@@ -1,0 +1,34 @@
+# 架构验收与阶段映射
+
+来源：[最终架构 §20.3](../JVM_Rust_Engine_Final_Architecture.md#s20)。下表全部为待实施的测试门槛。OpenSpec 格式验证不会执行这些验收，也不能替代 corpus、oracle、fuzz 或行为对照。
+
+| ID | 验收主题 | 首次负责阶段 | 必须保留的证据 |
+| --- | --- | --- | --- |
+| A01 | 未使用 Methodref 不是调用 | P1 | 同 fixture 的 CP 命中与 X1 consumer 结果对照 |
+| A02 | invokevirtual 位置精确 | P1，P0 先验 bytecode spans | 原 entry、方法完整 descriptor、BCI 50、opcode、CP index |
+| A03 | annotation/signature/catch 中独有类型 | P1 | 分类别正例、候选过滤与不经过 Class CP 的样本 |
+| A04 | LambdaMetafactory 与任意 bootstrap | P1 结构；P3 恢复；P4 增量语义 | implementation handle 和创建/调用的区分；未知最终目标 |
+| A05 | nested condy 与共享图 | P1 结构；P4 语义 | visited/cycle、边数/深度预算、共享节点和各 use-site 的 via 路径 |
+| A06 | root/11/17 MR 选择 | P1；P4 RuntimeMatrix | Physical 全量与 Java 8/11/17 选择；Manifest 条件及不合规诊断 |
+| A07 | WAR 同名类 | P1 物理/选择；P2 解析 | 不同 ordinal/origin、显式 loader/order 与歧义状态 |
+| A08 | DEFLATED nested JAR | P1 | 限内物化、超限 Partial、STORED 与 DEFLATED 成本区别 |
+| A09 | 历史 jsr/finally | P0 指令；P1 原始 X1；P2 规范化；P3 恢复 | 无需 normalize 的 X1；returnAddress/raw CFG/origin；可靠恢复或 fallback |
+| A10 | 缺失 StackMap/debug | P2；P3 无 debug 命名 | 独立 Frame 推导与版本合法性诊断；不得宣称 verifier 通过 |
+| A11 | Base.foo 声明、Sub CP owner | P2，P4 深度扩展 | symbolic 原 owner；宽候选/继承扩展后 resolves_to；缺失依赖不能变否定 |
+| A12 | accessor/concat 恢复隐藏调用 | P3；P4 现代恢复 | 恢复前后相同 X1 原始边、派生关系与多 origin source map |
+| A13 | 成员级失败 | P2/P3 | 同类正常与失败方法并存；representation、quality、execution、诊断分开 |
+| A14 | 全范围中断/缺失依赖 | P0 预算；P1 查询；后续各阶段回归 | 已扫描/未扫描范围、终止维度、取消与 resolution coverage，不假 Complete |
+| A15 | 冷/热/关缓存完整结果一致 | P5，每个缓存引入时 | 固定 snapshot/query/view、完整运行语义 fingerprint；中断子集不要求相同 |
+| A16 | 单方法按需边界 | P2/P3，P0 先验局部 bytecode | Header/Body 物化记录、扩展理由，不读无关 Body、不建全局 XRef |
+| A17 | X1 零 CFG/SSA/AST | P1，P2–P5 持续回归 | 构造计数和编译依赖边界；不能仅以“没有输出源码”代替证明 |
+| A18 | 分析期间输入变化 | P0/P1，各缓存/并行阶段回归 | 固定字节源或可检测变化中止；跨快照 token/缓存隔离 |
+
+## 语料与发布要求
+
+每个 fixture 记录来源、生成命令/编译器版本、输入摘要、目标 dialect、runtime/output profile 和预期能力。真实历史 javac/ECJ 样本与手工构造边界样本分别标记，现代 `--release 8` 不替代历史 codegen。
+
+输入矩阵覆盖 CLASS/JAR/WAR、Boot executable/deployed、MR、ZIP64、STORED/DEFLATED nested、同名/同字节多 origin、45–52 历史版本和 53–71 的逐 feature 注册。对抗矩阵覆盖截断、未知 CP/opcode、switch/wide、过长 attribute、非法索引、循环和超预算。
+
+输出支持矩阵分别记录 parse、X1、resolution、decompile-quality、output-level。语法检查、重编译和语义验证各自记录；生产引擎不执行输入，只有已知受控 fixtures 参与隔离动态对照。完整执行与预算中断分别比较，冷/热一致性只适用于相同语义配置的完整执行。
+
+现阶段无运行时实现，以上所有能力状态均为 **planned / not implemented**。文档可独立提交；只有真实测试记录满足该 change 的出口门槛后才勾选实施任务并归档。

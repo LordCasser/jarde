@@ -1,0 +1,31 @@
+schema: spec-driven
+
+context: |
+  Language: zh-CN
+  All artifacts must be written in zh-CN.
+  Keep OpenSpec structural headings and SHALL/MUST keywords in English.
+  Project: jarde, a pure Rust library-first JVM artifact analysis engine.
+  Architecture reference: JVM_Rust_Engine_Final_Architecture.md.
+  Current delivery contains planning documents only; P0-P5 are not implemented.
+  Query and Decompiler share readers and identities but do not start each other.
+  Preserve physical origins and raw facts; distinguish symbolic references,
+  definition resolution, dispatch, output quality, coverage and execution state.
+  Do not execute target code or download target dependencies automatically.
+  All input processing, dependency expansion and output need explicit budgets.
+  Prefer maintained libraries that pass our conformance gates; see dependencies.md.
+  Keep the smallest complete change. Do not create speculative crates or abstractions.
+  Favor long-term architecture; do not maintain backward compatibility by default.
+  Record unrelated architectural debt separately instead of expanding a change.
+
+rules:
+  proposal:
+    - State stage prerequisites and explicit non-goals; do not imply planned capabilities exist.
+  specs:
+    - Use observable SHALL/MUST requirements and testable WHEN/THEN scenarios.
+    - Keep dependencies and implementation choices in design, not behavioral specs.
+  design:
+    - Evaluate library reuse, maintenance, licensing and missing capabilities before custom code.
+    - Distinguish parse, dialect validation, runtime selection, verification and source recovery.
+  tasks:
+    - Give each implementation task a verification method or acceptance ID.
+    - Only mark work complete after its stated validation; planning completion is not implementation completion.
