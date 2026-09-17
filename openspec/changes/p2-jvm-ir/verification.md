@@ -160,5 +160,5 @@
 ## 第一片（1.1–1.3）状态与闸口
 
 - 1.1、1.2、1.3 均已完成、独立复核 **Approve** 并有各自 CI 记录；第一片的退出条件（reader 类型化操作数、预算维度、结果/请求契约可用）已满足。第一片整体以提交 `0cba0d6`（实现）+ `6344508`（文档）推送，CI run [`35253446169`](https://github.com/LordCasser/jarde/actions/runs/35253446169) 四个 job 全部 success（`stable` 含 ignored JDK 25 oracle、`MSRV 1.88.0`、双 workspace `supply chain`、`fuzz smoke`）。
-- 2.5 起未开始（2.1–2.4 已完成并复核 Approve）。按 `tasks.md`，2.x 各片逐项实现、验证并只读复核后再交接。
+- 2.5 已完成实现并经两轮独立只读复核（首轮有条件 Approve，三项必须改已关闭；复审要求补三条用例，收口记录见 2.5 节）。3.x 起未开始。按 `tasks.md`，各片逐项实现、验证并只读复核后再交接。
 - 债务池（登记，不阻塞）：1.2 的操作数存储放大与未完整解码前缀语义（3.x 消费前收紧）、`fuzz/README.md` 措辞、P2 维度真实膨胀由 3.5/4.3 验收、`query-api` 与 `analysis-contracts` 的 spec delta 在 P2 归档时同步主规格。
