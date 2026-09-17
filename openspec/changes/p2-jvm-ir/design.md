@@ -563,6 +563,7 @@ pub struct HeaderRead {
 - 诊断码：`resolution_default_conflict`（多个非抽象 default）、`resolution_kind_mismatch`（调用种类/owner 种类/静态性/`<init>`/abstract+`InvokeSpecial`）、`resolution_access_denied`、`resolution_access_not_checked`、`resolution_signature_polymorphic`、`resolution_array_owner`、`resolution_hierarchy_missing`（层级某层 Missing）、`resolution_hierarchy_ambiguous`（层级某层 Ambiguous）、`resolution_hierarchy_cycle`（层级环，与 2.2 共享）、以及既有的 `resolution_method_is_abstract`。
 - **语义近似（有意，记入 spec 边界，不得被当作 JVMS 完全实现）**：解析期报 default conflict 而 JVMS 8 把它放在 invocation selection；interface owner 不隐式继承 `java/lang/Object` 的方法（未命中即 `Missing`）；只检查成员自身的访问标志，不检查声明类的可访问性（JVMS 5.4.3.1）；调用方定义不一致或内容未提供属 stop（`state = None` + `Failed`），不是 `NotChecked`；字段的 static/instance 指令级规则留给 2.4/2.5（`MemberUse` 不含指令级种类）。
 - **schema 限制**：`ResolvedMemberRef` 没有类内坐标，同一 owner 内同名同描述符的重复声明只能表达为相同的 refs（由用例固定）；`Ambiguous` 与 `resolved` 互斥（只在 `Resolved` 时发布 `resolved`）。
+- **Class 符号的声明查询**：候选规则只对成员声明定义，因此 Class 符号的 `DeclarationRefQuery` 与被拒环境一样返回 1.1 的诚实不可用状态（`resolution_not_implemented` + `NotRequested`），不读字节。
 - **计费**：成员解析使 `analysis_steps` 成为真实输入，因此成员请求必须给非零值（否则第一步即 `BudgetExceeded`）；`dependency_depth = 0` 仍允许读取成员 owner 自身（深度 0 不观察深度）。`reads` 的 reason 集合按上一条语义产生。
 - **coverage 求和语义**：成员请求的 `runtime_resolution` 区间是**该次请求内各次查找已检查位置之和**（每次查找自身的 `[0, examined)` 与未决 `[examined, positions)` 拼接），不是单次查找的区间；任一查找有未决分支即为 `Partial`。停止发生在**推导出有效搜索序之前**（例如预取消、或 owner 直接是数组）时，没有任何 position 可声明：区间为空、状态仍为 `Partial`（不编造区间，也不因空区间而报 `CompleteWithinSchema`）。
 
@@ -581,7 +582,7 @@ pub struct HeaderRead {
 ### 复用方式：给扫描机器加一个 crate-private 候选形态过滤器
 
 - 在 `src/xref/mod.rs` 增 crate-private `CandidateFilter`：`Exact(QueryTarget)`（现有行为，`Engine::query` 用它）与 `MemberShape { name: JvmBytes, descriptor: JvmBytes }`（按原始 name/descriptor 字节匹配 `SymbolRef::Method`/`Field`，**owner 不参与**）。`ScanContext` 持有当前过滤器，`code.rs`/`metadata.rs`/`bootstrap.rs` 的 `use_site_answers`/`asks_symbol`/`target_matches`/`answers` 改为调用同一 `ctx.candidate_matches(..)`（`resource.rs` 只做 literal，不参与）。
-- 新增 crate-private 入口 `xref::scan_candidates(snapshot, scope, consumers, filter, budget) -> CandidateScan { items, coverage, execution, diagnostics }`：复用同一 `ProviderScan` 与各 consumer 子扫描、同一计费与 ordering，但**不带分页/游标**（`DeclarationRefQuery` 用 `max_items` + `has_more` 表达截断，规则与 P1 页限一致：coverage `Partial`、execution 仍 `Complete`、不复用 P1 游标）。
+- 新增 crate-private 入口 `xref::scan_candidates(snapshot, scope, consumers, filter, max_items, budget) -> CandidateScan { items, has_more, coverage, execution, diagnostics }`：复用同一 `ProviderScan` 与各 consumer 子扫描、同一计费与 ordering，但**不带游标**；`max_items` 直接约束扫描、`has_more` 上报截断，规则与 P1 页限一致（coverage `Partial`、execution 仍 `Complete`）。`scan` 与 `scan_candidates` 共享同一 unit 循环（容器顺序、子扫描顺序、`ResultItems` 计费点与停止语义只写一份）。
 - **A17 方向不变**：`CandidateFilter` 与 `scan_candidates` 都不引用 resolver/ir；`src/query.rs` 与 `src/xref/**` 仍不含 P2 记号（守卫测试继续成立）。`Engine::query` 的行为与证据逐字段不变（P1 golden 全绿即证据）。
 - 每个候选的 `origin`/`consumer`/`operation`/`evidence` 直接沿用 P1 的 item 证据形状；resolver 侧只做"把候选的 owner 解析成声明并与目标比较"这一步。
 
@@ -589,9 +590,17 @@ pub struct HeaderRead {
 
 1. 候选来自结构 consumer（未使用的 CP 条目不是引用：`MemberShape` 只匹配**被 consumer 消费**的 use-site，因为过滤器作用在 use-site 判定上，不在池枚举上）。
 2. 对每个候选：解析其 owner（2.1 的查找 + 2.3 的成员规则），把解析出的声明与请求的 declaration 比较（loader + 定义身份 + 成员符号）。**只有解析到请求声明的候选进入 `items`**（`resolved` 即该声明、`state = Resolved`）；解析到别的声明的候选计入 `scanned` 但不进 `items`，因此 `items` 的每个条目都满足"该 use-site 确实指向请求声明"这一可复核断言。
-3. **未决候选不得当已排除**：候选的 owner 解析为 `Missing`/`BudgetExceeded`/取消/环境问题（或候选自身损坏）时计入 `unresolved_candidates` 并保留 `origin`，`coverage` 标 `Partial`，`has_more` 视截断而定；不得把它们算作"已排除"。
+3. **未决候选不得当已排除**：候选的 owner 解析为 `Missing`/`Ambiguous`/`IncompatibleClassChange`/`Inaccessible`/`UnsupportedPolicy`/`BudgetExceeded`/取消/环境问题（或候选自身损坏）时计入 `unresolved_candidates` 并保留 `origin`（经 `resolution_candidate_unresolved`（Warning）诊断携带 P1 的 use-site 位置），`coverage` 标 `Partial`，`has_more` 视截断而定；不得把它们算作"已排除"。
+   **证据不含指令级成员种类的候选**（`metadata` 的成员事实如 `EnclosingMethod`、bootstrap 的成员参数、`ldc` 的 `MethodHandle`）同样按未决处理：没有指令种类就无法按 JVMS 施加 static/instance 规则，因此不臆造种类（这类候选当前不会成为 `items`）。若将来需要它们成为引用证据，必须先给 2.3 的 crate-private 词表加"无指令种类"的可能并明确跳过哪些规则。
+   "解析到别的声明"的候选既不是 `items` 也不是未决：可由 `reads`/usage 与"不在 items 也不在 unresolved"观察（报告不设第三个桶）。
 4. `max_items` 截断：按 P1 页限规则（`returned_items`、`has_more`、coverage `Partial`、execution 不因此变 Partial）。
 5. **P1 语义不变**：`Engine::query` 的 `mentions_symbol` 仍按原始符号精确匹配（`Base.foo` 查询不返回 `Sub.foo` 的调用点），这是 A11 需要的对照证据。
+
+### 2.4 的诊断码与边界（实现后固定）
+
+- 诊断码：`resolution_candidate_unresolved`（Warning，provenance = 候选 use-site）；环境与能力类码沿用 1.1–2.3 的既有集合。
+- `DeclarationRefQuery.consumers.version` 在 2.4 不校验（`Engine::query` 会拒绝非 1）；统一校验属后续小改动。
+- metadata 类成员候选当前永不成为 `items`（见上），因此"不读 Body"的公开证据是**本次查询的 `code_bytes` 等于同 consumers 的同范围 P1 扫描计费**（解析不额外读 Body），不要求某个 fixture 恰好为 0。
 
 ### 2.4 的验收
 
