@@ -418,6 +418,49 @@ impl Engine {
 - **错误语义**：无效目标/溢出/形状不符各给稳定 code + 原 BCI 的定位诊断，不 panic、不静默跳过该指令；已有错误码（`classfile_instruction_*`）优先复用，必要时才新增。
 - **1.2 的验收**：wide/iinc、正负相对分支、tableswitch 的 default/key/target、lookupswitch 的 default/pair、handler 边界（含 `end == code_length` 与 `start > end` 反例）、非法目标（跳入操作数/越界/溢出）反例、以及 P0 既有指令边界 oracle 与全部既有测试不回归；不要求也不允许 1.2 引入 CFG/SSA/AST 或改动公共输出。
 
+## 2.1 契约：Header providers、搜索顺序与内容身份（crate-private 事实 + 报告层状态）
+
+2.1 只实现"名字 → 物理定义（含最小 Header 事实）"的**查找**，不实现闭包（2.2）、成员解析（2.3）或 dispatch（2.5）。
+
+### 搜索模型
+
+- **搜索顺序完全由 domain 表决定**：`ParentFirst` 的有效序列是"最顶层祖先 → … → 调用方 loader"的链（每个 loader 内部按 `LoadDomain.roots` 声明顺序）；`ChildFirst` 是"调用方 loader → 其 parent → … → 最顶层祖先"。`Custom`/`Unknown` 与 `ModuleMode != ClassPath` 已在 1.1 判为 `UnsupportedPolicy`，2.1 不猜顺序。
+- **一个 root 内的候选**：ZIP/ArtifactTree root 的候选是 raw name 恰为 `internal_name + b".class"`（字节精确、大小写敏感，沿用 P1 的候选纪律）的非目录 entry，按 container 顺序 + entry ordinal 升序；standalone CLASS root 的候选是它自身（读 root 字节并以 `this_class` 原始字节比对名字）。
+- **首个匹配即胜出，不回退**：按有效序列遇到的第一个有候选的 root 决定结果；该候选损坏时报告该失败，**不得**继续到后面的 root（JVM 语义：搜索顺序先到的定义就是那个定义）。
+- **Ambiguous 仅指同一选择位置无法区分**：同一個 root 内同名且字节不同的多个 entry（重复路径或嵌套容器同路径）→ `Ambiguous` 并列出各自 origin；同一 root 内同名同字节的重复 entry 也视为无法区分（不按 ordinal 猜）。
+- **Missing 是事实**：全部 root 都没有该名字 → `Missing`（不是错误）；`LoadRoot::External` 与未提供内容的 root 使该位置不可判定，按 1.1 的 `EnvironmentProblem` 报告并不参与猜测。
+
+### 类型（crate-private，报告层复用 1.1 的公共状态）
+
+```rust
+pub(crate) struct HeaderLocation {
+    pub(crate) loader: LoaderId,
+    pub(crate) root_index: u32,             // 该 loader 的 roots 声明下标
+    pub(crate) definition: PhysicalDefinitionId,
+    pub(crate) entry: Option<PhysicalEntryId>,   // standalone CLASS root 为 None
+}
+pub(crate) enum HeaderLookupState { Found, Missing, Ambiguous }
+pub(crate) struct HeaderLookup {
+    pub(crate) state: HeaderLookupState,
+    pub(crate) location: Option<HeaderLocation>,
+    pub(crate) candidates: Vec<HeaderLocation>,  // Ambiguous 时非空
+    pub(crate) header: Option<ClassHeaderFacts>, // Found 时来自既有 classfile reader
+}
+```
+
+`ClassHeaderFacts` 是对既有 `classfile` 事实的最小封装（`major/minor/access_flags/this_class/super_class/interfaces/member headers/constant_pool`），不新增公共类型。
+
+### 计费与身份
+
+- 每个 **Header 读取尝试**记一次 `ClassHeaders`（与契约的计数单位一致）；ZIP 名字匹配走既有枚举路径（其 `archive_entries`/`result_items` 计费不变，2.1 不新建索引，索引属 P5）。
+- `definition` 由真实 origin + `class_bytes` 摘要/长度 + 路径变体派生（沿用 P1 的 `PhysicalDefinitionId` 语义）；同字节不同 origin 不合并。
+- 失败的尝试与损坏候选保留 origin 证据；预算/取消按既有 `Err(BudgetExceeded)`/`Err(Cancelled)` 传播，由报告层映射为相应平面。
+
+### 2.1 的验收
+
+- fixtures：`ParentFirst`/`ChildFirst` 的顺序差异（同名类在两个 loader 各自 root 中的选择）、同一 loader 内同名有序 root 的优先、同 root 同名不同字节 → `Ambiguous`、缺失 parent / 循环 parent（走 1.1 的校验）、`UnsupportedPolicy`（module mode 与 Custom/Unknown）、`External` root 与未提供内容、standalone CLASS root 按 `this_class` 命中、同名同字节不同 origin 不合并、损坏候选不回退到后续 root（并给出该 root/entry 的 origin 诊断）。
+- 每个 fixture 断言选择结果（loader + root 下标 + definition 身份）、`ClassHeaders` 计数、以及失败时的状态与诊断码；报告层只映射 1.1 已定型的 `ResolutionState`，不新增公共 variant。
+
 ## Risks / Trade-offs
 
 - [Risk] frame/phi/origin 或 jsr 克隆乘法膨胀 → 分配前计费及高扇出/多槽位用例；P1 输入有界不代替 IR 上界证明。
