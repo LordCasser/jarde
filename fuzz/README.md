@@ -17,7 +17,7 @@ root still reports exactly the members `jarde` and `jarde-cli`, and
 | `Cargo.lock` | committed, so the tools and the runtime library stay pinned |
 | `rust-toolchain.toml` | pins the fuzz workspace to `nightly-2026-07-20` (sanitizer and coverage instrumentation are nightly-only) |
 | `src/lib.rs` | fixed requests, bounded entry points, the public-contract assertions, the corpus checks |
-| `fuzz_targets/query.rs` | target 1: input → artifact → one fixed query request |
+| `fuzz_targets/query.rs` | target 1: input → artifact → all five fixed query requests |
 | `fuzz_targets/artifact_tree.rs` | target 2: input → artifact → nested tree enumeration + multi-release selection |
 | `corpus/generate_seeds.py` | deterministic generator for the committed seeds |
 | `corpus/<target>/` | the committed minimal seeds (digests below) |
@@ -32,8 +32,22 @@ targets.
 
 | target | input → handling | assertions |
 | --- | --- | --- |
-| `query` | input bytes are the artifact; a rejected input is an accepted outcome; an opened snapshot gets one of five fixed requests selected from the input's first byte (`mentions_symbol` on `com/example/Fuzz.target:()V`, on the class, `literal_value` on `fuzz-literal`, the raw `constant_pool_contains` probe, and a request naming every consumer category) | `page.returned_items == items.len()`; published items ≤ `limits.result_items`; a cursor implies `has_more`; `CompleteWithinSchema` ⇒ `ExecutionReport::Complete` + no unsupported category + no skipped range; any other execution ⇒ `Partial`; `unsupported_categories` is exactly the declared-but-unimplemented kinds; the two other coverage dimensions stay `NotRequested`; `unknown_candidates ≤ scanned_items`; every item answers the requested relation and claims no resolution; every `usage` field stays inside the limit that produced it |
+| `query` | input bytes are the artifact; a rejected input is an accepted outcome; an opened snapshot gets all five fixed requests sequentially, independent of the file magic (`mentions_symbol` on `com/example/Fuzz.target:()V`, on the class, `literal_value` on `fuzz-literal`, the raw `constant_pool_contains` probe, and a request naming every consumer category) | `page.returned_items == items.len()`; published items ≤ `limits.result_items`; a cursor implies `has_more`; `CompleteWithinSchema` ⇒ `ExecutionReport::Complete` + no unsupported category + no skipped range; any other execution ⇒ `Partial`; `unsupported_categories` is exactly the declared-but-unimplemented kinds; the two other coverage dimensions stay `NotRequested`; `unknown_candidates ≤ scanned_items`; every item answers the requested relation and claims no resolution; every `usage` field stays inside the limit that produced it |
 | `artifact_tree` | input bytes are the artifact; an opened snapshot is enumerated as a nested tree and then run through standard multi-release selection for a fixed Java 17 class-path runtime view, each with its own budget | reported containers + layout nodes ≤ `limits.result_items` (2 reservations + 1 per returned entry evidence + 1 per selection in the selection call); the same completeness/execution coupling on the artifact-structural and runtime-resolution dimensions; `verification == NotPerformed`; every `usage` field stays inside its limit |
+
+The shared `exercise_query` driver opens once, then checks and drops each report before
+starting the next request. A public query error does not skip the remaining shapes. Each
+operation has its own `limits()` budget: at most one open plus five queries, with at most
+five times each query limit in cumulative query work (including five cooperative deadlines).
+Only one query report is retained at a time. This is a bounded multiplier, not a single
+shared-budget request or a hard wall-clock timeout.
+
+The corpus tests run this same driver and require the actual visited shapes to be
+`[0, 1, 2, 3, 4]` for both valid CLASS and JAR seeds and for opened damaged seeds. Valid
+seeds must produce nonempty answers; damaged reports must retain their failure/Partial
+state, and the all-category request must report Verification/Debug as unsupported. The old
+first-byte selector was faulty: CLASS magic `0xCA` always selected shape 2, and ordinary
+PK ZIP magic `0x50` selected shape 0. Restoring it makes the new routing regression fail.
 
 The assertion set intentionally only states documented behaviour: a libFuzzer finding must
 be a real contract violation, not a legitimate outcome (an empty page, a damaged artifact,
@@ -93,8 +107,10 @@ PATH="$HOME/.cargo/bin:$PATH" cargo fuzz run query /tmp/jarde-fuzz/query -- \
   -max_total_time=60 -max_len=65536 -rss_limit_mb=512 -workers=1 -print_final_stats=1
 ```
 
-## Recorded smoke runs (2026-09-17, macOS aarch64, AddressSanitizer build)
+## Historical P1 smoke runs (before the routing fix, macOS aarch64, AddressSanitizer)
 
+These historical runs used the old one-request selector. They do not validate the revised
+five-request driver; see the harden-p1-validation verification record for the new runs.
 Each run started from a scratch copy of the five committed seeds and ran one worker:
 
 ```sh
@@ -114,11 +130,10 @@ same input twice per target with the same outcome (exit 0, "Executed … in 5 ms
 executed unit, no new corpus unit). No crash, hang or contract violation was found, so
 there is no minimized counterexample to record.
 
-The `artifact_tree` RSS figure is the sanitizer's, not the engine's: the identical run
-without AddressSanitizer (`cargo fuzz run -s none artifact_tree …`) executed 4 719 875
-units in the same 61 seconds with a flat peak RSS of 30 MB. The engine's own footprint
-does not grow with the number of runs; the 512 MB limit above is what the design fixes for
-the gate, and it was never reached.
+The historical no-AddressSanitizer comparison executed 4 719 875 units in 61 seconds
+with 30 MB peak RSS. It shows that instrumentation materially affects this measurement;
+it does not prove that every engine allocation is bounded or exclude leaks. Keep the
+512 MB gate and record platform, sanitizer, corpus and duration before comparing peaks.
 
 These runs are a **bounded smoke**, not a security or coverage proof: one worker, 60
 seconds, two targets, fixed requests and small budgets.
@@ -128,24 +143,19 @@ seconds, two targets, fixed requests and small budgets.
 `deny.toml` lives at the repository root and is the only policy source; the fuzz workspace
 does not add a second one.
 
+Run both dependency graphs explicitly from the repository root:
+
 ```sh
-cd fuzz && cargo deny check
-# advisories ok, bans ok, licenses FAILED, sources ok
+cargo deny --manifest-path Cargo.toml --workspace --locked --config deny.toml check
+cargo deny --manifest-path fuzz/Cargo.toml --workspace --locked --config deny.toml check
 ```
 
-* `advisories ok` (RustSec database fetched): no known vulnerability, yanked or unmaintained
-  crate in the 36-package fuzz lock.
-* `sources ok`: every package comes from crates.io.
-* `bans ok`: after `jarde = { path = "..", version = "=0.1.0" }` the workspace has no
-  wildcard dependency (`wildcards = "deny"` reports a bare path dependency).
-* `licenses` previously failed for exactly one crate: `libfuzzer-sys 0.4.13` is
-  `(MIT OR Apache-2.0) AND NCSA`. Its own code is MIT/Apache-2.0; the `NCSA` term is
-  LLVM's University of Illinois/NCSA license for the bundled libFuzzer C++ runtime. NCSA is
-  OSI-approved and FSF Free/Libre but was not in the root allow list. Policy owner decision
-  (2026-09-17): `NCSA` is now allowed in the single root `deny.toml` with a comment that
-  scopes it to this test-only workspace, so both `cargo deny check` here and in the crate
-  root report `advisories ok, bans ok, licenses ok, sources ok` without a second policy
-  file. The library itself never links this crate.
+The root graph contains the library and CLI; the independent fuzz graph contains
+`libfuzzer-sys`. Both must pass advisories, licenses, bans and sources. The single root
+policy grants NCSA only to the exact `libfuzzer-sys 0.4.13` exception, not to arbitrary
+future dependencies. This crate declares `(MIT OR Apache-2.0) AND NCSA`: the NCSA term
+covers its bundled libFuzzer runtime. Upgrading it requires reviewing the exception.
+
 
 ## CI
 
@@ -156,3 +166,8 @@ above), then run both targets for 20 seconds each with
 and finally require `git diff --exit-code` plus an empty `git status --porcelain` so the
 run cannot leave a tracked file changed. It proves a bounded smoke passes; it is not a
 security proof and no corpus accumulates between runs.
+
+The `supply-chain` job checks both manifests explicitly against the root policy. A green
+root audit alone cannot cover this independent fuzz workspace. Local command results and
+remote CI run results are recorded separately in
+[`harden-p1-validation`](../openspec/changes/harden-p1-validation/verification.md).

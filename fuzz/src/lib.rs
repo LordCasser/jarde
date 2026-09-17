@@ -5,9 +5,8 @@
 //! entry points, reader and `Limits`; nothing here re-implements a reader, mutates a
 //! request or generates class files. This module only
 //!
-//! * builds a small, closed set of fixed requests — the `query` target selects one per
-//!   input from its first byte, so one corpus can drive several relations without
-//!   hand-written input generation,
+//! * runs a small, closed set of fixed requests for every opened artifact, so file magic
+//!   cannot prevent a valid CLASS or JAR from reaching a request shape,
 //! * runs them through the public `Engine` entry points under hard input limits,
 //! * asserts the contracts that must hold for *every* outcome, including the damaged,
 //!   interrupted and cancelled ones.
@@ -61,7 +60,7 @@ pub fn limits() -> Limits {
     }
 }
 
-/// Number of fixed request shapes [`query_request`] selects from.
+/// Number of fixed request shapes exercised for every opened artifact.
 pub const QUERY_SHAPES: u8 = 5;
 
 /// One fixed query request: relation, target and consumer schema per shape.
@@ -213,6 +212,28 @@ pub fn run_tree(snapshot: &ArtifactSnapshot, limits: &Limits) -> Option<Artifact
     Engine::new()
         .enumerate_artifact_tree(snapshot, &mut budget)
         .ok()
+}
+
+/// The query target's complete driver, also used by the corpus regression tests.
+///
+/// One open and at most five sequential queries bound the work per input. Each operation
+/// has its own small budget; each report is checked and dropped before the next query.
+/// Public query errors do not skip the remaining shapes. The observer borrows the
+/// outcome so tests can check real routing/results without retaining all five reports;
+/// the fuzz target supplies a no-op observer.
+pub fn exercise_query(input: &[u8], mut observe: impl FnMut(u8, Option<&QueryReport>)) {
+    let limits = limits();
+    let Some(snapshot) = open(input, &limits) else {
+        return;
+    };
+    for shape in 0..QUERY_SHAPES {
+        let request = query_request(shape, &snapshot);
+        let report = run_query(&snapshot, &request, &limits);
+        if let Some(report) = &report {
+            assert_query_contract(report, &limits);
+        }
+        observe(shape, report.as_ref());
+    }
 }
 
 /// Runs standard multi-release selection, treating a public error as an accepted outcome.
@@ -548,6 +569,63 @@ mod corpus {
             !class_report.items.is_empty(),
             "the `new com/example/Fuzz` must answer a class target: {class_report:?}"
         );
+    }
+
+    #[test]
+    fn query_driver_exercises_every_shape_for_class_and_jar() {
+        for name in ["minimal-class", "minimal-jar"] {
+            let mut visited = Vec::new();
+            exercise_query(&read("query", name), |shape, report| {
+                visited.push(shape);
+                let report = report.expect("every valid seed shape returns a report");
+                assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+                assert!(!report.items.is_empty(), "seed {name}, shape {shape}");
+                let expected_relation = match shape {
+                    2 => jarde::QueryRelation::LiteralValue,
+                    3 => jarde::QueryRelation::ConstantPoolContains,
+                    _ => jarde::QueryRelation::MentionsSymbol,
+                };
+                assert_eq!(report.relation, expected_relation);
+                if shape == 4 {
+                    assert_eq!(
+                        report.coverage.unsupported_categories,
+                        vec![ConsumerKind::Verification, ConsumerKind::Debug]
+                    );
+                    assert_ne!(
+                        report.coverage.dimensions.artifact_structural.state,
+                        CoverageState::CompleteWithinSchema
+                    );
+                }
+            });
+            // A literal list pins the corpus's expected coverage independently of the
+            // driver/shape count. Restoring the magic-byte selector fails this assertion.
+            assert_eq!(visited, [0, 1, 2, 3, 4], "seed {name}");
+        }
+    }
+
+    #[test]
+    fn query_driver_checks_every_shape_for_damaged_seeds() {
+        for name in [
+            "damaged-candidate.jar",
+            "corrupt-payload.jar",
+            "truncated-class",
+        ] {
+            let mut visited = Vec::new();
+            exercise_query(&read("query", name), |shape, report| {
+                visited.push(shape);
+                let report = report.expect("an opened damaged seed reports its failure");
+                assert!(!matches!(
+                    report.execution,
+                    ExecutionReport::Complete { .. }
+                ));
+                assert_eq!(
+                    report.coverage.dimensions.artifact_structural.state,
+                    CoverageState::Partial,
+                    "seed {name}, shape {shape}"
+                );
+            });
+            assert_eq!(visited, [0, 1, 2, 3, 4], "seed {name}");
+        }
     }
 
     #[test]

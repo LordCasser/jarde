@@ -99,10 +99,18 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7.0.1
-      - name: Check advisories, licenses, bans, and sources
+      - name: Check root workspace advisories, licenses, bans, and sources
         uses: EmbarkStudios/cargo-deny-action@v2.1.1
         with:
           command: check
+          arguments: --all-features --workspace --locked --config ./deny.toml
+          manifest-path: ./Cargo.toml
+      - name: Check fuzz workspace advisories, licenses, bans, and sources
+        uses: EmbarkStudios/cargo-deny-action@v2.1.1
+        with:
+          command: check
+          arguments: --all-features --workspace --locked --config ./deny.toml
+          manifest-path: ./fuzz/Cargo.toml
 
   fuzz-smoke:
     name: fuzz smoke
