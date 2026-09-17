@@ -330,7 +330,32 @@ impl Engine {
 
 ### 1.3 负责的预算维度（名字固定，字段由 1.3 加入）
 
-`CountedBudgetDimension` 增 `ClassHeaders`、`MethodBodies`、`IrItems`、`IrEdges`、`AnalysisSteps`、`NormalizationClones`；`BudgetDimension` 另增 `DependencyDepth`（高水位，不累加，不得用 `NestedDepth` 代替）。1.1 先补 `Limits`/`UsageSnapshot` 的构造器或分维访问器，使后续加维是增量；1.3 在同一变更内更新 CLI 请求 schema、goldens 与 fuzz 的 usage 断言，并说明这是 P1 证据的 additive 变化。计数单位：`ClassHeaders`/`MethodBodies` 计"实际读取尝试"，去重后的 (definition, loader) 绑定由结果身份表达。
+`CountedBudgetDimension` 增 `ClassHeaders`、`MethodBodies`、`IrItems`、`IrEdges`、`AnalysisSteps`、`NormalizationClones`；`BudgetDimension` 另增 `DependencyDepth`（高水位，不累加，不得用 `NestedDepth` 代替）。1.1 先补 `Limits`/`UsageSnapshot` 的构造器或分维访问器，使后续加维是增量；1.3 在同一变更内更新 CLI 请求 schema、goldens 与 fuzz 的 usage 断言，并说明这是 P1 证据的 additive 变化。计数单位（1.3 的实现契约）：
+
+| 维度 | 计数单位 | 计费时机 |
+| --- | --- | --- |
+| `ClassHeaders` | 一次 Header 读取**尝试**（同一 (definition, loader) 绑定在同一请求内去重后不再计；失败尝试计一次） | 读取前 |
+| `MethodBodies` | 一次 Body（`Code`）读取尝试（同上；无 Body 的成员不尝试、不计） | 读取前 |
+| `IrItems` | 一个派生存储项：frame/local 槽、SSA 值、phi 输入、origin 成员各计 1 | 分配/入队前 |
+| `IrEdges` | 一条派生边：CFG 边（含异常边）、SSA def-use 边各计 1 | 加边前 |
+| `AnalysisSteps` | 工作列表的一次 pop/处理（重复访问计数） | 处理前 |
+| `NormalizationClones` | `jsr/ret` 规范化产生的一个克隆节点 | 克隆前 |
+| `DependencyDepth` | 依赖闭包深度的**高水位**（非累加，与容器 `NestedDepth` 独立），进 limits/usage/终止维度 | 每次扩展前比较 |
+
+去重后的 (definition, loader) 绑定由结果身份表达，不影响计费口径；预算在一个请求内共享一个生命周期，fallback 不 reset、不重读完整 Body。
+
+1.3 的 churn 已量化，必须在同一变更内一起更新（漏掉任何一项都算未完成）：
+
+| 位置 | 规模（2026-09-18 实测） | 要求的改法 |
+| --- | --- | --- |
+| `src/budget.rs` | `CountedBudgetDimension` 9 → 15、`BudgetDimension` 11 → 18、`try_from`、`Limits::counted_limit`/`get`、`UsageSnapshot::counted_usage`/`add`、`Budget::check_nested_depth` 旁新增高水位入口 | 生产改动即计费契约本身 |
+| `Limits { .. }` 字面量 | **73 处 / 24 个文件**（`src` 4 文件、`tests` 14、`crates` 2、`fuzz` 1、`examples` 2） | 1.1 已加 `counted_limit`/`counted_usage`；本切片再补 `Limits` 的构造器或 `Default`，让加维不再改字面量 |
+| CLI 请求 schema | `crates/jarde-cli/src/main.rs::RequestLimits`（`deny_unknown_fields`、全字段必填） | 新维度**同样必填**（不引入静默默认值；CLI 会先接受、到 5.1 才使用），并同步 `From<RequestLimits> for Limits`；这是 CLI JSON 契约的**有意变更**，要写进 verification |
+| P1 golden | `tests/fixtures/p1-golden/*.json` 共 **24 个 usage 对象**（4/4/5/10/1） | 手工补齐新字段（golden 是 checked-in 期望，不得自动生成） |
+| fuzz harness | `fuzz/src/lib.rs::assert_usage` 逐维手写断言（加维不会编译失败 → 静默漏检） | 改为按 `CountedBudgetDimension::ALL` 遍历，使新增维度自动纳入上限断言 |
+| 文档 | `docs/support-matrix.md` 的"十一项 limit"、README 的 limit 列表 | 更新为 18 项并说明哪些由 P2 使用 |
+
+`ALL` 的测试期穷尽 `match`（1.1 已为 `CountedBudgetDimension`/`EnvironmentProblemCode`/`AnalysisStage` 建立）必须扩到全部新增维度；`DependencyDepth` 与容器 `NestedDepth` 同为高水位，二者独立。
 
 ### 1.1 的验收义务
 
@@ -379,7 +404,15 @@ impl Engine {
   }
   ```
 
-  校验规则：目标必须落在某个指令起点（跳入操作数即非起点 → 无效）、不得越出 `code_length`、`handler_pc` 必须是起点、保护区间为半开区间且 `end` 允许等于 `code_length`、`start <= end`。**1.2 不构建 CFG**（3.x 才做），只交付可复核的校验事实与错误。
+  校验规则（JVMS 4.7.3 与 `specs/jvm-ir` 的"保护区间核对有效指令边界"）：
+  - branch/switch default/switch case/`handler_pc`：目标必须落在某个指令起点（跳入操作数即非起点 → `classfile_instruction_invalid_target`）、不得越出 `code_length`（含负向换算落到 BCI 0 之前 → `classfile_instruction_target_out_of_bounds`）；
+  - 保护区间：`start_pc` 必须是指令起点、`end_pc` 必须是指令起点或恰为 `code_length`、`start_pc < end_pc`（空区间不是合法保护区间）、`end_pc <= code_length`；违反者用 `classfile_exception_range_invalid`（区间关系）或 `classfile_instruction_invalid_target`（端点不在起点）报告。
+  - `Handler` 行的 `instruction_bci` 取 `handler_bci`（异常表记录没有唯一的"发出指令"；保护区间仍由 `exception_handlers[ordinal]` 给出）。
+  - Body 未完整解码（预算/取消/decode 停止）时 `control_flow_targets` 是**可靠但不完备**的视图：不会放过非法目标，但会把"落在未读后缀里的合法目标"报成非法。调用方 MUST 先查 `execution`/`stopped_at`，不得把该 `Err` 直接当成方法损坏；3.x 消费前若需要更强的类型级保护再收紧。
+- **switch 条目**：语义取自已解码事件（default/low/high/npairs 来自指令事件），条目本身允许从该指令**已记录字节区间**按 checked 偏移读取，且区域长度必须等于解码形状；这不算"再次遍历字节流重建语义"，也不得迭代 noak 的 `TablePairs`/`LookupPairs`（其 `high == i32::MAX` 会在 overflow-checks 下 panic）。
+- **有意不保留的操作数**：`newarray` 的 atype、`multianewarray` 的 dimensions、`invokeinterface` 的 count（3.x 若需要先改本节）；`immediate` 只表示 CP 条目或指令本身的字面量类型，不承担 ldc 变体与 CP tag 的配对合法性（那属 4.x verifier 领域）。
+- **存储与计费**：操作数 facts 只按既有 `CodeBytes` 1:1 计入，不新增维度；实测约 80 B/指令的派生放大（有绝对上界）在 1.3 由 `IrItems` 记账或在本节写明上界。
+- **1.2 不构建 CFG**（3.x 才做），只交付可复核的校验事实与错误。
 - **错误语义**：无效目标/溢出/形状不符各给稳定 code + 原 BCI 的定位诊断，不 panic、不静默跳过该指令；已有错误码（`classfile_instruction_*`）优先复用，必要时才新增。
 - **1.2 的验收**：wide/iinc、正负相对分支、tableswitch 的 default/key/target、lookupswitch 的 default/pair、handler 边界（含 `end == code_length` 与 `start > end` 反例）、非法目标（跳入操作数/越界/溢出）反例、以及 P0 既有指令边界 oracle 与全部既有测试不回归；不要求也不允许 1.2 引入 CFG/SSA/AST 或改动公共输出。
 

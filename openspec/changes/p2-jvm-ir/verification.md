@@ -39,9 +39,19 @@
 - `cargo run --example resolve_and_analyze --locked -- tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class` exit 0，输出诚实状态与缺 parent 的 `EnvironmentProblem`。
 - 以上命令由主 Agent 独立复跑确认；生产代码在复核修正轮中零改动（`src/**` 与首轮交付逐字节一致）。
 
+### 1.2 reader 层类型化操作数与目标校验
+
+- 交付：`src/classfile.rs` 新增 crate-private 的 `InstructionOperands`/`ImmediateValue`/`LocalOperand`/`SwitchOperands`，`MethodCodeFacts.operands` 与 `instructions` 同序同长；`MethodCodeFacts::control_flow_targets` 产出 `ControlFlowTarget`/`ControlFlowTargetKind`（branch/default/case/handler）。公共 `InstructionFact`/`BytecodeInspection`/`inspect_method_bytecode` 与计费口径**逐字段未变**（复核者在改动前后对 16 个 fixture 做公共 JSON 对照：剥 `elapsed_millis` 后逐字节相同；新增代码零 `charge`/`poll`）。
+- 校验：目标必须是指令起点、不得越出 `code_length`（含负向换算落到 BCI 0 之前）、switch default 与每个 case 同规则、`handler_pc` 是指令起点；保护区间按 JVMS 4.7.3 与 `specs/jvm-ir` 收紧为 `start_pc` 是指令起点、`end_pc` 是指令起点或恰为 `code_length`、`start_pc < end_pc`（空区间非法）。错误码分工：区间关系用 `classfile_exception_range_invalid`，端点/入口不在起点用 `classfile_instruction_invalid_target`，越界用 `classfile_instruction_target_out_of_bounds`。
+- 反例与证伪：F1（区间端点对齐/空区间）由主 Agent 裁定为**收紧**（JVMS 与 spec 字面都要求；复核者量化现有 15 个 fixture、42 个 body、8 条异常表记录的未对齐与空区间各为 0，故零回归）。9 个变异全部被新老测试捕获：switch default 不校验、`jsr`/`jsr_w` 缺失、符号扩展丢失、`code_length` 差一、未覆盖的 `wide` 族、四条 F1 子规则。首轮复核另列 5 组"实现正确但测试不敏感"的盲点（switch default、`jsr`、负数操作数、`wide astore/fload`、`target == code_length` 错误码），已由 7 条新测试补齐。
+- `repository_class_fixtures_validate_without_false_target_rejections`：递归扫描 `tests/fixtures/**` 的 15 个 class，全部 `class_facts` + `method_code_facts` + `control_flow_targets` 通过，并核对种群与 8 条 `jsr/jsr_w` 目标——真实历史 `finally` 子程序走同一套校验，收紧规则不拒绝既有语料。
+- 证据：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **348 passed / 0 failed / 1 ignored**，`cargo test --lib` = **114 passed**；由主 Agent 独立复跑确认。
+- 已知债务（登记，不阻塞）：`control_flow_targets` 对未完整解码的 body 是"可靠但不完备"的视图（不会放过非法目标，但会把未读后缀里的合法目标报成非法），调用方 MUST 先查 `execution`/`stopped_at`，3.x 消费前若需类型级保护再收紧；`newarray` atype、`multianewarray` dimensions、`invokeinterface` count 有意不保留（4.1/4.2 需要时先改契约）；`immediate` 只表示 CP 条目字面量类型，不承担 ldc 变体与 tag 配对合法性；操作数 facts 约 80 B/指令的派生放大只按 `CodeBytes` 1:1 计费，1.3 的 `IrItems` 记账或写明上界。
+- 事故记录：本轮实现过程中，coder 在变异实验里误用 `git checkout -- src/classfile.rs` 回退了未提交实现，随后从会话快照恢复并重放本轮改动。主 Agent 独立核实：HEAD 仍为 `6f820ab`（未提交任何东西）、工作树两处改动完好、文件 sha256 `3ba8b359…` 与 coder 声称一致、`git show HEAD:src/classfile.rs` 仍是 P2 前基线、20 个 1.2 测试函数全部在位、全量测试与仓库语料测试通过。结论：无内容丢失；后续变异实验一律用文件副本还原，不得触碰 git。
+
 ### 远端 CI
 
-本切片以两个提交推送 `main`：`0406178`（实现与测试）与 `6fc1674`（本 change 的契约与验证记录）。CI run [`35247034235`](https://github.com/LordCasser/jarde/actions/runs/35247034235) 在 `6fc1674` 上四个 job 全部 success：`stable / test and specification`（含 ignored JDK 25 指令边界 oracle 与两条公共示例）、`MSRV 1.88.0`、`supply chain`（根与 fuzz 两个依赖图）、`fuzz smoke`。
+本切片以两个提交推送 `main`：`0406178`（实现与测试）与 `6fc1674`（本 change 的契约与验证记录）。CI run [`35247034235`](https://github.com/LordCasser/jarde/actions/runs/35247034235) 在 `6fc1674` 上四个 job 全部 success：`stable / test and specification`（含 ignored JDK 25 指令边界 oracle 与两条公共示例）、`MSRV 1.88.0`、`supply chain`（根与 fuzz 两个依赖图）、`fuzz smoke`。1.2 的提交与 CI 在其小节内记录。
 
 ## 尚未关闭
 
