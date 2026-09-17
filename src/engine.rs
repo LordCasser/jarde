@@ -1,7 +1,8 @@
 //! Stateless synchronous composition of artifact and classfile contracts.
 
 use crate::artifact::{
-    ArtifactInput, ArtifactKind, ArtifactSnapshot, EnumerationReport, PhysicalEntry,
+    ArtifactInput, ArtifactKind, ArtifactSnapshot, ArtifactTreeReport, EnumerationReport,
+    PhysicalEntry,
 };
 use crate::budget::Budget;
 use crate::classfile::{
@@ -70,6 +71,14 @@ impl Engine {
         budget: &mut Budget,
     ) -> Result<EnumerationReport> {
         snapshot.enumerate(budget)
+    }
+
+    pub fn enumerate_artifact_tree(
+        &self,
+        snapshot: &ArtifactSnapshot,
+        budget: &mut Budget,
+    ) -> Result<ArtifactTreeReport> {
+        snapshot.enumerate_artifact_tree(budget)
     }
 
     pub fn inspect_header(

@@ -16,6 +16,7 @@ fn limits() -> Limits {
         code_bytes: 4 * 1024 * 1024,
         result_items: 100_000,
         output_bytes: 32 * 1024 * 1024,
+        nested_depth: 8,
         elapsed_millis: 30_000,
     }
 }

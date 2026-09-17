@@ -1,6 +1,6 @@
 ## Why
 
-以 P0 完成为进入条件。本 change 把有界内存快照、顶层物理 entry 定位和 classfile 检查组织成不依赖 CFG/SSA/反编译的结构查询产品，并明确物理视图与运行时视图的边界。Task 1.1 的公共 query/view/identity 模型已实现；nested/MR provider、consumer 扫描和查询执行仍未实现。
+以 P0 完成为进入条件。本 change 把有界内存快照、顶层物理 entry 定位和 classfile 检查组织成不依赖 CFG/SSA/反编译的结构查询产品，并明确物理视图与运行时视图的边界。Task 1.1 的公共 query/view/identity 模型和 task 1.2 的显式 bounded artifact-tree/nested/Boot/WAR 物理 provider 已实现；MR 选择、consumer 扫描和查询执行仍未实现。
 
 ## What Changes
 
@@ -19,10 +19,10 @@
 
 ### Modified Capabilities
 
-- `analysis-contracts`：物理定义身份显式区分 standalone CLASS root 与 archive entry，并把 nested origin 表示为外层 entry 到子容器的有向链；不得为 standalone CLASS 伪造 ZIP entry，也不得只保留无法复核边的容器 ID 列表。
+- `analysis-contracts`：物理定义身份显式区分 standalone CLASS root 与 archive entry，并把 nested origin 表示为外层 entry 到子容器的有向链；不得为 standalone CLASS 伪造 ZIP entry，也不得只保留无法复核边的容器 ID 列表。P1 artifact-tree 另增加非累加的 `nested_depth` 高水位 limits/usage/termination 维度，并延续 root 建立后的可靠前缀语义。
 
 P0 的 `artifact-snapshots`、`classfile-inspection` 和其余 `analysis-contracts` 作为输入契约；P0 仍只负责顶层 locator，不在本 change 中扩张为递归或运行时选择。
 
 ## Impact
 
-影响 `jarde` 的 query、artifact view、resource scanner 和 result model，以及 `jarde-cli` 的查询 JSON。继续复用 P0 评估的 noak、rawzip、flate2、blake3、serde、thiserror、clap，不预设新依赖。阶段门槛为 A01–A08、A14、A17、A18 对应的测试和文档；definition/dispatch 解析属于后续 P2。当前只有 1.1 值类型契约已实现，不能解释为结构查询产品已经可用。
+影响 `jarde` 的 query、artifact view、resource scanner 和 result model，以及 `jarde-cli` 的查询 JSON。继续复用 P0 评估的 noak、rawzip、flate2、blake3、serde、thiserror、clap，不预设新依赖。阶段门槛为 A01–A08、A14、A17、A18 对应的测试和文档；definition/dispatch 解析属于后续 P2。当前只有 1.1 值类型契约和 1.2 物理 artifact-tree provider 已实现，不能解释为 MR/runtime selection、结构 XRef 或查询产品已经可用。

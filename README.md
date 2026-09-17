@@ -1,8 +1,8 @@
 # jarde
 
-`jarde` 是纯 Rust、同步、library-first 的 JVM artifact 有界静态检查底座。**P0 已完成并归档**：不可变 CLASS/JAR/WAR 快照、顶层物理 ZIP entry 枚举与读取、classfile Header inspection、按方法的原始指令边界 inspection、预算/协作取消、公共 `Engine`、单请求 JSON CLI、支持矩阵、低内存 CI、公共示例与验证记录均已落地。P1 已完成 1.1 的 query/view/identity 公共模型，但 nested/MR provider、X0/X1 扫描、查询执行与 CLI 尚未实现；P2–P5 仍为 planned / not implemented。
+`jarde` 是纯 Rust、同步、library-first 的 JVM artifact 有界静态检查底座。**P0 已完成并归档**：不可变 CLASS/JAR/WAR 快照、顶层物理 ZIP entry 枚举与读取、classfile Header inspection、按方法的原始指令边界 inspection、预算/协作取消、公共 `Engine`、单请求 JSON CLI、支持矩阵、低内存 CI、公共示例与验证记录均已落地。P1 已完成 1.1 query/view/identity 模型和 1.2 显式 `enumerate_artifact_tree`：后者支持有界 nested archive 遍历、带物理 evidence 的 Boot/WAR 布局节点，以及从 root snapshot 复核 origin chain 的 nested entry replay；普通 `enumerate` 仍只枚举当前容器，不递归。P1 的 MR 选择、XRef/query 执行、resolver 与 runtime selection 尚未实现；P2–P5 仍为 planned / not implemented。
 
-这不是反编译器的完成版本。X1 引用扫描、运行时选择、resolution、nested archive 递归、CFG/SSA/IR、Java recovery/runtime view 均未实现。`Strict` 支持 45.x–51.x 与 52.0，且只表示 **version-only gate 下的结构读取和方法指令 inspection**，不是完整 dialect validation 或 JVM verifier；52 的非零 minor 不属于 Java 8 profile，`Strict` 拒绝。53–71、preview 与 future release 可由 `Forensic` 读取边界可靠的 Header 结构，但能力分别标为 `StructuralProbeOnly`、`UnsupportedPreview`、`FutureRelease`；`Strict` 均拒绝。完整、逐输入类型与版本的边界见[五维支持矩阵](docs/support-matrix.md)。
+这不是反编译器的完成版本。X1 引用扫描、MR/运行时选择、resolution、CFG/SSA/IR、Java recovery/runtime view 均未实现。`Strict` 支持 45.x–51.x 与 52.0，且只表示 **version-only gate 下的结构读取和方法指令 inspection**，不是完整 dialect validation 或 JVM verifier；52 的非零 minor 不属于 Java 8 profile，`Strict` 拒绝。53–71、preview 与 future release 可由 `Forensic` 读取边界可靠的 Header 结构，但能力分别标为 `StructuralProbeOnly`、`UnsupportedPreview`、`FutureRelease`；`Strict` 均拒绝。完整、逐输入类型与版本的边界见[五维支持矩阵](docs/support-matrix.md)。
 
 ## 支持范围
 
@@ -41,6 +41,7 @@ CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 cargo run -p jarde-cli -- <<'JSON'
     "code_bytes": 262144,
     "result_items": 10000,
     "output_bytes": 4194304,
+    "nested_depth": 8,
     "elapsed_millis": 30000
   },
   "operation": {
@@ -55,7 +56,7 @@ CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 cargo run -p jarde-cli -- <<'JSON'
 JSON
 ```
 
-十个 limit 都是请求级上限：`input_bytes`、`archive_entries`、`entry_bytes`、`read_bytes`、`class_bytes`、`attribute_bytes`、`code_bytes`、`result_items`、`output_bytes`、`elapsed_millis`。它们约束累计工作量和结果缓冲，不承诺进程 RSS 或硬实时中断。
+十一个 limit 都是请求级上限：`input_bytes`、`archive_entries`、`entry_bytes`、`read_bytes`、`class_bytes`、`attribute_bytes`、`code_bytes`、`result_items`、`output_bytes`、`nested_depth`、`elapsed_millis`。除 `nested_depth` 记录已接受嵌套容器深度的高水位外，其余资源维度约束累计工作量和结果缓冲；这些限制不承诺进程 RSS 或硬实时中断。
 
 成功响应 exit code 为 0、`status` 为 `"ok"`，并包含精确的 `transport.response_bytes`（含结尾换行）。只有在 ZIP 枚举报告已经建立，或目标 `Code` 已定位并已开始 exception-handler / instruction 扫描之后，局部预算耗尽、协作取消或局部输入失败才会作为 `status: "ok"` 内的 `Partial` / `Cancelled` report 返回；调用方必须读取内部 `execution`、coverage 和 diagnostics。协议错误，以及 artifact open、class Header、class 物化或方法/`Code` 定位完成前发生的错误，仍返回 exit code 1 和 `status: "error"`。
 

@@ -14,6 +14,7 @@ fn unlimited() -> Limits {
         code_bytes: u64::MAX,
         result_items: u64::MAX,
         output_bytes: u64::MAX,
+        nested_depth: u64::MAX,
         elapsed_millis: u64::MAX,
     }
 }

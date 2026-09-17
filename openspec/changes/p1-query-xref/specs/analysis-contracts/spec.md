@@ -22,3 +22,22 @@
 #### Scenario: Duplicate nested archive entries
 - **WHEN** 父容器中两个不同 ordinal 的同名 entry 各自产生一个 child container
 - **THEN** 两条 origin chain 分别保留其父 entry ordinal/raw name 和 child container ID，内层同名定义不得因容器名称相同而合并
+
+### Requirement: Provenance and execution are explicit
+系统 SHALL 为枚举、artifact-tree、Header 和 bytecode 返回快照/entry 身份及适用的 container origin、class offset 或方法 BCI，并分别返回 coverage、execution、diagnostics 和预算消耗。`nested_depth` SHALL 作为非累加的高水位预算维度进入 limits、usage 和 BudgetExceeded 结果；root container depth 为 0，直接 child 为 1。
+
+#### Scenario: Cancelled enumeration
+- **WHEN** ZIP 根容器已经建立，且枚举开始前或过程中收到取消
+- **THEN** 返回 `Ok(EnumerationReport)`，execution 为 Cancelled，并保留已完成的可靠前缀及其 coverage，不能将其标为 Complete
+
+#### Scenario: Partial or failed enumeration after root open
+- **WHEN** ZIP 根容器已经建立，枚举过程中耗尽预算或后续 entry 结构损坏
+- **THEN** 返回 `Ok(EnumerationReport)` 并保留已验证前缀；预算耗尽为 Partial 和对应 BudgetExceeded 维度，结构损坏为 Failed 和错误 diagnostic，artifact coverage 为 Partial，未完成范围明确标为 skipped
+
+#### Scenario: Root container cannot be established
+- **WHEN** 输入不是 ZIP，或 ZIP 根容器无法建立
+- **THEN** 枚举可以返回 `Err`，不得伪造可枚举的根容器或部分前缀
+
+#### Scenario: Nested depth is a high-water limit
+- **WHEN** artifact-tree 已接受 depth 1 的 child，随后请求 depth 2 而 `nested_depth` limit 为 1
+- **THEN** usage 的 nested depth 高水位保持 1，execution 为 Partial 且 reason 指向 `nested_depth`，depth 2 child 标为未扫描而不是累加消费或空成功

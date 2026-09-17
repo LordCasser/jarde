@@ -8,10 +8,11 @@
 use crate::budget::{Budget, BudgetDimension, CountedBudgetDimension, UsageSnapshot};
 use crate::error::{Error, Result};
 use crate::model::{
-    ArchiveNameBytes, ByteSpan, ContainerId, ContainerOrigin, Coverage, CoverageDimension,
-    CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity, ExecutionReport, PhysicalEntryId,
-    SnapshotId, TerminationReason,
+    ArchiveNameBytes, ByteSpan, ContainerId, ContainerOrigin, ContainerOriginStep, Coverage,
+    CoverageDimension, CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity,
+    ExecutionReport, Location, PhysicalEntryId, Provenance, SnapshotId, TerminationReason,
 };
+use crate::view::{PhysicalScope, PhysicalView};
 use rawzip::ZipArchive;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
@@ -113,6 +114,55 @@ pub struct PhysicalEntry {
 pub struct EnumerationReport {
     pub snapshot: SnapshotId,
     pub entries: Vec<PhysicalEntry>,
+    pub coverage: Coverage,
+    pub execution: ExecutionReport,
+    pub diagnostics: Vec<Diagnostic>,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum LayoutNodeKind {
+    NestedArchive,
+    BootClasses,
+    BootLibrary,
+    WarClasses,
+    WarLibrary,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum LayoutNodeSource {
+    Prefix {
+        container: ContainerOrigin,
+        prefix: ArchiveNameBytes,
+        evidence_entry: PhysicalEntryId,
+    },
+    Archive {
+        entry: PhysicalEntryId,
+        child_container: Option<ContainerOrigin>,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct LayoutNode {
+    pub kind: LayoutNodeKind,
+    pub source: LayoutNodeSource,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct ContainerReport {
+    pub origin: ContainerOrigin,
+    pub depth: u64,
+    pub entries: Vec<PhysicalEntry>,
+    pub coverage: Coverage,
+    pub execution: ExecutionReport,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct ArtifactTreeReport {
+    pub view: PhysicalView,
+    pub containers: Vec<ContainerReport>,
+    pub layout_nodes: Vec<LayoutNode>,
     pub coverage: Coverage,
     pub execution: ExecutionReport,
     pub diagnostics: Vec<Diagnostic>,
@@ -421,12 +471,321 @@ impl ArtifactSnapshot {
         })
     }
 
+    pub fn enumerate_artifact_tree(&self, budget: &mut Budget) -> Result<ArtifactTreeReport> {
+        self.enumerate_artifact_tree_with_hook(budget, |_| {})
+    }
+
+    fn enumerate_artifact_tree_with_hook<F>(
+        &self,
+        budget: &mut Budget,
+        mut candidate_hook: F,
+    ) -> Result<ArtifactTreeReport>
+    where
+        F: FnMut(u64),
+    {
+        if self.kind != ArtifactKind::Zip {
+            return Err(Error::invalid_input(
+                "not_zip",
+                "artifact-tree enumeration requires a ZIP snapshot",
+            ));
+        }
+        let root = root_origin(&self.id);
+        let view = PhysicalView {
+            snapshot: self.id.clone(),
+            scope: PhysicalScope::ArtifactTree {
+                root_container: root.root_container.clone(),
+            },
+        };
+        let root_expected_entries = ZipArchive::from_slice(&self.bytes)
+            .map_err(zip_invalid("zip_open"))?
+            .entries_hint();
+        let mut stack = vec![TreeStackItem {
+            bytes: self.bytes.clone(),
+            origin: root,
+            depth: 0,
+            parent_entry: None,
+            expected_entries: root_expected_entries,
+        }];
+        let mut containers = Vec::new();
+        let mut layout_nodes = Vec::new();
+        let mut diagnostics = Vec::new();
+        let mut first_issue: Option<ExecutionReport> = None;
+        let mut scanned_candidates = Vec::new();
+        let mut skipped_candidates = Vec::new();
+
+        while let Some(current) = stack.pop() {
+            if let Err(error) = budget.charge(CountedBudgetDimension::ResultItems, 1) {
+                merge_tree_error(&mut first_issue, &error, budget);
+                diagnostics.push(tree_diagnostic(&error, current.parent_entry.as_ref()));
+                stack.push(current);
+                break;
+            }
+            let TreeStackItem {
+                bytes,
+                origin,
+                depth,
+                parent_entry,
+                expected_entries: _,
+            } = current;
+            let temporary = ArtifactSnapshot {
+                id: self.id.clone(),
+                kind: ArtifactKind::Zip,
+                bytes,
+            };
+            let mut report = temporary.enumerate(budget)?;
+            for entry in &mut report.entries {
+                entry.id.origin = origin.clone();
+            }
+            let container_complete = matches!(report.execution, ExecutionReport::Complete { .. });
+            for mut diagnostic in report.diagnostics.drain(..) {
+                if !container_complete
+                    && diagnostic.provenance.is_none()
+                    && let Some(parent) = parent_entry.as_ref()
+                {
+                    diagnostic.provenance = tree_parent_provenance(parent);
+                }
+                diagnostics.push(diagnostic);
+            }
+            if !container_complete {
+                let issue = if depth == 0 {
+                    report.execution.clone()
+                } else {
+                    nested_container_execution(report.execution.clone())
+                };
+                merge_tree_execution(&mut first_issue, issue);
+            }
+            let entries = report.entries;
+            let container_execution = report.execution;
+            let can_expand = matches!(container_execution, ExecutionReport::Complete { .. });
+            let container_coverage = relabel_coverage(report.coverage, &origin);
+            let mut boot_classes = false;
+            let mut war_classes = false;
+            let mut children = Vec::new();
+            let mut stop_after_container = false;
+
+            for (entry_index, entry) in entries.iter().enumerate() {
+                let name = entry.id.raw_name.0.as_slice();
+                if !boot_classes && name.starts_with(b"BOOT-INF/classes/") {
+                    if let Err(error) = budget.charge(CountedBudgetDimension::ResultItems, 1) {
+                        append_skipped_candidates(
+                            &entries,
+                            entry_index,
+                            &origin,
+                            &mut skipped_candidates,
+                        )?;
+                        merge_tree_error(&mut first_issue, &error, budget);
+                        diagnostics.push(tree_diagnostic(&error, Some(entry)));
+                        stop_after_container = true;
+                        break;
+                    }
+                    layout_nodes.push(prefix_layout(
+                        LayoutNodeKind::BootClasses,
+                        &origin,
+                        b"BOOT-INF/classes/",
+                        entry,
+                    ));
+                    boot_classes = true;
+                }
+                if !war_classes && name.starts_with(b"WEB-INF/classes/") {
+                    if let Err(error) = budget.charge(CountedBudgetDimension::ResultItems, 1) {
+                        append_skipped_candidates(
+                            &entries,
+                            entry_index,
+                            &origin,
+                            &mut skipped_candidates,
+                        )?;
+                        merge_tree_error(&mut first_issue, &error, budget);
+                        diagnostics.push(tree_diagnostic(&error, Some(entry)));
+                        stop_after_container = true;
+                        break;
+                    }
+                    layout_nodes.push(prefix_layout(
+                        LayoutNodeKind::WarClasses,
+                        &origin,
+                        b"WEB-INF/classes/",
+                        entry,
+                    ));
+                    war_classes = true;
+                }
+                if entry.nested_archive != NestedArchiveState::CandidateNotScanned {
+                    continue;
+                }
+                let candidate_range = candidate_coverage_range(entry, &origin)?;
+                if !can_expand {
+                    skipped_candidates.push(candidate_range);
+                    continue;
+                }
+                let kind = if is_direct_library(name, b"BOOT-INF/lib/") {
+                    LayoutNodeKind::BootLibrary
+                } else if is_direct_library(name, b"WEB-INF/lib/") {
+                    LayoutNodeKind::WarLibrary
+                } else {
+                    LayoutNodeKind::NestedArchive
+                };
+                if let Err(error) = budget.charge(CountedBudgetDimension::ResultItems, 1) {
+                    skipped_candidates.push(candidate_range);
+                    append_skipped_candidates(
+                        &entries,
+                        entry_index + 1,
+                        &origin,
+                        &mut skipped_candidates,
+                    )?;
+                    merge_tree_error(&mut first_issue, &error, budget);
+                    diagnostics.push(tree_diagnostic(&error, Some(entry)));
+                    stop_after_container = true;
+                    break;
+                }
+                let child_depth = depth.saturating_add(1);
+                let mut child_origin = origin.clone();
+                let child_id =
+                    derive_child_container(&origin, entry.id.ordinal, &entry.id.raw_name);
+                child_origin.steps.push(ContainerOriginStep {
+                    via_ordinal: entry.id.ordinal,
+                    via_raw_name: entry.id.raw_name.clone(),
+                    child_container: child_id,
+                });
+                let mut child_bytes = None;
+                match budget.check_nested_depth(child_depth) {
+                    Ok(()) => {
+                        let mut local_entry = entry.clone();
+                        local_entry.id.origin = root_origin(&self.id);
+                        match temporary.read_entry_with_hooks(
+                            &local_entry,
+                            budget,
+                            MaterializationAccounting::Intermediate,
+                            |_| {},
+                            |_| {},
+                        ) {
+                            Ok(materialized) => {
+                                let bytes: Arc<[u8]> = Arc::from(materialized.bytes);
+                                match ZipArchive::from_slice(&bytes) {
+                                    Ok(archive) => {
+                                        let expected_entries = archive.entries_hint();
+                                        child_bytes = Some(bytes.clone());
+                                        children.push(TreeStackItem {
+                                            bytes,
+                                            origin: child_origin.clone(),
+                                            depth: child_depth,
+                                            parent_entry: Some(entry.clone()),
+                                            expected_entries,
+                                        });
+                                    }
+                                    Err(error) => record_tree_issue(
+                                        zip_invalid("nested_zip_open")(error),
+                                        entry,
+                                        budget,
+                                        &mut first_issue,
+                                        &mut diagnostics,
+                                    ),
+                                }
+                            }
+                            Err(error) => record_tree_issue(
+                                error,
+                                entry,
+                                budget,
+                                &mut first_issue,
+                                &mut diagnostics,
+                            ),
+                        }
+                    }
+                    Err(error) => {
+                        record_tree_issue(error, entry, budget, &mut first_issue, &mut diagnostics)
+                    }
+                }
+                if child_bytes.is_some() {
+                    scanned_candidates.push(candidate_range);
+                } else {
+                    skipped_candidates.push(candidate_range);
+                }
+                layout_nodes.push(LayoutNode {
+                    kind,
+                    source: LayoutNodeSource::Archive {
+                        entry: entry.id.clone(),
+                        child_container: child_bytes.map(|_| child_origin),
+                    },
+                });
+                let candidate_count = scanned_candidates
+                    .len()
+                    .checked_add(skipped_candidates.len())
+                    .and_then(|count| u64::try_from(count).ok())
+                    .ok_or_else(|| {
+                        Error::invalid_input(
+                            "candidate_count_overflow",
+                            "nested archive candidate count overflow",
+                        )
+                    })?;
+                candidate_hook(candidate_count);
+                if tree_must_stop(&first_issue) {
+                    append_skipped_candidates(
+                        &entries,
+                        entry_index + 1,
+                        &origin,
+                        &mut skipped_candidates,
+                    )?;
+                    break;
+                }
+            }
+            containers.push(ContainerReport {
+                origin,
+                depth,
+                entries,
+                coverage: container_coverage,
+                execution: container_execution,
+            });
+            for child in children.into_iter().rev() {
+                stack.push(child);
+            }
+            if stop_after_container || tree_must_stop(&first_issue) {
+                break;
+            }
+            if depth == 0
+                && !matches!(
+                    containers.last().unwrap().execution,
+                    ExecutionReport::Complete { .. }
+                )
+            {
+                break;
+            }
+        }
+
+        let execution = first_issue
+            .map(|execution| execution_with_usage(execution, budget.usage()))
+            .unwrap_or_else(|| ExecutionReport::Complete {
+                usage: budget.usage(),
+            });
+        let coverage = tree_coverage(
+            &containers,
+            &stack,
+            scanned_candidates,
+            skipped_candidates,
+            matches!(execution, ExecutionReport::Complete { .. }),
+        );
+        Ok(ArtifactTreeReport {
+            view,
+            containers,
+            layout_nodes,
+            coverage,
+            execution,
+            diagnostics,
+        })
+    }
+
     pub fn read_entry(
         &self,
         entry: &PhysicalEntry,
         budget: &mut Budget,
     ) -> Result<MaterializedEntry> {
-        self.read_entry_with_hooks(entry, budget, |_| {}, |_| {})
+        if entry.id.origin.steps.is_empty() {
+            self.read_entry_with_hooks(
+                entry,
+                budget,
+                MaterializationAccounting::CallerOutput,
+                |_| {},
+                |_| {},
+            )
+        } else {
+            self.read_nested_entry(entry, budget)
+        }
     }
 
     #[cfg(test)]
@@ -439,13 +798,20 @@ impl ArtifactSnapshot {
     where
         F: FnMut(usize),
     {
-        self.read_entry_with_hooks(entry, budget, |_| {}, hook)
+        self.read_entry_with_hooks(
+            entry,
+            budget,
+            MaterializationAccounting::CallerOutput,
+            |_| {},
+            hook,
+        )
     }
 
     fn read_entry_with_hooks<L, F>(
         &self,
         entry: &PhysicalEntry,
         budget: &mut Budget,
+        accounting: MaterializationAccounting,
         mut locator_hook: L,
         mut hook: F,
     ) -> Result<MaterializedEntry>
@@ -571,10 +937,12 @@ impl ArtifactSnapshot {
             CountedBudgetDimension::EntryBytes,
             authoritative.uncompressed_size,
         )?;
-        budget.check(
-            CountedBudgetDimension::OutputBytes,
-            authoritative.uncompressed_size,
-        )?;
+        if accounting == MaterializationAccounting::CallerOutput {
+            budget.check(
+                CountedBudgetDimension::OutputBytes,
+                authoritative.uncompressed_size,
+            )?;
+        }
         budget.check(
             CountedBudgetDimension::ReadBytes,
             authoritative.compressed_size,
@@ -592,33 +960,36 @@ impl ArtifactSnapshot {
         budget.charge(CountedBudgetDimension::ReadBytes, compressed_len)?;
 
         let mut output = Vec::new();
-        let read_result = match authoritative.compression {
-            EntryCompression::Stored => {
-                let reader = std::io::Cursor::new(local.data());
-                read_verified(&local, reader, &mut output, budget, &mut hook).and_then(|reader| {
-                    if reader.position() == local.data().len() as u64 {
-                        Ok(())
-                    } else {
-                        Err(std::io::Error::other(
-                            "stored entry has trailing compressed bytes",
-                        ))
-                    }
-                })
-            }
-            EntryCompression::Deflated => {
-                let decoder = flate2::bufread::DeflateDecoder::new(local.data());
-                read_verified(&local, decoder, &mut output, budget, &mut hook).and_then(|decoder| {
-                    if decoder.total_in() == local.data().len() as u64 {
-                        Ok(())
-                    } else {
-                        Err(std::io::Error::other(
-                            "deflate stream has trailing compressed bytes",
-                        ))
-                    }
-                })
-            }
-            EntryCompression::Unsupported => unreachable!("unsupported method rejected above"),
-        };
+        let read_result =
+            match authoritative.compression {
+                EntryCompression::Stored => {
+                    let reader = std::io::Cursor::new(local.data());
+                    read_verified(&local, reader, &mut output, budget, accounting, &mut hook)
+                        .and_then(|reader| {
+                            if reader.position() == local.data().len() as u64 {
+                                Ok(())
+                            } else {
+                                Err(std::io::Error::other(
+                                    "stored entry has trailing compressed bytes",
+                                ))
+                            }
+                        })
+                }
+                EntryCompression::Deflated => {
+                    let decoder = flate2::bufread::DeflateDecoder::new(local.data());
+                    read_verified(&local, decoder, &mut output, budget, accounting, &mut hook)
+                        .and_then(|decoder| {
+                            if decoder.total_in() == local.data().len() as u64 {
+                                Ok(())
+                            } else {
+                                Err(std::io::Error::other(
+                                    "deflate stream has trailing compressed bytes",
+                                ))
+                            }
+                        })
+                }
+                EntryCompression::Unsupported => unreachable!("unsupported method rejected above"),
+            };
         if let Err(error) = read_result {
             output.clear();
             return Err(map_verification_error(error));
@@ -640,6 +1011,464 @@ impl ArtifactSnapshot {
             content_digest,
             usage: budget.usage(),
         })
+    }
+
+    fn locate_entry_for_replay(
+        &self,
+        origin: &ContainerOrigin,
+        ordinal: u64,
+        raw_name: &ArchiveNameBytes,
+        budget: &mut Budget,
+    ) -> Result<PhysicalEntry> {
+        budget.poll()?;
+        let archive = ZipArchive::from_slice(&self.bytes).map_err(zip_invalid("zip_open"))?;
+        let directory_offset = archive.directory_offset();
+        let mut iterator = archive.entries();
+        let mut current = 0_u64;
+        loop {
+            budget.poll()?;
+            let header = iterator
+                .next_entry()
+                .map_err(zip_invalid("central_directory"))?
+                .ok_or_else(|| {
+                    Error::invalid_input("entry_not_found", "entry ordinal is absent")
+                })?;
+            budget.charge(CountedBudgetDimension::ArchiveEntries, 1)?;
+            if current != ordinal {
+                current = current.checked_add(1).ok_or_else(|| {
+                    Error::invalid_input("entry_count_overflow", "central entry ordinal overflow")
+                })?;
+                continue;
+            }
+            if header.file_path().as_bytes() != raw_name.0 {
+                return Err(Error::invalid_input(
+                    "entry_locator_mismatch",
+                    "entry ordinal does not match the requested raw name",
+                ));
+            }
+            budget.poll()?;
+            let local = archive
+                .get_entry(header.wayfinder())
+                .map_err(zip_invalid("local_entry"))?;
+            validate_headers(&header, &local)?;
+            let (data_start, data_end) = local.compressed_data_range();
+            let range_start = header.local_header_offset();
+            if range_start > data_start || data_start > data_end || data_end > directory_offset {
+                return Err(Error::invalid_input(
+                    "invalid_entry_span",
+                    format!(
+                        "entry {ordinal} range {range_start}..{data_end} is invalid for the file area ending at {directory_offset}"
+                    ),
+                ));
+            }
+            budget.poll()?;
+            if local
+                .data_descriptor()
+                .map_err(zip_invalid("data_descriptor"))?
+                .is_some_and(|descriptor| {
+                    descriptor.crc32() != header.crc32()
+                        || descriptor.compressed_size() != header.compressed_size_hint()
+                        || descriptor.uncompressed_size() != header.uncompressed_size_hint()
+                })
+            {
+                return Err(Error::invalid_input(
+                    "descriptor_central_mismatch",
+                    format!("entry {ordinal} data descriptor conflicts with central directory"),
+                ));
+            }
+            let flags = header.flags();
+            let method = header.compression_method().as_u16();
+            return Ok(PhysicalEntry {
+                id: PhysicalEntryId {
+                    origin: origin.clone(),
+                    ordinal,
+                    raw_name: raw_name.clone(),
+                },
+                compression: compression(method),
+                compression_method: method,
+                flags: EntryFlags {
+                    raw_bits: flags.bits(),
+                    encrypted: flags.is_encrypted(),
+                    strong_encryption: flags.has_strong_encryption(),
+                    data_descriptor: flags.has_data_descriptor(),
+                },
+                crc32: header.crc32(),
+                compressed_size: header.compressed_size_hint(),
+                uncompressed_size: header.uncompressed_size_hint(),
+                layout: EntryLayout {
+                    local_header_offset: range_start,
+                    central_header_offset: header.central_directory_offset(),
+                    compressed_data: ByteSpan::new(data_start, data_end - data_start),
+                },
+                nested_archive: nested_state(header.file_path().as_bytes()),
+                signature_metadata: signature_metadata(header.file_path().as_bytes()),
+            });
+        }
+    }
+
+    fn read_nested_entry(
+        &self,
+        entry: &PhysicalEntry,
+        budget: &mut Budget,
+    ) -> Result<MaterializedEntry> {
+        if self.kind != ArtifactKind::Zip || entry.id.snapshot() != &self.id {
+            return Err(Error::invalid_input(
+                "entry_snapshot_mismatch",
+                "entry does not belong to this ZIP snapshot",
+            ));
+        }
+        let root = root_origin(&self.id);
+        if entry.id.origin.root_container != root.root_container {
+            return Err(Error::invalid_input(
+                "entry_origin_mismatch",
+                "nested entry root container does not match this snapshot",
+            ));
+        }
+        let mut bytes = self.bytes.clone();
+        let mut current_origin = root;
+        for (index, step) in entry.id.origin.steps.iter().enumerate() {
+            let depth = u64::try_from(index + 1).map_err(|_| {
+                Error::invalid_input("nested_depth_overflow", "nested origin is too deep")
+            })?;
+            budget.check_nested_depth(depth)?;
+            if step.child_container
+                != derive_child_container(&current_origin, step.via_ordinal, &step.via_raw_name)
+            {
+                return Err(Error::invalid_input(
+                    "child_container_mismatch",
+                    "nested origin child container is not derived from its verified parent entry",
+                ));
+            }
+            let temporary = ArtifactSnapshot {
+                id: self.id.clone(),
+                kind: ArtifactKind::Zip,
+                bytes: bytes.clone(),
+            };
+            let parent = temporary.locate_entry_for_replay(
+                &current_origin,
+                step.via_ordinal,
+                &step.via_raw_name,
+                budget,
+            )?;
+            if parent.nested_archive != NestedArchiveState::CandidateNotScanned {
+                return Err(Error::invalid_input(
+                    "nested_parent_not_candidate",
+                    "nested origin parent entry is not an archive candidate",
+                ));
+            }
+            let mut local_parent = parent;
+            local_parent.id.origin = root_origin(&self.id);
+            let materialized = temporary.read_entry_with_hooks(
+                &local_parent,
+                budget,
+                MaterializationAccounting::Intermediate,
+                |_| {},
+                |_| {},
+            )?;
+            bytes = Arc::from(materialized.bytes);
+            ZipArchive::from_slice(&bytes).map_err(zip_invalid("nested_zip_open"))?;
+            current_origin.steps.push(step.clone());
+        }
+        if current_origin != entry.id.origin {
+            return Err(Error::invalid_input(
+                "entry_origin_mismatch",
+                "nested entry origin does not match the replayed container",
+            ));
+        }
+        let temporary = ArtifactSnapshot {
+            id: self.id.clone(),
+            kind: ArtifactKind::Zip,
+            bytes,
+        };
+        let authoritative = temporary.locate_entry_for_replay(
+            &current_origin,
+            entry.id.ordinal,
+            &entry.id.raw_name,
+            budget,
+        )?;
+        if &authoritative != entry {
+            return Err(Error::invalid_input(
+                "entry_metadata_mismatch",
+                "caller-supplied nested entry metadata differs from the fixed snapshot",
+            ));
+        }
+        let mut local_entry = authoritative.clone();
+        local_entry.id.origin = root_origin(&self.id);
+        let mut materialized = temporary.read_entry_with_hooks(
+            &local_entry,
+            budget,
+            MaterializationAccounting::CallerOutput,
+            |_| {},
+            |_| {},
+        )?;
+        materialized.entry = entry.id.clone();
+        materialized.usage = budget.usage();
+        Ok(materialized)
+    }
+}
+
+fn root_origin(snapshot: &SnapshotId) -> ContainerOrigin {
+    ContainerOrigin {
+        snapshot: snapshot.clone(),
+        root_container: ContainerId("root".into()),
+        steps: Vec::new(),
+    }
+}
+
+fn derive_child_container(
+    parent: &ContainerOrigin,
+    ordinal: u64,
+    raw_name: &ArchiveNameBytes,
+) -> ContainerId {
+    let mut hasher = blake3::Hasher::new();
+    hasher.update(b"jarde.child-container.v1\0");
+    hash_length_prefixed(&mut hasher, parent.snapshot.0.as_bytes());
+    hash_length_prefixed(&mut hasher, parent.root_container.0.as_bytes());
+    hasher.update(&(parent.steps.len() as u64).to_le_bytes());
+    for step in &parent.steps {
+        hasher.update(&step.via_ordinal.to_le_bytes());
+        hash_length_prefixed(&mut hasher, &step.via_raw_name.0);
+        hash_length_prefixed(&mut hasher, step.child_container.0.as_bytes());
+    }
+    hasher.update(&ordinal.to_le_bytes());
+    hash_length_prefixed(&mut hasher, &raw_name.0);
+    ContainerId(hasher.finalize().to_hex().to_string())
+}
+
+fn hash_length_prefixed(hasher: &mut blake3::Hasher, bytes: &[u8]) {
+    hasher.update(&(bytes.len() as u64).to_le_bytes());
+    hasher.update(bytes);
+}
+
+fn prefix_layout(
+    kind: LayoutNodeKind,
+    origin: &ContainerOrigin,
+    prefix: &[u8],
+    entry: &PhysicalEntry,
+) -> LayoutNode {
+    LayoutNode {
+        kind,
+        source: LayoutNodeSource::Prefix {
+            container: origin.clone(),
+            prefix: ArchiveNameBytes(prefix.to_vec()),
+            evidence_entry: entry.id.clone(),
+        },
+    }
+}
+
+fn is_direct_library(name: &[u8], prefix: &[u8]) -> bool {
+    name.strip_prefix(prefix)
+        .is_some_and(|tail| !tail.is_empty() && !tail.contains(&b'/') && tail.ends_with(b".jar"))
+}
+
+fn candidate_coverage_range(
+    entry: &PhysicalEntry,
+    origin: &ContainerOrigin,
+) -> Result<CoverageRange> {
+    Ok(CoverageRange {
+        label: format!(
+            "container:{}:nested_archive_candidates",
+            origin.current_container().0
+        ),
+        start: entry.id.ordinal,
+        end: entry.id.ordinal.checked_add(1).ok_or_else(|| {
+            Error::invalid_input(
+                "entry_ordinal_overflow",
+                "nested archive candidate ordinal overflow",
+            )
+        })?,
+    })
+}
+
+fn append_skipped_candidates(
+    entries: &[PhysicalEntry],
+    start: usize,
+    origin: &ContainerOrigin,
+    skipped: &mut Vec<CoverageRange>,
+) -> Result<()> {
+    for entry in &entries[start..] {
+        if entry.nested_archive == NestedArchiveState::CandidateNotScanned {
+            skipped.push(candidate_coverage_range(entry, origin)?);
+        }
+    }
+    Ok(())
+}
+
+fn relabel_coverage(mut coverage: Coverage, origin: &ContainerOrigin) -> Coverage {
+    let identity = origin.current_container().0.as_str();
+    for range in coverage
+        .artifact_structural
+        .scanned
+        .iter_mut()
+        .chain(coverage.artifact_structural.skipped.iter_mut())
+    {
+        range.label = format!("container:{identity}:{}", range.label);
+    }
+    coverage
+}
+
+struct TreeStackItem {
+    bytes: Arc<[u8]>,
+    origin: ContainerOrigin,
+    depth: u64,
+    parent_entry: Option<PhysicalEntry>,
+    expected_entries: u64,
+}
+
+fn tree_coverage(
+    containers: &[ContainerReport],
+    pending: &[TreeStackItem],
+    mut scanned: Vec<CoverageRange>,
+    mut skipped: Vec<CoverageRange>,
+    complete: bool,
+) -> Coverage {
+    for container in containers {
+        scanned.extend(container.coverage.artifact_structural.scanned.clone());
+        skipped.extend(container.coverage.artifact_structural.skipped.clone());
+    }
+    for container in pending {
+        skipped.push(CoverageRange {
+            label: format!(
+                "container:{}:central_directory_entries",
+                container.origin.current_container().0
+            ),
+            start: 0,
+            end: container.expected_entries,
+        });
+    }
+    Coverage {
+        artifact_structural: CoverageDimension {
+            state: if complete {
+                CoverageState::CompleteWithinSchema
+            } else {
+                CoverageState::Partial
+            },
+            scanned,
+            skipped,
+            uninterpreted_extensions: Vec::new(),
+        },
+        runtime_resolution: CoverageDimension::not_requested(),
+        dynamic_analysis: CoverageDimension::not_requested(),
+    }
+}
+
+fn record_tree_issue(
+    error: Error,
+    parent_entry: &PhysicalEntry,
+    budget: &Budget,
+    first_issue: &mut Option<ExecutionReport>,
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    merge_tree_error(first_issue, &error, budget);
+    diagnostics.push(tree_diagnostic(&error, Some(parent_entry)));
+}
+
+fn merge_tree_error(first_issue: &mut Option<ExecutionReport>, error: &Error, budget: &Budget) {
+    let execution = match error {
+        Error::Cancelled { .. } => ExecutionReport::Cancelled {
+            usage: budget.usage(),
+        },
+        Error::BudgetExceeded { dimension, .. } => ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: *dimension,
+            },
+            usage: budget.usage(),
+        },
+        Error::Unsupported { code, .. } => ExecutionReport::Partial {
+            reason: TerminationReason::Unsupported { code: code.clone() },
+            usage: budget.usage(),
+        },
+        Error::InvalidInput { code, .. }
+        | Error::Io {
+            operation: code, ..
+        } => ExecutionReport::Partial {
+            reason: TerminationReason::Error { code: code.clone() },
+            usage: budget.usage(),
+        },
+    };
+    merge_tree_execution(first_issue, execution);
+}
+
+fn nested_container_execution(execution: ExecutionReport) -> ExecutionReport {
+    match execution {
+        ExecutionReport::Failed { reason, usage } => ExecutionReport::Partial { reason, usage },
+        other => other,
+    }
+}
+
+fn merge_tree_execution(first_issue: &mut Option<ExecutionReport>, execution: ExecutionReport) {
+    let incoming_priority = tree_issue_priority(&execution);
+    let current_priority = first_issue.as_ref().map(tree_issue_priority).unwrap_or(0);
+    if first_issue.is_none() || incoming_priority > current_priority {
+        *first_issue = Some(execution);
+    }
+}
+
+fn tree_issue_priority(execution: &ExecutionReport) -> u8 {
+    match execution {
+        ExecutionReport::Cancelled { .. } => 3,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded { dimension },
+            ..
+        }
+        | ExecutionReport::Failed {
+            reason: TerminationReason::BudgetExceeded { dimension },
+            ..
+        } if *dimension != BudgetDimension::NestedDepth => 2,
+        ExecutionReport::Complete { .. } => 0,
+        _ => 1,
+    }
+}
+
+fn tree_must_stop(issue: &Option<ExecutionReport>) -> bool {
+    match issue {
+        Some(ExecutionReport::Cancelled { .. }) => true,
+        Some(ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded { dimension },
+            ..
+        }) => *dimension != BudgetDimension::NestedDepth,
+        _ => false,
+    }
+}
+
+fn execution_with_usage(execution: ExecutionReport, usage: UsageSnapshot) -> ExecutionReport {
+    match execution {
+        ExecutionReport::Complete { .. } => ExecutionReport::Complete { usage },
+        ExecutionReport::Partial { reason, .. } => ExecutionReport::Partial { reason, usage },
+        ExecutionReport::Cancelled { .. } => ExecutionReport::Cancelled { usage },
+        ExecutionReport::Failed { reason, .. } => ExecutionReport::Failed { reason, usage },
+    }
+}
+
+fn tree_parent_provenance(parent_entry: &PhysicalEntry) -> Option<Provenance> {
+    Some(Provenance {
+        location: Location::Entry {
+            id: parent_entry.id.clone(),
+            span: parent_entry.layout.compressed_data.clone(),
+        },
+    })
+}
+
+fn tree_diagnostic(error: &Error, parent_entry: Option<&PhysicalEntry>) -> Diagnostic {
+    Diagnostic {
+        code: match error {
+            Error::InvalidInput { code, .. } | Error::Unsupported { code, .. } => code.clone(),
+            Error::BudgetExceeded { dimension, .. } => {
+                format!("budget_exceeded_{}", budget_dimension_code(*dimension))
+            }
+            Error::Cancelled { .. } => "cancelled".into(),
+            Error::Io { operation, .. } => operation.clone(),
+        },
+        severity: if matches!(
+            error,
+            Error::InvalidInput { .. } | Error::Unsupported { .. }
+        ) {
+            DiagnosticSeverity::Error
+        } else {
+            DiagnosticSeverity::Warning
+        },
+        message: error.to_string(),
+        provenance: parent_entry.and_then(tree_parent_provenance),
     }
 }
 
@@ -720,6 +1549,7 @@ const fn budget_dimension_code(dimension: BudgetDimension) -> &'static str {
         BudgetDimension::CodeBytes => "code_bytes",
         BudgetDimension::ResultItems => "result_items",
         BudgetDimension::OutputBytes => "output_bytes",
+        BudgetDimension::NestedDepth => "nested_depth",
         BudgetDimension::ElapsedMillis => "elapsed_millis",
     }
 }
@@ -793,14 +1623,25 @@ fn terminated_enumeration(
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum MaterializationAccounting {
+    Intermediate,
+    CallerOutput,
+}
+
 fn read_verified<R: Read, F: FnMut(usize)>(
     entry: &rawzip::ZipSliceEntry<'_>,
     reader: R,
     output: &mut Vec<u8>,
     budget: &mut Budget,
+    accounting: MaterializationAccounting,
     hook: &mut F,
 ) -> std::io::Result<R> {
-    let reader = BudgetedEntryReader { reader, budget };
+    let reader = BudgetedEntryReader {
+        reader,
+        budget,
+        accounting,
+    };
     let mut verifier = entry.verifying_reader(reader);
     let mut chunk = [0_u8; READ_CHUNK];
     loop {
@@ -817,6 +1658,7 @@ fn read_verified<R: Read, F: FnMut(usize)>(
 struct BudgetedEntryReader<'a, R> {
     reader: R,
     budget: &'a mut Budget,
+    accounting: MaterializationAccounting,
 }
 
 impl<R: Read> Read for BudgetedEntryReader<'_, R> {
@@ -828,9 +1670,11 @@ impl<R: Read> Read for BudgetedEntryReader<'_, R> {
         self.budget
             .charge(CountedBudgetDimension::EntryBytes, count)
             .map_err(budget_io)?;
-        self.budget
-            .charge(CountedBudgetDimension::OutputBytes, count)
-            .map_err(budget_io)?;
+        if self.accounting == MaterializationAccounting::CallerOutput {
+            self.budget
+                .charge(CountedBudgetDimension::OutputBytes, count)
+                .map_err(budget_io)?;
+        }
         usize::try_from(count).map_err(|_| std::io::Error::other("chunk length overflow"))
     }
 }
@@ -1085,6 +1929,7 @@ mod tests {
             code_bytes: value,
             result_items: value,
             output_bytes: value,
+            nested_depth: value,
             elapsed_millis: u64::MAX,
         }
     }
@@ -2177,6 +3022,7 @@ mod tests {
         let result = snapshot.read_entry_with_hooks(
             &report.entries[2],
             &mut cancelled,
+            MaterializationAccounting::CallerOutput,
             |records| {
                 if records == 1 {
                     token.cancel();
@@ -2247,6 +3093,83 @@ mod tests {
             .collect::<Vec<_>>();
         let (snapshot, mut budget) = open_snapshot(zip(&borrowed));
         assert_eq!(snapshot.enumerate(&mut budget).unwrap().entries.len(), 256);
+    }
+
+    #[test]
+    fn legal_zip_payload_cannot_forge_a_nested_origin_when_parent_is_not_candidate() {
+        let inner = zip(&[(b"Inner.class", b"inner", STORE)]);
+        let outer = zip(&[(b"payload.bin", &inner, STORE)]);
+        let (snapshot, mut tree_budget) = open_snapshot(outer);
+        let root_report = snapshot.enumerate(&mut tree_budget).unwrap();
+        let parent = root_report.entries[0].clone();
+        assert_eq!(parent.nested_archive, NestedArchiveState::NotCandidate);
+
+        let (inner_snapshot, mut inner_budget) = open_snapshot(inner);
+        let mut forged = inner_snapshot.enumerate(&mut inner_budget).unwrap().entries[0].clone();
+        let root = root_origin(&snapshot.id);
+        let child_container = derive_child_container(&root, parent.id.ordinal, &parent.id.raw_name);
+        forged.id.origin = root;
+        forged.id.origin.steps.push(ContainerOriginStep {
+            via_ordinal: parent.id.ordinal,
+            via_raw_name: parent.id.raw_name,
+            child_container,
+        });
+
+        let error = snapshot.read_entry(&forged, &mut budget()).unwrap_err();
+        assert!(matches!(
+            error,
+            Error::InvalidInput { ref code, .. } if code == "nested_parent_not_candidate"
+        ));
+    }
+
+    #[test]
+    fn artifact_tree_cancellation_after_a_candidate_keeps_root_prefix() {
+        let inner = zip(&[(b"Inner.class", b"inner", STORE)]);
+        let outer = zip(&[
+            (b"first.jar", b"malformed", STORE),
+            (b"second.jar", &inner, STORE),
+        ]);
+        let (snapshot, mut budget) = open_snapshot(outer);
+        let token = budget.cancellation_token();
+        let report = snapshot
+            .enumerate_artifact_tree_with_hook(&mut budget, |completed| {
+                if completed == 1 {
+                    token.cancel();
+                }
+            })
+            .unwrap();
+        assert!(matches!(
+            report.execution,
+            ExecutionReport::Cancelled { .. }
+        ));
+        assert_eq!(report.containers.len(), 1);
+        assert_eq!(report.containers[0].entries.len(), 2);
+        assert_eq!(report.layout_nodes.len(), 1);
+        assert!(report.coverage.artifact_structural.state == CoverageState::Partial);
+        let label = format!(
+            "container:{}:nested_archive_candidates",
+            report.containers[0].origin.current_container().0
+        );
+        for ordinal in 0..2 {
+            assert!(
+                report
+                    .coverage
+                    .artifact_structural
+                    .skipped
+                    .iter()
+                    .any(|range| range.label == label
+                        && range.start == ordinal
+                        && range.end == ordinal + 1)
+            );
+        }
+        assert!(
+            report
+                .coverage
+                .artifact_structural
+                .scanned
+                .iter()
+                .all(|range| range.label != label)
+        );
     }
 
     #[test]

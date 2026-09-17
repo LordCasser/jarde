@@ -42,6 +42,7 @@ struct RequestLimits {
     code_bytes: u64,
     result_items: u64,
     output_bytes: u64,
+    nested_depth: u64,
     elapsed_millis: u64,
 }
 
@@ -57,6 +58,7 @@ impl From<RequestLimits> for Limits {
             code_bytes: value.code_bytes,
             result_items: value.result_items,
             output_bytes: value.output_bytes,
+            nested_depth: value.nested_depth,
             elapsed_millis: value.elapsed_millis,
         }
     }

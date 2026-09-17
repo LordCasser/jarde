@@ -1,6 +1,6 @@
 # JVM Rust Engine 阶段路线
 
-本路线描述 OpenSpec changes 的依赖、交付边界和验收门槛。P0 已完成、验证并归档，主规格位于 `openspec/specs/`；P1 已完成 1.1 公共模型但尚无 query 行为，其余 P1 任务和 P2–P5 尚未实现。真实完成度以各 active change 的 tasks、代码和验收证据为准，规划文档完成不代表阶段已经实现。
+本路线描述 OpenSpec changes 的依赖、交付边界和验收门槛。P0 已完成、验证并归档，主规格位于 `openspec/specs/`；P1 已完成 1.1 公共模型和 1.2 bounded artifact-tree/nested/Boot/WAR 物理 provider，但尚无 MR 选择或 query 行为，其余 P1 任务和 P2–P5 尚未实现。真实完成度以各 active change 的 tasks、代码和验收证据为准，规划文档完成不代表阶段已经实现。
 
 相关入口：[OpenSpec 规划入口](README.md)、[技术栈与依赖选型](dependencies.md)、[架构验收与阶段映射](acceptance.md)。
 

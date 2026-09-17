@@ -33,6 +33,7 @@ pub enum BudgetDimension {
     CodeBytes,
     ResultItems,
     OutputBytes,
+    NestedDepth,
     ElapsedMillis,
 }
 
@@ -66,7 +67,7 @@ impl TryFrom<BudgetDimension> for CountedBudgetDimension {
             BudgetDimension::CodeBytes => Ok(Self::CodeBytes),
             BudgetDimension::ResultItems => Ok(Self::ResultItems),
             BudgetDimension::OutputBytes => Ok(Self::OutputBytes),
-            BudgetDimension::ElapsedMillis => Err(()),
+            BudgetDimension::NestedDepth | BudgetDimension::ElapsedMillis => Err(()),
         }
     }
 }
@@ -82,6 +83,7 @@ pub struct Limits {
     pub code_bytes: u64,
     pub result_items: u64,
     pub output_bytes: u64,
+    pub nested_depth: u64,
     pub elapsed_millis: u64,
 }
 
@@ -96,6 +98,7 @@ pub struct UsageSnapshot {
     pub code_bytes: u64,
     pub result_items: u64,
     pub output_bytes: u64,
+    pub nested_depth: u64,
     pub elapsed_millis: u64,
 }
 
@@ -224,6 +227,21 @@ impl Budget {
         Ok(())
     }
 
+    pub fn check_nested_depth(&mut self, depth: u64) -> Result<()> {
+        self.poll()?;
+        if depth > self.limits.nested_depth {
+            return Err(Error::BudgetExceeded {
+                dimension: BudgetDimension::NestedDepth,
+                limit: self.limits.nested_depth,
+                consumed: depth.saturating_sub(1),
+                requested: 1,
+            });
+        }
+        self.usage.nested_depth = self.usage.nested_depth.max(depth);
+        self.usage.elapsed_millis = self.elapsed_millis();
+        Ok(())
+    }
+
     fn elapsed_millis(&self) -> u64 {
         self.started_at.elapsed().as_millis().min(u64::MAX as u128) as u64
     }
@@ -285,6 +303,7 @@ mod tests {
             code_bytes: value,
             result_items: value,
             output_bytes: value,
+            nested_depth: value,
             elapsed_millis: u64::MAX,
         }
     }
@@ -374,6 +393,27 @@ mod tests {
             })
         ));
         assert!(budget.usage().elapsed_millis >= 1);
+    }
+
+    #[test]
+    fn nested_depth_is_a_non_counted_high_water_mark() {
+        let mut configured = limits(10);
+        configured.nested_depth = 1;
+        let mut budget = Budget::new(configured);
+        budget.check_nested_depth(0).unwrap();
+        budget.check_nested_depth(1).unwrap();
+        assert_eq!(budget.usage().nested_depth, 1);
+        assert_eq!(
+            budget.check_nested_depth(2).unwrap_err(),
+            Error::BudgetExceeded {
+                dimension: BudgetDimension::NestedDepth,
+                limit: 1,
+                consumed: 1,
+                requested: 1,
+            }
+        );
+        assert_eq!(budget.usage().nested_depth, 1);
+        assert!(CountedBudgetDimension::try_from(BudgetDimension::NestedDepth).is_err());
     }
 
     #[test]
