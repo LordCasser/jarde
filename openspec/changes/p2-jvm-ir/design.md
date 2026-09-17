@@ -564,7 +564,9 @@ pub struct HeaderRead {
 - **语义近似（有意，记入 spec 边界，不得被当作 JVMS 完全实现）**：解析期报 default conflict 而 JVMS 8 把它放在 invocation selection；interface owner 不隐式继承 `java/lang/Object` 的方法（未命中即 `Missing`）；只检查成员自身的访问标志，不检查声明类的可访问性（JVMS 5.4.3.1）；调用方定义不一致或内容未提供属 stop（`state = None` + `Failed`），不是 `NotChecked`；字段的 static/instance 指令级规则留给 2.4/2.5（`MemberUse` 不含指令级种类）。
 - **schema 限制**：`ResolvedMemberRef` 没有类内坐标，同一 owner 内同名同描述符的重复声明只能表达为相同的 refs（由用例固定）；`Ambiguous` 与 `resolved` 互斥（只在 `Resolved` 时发布 `resolved`）。
 - **scope 校验**：`validate_declaration_reference_query` 必须校验 `PhysicalScope::ArtifactTree { root_container }` 的 root（与 P1 的 `query_artifact_tree_root_mismatch` 同一规则），不得接受会被静默忽略的容器名。
-- **计费纪律**：解析侧每发布 1 条 `items` 与每发布 1 条未决诊断前，各计一次 `ResultItems`（与 P1 的「每个返回 item = 1、每条域诊断 = 1」一致）；装配中途预算耗尽时保留已发布前缀并把 execution 标为 `Partial{BudgetExceeded{ResultItems}}`。
+- **计费纪律**：解析侧每发布 1 条 `items` 与**每发布 1 条进入该报告的诊断**（未决诊断与 2.3 的规则诊断都算）前，各计一次 `ResultItems`——与 P1 的「每个返回 item = 1、每条域诊断 = 1」同口径；装配中途预算耗尽时保留已发布前缀并把 execution 标为 `Partial{BudgetExceeded{ResultItems}}`。
+- **停止归属**：解析停止（如 `ClassHeaders`）与装配停止（`ResultItems`）同时发生时，`execution` 报**先发生的解析停止**，装配停止由 `has_more` 与覆盖平面的 `Partial` 表达。
+- **计数与诊断成对**：`unresolved_candidates` 与进入报告的未决诊断严格一一对应；装配被拒的候选既不进 `items` 也不计数，其 use-site 由停止诊断保留。
 - **Class 符号的声明查询**：候选规则只对成员声明定义，因此 Class 符号的 `DeclarationRefQuery` 与被拒环境一样返回 1.1 的诚实不可用状态（`resolution_not_implemented` + `NotRequested`），不读字节。
 - **计费**：成员解析使 `analysis_steps` 成为真实输入，因此成员请求必须给非零值（否则第一步即 `BudgetExceeded`）；`dependency_depth = 0` 仍允许读取成员 owner 自身（深度 0 不观察深度）。`reads` 的 reason 集合按上一条语义产生。
 - **coverage 求和语义**：成员请求的 `runtime_resolution` 区间是**该次请求内各次查找已检查位置之和**（每次查找自身的 `[0, examined)` 与未决 `[examined, positions)` 拼接），不是单次查找的区间；任一查找有未决分支即为 `Partial`。停止发生在**推导出有效搜索序之前**（例如预取消、或 owner 直接是数组）时，没有任何 position 可声明：区间为空、状态仍为 `Partial`（不编造区间，也不因空区间而报 `CompleteWithinSchema`）。
