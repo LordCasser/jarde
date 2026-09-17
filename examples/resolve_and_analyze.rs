@@ -47,6 +47,7 @@ fn limits() -> Limits {
         output_bytes: 32 * 1024 * 1024,
         nested_depth: 8,
         elapsed_millis: 30_000,
+        ..Limits::default()
     }
 }
 
@@ -102,8 +103,8 @@ fn print_usage(label: &str, usage: &UsageSnapshot) {
         .collect::<Vec<_>>()
         .join(" ");
     println!(
-        "{label}.usage counted[{counted}] nested_depth={} elapsed_millis={}",
-        usage.nested_depth, usage.elapsed_millis
+        "{label}.usage counted[{counted}] nested_depth={} dependency_depth={} elapsed_millis={}",
+        usage.nested_depth, usage.dependency_depth, usage.elapsed_millis
     );
 }
 

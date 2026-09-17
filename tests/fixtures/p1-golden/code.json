@@ -60,13 +60,20 @@
         "execution": {
           "status": "complete",
           "usage": {
+            "analysis_steps": 0,
             "archive_entries": 0,
             "attribute_bytes": 26,
             "class_bytes": 196,
+            "class_headers": 0,
             "code_bytes": 0,
+            "dependency_depth": 0,
             "entry_bytes": 0,
             "input_bytes": 0,
+            "ir_edges": 0,
+            "ir_items": 0,
+            "method_bodies": 0,
             "nested_depth": 0,
+            "normalization_clones": 0,
             "output_bytes": 196,
             "read_bytes": 196,
             "result_items": 1
@@ -253,13 +260,20 @@
         "execution": {
           "status": "complete",
           "usage": {
+            "analysis_steps": 0,
             "archive_entries": 0,
             "attribute_bytes": 52,
             "class_bytes": 196,
+            "class_headers": 0,
             "code_bytes": 8,
+            "dependency_depth": 0,
             "entry_bytes": 0,
             "input_bytes": 0,
+            "ir_edges": 0,
+            "ir_items": 0,
+            "method_bodies": 0,
             "nested_depth": 0,
+            "normalization_clones": 0,
             "output_bytes": 196,
             "read_bytes": 196,
             "result_items": 0
@@ -379,13 +393,20 @@
         "execution": {
           "status": "complete",
           "usage": {
+            "analysis_steps": 0,
             "archive_entries": 0,
             "attribute_bytes": 52,
             "class_bytes": 196,
+            "class_headers": 0,
             "code_bytes": 8,
+            "dependency_depth": 0,
             "entry_bytes": 0,
             "input_bytes": 0,
+            "ir_edges": 0,
+            "ir_items": 0,
+            "method_bodies": 0,
             "nested_depth": 0,
+            "normalization_clones": 0,
             "output_bytes": 196,
             "read_bytes": 196,
             "result_items": 1
@@ -586,13 +607,20 @@
         "execution": {
           "status": "complete",
           "usage": {
+            "analysis_steps": 0,
             "archive_entries": 0,
             "attribute_bytes": 78,
             "class_bytes": 392,
+            "class_headers": 0,
             "code_bytes": 8,
+            "dependency_depth": 0,
             "entry_bytes": 0,
             "input_bytes": 0,
+            "ir_edges": 0,
+            "ir_items": 0,
+            "method_bodies": 0,
             "nested_depth": 0,
+            "normalization_clones": 0,
             "output_bytes": 392,
             "read_bytes": 392,
             "result_items": 1

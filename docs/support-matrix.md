@@ -54,10 +54,10 @@ X1 列的 `Supported` 一律限定在**请求声明的 consumer schema 与物理
 | 平台 | Linux aarch64 | Supported（当前实际本地证据） | Fedora-like，kernel `7.1.0-rc3-gaokun3+`；证据版本见 verification。 |
 | 平台 | 32-bit | NotValidated / Unsupported | noak `lookupswitch` 巨大 `npairs` 等 `usize` 风险未建立支持；P0 限 64-bit。 |
 | Library adapter | `Engine` + `Budget` | Supported | 同步 API；含普通枚举、显式 `enumerate_artifact_tree`、标准 MR 选择与 P1 `query`（`PhysicalScope::SnapshotAll`/`ArtifactTree`）；`CancellationToken` 可由调用方注入，取消为协作式。 |
-| JSON CLI | stdin / `--request FILE` | Supported | 单请求、1 MiB 控制面；接受十一项 limit schema；暴露 `query`（relation、target、`PhysicalScope` 含 `artifact_tree`、consumers、`max_items`、cursor）并回显它解析出的 snapshot，错误码与库一致；`enumerate` 仍只枚举顶层容器；不暴露 cancellation token 注入。 |
+| JSON CLI | stdin / `--request FILE` | Supported | 单请求、1 MiB 控制面；接受十八项 limit schema（P0/P1 十一项 + 六个 P2 计数维度 + `dependency_depth`，全部必填、无静默默认值）；暴露 `query`（relation、target、`PhysicalScope` 含 `artifact_tree`、consumers、`max_items`、cursor）并回显它解析出的 snapshot，错误码与库一致；`enumerate` 仍只枚举顶层容器；不暴露 cancellation token 注入。 |
 | 测试门禁 | `fuzz/` 独立 workspace + CI `fuzz-smoke` | Validated（test-only、有界） | cargo-fuzz 0.13.2、libfuzzer-sys `=0.4.13`、nightly-2026-07-20；两个 target（查询与 MR/artifact-tree）单 worker、`-max_len=65536`、`-rss_limit_mb=512`，本地收口 60 秒、CI 20 秒。只证明有界 smoke 不 panic、不越公开预算、损坏输入不假 Complete，不是安全或覆盖率证明；该 workspace 的依赖不进入生产树。 |
 | 未来宿主 adapter | reverse-engine/MCP/backend | NotImplemented | 应由独立 adapter 单向依赖 `jarde`；核心不依赖宿主协议。 |
 | 生产运行 | 离线、无 JVM | Supported | 不执行目标代码，不启动 JVM/反编译器，不联网。 |
 | 测试 oracle | JDK 25 Class-File API | Validated（test-only、显式 ignored） | 只交叉检查 instruction boundaries；固定 runtime 25 与 fixture hash/scope，不证明 verification 或生产 JVM 依赖。 |
 
-请求暴露十一项 limit：input/archive-entry/entry/read/class/attribute/code/result/output、非累加的 nested-depth 高水位和 elapsed；它们不构成进程 RSS、硬 deadline、恶意并发写入下完整文件瞬时一致性或任意规模 ZIP 的保证。
+请求暴露十八项 limit：input/archive-entry/entry/read/class/attribute/code/result/output、P2 的 class-header/method-body/IR item/IR edge/analysis-step/normalization-clone、非累加高水位 nested-depth 与 dependency-depth、以及 elapsed。其中 P0/P1 入口只使用前九项和 `nested_depth`；P2 的六个计费维度与 `dependency_depth` 由 1.3 加入 limits/usage 与计费入口，在 2.x–5.x 的闭包、CFG、Frame/SSA 与规范化阶段接通后开始真正计费，因此现在它们在任何 P1 请求里保持零值，且 **P2 尚未验证实际派生膨胀的停止行为**（归 3.5/4.3）。这些限制不构成进程 RSS、硬 deadline、恶意并发写入下完整文件瞬时一致性或任意规模 ZIP 的保证。

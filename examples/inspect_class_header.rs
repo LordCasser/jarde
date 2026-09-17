@@ -18,6 +18,7 @@ fn limits() -> Limits {
         output_bytes: 32 * 1024 * 1024,
         nested_depth: 8,
         elapsed_millis: 30_000,
+        ..Limits::default()
     }
 }
 

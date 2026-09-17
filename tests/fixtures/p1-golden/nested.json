@@ -95,13 +95,20 @@
         "execution": {
           "status": "complete",
           "usage": {
+            "analysis_steps": 0,
             "archive_entries": 17,
             "attribute_bytes": 88,
             "class_bytes": 274,
+            "class_headers": 0,
             "code_bytes": 8,
+            "dependency_depth": 0,
             "entry_bytes": 1366,
             "input_bytes": 0,
+            "ir_edges": 0,
+            "ir_items": 0,
+            "method_bodies": 0,
             "nested_depth": 1,
+            "normalization_clones": 0,
             "output_bytes": 0,
             "read_bytes": 1204,
             "result_items": 11

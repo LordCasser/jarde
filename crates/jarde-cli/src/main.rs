@@ -31,6 +31,14 @@ struct Request {
     operation: Operation,
 }
 
+/// Request limits, one required field per [`Limits`] dimension.
+///
+/// Deliberately hand-written instead of derived from `Limits`: `serde` can deserialize a
+/// struct with `#[serde(default)]`, but that would silently substitute zero (or any other
+/// fallback) for a limit the caller forgot, and this schema has no omit-means-default case.
+/// Every dimension stays required, including the six P2 dimensions the CLI accepts now and
+/// uses from 5.1 on, so a request that means to run P2 work cannot accidentally ask for
+/// "no limit" or "zero limit" by leaving a field out.
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct RequestLimits {
@@ -43,7 +51,14 @@ struct RequestLimits {
     code_bytes: u64,
     result_items: u64,
     output_bytes: u64,
+    class_headers: u64,
+    method_bodies: u64,
+    ir_items: u64,
+    ir_edges: u64,
+    analysis_steps: u64,
+    normalization_clones: u64,
     nested_depth: u64,
+    dependency_depth: u64,
     elapsed_millis: u64,
 }
 
@@ -59,7 +74,14 @@ impl From<RequestLimits> for Limits {
             code_bytes: value.code_bytes,
             result_items: value.result_items,
             output_bytes: value.output_bytes,
+            class_headers: value.class_headers,
+            method_bodies: value.method_bodies,
+            ir_items: value.ir_items,
+            ir_edges: value.ir_edges,
+            analysis_steps: value.analysis_steps,
+            normalization_clones: value.normalization_clones,
             nested_depth: value.nested_depth,
+            dependency_depth: value.dependency_depth,
             elapsed_millis: value.elapsed_millis,
         }
     }

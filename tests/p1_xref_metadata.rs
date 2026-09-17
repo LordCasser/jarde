@@ -1603,6 +1603,7 @@ fn limits() -> Limits {
         output_bytes: 1 << 20,
         nested_depth: 4,
         elapsed_millis: u64::MAX,
+        ..Limits::default()
     }
 }
 

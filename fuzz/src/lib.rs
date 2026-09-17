@@ -18,11 +18,11 @@
 
 use jarde::{
     ArtifactInput, ArtifactSnapshot, ArtifactTreeReport, Budget, ConsumerKind, ConsumerSchema,
-    CoverageState, DelegationPolicy, Engine, ExecutionReport, JvmBytes, LayoutMode, Limits,
-    LiteralValue, LoadDomain, LoadRoot, LoaderId, ModuleMode, MultiReleasePolicy,
-    MultiReleaseViewReport, PhysicalScope, PhysicalView, QueryRelation, QueryReport, QueryRequest,
-    QueryResolution, QueryTarget, RuntimeProfile, RuntimeUncertainty, RuntimeView, SymbolRef,
-    UsageSnapshot, VerificationStatus,
+    CountedBudgetDimension, CoverageState, DelegationPolicy, Engine, ExecutionReport, JvmBytes,
+    LayoutMode, Limits, LiteralValue, LoadDomain, LoadRoot, LoaderId, ModuleMode,
+    MultiReleasePolicy, MultiReleaseViewReport, PhysicalScope, PhysicalView, QueryRelation,
+    QueryReport, QueryRequest, QueryResolution, QueryTarget, RuntimeProfile, RuntimeUncertainty,
+    RuntimeView, SymbolRef, UsageSnapshot, VerificationStatus,
 };
 
 /// The symbol, class and literal the committed seeds really carry.
@@ -57,6 +57,10 @@ pub fn limits() -> Limits {
         output_bytes: 16 * 1024,
         nested_depth: 2,
         elapsed_millis: 5_000,
+        // Every P2 dimension stays at the fail-closed zero of the base: the committed seeds
+        // exercise the P0/P1 entry points, which do not charge them yet (3.x/4.x wire them
+        // up), so a non-zero value here would only weaken the bound this harness checks.
+        ..Limits::default()
     }
 }
 
@@ -425,48 +429,30 @@ pub fn assert_multi_release_contract(report: &MultiReleaseViewReport, limits: &L
 
 /// The run always stays inside the limits it was given.
 ///
-/// `elapsed_millis` is intentionally not checked: it is a measurement, not a charge, and
-/// exceeding it is what terminates the run.
+/// Counted dimensions are read through [`CountedBudgetDimension::ALL`] and the
+/// `counted_limit`/`counted_usage` accessors rather than asserted field by field, so a
+/// dimension added to the budget (as P2's six did) is covered by this bound the moment it
+/// joins `ALL` — a hand-written list would keep compiling while silently skipping it. The
+/// two high-water dimensions and the clock are separate slots, not counted dimensions:
+/// `nested_depth` and `dependency_depth` are asserted directly, and `elapsed_millis` is
+/// intentionally not checked at all — it is a measurement, not a charge, and exceeding it is
+/// what terminates the run.
 fn assert_usage(usage: &UsageSnapshot, limits: &Limits) {
-    assert!(
-        usage.input_bytes <= limits.input_bytes,
-        "input_bytes crossed the limit"
-    );
-    assert!(
-        usage.archive_entries <= limits.archive_entries,
-        "archive_entries crossed the limit"
-    );
-    assert!(
-        usage.entry_bytes <= limits.entry_bytes,
-        "entry_bytes crossed the limit"
-    );
-    assert!(
-        usage.read_bytes <= limits.read_bytes,
-        "read_bytes crossed the limit"
-    );
-    assert!(
-        usage.class_bytes <= limits.class_bytes,
-        "class_bytes crossed the limit"
-    );
-    assert!(
-        usage.attribute_bytes <= limits.attribute_bytes,
-        "attribute_bytes crossed the limit"
-    );
-    assert!(
-        usage.code_bytes <= limits.code_bytes,
-        "code_bytes crossed the limit"
-    );
-    assert!(
-        usage.result_items <= limits.result_items,
-        "result_items crossed the limit"
-    );
-    assert!(
-        usage.output_bytes <= limits.output_bytes,
-        "output_bytes crossed the limit"
-    );
+    for dimension in CountedBudgetDimension::ALL {
+        let used = usage.counted_usage(dimension);
+        let allowed = limits.counted_limit(dimension);
+        assert!(
+            used <= allowed,
+            "{dimension:?} crossed the limit: usage {used} > limit {allowed}"
+        );
+    }
     assert!(
         usage.nested_depth <= limits.nested_depth,
         "nested_depth crossed the limit"
+    );
+    assert!(
+        usage.dependency_depth <= limits.dependency_depth,
+        "dependency_depth crossed the limit"
     );
 }
 

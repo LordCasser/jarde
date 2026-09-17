@@ -45,6 +45,7 @@ fn limits() -> Limits {
         output_bytes: 1 << 20,
         nested_depth: 1,
         elapsed_millis: u64::MAX,
+        ..Limits::default()
     }
 }
 
@@ -65,6 +66,7 @@ fn small_limits() -> Limits {
         output_bytes: 1 << 20,
         nested_depth: 1,
         elapsed_millis: u64::MAX,
+        ..Limits::default()
     }
 }
 
@@ -254,23 +256,146 @@ fn usage_of(execution: &ExecutionReport) -> &UsageSnapshot {
     }
 }
 
+/// Every counted dimension stays inside the limit it was given, and both high-water depths
+/// do too.
+///
+/// The counted set is read through [`CountedBudgetDimension::ALL`] and the by-value
+/// accessors instead of one hand-written assertion per field: a dimension added to the budget
+/// then joins this bound on its own, where a fixed list would keep compiling while quietly
+/// skipping it. The bound also tightens by itself here, because this file leaves the P2
+/// dimensions at a limit of zero: the moment a scan below charges one of them, these
+/// assertions fail instead of passing unseen.
+///
+/// `elapsed_millis` is deliberately not compared: it is a measurement, not a charge, and
+/// exceeding it is what ends a run.
 fn assert_within(usage: &UsageSnapshot, limits: &Limits) {
-    assert!(usage.input_bytes <= limits.input_bytes, "input_bytes");
+    for dimension in CountedBudgetDimension::ALL {
+        let used = usage.counted_usage(dimension);
+        let allowed = limits.counted_limit(dimension);
+        assert!(
+            used <= allowed,
+            "{dimension:?} crossed the limit: usage {used} > limit {allowed}"
+        );
+    }
     assert!(
-        usage.archive_entries <= limits.archive_entries,
-        "archive_entries"
+        usage.nested_depth <= limits.nested_depth,
+        "nested_depth crossed the limit: usage {} > limit {}",
+        usage.nested_depth,
+        limits.nested_depth
     );
-    assert!(usage.entry_bytes <= limits.entry_bytes, "entry_bytes");
-    assert!(usage.read_bytes <= limits.read_bytes, "read_bytes");
-    assert!(usage.class_bytes <= limits.class_bytes, "class_bytes");
     assert!(
-        usage.attribute_bytes <= limits.attribute_bytes,
-        "attribute_bytes"
+        usage.dependency_depth <= limits.dependency_depth,
+        "dependency_depth crossed the limit: usage {} > limit {}",
+        usage.dependency_depth,
+        limits.dependency_depth
     );
-    assert!(usage.code_bytes <= limits.code_bytes, "code_bytes");
-    assert!(usage.result_items <= limits.result_items, "result_items");
-    assert!(usage.output_bytes <= limits.output_bytes, "output_bytes");
-    assert!(usage.nested_depth <= limits.nested_depth, "nested_depth");
+}
+
+/// Serde name of one budget dimension — the key the usage snapshot publishes it under.
+///
+/// The two are one contract: `UsageSnapshot`'s fields carry the dimension names verbatim, so
+/// the self-check below can address a dimension by that name instead of restating 18 field
+/// names in a second list that could fall behind.
+fn dimension_field(dimension: BudgetDimension) -> String {
+    serde_json::to_string(&dimension)
+        .expect("a budget dimension serializes")
+        .trim_matches('"')
+        .to_string()
+}
+
+/// Usage with `value` on exactly one dimension and every other dimension at zero.
+fn usage_with(dimension: BudgetDimension, value: u64) -> UsageSnapshot {
+    let mut fields = serde_json::to_value(UsageSnapshot::default()).expect("usage serializes");
+    fields
+        .as_object_mut()
+        .expect("the usage snapshot is a JSON object")
+        .insert(dimension_field(dimension), serde_json::Value::from(value));
+    serde_json::from_value(fields).expect("the usage snapshot round-trips")
+}
+
+/// Every dimension a usage snapshot publishes: the counted set first, then the two
+/// high-water depths, then the clock.
+fn published_dimensions() -> Vec<BudgetDimension> {
+    let mut dimensions = CountedBudgetDimension::ALL
+        .iter()
+        .map(|dimension| BudgetDimension::from(*dimension))
+        .collect::<Vec<_>>();
+    dimensions.push(BudgetDimension::NestedDepth);
+    dimensions.push(BudgetDimension::DependencyDepth);
+    dimensions.push(BudgetDimension::ElapsedMillis);
+    dimensions
+}
+
+/// Self-check of [`assert_within`]: the bound must reject an over-limit usage for **every**
+/// dimension it claims to cover.
+///
+/// The runs above keep the P2 dimensions at zero, so a traversal that dropped one of them —
+/// or the hand-written list this file used before 1.3 — would leave every other assertion in
+/// this file green: the bound would get quieter without turning red. Handing the bound one
+/// usage that is over exactly one dimension's limit makes that failure name its dimension.
+/// The same loop pins the check's extent against the published usage schema, so a dimension
+/// added to `UsageSnapshot` later cannot stay out of either the schema or the traversal
+/// without failing here.
+#[test]
+fn the_within_bound_rejects_every_dimension_over_its_limit() {
+    let bounds = limits();
+    let dimensions = published_dimensions();
+    let schema = serde_json::to_value(UsageSnapshot::default()).expect("usage serializes");
+    let schema = schema
+        .as_object()
+        .expect("the usage snapshot is a JSON object");
+    assert_eq!(
+        schema.len(),
+        dimensions.len(),
+        "the checked dimension list must name every published usage field"
+    );
+
+    for dimension in &dimensions {
+        assert!(
+            schema.contains_key(&dimension_field(*dimension)),
+            "{dimension:?} does not name a published usage field"
+        );
+
+        if *dimension == BudgetDimension::ElapsedMillis {
+            // Published but not bounded: the clock is a measurement, not a charge, so this
+            // bound lets it pass even against a zero `elapsed_millis` limit. That is the one
+            // dimension left uncovered on purpose; every dimension below must be rejected
+            // once it is over its limit.
+            let no_clock = Limits {
+                elapsed_millis: 0,
+                ..bounds.clone()
+            };
+            assert_within(&usage_with(*dimension, 1), &no_clock);
+            continue;
+        }
+
+        let allowed = match CountedBudgetDimension::try_from(*dimension) {
+            Ok(counted) => bounds.counted_limit(counted),
+            Err(()) => match dimension {
+                BudgetDimension::NestedDepth => bounds.nested_depth,
+                BudgetDimension::DependencyDepth => bounds.dependency_depth,
+                other => panic!("{other:?} is neither a counted nor a high-water dimension"),
+            },
+        };
+        assert!(
+            allowed < u64::MAX,
+            "these limits must leave room to exceed {dimension:?}"
+        );
+
+        // Exactly at the limit is inside it: the bound is `usage <= limit`, not `<`.
+        assert_within(&usage_with(*dimension, allowed), &bounds);
+
+        let over = allowed + 1;
+        assert!(
+            std::panic::catch_unwind(|| assert_within(&usage_with(*dimension, over), &bounds))
+                .is_err(),
+            "{dimension:?} is over its limit ({over} > {allowed}) and must be rejected"
+        );
+    }
+
+    // Not a blanket rejection either: the zero usage sits inside every limit this file sets,
+    // including the P2 dimensions it leaves at zero.
+    assert_within(&UsageSnapshot::default(), &bounds);
 }
 
 /// The unpaged reference run: every hit is a published item.

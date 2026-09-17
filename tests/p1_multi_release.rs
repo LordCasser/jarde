@@ -15,6 +15,7 @@ fn limits() -> Limits {
         output_bytes: 1 << 24,
         nested_depth: 8,
         elapsed_millis: u64::MAX,
+        ..Limits::default()
     }
 }
 fn u16b(v: &mut Vec<u8>, n: u16) {

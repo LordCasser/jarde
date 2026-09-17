@@ -79,6 +79,7 @@ fn limits(value: u64) -> Limits {
         output_bytes: value,
         nested_depth: value,
         elapsed_millis: u64::MAX,
+        ..Limits::default()
     }
 }
 

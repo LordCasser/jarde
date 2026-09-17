@@ -54,6 +54,7 @@ fn limits() -> Limits {
         output_bytes: 1 << 24,
         nested_depth: 8,
         elapsed_millis: u64::MAX,
+        ..Limits::default()
     }
 }
 
@@ -72,6 +73,7 @@ fn zero_limits() -> Limits {
         output_bytes: 0,
         nested_depth: 0,
         elapsed_millis: 0,
+        ..Limits::default()
     }
 }
 
@@ -292,6 +294,14 @@ fn counted_dimension_index(dimension: CountedBudgetDimension) -> usize {
         CountedBudgetDimension::CodeBytes => 6,
         CountedBudgetDimension::ResultItems => 7,
         CountedBudgetDimension::OutputBytes => 8,
+        // The P2 slice, appended after the P0/P1 dimensions so their positions (and every
+        // position-based assertion in this file) keep the values P1 established.
+        CountedBudgetDimension::ClassHeaders => 9,
+        CountedBudgetDimension::MethodBodies => 10,
+        CountedBudgetDimension::IrItems => 11,
+        CountedBudgetDimension::IrEdges => 12,
+        CountedBudgetDimension::AnalysisSteps => 13,
+        CountedBudgetDimension::NormalizationClones => 14,
     }
 }
 
@@ -1742,8 +1752,25 @@ fn all_lists_are_complete_and_align_with_the_serde_names() {
 
     // `CountedBudgetDimension::ALL` is the zero-usage assertion's dimension set: adding a
     // counted dimension to `Limits`/`UsageSnapshot` without adding it here (and to the
-    // exhaustive match above) does not compile.
-    assert_eq!(CountedBudgetDimension::ALL.len(), 9);
+    // exhaustive match above) does not compile. The P2 slice (1.3) appended its six
+    // dimensions after the P0/P1 nine, which this count and the position assertions below
+    // pin: the P1 dimensions keep positions 0..=8.
+    assert_eq!(CountedBudgetDimension::ALL.len(), 15);
+    assert_eq!(
+        CountedBudgetDimension::ALL[..9],
+        [
+            CountedBudgetDimension::InputBytes,
+            CountedBudgetDimension::ArchiveEntries,
+            CountedBudgetDimension::EntryBytes,
+            CountedBudgetDimension::ReadBytes,
+            CountedBudgetDimension::ClassBytes,
+            CountedBudgetDimension::AttributeBytes,
+            CountedBudgetDimension::CodeBytes,
+            CountedBudgetDimension::ResultItems,
+            CountedBudgetDimension::OutputBytes,
+        ],
+        "the P0/P1 dimensions keep the positions P1 established"
+    );
     let mut indexes = Vec::new();
     for dimension in CountedBudgetDimension::ALL {
         let index = counted_dimension_index(dimension);
@@ -1768,8 +1795,10 @@ fn all_lists_are_complete_and_align_with_the_serde_names() {
     );
 
     // The `BudgetDimension` split agrees with `ALL`: every counted dimension round-trips
-    // through the total dimension enum, while the two non-counted dimensions stay out of
-    // the counted set.
+    // through the total dimension enum, while the three non-counted dimensions stay out of
+    // the counted set. `DependencyDepth` is the second high-water dimension, so it must be
+    // rejected here exactly like `NestedDepth` — a dependency depth that could be charged
+    // through `charge` would be a second, additive meaning for one limit.
     for dimension in CountedBudgetDimension::ALL {
         let total = BudgetDimension::from(dimension);
         assert_eq!(
@@ -1779,12 +1808,21 @@ fn all_lists_are_complete_and_align_with_the_serde_names() {
         );
         assert!(counted_dimension_index(dimension) < CountedBudgetDimension::ALL.len());
     }
-    for total in [BudgetDimension::NestedDepth, BudgetDimension::ElapsedMillis] {
+    for total in [
+        BudgetDimension::NestedDepth,
+        BudgetDimension::DependencyDepth,
+        BudgetDimension::ElapsedMillis,
+    ] {
         assert!(
             CountedBudgetDimension::try_from(total).is_err(),
             "{total:?} is not a counted dimension"
         );
     }
+    assert_eq!(
+        serde_json::to_string(&BudgetDimension::DependencyDepth).unwrap(),
+        "\"dependency_depth\"",
+        "the second high-water dimension has its own wire name"
+    );
 
     // `AnalysisStage::ALL` is both the fixed phase order and the filter the engine normalizes
     // a request through: a stage missing from it cannot be requested at all, so a new stage
@@ -1889,6 +1927,12 @@ fn dimension_code(dimension: CountedBudgetDimension) -> &'static str {
         CountedBudgetDimension::CodeBytes => "code_bytes",
         CountedBudgetDimension::ResultItems => "result_items",
         CountedBudgetDimension::OutputBytes => "output_bytes",
+        CountedBudgetDimension::ClassHeaders => "class_headers",
+        CountedBudgetDimension::MethodBodies => "method_bodies",
+        CountedBudgetDimension::IrItems => "ir_items",
+        CountedBudgetDimension::IrEdges => "ir_edges",
+        CountedBudgetDimension::AnalysisSteps => "analysis_steps",
+        CountedBudgetDimension::NormalizationClones => "normalization_clones",
     }
 }
 

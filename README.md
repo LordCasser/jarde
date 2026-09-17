@@ -41,7 +41,14 @@ CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 cargo run -p jarde-cli -- <<'JSON'
     "code_bytes": 262144,
     "result_items": 10000,
     "output_bytes": 4194304,
+    "class_headers": 1024,
+    "method_bodies": 1024,
+    "ir_items": 1048576,
+    "ir_edges": 1048576,
+    "analysis_steps": 1048576,
+    "normalization_clones": 4096,
     "nested_depth": 8,
+    "dependency_depth": 64,
     "elapsed_millis": 30000
   },
   "operation": {
@@ -56,7 +63,7 @@ CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 cargo run -p jarde-cli -- <<'JSON'
 JSON
 ```
 
-十一个 limit 都是请求级上限：`input_bytes`、`archive_entries`、`entry_bytes`、`read_bytes`、`class_bytes`、`attribute_bytes`、`code_bytes`、`result_items`、`output_bytes`、`nested_depth`、`elapsed_millis`。除 `nested_depth` 记录已接受嵌套容器深度的高水位外，其余资源维度约束累计工作量和结果缓冲；这些限制不承诺进程 RSS 或硬实时中断。
+十八项 limit 都是请求级上限，CLI 请求对象里逐项必填（`deny_unknown_fields`，缺一项即协议错误，不静默取默认值）：P0/P1 的 `input_bytes`、`archive_entries`、`entry_bytes`、`read_bytes`、`class_bytes`、`attribute_bytes`、`code_bytes`、`result_items`、`output_bytes`，P2 新增的 `class_headers`、`method_bodies`、`ir_items`、`ir_edges`、`analysis_steps`、`normalization_clones`，以及两个非累加高水位 `nested_depth`（已接受嵌套容器深度）与 `dependency_depth`（依赖闭包深度），另加 `elapsed_millis`。P0/P1 入口目前只使用前九项与两个高水位中的 `nested_depth`；P2 的六个计费维度由 3.x/4.x 的 CFG/Frame/SSA/规范化阶段开始计费（1.3 只加入维度与计费入口），在接通前它们保持 request/usage 的零值。计数的含义：`class_headers`/`method_bodies` 计读取**尝试**（同一 `(definition, loader)` 绑定在同一请求内由调用方去重，失败尝试仍计一次），`ir_items` 计 frame/local 槽、SSA 值、phi 输入与 origin 成员，`ir_edges` 计 CFG 边（含异常边）与 SSA def-use 边，`analysis_steps` 计工作列表 pop/处理（重复访问计数），`normalization_clones` 计 `jsr`/`ret` 克隆节点，全部在分配/入队/加边/克隆**之前**计费。除两个 depth 高水位外，其余维度约束累计工作量和结果缓冲；这些限制不承诺进程 RSS 或硬实时中断。
 
 成功响应 exit code 为 0、`status` 为 `"ok"`，并包含精确的 `transport.response_bytes`（含结尾换行）。只有在 ZIP 枚举报告已经建立，或目标 `Code` 已定位并已开始 exception-handler / instruction 扫描之后，局部预算耗尽、协作取消或局部输入失败才会作为 `status: "ok"` 内的 `Partial` / `Cancelled` report 返回；调用方必须读取内部 `execution`、coverage 和 diagnostics。协议错误，以及 artifact open、class Header、class 物化或方法/`Code` 定位完成前发生的错误，仍返回 exit code 1 和 `status: "error"`。
 
@@ -80,7 +87,14 @@ CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 cargo run -p jarde-cli -- <<'JSON'
     "code_bytes": 262144,
     "result_items": 10000,
     "output_bytes": 4194304,
+    "class_headers": 1024,
+    "method_bodies": 1024,
+    "ir_items": 1048576,
+    "ir_edges": 1048576,
+    "analysis_steps": 1048576,
+    "normalization_clones": 4096,
     "nested_depth": 8,
+    "dependency_depth": 64,
     "elapsed_millis": 30000
   },
   "operation": {

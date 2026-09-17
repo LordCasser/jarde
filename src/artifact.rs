@@ -1584,7 +1584,14 @@ pub(crate) const fn budget_dimension_code(dimension: BudgetDimension) -> &'stati
         BudgetDimension::CodeBytes => "code_bytes",
         BudgetDimension::ResultItems => "result_items",
         BudgetDimension::OutputBytes => "output_bytes",
+        BudgetDimension::ClassHeaders => "class_headers",
+        BudgetDimension::MethodBodies => "method_bodies",
+        BudgetDimension::IrItems => "ir_items",
+        BudgetDimension::IrEdges => "ir_edges",
+        BudgetDimension::AnalysisSteps => "analysis_steps",
+        BudgetDimension::NormalizationClones => "normalization_clones",
         BudgetDimension::NestedDepth => "nested_depth",
+        BudgetDimension::DependencyDepth => "dependency_depth",
         BudgetDimension::ElapsedMillis => "elapsed_millis",
     }
 }
@@ -1966,6 +1973,7 @@ mod tests {
             output_bytes: value,
             nested_depth: value,
             elapsed_millis: u64::MAX,
+            ..Limits::default()
         }
     }
 

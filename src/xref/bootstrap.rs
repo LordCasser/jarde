@@ -469,7 +469,16 @@ fn dimension_counts(
         BudgetDimension::CodeBytes => (limits.code_bytes, usage.code_bytes),
         BudgetDimension::ResultItems => (limits.result_items, usage.result_items),
         BudgetDimension::OutputBytes => (limits.output_bytes, usage.output_bytes),
+        BudgetDimension::ClassHeaders => (limits.class_headers, usage.class_headers),
+        BudgetDimension::MethodBodies => (limits.method_bodies, usage.method_bodies),
+        BudgetDimension::IrItems => (limits.ir_items, usage.ir_items),
+        BudgetDimension::IrEdges => (limits.ir_edges, usage.ir_edges),
+        BudgetDimension::AnalysisSteps => (limits.analysis_steps, usage.analysis_steps),
+        BudgetDimension::NormalizationClones => {
+            (limits.normalization_clones, usage.normalization_clones)
+        }
         BudgetDimension::NestedDepth => (limits.nested_depth, usage.nested_depth),
+        BudgetDimension::DependencyDepth => (limits.dependency_depth, usage.dependency_depth),
         BudgetDimension::ElapsedMillis => (limits.elapsed_millis, usage.elapsed_millis),
     }
 }

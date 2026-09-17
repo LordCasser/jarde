@@ -4258,6 +4258,7 @@ mod reader_facts_tests {
             output_bytes: u64::MAX,
             nested_depth: u64::MAX,
             elapsed_millis: u64::MAX,
+            ..Limits::default()
         }
     }
 
@@ -5654,6 +5655,7 @@ mod tests {
             output_bytes: value,
             nested_depth: value,
             elapsed_millis: u64::MAX,
+            ..Limits::default()
         }
     }
 
@@ -7595,17 +7597,27 @@ mod tests {
                 ]
             );
         }
+        // The usage schema is additive: 1.3 added its six counted dimensions and the
+        // `dependency_depth` high-water mark next to the P0/P1 eleven, and this list is
+        // still compared exactly, so a rename or a dropped field fails here.
         assert_eq!(
             json_keys(&json["execution"]["usage"]),
             [
+                "analysis_steps",
                 "archive_entries",
                 "attribute_bytes",
                 "class_bytes",
+                "class_headers",
                 "code_bytes",
+                "dependency_depth",
                 "elapsed_millis",
                 "entry_bytes",
                 "input_bytes",
+                "ir_edges",
+                "ir_items",
+                "method_bodies",
                 "nested_depth",
+                "normalization_clones",
                 "output_bytes",
                 "read_bytes",
                 "result_items",

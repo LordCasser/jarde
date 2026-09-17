@@ -16,6 +16,7 @@ fn unlimited() -> Limits {
         output_bytes: u64::MAX,
         nested_depth: u64::MAX,
         elapsed_millis: u64::MAX,
+        ..Limits::default()
     }
 }
 
