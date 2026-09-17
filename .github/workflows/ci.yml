@@ -66,11 +66,22 @@ jobs:
           cargo tree --workspace --all-features --locked -e features > "$RUNNER_TEMP/feature-tree.txt"
           grep -F 'blake3 feature "pure"' "$RUNNER_TEMP/feature-tree.txt"
           grep -F 'flate2 feature "rust_backend"' "$RUNNER_TEMP/feature-tree.txt"
+          # petgraph is admitted with `default-features = false, features = ["std"]` only
+          # (design 3.1). Assert both directions: `std` must be resolved, and no other
+          # petgraph feature may reappear, because the default set adds
+          # graphmap/stable_graph/matrix_graph, `rayon` pulls a thread pool, `serde-1` the
+          # serde family and `all` a dot parser — none of which the slice uses, and the
+          # normal-tree grep only catches `rayon` by name.
+          grep -F 'petgraph feature "std"' "$RUNNER_TEMP/feature-tree.txt"
+          if grep -E 'petgraph feature "(graphmap|stable_graph|matrix_graph|rayon|serde-1|serde|serde_derive|all|quickcheck|dot_parser|unstable|generate)"' "$RUNNER_TEMP/feature-tree.txt"; then
+            echo 'petgraph resolved features outside the admitted std-only set' >&2
+            exit 1
+          fi
 
       - name: Check normal dependency tree boundary
         run: |
           cargo tree --workspace --all-features --locked -e normal > "$RUNNER_TEMP/normal-tree.txt"
-          if grep -E '(^|[[:space:]├└─])(tokio([^[:alnum:]_]|$)|async-std([^[:alnum:]_]|$)|rayon([^[:alnum:]_]|$)|petgraph([^[:alnum:]_]|$)|sqlx([^[:alnum:]_]|$)|rusqlite([^[:alnum:]_]|$)|tree-sitter([^[:alnum:]_]|$)|reverse-engine-backend-api([^[:alnum:]_]|$)|ristretto_vm([^[:alnum:]_]|$)|jni([^[:alnum:]_]|$)|jvm([^[:alnum:]_]|$)|reqwest([^[:alnum:]_]|$)|hyper([^[:alnum:]_]|$)|ureq([^[:alnum:]_]|$)|surf([^[:alnum:]_]|$)|diesel([^[:alnum:]_]|$)|sea-orm([^[:alnum:]_]|$)|mongodb([^[:alnum:]_]|$)|redis([^[:alnum:]_]|$))' "$RUNNER_TEMP/normal-tree.txt"; then
+          if grep -E '(^|[[:space:]├└─])(tokio([^[:alnum:]_]|$)|async-std([^[:alnum:]_]|$)|rayon([^[:alnum:]_]|$)|sqlx([^[:alnum:]_]|$)|rusqlite([^[:alnum:]_]|$)|tree-sitter([^[:alnum:]_]|$)|reverse-engine-backend-api([^[:alnum:]_]|$)|ristretto_vm([^[:alnum:]_]|$)|jni([^[:alnum:]_]|$)|jvm([^[:alnum:]_]|$)|reqwest([^[:alnum:]_]|$)|hyper([^[:alnum:]_]|$)|ureq([^[:alnum:]_]|$)|surf([^[:alnum:]_]|$)|diesel([^[:alnum:]_]|$)|sea-orm([^[:alnum:]_]|$)|mongodb([^[:alnum:]_]|$)|redis([^[:alnum:]_]|$))' "$RUNNER_TEMP/normal-tree.txt"; then
             echo 'unexpected production dependency crossed the P0 boundary' >&2
             exit 1
           fi
