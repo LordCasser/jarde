@@ -37,7 +37,7 @@
 
 | 阶段与职责 | 候选 | 准入条件 |
 | --- | --- | --- |
-| P2 CFG/SCC/支配关系/拓扑排序 | [petgraph 0.8.3](https://docs.rs/petgraph/0.8.3/petgraph/algo/index.html)，发布于 2025-09-30 | 优先复用通用图算法；验证内存权重、确定性、异常边和遍历预算。JVM Frame、returnAddress、SSA origin/effect 仍由语义层负责，不能把普通图算法当 verifier |
+| P2 CFG/SCC/支配关系/拓扑排序 | [petgraph 0.8.3](https://docs.rs/petgraph/0.8.3/petgraph/algo/index.html)，发布于 2025-09-30，**已准入**（2026-09-18，证据见 `changes/p2-jvm-ir/verification.md` 的 3.1 节） | 优先复用通用图算法；验证内存权重、确定性、异常边和遍历预算。JVM Frame、returnAddress、SSA origin/effect 仍由语义层负责，不能把普通图算法当 verifier。准入后的硬约束：feature 固定 `default-features = false, features = ["std"]`；SCC 只用迭代的 `kosaraju_scc`（`tarjan_scc` 递归会 abort）；所有输出按 (物理定义, BCI) 自排序（`immediately_dominated_by` 跨进程顺序不定）；`simple_fast` 前自校验 root 归属；多出口合成 super-exit；阶段级不可取消，靠规模上界（`max_blocks` 默认 16 384 / 硬上限 65 535）与支配阶段 195 B/block 记账 |
 | P3 Java 文本排版 | [pretty 0.12.5](https://docs.rs/pretty/0.12.5/pretty/)，发布于 2025-09-26 | 优先复用文档组合、分组和断行，验证 source map、注释/转义和输出预算；不自行实现通用 pretty-print 算法 |
 | P3 Java 语法检查 oracle | [tree-sitter-java 0.23.5](https://github.com/tree-sitter/tree-sitter-java)，发布于 2024-12-21 | 含生成的 C parser，不符合纯 Rust 生产链；最多作为可选测试工具。语法解析也不证明类型检查或语义等价，且需核对目标 Java release 覆盖 |
 | P5 缓存、并行、持久索引 | 实测后选型 | 在出现真实瓶颈时评估有界缓存库、Rayon、SQLite/Rust 原生存储等；必须检查纯 Rust 约束、权重淘汰、取消、损坏回退和许可。当前不锁定产品或格式，也不预先自研 |

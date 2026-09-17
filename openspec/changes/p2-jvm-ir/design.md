@@ -539,20 +539,28 @@ pub struct HeaderRead {
    - 方法（class method resolution）：声明类 → 超类链 → 超接口的 **maximally-specific** 集合；
    - 方法（interface method resolution，owner 是接口）：该接口 → 其超接口的全部 maximally-specific 集合。
    每步都用 `ReadReason::HierarchyClosure` 读 Header（同 (definition, loader) 去重，2.2 的闭包机器）。
-3. **判定**（与 `specs/demand-resolver` 的 7 状态对齐）：
+3. **reason 语义（2.3 起生效）**：`ParentChain` 表示"沿声明/owner 的 `super_class` 链向上"读到的 Header，`HierarchyClosure` 表示"沿接口图（`interfaces`/超接口）"读到的 Header，`MemberOwner` 表示请求成员的 owner 定义本身，`RequestedDefinition` 表示请求目标自身，`DispatchScope` 归 2.5，`DriverMethodBody` 归 3.x。因此两个变体都有真实生产者，不得留未产出的公共 variant。
+4. **判定**（与 `specs/demand-resolver` 的 7 状态对齐）：
    - 唯一命中（字段；或方法在 class/超类链上唯一）→ `Resolved`；
    - 方法只有接口候选时，取 maximally-specific 集合：**恰好一个非抽象** → `Resolved`（该 default 方法）；**多个非抽象**（Java 8 default conflict）→ `IncompatibleClassChange` + `resolution_default_conflict` 诊断；**全部抽象** → `Resolved`（那个抽象声明）+ Warning `resolution_method_is_abstract`（JVMS：解析成功，AME 发生在调用时，不由解析阶段伪造）；
    - 什么都没找到 → `Missing`（保留原始 `SymbolRef`/descriptor/origin，不伪造空成员）；
    - 同一步骤内多个无法区分的候选（同一类里同名同描述符重复声明）→ `Ambiguous` + 各自 origin。
-4. **调用种类规则**（`ReferenceUse`；违反即 `IncompatibleClassChange` + 具名诊断）：
+5. **调用种类规则**（`ReferenceUse`；违反即 `IncompatibleClassChange` + 具名诊断）：
    - `InvokeStatic` 要求静态方法，`InvokeVirtual`/`InvokeInterface`/`InvokeSpecial` 要求实例方法（`<init>` 仅 `InvokeSpecial`）；
    - `FieldRead`/`FieldWrite` 中 static 指令（`GetStatic`/`PutStatic`）要求静态字段，实例指令要求实例字段——由 2.4/2.5 的 use-site 提供指令级种类时使用；
    - class method resolution 命中接口方法或 interface method resolution 命中类方法 → `IncompatibleClassChange` + `resolution_kind_mismatch`；
    - `InvokeSpecial` 命中抽象方法 → 同上（JVMS 5.4.3.3 对 invokespecial 的额外约束）。
-5. **访问规则**（JVMS 5.4.4，与解析分开）：调用方类名由 `CallerContext.enclosing`（其 `owner` 定义读 `this_class`）得到；运行时包 = (loader, 包名)。`public` 通过；`private` 要求同类；`protected` 要求同类/同包/子类；包私有要求同包。**判定不通过 → `Inaccessible` + `resolution_access_denied` 诊断**；调用方类未知（无 `enclosing`）时**不做访问判定**，返回 `Resolved` + Warning `resolution_access_not_checked`（不谎称已检查）。
-6. **明确的 unsupported 分支**：
+6. **访问规则**（JVMS 5.4.4，与解析分开）：调用方类名由 `CallerContext.enclosing`（其 `owner` 定义读 `this_class`）得到；运行时包 = (loader, 包名)。`public` 通过；`private` 要求同类；`protected` 要求同类/同包/子类；包私有要求同包。**判定不通过 → `Inaccessible` + `resolution_access_denied` 诊断**；调用方类未知（无 `enclosing`）时**不做访问判定**，返回 `Resolved` + Warning `resolution_access_not_checked`（不谎称已检查）。
+7. **明确的 unsupported 分支**：
    - **signature-polymorphic**（`java/lang/invoke/MethodHandle` 的 `invoke`/`invokeExact`，JVMS 2.9）：调用点 descriptor 与声明不同，故按 **name 匹配**解析到声明并返回 `Resolved`，同时给 Warning `resolution_signature_polymorphic`（`target` 保留调用点描述符、`resolved.member` 是声明描述符，两者都在报告里可见）；
    - **数组 owner**（`[` 开头，如 `[I.clone()`）：P2 不实现数组类型方法解析 → `UnsupportedPolicy` + `resolution_array_owner` 诊断（不伪造 Object.clone）。
+
+### 2.3 的诊断码与语义边界（实现后固定）
+
+- 诊断码：`resolution_default_conflict`（多个非抽象 default）、`resolution_kind_mismatch`（调用种类/owner 种类/静态性/`<init>`/abstract+`InvokeSpecial`）、`resolution_access_denied`、`resolution_access_not_checked`、`resolution_signature_polymorphic`、`resolution_array_owner`、`resolution_hierarchy_missing`（层级某层 Missing）、`resolution_hierarchy_ambiguous`（层级某层 Ambiguous）、`resolution_hierarchy_cycle`（层级环，与 2.2 共享）、以及既有的 `resolution_method_is_abstract`。
+- **语义近似（有意，记入 spec 边界，不得被当作 JVMS 完全实现）**：解析期报 default conflict 而 JVMS 8 把它放在 invocation selection；interface owner 不隐式继承 `java/lang/Object` 的方法（未命中即 `Missing`）；只检查成员自身的访问标志，不检查声明类的可访问性（JVMS 5.4.3.1）；调用方定义不一致或内容未提供属 stop（`state = None` + `Failed`），不是 `NotChecked`；字段的 static/instance 指令级规则留给 2.4/2.5（`MemberUse` 不含指令级种类）。
+- **schema 限制**：`ResolvedMemberRef` 没有类内坐标，同一 owner 内同名同描述符的重复声明只能表达为相同的 refs（由用例固定）；`Ambiguous` 与 `resolved` 互斥（只在 `Resolved` 时发布 `resolved`）。
+- **计费**：成员解析使 `analysis_steps` 与 `dependency_depth` 成为真实输入，因此成员请求必须给非零值（否则第一步即 `BudgetExceeded`）；`reads` 的 reason 集合按上一条语义产生。
 
 ### 2.3 的验收
 
@@ -611,6 +619,77 @@ pub struct HeaderRead {
 - **只读 Header**：`usage.method_bodies == 0`、`usage.class_headers > 0`、`reads` 的 reason 含 `DispatchScope`；
 - **预算/取消**：`ClassHeaders` 或 `ResultItems` 停止 → 保留已发现候选 + `open_world = true` + `Partial`；
 - **回归**：`Engine::query` 的既有行为与证据不变（P1 golden），`resolve_symbol` 的类符号路径不变（2.1 证据），`dispatch = None` 的请求不产生 dispatch 相关诊断。
+
+## 3.1 准入证据与使用约束（petgraph 0.8.3）
+
+准入证据见 `verification.md` 的 3.1 节；结论是**引入**，但带四条硬约束。实验目录与复现命令记在同节。
+
+- **feature 集合固定**：`petgraph = { version = "=0.8.3", default-features = false, features = ["std"] }`。默认 feature 会额外拉入 `stable_graph`/`graphmap`/`matrix_graph` 并把 serde 家族写进 lock；`rayon`/`serde-1`/`all` 不使用（含后台线程池或 proc-macro）。CI 的 feature-tree 步骤加一条 `grep -F 'petgraph feature "std"'` 锁住该集合。
+- **SCC 一律用 `kosaraju_scc`，禁止 `tarjan_scc`**：`tarjan_scc` 是**递归**实现，实测在 2 MiB 栈上 20 000 节点的链状图即 stack overflow 并 **abort 进程**（不可捕获）；`kosaraju_scc` 是迭代实现，512 KiB 栈下 100 000 节点正常。
+- **顺序自己定**：`kosaraju_scc`/`tarjan_scc`/`toposort` 的输出顺序是插入顺序与 `NodeIndex` 值的函数，`Dominators::immediately_dominated_by` 内部用 hashbrown `HashMap`、**同一二进制不同进程顺序不同**。因此所有对外发布的 `Vec<_>` 必须按 (物理定义, BCI) 显式排序，构建时也按 BCI 顺序加节点/边；不得依赖任何 petgraph 迭代顺序（该纪律由 golden/性质测试固定）。
+- **root 归属自校验**：把不属于该图的 `NodeIndex` 传给 `simple_fast` 会在 debug 与 release 都 panic（fixedbitset 的无条件断言）。适配层必须在调用前校验；`Graph::remove_node` 会 swap-remove 并改写末节点索引，构图后不删点。
+- **多出口要合成 super-exit**：后支配用 `simple_fast(Reversed(&g), super_exit)`，需先合成一个统一出口节点；入口节点的 `immediate_dominator` 为 `None`、`dominators` 为自身。
+- **取消粒度与规模上界**：petgraph 无任何中断/预算钩子，因此**阶段级不可取消**——进入前检查预算与取消、阶段结束后再次检查并据此决定是否继续；单次调用耗时/内存由输入规模上界保证。实测（release、macOS aarch64）：SCC/拓扑 ~13 ns/点·边，`Graph` 本体 52 B/点 + 26 B/边，支配树峰值 ≈ 195 B/block（`predecessor_sets` 的 HashMap/HashSet），65 535 点级图 `simple_fast` ≈ 7.7 ms / 12.6 MB。据此设 `max_blocks` 默认 16 384、硬上限 65 535（= `code_length` 上限），支配阶段按 195 B/block 记账。文档仍声明 `simple_fast` 最坏 O(|V|²)（未复现对抗图），block 上限是唯一保险。
+- **引入不等于可用**：依赖进入生产图不改变 A17——`query`/`xref` 仍不得引用 `ir`；首个消费者是 3.3 的 raw CFG，3.1 只做准入与依赖引入（本 change 的 3.1 与 3.2 都不产出图形算法调用）。
+- **升级门槛**：0.8.3 之后上游 master 已有破坏性提交，任何升级必须重跑 MSRV、`cargo deny` 两个图、feature-tree 断言与本节的行为证据（尤其是递归/栈与顺序两条）。
+
+## 3.2–3.5 契约：Pass 契约、raw CFG、returnAddress 与有界规范化
+
+### 3.2 PassDescriptor 与 invalidation（不引入动态调度）
+
+```rust
+pub(crate) enum IrPhase { RawFacts = 1, RawCfg, LegacyNormalization, CanonicalCfg, Frame, Ssa }
+pub(crate) enum FactKind { Instructions, ExceptionTable, ThrowSites, RawCfg, CallContexts, CanonicalCfg, Frames, Ssa, Effects }
+pub(crate) struct PassDescriptor {
+    pub(crate) phase: IrPhase,
+    pub(crate) name: &'static str,
+    pub(crate) requires: &'static [FactKind],
+    pub(crate) produces: &'static [FactKind],
+    pub(crate) invalidates: &'static [FactKind],   // 本 pass 改变 CFG/异常边时必须声明
+    pub(crate) budget: PassBudgetClass,            // Blocks | Steps | Clones | None
+}
+```
+
+- **描述表是静态常量**（`&'static [PassDescriptor]`），按 `IrPhase` 升序声明；引擎只按该表顺序执行，**没有动态注册、插件或运行时图**。
+- **启动校验**：请求的阶段集合在开跑前解析成"该表的前缀"（与 1.1 的 `scheduled_stages` 同规则），并检查每个被调度 pass 的 `requires` 都能由**更早的已调度 pass** 产出；缺失前置、`IrPhase` 逆序、`requires` 与 `produces` 冲突、表自身成环都在**启动时**返回结构化错误（`ir_pass_prerequisite_missing` / `ir_pass_order_invalid` / `ir_pass_graph_cycle`），不执行任何半初始化 IR。
+- **invalidation**：任何 pass 声明了非空 `invalidates` 时，其"之后"的既得事实必须被丢弃（`CanonicalCfg` 改变异常边即让 `Frames`/`Ssa`/`Effects` 失效），后续阶段若要使用必须重算或拒绝使用。运行时用一个"已产出事实集合"检查：使用未被重算的失效事实即 `ir_stale_fact`（结构化错误），不是静默沿用。
+- **失败隔离与最后有效阶段**：某个 pass 因输入损坏/预算/取消停止时，`stages` 记录到该阶段为止的 `Completed`/`Partial`/`Failed`，**不发布**半初始化 facts（与 1.1 `StageResult` 语义一致）。
+- **计费**：每个 pass 按其 `budget` 类别先计费后分配（`IrItems`/`IrEdges`/`AnalysisSteps`/`NormalizationClones`）；pass 边界是 `poll()` 检查点。
+
+### 3.3 raw CFG 与 effect facts
+
+- **形状（crate-private）**：
+  ```rust
+  pub(crate) struct RawCfg {
+      pub(crate) blocks: Vec<RawBlock>,          // 按 class offset/BCI 升序，入口为首块
+      pub(crate) edges: Vec<RawEdge>,            // 按 (from, kind, to, throw_ordinal) 排序
+      pub(crate) throw_sites: Vec<ThrowSite>,    // 指令级：method_bci → handler(s)
+      pub(crate) handlers: Vec<HandlerFact>,     // 保护区间 + handler 序（原始顺序）
+      pub(crate) unreachable: Vec<u32>,          // 真值表：入口不可达的块 BCI
+  }
+  pub(crate) enum EdgeKind { Normal, Exception { handler_ordinal: u32 }, SubroutineReturn { call_site: u32 } }
+  pub(crate) struct EffectFacts { /* locals 读/写集合、stack delta、可能的 throw */ }
+  ```
+- **指令级 throw 语义**：`throw_sites` 必须逐个 throwing instruction 记录（不能只取块尾指令），并按**异常表声明顺序**给出该点可行的 handler 列表；同一 BCI 的多条异常边都要保留（平行边，petgraph `Graph` 多次 `add_edge`）。
+- **不可达与自环**：不可达块进 `unreachable` 而不是被丢掉；自环（`goto` 指向自身、保护区间覆盖自身）必须可表达且不破坏 SCC/支配结果。
+- **确定性**：块/边/throw site/handler 一律按 (class offset, BCI, kind, ordinal) 显式排序；**不得依赖 petgraph 的迭代顺序或 `immediately_dominated_by` 的顺序**（3.1 的证据）。
+- **A17/P1 不变**：raw CFG 只在 `analyze_method` 路径上构建；`Engine::query` 的 BCI、引用数量与证据不变（P1 golden 全绿是证据）；`query`/`xref` 不引用 `ir`。
+- **计费**：块/边先计 `IrItems`/`IrEdges` 再构造；工作列表迭代计 `AnalysisSteps`；`max_blocks` 默认 16 384、硬上限 65 535；超限即停并发布已完成的阶段结果。
+
+### 3.4 raw returnAddress 与调用上下文
+
+- 对 45–52 且含 `jsr`/`jsr_w`/`ret` 的方法，建立**调用上下文**：每个 `jsr` 站点一个 `SubroutineContext { call_site_bci, return_bci, entry_bci, affected_locals }`；`ret` 的返回点来自该上下文而不是猜测（`CallContexts` 事实）。
+- 共享子程序（多个 `jsr` 指向同一 `entry_bci`）与嵌套子程序都要保留**各自上下文**；异常覆盖子程序（保护区间横跨 `jsr`）必须记录，不得把 handler 入口当成普通后继。
+- **51+ 的 `jsr`/`jsr_w`/`ret`**：原始事实仍保留，但报告 dialect 违规（`ir_legacy_opcode_forbidden`），不进入 CanonicalCFG；`51+` 判定只由 classfile version 决定。
+- 无法建立完整上下文的（例如 `ret` 的返回点集合无法收敛或超出步骤预算）→ 保留 raw facts + `Fallback`，不伪造调用图。
+
+### 3.5 有界 jsr/ret 规范化与 CanonicalCFG
+
+- **克隆语义**：一个子程序被 N 个调用上下文共享时，为每个上下文克隆其块集合（`NormalizationClones` 按克隆节点计费）；克隆块保留 **一对多 origin**：`OriginMember::MethodPoint { method, bci }` 指向原始 BCI，且 `OriginSet` 保留全部原始 BCI（不得只留一个）。
+- **超级块/边**：`ret` 在规范化后按其上下文确定后继；异常边按原始 handler 序重建；保护区间按上下文映射到克隆后的块范围。
+- **界与 fallback**：克隆数超过 `NormalizationClones` 上限、步骤耗尽或上下文无法唯一确定 → **停止**并返回 raw 字节码 + `quality = Fallback` + 原因诊断，**不得**用线性替换伪装语义完整（`ir_legacy_normalization_unbounded`）。
+- **PostCondition**：CanonicalCFG 的每个块都可通过 origin 映射回原始 BCI（含克隆块的一对多），且不存在未被任何上下文覆盖的孤立克隆。
+- **验收（3.5）**：真实历史 finally（ECJ 45–48 语料，含共享子程序）、嵌套子程序、异常路径上的 `jsr`、恰好/超界克隆、取消与预算停止、以及"规范化不改变 P1 XRef 次数"的对照。
 
 ## Risks / Trade-offs
 

@@ -89,6 +89,26 @@
 - 远端 CI：实现与文档提交 `da47836`、`6f5f0b2` 推送 `main` 后，CI run [`35263295922`](https://github.com/LordCasser/jarde/actions/runs/35263295922) 四个 job 全部 success。
 - 独立复核结论：**Approve**（三项"必须改"：`ir.rs` 公开 doc 与 `ReadReason::DriverMethodBody` 自相矛盾、恒真的 Body 证据、4 处语义无测试；均已关闭）。登记债务：闭包键 loader 分量在当前公开路径不可证伪（触发条件是"出现第一个以非调用方 loader 发起需求的调用方"，可能晚于 2.5）；`remembered`/`record_read`/`visited` 的线性扫描在 2.5 全 scope 枚举前需索引（P5）；`analysis_steps` 耗尽路径无用例；`providers.rs` 3 处冗余 `#[allow(dead_code)]`；`method_bodies` 在 3.x 接通计费前没有计费点，任何以它证明"不读 Body"的断言都不成立。
 
+### 3.1 petgraph 准入证据
+
+准入对象：`petgraph 0.8.3`（2025-09-30 发布，当前最新且未 yanked，仓库 `petgraph/petgraph` 活跃，包内 `.cargo_vcs_info.json` SHA1 `162903562ce5b00cdba390a0d9c1bb80f1c75bf5`）。**结论：准入通过，按四条硬约束引入**（约束已写入 design 的「3.1 准入证据与使用约束」与 `openspec/dependencies.md`）。
+
+| 准入项 | 实证结果 |
+| --- | --- |
+| MSRV 1.88 | `rustup run 1.88.0 cargo check --locked`（默认与最小 feature 两种、含 `--all-targets`）与行为测试在 1.88.0 下全部通过；petgraph 声明 `rust-version = 1.64`，实际下限由传递依赖决定（indexmap/hashbrown 1.85），有效下限 1.85 ≤ 1.88 |
+| 许可与纯 Rust | `MIT OR Apache-2.0`；无 `build.rs`、无 C/C++、无 `cc`/`bindgen`；`cargo-deny`（仓库原样 policy）在两个 feature 集合下四段 ok，唯一告警是 hashbrown 双版本（`multiple-versions = "warn"`）；RustSec 唯一相关条目 RUSTSEC-2024-0402 只影响 `=0.15.0`，实际使用 0.15.5 |
+| feature 集合 | 推荐最小集 `default-features = false, features = ["std"]`（normal 依赖 7 个）；默认 feature 会写入 serde 家族、`rayon` 会引入后台线程池、`all` 引入 dot-parser/quickcheck |
+| 平行边 | 同对节点 3 条有向边（1 普通 + 2 异常）计数与枚举完整保留；`edges_directed` 按加入逆序、`find_edge` 返回最近加入者（实现不得依赖该顺序，另见下条） |
+| 不可达节点 / 自环 / 孤立点 | `kosaraju_scc` 与 `tarjan_scc` 都覆盖全部节点，自环与孤立点各成单元素分量；`toposort` 对环与自环显式返回 `Err(Cycle)` |
+| 多出口 | 后支配需合成 super-exit（`simple_fast(Reversed(&g), super_exit)`）；入口 `immediate_dominator` 为 `None`、`dominators` 为自身；不可达节点的 dominators 三 API 全 `None` |
+| **确定性（关键）** | `kosaraju_scc`/`tarjan_scc`/`toposort`/图遍历不依赖 hash（跨进程逐字节可复现），但顺序是插入顺序/`NodeIndex` 的函数；**`Dominators::immediately_dominated_by` 用 hashbrown `HashMap`，同一二进制不同进程顺序不同**（实测 5 次运行出现 4 种顺序）。→ 必须自己按 (物理定义, BCI) 排序 |
+| 预算/取消粒度 | 源码无任何中断/预算/超时钩子；四个目标 API 无取消参数。→ 记录为「阶段级不可取消：进入前检查、结束后再检查，靠规模上界保证单次调用有界」；实测规模（release、macOS aarch64）SCC/拓扑 ~13 ns/点·边、`Graph` 52 B/点 + 26 B/边、支配树 ≈195 B/block、65 535 点 `simple_fast` ≈7.7 ms / 12.6 MB |
+| **进程 abort 风险（关键）** | `tarjan_scc` 递归：2 MiB 栈在 20 000 节点链状图即 stack overflow 且 **abort 进程**（不可捕获）；`kosaraju_scc` 迭代，512 KiB 栈 100 000 节点正常 → SCC 只用 `kosaraju_scc`。`simple_fast` 对不属于该图的 root 在 debug 与 release 都 panic → 调用前自校验 root 归属；构图后不得 `remove_node`（swap-remove 会改写索引） |
+
+复现入口：`/tmp/p2-petgraph-probe/`（`ADMISSION-EVIDENCE.md` 汇总；`algoprobe` 含 10 个行为测试、规模/深度/顺序探针；`feature-matrix.txt`、`scale-*.txt`、`depth-thresholds.txt`、`order-run*.txt`）。该目录是临时证据，不入库；本节的表格与命令是长期记录。
+
+未验证/遗留：`simple_fast` 最坏 O(|V|²) 未复现（block 上限是唯一保险）；递归/栈只测了链状深图；跨平台（CI 的 Linux x86_64）未复跑；依赖引入后需重跑 MSRV、两个图的 `cargo deny` 与 feature-tree 断言。
+
 ## 第一片（1.1–1.3）状态与闸口
 
 - 1.1、1.2、1.3 均已完成、独立复核 **Approve** 并有各自 CI 记录；第一片的退出条件（reader 类型化操作数、预算维度、结果/请求契约可用）已满足。第一片整体以提交 `0cba0d6`（实现）+ `6344508`（文档）推送，CI run [`35253446169`](https://github.com/LordCasser/jarde/actions/runs/35253446169) 四个 job 全部 success（`stable` 含 ignored JDK 25 oracle、`MSRV 1.88.0`、双 workspace `supply chain`、`fuzz smoke`）。
