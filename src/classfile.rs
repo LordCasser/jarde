@@ -904,7 +904,7 @@ fn instruction_width(opcode: u8, bci: u32, instruction: &RawInstruction<'_>) -> 
                     "tableswitch shape mismatch",
                 ));
             };
-            let padding = (4 - ((bci + 1) & 3)) & 3;
+            let padding = switch_padding(bci);
             let count = i64::from(table.high())
                 .checked_sub(i64::from(table.low()))
                 .and_then(|value| value.checked_add(1))
@@ -938,7 +938,7 @@ fn instruction_width(opcode: u8, bci: u32, instruction: &RawInstruction<'_>) -> 
                     "lookupswitch shape mismatch",
                 ));
             };
-            let padding = (4 - ((bci + 1) & 3)) & 3;
+            let padding = switch_padding(bci);
             let pairs = u32::try_from(lookup.pairs().count()).map_err(|_| {
                 Error::invalid_input(
                     "classfile_instruction_width_overflow",
@@ -2430,12 +2430,766 @@ pub(crate) struct MethodCodeFacts {
     /// first opcode, so a BCI becomes a class offset by adding `code_span.start`.
     pub code_span: ByteSpan,
     pub instructions: Vec<InstructionFact>,
+    /// Typed operands of [`Self::instructions`], in lockstep: `operands[i]` describes
+    /// `instructions[i]`, and any stop returns the same reliable prefix of both.
+    pub(crate) operands: Vec<InstructionOperands>,
     /// The whole exception table. Handlers are decoded before instructions, exactly
     /// like `inspect_method_bytecode`, so these are complete even when the instruction
     /// stream is the phase that stopped.
     pub exception_handlers: Vec<ExceptionHandlerFact>,
     pub execution: ExecutionReport,
     pub stopped_at: Option<BytecodeStop>,
+}
+
+/// Typed operands of one instruction, taken from the same noak event and the same
+/// instruction byte range that produced the matching [`InstructionFact`].
+///
+/// The mapping is total: a field is `None` exactly when the instruction has no operand
+/// of that kind, so an instruction without operands (`pop`, `return`, `dup`, …) is
+/// all-`None` rather than absent. Implicit operands are facts too — the `_0`..`_3`
+/// load/store forms name their local, the `iconst`/`lconst`/`fconst`/`dconst` forms
+/// name their constant, and `wide` marks the widened form — so 3.x never has to
+/// re-derive them from the raw opcode or from rendered text.
+///
+/// [`InstructionOperands::default`] is that all-`None` value.
+///
+/// Operands that 1.2 deliberately does not retain: the `newarray` atype, the
+/// `multianewarray` dimensions and the `invokeinterface` count. Their widths and
+/// constant-pool indices are still recorded in [`InstructionFact`], and a consumer that
+/// needs one changes the 1.2 contract section first.
+///
+/// This is crate-private reader data: it does not appear in [`BytecodeInspection`] and
+/// it is covered by the `CodeBytes` charge of the instruction it belongs to, with no
+/// extra dimension and no second charge.
+#[allow(dead_code)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub(crate) struct InstructionOperands {
+    /// `bipush`/`sipush`, the `ldc` family, and the constant forms encoded in the opcode.
+    pub(crate) immediate: Option<ImmediateValue>,
+    /// The local of a load, store, `iinc` or `ret`, including the implicit forms.
+    pub(crate) local: Option<LocalOperand>,
+    /// Signed increment of `iinc` and `wide iinc`; `None` for every other opcode.
+    pub(crate) increment: Option<i32>,
+    /// Same value as [`InstructionFact::constant_pool_index`] of the same instruction.
+    pub(crate) constant_pool_index: Option<u16>,
+    /// Relative offset exactly as encoded by a branch, `goto_w`, `jsr` or `jsr_w`:
+    /// relative to the BCI of the instruction itself.
+    pub(crate) branch_offset: Option<i32>,
+    /// Payload of `tableswitch`/`lookupswitch`; `None` for every other opcode.
+    pub(crate) switch: Option<SwitchOperands>,
+}
+
+/// The literal one instruction pushes directly.
+///
+/// Floating point keeps its bit pattern, so a NaN payload or a negative zero survives
+/// the fact. Reference constants are not literals here: `ldc` of a `String`, `Class`,
+/// `MethodHandle`, `MethodType` or dynamic constant keeps its
+/// [`InstructionOperands::constant_pool_index`] for the resolver instead.
+#[allow(dead_code)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum ImmediateValue {
+    Int(i32),
+    Long(i64),
+    Float(u32),
+    Double(u64),
+}
+
+/// One local variable slot named by an instruction.
+#[allow(dead_code)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct LocalOperand {
+    /// Local slot index in the method's frame.
+    pub(crate) index: u16,
+    /// `true` for the `wide` prefixed form, `false` for the short form and for the
+    /// `_0`..`_3` forms, whose index is encoded in the opcode.
+    pub(crate) wide: bool,
+}
+
+/// Payload of one `tableswitch`/`lookupswitch`.
+///
+/// The per-entry offsets are read from the instruction's own byte range instead of
+/// iterating noak's pair iterators: `TablePairs` walks an `i32` key toward a hostile
+/// `high`, which is the upper-bound risk the reader adapter deliberately keeps out.
+#[allow(dead_code)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) enum SwitchOperands {
+    Table {
+        default_offset: i32,
+        low: i32,
+        high: i32,
+        /// One relative offset per key, in payload order (`low` first).
+        offsets: Vec<i32>,
+    },
+    Lookup {
+        default_offset: i32,
+        /// `(match, offset)` in payload order.
+        pairs: Vec<(i32, i32)>,
+    },
+}
+
+/// One control-flow target of one method, validated but not yet a graph edge.
+#[allow(dead_code)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct ControlFlowTarget {
+    /// The instruction this row belongs to: the branch or switch instruction that
+    /// encodes the offset, and the handler entry for [`ControlFlowTargetKind::Handler`]
+    /// — an exception table record is not an instruction, and its `ordinal` in the
+    /// kind identifies the record.
+    pub(crate) instruction_bci: u32,
+    pub(crate) kind: ControlFlowTargetKind,
+    /// Absolute BCI the target must land on: an instruction start inside the code array.
+    pub(crate) target_bci: u32,
+}
+
+#[allow(dead_code)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum ControlFlowTargetKind {
+    /// A relative branch offset, kept exactly as encoded.
+    Branch {
+        offset: i32,
+    },
+    SwitchDefault,
+    /// `index` is the position in the switch payload; `key` is `low + index` for
+    /// `tableswitch` and the encoded `match` for `lookupswitch`.
+    SwitchCase {
+        index: u32,
+        key: i32,
+    },
+    /// Exception table record `ordinal`.
+    Handler {
+        ordinal: u32,
+    },
+}
+
+impl MethodCodeFacts {
+    /// Every control-flow target of this method, validated against the instruction
+    /// starts of the same facts. No CFG is built: these are the evidenced targets 3.x
+    /// consumes when it builds one.
+    ///
+    /// Rows come out in instruction order — a switch emits its default before its
+    /// cases — followed by the exception table in ordinal order. Validation is per row
+    /// and stops at the first failure, so the error always carries the original BCI:
+    ///
+    /// * a relative offset that leaves the code address space is
+    ///   `classfile_code_span_overflow`, and one that lands before BCI 0 is
+    ///   `classfile_instruction_target_out_of_bounds`;
+    /// * a target at or past `code_length` is `classfile_instruction_target_out_of_bounds`;
+    /// * a target that is not an instruction start is `classfile_instruction_invalid_target`;
+    /// * a protected range that ends past `code_length`, is inverted, or is empty is
+    ///   `classfile_exception_range_invalid`, while a range endpoint that is not an
+    ///   instruction start is `classfile_instruction_invalid_target`; `end == code_length`
+    ///   is the legal half-open end of the code array and needs no instruction start.
+    ///
+    /// A body whose instruction stream stopped early is validated on the facts it has:
+    /// this is a **reliable but incomplete** view. It never accepts an illegal target,
+    /// but a legal target inside the unread suffix reads as invalid. A caller MUST check
+    /// `execution`/`stopped_at` before reporting this `Err` as a corrupt method; 3.x
+    /// tightens the type-level guarantee only if it needs one.
+    #[allow(dead_code)]
+    pub(crate) fn control_flow_targets(&self) -> Result<Vec<ControlFlowTarget>> {
+        debug_assert_eq!(
+            self.instructions.len(),
+            self.operands.len(),
+            "operand facts are produced in lockstep with instructions"
+        );
+        let code_length = u32::try_from(self.code_span.length).map_err(|_| {
+            Error::invalid_input(
+                "classfile_code_span_overflow",
+                "code length does not fit u32",
+            )
+        })?;
+        let starts = InstructionStarts::new(&self.instructions);
+        let mut targets = Vec::new();
+        for (fact, operands) in self.instructions.iter().zip(self.operands.iter()) {
+            if let Some(offset) = operands.branch_offset {
+                let target = relative_target_bci(fact.bci, offset)?;
+                check_target(
+                    &starts,
+                    code_length,
+                    target,
+                    &format!("branch from BCI {} with offset {offset}", fact.bci),
+                )?;
+                targets.push(ControlFlowTarget {
+                    instruction_bci: fact.bci,
+                    kind: ControlFlowTargetKind::Branch { offset },
+                    target_bci: target,
+                });
+            }
+            match &operands.switch {
+                None => {}
+                Some(SwitchOperands::Table {
+                    default_offset,
+                    low,
+                    offsets,
+                    ..
+                }) => {
+                    let default = relative_target_bci(fact.bci, *default_offset)?;
+                    check_target(
+                        &starts,
+                        code_length,
+                        default,
+                        &format!("switch default from BCI {}", fact.bci),
+                    )?;
+                    targets.push(ControlFlowTarget {
+                        instruction_bci: fact.bci,
+                        kind: ControlFlowTargetKind::SwitchDefault,
+                        target_bci: default,
+                    });
+                    for (index, offset) in (0u32..).zip(offsets.iter().copied()) {
+                        let key = table_key(*low, index)?;
+                        let target = relative_target_bci(fact.bci, offset)?;
+                        check_target(
+                            &starts,
+                            code_length,
+                            target,
+                            &format!("switch case {index} from BCI {}", fact.bci),
+                        )?;
+                        targets.push(ControlFlowTarget {
+                            instruction_bci: fact.bci,
+                            kind: ControlFlowTargetKind::SwitchCase { index, key },
+                            target_bci: target,
+                        });
+                    }
+                }
+                Some(SwitchOperands::Lookup {
+                    default_offset,
+                    pairs,
+                }) => {
+                    let default = relative_target_bci(fact.bci, *default_offset)?;
+                    check_target(
+                        &starts,
+                        code_length,
+                        default,
+                        &format!("switch default from BCI {}", fact.bci),
+                    )?;
+                    targets.push(ControlFlowTarget {
+                        instruction_bci: fact.bci,
+                        kind: ControlFlowTargetKind::SwitchDefault,
+                        target_bci: default,
+                    });
+                    for (index, (key, offset)) in (0u32..).zip(pairs.iter().copied()) {
+                        let target = relative_target_bci(fact.bci, offset)?;
+                        check_target(
+                            &starts,
+                            code_length,
+                            target,
+                            &format!("switch case {index} from BCI {}", fact.bci),
+                        )?;
+                        targets.push(ControlFlowTarget {
+                            instruction_bci: fact.bci,
+                            kind: ControlFlowTargetKind::SwitchCase { index, key },
+                            target_bci: target,
+                        });
+                    }
+                }
+            }
+        }
+        for handler in &self.exception_handlers {
+            check_protected_range(&starts, code_length, handler)?;
+            targets.push(ControlFlowTarget {
+                instruction_bci: handler.handler_bci,
+                kind: ControlFlowTargetKind::Handler {
+                    ordinal: handler.ordinal,
+                },
+                target_bci: handler.handler_bci,
+            });
+        }
+        Ok(targets)
+    }
+}
+
+/// Validates one exception table record: a non-empty half-open protected range of
+/// instruction boundaries, and an entry that is a target like any other.
+///
+/// JVMS 4.7.3 requires `start_pc < end_pc <= code_length`; the endpoints are also
+/// instruction boundaries, because an exception region covers instructions and not
+/// bytes inside operands. A range that ends after the code or is inverted or empty is
+/// a range-relation error (`classfile_exception_range_invalid`); an endpoint that is
+/// not a boundary is a target error (`classfile_instruction_invalid_target`), so a
+/// caller can tell "this record contradicts the code array" from "this record does not
+/// line up with the instruction starts". Only `end_pc == code_length` is legal without
+/// being an instruction start: it is the half-open end of the code array.
+fn check_protected_range(
+    starts: &InstructionStarts<'_>,
+    code_length: u32,
+    handler: &ExceptionHandlerFact,
+) -> Result<()> {
+    let ordinal = handler.ordinal;
+    if handler.end_bci > code_length {
+        return Err(Error::invalid_input(
+            "classfile_exception_range_invalid",
+            format!(
+                "exception handler {ordinal} protected range {}..{} ends past code_length {code_length}",
+                handler.start_bci, handler.end_bci
+            ),
+        ));
+    }
+    if handler.start_bci > handler.end_bci {
+        return Err(Error::invalid_input(
+            "classfile_exception_range_invalid",
+            format!(
+                "exception handler {ordinal} protected range {}..{} starts after its end",
+                handler.start_bci, handler.end_bci
+            ),
+        ));
+    }
+    if handler.start_bci == handler.end_bci {
+        return Err(Error::invalid_input(
+            "classfile_exception_range_invalid",
+            format!(
+                "exception handler {ordinal} protected range at BCI {} is empty",
+                handler.start_bci
+            ),
+        ));
+    }
+    // `start < end <= code_length` holds here, so both endpoints are inside the code
+    // array and can be compared against the instruction starts.
+    if !starts.contains(handler.start_bci) {
+        return Err(Error::invalid_input(
+            "classfile_instruction_invalid_target",
+            format!(
+                "exception handler {ordinal} protected range start {} is not an instruction start",
+                handler.start_bci
+            ),
+        ));
+    }
+    if handler.end_bci != code_length && !starts.contains(handler.end_bci) {
+        return Err(Error::invalid_input(
+            "classfile_instruction_invalid_target",
+            format!(
+                "exception handler {ordinal} protected range end {} is neither an instruction start nor code_length {code_length}",
+                handler.end_bci
+            ),
+        ));
+    }
+    check_target(
+        starts,
+        code_length,
+        handler.handler_bci,
+        &format!("exception handler {ordinal} entry"),
+    )
+}
+
+/// The instruction-start set of one method body.
+///
+/// The facts are ordered by BCI and non-overlapping, so one binary search decides
+/// whether a target is an instruction boundary or lands inside an operand.
+struct InstructionStarts<'a> {
+    instructions: &'a [InstructionFact],
+}
+
+impl<'a> InstructionStarts<'a> {
+    const fn new(instructions: &'a [InstructionFact]) -> Self {
+        Self { instructions }
+    }
+
+    fn contains(&self, bci: u32) -> bool {
+        self.instructions
+            .binary_search_by_key(&bci, |fact| fact.bci)
+            .is_ok()
+    }
+}
+
+/// Validates one absolute target against the code array and the start set.
+fn check_target(
+    starts: &InstructionStarts<'_>,
+    code_length: u32,
+    target: u32,
+    label: &str,
+) -> Result<()> {
+    if target >= code_length {
+        return Err(Error::invalid_input(
+            "classfile_instruction_target_out_of_bounds",
+            format!("{label} target {target} is outside 0..{code_length}"),
+        ));
+    }
+    if !starts.contains(target) {
+        return Err(Error::invalid_input(
+            "classfile_instruction_invalid_target",
+            format!("{label} target {target} is not an instruction start"),
+        ));
+    }
+    Ok(())
+}
+
+/// Absolute BCI of one encoded relative offset, checked against the unsigned address
+/// space in both directions.
+fn relative_target_bci(instruction_bci: u32, offset: i32) -> Result<u32> {
+    if offset >= 0 {
+        instruction_bci
+            .checked_add(offset.unsigned_abs())
+            .ok_or_else(|| {
+                Error::invalid_input(
+                    "classfile_code_span_overflow",
+                    format!(
+                        "relative offset {offset} at BCI {instruction_bci} overflows the code address space"
+                    ),
+                )
+            })
+    } else {
+        instruction_bci
+            .checked_sub(offset.unsigned_abs())
+            .ok_or_else(|| {
+                Error::invalid_input(
+                    "classfile_instruction_target_out_of_bounds",
+                    format!(
+                        "relative offset {offset} at BCI {instruction_bci} targets a BCI before 0"
+                    ),
+                )
+            })
+    }
+}
+
+/// `tableswitch` key of one payload position: `low + index`, checked.
+fn table_key(low: i32, index: u32) -> Result<i32> {
+    let key = i64::from(low) + i64::from(index);
+    i32::try_from(key).map_err(|_| {
+        Error::invalid_input(
+            "classfile_instruction_invalid_range",
+            format!("tableswitch key {key} at index {index} does not fit i32"),
+        )
+    })
+}
+
+/// Padding before the first operand field of a `tableswitch`/`lookupswitch`, relative
+/// to the instruction's own BCI: its four-byte fields start at the next four-byte
+/// boundary after the opcode byte.
+fn switch_padding(bci: u32) -> u32 {
+    (4 - ((bci + 1) & 3)) & 3
+}
+
+/// Typed operands of one instruction, from the same noak event that produced the
+/// matching [`InstructionFact`] (`instruction`) and from the same instruction byte
+/// range (`bytes`, exactly the fact's `width`).
+///
+/// Nothing here walks the code array again or recovers meaning from rendered text: the
+/// scalars come from the decoded event and only the switch entry lists, which noak
+/// exposes through iterators this adapter does not use, are read from the recorded
+/// bytes with checked offsets. Either way the operand region is the region the width
+/// already charged as `CodeBytes`.
+fn instruction_operands(
+    opcode: u8,
+    bci: u32,
+    instruction: &RawInstruction<'_>,
+    bytes: &[u8],
+    pool: &noak::reader::cpool::ConstantPool<'_>,
+) -> Result<InstructionOperands> {
+    let mut operands = InstructionOperands {
+        immediate: None,
+        local: None,
+        increment: None,
+        // The same helper and the same slice `InstructionFact` uses, so the two facts
+        // cannot disagree.
+        constant_pool_index: constant_pool_index(opcode, bytes),
+        branch_offset: None,
+        switch: None,
+    };
+    match instruction {
+        // Constants encoded in the opcode itself.
+        RawInstruction::IConstM1 => operands.immediate = Some(ImmediateValue::Int(-1)),
+        RawInstruction::IConst0 => operands.immediate = Some(ImmediateValue::Int(0)),
+        RawInstruction::IConst1 => operands.immediate = Some(ImmediateValue::Int(1)),
+        RawInstruction::IConst2 => operands.immediate = Some(ImmediateValue::Int(2)),
+        RawInstruction::IConst3 => operands.immediate = Some(ImmediateValue::Int(3)),
+        RawInstruction::IConst4 => operands.immediate = Some(ImmediateValue::Int(4)),
+        RawInstruction::IConst5 => operands.immediate = Some(ImmediateValue::Int(5)),
+        RawInstruction::LConst0 => operands.immediate = Some(ImmediateValue::Long(0)),
+        RawInstruction::LConst1 => operands.immediate = Some(ImmediateValue::Long(1)),
+        RawInstruction::FConst0 => operands.immediate = Some(ImmediateValue::Float(0f32.to_bits())),
+        RawInstruction::FConst1 => operands.immediate = Some(ImmediateValue::Float(1f32.to_bits())),
+        RawInstruction::FConst2 => operands.immediate = Some(ImmediateValue::Float(2f32.to_bits())),
+        RawInstruction::DConst0 => {
+            operands.immediate = Some(ImmediateValue::Double(0f64.to_bits()))
+        }
+        RawInstruction::DConst1 => {
+            operands.immediate = Some(ImmediateValue::Double(1f64.to_bits()))
+        }
+        // Constants encoded as an operand byte or as a constant-pool index.
+        RawInstruction::BIPush { value } => {
+            operands.immediate = Some(ImmediateValue::Int(i32::from(*value)));
+        }
+        RawInstruction::SIPush { value } => {
+            operands.immediate = Some(ImmediateValue::Int(i32::from(*value)));
+        }
+        RawInstruction::LdC { .. } | RawInstruction::LdCW { .. } | RawInstruction::LdC2W { .. } => {
+            operands.immediate = operands
+                .constant_pool_index
+                .and_then(|index| pool_literal(pool, index));
+        }
+        // Local variable operands named by an operand byte.
+        RawInstruction::ALoad { index } => operands.local = Some(short_local(*index)),
+        RawInstruction::ALoadW { index } => operands.local = Some(wide_local(*index)),
+        RawInstruction::AStore { index } => operands.local = Some(short_local(*index)),
+        RawInstruction::AStoreW { index } => operands.local = Some(wide_local(*index)),
+        RawInstruction::ILoad { index } => operands.local = Some(short_local(*index)),
+        RawInstruction::ILoadW { index } => operands.local = Some(wide_local(*index)),
+        RawInstruction::IStore { index } => operands.local = Some(short_local(*index)),
+        RawInstruction::IStoreW { index } => operands.local = Some(wide_local(*index)),
+        RawInstruction::LLoad { index } => operands.local = Some(short_local(*index)),
+        RawInstruction::LLoadW { index } => operands.local = Some(wide_local(*index)),
+        RawInstruction::LStore { index } => operands.local = Some(short_local(*index)),
+        RawInstruction::LStoreW { index } => operands.local = Some(wide_local(*index)),
+        RawInstruction::FLoad { index } => operands.local = Some(short_local(*index)),
+        RawInstruction::FLoadW { index } => operands.local = Some(wide_local(*index)),
+        RawInstruction::FStore { index } => operands.local = Some(short_local(*index)),
+        RawInstruction::FStoreW { index } => operands.local = Some(wide_local(*index)),
+        RawInstruction::DLoad { index } => operands.local = Some(short_local(*index)),
+        RawInstruction::DLoadW { index } => operands.local = Some(wide_local(*index)),
+        RawInstruction::DStore { index } => operands.local = Some(short_local(*index)),
+        RawInstruction::DStoreW { index } => operands.local = Some(wide_local(*index)),
+        // `iinc` names a local and carries a signed increment.
+        RawInstruction::IInc { index, value } => {
+            operands.local = Some(short_local(*index));
+            operands.increment = Some(i32::from(*value));
+        }
+        RawInstruction::IIncW { index, value } => {
+            operands.local = Some(wide_local(*index));
+            operands.increment = Some(i32::from(*value));
+        }
+        // `ret` names the local holding the return address.
+        RawInstruction::Ret { index } => operands.local = Some(short_local(*index)),
+        RawInstruction::RetW { index } => operands.local = Some(wide_local(*index)),
+        // Relative branch offsets, in the width the opcode encodes.
+        RawInstruction::Goto { offset }
+        | RawInstruction::JSr { offset }
+        | RawInstruction::IfACmpEq { offset }
+        | RawInstruction::IfACmpNe { offset }
+        | RawInstruction::IfICmpEq { offset }
+        | RawInstruction::IfICmpNe { offset }
+        | RawInstruction::IfICmpLt { offset }
+        | RawInstruction::IfICmpGe { offset }
+        | RawInstruction::IfICmpGt { offset }
+        | RawInstruction::IfICmpLe { offset }
+        | RawInstruction::IfEq { offset }
+        | RawInstruction::IfNe { offset }
+        | RawInstruction::IfLt { offset }
+        | RawInstruction::IfGe { offset }
+        | RawInstruction::IfGt { offset }
+        | RawInstruction::IfLe { offset }
+        | RawInstruction::IfNull { offset }
+        | RawInstruction::IfNonNull { offset } => {
+            operands.branch_offset = Some(i32::from(*offset));
+        }
+        RawInstruction::GotoW { offset } | RawInstruction::JSrW { offset } => {
+            operands.branch_offset = Some(*offset);
+        }
+        // Switch payloads: scalars from the event, entry lists from the bytes.
+        RawInstruction::TableSwitch(table) => {
+            operands.switch = Some(table_switch_operands(
+                bci,
+                bytes,
+                table.default_offset(),
+                table.low(),
+                table.high(),
+            )?);
+        }
+        RawInstruction::LookupSwitch(lookup) => {
+            let pairs = u32::try_from(lookup.pairs().count()).map_err(|_| {
+                Error::invalid_input(
+                    "classfile_instruction_width_overflow",
+                    "lookupswitch pair count overflow",
+                )
+            })?;
+            operands.switch = Some(lookup_switch_operands(
+                bci,
+                bytes,
+                lookup.default_offset(),
+                pairs,
+            )?);
+        }
+        _ => {}
+    }
+    // `xload_0`..`xstore_3` name their local in the opcode: each of the ten families is
+    // a block of four opcodes (JVMS 6.2/6.4), so the index is the offset in the block.
+    match opcode {
+        0x1a..=0x2d => {
+            operands.local = Some(LocalOperand {
+                index: u16::from((opcode - 0x1a) % 4),
+                wide: false,
+            })
+        }
+        0x3b..=0x4e => {
+            operands.local = Some(LocalOperand {
+                index: u16::from((opcode - 0x3b) % 4),
+                wide: false,
+            })
+        }
+        _ => {}
+    }
+    Ok(operands)
+}
+
+/// A short-form local operand: the index fits the byte the opcode encodes.
+fn short_local(index: u8) -> LocalOperand {
+    LocalOperand {
+        index: u16::from(index),
+        wide: false,
+    }
+}
+
+/// A `wide` local operand.
+fn wide_local(index: u16) -> LocalOperand {
+    LocalOperand { index, wide: true }
+}
+
+/// The literal one `ldc`-family index names, when the pool entry is one of the four
+/// literal kinds.
+///
+/// An index the pool does not hold, an entry of another tag, and the reserved slot of a
+/// long or double all mean "no literal here": the index itself is the recorded fact,
+/// and rejecting the instruction would fail classes the public reader accepts. Resolving
+/// those constants is the resolver's job.
+fn pool_literal(
+    pool: &noak::reader::cpool::ConstantPool<'_>,
+    index: u16,
+) -> Option<ImmediateValue> {
+    use noak::reader::cpool::{Index, Item};
+    let at = Index::<Item<'_>>::new(index).ok()?;
+    match pool.get(at).ok()? {
+        Item::Integer(value) => Some(ImmediateValue::Int(value.value)),
+        Item::Long(value) => Some(ImmediateValue::Long(value.value)),
+        Item::Float(value) => Some(ImmediateValue::Float(value.value.to_bits())),
+        Item::Double(value) => Some(ImmediateValue::Double(value.value.to_bits())),
+        _ => None,
+    }
+}
+
+/// `tableswitch` operands: `default_offset`, `low` and `high` come from the event that
+/// also produced the width, and the entry offsets are read from the recorded bytes.
+fn table_switch_operands(
+    bci: u32,
+    bytes: &[u8],
+    default_offset: i32,
+    low: i32,
+    high: i32,
+) -> Result<SwitchOperands> {
+    let count = i64::from(high)
+        .checked_sub(i64::from(low))
+        .and_then(|value| value.checked_add(1))
+        .filter(|count| *count > 0)
+        .ok_or_else(|| {
+            Error::invalid_input(
+                "classfile_instruction_invalid_range",
+                format!("tableswitch at BCI {bci} has a high below its low"),
+            )
+        })?;
+    let count = usize::try_from(count).map_err(|_| {
+        Error::invalid_input(
+            "classfile_instruction_width_overflow",
+            format!("tableswitch entry count at BCI {bci} does not fit usize"),
+        )
+    })?;
+    let entries = switch_entries_start(bci, bytes, 12, count, 4, "tableswitch")?;
+    let mut offsets = Vec::with_capacity(count);
+    for index in 0..count {
+        offsets.push(switch_i32(bytes, bci, entries + index * 4)?);
+    }
+    Ok(SwitchOperands::Table {
+        default_offset,
+        low,
+        high,
+        offsets,
+    })
+}
+
+/// `lookupswitch` operands: `default_offset` and the pair count come from the event
+/// that also produced the width, and the pairs are read from the recorded bytes.
+fn lookup_switch_operands(
+    bci: u32,
+    bytes: &[u8],
+    default_offset: i32,
+    pairs: u32,
+) -> Result<SwitchOperands> {
+    let count = usize::try_from(pairs).map_err(|_| {
+        Error::invalid_input(
+            "classfile_instruction_width_overflow",
+            format!("lookupswitch pair count at BCI {bci} does not fit usize"),
+        )
+    })?;
+    let entries = switch_entries_start(bci, bytes, 8, count, 8, "lookupswitch")?;
+    let mut collected = Vec::with_capacity(count);
+    for index in 0..count {
+        let key = switch_i32(bytes, bci, entries + index * 8)?;
+        let offset = switch_i32(bytes, bci, entries + index * 8 + 4)?;
+        collected.push((key, offset));
+    }
+    Ok(SwitchOperands::Lookup {
+        default_offset,
+        pairs: collected,
+    })
+}
+
+/// Start offset of a switch entry list inside the instruction bytes, after checking
+/// that the recorded region is exactly the shape the decoded counts describe.
+///
+/// The width of the instruction came from the same counts, so a mismatch means the
+/// bytes and the event disagree: no operand facts are published for that instruction.
+fn switch_entries_start(
+    bci: u32,
+    bytes: &[u8],
+    scalars: usize,
+    count: usize,
+    unit: usize,
+    name: &str,
+) -> Result<usize> {
+    let start = 1usize
+        .checked_add(usize::try_from(switch_padding(bci)).map_err(|_| {
+            Error::invalid_input(
+                "classfile_code_span_overflow",
+                format!("switch padding at BCI {bci} does not fit usize"),
+            )
+        })?)
+        .and_then(|start| start.checked_add(scalars))
+        .ok_or_else(|| {
+            Error::invalid_input(
+                "classfile_code_span_overflow",
+                format!("{name} operand offset at BCI {bci} overflows"),
+            )
+        })?;
+    let entries_end = count
+        .checked_mul(unit)
+        .and_then(|length| start.checked_add(length))
+        .ok_or_else(|| {
+            Error::invalid_input(
+                "classfile_instruction_width_overflow",
+                format!("{name} operand region at BCI {bci} overflows"),
+            )
+        })?;
+    if entries_end != bytes.len() {
+        return Err(Error::invalid_input(
+            "classfile_instruction_shape_mismatch",
+            format!(
+                "{name} at BCI {bci} has {} recorded bytes but {} entries need {entries_end}",
+                bytes.len(),
+                count
+            ),
+        ));
+    }
+    Ok(start)
+}
+
+/// One big-endian `i32` switch operand, checked against the instruction bytes.
+fn switch_i32(bytes: &[u8], bci: u32, offset: usize) -> Result<i32> {
+    let end = offset
+        .checked_add(4)
+        .ok_or_else(|| switch_operand_bounds(bytes, bci, offset))?;
+    let value = bytes
+        .get(offset..end)
+        .ok_or_else(|| switch_operand_bounds(bytes, bci, offset))?;
+    Ok(i32::from_be_bytes(
+        value.try_into().expect("slice length was checked"),
+    ))
+}
+
+/// Structured error for a switch operand that leaves the instruction bytes.
+fn switch_operand_bounds(bytes: &[u8], bci: u32, offset: usize) -> Error {
+    Error::invalid_input(
+        "classfile_instruction_shape_mismatch",
+        format!(
+            "switch operand at byte {offset} of BCI {bci} leaves the {} recorded instruction bytes",
+            bytes.len()
+        ),
+    )
 }
 
 /// Decodes one method's `Code` attribute as reusable facts.
@@ -2599,6 +3353,7 @@ pub(crate) fn method_code_facts(
                 &code,
                 code_span,
                 Vec::new(),
+                Vec::new(),
                 handlers,
                 BytecodeStopPosition::ExceptionHandler(ordinal),
                 StopFailure::Budget(&error),
@@ -2615,6 +3370,7 @@ pub(crate) fn method_code_facts(
     }
 
     let mut instructions = Vec::new();
+    let mut operands = Vec::new();
     let mut cursor_bci = 0u32;
     for item in code.raw_instructions() {
         if let Err(error) = budget.poll() {
@@ -2622,6 +3378,7 @@ pub(crate) fn method_code_facts(
                 &code,
                 code_span,
                 instructions,
+                operands,
                 handlers,
                 BytecodeStopPosition::Instruction(cursor_bci),
                 StopFailure::Budget(&error),
@@ -2638,6 +3395,7 @@ pub(crate) fn method_code_facts(
                     &code,
                     code_span,
                     instructions,
+                    operands,
                     handlers,
                     BytecodeStopPosition::Instruction(cursor_bci),
                     StopFailure::Decode("classfile_instruction_decode"),
@@ -2676,6 +3434,7 @@ pub(crate) fn method_code_facts(
                     &code,
                     code_span,
                     instructions,
+                    operands,
                     handlers,
                     BytecodeStopPosition::Instruction(cursor_bci),
                     StopFailure::Decode(adapter_code),
@@ -2709,6 +3468,7 @@ pub(crate) fn method_code_facts(
                 &code,
                 code_span,
                 instructions,
+                operands,
                 handlers,
                 BytecodeStopPosition::Instruction(cursor_bci),
                 StopFailure::Budget(&error),
@@ -2733,6 +3493,30 @@ pub(crate) fn method_code_facts(
                 "instruction slice exceeds code array",
             )
         })?;
+        // Operands come out of the same event and the same slice as the fact below, so
+        // the two lists stay in lockstep and share the `CodeBytes` charge above.
+        let operands_fact =
+            match instruction_operands(opcode, cursor_bci, &instruction, instruction_bytes, pool) {
+                Ok(fact) => fact,
+                Err(error) => {
+                    let Error::InvalidInput {
+                        code: adapter_code, ..
+                    } = &error
+                    else {
+                        return Err(error);
+                    };
+                    return stopped_code_facts(
+                        &code,
+                        code_span,
+                        instructions,
+                        operands,
+                        handlers,
+                        BytecodeStopPosition::Instruction(cursor_bci),
+                        StopFailure::Decode(adapter_code),
+                        budget,
+                    );
+                }
+            };
         instructions.push(InstructionFact {
             bci: cursor_bci,
             opcode,
@@ -2741,6 +3525,7 @@ pub(crate) fn method_code_facts(
             operands_span: ByteSpan::new(span_start + 1, u64::from(width - 1)),
             constant_pool_index: constant_pool_index(opcode, instruction_bytes),
         });
+        operands.push(operands_fact);
         cursor_bci = end;
     }
     if cursor_bci != code_bytes.len() as u32 {
@@ -2755,6 +3540,7 @@ pub(crate) fn method_code_facts(
         max_locals: code.max_locals(),
         code_span,
         instructions,
+        operands,
         exception_handlers: handlers,
         execution: ExecutionReport::Complete {
             usage: budget.usage(),
@@ -2784,10 +3570,12 @@ enum StopFailure<'a> {
 /// `inspect_method_bytecode` path uses, so a cancelled or exhausted decode never reads
 /// as a complete body: a cancellation stays a cancellation, a budget stop keeps its
 /// dimension, and a decode failure keeps its own code.
+#[allow(clippy::too_many_arguments)]
 fn stopped_code_facts(
     code: &Code<'_>,
     code_span: ByteSpan,
     instructions: Vec<InstructionFact>,
+    operands: Vec<InstructionOperands>,
     handlers: Vec<ExceptionHandlerFact>,
     position: BytecodeStopPosition,
     failure: StopFailure<'_>,
@@ -2836,6 +3624,7 @@ fn stopped_code_facts(
         max_locals: code.max_locals(),
         code_span,
         instructions,
+        operands,
         exception_handlers: handlers,
         execution,
         stopped_at: Some(stopped_at),
@@ -6530,5 +7319,1271 @@ mod tests {
             error,
             Error::InvalidInput { ref code, .. } if code == "classfile_decode"
         ));
+    }
+
+    // -----------------------------------------------------------------------
+    // Reader operand facts and control-flow target validation (P2 1.2)
+    // -----------------------------------------------------------------------
+
+    /// Class file with one `method()V` and a constant pool that holds the literal
+    /// kinds the `ldc` family can name:
+    ///
+    /// | index | entry |
+    /// | --- | --- |
+    /// | 8 | `Integer` 7 |
+    /// | 9 | `Float` 1.5 |
+    /// | 10 | `Long` 0x1122334455667788 (11 is its reserved slot) |
+    /// | 12 | `Double` 2.5 (13 is its reserved slot) |
+    /// | 15 | `String` "hello" |
+    fn operand_fixture(code: &[u8], handlers: &[(u16, u16, u16, u16)]) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(&0xcafebabe_u32.to_be_bytes());
+        u16_be(&mut bytes, 0);
+        u16_be(&mut bytes, 52);
+        u16_be(&mut bytes, 16);
+        utf8(&mut bytes, b"Test"); // 1
+        class_entry(&mut bytes, 1); // 2
+        utf8(&mut bytes, b"java/lang/Object"); // 3
+        class_entry(&mut bytes, 3); // 4
+        utf8(&mut bytes, b"method"); // 5
+        utf8(&mut bytes, b"()V"); // 6
+        utf8(&mut bytes, b"Code"); // 7
+        bytes.push(3);
+        bytes.extend_from_slice(&7i32.to_be_bytes()); // 8
+        bytes.push(4);
+        bytes.extend_from_slice(&1.5f32.to_bits().to_be_bytes()); // 9
+        bytes.push(5);
+        bytes.extend_from_slice(&0x1122_3344_5566_7788i64.to_be_bytes()); // 10 (+11)
+        bytes.push(6);
+        bytes.extend_from_slice(&2.5f64.to_bits().to_be_bytes()); // 12 (+13)
+        utf8(&mut bytes, b"hello"); // 14
+        bytes.push(8);
+        u16_be(&mut bytes, 14); // 15
+        u16_be(&mut bytes, 0x0021);
+        u16_be(&mut bytes, 2);
+        u16_be(&mut bytes, 4);
+        u16_be(&mut bytes, 0);
+        u16_be(&mut bytes, 0);
+        u16_be(&mut bytes, 1);
+        u16_be(&mut bytes, 0x0009);
+        u16_be(&mut bytes, 5);
+        u16_be(&mut bytes, 6);
+        u16_be(&mut bytes, 1);
+        let mut content = Vec::new();
+        u16_be(&mut content, 4);
+        u16_be(&mut content, 3);
+        u32_be(&mut content, u32::try_from(code.len()).unwrap());
+        content.extend_from_slice(code);
+        u16_be(&mut content, u16::try_from(handlers.len()).unwrap());
+        for &(start, end, handler, catch) in handlers {
+            u16_be(&mut content, start);
+            u16_be(&mut content, end);
+            u16_be(&mut content, handler);
+            u16_be(&mut content, catch);
+        }
+        u16_be(&mut content, 0);
+        attribute(&mut bytes, 7, &content);
+        u16_be(&mut bytes, 0);
+        bytes
+    }
+
+    /// Code array of [`operand_fixture`], laying out one instruction of every operand
+    /// class the 1.2 contract names and choosing every control-flow target so that it
+    /// is a real instruction start:
+    ///
+    /// ```text
+    ///  0..2    ldc #8 (Integer 7)        35..37  ldc #99 (index outside the pool)
+    ///  2..5    ldc_w #9 (Float 1.5)      37..40  goto +3 -> 40
+    ///  5..8    ldc2_w #10 (Long)         40..68  tableswitch default -> 100,
+    ///  8..11   ldc2_w #12 (Double)                keys -1/0/1 -> 68/71/72
+    /// 11..13   bipush 5                  68..71  ifne +3 -> 71
+    /// 13..16   sipush 256                71      iload_0
+    /// 16       pop                       72      istore_0
+    /// 17..19   iload 2                   73..100 lookupswitch default -> 100,
+    /// 19       istore_2                          pairs (-7 -> 0), (9 -> 68)
+    /// 20..24   wide iload 2              100     return (code_length 101)
+    /// 24..27   iinc 1, 3
+    /// 27..33   wide iinc 1, 1
+    /// 33..35   ldc #15 (String "hello")
+    /// ```
+    fn operand_code() -> Vec<u8> {
+        let mut code = Vec::new();
+        code.extend_from_slice(&[0x12, 0x08]);
+        code.extend_from_slice(&[0x13, 0x00, 0x09]);
+        code.extend_from_slice(&[0x14, 0x00, 0x0a]);
+        code.extend_from_slice(&[0x14, 0x00, 0x0c]);
+        code.extend_from_slice(&[0x10, 0x05]);
+        code.extend_from_slice(&[0x11, 0x01, 0x00]);
+        code.push(0x57);
+        code.extend_from_slice(&[0x15, 0x02]);
+        code.push(0x3d);
+        code.extend_from_slice(&[0xc4, 0x15, 0x00, 0x02]);
+        code.extend_from_slice(&[0x84, 0x01, 0x03]);
+        code.extend_from_slice(&[0xc4, 0x84, 0x00, 0x01, 0x00, 0x01]);
+        code.extend_from_slice(&[0x12, 0x0f]);
+        code.extend_from_slice(&[0x12, 0x63]);
+        code.extend_from_slice(&[0xa7, 0x00, 0x03]);
+        assert_eq!(code.len(), 40, "tableswitch must start at BCI 40");
+        code.push(0xaa);
+        code.extend_from_slice(&[0, 0, 0]); // padding: BCI 40 is 4-byte aligned
+        code.extend_from_slice(&(100i32 - 40).to_be_bytes());
+        code.extend_from_slice(&(-1i32).to_be_bytes());
+        code.extend_from_slice(&1i32.to_be_bytes());
+        for target in [68i32, 71, 72] {
+            code.extend_from_slice(&(target - 40).to_be_bytes());
+        }
+        assert_eq!(code.len(), 68, "ifne must start at BCI 68");
+        code.extend_from_slice(&[0x9a, 0x00, 0x03]);
+        code.push(0x1a);
+        code.push(0x3b);
+        assert_eq!(code.len(), 73, "lookupswitch must start at BCI 73");
+        code.push(0xab);
+        code.extend_from_slice(&[0, 0]); // padding: 1 + 73 needs two bytes to align
+        code.extend_from_slice(&(100i32 - 73).to_be_bytes());
+        code.extend_from_slice(&2i32.to_be_bytes());
+        for (key, target) in [(-7i32, 0i32), (9, 68)] {
+            code.extend_from_slice(&key.to_be_bytes());
+            code.extend_from_slice(&(target - 73).to_be_bytes());
+        }
+        assert_eq!(code.len(), 100, "return must start at BCI 100");
+        code.push(0xb1);
+        code
+    }
+
+    /// `method_code_facts` for the single `method()V` of a fixture built by
+    /// [`operand_fixture`].
+    fn operand_facts(bytes: &[u8]) -> MethodCodeFacts {
+        let mut budget = Budget::new(limits(u64::MAX));
+        let header = class_facts(bytes, &mut budget).unwrap();
+        let method = header
+            .methods
+            .first()
+            .expect("fixture has one method")
+            .clone();
+        method_code_facts(bytes, &method, &mut budget).unwrap()
+    }
+
+    /// The public `inspect_method_bytecode` report of [`operand_code`] is pinned
+    /// against the values recorded from the build **before** the crate-private 1.2
+    /// operand facts existed (working tree at `6fc1674` plus this test module only).
+    ///
+    /// 1.2 adds crate-private facts and does not touch the public path, so every
+    /// public field and every serialized key must stay exactly as recorded here. The
+    /// only field left unasserted is `elapsed_millis`, which reports real elapsed
+    /// time; the schema assertion covers its presence.
+    ///
+    /// An intentional public change must update this test and say why, instead of
+    /// loosening it.
+    #[test]
+    fn public_bytecode_report_is_unchanged_by_reader_operand_facts() {
+        let bytes = operand_fixture(&operand_code(), &[(0, 100, 100, 2), (40, 101, 71, 0)]);
+        let mut budget = Budget::new(limits(u64::MAX));
+        let report = inspect_method_bytecode(&bytes, selector(), &mut budget).unwrap();
+
+        assert_eq!(report.selector, selector());
+        assert_eq!((report.max_stack, report.max_locals), (4, 3));
+        assert_eq!(report.code_span, ByteSpan::new(137, 101));
+        assert_eq!(
+            report
+                .instructions
+                .iter()
+                .map(|fact| (
+                    fact.bci,
+                    fact.opcode,
+                    fact.width,
+                    fact.span.start,
+                    fact.span.length,
+                    fact.operands_span.start,
+                    fact.operands_span.length,
+                    fact.constant_pool_index,
+                ))
+                .collect::<Vec<_>>(),
+            vec![
+                (0, 0x12, 2, 137, 2, 138, 1, Some(8)),
+                (2, 0x13, 3, 139, 3, 140, 2, Some(9)),
+                (5, 0x14, 3, 142, 3, 143, 2, Some(10)),
+                (8, 0x14, 3, 145, 3, 146, 2, Some(12)),
+                (11, 0x10, 2, 148, 2, 149, 1, None),
+                (13, 0x11, 3, 150, 3, 151, 2, None),
+                (16, 0x57, 1, 153, 1, 154, 0, None),
+                (17, 0x15, 2, 154, 2, 155, 1, None),
+                (19, 0x3d, 1, 156, 1, 157, 0, None),
+                (20, 0xc4, 4, 157, 4, 158, 3, None),
+                (24, 0x84, 3, 161, 3, 162, 2, None),
+                (27, 0xc4, 6, 164, 6, 165, 5, None),
+                (33, 0x12, 2, 170, 2, 171, 1, Some(15)),
+                (35, 0x12, 2, 172, 2, 173, 1, Some(99)),
+                (37, 0xa7, 3, 174, 3, 175, 2, None),
+                (40, 0xaa, 28, 177, 28, 178, 27, None),
+                (68, 0x9a, 3, 205, 3, 206, 2, None),
+                (71, 0x1a, 1, 208, 1, 209, 0, None),
+                (72, 0x3b, 1, 209, 1, 210, 0, None),
+                (73, 0xab, 27, 210, 27, 211, 26, None),
+                (100, 0xb1, 1, 237, 1, 238, 0, None),
+            ]
+        );
+        assert_eq!(report.exception_handler_count, 2);
+        assert_eq!(
+            report.exception_handlers,
+            vec![
+                ExceptionHandlerFact {
+                    ordinal: 0,
+                    start_bci: 0,
+                    end_bci: 100,
+                    handler_bci: 100,
+                    catch_type_index: Some(2),
+                },
+                ExceptionHandlerFact {
+                    ordinal: 1,
+                    start_bci: 40,
+                    end_bci: 101,
+                    handler_bci: 71,
+                    catch_type_index: None,
+                },
+            ]
+        );
+        let ExecutionReport::Complete { usage } = &report.execution else {
+            panic!("the pinned fixture decodes completely");
+        };
+        assert_eq!(
+            (
+                usage.input_bytes,
+                usage.archive_entries,
+                usage.entry_bytes,
+                usage.read_bytes,
+                usage.class_bytes,
+                usage.attribute_bytes,
+                usage.code_bytes,
+                usage.result_items,
+                usage.output_bytes,
+                usage.nested_depth,
+            ),
+            (0, 0, 0, 0, 260, 135, 101, 24, 0, 0)
+        );
+        assert!(report.diagnostics.is_empty());
+        assert_eq!(report.verification, VerificationStatus::NotPerformed);
+        assert!(report.stopped_at.is_none());
+
+        // No new public field, and no crate-private fact type, reaches this output.
+        let json = serde_json::to_value(&report).unwrap();
+        assert_eq!(
+            json_keys(&json),
+            [
+                "code_span",
+                "diagnostics",
+                "exception_handler_count",
+                "exception_handlers",
+                "execution",
+                "instructions",
+                "max_locals",
+                "max_stack",
+                "selector",
+                "stopped_at",
+                "verification",
+            ]
+        );
+        for fact in json["instructions"].as_array().unwrap() {
+            assert_eq!(
+                json_keys(fact),
+                [
+                    "bci",
+                    "constant_pool_index",
+                    "opcode",
+                    "operands_span",
+                    "span",
+                    "width",
+                ]
+            );
+        }
+        assert_eq!(
+            json_keys(&json["execution"]["usage"]),
+            [
+                "archive_entries",
+                "attribute_bytes",
+                "class_bytes",
+                "code_bytes",
+                "elapsed_millis",
+                "entry_bytes",
+                "input_bytes",
+                "nested_depth",
+                "output_bytes",
+                "read_bytes",
+                "result_items",
+            ]
+        );
+        assert_eq!(json_keys(&json["selector"]), ["descriptor", "name"]);
+    }
+
+    /// Sorted serialized keys of one JSON object, so a schema change is visible.
+    fn json_keys(value: &serde_json::Value) -> Vec<&str> {
+        value
+            .as_object()
+            .expect("serialized reports are JSON objects")
+            .keys()
+            .map(String::as_str)
+            .collect()
+    }
+
+    /// Stable code and message of the structured error `control_flow_targets` returns
+    /// for one fixture; panics when the fixture validates.
+    fn target_error(code: &[u8], handlers: &[(u16, u16, u16, u16)]) -> (String, String) {
+        let bytes = operand_fixture(code, handlers);
+        let facts = operand_facts(&bytes);
+        let error = facts
+            .control_flow_targets()
+            .expect_err("fixture must be rejected");
+        match error {
+            Error::InvalidInput { code, message } => (code, message),
+            other => panic!("expected a structured invalid-input error, got {other:?}"),
+        }
+    }
+
+    /// Operand facts of the instruction starting at `bci`, with the lockstep check.
+    fn operand_facts_at(facts: &MethodCodeFacts, bci: u32) -> InstructionOperands {
+        let position = facts
+            .instructions
+            .binary_search_by_key(&bci, |fact| fact.bci)
+            .unwrap_or_else(|_| panic!("no instruction starts at BCI {bci}"));
+        assert_eq!(
+            facts.operands.len(),
+            facts.instructions.len(),
+            "operand facts must stay in lockstep with instructions"
+        );
+        facts.operands[position].clone()
+    }
+
+    #[test]
+    fn operand_facts_cover_immediates_locals_increments_and_cp_indices() {
+        let facts = operand_facts(&operand_fixture(&operand_code(), &[]));
+        assert_eq!(facts.instructions.len(), facts.operands.len());
+        assert!(matches!(facts.execution, ExecutionReport::Complete { .. }));
+        assert_eq!(facts.instructions.len(), 21);
+
+        // Every operand fact repeats the constant-pool index of its instruction.
+        for (fact, operands) in facts.instructions.iter().zip(facts.operands.iter()) {
+            assert_eq!(operands.constant_pool_index, fact.constant_pool_index);
+        }
+
+        let expected = [
+            // `ldc` family: literal kinds become immediates, the `String` entry and an
+            // index outside the pool stay reference facts only.
+            (
+                0,
+                InstructionOperands {
+                    immediate: Some(ImmediateValue::Int(7)),
+                    constant_pool_index: Some(8),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                2,
+                InstructionOperands {
+                    immediate: Some(ImmediateValue::Float(1.5f32.to_bits())),
+                    constant_pool_index: Some(9),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                5,
+                InstructionOperands {
+                    immediate: Some(ImmediateValue::Long(0x1122_3344_5566_7788)),
+                    constant_pool_index: Some(10),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                8,
+                InstructionOperands {
+                    immediate: Some(ImmediateValue::Double(2.5f64.to_bits())),
+                    constant_pool_index: Some(12),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                11,
+                InstructionOperands {
+                    immediate: Some(ImmediateValue::Int(5)),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                13,
+                InstructionOperands {
+                    immediate: Some(ImmediateValue::Int(256)),
+                    ..InstructionOperands::default()
+                },
+            ),
+            // `pop` has no operand at all, so its fact is all-`None`.
+            (16, InstructionOperands::default()),
+            (
+                17,
+                InstructionOperands {
+                    local: Some(LocalOperand {
+                        index: 2,
+                        wide: false,
+                    }),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                19,
+                InstructionOperands {
+                    local: Some(LocalOperand {
+                        index: 2,
+                        wide: false,
+                    }),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                20,
+                InstructionOperands {
+                    local: Some(LocalOperand {
+                        index: 2,
+                        wide: true,
+                    }),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                24,
+                InstructionOperands {
+                    local: Some(LocalOperand {
+                        index: 1,
+                        wide: false,
+                    }),
+                    increment: Some(3),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                27,
+                InstructionOperands {
+                    local: Some(LocalOperand {
+                        index: 1,
+                        wide: true,
+                    }),
+                    increment: Some(1),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                33,
+                InstructionOperands {
+                    constant_pool_index: Some(15),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                35,
+                InstructionOperands {
+                    constant_pool_index: Some(99),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                37,
+                InstructionOperands {
+                    branch_offset: Some(3),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                40,
+                InstructionOperands {
+                    switch: Some(SwitchOperands::Table {
+                        default_offset: 60,
+                        low: -1,
+                        high: 1,
+                        offsets: vec![28, 31, 32],
+                    }),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                68,
+                InstructionOperands {
+                    branch_offset: Some(3),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                71,
+                InstructionOperands {
+                    local: Some(LocalOperand {
+                        index: 0,
+                        wide: false,
+                    }),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                72,
+                InstructionOperands {
+                    local: Some(LocalOperand {
+                        index: 0,
+                        wide: false,
+                    }),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (
+                73,
+                InstructionOperands {
+                    switch: Some(SwitchOperands::Lookup {
+                        default_offset: 27,
+                        pairs: vec![(-7, -73), (9, -5)],
+                    }),
+                    ..InstructionOperands::default()
+                },
+            ),
+            (100, InstructionOperands::default()),
+        ];
+        for (bci, operands) in expected {
+            assert_eq!(operand_facts_at(&facts, bci), operands, "BCI {bci}");
+        }
+    }
+
+    #[test]
+    fn control_flow_targets_convert_branches_switches_and_handlers() {
+        let facts = operand_facts(&operand_fixture(
+            &operand_code(),
+            &[(0, 100, 100, 2), (40, 101, 71, 0)],
+        ));
+        let targets = facts.control_flow_targets().unwrap();
+        assert_eq!(
+            targets,
+            vec![
+                ControlFlowTarget {
+                    instruction_bci: 37,
+                    kind: ControlFlowTargetKind::Branch { offset: 3 },
+                    target_bci: 40,
+                },
+                ControlFlowTarget {
+                    instruction_bci: 40,
+                    kind: ControlFlowTargetKind::SwitchDefault,
+                    target_bci: 100,
+                },
+                ControlFlowTarget {
+                    instruction_bci: 40,
+                    kind: ControlFlowTargetKind::SwitchCase { index: 0, key: -1 },
+                    target_bci: 68,
+                },
+                ControlFlowTarget {
+                    instruction_bci: 40,
+                    kind: ControlFlowTargetKind::SwitchCase { index: 1, key: 0 },
+                    target_bci: 71,
+                },
+                ControlFlowTarget {
+                    instruction_bci: 40,
+                    kind: ControlFlowTargetKind::SwitchCase { index: 2, key: 1 },
+                    target_bci: 72,
+                },
+                ControlFlowTarget {
+                    instruction_bci: 68,
+                    kind: ControlFlowTargetKind::Branch { offset: 3 },
+                    target_bci: 71,
+                },
+                ControlFlowTarget {
+                    instruction_bci: 73,
+                    kind: ControlFlowTargetKind::SwitchDefault,
+                    target_bci: 100,
+                },
+                ControlFlowTarget {
+                    instruction_bci: 73,
+                    kind: ControlFlowTargetKind::SwitchCase { index: 0, key: -7 },
+                    target_bci: 0,
+                },
+                ControlFlowTarget {
+                    instruction_bci: 73,
+                    kind: ControlFlowTargetKind::SwitchCase { index: 1, key: 9 },
+                    target_bci: 68,
+                },
+                // `end == code_length` is the legal half-open end of the code array.
+                ControlFlowTarget {
+                    instruction_bci: 100,
+                    kind: ControlFlowTargetKind::Handler { ordinal: 0 },
+                    target_bci: 100,
+                },
+                ControlFlowTarget {
+                    instruction_bci: 71,
+                    kind: ControlFlowTargetKind::Handler { ordinal: 1 },
+                    target_bci: 71,
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn tableswitch_keys_hold_their_low_high_bounds() {
+        // A key interval next to `i32::MAX`: the key of a case is `low + index`, and the
+        // interval must not overflow the i32 key space.
+        let mut code = vec![0xaa, 0, 0, 0];
+        code.extend_from_slice(&28i32.to_be_bytes());
+        code.extend_from_slice(&(i32::MAX - 2).to_be_bytes());
+        code.extend_from_slice(&i32::MAX.to_be_bytes());
+        for _ in 0..3 {
+            code.extend_from_slice(&28i32.to_be_bytes());
+        }
+        code.push(0xb1);
+        let facts = operand_facts(&operand_fixture(&code, &[]));
+        assert_eq!(
+            operand_facts_at(&facts, 0).switch,
+            Some(SwitchOperands::Table {
+                default_offset: 28,
+                low: i32::MAX - 2,
+                high: i32::MAX,
+                offsets: vec![28, 28, 28],
+            })
+        );
+        assert_eq!(
+            facts.control_flow_targets().unwrap(),
+            vec![
+                ControlFlowTarget {
+                    instruction_bci: 0,
+                    kind: ControlFlowTargetKind::SwitchDefault,
+                    target_bci: 28,
+                },
+                ControlFlowTarget {
+                    instruction_bci: 0,
+                    kind: ControlFlowTargetKind::SwitchCase {
+                        index: 0,
+                        key: i32::MAX - 2,
+                    },
+                    target_bci: 28,
+                },
+                ControlFlowTarget {
+                    instruction_bci: 0,
+                    kind: ControlFlowTargetKind::SwitchCase {
+                        index: 1,
+                        key: i32::MAX - 1,
+                    },
+                    target_bci: 28,
+                },
+                ControlFlowTarget {
+                    instruction_bci: 0,
+                    kind: ControlFlowTargetKind::SwitchCase {
+                        index: 2,
+                        key: i32::MAX,
+                    },
+                    target_bci: 28,
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn implicit_and_wide_locals_keep_their_index() {
+        let code = [
+            0x15, 0x07, // iload 7
+            0x16, 0x08, // lload 8
+            0x17, 0x09, // fload 9
+            0x18, 0x0a, // dload 10
+            0x19, 0x0b, // aload 11
+            0x36, 0x0c, // istore 12
+            0x37, 0x0d, // lstore 13
+            0x38, 0x0e, // fstore 14
+            0x39, 0x0f, // dstore 15
+            0x3a, 0x10, // astore 16
+            0x1d, // iload_3
+            0x21, // lload_3
+            0x25, // fload_3
+            0x29, // dload_3
+            0x2d, // aload_3
+            0x3e, // istore_3
+            0x42, // lstore_3
+            0x46, // fstore_3
+            0x4a, // dstore_3
+            0x4e, // astore_3
+            0xa9, 0x11, // ret 17
+            0xc4, 0x15, 0x00, 0x12, // wide iload 18
+            0xc4, 0x39, 0x00, 0x13, // wide dstore 19
+            0xc4, 0xa9, 0x00, 0x14, // wide ret 20
+            0xc4, 0x3a, 0x00, 0x15, // wide astore 21
+            0xc4, 0x17, 0x00, 0x16, // wide fload 22
+            0xb1, // return
+        ];
+        let facts = operand_facts(&operand_fixture(&code, &[]));
+        let expected: Vec<(u32, Option<LocalOperand>)> = vec![
+            (0, local(7, false)),
+            (2, local(8, false)),
+            (4, local(9, false)),
+            (6, local(10, false)),
+            (8, local(11, false)),
+            (10, local(12, false)),
+            (12, local(13, false)),
+            (14, local(14, false)),
+            (16, local(15, false)),
+            (18, local(16, false)),
+            (20, local(3, false)),
+            (21, local(3, false)),
+            (22, local(3, false)),
+            (23, local(3, false)),
+            (24, local(3, false)),
+            (25, local(3, false)),
+            (26, local(3, false)),
+            (27, local(3, false)),
+            (28, local(3, false)),
+            (29, local(3, false)),
+            (30, local(17, false)),
+            (32, local(18, true)),
+            (36, local(19, true)),
+            (40, local(20, true)),
+            (44, local(21, true)),
+            (48, local(22, true)),
+            (52, None),
+        ];
+        for (bci, operands) in expected {
+            assert_eq!(operand_facts_at(&facts, bci).local, operands, "BCI {bci}");
+        }
+    }
+
+    /// A local expectation, so the table above reads as one column.
+    fn local(index: u16, wide: bool) -> Option<LocalOperand> {
+        Some(LocalOperand { index, wide })
+    }
+
+    #[test]
+    fn stopped_bodies_keep_instruction_and_operand_lockstep() {
+        let bytes = operand_fixture(&operand_code(), &[]);
+        let mut header_budget = Budget::new(limits(u64::MAX));
+        let header = class_facts(&bytes, &mut header_budget).unwrap();
+        let method = header.methods.first().unwrap().clone();
+        let mut limited = limits(u64::MAX);
+        limited.code_bytes = 5;
+        let facts = method_code_facts(&bytes, &method, &mut Budget::new(limited)).unwrap();
+        assert!(matches!(facts.execution, ExecutionReport::Partial { .. }));
+        assert!(facts.stopped_at.is_some());
+        assert_eq!(facts.instructions.len(), 2);
+        assert_eq!(facts.operands.len(), 2);
+        assert_eq!(
+            facts.operands[1].immediate,
+            Some(ImmediateValue::Float(1.5f32.to_bits()))
+        );
+    }
+
+    #[test]
+    fn branch_targets_inside_operands_are_rejected_with_the_sourcing_bci() {
+        // `goto +1` at BCI 2 targets BCI 3, the first operand byte of the `goto` itself.
+        let code = [0x10, 0x05, 0xa7, 0x00, 0x01, 0xb1];
+        let bytes = operand_fixture(&code, &[]);
+        // The body itself decodes: the rejection is target validation, not a decode stop.
+        let facts = operand_facts(&bytes);
+        assert!(matches!(facts.execution, ExecutionReport::Complete { .. }));
+        let (error_code, message) = target_error(&code, &[]);
+        assert_eq!(error_code, "classfile_instruction_invalid_target");
+        assert!(
+            message.contains("branch from BCI 2 with offset 1"),
+            "{message}"
+        );
+        assert!(message.contains("target 3"), "{message}");
+    }
+
+    #[test]
+    fn targets_outside_the_code_array_are_rejected() {
+        // `goto +99` at BCI 2 reaches BCI 101 of a 6-byte code array.
+        let (code, message) = target_error(&[0x10, 0x05, 0xa7, 0x00, 0x63, 0xb1], &[]);
+        assert_eq!(code, "classfile_instruction_target_out_of_bounds");
+        assert!(
+            message.contains("branch from BCI 2 with offset 99"),
+            "{message}"
+        );
+        assert!(message.contains("target 101 is outside 0..6"), "{message}");
+
+        // A negative relative offset leaves the code array below BCI 0.
+        let (code, message) = target_error(&[0xa7, 0xff, 0xfb], &[]);
+        assert_eq!(code, "classfile_instruction_target_out_of_bounds");
+        assert!(
+            message.contains("relative offset -5 at BCI 0 targets a BCI before 0"),
+            "{message}"
+        );
+
+        // A handler entry outside the code array.
+        let (code, message) = target_error(&[0xb1], &[(0, 1, 9, 0)]);
+        assert_eq!(code, "classfile_instruction_target_out_of_bounds");
+        assert!(
+            message.contains("exception handler 0 entry target 9 is outside 0..1"),
+            "{message}"
+        );
+    }
+
+    #[test]
+    fn handler_entry_inside_operands_is_rejected() {
+        // `bipush 5` at BCI 0, `return` at 2: BCI 1 is an operand byte, and the
+        // protected range ends exactly at `code_length`.
+        let (code, message) = target_error(&[0x10, 0x05, 0xb1], &[(0, 3, 1, 0)]);
+        assert_eq!(code, "classfile_instruction_invalid_target");
+        assert!(
+            message.contains("exception handler 0 entry target 1 is not an instruction start"),
+            "{message}"
+        );
+    }
+
+    #[test]
+    fn handler_ranges_must_start_before_they_end_and_stay_inside_the_code() {
+        // `start > end` on a legal handler entry.
+        let (code, message) = target_error(&[0x10, 0x05, 0xb1], &[(2, 1, 2, 0)]);
+        assert_eq!(code, "classfile_exception_range_invalid");
+        assert!(
+            message.contains("exception handler 0 protected range 2..1 starts after its end"),
+            "{message}"
+        );
+
+        // `end > code_length` on a legal handler entry.
+        let (code, message) = target_error(&[0xb1], &[(0, 4, 0, 0)]);
+        assert_eq!(code, "classfile_exception_range_invalid");
+        assert!(
+            message.contains("exception handler 0 protected range 0..4 ends past code_length 1"),
+            "{message}"
+        );
+
+        // Half-open and legal: `end == code_length`, handler on the last instruction.
+        let facts = operand_facts(&operand_fixture(&[0x10, 0x05, 0xb1], &[(0, 3, 2, 0)]));
+        assert_eq!(
+            facts.control_flow_targets().unwrap(),
+            vec![ControlFlowTarget {
+                instruction_bci: 2,
+                kind: ControlFlowTargetKind::Handler { ordinal: 0 },
+                target_bci: 2,
+            }]
+        );
+    }
+
+    #[test]
+    fn switch_case_targets_are_validated_like_branches() {
+        // `tableswitch` at BCI 0 with one case pointing past the 21-byte code array.
+        let mut code = vec![0xaa, 0, 0, 0];
+        code.extend_from_slice(&20i32.to_be_bytes());
+        code.extend_from_slice(&0i32.to_be_bytes());
+        code.extend_from_slice(&0i32.to_be_bytes());
+        code.extend_from_slice(&100i32.to_be_bytes());
+        code.push(0xb1);
+        let (code, message) = target_error(&code, &[]);
+        assert_eq!(code, "classfile_instruction_target_out_of_bounds");
+        assert!(message.contains("switch case 0 from BCI 0"), "{message}");
+        assert!(message.contains("target 100 is outside 0..21"), "{message}");
+
+        // A case that lands inside the switch payload is not an instruction start.
+        let mut code = vec![0xaa, 0, 0, 0];
+        code.extend_from_slice(&20i32.to_be_bytes());
+        code.extend_from_slice(&0i32.to_be_bytes());
+        code.extend_from_slice(&0i32.to_be_bytes());
+        code.extend_from_slice(&4i32.to_be_bytes());
+        code.push(0xb1);
+        let (code, message) = target_error(&code, &[]);
+        assert_eq!(code, "classfile_instruction_invalid_target");
+        assert!(message.contains("switch case 0 from BCI 0"), "{message}");
+        assert!(
+            message.contains("target 4 is not an instruction start"),
+            "{message}"
+        );
+    }
+
+    #[test]
+    fn relative_target_arithmetic_is_checked_in_both_directions() {
+        let error = relative_target_bci(u32::MAX, 1).unwrap_err();
+        assert!(
+            matches!(error, Error::InvalidInput { ref code, .. } if code == "classfile_code_span_overflow")
+        );
+        let error = relative_target_bci(u32::MAX, i32::MAX).unwrap_err();
+        assert!(
+            matches!(error, Error::InvalidInput { ref code, .. } if code == "classfile_code_span_overflow")
+        );
+        let error = relative_target_bci(0, -1).unwrap_err();
+        assert!(
+            matches!(error, Error::InvalidInput { ref code, .. } if code == "classfile_instruction_target_out_of_bounds")
+        );
+        let error = relative_target_bci(1, i32::MIN).unwrap_err();
+        assert!(
+            matches!(error, Error::InvalidInput { ref code, .. } if code == "classfile_instruction_target_out_of_bounds")
+        );
+        assert_eq!(relative_target_bci(10, -10).unwrap(), 0);
+        assert_eq!(relative_target_bci(10, 5).unwrap(), 15);
+    }
+
+    #[test]
+    fn switch_operands_reject_a_region_that_does_not_match_the_decoded_shape() {
+        // Two entries need `1 + 3 + 12 + 8` bytes; the recorded region is one truncated
+        // instruction, which is what a width/byte disagreement would look like.
+        let error = table_switch_operands(0, &[0xaa, 0, 0, 0], 0, 0, 1).unwrap_err();
+        assert!(
+            matches!(error, Error::InvalidInput { ref code, ref message }
+                if code == "classfile_instruction_shape_mismatch"
+                    && message.contains("tableswitch at BCI 0 has 4 recorded bytes but 2 entries need 24")),
+            "{error:?}"
+        );
+
+        // A pair list whose last pair is cut off.
+        let bytes = [0xab_u8, 0, 0, 0];
+        let error = lookup_switch_operands(0, &bytes, 0, 1).unwrap_err();
+        assert!(matches!(error, Error::InvalidInput { ref code, .. }
+                if code == "classfile_instruction_shape_mismatch"));
+
+        // `high < low` is a range violation, not a shape violation.
+        let error = table_switch_operands(0, &[], 0, 5, 4).unwrap_err();
+        assert!(matches!(error, Error::InvalidInput { ref code, .. }
+                if code == "classfile_instruction_invalid_range"));
+
+        // A single operand that leaves the recorded bytes.
+        let error = switch_i32(&[0, 0, 0], 7, 0).unwrap_err();
+        assert!(
+            matches!(error, Error::InvalidInput { ref code, ref message }
+                if code == "classfile_instruction_shape_mismatch"
+                    && message.contains("BCI 7")),
+            "{error:?}"
+        );
+    }
+
+    #[test]
+    fn switch_defaults_are_validated_like_cases() {
+        // `tableswitch` at BCI 0, one case on the trailing `return` at BCI 20; the
+        // default points at BCI 1, inside the switch's own padding.
+        let mut code = vec![0xaa, 0, 0, 0];
+        code.extend_from_slice(&1i32.to_be_bytes());
+        code.extend_from_slice(&0i32.to_be_bytes());
+        code.extend_from_slice(&0i32.to_be_bytes());
+        code.extend_from_slice(&20i32.to_be_bytes());
+        code.push(0xb1);
+        let (error_code, message) = target_error(&code, &[]);
+        assert_eq!(error_code, "classfile_instruction_invalid_target");
+        assert!(message.contains("switch default from BCI 0"), "{message}");
+        assert!(
+            message.contains("target 1 is not an instruction start"),
+            "{message}"
+        );
+
+        // `lookupswitch` at BCI 0, one pair on the trailing `return`; the default is far
+        // outside the code array.
+        let mut code = vec![0xab, 0, 0, 0];
+        code.extend_from_slice(&1000i32.to_be_bytes());
+        code.extend_from_slice(&1i32.to_be_bytes());
+        code.extend_from_slice(&0i32.to_be_bytes());
+        code.extend_from_slice(&20i32.to_be_bytes());
+        code.push(0xb1);
+        let (error_code, message) = target_error(&code, &[]);
+        assert_eq!(error_code, "classfile_instruction_target_out_of_bounds");
+        assert!(message.contains("switch default from BCI 0"), "{message}");
+        assert!(
+            message.contains("target 1000 is outside 0..21"),
+            "{message}"
+        );
+
+        // With a legal default, the same two shapes validate, so the cases above fail
+        // for the default and not because the switch itself is malformed.
+        let mut valid = vec![0xaa, 0, 0, 0];
+        valid.extend_from_slice(&20i32.to_be_bytes());
+        valid.extend_from_slice(&0i32.to_be_bytes());
+        valid.extend_from_slice(&0i32.to_be_bytes());
+        valid.extend_from_slice(&20i32.to_be_bytes());
+        valid.push(0xb1);
+        let facts = operand_facts(&operand_fixture(&valid, &[]));
+        assert_eq!(
+            facts.control_flow_targets().unwrap(),
+            vec![
+                ControlFlowTarget {
+                    instruction_bci: 0,
+                    kind: ControlFlowTargetKind::SwitchDefault,
+                    target_bci: 20,
+                },
+                ControlFlowTarget {
+                    instruction_bci: 0,
+                    kind: ControlFlowTargetKind::SwitchCase { index: 0, key: 0 },
+                    target_bci: 20,
+                },
+            ]
+        );
+
+        let mut valid = vec![0xab, 0, 0, 0];
+        valid.extend_from_slice(&20i32.to_be_bytes());
+        valid.extend_from_slice(&1i32.to_be_bytes());
+        valid.extend_from_slice(&0i32.to_be_bytes());
+        valid.extend_from_slice(&20i32.to_be_bytes());
+        valid.push(0xb1);
+        let facts = operand_facts(&operand_fixture(&valid, &[]));
+        assert_eq!(
+            facts.control_flow_targets().unwrap(),
+            vec![
+                ControlFlowTarget {
+                    instruction_bci: 0,
+                    kind: ControlFlowTargetKind::SwitchDefault,
+                    target_bci: 20,
+                },
+                ControlFlowTarget {
+                    instruction_bci: 0,
+                    kind: ControlFlowTargetKind::SwitchCase { index: 0, key: 0 },
+                    target_bci: 20,
+                },
+            ]
+        );
+    }
+
+    #[test]
+    fn jsr_operands_and_targets_use_the_same_validation() {
+        let code = [
+            0xa8, 0x00, 0x03, // 0: jsr +3 -> BCI 3
+            0xc9, 0x00, 0x00, 0x00, 0x05, // 3: jsr_w +5 -> BCI 8
+            0xb1, // 8: return
+        ];
+        let facts = operand_facts(&operand_fixture(&code, &[]));
+        assert_eq!(operand_facts_at(&facts, 0).branch_offset, Some(3));
+        assert_eq!(operand_facts_at(&facts, 3).branch_offset, Some(5));
+        assert_eq!(
+            facts.control_flow_targets().unwrap(),
+            vec![
+                ControlFlowTarget {
+                    instruction_bci: 0,
+                    kind: ControlFlowTargetKind::Branch { offset: 3 },
+                    target_bci: 3,
+                },
+                ControlFlowTarget {
+                    instruction_bci: 3,
+                    kind: ControlFlowTargetKind::Branch { offset: 5 },
+                    target_bci: 8,
+                },
+            ]
+        );
+
+        // Both subroutines go through the same target rules as any other branch.
+        let (error_code, message) = target_error(&[0xa8, 0x00, 0x01, 0xb1], &[]);
+        assert_eq!(error_code, "classfile_instruction_invalid_target");
+        assert!(
+            message.contains("branch from BCI 0 with offset 1"),
+            "{message}"
+        );
+        let (error_code, message) = target_error(&[0xc9, 0x00, 0x00, 0x00, 0x63, 0xb1], &[]);
+        assert_eq!(error_code, "classfile_instruction_target_out_of_bounds");
+        assert!(
+            message.contains("branch from BCI 0 with offset 99"),
+            "{message}"
+        );
+        // A negative `jsr_w` offset leaves the code array below BCI 0.
+        let (error_code, message) = target_error(&[0xc9, 0xff, 0xff, 0xff, 0xfb], &[]);
+        assert_eq!(error_code, "classfile_instruction_target_out_of_bounds");
+        assert!(
+            message.contains("relative offset -5 at BCI 0 targets a BCI before 0"),
+            "{message}"
+        );
+    }
+
+    #[test]
+    fn signed_operands_keep_their_sign() {
+        let code = [
+            0x10, 0xfb, // 0: bipush -5
+            0x11, 0xfe, 0xd4, // 2: sipush -300
+            0x84, 0x03, 0xfe, // 5: iinc 3, -2
+            0xc4, 0x84, 0x00, 0x04, 0xff, 0xfb, // 8: wide iinc 4, -5
+            0xb1, // 14: return
+        ];
+        let facts = operand_facts(&operand_fixture(&code, &[]));
+        assert_eq!(
+            operand_facts_at(&facts, 0).immediate,
+            Some(ImmediateValue::Int(-5))
+        );
+        assert_eq!(
+            operand_facts_at(&facts, 2).immediate,
+            Some(ImmediateValue::Int(-300))
+        );
+        assert_eq!(
+            operand_facts_at(&facts, 5),
+            InstructionOperands {
+                local: local(3, false),
+                increment: Some(-2),
+                ..InstructionOperands::default()
+            }
+        );
+        assert_eq!(
+            operand_facts_at(&facts, 8),
+            InstructionOperands {
+                local: local(4, true),
+                increment: Some(-5),
+                ..InstructionOperands::default()
+            }
+        );
+        // The negative operands decode; nothing in this body is a control-flow target.
+        assert_eq!(facts.control_flow_targets().unwrap(), Vec::new());
+    }
+
+    #[test]
+    fn targets_at_code_length_are_out_of_bounds_not_unstarted() {
+        // `goto +3` in a 3-byte code array targets exactly `code_length`: one past the
+        // last byte. That is a bounds error, not an "inside an operand" error.
+        let (error_code, message) = target_error(&[0xa7, 0x00, 0x03], &[]);
+        assert_eq!(error_code, "classfile_instruction_target_out_of_bounds");
+        assert!(message.contains("target 3 is outside 0..3"), "{message}");
+
+        // BCI `code_length - 1` is still a legal target: `goto +3` reaches the `return`.
+        let facts = operand_facts(&operand_fixture(&[0xa7, 0x00, 0x03, 0xb1], &[]));
+        assert_eq!(facts.control_flow_targets().unwrap()[0].target_bci, 3);
+
+        // A handler entry exactly at `code_length` is not a target either, and the
+        // range itself is legal (`end == code_length`).
+        let (error_code, message) = target_error(&[0xb1], &[(0, 1, 1, 0)]);
+        assert_eq!(error_code, "classfile_instruction_target_out_of_bounds");
+        assert!(
+            message.contains("exception handler 0 entry target 1 is outside 0..1"),
+            "{message}"
+        );
+    }
+
+    #[test]
+    fn protected_range_endpoints_must_be_instruction_starts() {
+        // `bipush 5` at BCI 0 (its operand is BCI 1), `return` at BCI 2.
+        let code = [0x10, 0x05, 0xb1];
+
+        // A range start inside an operand.
+        let (error_code, message) = target_error(&code, &[(1, 3, 2, 0)]);
+        assert_eq!(error_code, "classfile_instruction_invalid_target");
+        assert!(
+            message.contains(
+                "exception handler 0 protected range start 1 is not an instruction start"
+            ),
+            "{message}"
+        );
+
+        // A range end inside an operand.
+        let (error_code, message) = target_error(&code, &[(0, 1, 2, 0)]);
+        assert_eq!(error_code, "classfile_instruction_invalid_target");
+        assert!(
+            message.contains(
+                "protected range end 1 is neither an instruction start nor code_length 3"
+            ),
+            "{message}"
+        );
+
+        // An aligned range keeps validating, including the legal half-open end.
+        let facts = operand_facts(&operand_fixture(&code, &[(0, 3, 2, 0)]));
+        assert_eq!(
+            facts.control_flow_targets().unwrap(),
+            vec![ControlFlowTarget {
+                instruction_bci: 2,
+                kind: ControlFlowTargetKind::Handler { ordinal: 0 },
+                target_bci: 2,
+            }]
+        );
+    }
+
+    #[test]
+    fn protected_ranges_must_not_be_empty() {
+        let code = [0x10, 0x05, 0xb1];
+
+        // An empty range on an instruction start: JVMS 4.7.3 wants `start < end`.
+        let (error_code, message) = target_error(&code, &[(2, 2, 2, 0)]);
+        assert_eq!(error_code, "classfile_exception_range_invalid");
+        assert!(
+            message.contains("exception handler 0 protected range at BCI 2 is empty"),
+            "{message}"
+        );
+
+        // An empty range inside an operand stays a range error: the relation is checked
+        // before the endpoints, so the two failure kinds stay distinguishable.
+        let (error_code, message) = target_error(&code, &[(1, 1, 2, 0)]);
+        assert_eq!(error_code, "classfile_exception_range_invalid");
+        assert!(message.contains("is empty"), "{message}");
+
+        // An inverted range keeps its own message.
+        let (error_code, message) = target_error(&code, &[(2, 1, 2, 0)]);
+        assert_eq!(error_code, "classfile_exception_range_invalid");
+        assert!(
+            message.contains("protected range 2..1 starts after its end"),
+            "{message}"
+        );
+    }
+
+    /// Every class fixture in the repository still validates: the tightened handler
+    /// rules must not reject real code, and real historical subroutines must go through
+    /// the same target checks.
+    ///
+    /// The counts are the measured population — 15 classes, 42 bodies, 8 exception table
+    /// records, 8 branch/switch targets, 8 `jsr`/`jsr_w` instructions (the ECJ 4.6.1
+    /// 45–48 `finally` codegen) — so a fixture that silently stops being visited, or a
+    /// body that stops decoding, fails here instead of quietly shrinking the sweep.
+    #[test]
+    fn repository_class_fixtures_validate_without_false_target_rejections() {
+        let fixtures = class_fixture_paths();
+        let mut bodies = 0u32;
+        let mut handler_records = 0u32;
+        let mut branch_targets = 0u32;
+        let mut subroutines = 0u32;
+        for path in &fixtures {
+            let bytes = std::fs::read(path).unwrap();
+            let mut budget = Budget::new(limits(u64::MAX));
+            let header = class_facts(&bytes, &mut budget)
+                .unwrap_or_else(|error| panic!("{}: {error:?}", path.display()));
+            for method in &header.methods {
+                let facts = match method_code_facts(&bytes, method, &mut budget) {
+                    Ok(facts) => facts,
+                    Err(Error::Unsupported { code, .. })
+                        if code == "classfile_method_has_no_code" =>
+                    {
+                        continue;
+                    }
+                    Err(error) => panic!("{}: {error:?}", path.display()),
+                };
+                assert!(
+                    matches!(facts.execution, ExecutionReport::Complete { .. }),
+                    "{}: a fixture body must decode completely",
+                    path.display()
+                );
+                let targets = facts
+                    .control_flow_targets()
+                    .unwrap_or_else(|error| panic!("{}: {error:?}", path.display()));
+                bodies += 1;
+                handler_records += facts.exception_handlers.len() as u32;
+                branch_targets += targets
+                    .iter()
+                    .filter(|target| !matches!(target.kind, ControlFlowTargetKind::Handler { .. }))
+                    .count() as u32;
+                for fact in &facts.instructions {
+                    if matches!(fact.opcode, 0xa8 | 0xc9) {
+                        subroutines += 1;
+                        assert!(
+                            targets.iter().any(|target| {
+                                target.instruction_bci == fact.bci
+                                    && matches!(target.kind, ControlFlowTargetKind::Branch { .. })
+                            }),
+                            "{}: the subroutine at BCI {} lost its branch target",
+                            path.display(),
+                            fact.bci
+                        );
+                    }
+                }
+            }
+        }
+        assert_eq!(
+            (
+                fixtures.len(),
+                bodies,
+                handler_records,
+                branch_targets,
+                subroutines
+            ),
+            (15, 42, 8, 8, 8),
+            "fixture population changed: re-measure these counts"
+        );
+    }
+
+    /// Every `.class` under `tests/fixtures`, in a deterministic order.
+    fn class_fixture_paths() -> Vec<std::path::PathBuf> {
+        fn walk(directory: &std::path::Path, found: &mut Vec<std::path::PathBuf>) {
+            let mut entries = std::fs::read_dir(directory)
+                .unwrap_or_else(|error| panic!("{}: {error}", directory.display()))
+                .map(|entry| entry.unwrap().path())
+                .collect::<Vec<_>>();
+            entries.sort();
+            for entry in entries {
+                if entry.is_dir() {
+                    walk(&entry, found);
+                } else if entry
+                    .extension()
+                    .is_some_and(|extension| extension == "class")
+                {
+                    found.push(entry);
+                }
+            }
+        }
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
+        let mut found = Vec::new();
+        walk(&root, &mut found);
+        found
     }
 }
