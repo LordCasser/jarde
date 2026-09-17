@@ -16,9 +16,9 @@
 
 ### 单独处理的验证维护项
 
-以下是验证缺口，不是已证明的运行时错误。它们由独立的 [harden-p1-validation](../harden-p1-validation/tasks.md) 承接，验证通过后再进入本 tasks 的实现；P2 设计先完成。不把维护代码混进 IR 任务，也不重新打开历史归档。
+以下是验证缺口，不是已证明的运行时错误。它们由独立的 [harden-p1-validation](../archive/2026-09-17-harden-p1-validation/tasks.md) 承接，验证通过后再进入本 tasks 的实现；P2 设计先完成。不把维护代码混进 IR 任务，也不重新打开历史归档。
 
-本轮状态：V1/V2 修复和本地正反例验证已完成，见[验证记录](../harden-p1-validation/verification.md)。维护改动尚未提交/推送，新 CI 配置没有远端执行证据；进入 P2 实现前确认维护提交对应的 CI 结果，不能沿用旧 P1 run 代替。
+本轮状态：V1/V2 修复和本地正反例验证已完成，见[验证记录](../archive/2026-09-17-harden-p1-validation/verification.md)。维护提交 `555c785`、`acbba49` 已推送，CI run `35238994798` 四个 job success（含双 workspace supply-chain 与修复后的 fuzz smoke）；该 change 已归档，P2 实现前置条件满足。
 
 | 项 | 证据与影响 | 最小修正与退出条件 |
 | --- | --- | --- |
@@ -119,7 +119,7 @@ P2 实际只产生 `representation=Bytecode`、`syntax_status=NotJava`、`compil
 
 先独立完成 V1/V2 验证维护，再按 tasks 的基础契约、resolver、raw/legacy CFG、Frame/SSA、产品验收逐片执行。第一轮只做 1.1–1.3，退出时证明 reader、预算、结果模型可用。每片记录命令/结果和只读复核结论，阻塞项修复后以定向反例复验，再开始依赖片。交接列明未完成项和允许修改模块，不一次派发整条管线。
 
-P2 本轮只修改规划与过时的 OpenSpec 阶段上下文，不新增 P2 代码、不勾选本 change 的实现任务。P1 的 harness/CI/deny 修复及实际验证归 harden-p1-validation。CI 状态按具体 commit/run 查询，不追加“记录文档提交自己的 CI”的循环提交。
+P2 本轮只修改规划与过时的 OpenSpec 阶段上下文，不新增 P2 代码、不勾选本 change 的实现任务。P1 的 harness/CI/deny 修复及实际验证归 harden-p1-validation（已归档，见 `../archive/2026-09-17-harden-p1-validation/`）。CI 状态按具体 commit/run 查询，不追加“记录文档提交自己的 CI”的循环提交。
 
 ### 保持拆分的既有债务
 

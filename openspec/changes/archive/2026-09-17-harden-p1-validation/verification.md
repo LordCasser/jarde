@@ -79,4 +79,6 @@ fuzz/Cargo.lock  af5d0cb60db79176bdde87c4285c11e5ee49c9fb561a497c5140c234f402738
 
 独立只读复核未发现 harness/回归测试的阻塞问题：确认五种请求实际执行、公开错误后继续、报告逐次释放、真实 target 与回归共用驱动，且未改生产 API。P2 规划机械复核确认三份 capability/spec 对齐、20 个任务均未勾选；这不替代未来各 IR 切片的语义复核。主 agent 另行核对 CI action 官方入口、最终严格 policy、正反例日志和 CLI 最小 manifest diff。
 
-`openspec validate --all --strict --no-interactive`：**11 passed / 0 failed**；`git diff --check` 干净。P1 维护本地验证完成，P2 仍是规划；本轮尚未提交、推送或运行新的远端 CI，旧三个绿色 run 只证明原 P1 基线。
+`openspec validate --all --strict --no-interactive`：**11 passed / 0 failed**；`git diff --check` 干净。P1 维护本地验证完成，P2 仍是规划。
+
+随后提交并推送：`555c785`（fuzz harness + CI 双图审计 + NCSA 收窄 + CLI 版本约束）与 `acbba49`（P2 规划修订与项目上下文，`8fcdd66..acbba49` fast-forward 到 `main`）。CI run [`35238994798`](https://github.com/LordCasser/jarde/actions/runs/35238994798) 在 `acbba49` 上四个 job 全部 success：`stable / test and specification`、`MSRV 1.88.0`、`supply chain`（现已分别审计根与 `fuzz/Cargo.toml` 两个依赖图）与 `fuzz smoke`（运行修复后的请求路由）。此前的三个绿色 run 只证明原 P1 基线；归档提交及其后的仅文档改动以各自的 run 为准。

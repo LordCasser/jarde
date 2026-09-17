@@ -1,6 +1,6 @@
 ## 1. 基础契约与第一片交接
 
-执行前确认 [harden-p1-validation](../harden-p1-validation/verification.md) 的维护提交及对应 CI 通过；本轮其本地修复/验证已完成，尚未提交或运行新 CI。本清单只跟踪 P2，第一轮仅做 1.1–1.3，验证并只读复核后再进入 2.x。所有任务均未实现，既有债务不并入本清单。
+执行前确认 [harden-p1-validation](../archive/2026-09-17-harden-p1-validation/verification.md) 的维护提交及对应 CI 通过；该维护已提交（`555c785`、`acbba49`）并由 CI run `35238994798` 证明（四个 job success），并已归档。本清单只跟踪 P2，第一轮仅做 1.1–1.3，验证并只读复核后再进入 2.x。所有任务均未实现，既有债务不并入本清单。
 
 - [ ] 1.1 固定解析/声明查询与方法分析的请求、provider 绑定、阶段结果、origin 和预算计费契约；交付可编译的最小类型/API 及示例，验证缺少运行环境不能隐式启动解析，Bytecode/NotJava/NotPerformed 与 coverage/execution 可分别表达（A13、A17）
 - [ ] 1.2 在现有 noak reader 适配中提供内部类型化操作数与目标校验；用 wide/iinc、正负 branch、switch default/key/target、handler 边界、溢出/跳入操作数反例及 P0 oracle 回归验证，不另建 decoder（A09、A10）
