@@ -45,7 +45,7 @@
 
 | 维度 | 环境/入口 | 状态 | 边界 |
 | --- | --- | --- | --- |
-| 平台 | Linux x86_64 | Configured（首次 CI 待验证） | stable 与 MSRV job 已配置；CI runner 为固定 `ubuntu-24.04`，尚无 remote green 证据。 |
+| 平台 | Linux x86_64 | Validated（CI） | `ubuntu-24.04` 上 stable、MSRV 1.88.0 与 supply-chain job 已通过；证据见 verification 中的 run `35168810088`。 |
 | 平台 | Linux aarch64 | Supported（当前实际本地证据） | Fedora-like，kernel `7.1.0-rc3-gaokun3+`；证据版本见 verification。 |
 | 平台 | 32-bit | NotValidated / Unsupported | noak `lookupswitch` 巨大 `npairs` 等 `usize` 风险未建立支持；P0 限 64-bit。 |
 | Library adapter | `Engine` + `Budget` | Supported | 同步 API；`CancellationToken` 可由调用方注入，取消为协作式。 |

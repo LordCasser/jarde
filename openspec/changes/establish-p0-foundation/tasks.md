@@ -17,5 +17,5 @@
 - [x] 3.1 CLASS/JAR/WAR、重复项、ZIP64、压缩、CRC、快照回归
 - [x] 3.2 历史版本、MUTF-8、未知属性、switch/wide、截断与属性/指令 fuzz 回归
 - [x] 3.3 验证预算、取消、局部请求和无 IR 构建的边界
-- [ ] 3.4 完成 README、支持矩阵、CI、示例与实际测试记录
+- [x] 3.4 完成 README、支持矩阵、CI、示例与实际测试记录
 - [ ] 3.5 cargo fmt/clippy/test、OpenSpec strict validation 并归档已完成 change

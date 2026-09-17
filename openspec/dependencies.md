@@ -1,10 +1,10 @@
 # 技术栈与依赖选型
 
-核对日期：2026-09-16。本文件是实施前的选型决策和准入门槛，未表示引擎或所有候选库已通过行为验收。版本来自 crates.io 元数据及下载的 crate 源码；实施时使用明确版本和 Cargo.lock，升级后重新执行相关门槛。
+核对日期：2026-09-17。本文件记录选型决策、准入门槛及已完成的 P0 证据；未表示后续阶段或所有候选库已通过行为验收。版本来自 crates.io 元数据及下载的 crate 源码；实施时使用明确版本和 Cargo.lock，升级后重新执行相关门槛。
 
 ## 技术栈边界
 
-生产核心使用 Rust 2024，MSRV 初选 1.88，由未来 CI 实际验证。首期仅库 `jarde` 和薄适配器 `jarde-cli` 两个 crate；artifact、classfile、model、query、resolver、IR、Java 输出先保持逻辑模块边界，随真实编译依赖再拆包。
+生产核心使用 Rust 2024，MSRV 1.88 已由本地单作业检查及 Linux x86_64 CI 实际验证。首期仅库 `jarde` 和薄适配器 `jarde-cli` 两个 crate；artifact、classfile、model、query、resolver、IR、Java 输出先保持逻辑模块边界，随真实编译依赖再拆包。
 
 公共 API 同步、可取消，不强制 Tokio、线程池或数据库。CLASS/JAR/WAR 为必需输入；目标代码、bootstrap、JNI 和 launcher 均不执行。JDK、javap、其他反编译器只用于受控测试 oracle，用户依赖不自动联网下载。纯 Rust 要求覆盖生产依赖链，不能只检查顶层 crate 名称。
 
@@ -53,7 +53,7 @@
 3. **Header 延迟性**：P0 2.3 已用非法 Code 内容验证 Header 只读取外壳，并为未知 class/field/method attribute 保留完整及 content span；名称和 descriptor 同时保留原始 MUTF-8、UTF-16 units 与安全转义显示，不以 lossy 文本作为身份。P0 3.2 已补齐 Code 嵌套未知 attribute 的长度/截断回归，证明 Header 不进入 Code 子属性而 bytecode 请求在读取该结构时拒绝非法长度；attribute 合法位置、基数和版本语义仍由后续 capability registry 负责。
 4. **rawzip 容器**：P0 3.1 已覆盖 CLASS 与 JAR/WAR 路径入口、重复 raw name/同内容不同 origin、EOCD 与实际 entry 数不符、中央/局部头冲突、data descriptor、前置脚本、STORED/DEFLATED、CRC/size、加密/未知压缩、重叠数据区间和源替换快照。ZIP64 使用确定性生成的 248-byte 小型 fixture，classic sentinel、ZIP64 EOCD/locator、64-bit entry hint、物理 spans 和读取摘要均经真实 `ArtifactSnapshot` 入口复核；不依赖 65535-entry 或多 GiB 测试数据。复用库的解析与验证接口，不把高层成功等同全部输入合规。
 5. **预算与 I/O**：P0 3.3 已验证 artifact open、中央目录枚举、entry locator/read、class Header 和单方法 bytecode 在同一请求中的累计 Budget，以及入口预取消和内部循环协作取消。DEFLATE 按实际展开字节计 `EntryBytes`，压缩输入计 `ReadBytes`；目录记录逐项计 `ArchiveEntries`；snapshot、临时物化和结果缓冲分别计费。Header 不计 `CodeBytes`，方法请求只计所选 Code shell 和可靠指令前缀。P1 分别验证 STORED 子范围访问和 DEFLATED nested 有界物化，不承诺任意 nested 零拷贝。
-6. **供应链**：固定 lockfile；MSRV/stable CI；许可证与 RustSec 检查；`cargo tree -e features` 检查传递 feature 与 C/JVM 运行依赖；完整结果冷/热一致。检查通过之前不标记依赖通过生产验收。
+6. **供应链**：P0 3.4 已固定 lockfile，并在 Linux x86_64 运行 stable 与 MSRV 1.88 CI、`cargo-deny 0.20.2` 的 advisories/licenses/bans/sources 门禁、feature tree 和生产依赖边界检查；本地 Linux aarch64 使用相同 lockfile 补充验证。当前生产 feature 保持 BLAKE3 `pure` 与 flate2 `rust_backend`，未引入 JVM、网络、async、图 IR 或数据库 runtime。后续依赖升级必须重新执行这些门槛；冷/热完整结果一致性仍由引入缓存的 P5 负责。
 
 ## 可复核源码版本
 

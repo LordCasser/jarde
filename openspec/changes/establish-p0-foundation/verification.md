@@ -13,7 +13,7 @@
 - Rust：`rustc 1.96.1`、`cargo 1.96.1`。
 - OpenSpec：`1.11.0`。
 - JDK oracle：OpenJDK `25.0.4+7`（本地发行版未记录为 Temurin；CI 配置使用 Temurin）。
-- P0 支持目标限 64-bit；Linux x86_64 已配置 CI、首次 remote CI 待验证，32-bit 未建立支持证据。
+- P0 支持目标限 64-bit；Linux x86_64 已由固定 `ubuntu-24.04` remote CI 验证，Linux aarch64 有本地证据，32-bit 未建立支持证据。
 
 ## 最终 3.3 candidate 的已实测证据
 
@@ -43,17 +43,24 @@
 - README 中的完整 JSON CLI 请求实际运行成功：`status="ok"`、bytecode execution `complete`，文件长度与 `transport.response_bytes` 均为 **2801**。
 - `cargo +1.88.0 check --workspace --all-targets --locked`：通过，验证 MSRV 1.88.0；全程单作业。
 - feature tree 同时包含 `blake3 feature "pure"` 与 `flate2 feature "rust_backend"`；normal production tree 未出现 CI 门禁列出的 async、图 IR、JVM、网络或数据库 runtime 依赖。
-- `.github/workflows/ci.yml` 经官方 `actionlint 1.7.12`（已校验 release SHA-256）检查通过；workflow 内 Cargo 命令串行且设置低内存环境。首次 remote GitHub Actions 已触发，但 stable job 未进入 Cargo 步骤，故 **Linux x86_64 完整验证仍 pending，3.4 不勾选**。
+- `.github/workflows/ci.yml` 经官方 `actionlint 1.7.12`（已校验 release SHA-256）检查通过；workflow 内 Cargo 命令串行且设置低内存环境。修正首次 run 暴露的 JDK 版本语法后，第二次 remote run 的 stable、MSRV 与 supply-chain 三个 job 全部通过，建立 Linux x86_64 证据。
 - 使用官方预编译 `cargo-deny 0.20.2`（与 `EmbarkStudios/cargo-deny-action@v2.1.1` 一致）执行 `--offline --locked --all-features check`：`advisories ok, bans ok, licenses ok, sources ok`。直接 git clone RustSec 数据库两次因外部 GitHub TLS/连接失败，故本地门禁改用 GitHub API 固定 RustSec commit `e2e640471715167f73e22eaf761f2e547adafeec`；下载 tarball SHA-256 为 `153f4ac096ad6981380884715cfa63acafe4189f48fe2f8c4ed5a64343850167`。四个未遇到的可接受许可证仅产生 warning，不影响门禁结果。
 - `openspec validate --all --strict --no-interactive`：**6 passed / 0 failed**；`git diff --check`：通过。
-- 完成本轮后 `target/` 约 **2.3 GiB**，未超过 10 GiB 上限；将在阶段提交和远端 CI 完成后清理。
+- 本轮验证结束时 `target/` 的 `du` 大小为 `2,401,866,261` bytes，未超过 10 GiB 上限；remote CI 通过后执行 `cargo clean`，Cargo 报告移除 **7,737 files / 2.6 GiB**，工作区 `target/` 已清空。
 
 ## 首次 remote run
 
 - GitHub Actions run ID：[`35168515529`](https://github.com/LordCasser/jarde/actions/runs/35168515529)。
 - `MSRV 1.88.0`：success；`supply chain`：success。
 - `stable / test and specification` 在任何 Cargo 步骤前，于 `actions/setup-java` 解析 Temurin 版本时失败：`25.0.4+7` 不被解析器接受。
-- 这是 CI 配置失败，不是代码测试失败；该 run 未提供 Linux x86_64 stable 测试通过证据，因此 x86_64 仍 pending，3.4 不勾选。
-- 精确修正：所有 checkout 更新为 `actions/checkout@v7.0.1`；setup-java 更新为 `actions/setup-java@v6.0.1`，并将 `java-version` 改为 `"25.0.4+7.0.LTS"`（预期 runtime 仍为 `25.0.4+7`）；setup-node 更新为 `actions/setup-node@v7.0.0`，继续安装 Node 22，并设置 `package-manager-cache: false`，避免无 `package.json` 时自动缓存。
+- 这是 CI 配置失败，不是代码测试失败；该 run 本身没有提供 Linux x86_64 stable 测试通过证据，后续通过的 run 见下节。
+- 精确修正：所有 checkout 更新为 `actions/checkout@v7.0.1`；setup-java 更新为 `actions/setup-java@v6.0.1`，并将 `java-version` 改为 `"25.0.4+7.0.LTS"`（runtime 仍为 `25.0.4+7`）；setup-node 更新为 `actions/setup-node@v7.0.0`，继续安装 Node 22，并设置 `package-manager-cache: false`，避免无 `package.json` 时自动缓存。
+
+## 通过的 remote run
+
+- GitHub Actions run ID：[`35168810088`](https://github.com/LordCasser/jarde/actions/runs/35168810088)，对应 commit `b49271776caed081329af2a144134c2f7a762cce`，结论 **success**。
+- `stable / test and specification`：全部步骤 success，包括 stable fmt、clippy、两个固定 proptest seed 的全 workspace tests、显式 JDK 25 oracle、公共示例、feature/normal dependency tree 门禁、OpenSpec strict validation 和 tracked diff 检查。
+- `MSRV 1.88.0`：success；`supply chain`：success，后者实际构建并运行 `EmbarkStudios/cargo-deny-action@v2.1.1`。
+- runner 为 Linux x86_64、固定 `ubuntu-24.04`。该 run 与本地 Linux aarch64 证据共同满足 3.4 的平台、CI、示例与实际测试记录门槛。
 
 低内存验证必须继续串行。独立 GitHub jobs 可使用不同 runner 并行，但每个 runner 不并行启动 Cargo。
