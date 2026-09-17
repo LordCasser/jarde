@@ -126,6 +126,7 @@
 - 反例与证伪：首轮复核 **Approve** + F1/F2/F3（签名多态站点被静默漏报、`ArtifactTree` root 未校验、报告条目不计费）→ 修正 → 复审 **Approve**（loader 轴不可证伪、诊断计费口径、停止归属、计数成对）→ 再修正 → 三轮 **Approve**。全过程 30+ 组变异：过滤器退回 owner 精确、把别的声明当命中、未决当已排除、`max_items` 不下传、身份比较丢 loader、sig-poly 忽略 name/owner、tree root 大小写、诊断不收费、停止不去重等全部被捕获；P1 的 23 条查询差分矩阵（2.4 前树 vs 当前树）除 `elapsed_millis` 外**逐字段相同**，且该矩阵本身有判别力（注入 owner 精确匹配或去掉 descriptor 类型判定即 DIFFERS）。
 - A11 端到端：`Base.foo` 在 `Sub` 调用时 P1 的 `mentions_symbol(Base.foo)` 不展开 owner，而声明引用查询返回该 use-site（`referenced` 保留 `Sub` 符号、`resolved` 指向 `Base` 声明、origin 为调用点 BCI）；同一链路有 `Mid`/无关层级/异描述符/未消费 `Methodref` 的对照。
 - 证据：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **487 passed / 0 failed / 1 ignored**（`p2_declaration_refs` 34、`p1_xref_golden` 5、`p2_members` 46）；示例 exit 0；由主 Agent 独立复跑确认。
+- 远端 CI：实现与文档提交 `2da3abe`、`d94206e` 推送 `main` 后，CI run [`35277379198`](https://github.com/LordCasser/jarde/actions/runs/35277379198) 四个 job 全部 success。
 - 独立复核结论：**Approve**（三轮）。登记债务：closure 自身诊断的计费循环当前无生产者（2.5 接上后生效，代码 fail-safe）；`DeclarationRefQuery.consumers.version` 不校验（`Engine::query` 会拒绝非 1）；"解析到别的声明"无独立报告字段（由 `reads`/usage 观察）；签名多态与 `MemberShape` 共享 2.3 的 name-only 近似。
 
 ## P2 验收映射现状（滚动更新）
