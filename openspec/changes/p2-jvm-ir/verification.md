@@ -159,6 +159,7 @@
 - 反例与证伪：实现者 5 组变异（前置校验跳过、表逆序、`invalidates` 被忽略、映射错位、先发布后检查）；复核者 10 组变异（含 `invalidates` 空实现、同 phase 也算降序、成环检查直接 Ok、前缀取 min、校验器拒绝一切请求）——除两项外全部被捕获；**M8「删掉 `engine.rs` 的校验调用」与 M10「交换两条校验调用顺序」存活**，即该接入在公共路径上行为不可观测（已登记）。
 - 复核发现的契约表达力缺口（**3.3 开工前必修，已修**）：`budget` 原为单一类别，无法表达 raw CFG 同时计 `IrItems`+`IrEdges`+`AnalysisSteps`——按字面实现会**静默漏计 `AnalysisSteps`**，违反 1.3 的超限验收。契约改为维度集合（`Blocks = IrItems + IrEdges`、空集合 = 不计费），并新增金标断言 `every_pass_declares_exactly_the_dimensions_it_bills` 与重入单调性断言 `re_entering_an_earlier_phase_never_lowers_the_last_completed_phase`（两组变异各被对应新断言捕获）。
 - 证据：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **540 passed / 0 failed / 1 ignored**（27 个 suite 全 ok；lib 160→162、`p2_passes` 4），`cargo test --test p1_xref_golden --locked` = 5；由主 Agent 独立复跑确认。
+- 远端 CI：实现与文档提交 `2bc0ea6`、`8d74ce4` 推送 `main` 后，CI run [`35287796487`](https://github.com/LordCasser/jarde/actions/runs/35287796487) 四个 job 全部 success。
 - 独立复核结论：**Approve**（无必修项；D1 契约缺口已在 3.3 前修正）。登记债务：**`engine.rs` 的接入不可观测**（删掉调用或换序都无测试变红，且前缀规则在 `ir::scheduled_stages` 与 `passes::validate_schedule` 各有一份实现——5.1 必须以校验器返回的表前缀作为唯一执行/阶段来源，并把「报告 `stages` == 校验器前缀」写成断言）；`Effects` 目前无消费者（其失效在运行时不被强制，故契约已写明「事实的消费者必须写进 `requires`」）；`progress()` 的 `no phase completed yet` 分支与空集合分支仓内无覆盖（探针证明可达且正确）；本片的计费语句只有声明，真实计费点从 3.3 起。
 
 ## P2 验收映射现状（滚动更新）
