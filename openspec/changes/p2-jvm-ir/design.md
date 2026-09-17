@@ -566,6 +566,7 @@ pub struct HeaderRead {
 - **scope 校验**：`validate_declaration_reference_query` 必须校验 `PhysicalScope::ArtifactTree { root_container }` 的 root（与 P1 的 `query_artifact_tree_root_mismatch` 同一规则），不得接受会被静默忽略的容器名。
 - **计费纪律**：解析侧每发布 1 条 `items` 与**每发布 1 条进入该报告的诊断**（未决诊断与 2.3 的规则诊断都算）前，各计一次 `ResultItems`——与 P1 的「每个返回 item = 1、每条域诊断 = 1」同口径；装配中途预算耗尽时保留已发布前缀并把 execution 标为 `Partial{BudgetExceeded{ResultItems}}`。
 - **停止归属**：解析停止（如 `ClassHeaders`）与装配停止（`ResultItems`）同时发生时，`execution` 报**先发生的解析停止**，装配停止由 `has_more` 与覆盖平面的 `Partial` 表达。
+- **不收费的两类元数据**（与 P1 的 `query_relation_unsupported`／terminal diagnostic 同纪律）：环境平面诊断（`environment_problems` 及其镜像诊断，被拒环境必须零字节零计费）与**停止解释**诊断（`budget_exceeded_*`/`cancelled`/结构错误码）——它们解释请求或中断，不能自付，否则报告会失去停止原因。
 - **计数与诊断成对**：`unresolved_candidates` 与进入报告的未决诊断严格一一对应；装配被拒的候选既不进 `items` 也不计数，其 use-site 由停止诊断保留。
 - **Class 符号的声明查询**：候选规则只对成员声明定义，因此 Class 符号的 `DeclarationRefQuery` 与被拒环境一样返回 1.1 的诚实不可用状态（`resolution_not_implemented` + `NotRequested`），不读字节。
 - **计费**：成员解析使 `analysis_steps` 成为真实输入，因此成员请求必须给非零值（否则第一步即 `BudgetExceeded`）；`dependency_depth = 0` 仍允许读取成员 owner 自身（深度 0 不观察深度）。`reads` 的 reason 集合按上一条语义产生。
@@ -609,6 +610,12 @@ pub struct HeaderRead {
 - 诊断码：`resolution_candidate_unresolved`（Warning，provenance = 候选 use-site）；环境与能力类码沿用 1.1–2.3 的既有集合。
 - `DeclarationRefQuery.consumers.version` 在 2.4 不校验（`Engine::query` 会拒绝非 1）；统一校验属后续小改动。
 - metadata 类成员候选当前永不成为 `items`（见上），因此"不读 Body"的公开证据是**本次查询的 `code_bytes` 等于同 consumers 的同范围 P1 扫描计费**（解析不额外读 Body），不要求某个 fixture 恰好为 0。
+
+### 2.4 实现记录与已知边界
+
+- **closure 自身诊断的计费是前瞻性条款**：`HeaderClosure::record_diagnostic` 目前只由 `hierarchy_closure` 驱动，而 2.3/2.4 都逐类 `demand`、不启用该 walk，因此解析侧末尾那段 closure 诊断循环**当前无生产者**（代码 fail-safe，2.5 接上后生效）。不得把它当作已测试行为；若复核要求，可在该循环加注释说明。
+- 声明查询入口无 hook，**中途取消**不可构造（预取消已覆盖）；`SignaturePolymorphic` 与 `MemberShape` 共享 2.3 的 name-only 近似（有意）。
+- 测试写入器在本片修掉一个真实缺陷：接口项原先在常量池落盘之后才 intern，会产生非法索引的 class；修复后接口/`BootstrapMethods`/`InvokeDynamic` 才能被正确写入（幂等性与既有 fixture 字节由复核者独立对照确认）。
 
 ### 2.4 的验收
 

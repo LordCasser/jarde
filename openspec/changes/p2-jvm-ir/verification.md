@@ -119,6 +119,15 @@
 - 语义边界（已写入 `specs/demand-resolver` 的边界段，不得读作 JVMS 完全实现）：default conflict 在解析期报告（JVMS 8 放在 invocation selection）；interface owner 不隐式继承 `java/lang/Object` 的方法；只检查成员自身声明的可访问性（不查声明类，JVMS 5.4.3.1）；`InvokeDynamic` 的 owner 只是搜索起点；同一 owner 内同名同描述符重复声明只能表达为 `Ambiguous`。
 - 登记的债务：调用方层级成环时 `subtype_of` 静默跳过 → 判 `Inaccessible` 且无环诊断（与声明侧不对称）；sig-poly 在调用点描述符恰好等于声明描述符时仍发"两者按规则不同"的文案；`read_definition` 的记录挂在请求声明的 `caller.loader` 上（`PhysicalDefinitionId` 不含 loader，API 内不可校验）；成员 coverage 的求和语义与"推导有效序之前停止则区间为空"已写入契约；`HierarchyWalk` 的逐层 reason 仍只由 `providers` 的 lib 单测固定（公开消费者是 2.5）。
 
+### 2.4 声明引用查询（复用结构 consumer）
+
+- 交付：`src/xref/mod.rs` 增 crate-private `CandidateFilter`（`Exact` / `MemberShape{name,descriptor}`（owner 不参与）/ `SignaturePolymorphic{owner,name}`）与 `scan_candidates`；三个 consumer 子模块改走同一 `candidate_matches`/`published_target` 决策点（`resource.rs` 按类型形状天然不参与）；`src/resolver.rs` 的 `Engine::declaration_references` 从诚实不可用变为真查询（成员形状候选 → 逐条 2.1+2.3 解析 → 只发布解析到请求声明的候选；未决候选计数 + 保留 use-site；`max_items` 截断按 P1 页限；scope 校验与 P1 同规则）。
+- 语义：未使用的常量池条目不是引用；"解析到别的声明"既不是 item 也不是未决；损坏候选是**扫描级停止**（不进未决计数）；请求级环境问题与"被拒环境"分属两条路径；**每条进入报告的 item 与诊断各计一次 `ResultItems`**（环境平面与停止解释两类元数据不收费，与 P1 同纪律）；解析停止在 `execution` 上优先于装配停止。
+- 反例与证伪：首轮复核 **Approve** + F1/F2/F3（签名多态站点被静默漏报、`ArtifactTree` root 未校验、报告条目不计费）→ 修正 → 复审 **Approve**（loader 轴不可证伪、诊断计费口径、停止归属、计数成对）→ 再修正 → 三轮 **Approve**。全过程 30+ 组变异：过滤器退回 owner 精确、把别的声明当命中、未决当已排除、`max_items` 不下传、身份比较丢 loader、sig-poly 忽略 name/owner、tree root 大小写、诊断不收费、停止不去重等全部被捕获；P1 的 23 条查询差分矩阵（2.4 前树 vs 当前树）除 `elapsed_millis` 外**逐字段相同**，且该矩阵本身有判别力（注入 owner 精确匹配或去掉 descriptor 类型判定即 DIFFERS）。
+- A11 端到端：`Base.foo` 在 `Sub` 调用时 P1 的 `mentions_symbol(Base.foo)` 不展开 owner，而声明引用查询返回该 use-site（`referenced` 保留 `Sub` 符号、`resolved` 指向 `Base` 声明、origin 为调用点 BCI）；同一链路有 `Mid`/无关层级/异描述符/未消费 `Methodref` 的对照。
+- 证据：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **487 passed / 0 failed / 1 ignored**（`p2_declaration_refs` 34、`p1_xref_golden` 5、`p2_members` 46）；示例 exit 0；由主 Agent 独立复跑确认。
+- 独立复核结论：**Approve**（三轮）。登记债务：closure 自身诊断的计费循环当前无生产者（2.5 接上后生效，代码 fail-safe）；`DeclarationRefQuery.consumers.version` 不校验（`Engine::query` 会拒绝非 1）；"解析到别的声明"无独立报告字段（由 `reads`/usage 观察）；签名多态与 `MemberShape` 共享 2.3 的 name-only 近似。
+
 ## P2 验收映射现状（滚动更新）
 
 按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
@@ -139,5 +148,5 @@
 ## 第一片（1.1–1.3）状态与闸口
 
 - 1.1、1.2、1.3 均已完成、独立复核 **Approve** 并有各自 CI 记录；第一片的退出条件（reader 类型化操作数、预算维度、结果/请求契约可用）已满足。第一片整体以提交 `0cba0d6`（实现）+ `6344508`（文档）推送，CI run [`35253446169`](https://github.com/LordCasser/jarde/actions/runs/35253446169) 四个 job 全部 success（`stable` 含 ignored JDK 25 oracle、`MSRV 1.88.0`、双 workspace `supply chain`、`fuzz smoke`）。
-- 2.4 起未开始（2.1–2.3 已完成并复核 Approve）。按 `tasks.md`，2.x 各片逐项实现、验证并只读复核后再交接。
+- 2.5 起未开始（2.1–2.4 已完成并复核 Approve）。按 `tasks.md`，2.x 各片逐项实现、验证并只读复核后再交接。
 - 债务池（登记，不阻塞）：1.2 的操作数存储放大与未完整解码前缀语义（3.x 消费前收紧）、`fuzz/README.md` 措辞、P2 维度真实膨胀由 3.5/4.3 验收、`query-api` 与 `analysis-contracts` 的 spec delta 在 P2 归档时同步主规格。
