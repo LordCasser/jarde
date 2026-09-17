@@ -146,16 +146,16 @@
 
 | 验收 | 承担任务 | 现状 | 还缺什么（退出 P2 前必须补） |
 | --- | --- | --- | --- |
-| A11 Base.foo / Sub CP owner | 2.3、2.4 | **部分**：2.3 已实现并复核成员解析（含 `Resolved`/`Missing`/`Ambiguous`/`Inaccessible`/ICCE 与"缺失依赖不变否定"，有 46 条用例与探针）；2.4 的声明引用查询实现中 | 2.4 的 `Base.foo` 在 `Sub` 调用的端到端对照（`mentions_symbol` 仍按原始符号）、未使用 CP 不算引用、未决候选不当已排除；2.5 的 dispatch/open-world |
-| A14 全范围中断/缺失依赖 | 1.3、2.1、2.2、2.3、2.5、5.1 | **部分**：18 项预算维度与两个高水位就位；2.1/2.2/2.3 的停止语义（`Partial`/`Cancelled`/`BudgetExceeded` + 前缀）有实证 | 2.5 的 scope 枚举预算；5.1 的库/CLI 一致性与终止语义逐字段一致 |
-| A16 单方法按需边界 | 2.2、2.3、5.2 | **部分**：`reads` 记录 (definition, loader) 与理由；成员搜索不读 Body（`code_bytes == 0` 有真实对照） | 5.2 的实际入口读取/构造计数（不加载无关 Body、不建全局 XRef） |
-| A17 X1 零 CFG/SSA/AST | 1.1、5.2 | **部分**：源码级守卫（`query`/`xref` 不得引用 P2 模块与类型，含推导的类型名单与注入自检） | 5.2 的构造计数（resolver/CFG/SSA/Region/AST 次数为零）；petgraph 引入后守卫需覆盖新依赖位置 |
+| A11 Base.foo / Sub CP owner | 2.3、2.4、2.5 | **已达成（待 5.4 总门禁）**：2.3 成员解析（46 条用例 + 探针，含 JVMS 5.4.3 三条搜索路径、访问与调用种类规则、default conflict）；2.4 声明引用查询（`Base.foo` 在 `Sub` 调用时 `mentions_symbol(Base.foo)`=0 而声明查询返回该 use-site、`resolved` 指向 `Base`；未使用 CP 不算引用；未决候选保留 use-site 不当作已排除）；2.5 已知范围 dispatch（候选 + open-world 证据，单一候选不声称唯一运行目标） | 5.4 的总门禁与文档同步（功能面已全部落地并有独立复核） |
+| A14 全范围中断/缺失依赖 | 1.3、2.1、2.2、2.3、2.4、2.5、5.1 | **部分**：18 项预算维度与两个高水位就位；2.1–2.5 的停止语义（`Partial`/`Cancelled`/`BudgetExceeded` + 前缀）各有实证，2.5 补上 scope 枚举预算与 `DependencyDepth`→listing 截断的停止路径 | 5.1 的库/CLI 一致性与终止语义逐字段一致；4.x 阶段的停止（Frame/SSA 预算） |
+| A16 单方法按需边界 | 2.2、2.3、2.4、2.5、5.2 | **部分**：`reads` 记录 (definition, loader) 与理由（含 `DispatchScope`）；成员搜索与 dispatch 都不读 Body（`code_bytes == 0` 有真实对照，2.4 另有"与同 consumers 的 P1 扫描计费相等"口径） | 5.2 的实际入口读取/构造计数（不加载无关 Body、不建全局 XRef） |
+| A17 X1 零 CFG/SSA/AST | 1.1、3.3、5.2 | **部分**：源码级守卫（`query`/`xref` 不得引用 P2 模块与类型，含推导的类型名单与注入自检） | **已证实的缺口**：3.1 引入 petgraph 后，受守卫文件里 `use petgraph::…` 能编译且守卫不报警（3.3 必须把 `petgraph::`/`petgraph as`/`extern crate petgraph` 加入 `A17_IMPORT_TOKENS`）；`crate::dispatch` 等新 crate-private 模块也不在 token 表；5.2 的构造计数是行为侧证据 |
 | A09 历史 jsr/finally | 3.3–3.5 | **未开始** | raw CFG/returnAddress/有界规范化 + 真实历史 finally 语料 |
 | A10 缺失 StackMap/debug | 4.1–4.3 | **未开始** | Frame 推导、版本合法性诊断、`NotPerformed` 语义 |
 | A13 成员级失败 | 5.1 | **未开始** | 同类正常与失败方法并存、五平面分开报告 |
 | A18 输入变化 | P0/P1 已覆盖 | **保持** | 每个缓存/并行阶段引入时回归（P5） |
 
-结论：2.x 完成前不宣称任何 P2 验收通过；上表在每片收口时更新。
+结论：A11 的功能面已随 2.3–2.5 全部落地并有独立复核，但**只有 5.4 的总门禁跑完才算通过**；A14/A16/A17 仍各缺 5.x 的入口侧证据（A17 另有一处已被证实的守卫缺口，必须由 3.3 关闭）。上表在每片收口时更新。
 
 ## 第一片（1.1–1.3）状态与闸口
 
