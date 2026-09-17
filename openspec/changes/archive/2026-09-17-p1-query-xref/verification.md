@@ -163,8 +163,11 @@
 
 ### 尚未关闭
 
-- 3.3 已完成并复核 **Approve**（语料索引、golden、性质与有界 fuzz 见下两节）。
-- 3.4 文档同步（README、支持矩阵、OpenSpec 入口/roadmap/acceptance）与完整 CI/归档：进行中；在最终候选 CI 通过前不勾选 3.4、不归档。
+- 3.4 的最终候选已推送并记录（见下），归档随后执行；归档提交本身只改文档，其 CI 结果另记。
+
+## 2026-09-17 最终候选与 CI（3.4）
+
+最终候选为 `main` 上的 **`a6bcccb`**（`43032b2` 实现 + `61efae9` 仓库卫生 + `a6bcccb` 文档与验收记录，从 `ee0a3a1` fast-forward）。CI run [`35233298026`](https://github.com/LordCasser/jarde/actions/runs/35233298026)：`stable / test and specification`、`MSRV 1.88.0`、`supply chain`、`fuzz smoke` **四个 job 全部 success**。该 run 覆盖：`fmt`、`clippy --workspace --all-targets --all-features --locked -D warnings`、两个固定种子的全量测试、**ignored JDK 25 instruction-boundary oracle**、公共示例、feature/normal 依赖树、`openspec validate --all --strict`、干净树检查，以及 fuzz workspace 的语料自检与两个 target 的 20 秒有界 smoke。同一命令集在推送前的本地收口运行（单作业）全部通过，例外是本机没有 JDK 25，因此 oracle 的通过证据只来自该 CI run。收口 smoke 的 60 秒单 worker 记录见 3.3 第二节，由实现者、独立复核者与主 Agent 各跑一遍。
 
 ## 2026-09-17 P1 fuzz 门禁与高扇出边界（3.3 第二部分）
 

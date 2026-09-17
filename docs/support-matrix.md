@@ -1,6 +1,6 @@
 # 当前五维支持矩阵
 
-本页是当前用户可见能力状态的单一事实源。P0 的验收要求以[已生效主规格](../openspec/specs/)和[归档 tasks](../openspec/changes/archive/2026-09-17-establish-p0-foundation/tasks.md)为准；已完成的 P1 增量以 [`p1-query-xref` tasks](../openspec/changes/p1-query-xref/tasks.md) 和 [verification](../openspec/changes/p1-query-xref/verification.md) 为准。这里只描述实际实现，不是未来路线承诺。
+本页是当前用户可见能力状态的单一事实源。P0 的验收要求以[已生效主规格](../openspec/specs/)和[归档 tasks](../openspec/changes/archive/2026-09-17-establish-p0-foundation/tasks.md)为准；P1 的增量以[归档 tasks](../openspec/changes/archive/2026-09-17-p1-query-xref/tasks.md)和[verification](../openspec/changes/archive/2026-09-17-p1-query-xref/verification.md)为准。这里只描述实际实现，不是未来路线承诺。
 
 ## 状态词
 

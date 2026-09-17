@@ -110,7 +110,8 @@ JSON
 
 - [五维支持矩阵](docs/support-matrix.md)
 - [P0 实际验证记录](openspec/changes/archive/2026-09-17-establish-p0-foundation/verification.md)
-- [P1 change（proposal / design / tasks / verification）](openspec/changes/p1-query-xref/)
+- [P1 归档（proposal / design / tasks / verification）](openspec/changes/archive/2026-09-17-p1-query-xref/)
+- [已生效主规格](openspec/specs/)（P0 的 analysis-contracts / artifact-snapshots / classfile-inspection，P1 的 artifact-views / query-api / structural-xref）
 - [OpenSpec 入口](openspec/README.md)
 - [P0 归档 proposal / design / tasks](openspec/changes/archive/2026-09-17-establish-p0-foundation/)
 - [已生效的 P0 主规格](openspec/specs/)

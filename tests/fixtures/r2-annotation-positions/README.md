@@ -1,7 +1,7 @@
 # Annotation-position fixtures for the R2 counterexamples
 
 These two class files are the R2 counterexamples recorded in
-`openspec/changes/p1-query-xref/design.md` (section "反例复现材料"): real javac output in
+`openspec/changes/archive/2026-09-17-p1-query-xref/design.md` (section "反例复现材料"): real javac output in
 which the only occurrence of an annotation type is a nested attribute position — a
 `Record` component for the first one, a method's `Code` attribute for the second. They are
 checked in so the regression tests run against compiler output instead of only against

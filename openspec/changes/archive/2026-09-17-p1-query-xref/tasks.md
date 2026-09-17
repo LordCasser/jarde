@@ -1,4 +1,4 @@
-复核状态（2026-09-17）：接手时是 **9/11**，不是交接摘要中的 8/11；重新打开 2.1、2.2、3.1 后为 **6/11**。修复进展：**2.1、2.2、3.1、3.3 均已修复/完成并通过独立只读复核（Approve），当前 10/11**；剩余 3.4（文档、完整 CI、归档）。R1–R4 的反例、源码位置及范围见 [design](design.md#2026-09-17-复核与推进顺序)，实施与复核证据见 [verification](verification.md#2026-09-17-修复轮r1--r4)。2.2 实施期间另发现并修复了方法 `Signature` 的 `Result`/`ThrowsSignature` 假失败（合法 javac 输出被判 malformed）。本轮只修改实现、测试与验证记录，不提交或推送工作树。
+复核状态（2026-09-17）：接手时是 **9/11**，不是交接摘要中的 8/11；重新打开 2.1、2.2、3.1 后为 **6/11**。修复进展：**2.1、2.2、3.1、3.3 均已修复/完成并通过独立只读复核（Approve）；3.4 的文档同步、本地完整门禁与候选 CI 已完成，当前 11/11**，归档与主规格同步按最终候选 `a6bcccb` 的 CI run `35233298026` 执行。R1–R4 的反例、源码位置及范围见 [design](design.md#2026-09-17-复核与推进顺序)，实施与复核证据见 [verification](verification.md#2026-09-17-修复轮r1--r4)。2.2 实施期间另发现并修复了方法 `Signature` 的 `Result`/`ThrowsSignature` 假失败（合法 javac 输出被判 malformed）。
 
 ## 1. Query model and views
 
@@ -18,7 +18,7 @@
 - [x] 3.1 修复 R1：游标及其 digest 绑定完整 QueryTarget，升级 QUERY_ENGINE_SCHEMA，拒绝 target/schema/digest 不匹配；覆盖 owner/name/descriptor、literal kind/原始值/float 位模式变化，库与 CLI 均拒绝跨目标续页；同目标在不同页大小/预算下按发布边界不重不漏，维持 A14/A18 和 Unknown/Partial/Complete 契约（2026-09-17 修复并独立复核 Approve；复核要求的预算续页等价用例已补齐，证据见 verification 的修复轮 R1）
 - [x] 3.2 在 jarde-cli 暴露查询范围、view、预算和 evidence，验证库与 CLI 结果语义一致
 - [x] 3.3 在 R1–R4 回归及独立复核通过后，按 design 验收表建立 P1 版本/打包/身份/对抗语料索引与结构 XRef golden/性质及有界 fuzz 门禁：映射 A01–A08、A14、A17、A18，保留来源/生成命令/编译器版本/摘要；覆盖跨页等价、未使用 CP 不产出 X1、局部未知不伪装否定、预算/取消和嵌套容器组合；声明性 UnsupportedAnalysis 与解析结果必须可区分（2026-09-17 完成并独立复核 Approve：语料索引见 verification 的 3.3 两节，golden/demo 清单与 fuzz 工具、限值、冒烟记录同处；两处门禁削弱点已关闭并各有可证伪实验）
-- [ ] 3.4 在 3.3 通过后同步 README、OpenSpec 入口/roadmap/acceptance/proposal/verification 与五维支持矩阵，按 CI 原命令跑 fmt、all-targets/all-features/locked clippy、双固定种子 tests、ignored JDK 25 oracle、示例、依赖树、MSRV 与 supply-chain；检查差异，按可编译边界提交/推送并记录最终候选 SHA 对应的 CI，门禁全部通过后才归档同步主 specs；仓库卫生改动单独提交，P1 仍不包含 Decompiler
+- [x] 3.4 在 3.3 通过后同步 README、OpenSpec 入口/roadmap/acceptance/proposal/verification 与五维支持矩阵，按 CI 原命令跑 fmt、all-targets/all-features/locked clippy、双固定种子 tests、ignored JDK 25 oracle、示例、依赖树、MSRV 与 supply-chain；检查差异，按可编译边界提交/推送并记录最终候选 SHA 对应的 CI，门禁全部通过后才归档同步主 specs；仓库卫生改动单独提交，P1 仍不包含 Decompiler（2026-09-17 完成：本地门禁全绿，候选 `a6bcccb` 的 CI run `35233298026` 四个 job success，证据见 verification 的 3.4 节；JDK 25 oracle 只由该 CI run 证明）
 
 ## 执行顺序与收口规则
 
