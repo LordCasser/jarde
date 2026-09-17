@@ -685,14 +685,17 @@ pub struct HeaderRead {
 ```rust
 pub(crate) enum IrPhase { RawFacts = 1, RawCfg, LegacyNormalization, CanonicalCfg, Frame, Ssa }
 pub(crate) enum FactKind { Instructions, ExceptionTable, ThrowSites, RawCfg, CallContexts, CanonicalCfg, Frames, Ssa, Effects }
-pub(crate) enum PassBudgetClass { Blocks, Steps, Clones, None }  // IrItems / AnalysisSteps / NormalizationClones / 不计费
+pub(crate) enum PassBudgetClass { Blocks, Steps, Clones }
+// Blocks = IrItems + IrEdges（块与边）；Steps = AnalysisSteps；Clones = NormalizationClones。
+// 集合为空 = 该 pass 不计费（例如 raw_facts：解码是 reader 的工作，字节已按 ClassBytes/AttributeBytes/CodeBytes 收过费）。
+// **单一 pass 可以计多个维度**：raw_cfg 同时产块与边并迭代工作列表，故其集合是 [Blocks, Steps]——这正是本字段必须是集合而非单一类别的原因。
 pub(crate) struct PassDescriptor {
     pub(crate) phase: IrPhase,
     pub(crate) name: &'static str,
     pub(crate) requires: &'static [FactKind],
     pub(crate) produces: &'static [FactKind],
     pub(crate) invalidates: &'static [FactKind],   // 本 pass 改变 CFG/异常边时必须声明
-    pub(crate) budget: PassBudgetClass,            // Blocks | Steps | Clones | None
+    pub(crate) budget: &'static [PassBudgetClass], // 该 pass 实际计费的维度集合（空 = 不计费）
 }
 ```
 
@@ -701,7 +704,13 @@ pub(crate) struct PassDescriptor {
 - **启动校验**：请求的阶段集合在开跑前解析成"该表的前缀"（与 1.1 的 `scheduled_stages` 同规则），并检查每个被调度 pass 的 `requires` 都能由**更早的已调度 pass** 产出；缺失前置、`IrPhase` 逆序、`requires` 与 `produces` 冲突、表自身成环都在**启动时**返回结构化错误（`ir_pass_prerequisite_missing` / `ir_pass_order_invalid` / `ir_pass_graph_cycle`），不执行任何半初始化 IR。
 - **invalidation**：任何 pass 声明了非空 `invalidates` 时，其"之后"的既得事实必须被丢弃（`CanonicalCfg` 改变异常边即让 `Frames`/`Ssa`/`Effects` 失效），后续阶段若要使用必须重算或拒绝使用。运行时用一个"已产出事实集合"检查：使用未被重算的失效事实即 `ir_stale_fact`（结构化错误），不是静默沿用。
 - **失败隔离与最后有效阶段**：某个 pass 因输入损坏/预算/取消停止时，`stages` 记录到该阶段为止的 `Completed`/`Partial`/`Failed`，**不发布**半初始化 facts（与 1.1 `StageResult` 语义一致）。
-- **计费**：每个 pass 按其 `budget` 类别先计费后分配（`IrItems`/`IrEdges`/`AnalysisSteps`/`NormalizationClones`）；pass 边界是 `poll()` 检查点。
+- **计费**：每个 pass 按其 `budget` **声明的维度集合**先计费后分配；pass 边界是 `poll()` 检查点。声明的集合与实现实际计费的维度必须**逐项相等**——多计（未声明的维度被收费）或少计（声明的维度漏收，例如 raw CFG 漏计 `AnalysisSteps`）都是缺陷，由每条 pass 的用例断言该集合。
+- **失效后的重算者要指定**：`Frames` 由 `frame` 重算，`Ssa` 与 `Effects` 由 `ssa` 重算——「必须重算」没有指定落点就只是一句空话。
+- **invalidate 未产出的事实是 no-op**：状态停在 `NotProduced`，其缺失随后以 `ir_pass_prerequisite_missing` 报出（不是 `ir_stale_fact`）。
+- **检查范围分工**：phase 顺序与成环是**整表**性质（不在被调度前缀里的环也报错）；缺前置只判**被调度前缀**（前缀外的悬空 `requires` 不算错）。
+- **事实的消费者必须把该事实写进自己的 `requires`**：否则 invalidation 检查对它不生效（校验器只能看到声明过的依赖）。
+- **重入语义**：同一执行内重新施加某 pass（3.5 在更大克隆预算下重试、或 5.1 的失败重装配）是合法操作——重入前必须重新满足 `requires`，其 `invalidates` 照常生效；3.5 的默认行为仍是「超限即停 + fallback」，重试由调用方以更大预算重新发起。`last_completed` 的语义是**已完成的最高 phase**（重入不得使其回退）——5.1 装配 `stages` 时以它为准，而不是「最后施加的那个 pass」。
+- **phase 命名**：`LegacyNormalization`（3.4）产 `CallContexts`，真正的克隆规范化发生在 `CanonicalCfg`（3.5）；不要把 `legacy_normalization` 读成克隆 pass。
 - **运行期复用同一记账**：3.3 起每个 pass 的入口必须走 3.2 的 `FactLedger::apply`（先全量检查 `requires`、再记 `invalidates`、再 `produces`、最后推进 `last_completed`），**禁止**另写一套事实记账——否则启动校验与运行期检查会各自漂移，`ir_stale_fact` 也就失去意义。
 - **计费语句在本片只有声明**：3.2 只建立 pass 表与校验，`IrItems`/`IrEdges`/`AnalysisSteps`/`NormalizationClones` 的真实计费点从 3.3/3.4/3.5 起出现；在此之前 `analyze_method` 的 counted usage 全零（1.1 语义不变）。
 - **本表的属性 vs 通用规则**：固定表满足"一 phase 一 pass、前缀即 pass 前缀"，由金标单测钉住；校验器本身只拒绝 phase **降序**（同 phase 多 pass 合法），这样 3.3–4.x 若要给一个 phase 拆两个 pass 不必改校验。
@@ -724,7 +733,7 @@ pub(crate) struct PassDescriptor {
 - **不可达与自环**：不可达块进 `unreachable` 而不是被丢掉；自环（`goto` 指向自身、保护区间覆盖自身）必须可表达且不破坏 SCC/支配结果。
 - **确定性**：块/边/throw site/handler 一律按 (class offset, BCI, kind, ordinal) 显式排序；**不得依赖 petgraph 的迭代顺序或 `immediately_dominated_by` 的顺序**（3.1 的证据）。
 - **A17/P1 不变**：raw CFG 只在 `analyze_method` 路径上构建；`Engine::query` 的 BCI、引用数量与证据不变（P1 golden 全绿是证据）；`query`/`xref` 不引用 `ir`。
-- **计费**：块/边先计 `IrItems`/`IrEdges` 再构造；工作列表迭代计 `AnalysisSteps`；`max_blocks` 默认 16 384、硬上限 65 535；超限即停并发布已完成的阶段结果。
+- **计费**：块/边先计 `IrItems`/`IrEdges` 再构造；工作列表迭代计 `AnalysisSteps`（即该 pass 的 `budget` 集合为 `[Blocks, Steps]`）；`max_blocks` 默认 16 384、硬上限 65 535；超限即停并发布已完成的阶段结果。
 
 ### 3.4 raw returnAddress 与调用上下文
 
