@@ -26,8 +26,16 @@
 系统 SHALL 为枚举、Header 和 bytecode 返回快照/entry 身份及适用的 class offset 或方法 BCI，并分别返回 coverage、execution、diagnostics 和预算消耗。
 
 #### Scenario: Cancelled enumeration
-- **WHEN** 枚举开始前或过程中收到取消
-- **THEN** 返回 Cancelled 和已完成范围，不能将其标为 Complete
+- **WHEN** ZIP 根容器已经建立，且枚举开始前或过程中收到取消
+- **THEN** 返回 `Ok(EnumerationReport)`，execution 为 Cancelled，并保留已完成的可靠前缀及其 coverage，不能将其标为 Complete
+
+#### Scenario: Partial or failed enumeration after root open
+- **WHEN** ZIP 根容器已经建立，枚举过程中耗尽预算或后续 entry 结构损坏
+- **THEN** 返回 `Ok(EnumerationReport)` 并保留已验证前缀；预算耗尽为 Partial 和对应 BudgetExceeded 维度，结构损坏为 Failed 和错误 diagnostic，artifact coverage 为 Partial，未完成范围明确标为 skipped
+
+#### Scenario: Root container cannot be established
+- **WHEN** 输入不是 ZIP，或 ZIP 根容器无法建立
+- **THEN** 枚举可以返回 `Err`，不得伪造可枚举的根容器或部分前缀
 
 ### Requirement: Independent evidence and coverage dimensions
 结构引用 SHALL 分开表示 relation、derivation、resolution、applicability 和 validity。结果 MUST 分开描述 artifact structural coverage、runtime resolution coverage、dynamic analysis coverage、execution 和分页；“对已声明 schema 完整”不得扩张为理解任意未知 attribute 或完整运行图。

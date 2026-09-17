@@ -1,6 +1,6 @@
 # JVM Rust Engine 阶段路线
 
-本路线只描述未来 OpenSpec changes 的依赖、交付边界和验收门槛。P0–P5 change 均为规划，文档完成不代表任何阶段已经实现。
+本路线描述 OpenSpec changes 的依赖、交付边界和验收门槛。P0 已开始实施，P0–P5 的真实完成度以各 change 的 tasks、代码和验收证据为准；规划文档完成不代表阶段已经实现。
 
 相关入口：[OpenSpec 规划入口](README.md)、[技术栈与依赖选型](dependencies.md)、[架构验收与阶段映射](acceptance.md)。
 
@@ -29,6 +29,6 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 
 - 每个阶段保持独立 OpenSpec change；`proposal.md` 的 capabilities 必须与 `specs/<capability>/spec.md` 一一对应。
 - P0 的顶层 locator 与有界内存快照不在 P1 重做；P1 才增加 nested/MR/Boot 的递归候选、布局和 RuntimeView。
-- P0–P5 的实施任务均保持未完成；P0 的三项文档准备任务已完成并单独勾选。后续只有实际完成并验证后才能勾选实施任务；本文不表示任何阶段已经实现。
+- P0–P5 只有实际完成并验证的任务才能勾选；当前状态以各 change 的 `tasks.md` 为准。本文描述依赖和门槛，不表示任何阶段已经整体实现。
 - 每个 change 的实施阶段归档前先执行对应 strict validation，再按架构验收 IDs 和真实语料验证；有行为 delta 时 archive 默认同步主 specs，不使用 `--skip-specs`。
 - 优先复用 P0 已评估的 noak、rawzip、flate2 rust_backend、blake3、serde、thiserror、clap；后续库、持久 index 或并发方案先依 [选型准入](dependencies.md) 评估。JVM/JADX 不进入生产核心运行依赖，只可作为受控测试 oracle。

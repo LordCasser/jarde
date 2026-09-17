@@ -24,4 +24,4 @@
 
 ## Impact
 
-未来实现拟新增根 crate `jarde` 和 `crates/jarde-cli`。底层优先复用 noak、rawzip、flate2、blake3、serde、thiserror、clap；评估版本、准入测试和排除项记录于 [依赖选型](../../dependencies.md)。本 change 不实现 XRef、runtime selection、resolver、CFG/SSA 或 Java 恢复，后续能力分别验收。当前只交付 OpenSpec 文档，尚无 P0 实现。
+已建立宿主无关的核心 crate `jarde` 和薄包装 `crates/jarde-cli`；外部 `reverse-engine` 如需接入，应由其独立 adapter/backend crate 单向依赖 `jarde`，不把 MCP 或宿主协议反向引入核心。底层复用 noak、rawzip、flate2、blake3、serde、thiserror、clap；评估版本、准入测试和排除项记录于 [依赖选型](../../dependencies.md)。本 change 不实现 XRef、runtime selection、resolver、CFG/SSA 或 Java 恢复，后续能力分别验收。P0 Foundation 已按 `tasks.md` 实现，验证与交付任务仍在进行；未勾选任务和未通过验收的能力仍视为未实现。

@@ -1,0 +1,23 @@
+[workspace]
+resolver = "3"
+members = [".", "crates/jarde-cli"]
+
+[package]
+name = "jarde"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT OR Apache-2.0"
+description = "Bounded, provenance-preserving JVM artifact analysis contracts"
+
+[dependencies]
+blake3 = { version = "=1.8.7", default-features = false, features = ["pure"] }
+flate2 = { version = "=1.1.10", default-features = false, features = ["rust_backend"] }
+noak = "=0.7.0"
+rawzip = "=0.5.1"
+serde = { version = "=1.0.229", features = ["derive"] }
+thiserror = "=2.0.20"
+
+[dev-dependencies]
+proptest = "=1.11.0"
+serde_json = "=1.0.151"

@@ -6,7 +6,11 @@ context: |
   Keep OpenSpec structural headings and SHALL/MUST keywords in English.
   Project: jarde, a pure Rust library-first JVM artifact analysis engine.
   Architecture reference: JVM_Rust_Engine_Final_Architecture.md.
-  Current delivery contains planning documents only; P0-P5 are not implemented.
+  Keep the core jarde crate host-agnostic. jarde-cli and any reverse-engine backend
+  integration are thin outward adapters that depend on jarde; the core must not
+  depend on CLI, MCP, or host/backend protocol types.
+  Implementation is in progress; no P0-P5 stage is complete. Use each change's
+  tasks and validation evidence as the implementation status source.
   Query and Decompiler share readers and identities but do not start each other.
   Preserve physical origins and raw facts; distinguish symbolic references,
   definition resolution, dispatch, output quality, coverage and execution state.

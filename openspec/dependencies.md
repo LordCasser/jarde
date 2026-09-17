@@ -46,13 +46,13 @@
 
 ## 上游准入门槛与已知关注点
 
-以下是待实施验证项，尚未完成：
+以下是依赖准入与持续验证清单；每项完成度以分项说明为准，尚未覆盖的部分留在对应 tasks：
 
-1. **noak CP/字符串**：无效 tag/index、Long/Double 末槽、MUTF-8 NUL、补充字符、孤立 surrogate、非法编码和 descriptor 字节边界。0.7.0 的 CP 双槽读取需要额外关注最后保留槽；禁止直接假定构造成功即 JVMS 合法。
-2. **noak instruction cursor**：wide、相对 Code 起点的 switch padding、负表长、high/low 边界、`i32::MAX` table key、截断和 reserved opcode。审阅发现 `TablePairs` 的 key 递增涉及 i32 上界；必须建立回归并避免调用可能溢出的遍历路径，必要时推动上游修复。首个错误后不得继续解码。
-3. **Header 延迟性**：无效 Code 不影响可读 Header 外壳；未知 attribute 保留位置；子属性长度、位置/基数/版本验证由 capability registry 明确声明。MUTF-8 descriptor 不能靠 lossy 字符迭代恢复精确身份。
-4. **rawzip 容器**：重复 raw name、同内容不同 origin、EOCD 与实际 entry 数不符、中央/局部头冲突、ZIP64、data descriptor、前置脚本、CRC/size、加密/未知压缩、重叠数据区间。复用库的解析与验证接口，不把高层成功等同全部输入合规。
-5. **预算与 I/O**：按实际展开字节限制 DEFLATE，校验声明大小；目录逐项计数；同一请求累计计算 snapshot/临时物化/结果缓冲。P1 分别验证 STORED 子范围访问和 DEFLATED 有界物化，不承诺任意 nested 零拷贝。
+1. **noak CP/字符串**：P0 2.3 已覆盖无效 tag/index、Long 末槽、MUTF-8 NUL、补充字符、孤立 surrogate 和非法编码；同一局部预检同时约束 Double 双槽。回归确认 0.7.0 会接受缺少合法后继保留槽的末位 Long/Double，因此适配层在 noak 前拒绝该边界，不能把构造成功等同 JVMS 合法。P0 3.2 又以真实 Header descriptor 路径覆盖 encoded NUL、surrogate pair 和孤立 surrogate，并用 256-case UTF-16 unit 性质测试核对 raw/UTF-16/escaped 稳定性；这些测试验证结构保真，不冒充 descriptor 语法验证。
+2. **noak instruction cursor**：P0 2.4 已覆盖 wide、相对 Code 起点的 switch padding、high/low 边界、`i32::MAX` table key、截断、reserved opcode、CP index、异常表顺序、局部预算/取消及首错停止。P0 3.2 进一步要求任意 0–64 byte 指令向量都通过公共方法入口返回 Complete 或保留可靠前缀的 method-local Partial，并核对 raw opcode/span、stop/diagnostic code 和预算；非法零项 `tableswitch`、malformed `wide` 及 synthetic `jsr/jsr_w/ret` 均有定向回归。固定 ECJ 4.6.1 历史目标语料覆盖 45.3–52.0，其中 45–48 的 finally codegen 保留真实 `jsr`/`ret` 边界。适配不迭代存在 i32 上界递增风险的 `TablePairs`；noak 成功事件之后的 checked 宽度薄适配同时由下一 BCI、最终 code_length 和 operand 类别回归约束。测试专用 OpenJDK 25 Class-File API oracle 已对 `tableswitch`、`lookupswitch` 与 CP-bearing fixed-width 指令交叉检查：runtime `25.0.4+7`，动态 fixture 固定为 52.0，SHA-256 `04ea6ad5115a0c17d4bd604ef262f8110e417efa8725f39c9de9641565c2b345`；oracle scope 仅为 instruction boundary，不是 verification。
+3. **Header 延迟性**：P0 2.3 已用非法 Code 内容验证 Header 只读取外壳，并为未知 class/field/method attribute 保留完整及 content span；名称和 descriptor 同时保留原始 MUTF-8、UTF-16 units 与安全转义显示，不以 lossy 文本作为身份。P0 3.2 已补齐 Code 嵌套未知 attribute 的长度/截断回归，证明 Header 不进入 Code 子属性而 bytecode 请求在读取该结构时拒绝非法长度；attribute 合法位置、基数和版本语义仍由后续 capability registry 负责。
+4. **rawzip 容器**：P0 3.1 已覆盖 CLASS 与 JAR/WAR 路径入口、重复 raw name/同内容不同 origin、EOCD 与实际 entry 数不符、中央/局部头冲突、data descriptor、前置脚本、STORED/DEFLATED、CRC/size、加密/未知压缩、重叠数据区间和源替换快照。ZIP64 使用确定性生成的 248-byte 小型 fixture，classic sentinel、ZIP64 EOCD/locator、64-bit entry hint、物理 spans 和读取摘要均经真实 `ArtifactSnapshot` 入口复核；不依赖 65535-entry 或多 GiB 测试数据。复用库的解析与验证接口，不把高层成功等同全部输入合规。
+5. **预算与 I/O**：P0 3.3 已验证 artifact open、中央目录枚举、entry locator/read、class Header 和单方法 bytecode 在同一请求中的累计 Budget，以及入口预取消和内部循环协作取消。DEFLATE 按实际展开字节计 `EntryBytes`，压缩输入计 `ReadBytes`；目录记录逐项计 `ArchiveEntries`；snapshot、临时物化和结果缓冲分别计费。Header 不计 `CodeBytes`，方法请求只计所选 Code shell 和可靠指令前缀。P1 分别验证 STORED 子范围访问和 DEFLATED nested 有界物化，不承诺任意 nested 零拷贝。
 6. **供应链**：固定 lockfile；MSRV/stable CI；许可证与 RustSec 检查；`cargo tree -e features` 检查传递 feature 与 C/JVM 运行依赖；完整结果冷/热一致。检查通过之前不标记依赖通过生产验收。
 
 ## 可复核源码版本
