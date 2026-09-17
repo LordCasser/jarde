@@ -702,6 +702,9 @@ pub(crate) struct PassDescriptor {
 - **invalidation**：任何 pass 声明了非空 `invalidates` 时，其"之后"的既得事实必须被丢弃（`CanonicalCfg` 改变异常边即让 `Frames`/`Ssa`/`Effects` 失效），后续阶段若要使用必须重算或拒绝使用。运行时用一个"已产出事实集合"检查：使用未被重算的失效事实即 `ir_stale_fact`（结构化错误），不是静默沿用。
 - **失败隔离与最后有效阶段**：某个 pass 因输入损坏/预算/取消停止时，`stages` 记录到该阶段为止的 `Completed`/`Partial`/`Failed`，**不发布**半初始化 facts（与 1.1 `StageResult` 语义一致）。
 - **计费**：每个 pass 按其 `budget` 类别先计费后分配（`IrItems`/`IrEdges`/`AnalysisSteps`/`NormalizationClones`）；pass 边界是 `poll()` 检查点。
+- **运行期复用同一记账**：3.3 起每个 pass 的入口必须走 3.2 的 `FactLedger::apply`（先全量检查 `requires`、再记 `invalidates`、再 `produces`、最后推进 `last_completed`），**禁止**另写一套事实记账——否则启动校验与运行期检查会各自漂移，`ir_stale_fact` 也就失去意义。
+- **计费语句在本片只有声明**：3.2 只建立 pass 表与校验，`IrItems`/`IrEdges`/`AnalysisSteps`/`NormalizationClones` 的真实计费点从 3.3/3.4/3.5 起出现；在此之前 `analyze_method` 的 counted usage 全零（1.1 语义不变）。
+- **本表的属性 vs 通用规则**：固定表满足"一 phase 一 pass、前缀即 pass 前缀"，由金标单测钉住；校验器本身只拒绝 phase **降序**（同 phase 多 pass 合法），这样 3.3–4.x 若要给一个 phase 拆两个 pass 不必改校验。
 
 ### 3.3 raw CFG 与 effect facts
 
