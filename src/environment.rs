@@ -8,9 +8,11 @@
 //! (A17).
 //!
 //! [`validate_environment`] decides everything that the declarations alone can decide and
-//! returns every violation it found. The problem codes are a closed set: a validation
-//! failure never turns into a broken-down "best effort" search order, it stays a reportable
-//! environment problem that keeps the original symbols and the unperformed range.
+//! returns every violation it found; [`validate_environment_with_caller`] adds the one check
+//! that needs the request's own `CallerContext` as well, because that identity is not part of
+//! the environment. The problem codes are a closed set: a validation failure never turns into a
+//! broken-down "best effort" search order, it stays a reportable environment problem that keeps
+//! the original symbols and the unperformed range.
 
 use crate::artifact::ArtifactSnapshot;
 use crate::error::{Error, Result};
@@ -63,6 +65,9 @@ pub struct CallerContext {
 pub enum EnvironmentProblemCode {
     DuplicateLoader,
     CallerDomainMismatch,
+    /// The request's `CallerContext` and the environment's caller domain name different
+    /// loaders; both claim to be the caller's identity.
+    CallerLoaderMismatch,
     MissingParent,
     ParentCycle,
     UnsupportedPolicy,
@@ -73,9 +78,10 @@ pub enum EnvironmentProblemCode {
 
 impl EnvironmentProblemCode {
     /// The closed set in declaration order.
-    pub const ALL: [Self; 8] = [
+    pub const ALL: [Self; 9] = [
         Self::DuplicateLoader,
         Self::CallerDomainMismatch,
+        Self::CallerLoaderMismatch,
         Self::MissingParent,
         Self::ParentCycle,
         Self::UnsupportedPolicy,
@@ -89,6 +95,7 @@ impl EnvironmentProblemCode {
         match self {
             Self::DuplicateLoader => "duplicate_loader",
             Self::CallerDomainMismatch => "caller_domain_mismatch",
+            Self::CallerLoaderMismatch => "caller_loader_mismatch",
             Self::MissingParent => "missing_parent",
             Self::ParentCycle => "parent_cycle",
             Self::UnsupportedPolicy => "unsupported_policy",
@@ -147,13 +154,43 @@ pub struct EnvironmentIdentity {
 /// snapshots only. An unreadable or unprovided root is a problem, not an instruction to
 /// guess: the caller sees exactly which declaration is unusable and still gets the
 /// identity of the environment that was rejected.
+///
+/// The request's own `CallerContext` is not part of the environment, so this entry cannot
+/// decide the one check that needs both: it stays the declaration-only decision, and the
+/// entries that carry a caller use [`validate_environment_with_caller`] instead.
 pub fn validate_environment(
     content: &[ArtifactSnapshot],
     environment: &ResolutionEnvironment,
 ) -> (Vec<EnvironmentProblem>, EnvironmentIdentity) {
+    decide_environment(content, environment, None)
+}
+
+/// The same decision, with the request's caller identity included.
+///
+/// An environment is a declaration of the caller's domain, and a request carries a
+/// `CallerContext` of its own; the two name the same identity, so the closed set has one code
+/// for their disagreement (`CallerLoaderMismatch`). A declaration-only check cannot see it: the
+/// mismatch exists between the environment and the request, not inside either one.
+pub(crate) fn validate_environment_with_caller(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    caller: &CallerContext,
+) -> (Vec<EnvironmentProblem>, EnvironmentIdentity) {
+    decide_environment(content, environment, Some(caller))
+}
+
+/// The one decision both entries share; `caller` adds the check that needs the request.
+fn decide_environment(
+    content: &[ArtifactSnapshot],
+    environment: &ResolutionEnvironment,
+    caller: Option<&CallerContext>,
+) -> (Vec<EnvironmentProblem>, EnvironmentIdentity) {
     let mut problems = Vec::new();
     validate_domain_loaders(environment, &mut problems);
     validate_caller_domain(environment, &mut problems);
+    if let Some(caller) = caller {
+        validate_caller_context(environment, caller, &mut problems);
+    }
     for domain in &environment.domains {
         validate_domain_policy(domain, &mut problems);
         validate_domain_parent(domain, environment, &mut problems);
@@ -334,6 +371,32 @@ fn validate_caller_domain(
             ),
         )),
     }
+}
+
+/// The request's caller identity and the environment's caller domain must name one loader.
+///
+/// Both declarations claim to be the caller: the domain whose roots the search starts from and
+/// the context the use site was found in. A search that started from one while reporting the
+/// other would publish two caller identities in one report, so the disagreement is a problem
+/// instead of a silently picked side.
+fn validate_caller_context(
+    environment: &ResolutionEnvironment,
+    caller: &CallerContext,
+    problems: &mut Vec<EnvironmentProblem>,
+) {
+    let declared = &environment.runtime.load_domain.loader;
+    if &caller.loader == declared {
+        return;
+    }
+    problems.push(problem(
+        EnvironmentProblemCode::CallerLoaderMismatch,
+        EnvironmentSubject::Loader(caller.loader.clone()),
+        format!(
+            "the request names caller loader `{}` while `runtime.load_domain` is loader `{}`; \
+             the two declarations of the caller identity must be equal",
+            caller.loader.0, declared.0
+        ),
+    ));
 }
 
 /// Policies this slice cannot execute must be refused, not flattened into one classpath.

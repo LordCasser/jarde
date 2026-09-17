@@ -5,7 +5,9 @@
 //!
 //! 1. the environment validator reports every declared violation it can decide without
 //!    reading a byte, under the closed `EnvironmentProblemCode` set, and never turns one
-//!    into a unique resolution (`state = None`),
+//!    into a unique resolution (`state = None`) — including the caller-loader check, which is
+//!    decided by the request-level entries because the caller identity is part of the request
+//!    and not of the environment,
 //! 2. the three entry points reject request-level mismatches as input errors and answer
 //!    legal requests with the honest unavailable state: `NotPerformed` / `Failed {
 //!    Unsupported }` / three-dimensional `NotRequested` coverage and zero counted usage,
@@ -225,6 +227,28 @@ fn request(environment: ResolutionEnvironment) -> ResolutionRequest {
     }
 }
 
+/// The same request shape for a class symbol, with the caller loader as a parameter: the
+/// resolution slice looks class names up (2.1), and the caller identity is what the newest
+/// environment check compares against the environment's own caller domain.
+fn class_request(
+    environment: ResolutionEnvironment,
+    caller: &LoaderId,
+    class_name: &[u8],
+) -> ResolutionRequest {
+    ResolutionRequest {
+        environment,
+        target: SymbolRef::Class {
+            owner: bytes(class_name),
+        },
+        use_kind: ReferenceUse::ClassReference,
+        caller: CallerContext {
+            loader: caller.clone(),
+            enclosing: None,
+        },
+        dispatch: None,
+    }
+}
+
 fn declaration_query(fixture: &Fixture, environment: ResolutionEnvironment) -> DeclarationRefQuery {
     DeclarationRefQuery {
         environment,
@@ -311,12 +335,16 @@ fn problem_code_index(code: EnvironmentProblemCode) -> usize {
     match code {
         EnvironmentProblemCode::DuplicateLoader => 0,
         EnvironmentProblemCode::CallerDomainMismatch => 1,
-        EnvironmentProblemCode::MissingParent => 2,
-        EnvironmentProblemCode::ParentCycle => 3,
-        EnvironmentProblemCode::UnsupportedPolicy => 4,
-        EnvironmentProblemCode::UnreadableRoot => 5,
-        EnvironmentProblemCode::ContentNotProvided => 6,
-        EnvironmentProblemCode::ProviderRootUnbound => 7,
+        // Inserted after the two domain/caller-domain codes, where the design's schema
+        // skeleton lists it: the positions are the declaration order `ALL` has to mirror, and
+        // `all_lists_are_complete_and_align_with_the_serde_names` compares them as a sequence.
+        EnvironmentProblemCode::CallerLoaderMismatch => 2,
+        EnvironmentProblemCode::MissingParent => 3,
+        EnvironmentProblemCode::ParentCycle => 4,
+        EnvironmentProblemCode::UnsupportedPolicy => 5,
+        EnvironmentProblemCode::UnreadableRoot => 6,
+        EnvironmentProblemCode::ContentNotProvided => 7,
+        EnvironmentProblemCode::ProviderRootUnbound => 8,
     }
 }
 
@@ -748,6 +776,111 @@ fn caller_domain_must_be_equal_to_the_domain_declared_under_the_same_loader() {
         vec![EnvironmentSubject::Loader(app)]
     );
     assert_problem_report(&fixture, environment, &["caller_domain_mismatch"]);
+}
+
+#[test]
+fn caller_context_must_name_the_loader_of_its_own_domain() {
+    let fixture = fixture();
+    let app = loader("app");
+    let platform = loader("platform");
+    let environment = healthy_environment(&fixture);
+    let content = std::slice::from_ref(&fixture.snapshot);
+
+    // One environment, one class symbol, two caller identities. The caller that names the
+    // loader of `runtime.load_domain` is not a problem and resolves through the fixture's
+    // standalone CLASS root. The P0/P1 `limits()` helper leaves every P2 dimension at its
+    // fail-closed zero, so a real lookup raises its own header-attempt allowance explicitly.
+    let lookup_limits = Limits {
+        class_headers: 8,
+        ..limits()
+    };
+    let mut budget = Budget::new(lookup_limits.clone());
+    let agreeing = Engine::new()
+        .resolve_symbol(
+            content,
+            &class_request(environment.clone(), &app, b"HistoricalControlFlow"),
+            &mut budget,
+        )
+        .expect("a legal request is answered, not raised");
+    assert_eq!(
+        agreeing.environment_problems,
+        Vec::new(),
+        "a caller that names its own domain's loader is not a problem"
+    );
+    assert_eq!(agreeing.analysis, ResolutionAnalysis::Performed);
+    assert_eq!(agreeing.state, Some(ResolutionState::Resolved));
+    assert_eq!(
+        agreeing
+            .resolved
+            .as_ref()
+            .map(|resolved| resolved.loader.clone()),
+        Some(app.clone())
+    );
+    assert!(
+        agreeing.diagnostics.is_empty(),
+        "{:?}",
+        agreeing.diagnostics
+    );
+    assert_eq!(budget.usage().class_headers, 1);
+
+    // The disagreeing caller is a problem, and the environment counts as rejected: the same
+    // symbol that just resolved resolves nothing here, under the 1.1 honest state with the new
+    // problem in front of the capability code.
+    let mut budget = Budget::new(lookup_limits);
+    let disagreeing = Engine::new()
+        .resolve_symbol(
+            content,
+            &class_request(environment.clone(), &platform, b"HistoricalControlFlow"),
+            &mut budget,
+        )
+        .expect("environment problems are reported, not raised");
+    assert_eq!(
+        problem_codes(&disagreeing.environment_problems),
+        vec!["caller_loader_mismatch"]
+    );
+    assert_eq!(
+        problem_subjects(&disagreeing.environment_problems),
+        vec![EnvironmentSubject::Loader(platform.clone())],
+        "the subject is the caller identity that has to change"
+    );
+    let message = &disagreeing.environment_problems[0].message;
+    assert!(
+        message.contains("platform") && message.contains("app"),
+        "the message names both declarations: {message}"
+    );
+    assert_nothing_was_performed(&disagreeing);
+    assert_report_diagnostics(
+        &disagreeing.environment_problems,
+        &disagreeing.diagnostics,
+        &["caller_loader_mismatch"],
+        RESOLUTION_NOT_IMPLEMENTED,
+        "resolve_symbol",
+    );
+    assert_eq!(
+        unsupported_code(&disagreeing.execution),
+        Some(RESOLUTION_NOT_IMPLEMENTED)
+    );
+    assert!(
+        counted_usage_is_zero(&budget.usage()),
+        "a rejected environment reads no byte"
+    );
+
+    // The check belongs to the entry that carries a caller: a declaration query has no
+    // `CallerContext`, so it neither reports the problem nor pretends to have checked it.
+    let mut budget = Budget::new(limits());
+    let declarations = Engine::new()
+        .declaration_references(
+            content,
+            &declaration_query(&fixture, environment),
+            &mut budget,
+        )
+        .expect("a legal query is answered, not raised");
+    assert_eq!(declarations.environment_problems, Vec::new());
+    assert_eq!(
+        declarations.analysis,
+        ResolutionAnalysis::NotPerformed,
+        "a declaration query still performs nothing in this slice"
+    );
 }
 
 #[test]
@@ -1724,7 +1857,7 @@ fn all_lists_are_complete_and_align_with_the_serde_names() {
     // `EnvironmentProblemCode::ALL` is the closed set itself: every code appears exactly
     // once, at the index its exhaustive match names, and its `as_str` is the serde name the
     // reports and diagnostics use.
-    assert_eq!(EnvironmentProblemCode::ALL.len(), 8);
+    assert_eq!(EnvironmentProblemCode::ALL.len(), 9);
     let mut indexes = Vec::new();
     for code in EnvironmentProblemCode::ALL {
         let index = problem_code_index(code);

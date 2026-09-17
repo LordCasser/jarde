@@ -4,33 +4,47 @@
 //! state, dispatch report and the declaration-reference query/report. Symbols stay raw
 //! bytes; nothing here normalizes an owner, name or descriptor.
 //!
-//! This slice delivers the schema and the honest unavailable state: [`validate_request`]
-//! checks the request shape, [`resolution_report`] and [`declaration_reference_report`]
-//! report that nothing was performed and that no byte was read. The resolver itself is
-//! implemented by the following slices.
+//! This module owns the request/report shape and maps a performed lookup into it.
+//! [`validate_request`] checks the request shape, [`resolution_report`] answers one request:
+//! a class symbol in an environment the validator accepted is looked up for real by
+//! [`crate::providers`], every other request keeps the honest unavailable state of the schema
+//! slice (`NotPerformed` / `state = None` / `Failed { Unsupported }`), and no report ever
+//! claims a result the lookup did not produce.
+//!
+//! Two capability codes still name what this engine slice does not do: a member symbol reports
+//! `resolution_not_implemented` (2.3 implements it) and a request that also asks for dispatch
+//! candidates reports `dispatch_not_implemented` as a warning (2.5 implements it). Both disappear
+//! with the capability they name.
 //!
 //! The module borrows vocabulary from `query` ([`ConsumerKind`], [`ConsumerSchema`],
 //! [`XrefOperation`]) and never the other way round: `query` and `xref` must not know that
 //! this module exists (A17).
 
-use crate::artifact::ArtifactSnapshot;
-use crate::budget::Budget;
+use crate::artifact::{ArtifactSnapshot, budget_dimension_code};
+use crate::budget::{Budget, UsageSnapshot};
 use crate::environment::{
     CallerContext, EnvironmentIdentity, EnvironmentProblem, ResolutionEnvironment,
     environment_diagnostics, require_content_snapshot, unavailable_diagnostic,
-    validate_environment,
+    validate_environment, validate_environment_with_caller,
 };
 use crate::error::{Error, Result};
 use crate::model::{
-    Coverage, Diagnostic, ExecutionReport, OriginSet, PhysicalDefinitionId, SymbolRef,
-    TerminationReason,
+    Coverage, CoverageDimension, CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity,
+    ExecutionReport, JvmBytes, OriginSet, PhysicalDefinitionId, SymbolRef, TerminationReason,
 };
+use crate::providers::{HeaderLookupState, HeaderSearch, lookup_class_header};
 use crate::query::{ConsumerKind, ConsumerSchema, XrefOperation};
 use crate::view::{LoaderId, PhysicalScope};
 use serde::{Deserialize, Serialize};
 
 /// Capability name of the resolution entry points while they are not implemented.
 pub(crate) const RESOLUTION_NOT_IMPLEMENTED: &str = "resolution_not_implemented";
+
+/// Capability name of the dispatch-candidate enumeration this slice does not perform.
+///
+/// Reported as a warning next to a performed declaration lookup, and replaced by the real
+/// `DispatchReport` in 2.5.
+const DISPATCH_NOT_IMPLEMENTED: &str = "dispatch_not_implemented";
 
 /// Access or invocation kind of a reference: the input of the resolution rules.
 ///
@@ -249,43 +263,270 @@ pub(crate) fn validate_declaration_reference_query(
     require_content_snapshot(content, &query.environment.runtime.physical.snapshot)
 }
 
-/// Honest result of a legally shaped resolution request in this slice.
+/// Result of one legally shaped resolution request.
 ///
-/// Environment problems are part of the report; they are never an `Err` and never a
-/// fallback search order. Nothing was performed, so `state`, `resolved`, `candidates` and
-/// `dispatch` stay empty, coverage stays `NotRequested` and the counted usage stays zero.
+/// A class symbol in an environment whose declarations are usable is looked up by
+/// [`crate::providers`] and the lookup is mapped into the schema's own planes. The mapping rule
+/// is invariant 3: `state = Some(v)` exactly when the run reached a semantic decision, and
+/// `state = None` covers both a capability that never ran (`analysis = NotPerformed`) and a run
+/// that stopped before deciding (`analysis = Performed` with `execution` `Cancelled`/`Failed`/
+/// `Partial`).
+///
+/// Concretely: `Resolved`, `Missing` and `Ambiguous` are the lookup's three decisions, and a
+/// budget stop is the fourth (`BudgetExceeded`, with the same stop in `execution`). A
+/// cancellation is `execution = Cancelled` with `state = None`; a damaged candidate or a
+/// stopped listing is `execution = Failed { Error { code } }` with `state = None` and a
+/// diagnostic that names the origin. `Inaccessible` and `IncompatibleClassChange` are reserved
+/// for the access and link rules of 2.3/2.5 — a read failure never occupies a semantic state.
+///
+/// Everything else keeps the honest unavailable state: a member symbol is resolved by 2.3, and
+/// an environment the validator rejected never yields a unique definition (invariant 2), so
+/// neither one starts a search. Environment problems are part of the report; they are never an
+/// `Err` and never a fallback search order.
 pub(crate) fn resolution_report(
     content: &[ArtifactSnapshot],
     request: &ResolutionRequest,
-    budget: &Budget,
+    budget: &mut Budget,
 ) -> ResolutionReport {
-    let (problems, environment_identity) = validate_environment(content, &request.environment);
+    let (problems, environment_identity) =
+        validate_environment_with_caller(content, &request.environment, &request.caller);
     let mut diagnostics = environment_diagnostics(&problems);
-    diagnostics.push(unavailable_diagnostic(
-        RESOLUTION_NOT_IMPLEMENTED,
-        "demand-bound symbol resolution",
-    ));
+    let Some(target) = performable_class(&request.target, &problems) else {
+        diagnostics.push(unavailable_diagnostic(
+            RESOLUTION_NOT_IMPLEMENTED,
+            "demand-bound symbol resolution",
+        ));
+        return ResolutionReport {
+            environment_identity,
+            environment_problems: problems,
+            target: request.target.clone(),
+            use_kind: request.use_kind,
+            caller: request.caller.clone(),
+            analysis: ResolutionAnalysis::NotPerformed,
+            state: None,
+            resolved: None,
+            candidates: Vec::new(),
+            // A dispatch report would claim a performed candidate enumeration, so a request
+            // whose declaration was not resolved reports no dispatch at all.
+            dispatch: None,
+            coverage: Coverage::not_requested(),
+            execution: ExecutionReport::Failed {
+                reason: TerminationReason::Unsupported {
+                    code: RESOLUTION_NOT_IMPLEMENTED.to_string(),
+                },
+                usage: budget.usage(),
+            },
+            diagnostics,
+        };
+    };
+
+    // `dispatch = Some(..)` also asks for `KnownCandidates` inside one explicit scope. This
+    // slice resolves the declaration only, so the request is not answered in silence: the
+    // report names the capability that did not run and claims no candidate.
+    if request.dispatch.is_some() {
+        diagnostics.push(dispatch_not_implemented_diagnostic());
+    }
+    let HeaderSearch {
+        lookup,
+        examined,
+        positions,
+    } = lookup_class_header(content, &request.environment, &target.0, budget);
+    let concluded = lookup.is_ok();
+    let usage = budget.usage();
+    let (analysis, state, resolved, candidates, execution) = match lookup {
+        Ok(lookup) => {
+            let state = match lookup.state {
+                HeaderLookupState::Found => ResolutionState::Resolved,
+                HeaderLookupState::Missing => ResolutionState::Missing,
+                HeaderLookupState::Ambiguous => ResolutionState::Ambiguous,
+            };
+            let resolved = lookup.location.as_ref().map(|location| {
+                resolved_class(&location.loader, &location.definition, &request.target)
+            });
+            let candidates = lookup
+                .candidates
+                .iter()
+                .map(|location| {
+                    resolved_class(&location.loader, &location.definition, &request.target)
+                })
+                .collect();
+            (
+                ResolutionAnalysis::Performed,
+                Some(state),
+                resolved,
+                candidates,
+                ExecutionReport::Complete { usage },
+            )
+        }
+        Err(error) => {
+            let (execution, diagnostic) = terminal(&error, usage);
+            // The lookup ran and stopped before a semantic decision. Only a budget stop *is* a
+            // decision (`BudgetExceeded`, because the declared bounds are what decided the
+            // answer); a cancellation and a damaged candidate or stopped listing stay
+            // `state = None` and are recorded as the interruption they are, so
+            // `Inaccessible`/`IncompatibleClassChange` keep their access and link meaning.
+            let state = matches!(error, Error::BudgetExceeded { .. })
+                .then_some(ResolutionState::BudgetExceeded);
+            diagnostics.push(diagnostic);
+            (
+                ResolutionAnalysis::Performed,
+                state,
+                None,
+                Vec::new(),
+                execution,
+            )
+        }
+    };
     ResolutionReport {
         environment_identity,
         environment_problems: problems,
         target: request.target.clone(),
         use_kind: request.use_kind,
         caller: request.caller.clone(),
-        analysis: ResolutionAnalysis::NotPerformed,
-        state: None,
-        resolved: None,
-        candidates: Vec::new(),
-        // A dispatch report would claim a performed candidate enumeration, so an
-        // unimplemented request reports no dispatch at all.
+        analysis,
+        state,
+        resolved,
+        candidates,
         dispatch: None,
-        coverage: Coverage::not_requested(),
-        execution: ExecutionReport::Failed {
-            reason: TerminationReason::Unsupported {
-                code: RESOLUTION_NOT_IMPLEMENTED.to_string(),
-            },
-            usage: budget.usage(),
-        },
+        coverage: search_coverage(examined, positions, concluded),
+        execution,
         diagnostics,
+    }
+}
+
+/// The class symbol this slice performs a lookup for, if any.
+///
+/// A member symbol belongs to 2.3, and a rejected environment never yields a unique definition
+/// (invariant 2), so neither one starts a search.
+fn performable_class<'a>(
+    target: &'a SymbolRef,
+    problems: &[EnvironmentProblem],
+) -> Option<&'a JvmBytes> {
+    match target {
+        SymbolRef::Class { owner } if problems.is_empty() => Some(owner),
+        _ => None,
+    }
+}
+
+/// One resolved class: the position that selected it and the raw symbol that was asked for.
+///
+/// A class symbol has no separate declaring member, so the raw reference is published as it
+/// was asked (`report.target` carries the same bytes by contract) and the new information is
+/// the position: the loader and the physical definition.
+fn resolved_class(
+    loader: &LoaderId,
+    definition: &PhysicalDefinitionId,
+    target: &SymbolRef,
+) -> ResolvedMemberRef {
+    ResolvedMemberRef {
+        loader: loader.clone(),
+        definition: definition.clone(),
+        member: target.clone(),
+    }
+}
+
+/// Resolution coverage of one performed lookup.
+///
+/// The resolution plane reports the prefix of the effective order the search examined and,
+/// when the search stopped, the positions it never reached. A concluded lookup declares the
+/// positions its decision covers and nothing as skipped: the order stops there by rule, because
+/// the first position that holds a candidate is the definition. The request declares no artifact
+/// range of its own, so the artifact and dynamic planes stay `NotRequested`.
+fn search_coverage(examined: u32, positions: u32, concluded: bool) -> Coverage {
+    const LABEL: &str = "provider_search_position";
+    let mut scanned = Vec::new();
+    let mut skipped = Vec::new();
+    if examined > 0 {
+        scanned.push(CoverageRange {
+            label: LABEL.to_string(),
+            start: 0,
+            end: u64::from(examined),
+        });
+    }
+    if !concluded && examined < positions {
+        skipped.push(CoverageRange {
+            label: LABEL.to_string(),
+            start: u64::from(examined),
+            end: u64::from(positions),
+        });
+    }
+    Coverage {
+        artifact_structural: CoverageDimension::not_requested(),
+        runtime_resolution: CoverageDimension {
+            state: if concluded {
+                CoverageState::CompleteWithinSchema
+            } else {
+                CoverageState::Partial
+            },
+            scanned,
+            skipped,
+            uninterpreted_extensions: Vec::new(),
+        },
+        dynamic_analysis: CoverageDimension::not_requested(),
+    }
+}
+
+/// Terminal mapping of a refusal, under the same contract the physical reports use: a budget
+/// stop is a partial execution that names its dimension, a cancellation is a cancellation, and
+/// a structural failure keeps the reader's or listing's own code.
+fn terminal(error: &Error, usage: UsageSnapshot) -> (ExecutionReport, Diagnostic) {
+    let diagnostic = |code: String, severity: DiagnosticSeverity| Diagnostic {
+        code,
+        severity,
+        message: error.to_string(),
+        provenance: None,
+    };
+    match error {
+        Error::Cancelled { .. } => (
+            ExecutionReport::Cancelled { usage },
+            diagnostic("cancelled".to_string(), DiagnosticSeverity::Warning),
+        ),
+        Error::BudgetExceeded { dimension, .. } => (
+            ExecutionReport::Partial {
+                reason: TerminationReason::BudgetExceeded {
+                    dimension: *dimension,
+                },
+                usage,
+            },
+            diagnostic(
+                format!("budget_exceeded_{}", budget_dimension_code(*dimension)),
+                DiagnosticSeverity::Warning,
+            ),
+        ),
+        Error::InvalidInput { code, .. }
+        | Error::Io {
+            operation: code, ..
+        } => (
+            ExecutionReport::Failed {
+                reason: TerminationReason::Error { code: code.clone() },
+                usage,
+            },
+            diagnostic(code.clone(), DiagnosticSeverity::Error),
+        ),
+        Error::Unsupported { code, .. } => (
+            ExecutionReport::Failed {
+                reason: TerminationReason::Unsupported { code: code.clone() },
+                usage,
+            },
+            diagnostic(code.clone(), DiagnosticSeverity::Error),
+        ),
+    }
+}
+
+/// The diagnostic of a requested dispatch enumeration that this slice does not perform.
+///
+/// Warning, not `Error`: the declaration lookup in the same request did run, so this diagnostic
+/// reports a requested range that was not covered rather than a rejected request. 2.5 replaces
+/// it with a real `DispatchReport` and the code disappears with the capability.
+fn dispatch_not_implemented_diagnostic() -> Diagnostic {
+    Diagnostic {
+        code: DISPATCH_NOT_IMPLEMENTED.to_string(),
+        severity: DiagnosticSeverity::Warning,
+        message: "the request also asks for known dispatch candidates inside an explicit scope; \
+                  this engine slice resolves the declaration only, so `dispatch` stays empty and \
+                  no runtime target is claimed"
+            .to_string(),
+        provenance: None,
     }
 }
 

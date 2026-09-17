@@ -1,19 +1,22 @@
 //! Prints the P2 entry points' honest result for one historical class file.
 //!
-//! The example shows four things:
+//! The example shows five things:
 //!
 //! 1. a physical use of the P1 surface (open the snapshot, read the header) on its own
 //!    budget, so the P2 request budget below provably stays at zero,
-//! 2. `Engine::resolve_symbol` / `Engine::declaration_references` /
+//! 2. a class-name lookup (2.1): the class symbol is resolved for real through the declared
+//!    search order — here the caller's only root is this standalone CLASS file, which declares
+//!    its own name — and the report names the selected position and its one header read,
+//! 3. `Engine::resolve_symbol` on a member symbol and `Engine::declaration_references` /
 //!    `Engine::analyze_method` on one explicit `ResolutionEnvironment`: the reports say
 //!    `NotPerformed` / `Failed { Unsupported }` / `NotRequested` and list the scheduled
 //!    method-analysis phases as `NotPerformed`,
-//! 3. the product planes of one report (`representation`, `quality`, `syntax_status`,
+//! 4. the product planes of one report (`representation`, `quality`, `syntax_status`,
 //!    `compile_status`, `semantic_validation`, `verification`, `body`) printed side by
 //!    side; the body stays `NotInspected` because nothing was located or read, and
 //!    `quality = Fallback` is printed with it only as "not Conservative", not as a claim
 //!    that a fallback recovery happened,
-//! 4. a second environment whose caller domain declares a parent that no domain binds:
+//! 5. a second environment whose caller domain declares a parent that no domain binds:
 //!    the report carries `MissingParent` instead of starting a resolver or falling back to
 //!    a flat classpath.
 //!
@@ -26,9 +29,9 @@ use jarde::{
     ExecutionReport, HeaderProvider, InspectionMode, JvmBytes, LayoutMode, Limits, LoadDomain,
     LoadRoot, LoaderId, MethodAnalysisRequest, MethodBodyState, ModuleMode, MultiReleasePolicy,
     PhysicalDefinitionId, PhysicalMethodId, PhysicalScope, PhysicalVariant, PhysicalView,
-    ProviderId, ReferenceUse, ResolutionEnvironment, ResolutionRequest, ResolvedMemberRef,
-    RuntimeProfile, RuntimeUncertainty, RuntimeView, SnapshotId, SymbolRef, TerminationReason,
-    UsageSnapshot,
+    ProviderId, ReferenceUse, ResolutionEnvironment, ResolutionRequest, ResolutionState,
+    ResolvedMemberRef, RuntimeProfile, RuntimeUncertainty, RuntimeView, SnapshotId, SymbolRef,
+    TerminationReason, UsageSnapshot,
 };
 use std::env;
 use std::path::{Path, PathBuf};
@@ -45,6 +48,9 @@ fn limits() -> Limits {
         code_bytes: 4 * 1024 * 1024,
         result_items: 100_000,
         output_bytes: 32 * 1024 * 1024,
+        // The class-name lookup reads one header per attempt; every other P2 dimension stays
+        // at the fail-closed default, because this example performs no closure and no IR work.
+        class_headers: 1_000,
         nested_depth: 8,
         elapsed_millis: 30_000,
         ..Limits::default()
@@ -202,7 +208,47 @@ fn run(path: PathBuf) -> jarde::Result<()> {
     assert!(report.environment_problems.is_empty());
     assert!(report.state.is_none());
 
-    // 2. One declaration-reference query: the declaration is the fixture's constructor.
+    // 2. One class-name lookup under the same environment. The caller's only root is this
+    //    standalone CLASS file, which declares its own name, so the lookup selects it through
+    //    `this_class` and charges exactly one header read attempt.
+    let mut budget = Budget::new(limits());
+    let request = ResolutionRequest {
+        environment: environment.clone(),
+        target: SymbolRef::Class {
+            owner: bytes(b"HistoricalControlFlow"),
+        },
+        use_kind: ReferenceUse::ClassReference,
+        caller: caller.clone(),
+        dispatch: None,
+    };
+    let report = engine.resolve_symbol(std::slice::from_ref(&snapshot), &request, &mut budget)?;
+    println!(
+        "resolve_symbol.class: analysis={:?} state={:?} resolved={:?} candidates={} \
+         coverage={:?} execution={:?} diagnostics={:?}",
+        report.analysis,
+        report.state,
+        report.resolved,
+        report.candidates.len(),
+        report.coverage.runtime_resolution.state,
+        report.execution,
+        report
+            .diagnostics
+            .iter()
+            .map(|diagnostic| diagnostic.code.as_str())
+            .collect::<Vec<_>>(),
+    );
+    assert_eq!(report.state, Some(ResolutionState::Resolved));
+    assert_eq!(
+        report
+            .resolved
+            .as_ref()
+            .map(|resolved| resolved.loader.clone()),
+        Some(app.clone())
+    );
+    assert!(report.environment_problems.is_empty());
+    print_usage("resolve_symbol.class", &budget.usage());
+
+    // 3. One declaration-reference query: the declaration is the fixture's constructor.
     let declaration = ResolvedMemberRef {
         loader: app.clone(),
         definition: definition.clone(),
@@ -236,7 +282,7 @@ fn run(path: PathBuf) -> jarde::Result<()> {
     print_usage("declaration_references", &budget.usage());
     assert!(report.items.is_empty());
 
-    // 3. One method analysis request: `Frame` and `Ssa` are requested out of order and
+    // 4. One method analysis request: `Frame` and `Ssa` are requested out of order and
     //    with a duplicate, so the normalized request and the scheduled phase list differ.
     let mut budget = Budget::new(limits());
     let analysis = MethodAnalysisRequest {
@@ -298,7 +344,7 @@ fn run(path: PathBuf) -> jarde::Result<()> {
     );
     print_usage("analyze_method", &budget.usage());
 
-    // 4. A second environment whose caller domain declares a parent no domain binds. The
+    // 5. A second environment whose caller domain declares a parent no domain binds. The
     //    report keeps the original symbol and reports the problem instead of resolving.
     let missing = LoaderId("missing-platform".to_string());
     let broken = build_environment(

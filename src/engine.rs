@@ -141,9 +141,13 @@ impl Engine {
     /// The request shape is checked first: a snapshot the content does not provide or a
     /// target whose kind contradicts the reference use is an input error
     /// (`resolution_snapshot_mismatch`, `resolution_target_use_mismatch`). Environment
-    /// problems are not an error; they are part of the report. This slice performs no
-    /// resolution and reads no artifact byte, so the report is the honest unavailable
-    /// state for a legal request.
+    /// problems are not an error; they are part of the report.
+    ///
+    /// A class symbol is looked up by name in the declared search order and the selected
+    /// definition is reported as `Resolved` / `Missing` / `Ambiguous` (2.1); a member symbol
+    /// keeps the honest unavailable state until the member slice implements it, and so does a
+    /// request whose environment the validator rejected, because a rejected environment never
+    /// yields a unique definition.
     pub fn resolve_symbol(
         &self,
         content: &[ArtifactSnapshot],

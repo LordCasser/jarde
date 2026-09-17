@@ -225,6 +225,46 @@ pub enum PhysicalVariant {
     Other { label: String },
 }
 
+/// Syntactic physical-variant label of a container-relative raw path.
+///
+/// This is the one derivation of [`PhysicalVariant`] from an entry name, shared by the
+/// physical scan and the P2 header lookup so one entry has one identity in both reports.
+/// The label is syntactic: it is not the multi-release selection contract and claims
+/// nothing about activation or validity.
+pub(crate) fn physical_variant_for_path(raw_name: &[u8]) -> PhysicalVariant {
+    const PREFIX: &[u8] = b"META-INF/versions/";
+    let Some(rest) = raw_name.strip_prefix(PREFIX) else {
+        return PhysicalVariant::Base;
+    };
+    let Some(slash) = rest.iter().position(|byte| *byte == b'/') else {
+        return PhysicalVariant::Base;
+    };
+    let (release, logical) = rest.split_at(slash);
+    let release_unlabelled = PhysicalVariant::Other {
+        label: "multi_release_version_unlabelled".into(),
+    };
+    if release.is_empty() || logical.len() <= 1 || (release.len() > 1 && release[0] == b'0') {
+        return release_unlabelled;
+    }
+    if !release.iter().all(u8::is_ascii_digit) {
+        return release_unlabelled;
+    }
+    let mut version = 0_u64;
+    for digit in release {
+        version = match version
+            .checked_mul(10)
+            .and_then(|value| value.checked_add(u64::from(digit - b'0')))
+        {
+            Some(value) => value,
+            None => return release_unlabelled,
+        };
+    }
+    match u16::try_from(version) {
+        Ok(version) => PhysicalVariant::MultiRelease { version },
+        Err(_) => release_unlabelled,
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum PhysicalClassLocation {

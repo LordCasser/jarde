@@ -13,6 +13,7 @@ pub mod error;
 pub mod ir;
 pub mod model;
 pub mod multi_release;
+mod providers;
 pub mod query;
 pub mod resolver;
 pub mod view;

@@ -43,7 +43,7 @@ use crate::model::{
     ByteSpan, ClassBytesId, ContainerId, ContainerOrigin, Coverage, CoverageDimension,
     CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity, Digest, ExecutionReport,
     Location, PhysicalClassLocation, PhysicalDefinitionId, PhysicalVariant, Provenance, SnapshotId,
-    TerminationReason,
+    TerminationReason, physical_variant_for_path,
 };
 use crate::query::{
     ConsumerKind, QUERY_ENGINE_SCHEMA, QueryBoundary, QueryCoverage, QueryCursor, QueryPage,
@@ -360,7 +360,7 @@ impl ScanUnit {
                     entry: entry.id.clone(),
                 },
                 class_bytes,
-                variant: entry_variant(&entry.id.raw_name.0),
+                variant: physical_variant_for_path(&entry.id.raw_name.0),
             },
             UnitKind::StandaloneRoot => PhysicalDefinitionId {
                 location: PhysicalClassLocation::StandaloneRoot {
@@ -849,41 +849,6 @@ fn root_origin(snapshot: &SnapshotId) -> ContainerOrigin {
         snapshot: snapshot.clone(),
         root_container: ContainerId("root".into()),
         steps: Vec::new(),
-    }
-}
-
-/// Syntactic physical-variant label of a container-relative raw path.
-fn entry_variant(raw_name: &[u8]) -> PhysicalVariant {
-    const PREFIX: &[u8] = b"META-INF/versions/";
-    let Some(rest) = raw_name.strip_prefix(PREFIX) else {
-        return PhysicalVariant::Base;
-    };
-    let Some(slash) = rest.iter().position(|byte| *byte == b'/') else {
-        return PhysicalVariant::Base;
-    };
-    let (release, logical) = rest.split_at(slash);
-    let release_unlabelled = PhysicalVariant::Other {
-        label: "multi_release_version_unlabelled".into(),
-    };
-    if release.is_empty() || logical.len() <= 1 || (release.len() > 1 && release[0] == b'0') {
-        return release_unlabelled;
-    }
-    if !release.iter().all(u8::is_ascii_digit) {
-        return release_unlabelled;
-    }
-    let mut version = 0_u64;
-    for digit in release {
-        version = match version
-            .checked_mul(10)
-            .and_then(|value| value.checked_add(u64::from(digit - b'0')))
-        {
-            Some(value) => value,
-            None => return release_unlabelled,
-        };
-    }
-    match u16::try_from(version) {
-        Ok(version) => PhysicalVariant::MultiRelease { version },
-        Err(_) => release_unlabelled,
     }
 }
 
