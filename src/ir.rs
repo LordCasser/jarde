@@ -218,7 +218,9 @@ impl MethodAnalysisRequest {
     ///
     /// The phases form one fixed order, so requesting a phase also requires every earlier
     /// phase; the scheduled list is the prefix of the phase order up to the last requested
-    /// phase.
+    /// phase. The crate-private pass table (`crate::passes::PASSES`) is declared in this
+    /// same phase order, which is what lets the engine validate the schedule of a request
+    /// against the passes that will really run it.
     fn scheduled_stages(&self) -> Vec<AnalysisStage> {
         let Some(last) = self
             .normalized_stages()

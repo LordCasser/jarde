@@ -182,8 +182,12 @@ impl Engine {
     /// Method IR analysis under an explicit environment (P2 entry point).
     ///
     /// An empty stage set is an input error (`analysis_no_stages`); every other mismatch
-    /// is checked like [`Engine::resolve_symbol`]. This slice performs no phase and reads
-    /// no artifact byte, so the report lists the scheduled phases as `NotPerformed`.
+    /// is checked like [`Engine::resolve_symbol`]. The requested stages are then validated
+    /// against the fixed pass table *before* anything runs: a schedule the table cannot
+    /// serve is an input error (`ir_pass_prerequisite_missing`, `ir_pass_order_invalid`,
+    /// `ir_pass_graph_cycle`, `ir_stale_fact`) rather than a half-initialized pipeline.
+    /// This slice performs no phase and reads no artifact byte, so a valid request is
+    /// answered with the report that lists its scheduled phases as `NotPerformed`.
     pub fn analyze_method(
         &self,
         content: &[ArtifactSnapshot],
@@ -191,6 +195,7 @@ impl Engine {
         budget: &mut Budget,
     ) -> Result<crate::ir::MethodAnalysisReport> {
         crate::ir::validate_request(content, request)?;
+        crate::passes::validate_requested_stages(&request.stages)?;
         Ok(crate::ir::analysis_report(content, request, budget))
     }
 }

@@ -15,6 +15,7 @@ pub mod ir;
 mod members;
 pub mod model;
 pub mod multi_release;
+mod passes;
 mod providers;
 pub mod query;
 pub mod resolver;
