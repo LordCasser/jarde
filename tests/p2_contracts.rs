@@ -500,6 +500,10 @@ fn assert_nothing_was_performed(report: &ResolutionReport) {
     );
     assert!(report.resolved.is_none());
     assert!(report.candidates.is_empty());
+    assert!(
+        report.reads.is_empty(),
+        "a capability that never ran cannot have read a class header"
+    );
     assert_eq!(report.coverage, Coverage::not_requested());
     assert!(counted_usage_is_zero(usage_of(&report.execution)));
 }
@@ -1457,6 +1461,10 @@ fn declaration_reference_query_reports_the_unavailable_capability() {
     assert_eq!(report.unresolved_candidates, 0);
     assert!(!report.has_more);
     assert_eq!(report.returned_items, 0);
+    assert!(
+        report.reads.is_empty(),
+        "nothing was scanned, so no class header was read"
+    );
     assert_eq!(report.coverage, Coverage::not_requested());
     assert_eq!(
         unsupported_code(&report.execution),
@@ -1513,6 +1521,10 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
     assert_eq!(report.method, fixture.method);
     assert_eq!(report.loader, loader("app"));
     assert!(report.origin.is_empty());
+    assert!(
+        report.reads.is_empty(),
+        "no phase ran, so no class header was demanded and none was read"
+    );
     assert_eq!(report.coverage, Coverage::not_requested());
     assert_eq!(
         unsupported_code(&report.execution),
@@ -1777,6 +1789,25 @@ fn requests_and_identity_reject_unknown_fields_and_round_trip() {
     let mut value: serde_json::Value = serde_json::from_str(&json).expect("valid JSON");
     value["digest"] = serde_json::Value::String("later".to_string());
     assert!(serde_json::from_value::<EnvironmentIdentity>(value).is_err());
+
+    // The read record of the 2.2 closure: an identity-bearing value type of the reports, so it
+    // round-trips and denies unknown fields like the other result records.
+    let read = HeaderRead {
+        loader: loader("app"),
+        definition: fixture.definition.clone(),
+        reason: ReadReason::HierarchyClosure,
+    };
+    let json = serde_json::to_string(&read).expect("a read record serializes");
+    assert_eq!(
+        serde_json::from_str::<HeaderRead>(&json).expect("a read record round-trips"),
+        read
+    );
+    let mut value: serde_json::Value = serde_json::from_str(&json).expect("valid JSON");
+    value["unexpected"] = serde_json::Value::Bool(true);
+    assert!(
+        serde_json::from_value::<HeaderRead>(value).is_err(),
+        "a read record denies unknown fields"
+    );
 }
 
 #[test]
@@ -1842,6 +1873,27 @@ fn closed_sets_serialize_as_snake_case_strings() {
         "the problem code set is closed"
     );
     assert!(serde_json::from_str::<ResolutionState>("\"not_performed\"").is_err());
+
+    // The read reasons of the 2.2 closure: every variant's wire name is pinned, so renaming
+    // one or dropping the snake_case rule cannot pass as a compatible change.
+    for (reason, name) in [
+        (ReadReason::RequestedDefinition, "requested_definition"),
+        (ReadReason::ParentChain, "parent_chain"),
+        (ReadReason::HierarchyClosure, "hierarchy_closure"),
+        (ReadReason::DispatchScope, "dispatch_scope"),
+        (ReadReason::MemberOwner, "member_owner"),
+        (ReadReason::DriverMethodBody, "driver_method_body"),
+    ] {
+        assert_eq!(
+            serde_json::to_string(&reason).expect("a read reason serializes"),
+            format!("\"{name}\"")
+        );
+        assert_eq!(
+            serde_json::from_str::<ReadReason>(&format!("\"{name}\""))
+                .expect("a read reason round-trips"),
+            reason
+        );
+    }
 }
 
 #[test]

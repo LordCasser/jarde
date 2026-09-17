@@ -6,10 +6,11 @@
 //!
 //! This module owns the request/report shape and maps a performed lookup into it.
 //! [`validate_request`] checks the request shape, [`resolution_report`] answers one request:
-//! a class symbol in an environment the validator accepted is looked up for real by
-//! [`crate::providers`], every other request keeps the honest unavailable state of the schema
+//! a class symbol in an environment the validator accepted is looked up for real by the
+//! 2.2 closure over [`crate::providers`], every header that lookup really read is published as
+//! a [`HeaderRead`], every other request keeps the honest unavailable state of the schema
 //! slice (`NotPerformed` / `state = None` / `Failed { Unsupported }`), and no report ever
-//! claims a result the lookup did not produce.
+//! claims a result the closure did not produce.
 //!
 //! Two capability codes still name what this engine slice does not do: a member symbol reports
 //! `resolution_not_implemented` (2.3 implements it) and a request that also asks for dispatch
@@ -32,7 +33,7 @@ use crate::model::{
     Coverage, CoverageDimension, CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity,
     ExecutionReport, JvmBytes, OriginSet, PhysicalDefinitionId, SymbolRef, TerminationReason,
 };
-use crate::providers::{HeaderLookupState, HeaderSearch, lookup_class_header};
+use crate::providers::{HeaderClosure, HeaderDemand, HeaderLookupState};
 use crate::query::{ConsumerKind, ConsumerSchema, XrefOperation};
 use crate::view::{LoaderId, PhysicalScope};
 use serde::{Deserialize, Serialize};
@@ -140,6 +141,44 @@ pub struct ResolvedMemberRef {
     pub member: SymbolRef,
 }
 
+/// Why one class header was read by the closure that served a request.
+///
+/// The reason names the demand, not the outcome: a header read while expanding a hierarchy is
+/// recorded as `HierarchyClosure` even when the name it was demanded for turned out to
+/// resolve to that definition, and a read that happened before the search stopped keeps the
+/// demand that caused it.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ReadReason {
+    /// The request target itself.
+    RequestedDefinition,
+    /// One step up a `super_class` chain.
+    ParentChain,
+    /// One class of a superclass/interface closure expansion.
+    HierarchyClosure,
+    /// One class of an explicitly scoped candidate enumeration (2.5).
+    DispatchScope,
+    /// The owner a member resolution landed on (2.3).
+    MemberOwner,
+    /// The target method's body — the only reason that upgrades to a body read (3.x).
+    DriverMethodBody,
+}
+
+/// One class header a request really read.
+///
+/// A record exists only for a read that produced a definition identity: a refused charge, a
+/// damaged candidate and a read-layer failure produce no record, and their evidence is the
+/// diagnostic that names them. The same `(definition, loader)` binding is recorded once per
+/// request — reusing an already read header for another reason is not a second read — so
+/// `reads.len() <= usage.class_headers` holds for every report.
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct HeaderRead {
+    pub loader: LoaderId,
+    pub definition: PhysicalDefinitionId,
+    pub reason: ReadReason,
+}
+
 /// Why a candidate cannot be proven to be the only runtime target.
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
@@ -182,6 +221,9 @@ pub struct ResolutionReport {
     /// Only definitions that are indistinguishable at one selection position.
     pub candidates: Vec<ResolvedMemberRef>,
     pub dispatch: Option<DispatchReport>,
+    /// Every class header this request read, in read order, at most once per
+    /// `(definition, loader)`; empty when the request performed nothing.
+    pub reads: Vec<HeaderRead>,
     pub coverage: Coverage,
     pub execution: ExecutionReport,
     /// Includes one diagnostic per environment problem, under the same code.
@@ -230,6 +272,9 @@ pub struct DeclarationRefReport {
     pub unresolved_candidates: u64,
     pub has_more: bool,
     pub returned_items: u64,
+    /// Every class header this scan read, in read order, at most once per
+    /// `(definition, loader)`; empty when the scan performed nothing.
+    pub reads: Vec<HeaderRead>,
     pub coverage: Coverage,
     pub execution: ExecutionReport,
     pub diagnostics: Vec<Diagnostic>,
@@ -309,6 +354,8 @@ pub(crate) fn resolution_report(
             // A dispatch report would claim a performed candidate enumeration, so a request
             // whose declaration was not resolved reports no dispatch at all.
             dispatch: None,
+            // Nothing was demanded, so nothing was read.
+            reads: Vec::new(),
             coverage: Coverage::not_requested(),
             execution: ExecutionReport::Failed {
                 reason: TerminationReason::Unsupported {
@@ -326,15 +373,17 @@ pub(crate) fn resolution_report(
     if request.dispatch.is_some() {
         diagnostics.push(dispatch_not_implemented_diagnostic());
     }
-    let HeaderSearch {
-        lookup,
-        examined,
-        positions,
-    } = lookup_class_header(content, &request.environment, &target.0, budget);
-    let concluded = lookup.is_ok();
+    let mut closure = HeaderClosure::new(content, &request.environment);
+    let answer = closure.demand(&target.0, HeaderDemand::RequestedDefinition, budget);
+    let extent = answer
+        .searched
+        .expect("the first demand of a fresh closure performs the search it answers");
+    let reads = published_reads(&closure);
+    let concluded = answer.decision.is_ok();
     let usage = budget.usage();
-    let (analysis, state, resolved, candidates, execution) = match lookup {
-        Ok(lookup) => {
+    let (analysis, state, resolved, candidates, execution) = match answer.decision {
+        Ok(handle) => {
+            let lookup = &closure.resolution(handle).lookup;
             let state = match lookup.state {
                 HeaderLookupState::Found => ResolutionState::Resolved,
                 HeaderLookupState::Missing => ResolutionState::Missing,
@@ -377,6 +426,10 @@ pub(crate) fn resolution_report(
             )
         }
     };
+    // The closure's own diagnostics belong to this report: a refused cyclic hierarchy names
+    // the classes and loader it refused, and dropping it would hide the reason a closure is
+    // short.
+    diagnostics.extend(closure.diagnostics().iter().cloned());
     ResolutionReport {
         environment_identity,
         environment_problems: problems,
@@ -388,10 +441,32 @@ pub(crate) fn resolution_report(
         resolved,
         candidates,
         dispatch: None,
-        coverage: search_coverage(examined, positions, concluded),
+        reads,
+        coverage: search_coverage(extent.examined, extent.positions, concluded),
         execution,
         diagnostics,
     }
+}
+
+/// The read records of one performed closure, in read order.
+///
+/// The crate-private demands are mapped onto the public vocabulary here, at the boundary that
+/// owns it: a demand added by a later slice fails to compile until it is mapped, so the report
+/// cannot publish a reason the closure never had.
+fn published_reads(closure: &HeaderClosure<'_>) -> Vec<HeaderRead> {
+    closure
+        .reads()
+        .iter()
+        .map(|read| HeaderRead {
+            loader: read.loader.clone(),
+            definition: read.definition.clone(),
+            reason: match read.demand {
+                HeaderDemand::RequestedDefinition => ReadReason::RequestedDefinition,
+                HeaderDemand::ParentChain => ReadReason::ParentChain,
+                HeaderDemand::HierarchyClosure => ReadReason::HierarchyClosure,
+            },
+        })
+        .collect()
 }
 
 /// The class symbol this slice performs a lookup for, if any.
@@ -555,6 +630,8 @@ pub(crate) fn declaration_reference_report(
         unresolved_candidates: 0,
         has_more: false,
         returned_items: 0,
+        // Nothing was demanded, so no class header was read.
+        reads: Vec::new(),
         coverage: Coverage::not_requested(),
         execution: ExecutionReport::Failed {
             reason: TerminationReason::Unsupported {

@@ -34,6 +34,14 @@
 //! * several candidates at one position are `Ambiguous` and keep their own origins; equal
 //!   bytes never merge two origins, and a byte-equal duplicate is not ordered by ordinal
 //!   either.
+//!
+//! The closure slice (2.2) organizes those single lookups into one request-scoped machine.
+//! [`HeaderClosure`] demands a class header per `(loader, internal name)`, answers a repeated
+//! demand from its own request memo, records every header the request really read together with
+//! the demand that read it, and [`HierarchyWalk`] expands the superclass/interface graph one
+//! layer at a time under the dependency-depth and worklist budgets. A closure reads headers
+//! only: a method body stays untouched until a later slice asks for one with an explicit
+//! reason, and this machine has no body path at all.
 
 use crate::artifact::{ArtifactKind, ArtifactSnapshot, PhysicalEntry};
 use crate::budget::{Budget, BudgetDimension, CountedBudgetDimension, Limits, UsageSnapshot};
@@ -41,19 +49,23 @@ use crate::classfile::{ClassFacts, class_facts};
 use crate::environment::{EnvironmentProblemCode, ResolutionEnvironment};
 use crate::error::{Error, Result};
 use crate::model::{
-    ClassBytesId, ContainerOrigin, Diagnostic, Digest, ExecutionReport, PhysicalClassLocation,
-    PhysicalDefinitionId, PhysicalEntryId, PhysicalVariant, SnapshotId, TerminationReason,
-    physical_variant_for_path,
+    ClassBytesId, ContainerOrigin, Diagnostic, DiagnosticSeverity, Digest, ExecutionReport,
+    JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalEntryId, PhysicalVariant,
+    SnapshotId, TerminationReason, physical_variant_for_path,
 };
 use crate::view::{DelegationPolicy, LoadDomain, LoadRoot, LoaderId, ModuleMode};
+use std::collections::VecDeque;
 
 /// Suffix every archive entry of a class carries; the comparison is byte-exact.
 const CLASS_SUFFIX: &[u8] = b".class";
 
-/// One physical position a class name was found at.
+/// One physical position with the definition it selected or read.
 ///
 /// The position is a declaration coordinate: the loader that owns the root, the root's index
-/// in that loader's `roots`, and the definition the position selected.
+/// in that loader's `roots`, and the definition the position produced. A lookup publishes the
+/// one position that decided it ([`HeaderLookup`]); a read publishes the position of every
+/// header it really read, in read order ([`HeaderSearch::reads`]), which is what the closure
+/// records per request.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct HeaderLocation {
     pub(crate) loader: LoaderId,
@@ -157,6 +169,15 @@ pub(crate) struct HeaderSearch {
     pub(crate) examined: u32,
     /// Positions the effective order declares in total, `0` when the order itself is refused.
     pub(crate) positions: u32,
+    /// Every header this search really read, in read order: the position of each successful
+    /// read, whether or not that position decided the lookup (a standalone root that declares
+    /// another name is read and recorded), and whether or not the search concluded (a read
+    /// that happened before a later position refused the search still happened).
+    ///
+    /// A failed attempt appends nothing: bytes that are not a class, a read-layer failure and
+    /// a refused charge produce no definition identity, and their evidence is the diagnostic
+    /// that names them. Each recorded read is one charged `ClassHeaders` attempt.
+    pub(crate) reads: Vec<HeaderLocation>,
 }
 
 impl HeaderSearch {
@@ -166,6 +187,7 @@ impl HeaderSearch {
             lookup: Err(error),
             examined: 0,
             positions: 0,
+            reads: Vec::new(),
         }
     }
 }
@@ -194,15 +216,24 @@ pub(crate) fn lookup_class_header(
     let total = u32::try_from(positions.len()).unwrap_or(u32::MAX);
     let expected = entry_name(internal_name);
 
+    let mut reads = Vec::new();
     let mut examined = 0_u32;
     for position in &positions {
-        let decided = match probe_root(content, position, internal_name, &expected, budget) {
+        let decided = match probe_root(
+            content,
+            position,
+            internal_name,
+            &expected,
+            budget,
+            &mut reads,
+        ) {
             Ok(decided) => decided,
             Err(error) => {
                 return HeaderSearch {
                     lookup: Err(error),
                     examined,
                     positions: total,
+                    reads,
                 };
             }
         };
@@ -212,6 +243,7 @@ pub(crate) fn lookup_class_header(
                 lookup: Ok(lookup),
                 examined,
                 positions: total,
+                reads,
             };
         }
     }
@@ -219,6 +251,472 @@ pub(crate) fn lookup_class_header(
         lookup: Ok(HeaderLookup::missing()),
         examined,
         positions: total,
+        reads,
+    }
+}
+
+/// Why one class header was demanded inside one request.
+///
+/// This is the crate-private side of the report's public read reason: the closure owns the
+/// demands it serves, and the report layer maps each one onto the public vocabulary it
+/// publishes. The dependency direction is `resolver -> providers`, so the public enum cannot
+/// live here.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+pub(crate) enum HeaderDemand {
+    /// The request target itself.
+    RequestedDefinition,
+    /// One step up a `super_class` chain (2.3 member resolution).
+    ///
+    /// The parent-chain walk of this slice is not called by a report entry point yet; 2.3
+    /// consumes it, and its semantics are pinned by this module's tests.
+    #[allow(dead_code)]
+    ParentChain,
+    /// One class of a superclass/interface closure expansion (2.3/2.5).
+    ///
+    /// Like [`HeaderDemand::ParentChain`], the closure walk is consumed by 2.3/2.5.
+    #[allow(dead_code)]
+    HierarchyClosure,
+}
+
+/// One header this request read, with the demand that read it.
+///
+/// A binding is recorded once per request: the memo makes a second *read* of one
+/// `(loader, internal name)` impossible, and a class that a later demand reaches for another
+/// reason is the same read, so the record keeps the reason of the demand that performed it.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct HeaderReadRecord {
+    pub(crate) loader: LoaderId,
+    pub(crate) definition: PhysicalDefinitionId,
+    pub(crate) demand: HeaderDemand,
+}
+
+/// Handle of one class inside one request's closure; stable for the request's lifetime.
+///
+/// A handle is only produced by the closure that resolved it, and [`HeaderClosure::resolution`]
+/// panics for one from another request: a handle is a request-local coordinate, not an
+/// identity. The identity of a class is its `(loader, definition)` binding.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+pub(crate) struct ClassHandle(usize);
+
+/// What one demand resolved for one class name.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct ClassResolution {
+    /// The loader whose declared order searched for this name.
+    pub(crate) loader: LoaderId,
+    /// The raw internal name that was demanded.
+    pub(crate) name: JvmBytes,
+    /// The 2.1 lookup decision: state, selected position, candidates and header facts.
+    pub(crate) lookup: HeaderLookup,
+}
+
+/// How far the effective order of one demand searched.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct SearchExtent {
+    /// Positions examined to a decision.
+    pub(crate) examined: u32,
+    /// Positions the effective order declares in total.
+    pub(crate) positions: u32,
+}
+
+/// Answer of one demand.
+#[derive(Clone, Debug)]
+pub(crate) struct DemandAnswer {
+    /// The class this demand decided, or the stop that ended it before deciding anything.
+    pub(crate) decision: Result<ClassHandle>,
+    /// Extent of the effective order for the demand that really searched; `None` when the
+    /// request memo answered this demand instead of searching again. A stopped search still
+    /// reports its extent: the positions it examined and the ones it never reached.
+    pub(crate) searched: Option<SearchExtent>,
+}
+
+/// One request-scoped closure over class headers.
+///
+/// Every class a request needs — the target itself, one step up a `super_class` chain, or a
+/// whole superclass/interface closure — is demanded here, and a repeated demand is answered
+/// from the request memo. The memo key is `(loader, internal name)`: the second demand of one
+/// key is not read again, not charged again and appends no second read record, so one
+/// `(definition, loader)` binding is read at most once per request while the same bytes under
+/// two loaders or two origins stay two bindings.
+///
+/// The memo holds the *decisions* a demand reached: a `Missing` is a fact about the declared
+/// order, not a retryable miss, and an `Ambiguous` position stays ambiguous. A demand that
+/// stopped before deciding (budget, cancellation, damaged bytes) decided nothing and is not
+/// remembered, so asking again searches and stops again instead of inventing an answer.
+///
+/// A closure reads headers only. It has no method-body path at all: upgrading a body needs the
+/// explicit `DriverMethodBody` demand of the analysis slices, and no closure demand may read
+/// one.
+pub(crate) struct HeaderClosure<'a> {
+    content: &'a [ArtifactSnapshot],
+    environment: &'a ResolutionEnvironment,
+    /// One entry per decided `(loader, internal name)` key, in first-demand order.
+    resolutions: Vec<ClassResolution>,
+    reads: Vec<HeaderReadRecord>,
+    diagnostics: Vec<Diagnostic>,
+}
+
+impl<'a> HeaderClosure<'a> {
+    /// A closure over one request's own environment and provided content.
+    pub(crate) fn new(
+        content: &'a [ArtifactSnapshot],
+        environment: &'a ResolutionEnvironment,
+    ) -> Self {
+        Self {
+            content,
+            environment,
+            resolutions: Vec::new(),
+            reads: Vec::new(),
+            diagnostics: Vec::new(),
+        }
+    }
+
+    /// Demands one class header for this request.
+    ///
+    /// Every demand of one request searches the same way the 2.1 lookup does: it starts at the
+    /// caller's own domain (`environment.runtime.load_domain`), the loader 1.1 binds to the
+    /// unique equal `domains` entry and rejects a `CallerContext` that names another one, so a
+    /// request has exactly one search start and the memo's loader component names it.
+    ///
+    /// A key the request has not decided yet is searched by [`lookup_class_header`], the 2.1
+    /// lookup; every header that search read is recorded under this demand's reason, including
+    /// the headers read before a later position refused the search. A key the request already
+    /// decided is answered from the memo with the same handle and `searched = None`.
+    pub(crate) fn demand(
+        &mut self,
+        name: &[u8],
+        demand: HeaderDemand,
+        budget: &mut Budget,
+    ) -> DemandAnswer {
+        let loader = self.environment.runtime.load_domain.loader.clone();
+        if let Some(index) = self.remembered(&loader, name) {
+            return DemandAnswer {
+                decision: Ok(ClassHandle(index)),
+                searched: None,
+            };
+        }
+        let search = lookup_class_header(self.content, self.environment, name, budget);
+        for location in &search.reads {
+            self.record_read(&location.loader, &location.definition, demand);
+        }
+        let searched = Some(SearchExtent {
+            examined: search.examined,
+            positions: search.positions,
+        });
+        match search.lookup {
+            Ok(lookup) => {
+                self.resolutions.push(ClassResolution {
+                    loader,
+                    name: JvmBytes(name.to_vec()),
+                    lookup,
+                });
+                DemandAnswer {
+                    decision: Ok(ClassHandle(self.resolutions.len() - 1)),
+                    searched,
+                }
+            }
+            Err(error) => DemandAnswer {
+                decision: Err(error),
+                searched,
+            },
+        }
+    }
+
+    /// The resolution one handle names.
+    pub(crate) fn resolution(&self, handle: ClassHandle) -> &ClassResolution {
+        &self.resolutions[handle.0]
+    }
+
+    /// The index of an already decided key, if the request remembers one.
+    fn remembered(&self, loader: &LoaderId, name: &[u8]) -> Option<usize> {
+        self.resolutions
+            .iter()
+            .position(|resolution| &resolution.loader == loader && resolution.name.0 == name)
+    }
+
+    /// Records one header this request read, under the demand that caused the read.
+    fn record_read(
+        &mut self,
+        loader: &LoaderId,
+        definition: &PhysicalDefinitionId,
+        demand: HeaderDemand,
+    ) {
+        let recorded = self
+            .reads
+            .iter()
+            .any(|read| &read.loader == loader && &read.definition == definition);
+        if !recorded {
+            self.reads.push(HeaderReadRecord {
+                loader: loader.clone(),
+                definition: definition.clone(),
+                demand,
+            });
+        }
+    }
+
+    /// Every header this request read, in the order the reads happened.
+    pub(crate) fn reads(&self) -> &[HeaderReadRecord] {
+        &self.reads
+    }
+
+    /// Diagnostics this request itself produced, in generation order.
+    ///
+    /// The report layer owns the published diagnostic list, so a walk that refuses an edge
+    /// hands its diagnostic here instead of dropping it. The class-symbol path produces none.
+    pub(crate) fn diagnostics(&self) -> &[Diagnostic] {
+        &self.diagnostics
+    }
+
+    /// Records one diagnostic this request produced.
+    ///
+    /// Consumed by the walks below, which are reached by 2.3/2.5 rather than by the class
+    /// symbol path of this slice.
+    #[allow(dead_code)]
+    pub(crate) fn record_diagnostic(&mut self, diagnostic: Diagnostic) {
+        self.diagnostics.push(diagnostic);
+    }
+
+    /// Walks the `super_class` chain of `root`, one class per layer.
+    ///
+    /// Every layer is demanded with [`HeaderDemand::ParentChain`].
+    #[allow(dead_code)]
+    pub(crate) fn parent_chain(&self, root: &[u8]) -> HierarchyWalk {
+        HierarchyWalk::new(root, WalkEdges::ParentChain, HeaderDemand::ParentChain)
+    }
+
+    /// Walks every superclass and interface of `root`, breadth-first.
+    ///
+    /// Every layer is demanded with [`HeaderDemand::HierarchyClosure`].
+    #[allow(dead_code)]
+    pub(crate) fn hierarchy_closure(&self, root: &[u8]) -> HierarchyWalk {
+        HierarchyWalk::new(
+            root,
+            WalkEdges::SupertypeClosure,
+            HeaderDemand::HierarchyClosure,
+        )
+    }
+}
+
+/// Which supertype edges one walk follows.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum WalkEdges {
+    /// `super_class` only: the linear chain of ancestors.
+    ParentChain,
+    /// `super_class` and `interfaces`: the whole supertype closure.
+    SupertypeClosure,
+}
+
+/// One layer waiting to be expanded: the name to demand and the path that reached it.
+#[allow(dead_code)]
+struct PendingLayer {
+    name: JvmBytes,
+    /// The classes already on the supertype path that reached this layer. The length is the
+    /// layer's dependency depth — the root has an empty path, because the root is the starting
+    /// point of the walk and not a step up.
+    ancestors: Vec<JvmBytes>,
+}
+
+/// What one walk could not expand, and why.
+///
+/// A caller reports these as the unfinished part of the closure's coverage: a missing or
+/// ambiguous supertype is an open-world fact that ends its own branch, and a name that repeats
+/// on one supertype path is an illegal hierarchy the walk refuses to follow.
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub(crate) struct WalkGaps {
+    /// Names no position of the order holds.
+    pub(crate) missing: Vec<JvmBytes>,
+    /// Names one position holds but cannot tell apart.
+    pub(crate) ambiguous: Vec<JvmBytes>,
+    /// Names that reached themselves: cyclic supertypes, refused instead of expanded.
+    pub(crate) cycles: Vec<JvmBytes>,
+}
+
+/// One class-graph walk over one request's closure, resumed one layer at a time.
+///
+/// The walk keeps its own visited set, so a diamond-shaped or cyclic hierarchy terminates:
+/// every class is expanded at most once per walk, while the request memo keeps the underlying
+/// read at most once per `(loader, internal name)` for the whole request. The first layer is
+/// the root the walk was created for, so a caller that already demanded the root gets it back
+/// from the memo without a second read.
+///
+/// Each layer above the root calls [`Budget::observe_dependency_depth`] **before** the layer is
+/// demanded — a depth stop therefore leaves the layers already returned as the trustworthy
+/// prefix and reads none of the rest — and each layer charges one `AnalysisSteps` before it is
+/// processed. A missing or ambiguous supertype ends its own branch and is recorded in
+/// [`HierarchyWalk::gaps`]; a budget stop or a cancellation ends the walk with the stop's own
+/// refusal, never as `Missing` and never as an empty closure.
+#[allow(dead_code)]
+pub(crate) struct HierarchyWalk {
+    edges: WalkEdges,
+    reason: HeaderDemand,
+    pending: VecDeque<PendingLayer>,
+    /// Names this walk already expanded, so a shared supertype is not expanded twice.
+    visited: Vec<JvmBytes>,
+    gaps: WalkGaps,
+    /// The stop that ended this walk: a stopped walk reports the same stop again instead of
+    /// claiming that it is complete.
+    stop: Option<Error>,
+}
+
+///
+/// Consumed by 2.3/2.5, which ask the request for a hierarchy instead of one declaration; the
+/// class-symbol path of this slice demands its target only, and this module's tests pin the
+/// walk's semantics until those slices reach it.
+#[allow(dead_code)]
+impl HierarchyWalk {
+    /// A walk with its root layer pending.
+    fn new(root: &[u8], edges: WalkEdges, reason: HeaderDemand) -> Self {
+        Self {
+            edges,
+            reason,
+            pending: VecDeque::from([PendingLayer {
+                name: JvmBytes(root.to_vec()),
+                ancestors: Vec::new(),
+            }]),
+            visited: Vec::new(),
+            gaps: WalkGaps::default(),
+            stop: None,
+        }
+    }
+
+    /// Expands the next layer.
+    ///
+    /// `Ok(Some(handle))` is the layer this call demanded and decided — its state may be
+    /// `Found`, `Missing` or `Ambiguous`, and the caller reads it from
+    /// [`HeaderClosure::resolution`]. `Ok(None)` means nothing is left to expand. `Err` is a
+    /// stop before the next layer was expanded: a budget stop (`Partial`), a cancellation or a
+    /// refused position, with every layer already returned kept as the trustworthy prefix. A
+    /// stopped walk stays stopped.
+    pub(crate) fn next(
+        &mut self,
+        closure: &mut HeaderClosure<'_>,
+        budget: &mut Budget,
+    ) -> Result<Option<ClassHandle>> {
+        if let Some(stop) = &self.stop {
+            return Err(stop.clone());
+        }
+        let expanded = self.expand_next(closure, budget);
+        if let Err(error) = &expanded {
+            // The budget or cancellation that ended this walk cannot be spent again, and
+            // resuming would read a layer the stop already refused.
+            self.stop = Some(error.clone());
+            self.pending.clear();
+        }
+        expanded
+    }
+
+    /// What this walk could not expand.
+    pub(crate) fn gaps(&self) -> &WalkGaps {
+        &self.gaps
+    }
+
+    fn expand_next(
+        &mut self,
+        closure: &mut HeaderClosure<'_>,
+        budget: &mut Budget,
+    ) -> Result<Option<ClassHandle>> {
+        let Some(layer) = self.pending.pop_front() else {
+            return Ok(None);
+        };
+        if !layer.ancestors.is_empty() {
+            let depth = u64::try_from(layer.ancestors.len()).unwrap_or(u64::MAX);
+            budget.observe_dependency_depth(depth)?;
+        }
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let handle = closure
+            .demand(&layer.name.0, self.reason, budget)
+            .decision?;
+        self.visited.push(layer.name.clone());
+        match closure.resolution(handle).lookup.state {
+            HeaderLookupState::Found => self.queue_supertypes(closure, handle, &layer),
+            HeaderLookupState::Missing => self.gaps.missing.push(layer.name.clone()),
+            HeaderLookupState::Ambiguous => self.gaps.ambiguous.push(layer.name.clone()),
+        }
+        Ok(Some(handle))
+    }
+
+    /// Queues the supertypes one found class declares, one dependency step deeper.
+    fn queue_supertypes(
+        &mut self,
+        closure: &mut HeaderClosure<'_>,
+        handle: ClassHandle,
+        layer: &PendingLayer,
+    ) {
+        let loader = closure.resolution(handle).loader.clone();
+        for child in supertype_names(closure.resolution(handle), self.edges) {
+            if layer.name == child || layer.ancestors.contains(&child) {
+                // `A -> B -> A`: the name is already on the path that reached it, so this
+                // hierarchy is cyclic (illegal) and expanding it would never terminate.
+                self.gaps.cycles.push(child.clone());
+                closure.record_diagnostic(cycle_diagnostic(&loader, layer, &child));
+                continue;
+            }
+            if self.visited.contains(&child)
+                || self.pending.iter().any(|pending| pending.name == child)
+            {
+                // A shared supertype (a diamond): already expanded or already queued by this
+                // walk, and expanding it twice would read nothing new.
+                continue;
+            }
+            let mut ancestors = layer.ancestors.clone();
+            ancestors.push(layer.name.clone());
+            self.pending.push_back(PendingLayer {
+                name: child,
+                ancestors,
+            });
+        }
+    }
+}
+
+/// The supertype names one decision declares, in expansion order.
+///
+/// The superclass is queued before the interfaces, so both walks visit the class chain of a
+/// layer before its interface fan-out. A decision that is not `Found` declares nothing.
+///
+/// Consumed by [`HierarchyWalk`] (2.3/2.5).
+#[allow(dead_code)]
+fn supertype_names(resolution: &ClassResolution, edges: WalkEdges) -> Vec<JvmBytes> {
+    let Some(header) = resolution.lookup.header.as_ref() else {
+        return Vec::new();
+    };
+    let mut names = Vec::new();
+    if let Some(super_class) = &header.facts.super_class {
+        names.push(JvmBytes(super_class.raw().0.clone()));
+    }
+    if edges == WalkEdges::SupertypeClosure {
+        for interface in &header.facts.interfaces {
+            names.push(JvmBytes(interface.raw().0.clone()));
+        }
+    }
+    names
+}
+
+/// The diagnostic of a cyclic supertype edge.
+///
+/// A warning, not an error: the walk refuses one edge and keeps every layer it already
+/// expanded, so the report names the illegal hierarchy without turning the request into a
+/// failure. The message carries the loader and the whole path, so the cycle can be located.
+///
+/// Consumed by [`HierarchyWalk`] (2.3/2.5).
+#[allow(dead_code)]
+fn cycle_diagnostic(loader: &LoaderId, layer: &PendingLayer, repeated: &JvmBytes) -> Diagnostic {
+    let mut path = layer
+        .ancestors
+        .iter()
+        .map(|name| escaped(&name.0))
+        .collect::<Vec<_>>();
+    path.push(escaped(&layer.name.0));
+    path.push(escaped(&repeated.0));
+    Diagnostic {
+        code: "resolution_hierarchy_cycle".to_string(),
+        severity: DiagnosticSeverity::Warning,
+        message: format!(
+            "loader `{}`: `{}` is its own supertype ({}); a cyclic hierarchy is illegal, so this \
+             edge is refused instead of expanded",
+            loader.0,
+            escaped(&repeated.0),
+            path.join(" -> ")
+        ),
+        provenance: None,
     }
 }
 
@@ -320,13 +818,14 @@ fn search_positions<'a>(domains: &[&'a LoadDomain]) -> Vec<SearchPosition<'a>> {
 
 /// Decides one position: `Ok(None)` when the root holds no candidate for this name,
 /// `Ok(Some(lookup))` when this position decided the lookup, `Err` when the position cannot be
-/// decided at all.
+/// decided at all. Every read the position really performed is appended to `reads`.
 fn probe_root(
     content: &[ArtifactSnapshot],
     position: &SearchPosition<'_>,
     internal_name: &[u8],
     entry_name: &[u8],
     budget: &mut Budget,
+    reads: &mut Vec<HeaderLocation>,
 ) -> Result<Option<HeaderLookup>> {
     let label = position_label(position);
     let Some(snapshot) = content
@@ -352,15 +851,15 @@ fn probe_root(
         LoadRoot::Snapshot { .. } => match snapshot.kind() {
             ArtifactKind::Zip => {
                 let candidates = zip_candidates(snapshot, entry_name, &label, budget)?;
-                decide(snapshot, position, candidates, budget)
+                decide(snapshot, position, candidates, budget, reads)
             }
             ArtifactKind::StandaloneClass => {
-                standalone_probe(snapshot, position, internal_name, budget)
+                standalone_probe(snapshot, position, internal_name, budget, reads)
             }
         },
         LoadRoot::ArtifactTree { root } => {
             let candidates = tree_candidates(snapshot, root, entry_name, &label, budget)?;
-            decide(snapshot, position, candidates, budget)
+            decide(snapshot, position, candidates, budget, reads)
         }
     }
 }
@@ -430,12 +929,15 @@ fn matching_entries(entries: Vec<PhysicalEntry>, entry_name: &[u8]) -> Vec<Physi
 /// One candidate is the definition the position selects. Several candidates cannot be told
 /// apart, so each one is read for its origin and byte identity and the position is `Ambiguous`:
 /// byte-equal duplicates are not ordered by ordinal either. A candidate that cannot be read is
-/// that position's failure and the search does not continue past it.
+/// that position's failure and the search does not continue past it. Every candidate that was
+/// read successfully is appended to `reads`, the ambiguous ones included: those reads happened
+/// and produced identities, they just did not elect a definition.
 fn decide(
     snapshot: &ArtifactSnapshot,
     position: &SearchPosition<'_>,
     candidates: Vec<PhysicalEntry>,
     budget: &mut Budget,
+    reads: &mut Vec<HeaderLocation>,
 ) -> Result<Option<HeaderLookup>> {
     match candidates.as_slice() {
         [] => Ok(None),
@@ -443,6 +945,7 @@ fn decide(
             let content = read_candidate(snapshot, position, entry, budget)?;
             let facts = class_facts(&content.bytes, budget)
                 .map_err(|error| at_origin(error, &content.origin))?;
+            reads.push(content.location.clone());
             Ok(Some(HeaderLookup::found(
                 content.location,
                 ClassHeaderFacts { facts },
@@ -453,6 +956,7 @@ fn decide(
             for entry in several {
                 locations.push(read_candidate(snapshot, position, entry, budget)?.location);
             }
+            reads.extend(locations.iter().cloned());
             Ok(Some(HeaderLookup::ambiguous(locations)))
         }
     }
@@ -506,12 +1010,14 @@ fn read_candidate(
 /// The root is its own single candidate: its bytes are read, and `this_class` decides whether
 /// this root provides the requested name. The comparison is on raw bytes. A root that declares
 /// another name simply holds no candidate for this name and the search continues with the next
-/// position; the read attempt is charged either way.
+/// position; the read attempt is charged either way, and the read is recorded either way,
+/// because the bytes of this definition really were read.
 fn standalone_probe(
     snapshot: &ArtifactSnapshot,
     position: &SearchPosition<'_>,
     internal_name: &[u8],
     budget: &mut Budget,
+    reads: &mut Vec<HeaderLocation>,
 ) -> Result<Option<HeaderLookup>> {
     let origin = format!("{} (standalone CLASS root)", position_label(position));
     charge_header_attempt(budget)?;
@@ -519,28 +1025,30 @@ fn standalone_probe(
         .root_bytes(budget)
         .map_err(|error| at_origin(error, &origin))?;
     let facts = class_facts(&bytes, budget).map_err(|error| at_origin(error, &origin))?;
-    if facts.this_class.raw().0 != internal_name {
-        return Ok(None);
-    }
     let length = u64::try_from(bytes.len()).map_err(|_| {
         Error::invalid_input("class_size_overflow", "class length does not fit u64")
     })?;
-    Ok(Some(HeaderLookup::found(
-        HeaderLocation {
-            loader: position.loader.clone(),
-            root_index: position.root_index,
-            definition: PhysicalDefinitionId {
-                location: PhysicalClassLocation::StandaloneRoot {
-                    snapshot: snapshot.id().clone(),
-                },
-                class_bytes: ClassBytesId {
-                    digest: Digest(blake3::hash(&bytes).to_hex().to_string()),
-                    length,
-                },
-                variant: PhysicalVariant::Base,
+    let location = HeaderLocation {
+        loader: position.loader.clone(),
+        root_index: position.root_index,
+        definition: PhysicalDefinitionId {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
             },
-            entry: None,
+            class_bytes: ClassBytesId {
+                digest: Digest(blake3::hash(&bytes).to_hex().to_string()),
+                length,
+            },
+            variant: PhysicalVariant::Base,
         },
+        entry: None,
+    };
+    reads.push(location.clone());
+    if facts.this_class.raw().0 != internal_name {
+        return Ok(None);
+    }
+    Ok(Some(HeaderLookup::found(
+        location,
         ClassHeaderFacts { facts },
     )))
 }
@@ -772,7 +1280,7 @@ fn escaped(raw: &[u8]) -> String {
 mod tests {
     use super::*;
     use crate::artifact::ArtifactInput;
-    use crate::budget::Limits;
+    use crate::budget::{CancellationToken, Limits};
     use crate::view::{
         LayoutMode, ModuleMode, MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile,
         RuntimeUncertainty, RuntimeView,
@@ -801,31 +1309,135 @@ mod tests {
 
     /// Smallest class file the reader accepts, with `this_class` set to `this_class`.
     fn class_bytes(this_class: &[u8], major: u16) -> Vec<u8> {
+        class_with(this_class, Some(b"java/lang/Object"), &[], major)
+    }
+
+    /// Smallest class file the reader accepts, with a chosen name, superclass and interfaces.
+    ///
+    /// The constant pool is built in declaration order: the class's own name first, then the
+    /// superclass (when there is one), then the interfaces, each name as a `CONSTANT_Utf8`
+    /// followed by its `CONSTANT_Class`. Nothing else is in the pool, so a fixture that claims
+    /// a supertype really declares it.
+    fn class_with(
+        this_class: &[u8],
+        super_class: Option<&[u8]>,
+        interfaces: &[&[u8]],
+        major: u16,
+    ) -> Vec<u8> {
+        let mut names: Vec<&[u8]> = vec![this_class];
+        names.extend(super_class);
+        names.extend(interfaces.iter().copied());
         let mut pool = Vec::new();
-        pool.push(1_u8); // CONSTANT_Utf8 this_class
-        pool.extend_from_slice(
-            &u16::try_from(this_class.len())
-                .expect("name fits u16")
-                .to_be_bytes(),
-        );
-        pool.extend_from_slice(this_class);
-        pool.extend_from_slice(&[7, 0, 1]); // CONSTANT_Class #1
-        pool.push(1_u8); // CONSTANT_Utf8 "java/lang/Object"
-        pool.extend_from_slice(&16_u16.to_be_bytes());
-        pool.extend_from_slice(b"java/lang/Object");
-        pool.extend_from_slice(&[7, 0, 3]); // CONSTANT_Class #3
+        for (index, name) in names.iter().enumerate() {
+            pool.push(1_u8); // CONSTANT_Utf8 #(1 + 2 * index)
+            pool.extend_from_slice(
+                &u16::try_from(name.len())
+                    .expect("fixture name fits u16")
+                    .to_be_bytes(),
+            );
+            pool.extend_from_slice(name);
+            pool.push(7_u8); // CONSTANT_Class #(2 + 2 * index) -> the name above
+            pool.extend_from_slice(
+                &u16::try_from(1 + index * 2)
+                    .expect("fixture pool index fits u16")
+                    .to_be_bytes(),
+            );
+        }
+        let count = u16::try_from(names.len() * 2 + 1).expect("fixture pool count fits u16");
 
         let mut bytes = 0xcafebabe_u32.to_be_bytes().to_vec();
-        bytes.extend_from_slice(&0_u16.to_be_bytes());
+        bytes.extend_from_slice(&0_u16.to_be_bytes()); // minor
         bytes.extend_from_slice(&major.to_be_bytes());
-        bytes.extend_from_slice(&5_u16.to_be_bytes()); // constant_pool_count
+        bytes.extend_from_slice(&count.to_be_bytes()); // constant_pool_count
         bytes.extend_from_slice(&pool);
         bytes.extend_from_slice(&0x0021_u16.to_be_bytes()); // ACC_PUBLIC | ACC_SUPER
-        bytes.extend_from_slice(&2_u16.to_be_bytes()); // this_class
-        bytes.extend_from_slice(&4_u16.to_be_bytes()); // super_class
-        for _ in 0..4 {
-            bytes.extend_from_slice(&0_u16.to_be_bytes()); // interfaces, fields, methods, attributes
+        bytes.extend_from_slice(&2_u16.to_be_bytes()); // this_class -> Class #2
+        bytes.extend_from_slice(&if super_class.is_some() { 4_u16 } else { 0_u16 }.to_be_bytes());
+        bytes.extend_from_slice(
+            &u16::try_from(interfaces.len())
+                .expect("interface count fits u16")
+                .to_be_bytes(),
+        );
+        for index in 0..interfaces.len() {
+            bytes.extend_from_slice(
+                &u16::try_from(6 + index * 2)
+                    .expect("fixture interface index fits u16")
+                    .to_be_bytes(),
+            );
         }
+        for _ in 0..3 {
+            bytes.extend_from_slice(&0_u16.to_be_bytes()); // fields, methods, attributes
+        }
+        bytes
+    }
+
+    /// Limits with the dimensions a closure charges funded, on top of a 2.1 fixture.
+    fn closure_limits() -> Limits {
+        Limits {
+            dependency_depth: 4,
+            analysis_steps: 1_000,
+            ..limits()
+        }
+    }
+
+    /// A single `app` loader whose only root is the given snapshot.
+    fn app_environment(snapshot: &ArtifactSnapshot) -> ResolutionEnvironment {
+        let caller = domain(
+            "app",
+            None,
+            DelegationPolicy::ParentFirst,
+            vec![root_of(snapshot)],
+        );
+        environment(caller.clone(), vec![caller])
+    }
+
+    /// A class file whose single method carries a `Code` attribute.
+    ///
+    /// The body is one `return`, so the class really holds bytes a body read would find: a
+    /// closure that reports `method_bodies == 0` on a class without a body proves nothing.
+    /// Pool: `#1` name, `#2` its class, `#3` `java/lang/Object`, `#4` its class, `#5` `m`,
+    /// `#6` `()V`, `#7` `Code`.
+    fn class_with_body(this_class: &[u8]) -> Vec<u8> {
+        let mut pool = Vec::new();
+        for name in [this_class, b"java/lang/Object", b"m", b"()V", b"Code"] {
+            pool.push(1_u8); // CONSTANT_Utf8
+            pool.extend_from_slice(
+                &u16::try_from(name.len())
+                    .expect("fixture name fits u16")
+                    .to_be_bytes(),
+            );
+            pool.extend_from_slice(name);
+        }
+        // Pool: #1 the class name, #2 `java/lang/Object`, #3 `m`, #4 `()V`, #5 `Code`,
+        // #6 the class entry of #1, #7 the class entry of #2.
+        pool.extend_from_slice(&[7, 0, 1]);
+        pool.extend_from_slice(&[7, 0, 3]);
+
+        // max_stack, max_locals, code_length, one `return`, no handlers, no code attributes.
+        let code: &[u8] = &[0, 0, 0, 1, 0, 0, 0, 1, 0xb1, 0, 0, 0, 0];
+        let mut bytes = 0xcafebabe_u32.to_be_bytes().to_vec();
+        bytes.extend_from_slice(&0_u16.to_be_bytes()); // minor
+        bytes.extend_from_slice(&52_u16.to_be_bytes()); // major
+        bytes.extend_from_slice(&8_u16.to_be_bytes()); // constant_pool_count: #1..#7
+        bytes.extend_from_slice(&pool);
+        bytes.extend_from_slice(&0x0021_u16.to_be_bytes()); // ACC_PUBLIC | ACC_SUPER
+        bytes.extend_from_slice(&6_u16.to_be_bytes()); // this_class -> #6
+        bytes.extend_from_slice(&7_u16.to_be_bytes()); // super_class -> #7
+        bytes.extend_from_slice(&0_u16.to_be_bytes()); // interfaces
+        bytes.extend_from_slice(&0_u16.to_be_bytes()); // fields
+        bytes.extend_from_slice(&1_u16.to_be_bytes()); // methods
+        bytes.extend_from_slice(&0x0001_u16.to_be_bytes()); // ACC_PUBLIC
+        bytes.extend_from_slice(&3_u16.to_be_bytes()); // name_index -> "m"
+        bytes.extend_from_slice(&4_u16.to_be_bytes()); // descriptor_index -> "()V"
+        bytes.extend_from_slice(&1_u16.to_be_bytes()); // method attributes
+        bytes.extend_from_slice(&5_u16.to_be_bytes()); // attribute_name_index -> "Code"
+        bytes.extend_from_slice(
+            &u32::try_from(code.len())
+                .expect("fixture code fits u32")
+                .to_be_bytes(),
+        );
+        bytes.extend_from_slice(code);
+        bytes.extend_from_slice(&0_u16.to_be_bytes()); // class attributes
         bytes
     }
 
@@ -1187,5 +1799,715 @@ mod tests {
         assert!(lookup.header.is_none());
         assert_eq!(search.examined, search.positions);
         assert_eq!(budget.usage().class_headers, 0, "no candidate was read");
+    }
+
+    // -----------------------------------------------------------------------
+    // 2.2: the request-scoped closure
+    // -----------------------------------------------------------------------
+
+    /// Walks to the end, appending the handle of every layer the walk decided to `handles`.
+    ///
+    /// `Err` is the walk's own stop; the handles already collected stay the trustworthy prefix,
+    /// and the request's reads stay available on the closure.
+    fn walk_handles(
+        closure: &mut HeaderClosure<'_>,
+        walk: &mut HierarchyWalk,
+        budget: &mut Budget,
+        handles: &mut Vec<ClassHandle>,
+    ) -> Result<()> {
+        loop {
+            let Some(handle) = walk.next(closure, budget)? else {
+                return Ok(());
+            };
+            handles.push(handle);
+        }
+    }
+
+    fn names(names: &[&[u8]]) -> Vec<JvmBytes> {
+        names.iter().map(|name| JvmBytes(name.to_vec())).collect()
+    }
+
+    fn layers(closure: &HeaderClosure<'_>, handles: &[ClassHandle]) -> Vec<JvmBytes> {
+        handles
+            .iter()
+            .map(|handle| closure.resolution(*handle).name.clone())
+            .collect()
+    }
+
+    #[test]
+    fn a_repeated_demand_reuses_the_first_read_without_a_second_record() {
+        let snapshot = open(zip(&[(b"p/C.class", &class_bytes(b"p/C", 52))]));
+        let environment = app_environment(&snapshot);
+        let mut budget = Budget::new(closure_limits());
+        let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
+
+        let first = closure
+            .demand(b"p/C", HeaderDemand::RequestedDefinition, &mut budget)
+            .decision
+            .expect("the fixture holds the name");
+        let repeated = closure.demand(b"p/C", HeaderDemand::HierarchyClosure, &mut budget);
+
+        assert_eq!(
+            repeated.decision.expect("the request remembers the key"),
+            first,
+            "one handle per (loader, internal name) key"
+        );
+        assert!(
+            repeated.searched.is_none(),
+            "the memo answers without searching again"
+        );
+        assert_eq!(budget.usage().class_headers, 1, "one read attempt in total");
+        assert_eq!(
+            closure.reads().len(),
+            1,
+            "one read record in total, not one per demand"
+        );
+        assert_eq!(
+            closure.reads()[0].demand,
+            HeaderDemand::RequestedDefinition,
+            "the record keeps the demand that really read the header"
+        );
+        assert_eq!(closure.reads()[0].loader.0, "app");
+        assert_eq!(closure.resolution(first).name, JvmBytes(b"p/C".to_vec()));
+        assert_eq!(
+            closure.resolution(first).lookup.state,
+            HeaderLookupState::Found
+        );
+    }
+
+    #[test]
+    fn one_binding_is_one_record_even_when_two_demands_read_it() {
+        // A standalone root that declares the requested name is the only position, so a second
+        // demand for another name probes the same root and reads the same bytes again: two read
+        // attempts, one `(loader, definition)` binding, and therefore one record — which is why
+        // the invariant is `reads.len() <= class_headers` and not equality.
+        let bytes = class_bytes(b"p/S", 52);
+        let standalone = open(bytes.clone());
+        let environment = app_environment(&standalone);
+        let mut budget = Budget::new(closure_limits());
+        let mut closure = HeaderClosure::new(std::slice::from_ref(&standalone), &environment);
+
+        let first = closure
+            .demand(b"p/S", HeaderDemand::RequestedDefinition, &mut budget)
+            .decision
+            .expect("the root declares this name");
+        assert_eq!(
+            closure.resolution(first).lookup.state,
+            HeaderLookupState::Found
+        );
+        let second = closure
+            .demand(b"p/Other", HeaderDemand::HierarchyClosure, &mut budget)
+            .decision
+            .expect("a name no position holds is a fact");
+        assert_eq!(
+            closure.resolution(second).lookup.state,
+            HeaderLookupState::Missing
+        );
+
+        assert_eq!(
+            budget.usage().class_headers,
+            2,
+            "the standalone root was probed twice"
+        );
+        assert_eq!(
+            closure.reads().len(),
+            1,
+            "one (definition, loader) binding is one read record"
+        );
+        assert_eq!(
+            closure.reads()[0].definition,
+            PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: standalone.id().clone(),
+                },
+                class_bytes: ClassBytesId {
+                    digest: Digest(blake3::hash(&bytes).to_hex().to_string()),
+                    length: u64::try_from(bytes.len()).expect("fixture length fits u64"),
+                },
+                variant: PhysicalVariant::Base,
+            }
+        );
+        assert_eq!(
+            closure.reads()[0].demand,
+            HeaderDemand::RequestedDefinition,
+            "the record keeps the demand that performed the read"
+        );
+    }
+
+    #[test]
+    fn a_parent_chain_stops_before_the_step_over_the_dependency_depth() {
+        // p/A -> p/B -> p/C -> p/D, every class of the chain in one root.
+        let snapshot = open(zip(&[
+            (b"p/A.class", &class_with(b"p/A", Some(b"p/B"), &[], 52)),
+            (b"p/B.class", &class_with(b"p/B", Some(b"p/C"), &[], 52)),
+            (b"p/C.class", &class_with(b"p/C", Some(b"p/D"), &[], 52)),
+            (
+                b"p/D.class",
+                &class_with(b"p/D", Some(b"java/lang/Object"), &[], 52),
+            ),
+        ]));
+        let environment = app_environment(&snapshot);
+        let mut budget = Budget::new(Limits {
+            dependency_depth: 2,
+            ..closure_limits()
+        });
+        let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
+        let mut walk = closure.parent_chain(b"p/A");
+
+        let mut expanded = Vec::new();
+        let stop = walk_handles(&mut closure, &mut walk, &mut budget, &mut expanded)
+            .expect_err("the chain is one step deeper than the limit");
+
+        assert!(
+            matches!(
+                stop,
+                Error::BudgetExceeded {
+                    dimension: BudgetDimension::DependencyDepth,
+                    limit: 2,
+                    consumed: 2,
+                    ..
+                }
+            ),
+            "the stop names the depth dimension: {stop:?}"
+        );
+        assert_eq!(
+            layers(&closure, &expanded),
+            names(&[b"p/A", b"p/B", b"p/C"]),
+            "the layers already expanded are the trustworthy prefix"
+        );
+        assert_eq!(
+            budget.usage().dependency_depth,
+            2,
+            "the deep-water mark is the deepest layer that was read"
+        );
+        assert_eq!(
+            closure.reads().len(),
+            3,
+            "reads only hold the layers that were really read"
+        );
+        assert!(
+            closure
+                .reads()
+                .iter()
+                .all(|read| read.demand == HeaderDemand::ParentChain),
+            "every read of this walk is a parent-chain read"
+        );
+        assert_eq!(budget.usage().class_headers, 3);
+        assert_eq!(
+            budget.usage().analysis_steps,
+            3,
+            "one worklist iteration per layer processed"
+        );
+        assert_eq!(walk.gaps(), &WalkGaps::default());
+        assert!(closure.diagnostics().is_empty());
+    }
+
+    #[test]
+    fn a_supertype_closure_reads_every_header_once() {
+        // p/C extends p/Base and implements p/I1, p/I2; the two interfaces extend p/I3 and
+        // p/I4, and every class's own superclass is in the same root.
+        let snapshot = open(zip(&[
+            (
+                b"p/C.class",
+                &class_with(b"p/C", Some(b"p/Base"), &[b"p/I1", b"p/I2"], 52),
+            ),
+            (
+                b"p/Base.class",
+                &class_with(b"p/Base", Some(b"java/lang/Object"), &[], 52),
+            ),
+            (
+                b"p/I1.class",
+                &class_with(b"p/I1", Some(b"java/lang/Object"), &[b"p/I3"], 52),
+            ),
+            (
+                b"p/I2.class",
+                &class_with(b"p/I2", Some(b"java/lang/Object"), &[b"p/I4"], 52),
+            ),
+            (
+                b"p/I3.class",
+                &class_with(b"p/I3", Some(b"java/lang/Object"), &[], 52),
+            ),
+            (
+                b"p/I4.class",
+                &class_with(b"p/I4", Some(b"java/lang/Object"), &[], 52),
+            ),
+            (
+                // The root class of the hierarchy declares no superclass: declaring itself
+                // would be the cyclic fixture the cycle test builds on purpose.
+                b"java/lang/Object.class",
+                &class_with(b"java/lang/Object", None, &[], 52),
+            ),
+        ]));
+        let environment = app_environment(&snapshot);
+        let mut budget = Budget::new(closure_limits());
+        let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
+        let mut walk = closure.hierarchy_closure(b"p/C");
+
+        let mut expanded = Vec::new();
+        walk_handles(&mut closure, &mut walk, &mut budget, &mut expanded)
+            .expect("every supertype of the fixture is in the root");
+
+        assert_eq!(
+            layers(&closure, &expanded),
+            names(&[
+                b"p/C",
+                b"p/Base",
+                b"p/I1",
+                b"p/I2",
+                b"java/lang/Object",
+                b"p/I3",
+                b"p/I4",
+            ]),
+            "breadth-first: the superclass before the interfaces, and every layer before the \
+             supertypes it declares"
+        );
+        assert_eq!(
+            budget.usage().class_headers,
+            7,
+            "one read per class, none repeated"
+        );
+        assert_eq!(closure.reads().len(), 7);
+        assert_eq!(
+            budget.usage().dependency_depth,
+            2,
+            "the interfaces of the interfaces are the deepest layer"
+        );
+        assert!(closure.diagnostics().is_empty());
+        for (index, read) in closure.reads().iter().enumerate() {
+            assert_eq!(read.demand, HeaderDemand::HierarchyClosure);
+            for other in &closure.reads()[index + 1..] {
+                assert_ne!(
+                    (&read.loader, &read.definition),
+                    (&other.loader, &other.definition),
+                    "one (definition, loader) binding is one read record"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn a_missing_supertype_ends_its_branch_without_a_fabricated_definition() {
+        // p/Base and p/Gone are declared as supertypes but no position holds them; p/I1 is
+        // there and declares p/Base, which is missing too.
+        let snapshot = open(zip(&[
+            (
+                b"p/C.class",
+                &class_with(b"p/C", Some(b"p/Base"), &[b"p/I1", b"p/Gone"], 52),
+            ),
+            (
+                b"p/I1.class",
+                &class_with(b"p/I1", Some(b"java/lang/Object"), &[], 52),
+            ),
+        ]));
+        let environment = app_environment(&snapshot);
+        let mut budget = Budget::new(closure_limits());
+        let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
+        let mut walk = closure.hierarchy_closure(b"p/C");
+
+        let mut expanded = Vec::new();
+        walk_handles(&mut closure, &mut walk, &mut budget, &mut expanded)
+            .expect("a missing name is a fact, not a stop");
+
+        assert_eq!(
+            layers(&closure, &expanded),
+            names(&[b"p/C", b"p/Base", b"p/I1", b"p/Gone", b"java/lang/Object",]),
+            "the walk still visits every branch it was declared"
+        );
+        assert_eq!(
+            walk.gaps().missing,
+            names(&[b"p/Base", b"p/Gone", b"java/lang/Object"]),
+            "every name no position holds is published as a gap — the unfinished part of the \
+             closure a report has to mark as skipped"
+        );
+        assert_eq!(
+            budget.usage().class_headers,
+            2,
+            "only the found names were read"
+        );
+        assert_eq!(closure.reads().len(), 2);
+        for handle in &expanded {
+            let resolution = closure.resolution(*handle);
+            if resolution.lookup.state == HeaderLookupState::Missing {
+                assert!(
+                    resolution.lookup.location.is_none() && resolution.lookup.header.is_none(),
+                    "a missing name has no definition and no header to publish"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn a_cyclic_hierarchy_terminates_with_a_locatable_diagnostic() {
+        let snapshot = open(zip(&[
+            (b"p/A.class", &class_with(b"p/A", Some(b"p/B"), &[], 52)),
+            (b"p/B.class", &class_with(b"p/B", Some(b"p/A"), &[], 52)),
+        ]));
+        let environment = app_environment(&snapshot);
+        let mut budget = Budget::new(closure_limits());
+        let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
+        let mut walk = closure.hierarchy_closure(b"p/A");
+
+        let mut expanded = Vec::new();
+        walk_handles(&mut closure, &mut walk, &mut budget, &mut expanded)
+            .expect("a cycle ends a branch, it does not fail the request");
+
+        assert_eq!(
+            layers(&closure, &expanded),
+            names(&[b"p/A", b"p/B"]),
+            "the walk terminates: each class is expanded once"
+        );
+        assert_eq!(walk.gaps().cycles, names(&[b"p/A"]));
+        assert_eq!(
+            budget.usage().class_headers,
+            2,
+            "the cycle is refused before a third read"
+        );
+        assert_eq!(closure.reads().len(), 2);
+        assert_eq!(closure.diagnostics().len(), 1);
+        let diagnostic = &closure.diagnostics()[0];
+        assert_eq!(diagnostic.code, "resolution_hierarchy_cycle");
+        assert_eq!(diagnostic.severity, DiagnosticSeverity::Warning);
+        for expected in [
+            "loader `app`",
+            "p/A -> p/B -> p/A",
+            "`p/A` is its own supertype",
+        ] {
+            assert!(
+                diagnostic.message.contains(expected),
+                "the diagnostic locates the cycle ({expected}): {}",
+                diagnostic.message
+            );
+        }
+    }
+
+    #[test]
+    fn a_walk_stops_before_the_next_expansion_on_cancellation() {
+        let snapshot = open(zip(&[
+            (b"p/A.class", &class_with(b"p/A", Some(b"p/B"), &[], 52)),
+            (
+                b"p/B.class",
+                &class_with(b"p/B", Some(b"java/lang/Object"), &[], 52),
+            ),
+        ]));
+        let environment = app_environment(&snapshot);
+
+        // Cancelled before the walk starts: no layer is read at all.
+        let cancelled = CancellationToken::new();
+        cancelled.cancel();
+        let mut budget = Budget::with_cancellation_token(closure_limits(), cancelled);
+        let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
+        let mut walk = closure.parent_chain(b"p/A");
+        let stop = walk
+            .next(&mut closure, &mut budget)
+            .expect_err("a cancelled request reads nothing");
+        assert!(matches!(stop, Error::Cancelled { .. }), "{stop:?}");
+        assert!(closure.reads().is_empty());
+        assert_eq!(budget.usage().class_headers, 0);
+
+        // Cancelled between two layers: the layer that was read stays, the next one is not
+        // reached, and the stop is a cancellation rather than a missing definition.
+        let token = CancellationToken::new();
+        let mut budget = Budget::with_cancellation_token(closure_limits(), token.clone());
+        let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
+        let mut walk = closure.parent_chain(b"p/A");
+        let root = walk
+            .next(&mut closure, &mut budget)
+            .expect("the root layer is read")
+            .expect("a walk always has its root layer");
+        assert_eq!(closure.resolution(root).name, JvmBytes(b"p/A".to_vec()));
+        token.cancel();
+        let stop = walk
+            .next(&mut closure, &mut budget)
+            .expect_err("the next expansion is refused");
+        assert!(matches!(stop, Error::Cancelled { .. }), "{stop:?}");
+        assert_eq!(
+            closure.reads().len(),
+            1,
+            "only the layer read before the cancellation is recorded"
+        );
+        assert_eq!(budget.usage().class_headers, 1);
+        assert!(
+            walk.next(&mut closure, &mut budget).is_err(),
+            "a stopped walk stays stopped"
+        );
+        assert!(
+            u64::try_from(closure.reads().len()).expect("a read count fits u64")
+                <= budget.usage().class_headers,
+            "reads.len() <= class_headers holds under a stop"
+        );
+    }
+
+    #[test]
+    fn a_closure_reads_headers_only_and_never_a_body() {
+        let bytes = class_with_body(b"p/C");
+        // Fixture sanity: the class really carries a method with a body, so "no body was read"
+        // is a statement about the closure and not about an empty fixture.
+        let mut sanity = Budget::new(closure_limits());
+        let facts = class_facts(&bytes, &mut sanity).expect("the fixture is a readable class");
+        assert_eq!(facts.methods.len(), 1);
+        assert_eq!(facts.methods[0].attributes.len(), 1);
+        assert_eq!(facts.methods[0].attributes[0].name.raw().0, b"Code");
+
+        let snapshot = open(zip(&[(b"p/C.class", &bytes)]));
+        let environment = app_environment(&snapshot);
+        let mut budget = Budget::new(closure_limits());
+        let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
+        let handle = closure
+            .demand(b"p/C", HeaderDemand::RequestedDefinition, &mut budget)
+            .decision
+            .expect("the fixture holds the name");
+        let header = closure
+            .resolution(handle)
+            .lookup
+            .header
+            .as_ref()
+            .expect("a found class carries its header");
+
+        assert_eq!(
+            header.facts.methods.len(),
+            1,
+            "the header facts are the declarations, and the closure uses them as such"
+        );
+        assert_eq!(
+            budget.usage().method_bodies,
+            0,
+            "a closure reads headers only, even when the class has a body"
+        );
+        assert_eq!(budget.usage().code_bytes, 0, "no code byte was read");
+        assert!(
+            closure.reads().iter().all(|read| matches!(
+                read.demand,
+                HeaderDemand::RequestedDefinition
+                    | HeaderDemand::ParentChain
+                    | HeaderDemand::HierarchyClosure
+            )),
+            "the reason set is exactly the demands a header closure may publish"
+        );
+    }
+
+    #[test]
+    fn a_parent_chain_walk_follows_the_superclass_and_ignores_interfaces() {
+        // p/C extends p/Base and implements p/I; p/Base extends java/lang/Object.
+        //
+        // `ReadReason::ParentChain` names one step up the *type's* `super_class` chain, so this
+        // walk reads the class chain and never an interface: it answers "what does this class
+        // extend", which is a different question from the supertype closure the fan-out test
+        // covers.
+        let snapshot = open(zip(&[
+            (
+                b"p/C.class",
+                &class_with(b"p/C", Some(b"p/Base"), &[b"p/I"], 52),
+            ),
+            (
+                b"p/Base.class",
+                &class_with(b"p/Base", Some(b"java/lang/Object"), &[], 52),
+            ),
+            (
+                b"p/I.class",
+                &class_with(b"p/I", Some(b"java/lang/Object"), &[], 52),
+            ),
+            (
+                b"java/lang/Object.class",
+                &class_with(b"java/lang/Object", None, &[], 52),
+            ),
+        ]));
+        let environment = app_environment(&snapshot);
+        let mut budget = Budget::new(closure_limits());
+        let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
+        let mut walk = closure.parent_chain(b"p/C");
+
+        let mut expanded = Vec::new();
+        walk_handles(&mut closure, &mut walk, &mut budget, &mut expanded)
+            .expect("every class of the chain is in the root");
+
+        assert_eq!(
+            layers(&closure, &expanded),
+            names(&[b"p/C", b"p/Base", b"java/lang/Object"]),
+            "the parent chain is the superclass chain: the interface p/I is not on it"
+        );
+        assert_eq!(
+            budget.usage().class_headers,
+            3,
+            "p/I is never read by a parent-chain walk, even though p/C implements it"
+        );
+        assert_eq!(closure.reads().len(), 3);
+        assert!(
+            closure
+                .reads()
+                .iter()
+                .all(|read| read.demand == HeaderDemand::ParentChain),
+            "every read of this walk names the parent-chain demand"
+        );
+        assert_eq!(
+            walk.gaps(),
+            &WalkGaps::default(),
+            "nothing was missing, ambiguous or cyclic"
+        );
+        assert!(
+            expanded
+                .iter()
+                .all(|handle| closure.resolution(*handle).name != JvmBytes(b"p/I".to_vec())),
+            "no layer of this walk is the interface"
+        );
+    }
+
+    #[test]
+    fn a_stopped_demand_is_not_remembered_as_a_decision() {
+        // Position 0 is a standalone CLASS root that declares another name: it is read — and
+        // recorded — before the search continues. Position 1 holds the requested name, and a
+        // one-attempt header budget refuses that read, so the demand stops without deciding.
+        let other_bytes = class_bytes(b"other/O", 52);
+        let other = open(other_bytes.clone());
+        let bytes = class_bytes(b"p/S", 52);
+        let snapshot = open(zip(&[(b"p/S.class", &bytes)]));
+        let roots = vec![root_of(&other), root_of(&snapshot)];
+        let environment = environment(
+            domain("app", None, DelegationPolicy::ParentFirst, roots.clone()),
+            vec![domain("app", None, DelegationPolicy::ParentFirst, roots)],
+        );
+        let content = [other, snapshot];
+        let mut closure = HeaderClosure::new(&content, &environment);
+
+        let mut tight = Budget::new(Limits {
+            class_headers: 1,
+            ..closure_limits()
+        });
+        let stop = closure
+            .demand(b"p/S", HeaderDemand::RequestedDefinition, &mut tight)
+            .decision
+            .expect_err("the second read attempt is refused");
+        assert!(
+            matches!(
+                stop,
+                Error::BudgetExceeded {
+                    dimension: BudgetDimension::ClassHeaders,
+                    ..
+                }
+            ),
+            "the stop keeps its own dimension: {stop:?}"
+        );
+        assert_eq!(
+            closure.reads().len(),
+            1,
+            "the standalone root's read happened before the stop"
+        );
+
+        // The same key asked again searches again on the fresh budget: a stop decided nothing,
+        // so it must not be remembered as `Missing`, as an empty closure, or as a memo hit.
+        let mut fresh = Budget::new(closure_limits());
+        let answer = closure.demand(b"p/S", HeaderDemand::RequestedDefinition, &mut fresh);
+        assert!(
+            answer.searched.is_some(),
+            "the second demand performed a search of its own instead of reading the stop out \
+             of the memo"
+        );
+        assert_eq!(
+            fresh.usage().class_headers,
+            2,
+            "the retry really searched the order again"
+        );
+        let handle = answer
+            .decision
+            .expect("the retry reaches the decision the stop prevented");
+        assert_eq!(
+            closure.resolution(handle).lookup.state,
+            HeaderLookupState::Found,
+            "the retry decides the name; the stop did not invent a `Missing`"
+        );
+        assert_eq!(
+            closure.reads().len(),
+            2,
+            "the retry records the candidate it read; the standalone root is already known, so \
+             it is not recorded twice"
+        );
+    }
+
+    #[test]
+    fn an_ambiguous_supertype_is_a_gap_of_its_own_kind() {
+        // p/C extends p/Base, and the root holds two indistinguishable p/Base entries: the
+        // branch ends as `ambiguous` — its own gap field, not a missing or a cyclic one — and
+        // both candidates are read and recorded.
+        let snapshot = open(zip(&[
+            (b"p/C.class", &class_with(b"p/C", Some(b"p/Base"), &[], 52)),
+            (b"p/Base.class", &class_with(b"p/Base", None, &[], 52)),
+            (b"p/Base.class", &class_with(b"p/Base", None, &[], 51)),
+        ]));
+        let environment = app_environment(&snapshot);
+        let mut budget = Budget::new(closure_limits());
+        let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
+        let mut walk = closure.hierarchy_closure(b"p/C");
+
+        let mut expanded = Vec::new();
+        walk_handles(&mut closure, &mut walk, &mut budget, &mut expanded)
+            .expect("an ambiguous name ends its branch without failing the request");
+
+        assert_eq!(walk.gaps().ambiguous, names(&[b"p/Base"]));
+        assert!(
+            walk.gaps().missing.is_empty() && walk.gaps().cycles.is_empty(),
+            "an ambiguous name is not a missing or a cyclic one: {:?}",
+            walk.gaps()
+        );
+        assert_eq!(
+            budget.usage().class_headers,
+            3,
+            "both candidates of the ambiguous position are read attempts"
+        );
+        assert_eq!(
+            closure.reads().len(),
+            3,
+            "each candidate that was really read is recorded, the ambiguous ones included"
+        );
+        assert_eq!(
+            layers(&closure, &expanded),
+            names(&[b"p/C", b"p/Base"]),
+            "the ambiguous layer is expanded once and its branch stops there"
+        );
+        assert_eq!(
+            closure
+                .resolution(*expanded.last().expect("the walk expanded a layer"))
+                .lookup
+                .state,
+            HeaderLookupState::Ambiguous
+        );
+        assert!(closure.diagnostics().is_empty());
+    }
+
+    #[test]
+    fn a_class_that_extends_itself_is_refused_with_a_diagnostic() {
+        let snapshot = open(zip(&[(
+            b"p/A.class",
+            &class_with(b"p/A", Some(b"p/A"), &[], 52),
+        )]));
+        let environment = app_environment(&snapshot);
+        let mut budget = Budget::new(closure_limits());
+        let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
+        let mut walk = closure.hierarchy_closure(b"p/A");
+
+        let mut expanded = Vec::new();
+        walk_handles(&mut closure, &mut walk, &mut budget, &mut expanded)
+            .expect("a self-extending class ends its branch, it does not fail the request");
+
+        assert_eq!(
+            layers(&closure, &expanded),
+            names(&[b"p/A"]),
+            "the walk terminates at the class that extends itself"
+        );
+        assert_eq!(walk.gaps().cycles, names(&[b"p/A"]));
+        assert_eq!(
+            budget.usage().class_headers,
+            1,
+            "the cycle is refused before a second read"
+        );
+        assert_eq!(closure.diagnostics().len(), 1);
+        let diagnostic = &closure.diagnostics()[0];
+        assert_eq!(diagnostic.code, "resolution_hierarchy_cycle");
+        assert_eq!(diagnostic.severity, DiagnosticSeverity::Warning);
+        for expected in ["loader `app`", "p/A -> p/A", "`p/A` is its own supertype"] {
+            assert!(
+                diagnostic.message.contains(expected),
+                "the diagnostic locates the cycle ({expected}): {}",
+                diagnostic.message
+            );
+        }
     }
 }

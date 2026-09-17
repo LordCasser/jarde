@@ -25,6 +25,7 @@ use crate::error::{Error, Result};
 use crate::model::{
     Coverage, Diagnostic, ExecutionReport, OriginSet, PhysicalMethodId, TerminationReason,
 };
+use crate::resolver::HeaderRead;
 use crate::view::LoaderId;
 use serde::{Deserialize, Serialize};
 
@@ -190,6 +191,15 @@ pub struct MethodAnalysisReport {
     /// in phase order.
     pub stages: Vec<StageResult>,
     pub origin: OriginSet,
+    /// Every class header this request read, in read order, at most once per
+    /// `(definition, loader)`; empty when the request read nothing.
+    ///
+    /// This slice has no body path at all, so `reads` is empty here. A body is upgraded only
+    /// by an explicit request for the target method's body, which the analysis slices record
+    /// in this same list under
+    /// [`crate::resolver::ReadReason::DriverMethodBody`] — the one reason that may name a
+    /// body read, and the one that lets `reads` differ from the header-only closure.
+    pub reads: Vec<HeaderRead>,
     pub coverage: Coverage,
     pub execution: ExecutionReport,
     pub diagnostics: Vec<Diagnostic>,
@@ -289,6 +299,9 @@ pub(crate) fn analysis_report(
         stages,
         // No IR artifact was generated.
         origin: OriginSet::default(),
+        // No header was demanded: this slice performs no closure work at all, and the only
+        // reason that may upgrade to a body read (`DriverMethodBody`) belongs to 3.x.
+        reads: Vec::new(),
         coverage: Coverage::not_requested(),
         execution: ExecutionReport::Failed {
             reason: TerminationReason::Unsupported {

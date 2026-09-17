@@ -4,9 +4,10 @@
 //!
 //! 1. a physical use of the P1 surface (open the snapshot, read the header) on its own
 //!    budget, so the P2 request budget below provably stays at zero,
-//! 2. a class-name lookup (2.1): the class symbol is resolved for real through the declared
-//!    search order — here the caller's only root is this standalone CLASS file, which declares
-//!    its own name — and the report names the selected position and its one header read,
+//! 2. a class-name lookup (2.1) organized by the request closure (2.2): the class symbol is
+//!    resolved for real through the declared search order — here the caller's only root is
+//!    this standalone CLASS file, which declares its own name — so the report names the
+//!    selected position, the header read it caused and the demand that caused it,
 //! 3. `Engine::resolve_symbol` on a member symbol and `Engine::declaration_references` /
 //!    `Engine::analyze_method` on one explicit `ResolutionEnvironment`: the reports say
 //!    `NotPerformed` / `Failed { Unsupported }` / `NotRequested` and list the scheduled
@@ -29,9 +30,9 @@ use jarde::{
     ExecutionReport, HeaderProvider, InspectionMode, JvmBytes, LayoutMode, Limits, LoadDomain,
     LoadRoot, LoaderId, MethodAnalysisRequest, MethodBodyState, ModuleMode, MultiReleasePolicy,
     PhysicalDefinitionId, PhysicalMethodId, PhysicalScope, PhysicalVariant, PhysicalView,
-    ProviderId, ReferenceUse, ResolutionEnvironment, ResolutionRequest, ResolutionState,
-    ResolvedMemberRef, RuntimeProfile, RuntimeUncertainty, RuntimeView, SnapshotId, SymbolRef,
-    TerminationReason, UsageSnapshot,
+    ProviderId, ReadReason, ReferenceUse, ResolutionEnvironment, ResolutionRequest,
+    ResolutionState, ResolvedMemberRef, RuntimeProfile, RuntimeUncertainty, RuntimeView,
+    SnapshotId, SymbolRef, TerminationReason, UsageSnapshot,
 };
 use std::env;
 use std::path::{Path, PathBuf};
@@ -244,6 +245,27 @@ fn run(path: PathBuf) -> jarde::Result<()> {
             .as_ref()
             .map(|resolved| resolved.loader.clone()),
         Some(app.clone())
+    );
+    // 2.2: the report names every class header the request read, at most once per
+    // `(definition, loader)`, with the demand that caused the read. This lookup reads the
+    // definition it selected and nothing else, so the list has one entry.
+    assert_eq!(report.reads.len(), 1);
+    assert_eq!(report.reads[0].reason, ReadReason::RequestedDefinition);
+    assert_eq!(
+        report.reads[0].definition,
+        report
+            .resolved
+            .as_ref()
+            .expect("a resolved lookup publishes its definition")
+            .definition
+    );
+    println!(
+        "resolve_symbol.class: reads={:?}",
+        report
+            .reads
+            .iter()
+            .map(|read| (read.loader.0.as_str(), read.reason))
+            .collect::<Vec<_>>(),
     );
     assert!(report.environment_problems.is_empty());
     print_usage("resolve_symbol.class", &budget.usage());
