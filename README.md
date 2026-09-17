@@ -1,8 +1,8 @@
 # jarde
 
-`jarde` 是纯 Rust、同步、library-first 的 JVM artifact 有界静态检查底座。**P0 已完成并归档**：不可变 CLASS/JAR/WAR 快照、顶层物理 ZIP entry 枚举与读取、classfile Header inspection、按方法的原始指令边界 inspection、预算/协作取消、公共 `Engine`、单请求 JSON CLI、支持矩阵、低内存 CI、公共示例与验证记录均已落地。P1 已完成 1.1 query/view/identity 模型和 1.2 显式 `enumerate_artifact_tree`：后者支持有界 nested archive 遍历、带物理 evidence 的 Boot/WAR 布局节点，以及从 root snapshot 复核 origin chain 的 nested entry replay；普通 `enumerate` 仍只枚举当前容器，不递归。P1 的 MR 选择、XRef/query 执行、resolver 与 runtime selection 尚未实现；P2–P5 仍为 planned / not implemented。
+`jarde` 是纯 Rust、同步、library-first 的 JVM artifact 有界静态检查底座。**P0 已完成并归档**：不可变 CLASS/JAR/WAR 快照、顶层物理 ZIP entry 枚举与读取、classfile Header inspection、按方法的原始指令边界 inspection、预算/协作取消、公共 `Engine`、单请求 JSON CLI、支持矩阵、低内存 CI、公共示例与验证记录均已落地。**P1 的 1.1–3.3 已完成并有证据**：query/view/identity 模型、显式 `enumerate_artifact_tree`（有界 nested 遍历、Boot/WAR 物理布局 evidence、origin chain 复核）、标准 MR-JAR 选择与合规诊断、结构 XRef（code/metadata/bootstrap/resource consumer，含 Record component 与 Code 内注解、实际使用点 descriptor 类型）、target-bound 游标与分页、CLI `query` operation，以及 P1 验收语料索引、结构 XRef golden、proptest 性质与有界 fuzz 门禁；3.4（文档、完整 CI 与归档）是收口步骤。resolution（definition/dispatch 解析、loader/module 绑定）与 P2–P5 仍为 planned / not implemented。
 
-这不是反编译器的完成版本。X1 引用扫描、MR/运行时选择、resolution、CFG/SSA/IR、Java recovery/runtime view 均未实现。`Strict` 支持 45.x–51.x 与 52.0，且只表示 **version-only gate 下的结构读取和方法指令 inspection**，不是完整 dialect validation 或 JVM verifier；52 的非零 minor 不属于 Java 8 profile，`Strict` 拒绝。53–71、preview 与 future release 可由 `Forensic` 读取边界可靠的 Header 结构，但能力分别标为 `StructuralProbeOnly`、`UnsupportedPreview`、`FutureRelease`；`Strict` 均拒绝。完整、逐输入类型与版本的边界见[五维支持矩阵](docs/support-matrix.md)。
+这不是反编译器的完成版本。X1 只在声明的 consumer schema 与物理视图内提供结构引用：`references_definition`/`may_dispatch_to` 返回 `UnsupportedAnalysis`（P2 resolver），`Verification`/`Debug` 类别不实现，不构建 CFG/SSA/Java AST；resolution、Java recovery 与 runtime view 均未实现。`Strict` 支持 45.x–51.x 与 52.0，且只表示 **version-only gate 下的结构读取和方法指令 inspection**，不是完整 dialect validation 或 JVM verifier；52 的非零 minor 不属于 Java 8 profile，`Strict` 拒绝。53–71、preview 与 future release 可由 `Forensic` 读取边界可靠的 Header 结构，但能力分别标为 `StructuralProbeOnly`、`UnsupportedPreview`、`FutureRelease`；`Strict` 均拒绝。完整、逐输入类型与版本的边界见[五维支持矩阵](docs/support-matrix.md)。
 
 ## 支持范围
 
@@ -62,10 +62,55 @@ JSON
 
 Library 可用 `Budget::with_cancellation_token` / `CancellationToken` 注入协作取消；P0 CLI 不暴露取消 token 注入，只支持 `elapsed_millis`。取消和 elapsed 都在协作检查点生效，不是强制抢占或硬超时。
 
+### P1 查询（structural XRef）
+
+`query` operation 接受 relation、target、`physical` scope、consumer schema、`max_items` 和可选 `cursor`；snapshot 由适配层打开并在报告里回显。下面的请求在已提交的 ECJ 4.6.1 fixture 上查找 `java/lang/Object.<init>()V` 的调用点（owner/name/descriptor 是 JVM 原始字节数组）：
+
+```sh
+CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 cargo run -p jarde-cli -- <<'JSON'
+{
+  "input_path": "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class",
+  "limits": {
+    "input_bytes": 1048576,
+    "archive_entries": 1024,
+    "entry_bytes": 1048576,
+    "read_bytes": 2097152,
+    "class_bytes": 1048576,
+    "attribute_bytes": 1048576,
+    "code_bytes": 262144,
+    "result_items": 10000,
+    "output_bytes": 4194304,
+    "nested_depth": 8,
+    "elapsed_millis": 30000
+  },
+  "operation": {
+    "kind": "query",
+    "relation": "mentions_symbol",
+    "target": {
+      "kind": "symbol",
+      "value": {
+        "kind": "method",
+        "owner": [106,97,118,97,47,108,97,110,103,47,79,98,106,101,99,116],
+        "name": [60,105,110,105,116,62],
+        "descriptor": [40,41,86]
+      }
+    },
+    "physical": { "kind": "snapshot_all" },
+    "consumers": { "version": 1, "kinds": ["invocation"] },
+    "max_items": 0,
+    "cursor": null
+  }
+}
+JSON
+```
+
+响应 `status: "ok"`，`report.items` 含一条 `consumer: "invocation"`、`operation: "invoke_special"`、CP index 8、BCI 1、opcode 183 的 item，`execution.status` 为 `complete`，`coverage.dimensions.artifact_structural.state` 为 `complete_within_schema`。`max_items` 只限制每页条目、不改变查询含义；`page.cursor` 是为同一查询身份签发的续页 token（`QUERY_ENGINE_SCHEMA = 2`，绑定 snapshot、view、relation、完整 target 与 consumer schema），跨目标或跨快照重放会被拒为 `query_cursor_mismatch`。请求未实现类别（`verification`/`debug`）时不会返回 `complete_within_schema`；`references_definition`/`may_dispatch_to` 返回 `analysis: unsupported_analysis` 并保留原始常量池候选。预算、取消或损坏输入只会产生 `partial`/`cancelled`/`failed` 与定位诊断，不会伪装成完整无命中。
+
 ## 规格与验证
 
 - [五维支持矩阵](docs/support-matrix.md)
 - [P0 实际验证记录](openspec/changes/archive/2026-09-17-establish-p0-foundation/verification.md)
+- [P1 change（proposal / design / tasks / verification）](openspec/changes/p1-query-xref/)
 - [OpenSpec 入口](openspec/README.md)
 - [P0 归档 proposal / design / tasks](openspec/changes/archive/2026-09-17-establish-p0-foundation/)
 - [已生效的 P0 主规格](openspec/specs/)
