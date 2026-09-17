@@ -147,6 +147,7 @@
 - 覆盖与计费：查找停（`ClassHeaders`/`DependencyDepth`/listing 截断/取消/损坏）保留 `skipped = [examined, positions)`；**发布停**（候选 `ResultItems` 被拒）标 `Partial` 但**不伪造** skipped（由 `DispatchStop::ended_a_search()` 显式区分）；进入报告的诊断（含闭包自报的 `resolution_hierarchy_cycle`）与随扫描增长的列表条目各计一次 `ResultItems`；判定证据字段（`resolved`/`candidates`）不单独计费；停止⇒`open_world` 只有一处实现；发布阶段已停下的请求不再启动 dispatch 平面。
 - 三轮复核的证伪链：首轮「有条件 Approve」→ 三项必须改（文档残留、覆盖平面丢 skipped 违反 spec MUST、闭包诊断未计费，前者主 Agent 修文档、后两者改实现）→ 复审 **Reject**（不是实现缺陷，而是三条契约化语义在 521 条测试下**变异存活**：结构性候选规则、规则诊断逐条计费、`Truncated` 保留 skipped）→ 补三条用例 → 有界复核 **Approve**（三组变异现在各被对应新用例捕获，且整仓只有该用例失败；另拆出只筛 private/static/abstract 三种单标志变异，均被捕获）。
 - 证据：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **525 passed / 0 failed / 1 ignored**（`p2_dispatch` 32、`p1_xref_golden` 5、lib 151）；示例 exit 0；由主 Agent 独立复跑确认。
+- 远端 CI：实现与文档提交 `12e735c`、`915bd6f` 推送 `main` 后，CI run [`35285853954`](https://github.com/LordCasser/jarde/actions/runs/35285853954) 四个 job 全部 success——**2.x 全片（2.1–2.5）至此完成、复核并全绿**。
 - 独立复核结论：**Approve**（三轮）。登记债务：`skipped` 在多次查找共享请求时是「未检查位置」的保守上界（高报未决、绝不低报；5.3 收紧为逐查找集合或在 golden 固定）；`resolve_symbol` 的判定证据字段不单独计费（契约已明确口径，由绝对账单边界守护）；`DependencyDepth` 在 dispatch 级的停止现已有用例；`resolve_symbol` 报告里 `resolved`/`candidates` 无逐条计费；范围枚举每次 demand 重跑容器枚举（P5 索引前）；range 的中途取消公开不可构造（预取消已覆盖）；`SnapshotAll` 与 `ArtifactTree` 的差异已有对照用例。
 
 ## P2 验收映射现状（滚动更新）
