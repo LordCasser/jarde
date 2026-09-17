@@ -95,8 +95,8 @@ use crate::model::{
     SymbolRef,
 };
 use crate::query::{
-    ConsumerKind, LiteralValue, QueryRelation, QueryResolution, QueryTarget, XrefCertainty,
-    XrefDerivation, XrefEvidence, XrefItem, XrefOperation, XrefTarget,
+    ConsumerKind, LiteralValue, QueryRelation, QueryResolution, XrefCertainty, XrefDerivation,
+    XrefEvidence, XrefItem, XrefOperation, XrefTarget,
 };
 
 const MODULE_INFO_CLASS: &[u8] = b"module-info";
@@ -392,20 +392,27 @@ impl Scan<'_, '_, '_> {
         });
     }
 
-    /// Publishes a candidate when the requested target matches it, and never
-    /// otherwise.
+    /// Publishes a candidate when the active filter answers it, and never otherwise.
     ///
-    /// The filter only drops candidates that are not references to the requested
-    /// target, so it cannot turn a recorded reference into a missing one. Every
-    /// candidate is `Exact`: the fact was read from bytes that parsed exactly.
+    /// The filter only drops candidates that do not answer the scan, so it cannot turn a
+    /// recorded reference into a missing one. Which candidates answer it is the scan
+    /// context's decision ([`super::ScanContext::candidate_matches`]), and the published
+    /// target is the one that decision returns: under a query's exact target that is the
+    /// target the caller asked for, and under a member shape it is the symbol this fact
+    /// really names, owner included. Every candidate is `Exact`: the fact was read from
+    /// bytes that parsed exactly.
     ///
     /// A fact read while a nested position is open is held in [`Scan::pending`] instead of
     /// being published: its position is the structure it was read from, and that range is
     /// only known once the structure has been read to its end ([`Scan::place`]).
     fn emit(&mut self, candidate: Candidate<'_>) {
-        if !target_matches(&self.ctx.request().target, &candidate.target) {
+        let (symbol, literal) = match &candidate.target {
+            XrefTarget::Symbol { value } => (Some(value), None),
+            XrefTarget::Literal { value } => (None, Some(value)),
+        };
+        let Some(target) = self.ctx.published_target(symbol, literal) else {
             return;
-        }
+        };
         let relation = self.ctx.request().relation;
         let offset = candidate.span.as_ref().map_or(0, |span| span.start);
         let definition = self.units.definition.clone();
@@ -415,7 +422,7 @@ impl Scan<'_, '_, '_> {
         let item = XrefItem {
             relation,
             source,
-            target: candidate.target,
+            target,
             consumer: Some(candidate.site.consumer),
             operation: candidate.site.operation,
             derivation: XrefDerivation::StructuralConsumer,
@@ -492,18 +499,6 @@ impl Scan<'_, '_, '_> {
 /// being replaced; every standard attribute name is unaffected.
 fn escaped_name(raw: &[u8]) -> String {
     raw.escape_ascii().to_string()
-}
-
-fn target_matches(request: &QueryTarget, candidate: &XrefTarget) -> bool {
-    match (request, candidate) {
-        (QueryTarget::Symbol { value: expected }, XrefTarget::Symbol { value: found }) => {
-            expected == found
-        }
-        (QueryTarget::Literal { value: expected }, XrefTarget::Literal { value: found }) => {
-            expected == found
-        }
-        _ => false,
-    }
 }
 
 /// The one entry the predicate accepts, or `None` when zero or several do.

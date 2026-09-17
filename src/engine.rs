@@ -160,8 +160,11 @@ impl Engine {
 
     /// Declaration-reference scan under an explicit environment (P2 entry point).
     ///
-    /// Same request-level check as [`Engine::resolve_symbol`]; this slice performs no scan
-    /// and reads no artifact byte.
+    /// Same request-level check as [`Engine::resolve_symbol`]. The query scans the explicit
+    /// scope for candidate use sites with the structure consumers, resolves every candidate's
+    /// owner, and publishes only the candidates that resolve to the requested declaration;
+    /// candidates no search could decide are reported as unresolved instead of excluded, and a
+    /// rejected environment keeps the honest unavailable state.
     pub fn declaration_references(
         &self,
         content: &[ArtifactSnapshot],
@@ -169,9 +172,7 @@ impl Engine {
         budget: &mut Budget,
     ) -> Result<crate::resolver::DeclarationRefReport> {
         crate::resolver::validate_declaration_reference_query(content, query)?;
-        Ok(crate::resolver::declaration_reference_report(
-            content, query, budget,
-        ))
+        crate::resolver::declaration_reference_report(content, query, budget)
     }
 
     /// Method IR analysis under an explicit environment (P2 entry point).

@@ -890,8 +890,9 @@ fn caller_context_must_name_the_loader_of_its_own_domain() {
     assert_eq!(declarations.environment_problems, Vec::new());
     assert_eq!(
         declarations.analysis,
-        ResolutionAnalysis::NotPerformed,
-        "a declaration query still performs nothing in this slice"
+        ResolutionAnalysis::Performed,
+        "the query has no caller identity to mismatch, so the environment it was given is the \
+         one it scans under"
     );
 }
 
@@ -1500,40 +1501,65 @@ fn resolution_stops_a_member_request_at_its_first_budgeted_step() {
 }
 
 #[test]
-fn declaration_reference_query_reports_the_unavailable_capability() {
+fn declaration_reference_query_reports_its_stop_instead_of_an_empty_answer() {
+    // The declaration query is performed by this engine: it scans the explicit scope with the
+    // structure consumers, so a request whose counted budget cannot fund that scan reports the
+    // stop it really made — never an empty-but-complete answer, and never a claim that a
+    // candidate was excluded. Every counted dimension is zero and only the clock is funded, so
+    // the stop names the work charge that was refused.
     let fixture = fixture();
     let environment = healthy_environment(&fixture);
     let query = declaration_query(&fixture, environment.clone());
 
-    let mut budget = Budget::new(zero_limits());
+    let mut budget = Budget::new(Limits {
+        elapsed_millis: u64::MAX,
+        ..zero_limits()
+    });
     let report = Engine::new()
         .declaration_references(std::slice::from_ref(&fixture.snapshot), &query, &mut budget)
         .expect("a legal query is answered, not raised");
 
-    assert_eq!(report.analysis, ResolutionAnalysis::NotPerformed);
+    assert_eq!(report.analysis, ResolutionAnalysis::Performed);
     assert!(report.items.is_empty());
     assert_eq!(report.declaration, query.declaration);
     assert_eq!(report.scope, PhysicalScope::SnapshotAll);
     assert_eq!(report.consumers, query.consumers);
     assert!(
         report.unsupported_categories.is_empty(),
-        "nothing was scanned, so no category can be called unsupported"
+        "the consumer schema names no category this engine cannot scan"
     );
     assert_eq!(report.unresolved_candidates, 0);
-    assert!(!report.has_more);
+    assert!(
+        report.has_more,
+        "the scan stopped before the end of its range, so the empty list is not the answer"
+    );
     assert_eq!(report.returned_items, 0);
     assert!(
         report.reads.is_empty(),
-        "nothing was scanned, so no class header was read"
+        "no charge was accepted, so no class header was read"
     );
-    assert_eq!(report.coverage, Coverage::not_requested());
     assert_eq!(
-        unsupported_code(&report.execution),
-        Some("resolution_not_implemented")
+        report.coverage.artifact_structural.state,
+        CoverageState::Partial,
+        "the scan did not reach the range it was asked to cover"
     );
+    assert_eq!(
+        report.coverage.runtime_resolution.state,
+        CoverageState::Partial,
+        "a scan that stopped may hold candidates no resolution has seen yet"
+    );
+    assert!(matches!(
+        report.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::ReadBytes
+            },
+            ..
+        }
+    ));
     assert_eq!(
         diagnostic_codes(&report.diagnostics),
-        vec!["resolution_not_implemented"]
+        vec!["budget_exceeded_read_bytes"]
     );
     assert_eq!(report.environment_identity.runtime, environment.runtime);
     assert!(counted_usage_is_zero(&budget.usage()));

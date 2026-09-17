@@ -10,9 +10,13 @@
 //!    selected position, the header read it caused and the demand that caused it,
 //! 3. `Engine::resolve_symbol` on a member symbol, which the member slice (2.3) resolves for
 //!    real: the report names the declaration the search selected, the class header it was read
-//!    from and the reason for that read, while `Engine::declaration_references` and
-//!    `Engine::analyze_method` still answer `NotPerformed` / `Failed { Unsupported }` /
-//!    `NotRequested` and list the scheduled method-analysis phases as `NotPerformed`,
+//!    from and the reason for that read; and `Engine::declaration_references`, which the
+//!    declaration-query slice (2.4) performs for real: it scans the fixture's structure
+//!    consumers for candidate use sites of the declared member shape, resolves each candidate's
+//!    owner, and reports the candidate whose owner the environment does not provide as
+//!    *unresolved* — with its use site and a partial resolution coverage — instead of calling it
+//!    excluded. `Engine::analyze_method` still answers `NotPerformed` / `Failed { Unsupported }`
+//!    / `NotRequested` and lists the scheduled method-analysis phases as `NotPerformed`,
 //! 4. the product planes of one report (`representation`, `quality`, `syntax_status`,
 //!    `compile_status`, `semantic_validation`, `verification`, `body`) printed side by
 //!    side; the body stays `NotInspected` because nothing was located or read, and
@@ -27,13 +31,13 @@
 
 use jarde::{
     AnalysisStage, ArtifactInput, Budget, CallerContext, ClassTarget, ConsumerKind, ConsumerSchema,
-    CountedBudgetDimension, DeclarationRefQuery, DelegationPolicy, Engine, EnvironmentProblemCode,
-    ExecutionReport, HeaderProvider, InspectionMode, JvmBytes, LayoutMode, Limits, LoadDomain,
-    LoadRoot, LoaderId, MethodAnalysisRequest, MethodBodyState, ModuleMode, MultiReleasePolicy,
-    PhysicalDefinitionId, PhysicalMethodId, PhysicalScope, PhysicalVariant, PhysicalView,
-    ProviderId, ReadReason, ReferenceUse, ResolutionEnvironment, ResolutionRequest,
-    ResolutionState, ResolvedMemberRef, RuntimeProfile, RuntimeUncertainty, RuntimeView,
-    SnapshotId, SymbolRef, TerminationReason, UsageSnapshot,
+    CountedBudgetDimension, CoverageState, DeclarationRefQuery, DelegationPolicy, Engine,
+    EnvironmentProblemCode, ExecutionReport, HeaderProvider, InspectionMode, JvmBytes, LayoutMode,
+    Limits, LoadDomain, LoadRoot, LoaderId, MethodAnalysisRequest, MethodBodyState, ModuleMode,
+    MultiReleasePolicy, PhysicalDefinitionId, PhysicalMethodId, PhysicalScope, PhysicalVariant,
+    PhysicalView, ProviderId, ReadReason, ReferenceUse, ResolutionAnalysis, ResolutionEnvironment,
+    ResolutionRequest, ResolutionState, ResolvedMemberRef, RuntimeProfile, RuntimeUncertainty,
+    RuntimeView, SnapshotId, SymbolRef, TerminationReason, UsageSnapshot,
 };
 use std::env;
 use std::path::{Path, PathBuf};
@@ -295,7 +299,13 @@ fn run(path: PathBuf) -> jarde::Result<()> {
     assert!(report.environment_problems.is_empty());
     print_usage("resolve_symbol.class", &budget.usage());
 
-    // 3. One declaration-reference query: the declaration is the fixture's constructor.
+    // 3. One declaration-reference query (2.4): the declaration is the fixture's constructor.
+    //    The query scans this snapshot's own structure consumers for candidates that carry the
+    //    declaration's name and descriptor — whatever owner they spell — and resolves each
+    //    candidate's owner. This fixture's constructor really calls
+    //    `java/lang/Object.<init>()V`, so the scan finds one candidate and the resolution cannot
+    //    decide it: `java/lang/Object` is not provided, so the candidate stays *unresolved*
+    //    with its use site in a diagnostic instead of being reported as excluded.
     let declaration = ResolvedMemberRef {
         loader: app.clone(),
         definition: definition.clone(),
@@ -317,17 +327,36 @@ fn run(path: PathBuf) -> jarde::Result<()> {
         engine.declaration_references(std::slice::from_ref(&snapshot), &query, &mut budget)?;
     println!(
         "declaration_references: analysis={:?} items={} unsupported_categories={} \
-         unresolved_candidates={} has_more={} returned_items={} execution={:?}",
+         unresolved_candidates={} has_more={} returned_items={} coverage=({:?}, {:?}) \
+         execution={:?} diagnostics={:?}",
         report.analysis,
         report.items.len(),
         report.unsupported_categories.len(),
         report.unresolved_candidates,
         report.has_more,
         report.returned_items,
+        report.coverage.artifact_structural.state,
+        report.coverage.runtime_resolution.state,
         report.execution,
+        report
+            .diagnostics
+            .iter()
+            .map(|diagnostic| diagnostic.code.as_str())
+            .collect::<Vec<_>>(),
     );
     print_usage("declaration_references", &budget.usage());
+    assert_eq!(report.analysis, ResolutionAnalysis::Performed);
     assert!(report.items.is_empty());
+    assert_eq!(
+        report.unresolved_candidates, 1,
+        "the constructor really references `java/lang/Object.<init>()V`, and that owner is not \
+         provided, so the candidate is undecided and not excluded"
+    );
+    assert_eq!(
+        report.coverage.runtime_resolution.state,
+        CoverageState::Partial,
+        "an undecided candidate leaves the resolution plane incomplete"
+    );
 
     // 4. One method analysis request: `Frame` and `Ssa` are requested out of order and
     //    with a duplicate, so the normalized request and the scheduled phase list differ.

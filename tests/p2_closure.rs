@@ -794,8 +794,10 @@ fn a_budget_stop_keeps_every_record_inside_the_charged_attempts() {
 
 #[test]
 fn the_other_two_reports_also_publish_their_reads() {
-    // Declaration references and method analysis read no header in this slice, so both report
-    // an empty list; the field exists on every report, which is what makes it comparable.
+    // This fixture holds no member reference at all, so neither the declaration query (which
+    // resolves the candidates it finds) nor the method analysis (which locates no body)
+    // demands a class header: both report an empty list. The field exists on every report,
+    // which is what makes it comparable.
     let bytes = class_bytes(b"p/S", 52);
     let snapshot = open(zip_of(&[(b"p/S.class", &bytes)]));
     let environment = single_loader(&snapshot);

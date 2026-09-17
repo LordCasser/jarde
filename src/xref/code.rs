@@ -45,9 +45,13 @@
 //!
 //! # Matching
 //!
-//! Matching is exact equality on the raw bytes the class file stores: an owner is an
-//! internal name, a descriptor its raw bytes, and no dimension is normalised. A
-//! `SymbolRef::Method` is answered by both `CONSTANT_Methodref` and
+//! Which candidate answers a scan is the scan context's decision
+//! ([`super::ScanContext::candidate_matches`]), not this stream's: the filter the scan was
+//! opened with decides it and the published target is the one that decision returns, so a
+//! candidate this stream finds can only appear with the symbol the instruction really names.
+//! Under a query's exact target the rule is equality on the raw bytes the class file stores:
+//! an owner is an internal name, a descriptor its raw bytes, and no dimension is normalised.
+//! A `SymbolRef::Method` is answered by both `CONSTANT_Methodref` and
 //! `CONSTANT_InterfaceMethodref`, because class-versus-interface method reference is a
 //! resolution detail and not one of the three raw dimensions the query compares. An
 //! absent dimension is not a wildcard: `NameAndType`, `Dynamic` and `InvokeDynamic`
@@ -61,7 +65,10 @@
 //! is a subclass is not a reference to the inherited method, so `mentions_symbol` reports
 //! a miss when the pool owner differs from the queried owner. That candidate expansion is
 //! the P2 definition resolver's job behind `references_definition`; keeping the two apart
-//! is the boundary acceptance A11 draws.
+//! is the boundary acceptance A11 draws. A member-shaped candidate filter works from the
+//! other side of that boundary: it matches on the raw name and descriptor and keeps the
+//! owner the instruction spells, so comparing that owner with a declaration's is the
+//! caller's resolution step and never this stream's.
 //!
 //! # Cost and order
 //!
@@ -352,7 +359,11 @@ fn has_code(method: &crate::classfile::MemberHeader) -> bool {
 ///
 /// One instruction publishes its use-site item first, and then one item per distinct object
 /// type of the descriptor it consumed. The two are different claims with different targets
-/// (a member or value, and a class), so a request answers whichever of them it names.
+/// (a member or value, and a class), so a request answers whichever of them it names. Which
+/// candidate answers the scan is the context's decision (its filter), not this stream's: the
+/// published target is the one that decision returns, which under an exact target is the
+/// target the caller asked for and under a member shape is the symbol this instruction
+/// really names.
 fn emit_instructions(
     ctx: &ScanContext<'_>,
     pool: &[CpEntryFacts],
@@ -364,7 +375,7 @@ fn emit_instructions(
         let Some(site) = instruction_use(ctx, pool, instruction)? else {
             continue;
         };
-        if use_site_answers(&ctx.request().target, &site) {
+        if let Some(target) = ctx.published_target(site.symbol.as_ref(), site.literal.as_ref()) {
             out.push(XrefItem {
                 relation: ctx.request().relation,
                 source: Provenance {
@@ -373,7 +384,7 @@ fn emit_instructions(
                         bci: instruction.bci,
                     },
                 },
-                target: item_target(&ctx.request().target),
+                target,
                 consumer: Some(site.consumer),
                 operation: site.operation,
                 derivation: XrefDerivation::StructuralConsumer,
@@ -387,7 +398,7 @@ fn emit_instructions(
         };
         for name in descriptor_types(&descriptor.descriptor.0, descriptor.kind)? {
             let symbol = SymbolRef::Class { owner: name };
-            if !asks_symbol(&ctx.request().target, &symbol) {
+            if !ctx.candidate_matches(Some(&symbol), None) {
                 continue;
             }
             out.push(XrefItem {
@@ -448,9 +459,9 @@ fn emit_handlers(
         let caught = SymbolRef::Class {
             owner: cp_class_name(pool, catch_type_index)?,
         };
-        if !asks_symbol(&ctx.request().target, &caught) {
+        let Some(target) = ctx.published_target(Some(&caught), None) else {
             continue;
-        }
+        };
         out.push(XrefItem {
             relation: ctx.request().relation,
             source: Provenance {
@@ -460,7 +471,7 @@ fn emit_handlers(
                     span: handler_record_span(&code.code_span, handler.ordinal)?,
                 },
             },
-            target: item_target(&ctx.request().target),
+            target,
             consumer: Some(ConsumerKind::Exception),
             operation: XrefOperation::ExceptionHandler,
             derivation: XrefDerivation::StructuralConsumer,
@@ -830,22 +841,6 @@ fn load_literal(entry: &CpEntryFacts) -> Option<LiteralValue> {
         CpEntryKind::Float { bits } => Some(LiteralValue::Float { value: *bits }),
         CpEntryKind::Double { bits } => Some(LiteralValue::Double { value: *bits }),
         _ => None,
-    }
-}
-
-/// Whether a use site answers a request target.
-fn use_site_answers(request: &QueryTarget, site: &UseSite) -> bool {
-    match request {
-        QueryTarget::Symbol { value } => site.symbol.as_ref() == Some(value),
-        QueryTarget::Literal { value } => site.literal.as_ref() == Some(value),
-    }
-}
-
-/// Whether a candidate symbol is the requested symbol.
-fn asks_symbol(request: &QueryTarget, candidate: &SymbolRef) -> bool {
-    match request {
-        QueryTarget::Symbol { value } => value == candidate,
-        QueryTarget::Literal { .. } => false,
     }
 }
 

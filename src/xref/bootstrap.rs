@@ -184,8 +184,8 @@ use crate::model::{
     TerminationReason,
 };
 use crate::query::{
-    BootstrapVia, ConsumerKind, LiteralValue, QueryRelation, QueryResolution, QueryTarget,
-    XrefCertainty, XrefDerivation, XrefEvidence, XrefItem, XrefOperation, XrefTarget,
+    BootstrapVia, ConsumerKind, LiteralValue, QueryRelation, QueryResolution, XrefCertainty,
+    XrefDerivation, XrefEvidence, XrefItem, XrefOperation, XrefTarget,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -1111,9 +1111,11 @@ fn entry_literal(kind: &CpEntryKind) -> Option<LiteralValue> {
 ///   walk, because a type only a bootstrap descriptor names has no other consumer that
 ///   could report it.
 ///
-/// Each product is published only for a symbol request whose target it answers, so a
-/// `Bootstrap`-only request produces no type item, and a `Type`-only request produces no
-/// node item.
+/// Each product is published only for a symbol request whose target the active filter
+/// answers, and the published target is the one that decision returns: under a query's exact
+/// target it is the target the caller asked for, and under a member shape it is the symbol
+/// this node really names. A `Bootstrap`-only request therefore produces no type item, and a
+/// `Type`-only request produces no node item.
 fn push_fact(
     ctx: &ScanContext<'_>,
     open: &OpenSite<'_>,
@@ -1121,7 +1123,9 @@ fn push_fact(
     fact: NodeFact,
     out: &mut Vec<XrefItem>,
 ) -> Result<()> {
-    if ctx.wants(ConsumerKind::Bootstrap) && answers(&ctx.request().target, &fact) {
+    if ctx.wants(ConsumerKind::Bootstrap)
+        && let Some(target) = ctx.published_target(fact.symbol.as_ref(), fact.literal.as_ref())
+    {
         out.push(XrefItem {
             relation: ctx.request().relation,
             source: Provenance {
@@ -1130,7 +1134,7 @@ fn push_fact(
                     bci: open.site.bci,
                 },
             },
-            target: item_target(&ctx.request().target),
+            target,
             consumer: Some(ConsumerKind::Bootstrap),
             operation: fact.operation,
             derivation: XrefDerivation::BootstrapEdge,
@@ -1146,7 +1150,8 @@ fn push_fact(
         return Ok(());
     }
     for name in descriptor_types(&descriptor.descriptor.0, descriptor.kind)? {
-        if !asks_class(&ctx.request().target, &name) {
+        let symbol = SymbolRef::Class { owner: name };
+        if !ctx.candidate_matches(Some(&symbol), None) {
             continue;
         }
         out.push(XrefItem {
@@ -1157,9 +1162,7 @@ fn push_fact(
                     bci: open.site.bci,
                 },
             },
-            target: XrefTarget::Symbol {
-                value: SymbolRef::Class { owner: name },
-            },
+            target: XrefTarget::Symbol { value: symbol },
             consumer: Some(ConsumerKind::Type),
             operation: fact.operation,
             derivation: XrefDerivation::BootstrapEdge,
@@ -1181,36 +1184,6 @@ fn node_evidence(open: &OpenSite<'_>, fact: &NodeFact, path: &[BootstrapVia]) ->
         attribute: Some(ArchiveNameBytes(open.shell.name.raw().0.clone())),
         span: Some(fact.span.clone()),
         via: path.to_vec(),
-    }
-}
-
-/// Whether a node fact answers the request target.
-fn answers(request: &QueryTarget, fact: &NodeFact) -> bool {
-    match request {
-        QueryTarget::Symbol { value } => fact.symbol.as_ref() == Some(value),
-        QueryTarget::Literal { value } => fact.literal.as_ref() == Some(value),
-    }
-}
-
-/// Whether a class symbol is the requested symbol.
-fn asks_class(request: &QueryTarget, owner: &JvmBytes) -> bool {
-    matches!(
-        request,
-        QueryTarget::Symbol {
-            value: SymbolRef::Class { owner: asked }
-        } if asked == owner
-    )
-}
-
-/// The requested target in result form.
-fn item_target(target: &QueryTarget) -> XrefTarget {
-    match target {
-        QueryTarget::Symbol { value } => XrefTarget::Symbol {
-            value: value.clone(),
-        },
-        QueryTarget::Literal { value } => XrefTarget::Literal {
-            value: value.clone(),
-        },
     }
 }
 

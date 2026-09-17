@@ -22,7 +22,7 @@
 //! this module exists (A17).
 
 use crate::artifact::{ArtifactSnapshot, budget_dimension_code};
-use crate::budget::{Budget, UsageSnapshot};
+use crate::budget::{Budget, CountedBudgetDimension, UsageSnapshot};
 use crate::environment::{
     CallerContext, EnvironmentIdentity, EnvironmentProblem, ResolutionEnvironment,
     environment_diagnostics, require_content_snapshot, unavailable_diagnostic,
@@ -31,17 +31,21 @@ use crate::environment::{
 use crate::error::{Error, Result};
 use crate::model::{
     Coverage, CoverageDimension, CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity,
-    ExecutionReport, JvmBytes, OriginSet, PhysicalDefinitionId, SymbolRef, TerminationReason,
+    ExecutionReport, JvmBytes, Location, OriginMember, OriginSet, PhysicalDefinitionId, SymbolRef,
+    TerminationReason,
 };
-use crate::providers::{HeaderClosure, HeaderDemand, HeaderLookupState};
-use crate::query::{ConsumerKind, ConsumerSchema, XrefOperation};
+use crate::providers::{HeaderClosure, HeaderDemand, HeaderLookupState, escaped};
+use crate::query::{ConsumerKind, ConsumerSchema, XrefItem, XrefOperation, XrefTarget};
 use crate::view::{LoaderId, PhysicalScope};
+use crate::xref::with_usage;
 use serde::{Deserialize, Serialize};
 
 /// Capability name of the resolution entry points while they are not implemented.
 ///
 /// It survives the member slice (2.3) as the honest state of a request whose environment the
-/// validator rejected: a rejected environment never yields a definition, so no lookup starts.
+/// validator rejected, and the declaration-query slice (2.4) as the state of a declaration
+/// this query states no candidate rule for: a rejected environment never yields a definition,
+/// so no lookup starts, and a class symbol is not a member declaration.
 pub(crate) const RESOLUTION_NOT_IMPLEMENTED: &str = "resolution_not_implemented";
 
 /// Capability name of the dispatch-candidate enumeration this slice does not perform.
@@ -275,10 +279,28 @@ pub struct DeclarationRefReport {
     pub consumers: ConsumerSchema,
     pub unsupported_categories: Vec<ConsumerKind>,
     pub analysis: ResolutionAnalysis,
+    /// The candidates that really resolve to `declaration`; each one answers the query with the
+    /// raw symbol, consumer, operation and physical use site the structural scan found.
+    ///
+    /// Publishing one item costs one `ResultItems`, charged before it is published, exactly like
+    /// a P1 item (and like every diagnostic below).
     pub items: Vec<DeclarationRefItem>,
-    /// Candidates that a missing dependency or a budget stop left undecided; they are
-    /// never presented as excluded.
+    /// Candidates that a missing dependency, an ambiguous position, a damaged read or a budget
+    /// stop left undecided; they are never presented as excluded, and each one keeps its
+    /// physical use site in a diagnostic of the same report. A candidate the search resolved to
+    /// a *different* declaration is not counted here: it is decided, and it is not a reference
+    /// to this declaration.
+    ///
+    /// The count and the diagnostics are published together — one `resolution_candidate_unresolved`
+    /// per counted candidate, each charged one `ResultItems` — so a candidate that could not be
+    /// reported is not counted either.
     pub unresolved_candidates: u64,
+    /// Whether the answer this report publishes is a prefix rather than the whole result: the
+    /// scan stopped before the end of its range (its item limit, a budget or cancellation stop),
+    /// or the report itself could not publish everything the scan found. A candidate behind
+    /// either stop was neither published nor counted as undecided.
+    ///
+    /// This is a truncation flag and not a cursor: a declaration-reference query replays nothing.
     pub has_more: bool,
     pub returned_items: u64,
     /// Every class header this scan read, in read order, at most once per
@@ -286,6 +308,13 @@ pub struct DeclarationRefReport {
     pub reads: Vec<HeaderRead>,
     pub coverage: Coverage,
     pub execution: ExecutionReport,
+    /// Includes one diagnostic per environment problem, under the same code, the scan's own
+    /// diagnostics, every rule diagnostic the member searches produced, one diagnostic per
+    /// candidate the query could not decide, and the diagnostics that explain a stop.
+    ///
+    /// Each diagnostic the *resolution* produced costs one `ResultItems`, charged before it
+    /// enters the report; the environment plane and the stop explanations are control metadata
+    /// and are not charged.
     pub diagnostics: Vec<Diagnostic>,
 }
 
@@ -310,11 +339,24 @@ pub(crate) fn validate_request(
 }
 
 /// Request-level checks of a declaration-reference query: shape only, no artifact access.
+///
+/// The scope is checked the way the P1 query checks its own physical view: the only root a
+/// fresh snapshot establishes is its own root container, so a scope that names another one
+/// cannot describe this snapshot and is refused instead of being silently ignored.
 pub(crate) fn validate_declaration_reference_query(
     content: &[ArtifactSnapshot],
     query: &DeclarationRefQuery,
 ) -> Result<()> {
-    require_content_snapshot(content, &query.environment.runtime.physical.snapshot)
+    require_content_snapshot(content, &query.environment.runtime.physical.snapshot)?;
+    if let PhysicalScope::ArtifactTree { root_container } = &query.scope
+        && root_container.0 != "root"
+    {
+        return Err(Error::invalid_input(
+            "query_artifact_tree_root_mismatch",
+            "declaration-reference scope tree root does not match the snapshot root container",
+        ));
+    }
+    Ok(())
 }
 
 /// Result of one legally shaped resolution request.
@@ -804,17 +846,620 @@ fn dispatch_not_implemented_diagnostic() -> Diagnostic {
     }
 }
 
-/// Honest result of a legally shaped declaration-reference query in this slice.
+/// Result of one legally shaped declaration-reference query.
+///
+/// The query scans the requested scope with the structure consumers themselves — the same
+/// scan machine `Engine::query` runs, opened with the candidate filter the queried declaration
+/// is found under instead of one exact target — and then resolves every candidate it found
+/// through 2.1 and 2.3 and compares the selected declaration with the requested one. The three
+/// outcomes are kept apart:
+///
+/// * a candidate that really resolves to `query.declaration` becomes an item, with the raw
+///   symbol, physical use site, operation and consumer the structural scan found;
+/// * a candidate that resolves to **another** declaration is decided and left out: it is a
+///   reference to a different declaration, not a reference to this one;
+/// * a candidate no search could decide — a missing owner, an ambiguous position, damaged
+///   bytes, a budget stop, a cancellation, or a use site whose instruction-level member kind
+///   its evidence does not carry — is counted as unresolved and keeps its physical use site in
+///   a diagnostic, because the report publishes no item for it and reporting it as excluded
+///   would be a claim the engine cannot make.
+///
+/// Publishing one entry (an item or a diagnostic) costs one `ResultItems`, charged before the
+/// entry is published — the rule diagnostics 2.3 returned, the undecided-candidate diagnostics
+/// and the closure's own branch warnings alike, exactly as a P1 item or a domain diagnostic
+/// does. A refused charge keeps the entries already published, ends the assembly and reports
+/// `Partial { BudgetExceeded { ResultItems } }` with `has_more`, so the report is a prefix that
+/// says so instead of an answer it could not afford. The diagnostics that explain the request
+/// (`environment_problems` and the state of a capability that never ran) and the ones that
+/// explain a stop are control metadata and are published uncharged, so a report never hides why
+/// it ended. When a resolution stop and an assembly stop coincide, `execution` reports the
+/// resolution stop that came first and the truncation is stated by `has_more` and the coverage
+/// planes.
+///
+/// A request whose environment the validator rejected, and a declaration that is not a
+/// member of a class, keep the honest unavailable state: nothing is scanned, no byte is read
+/// and no candidate is claimed.
 pub(crate) fn declaration_reference_report(
     content: &[ArtifactSnapshot],
     query: &DeclarationRefQuery,
-    budget: &Budget,
-) -> DeclarationRefReport {
+    budget: &mut Budget,
+) -> Result<DeclarationRefReport> {
     let (problems, environment_identity) = validate_environment(content, &query.environment);
+    if !problems.is_empty() {
+        return Ok(unavailable_declaration_reference_report(
+            query,
+            budget,
+            problems,
+            environment_identity,
+            "declaration-reference resolution",
+        ));
+    }
+    let Some(declaration_shape) = member_shape(&query.declaration.member) else {
+        // The query answers member declarations: its candidate rule is a member shape, and a
+        // class symbol names a type, not a member. No candidate rule is stated for one, so
+        // the report says so instead of scanning with a shape that cannot be expressed.
+        return Ok(unavailable_declaration_reference_report(
+            query,
+            budget,
+            problems,
+            environment_identity,
+            "declaration-reference resolution of a class symbol",
+        ));
+    };
+    // The entry point refuses a query whose environment names content the request does not
+    // provide, so this is unreachable from `Engine::declaration_references`; a report built
+    // by hand keeps the honest unavailable state instead of scanning an unknown snapshot.
+    let Some(snapshot) = content
+        .iter()
+        .find(|candidate| candidate.id() == &query.environment.runtime.physical.snapshot)
+    else {
+        return Ok(unavailable_declaration_reference_report(
+            query,
+            budget,
+            problems,
+            environment_identity,
+            "declaration-reference resolution",
+        ));
+    };
+
+    // Which candidate shape this declaration can be found under. A signature-polymorphic
+    // method is the one case where the site's own descriptor is not the declaration's — JVMS
+    // 2.9 matches `MethodHandle.invoke`/`invokeExact` by name, because the call site chooses
+    // the descriptor — so that shape compares owner and name, and every other member compares
+    // name and descriptor. Selecting the wrong one is not a detail: the descriptor comparison
+    // would answer "no candidate at all" for a call site that really resolves to this
+    // declaration.
+    let filter = match signature_polymorphic_shape(&query.declaration.member) {
+        Some((owner, name)) => crate::xref::CandidateFilter::SignaturePolymorphic { owner, name },
+        None => crate::xref::CandidateFilter::MemberShape {
+            name: declaration_shape.0,
+            descriptor: declaration_shape.1,
+        },
+    };
+    let scan = crate::xref::scan_candidates(
+        snapshot,
+        &query.scope,
+        &query.consumers,
+        filter,
+        query.max_items,
+        budget,
+    )?;
+    let mut diagnostics = scan.diagnostics;
+    // The declaration query carries no caller: a use site's kind is the reference's, but the
+    // class that declares the use site is the query's own attribute, not the reference's, so
+    // the member rules run with the caller's class unknown — which is exactly the state 2.3
+    // reports as `resolution_access_not_checked` for a member whose access depends on it.
+    let caller = CallerContext {
+        loader: query.environment.runtime.load_domain.loader.clone(),
+        enclosing: None,
+    };
+    let mut closure = HeaderClosure::new(content, &query.environment);
+    let mut items: Vec<DeclarationRefItem> = Vec::new();
+    let mut unresolved_candidates = 0_u64;
+    let mut stopped: Option<ExecutionReport> = None;
+    let mut assembly: Option<ExecutionReport> = None;
+    let mut hierarchies_complete = true;
+
+    for item in &scan.items {
+        // A shape filter admits member symbols only, and the scan of a symbolic relation
+        // publishes consumer facts only (the raw pool candidate has no consumer and belongs to
+        // the pool-probe relation), so neither guard can drop a candidate this engine's own
+        // query path produced.
+        let Some(referenced) = member_symbol(&item.target) else {
+            continue;
+        };
+        let Some(consumer) = item.consumer else {
+            continue;
+        };
+        // The decision phase: which entry this candidate contributes, the rule diagnostics the
+        // search produced for it, and — when the search could not finish — the stop that ended
+        // it. Nothing is published here; the entries are published below, each charged first.
+        let mut rules: Vec<Diagnostic> = Vec::new();
+        let mut resolution_stop: Option<Diagnostic> = None;
+        let contribution = if stopped.is_some() {
+            // The budget or cancellation already refused a resolution. It is a property of the
+            // request, not of one candidate, so the candidates after it were not decided either
+            // — the reliable prefix stays and nothing here counts as excluded.
+            Some(Contribution::Undecided(STOPPED_BEFORE_THIS_CANDIDATE))
+        } else if let Some(use_kind) = member_use_of(item.operation, referenced) {
+            let origin = origin_of(item);
+            match crate::members::resolve_member(
+                &mut closure,
+                referenced,
+                use_kind,
+                &caller,
+                budget,
+            ) {
+                Ok(outcome) => {
+                    hierarchies_complete &= outcome.hierarchy_complete;
+                    rules = outcome.diagnostics;
+                    match &outcome.decision {
+                        crate::members::MemberDecision::Resolved(location) => {
+                            let resolved = resolved_member(location);
+                            if same_declaration(&resolved, &query.declaration) {
+                                Some(Contribution::Reference(Box::new(DeclarationRefItem {
+                                    referenced: referenced.clone(),
+                                    consumer,
+                                    operation: item.operation,
+                                    origin,
+                                    resolved: Some(resolved),
+                                    state: ResolutionState::Resolved,
+                                })))
+                            } else {
+                                // Decided to be a reference to another declaration: neither a
+                                // reference to this one nor undecided.
+                                None
+                            }
+                        }
+                        decision => Some(Contribution::Undecided(undecided_reason(decision))),
+                    }
+                }
+                Err(error) => {
+                    let (execution, diagnostic) = terminal(&error, budget.usage());
+                    resolution_stop = Some(at_candidate(diagnostic, item));
+                    stopped = Some(execution);
+                    Some(Contribution::Undecided(STOPPED_AT_THIS_CANDIDATE))
+                }
+            }
+        } else {
+            Some(Contribution::Undecided(NO_INSTRUCTION_KIND_IN_EVIDENCE))
+        };
+        let Some(contribution) = contribution else {
+            continue;
+        };
+
+        // The publish phase. Every entry this query puts into the report — an item, an undecided
+        // diagnostic, or one of the rule diagnostics the search produced — costs one
+        // `ResultItems`, charged before it enters the report. A refused charge keeps the entries
+        // already published, ends the assembly and reports the stop, so the report is a prefix
+        // that says so instead of an answer it could not afford. The stop itself is control
+        // metadata and is published uncharged, even when the refused charge was the last unit of
+        // the very dimension it names.
+        let mut refused: Option<Diagnostic> = None;
+        for rule in rules {
+            match charge_and_publish(rule, &mut diagnostics, budget) {
+                None => {}
+                Some(stop) => {
+                    refused = Some(at_candidate(stop.diagnostic, item));
+                    assembly = Some(stop.execution);
+                    break;
+                }
+            }
+        }
+        if refused.is_none()
+            && let Some(stop) = resolution_stop
+        {
+            push_stop_diagnostic(&mut diagnostics, stop);
+        }
+        if refused.is_none() {
+            match contribution {
+                Contribution::Reference(entry) => match charge_entry(budget) {
+                    None => items.push(*entry),
+                    Some(stop) => {
+                        refused = Some(at_candidate(stop.diagnostic, item));
+                        assembly = Some(stop.execution);
+                    }
+                },
+                Contribution::Undecided(reason) => {
+                    let diagnostic = unresolved_candidate_diagnostic(item, referenced, reason);
+                    match charge_and_publish(diagnostic, &mut diagnostics, budget) {
+                        None => unresolved_candidates += 1,
+                        Some(stop) => {
+                            refused = Some(at_candidate(stop.diagnostic, item));
+                            assembly = Some(stop.execution);
+                        }
+                    }
+                }
+            }
+        }
+        if let Some(stop) = refused {
+            push_stop_diagnostic(&mut diagnostics, stop);
+            break;
+        }
+    }
+
+    // The closure's own diagnostics (an unreadable or cyclic hierarchy branch) are resolution
+    // results like any other, so each one is charged before it enters the report. They come
+    // last, after every candidate, so a refused charge here only shortens the tail.
+    for diagnostic in closure.diagnostics().to_vec() {
+        match charge_and_publish(diagnostic, &mut diagnostics, budget) {
+            None => {}
+            Some(stop) => {
+                // There is no candidate left to locate this stop at: a closure diagnostic is
+                // about a hierarchy branch, and its own entry belongs to a read this report
+                // already describes in `reads`.
+                diagnostics.push(stop.diagnostic);
+                assembly = Some(stop.execution);
+                break;
+            }
+        }
+    }
+
+    // The resolution plane is complete only when every candidate reached a decision about a
+    // declaration and every hierarchy it read was readable — and only when the scan that found
+    // the candidates reached the end of its own range and the report really published everything
+    // it found, because a scan or an assembly that stopped may hold candidates no resolution has
+    // seen yet. Either stop makes the answer a prefix, which is what `has_more` says.
+    let assembly_stopped = assembly.is_some();
+    let extent = closure.searched_extent();
+    let search = search_coverage(
+        extent.examined,
+        extent.positions,
+        stopped.is_none() && !assembly_stopped,
+        hierarchies_complete && unresolved_candidates == 0 && !scan.has_more,
+    );
+    let coverage = Coverage {
+        artifact_structural: scan.coverage.dimensions.artifact_structural.clone(),
+        runtime_resolution: search.runtime_resolution,
+        dynamic_analysis: CoverageDimension::not_requested(),
+    };
+    // The scan ran first, so a stop of its own is the condition that limited this query; a
+    // resolution stop governs the report when the scan completed, and an assembly stop — the
+    // report being unable to publish what it found — only when neither of those happened.
+    let execution = match (&scan.execution, stopped.or(assembly.clone())) {
+        (ExecutionReport::Complete { .. }, Some(stop)) => stop,
+        (scan_execution, _) => scan_execution.clone(),
+    };
+    let returned_items = u64::try_from(items.len()).map_err(|_| {
+        Error::invalid_input(
+            "query_size_overflow",
+            "declaration-reference item count does not fit u64",
+        )
+    })?;
+    Ok(DeclarationRefReport {
+        environment_identity,
+        environment_problems: problems,
+        declaration: query.declaration.clone(),
+        scope: query.scope.clone(),
+        consumers: query.consumers.clone(),
+        unsupported_categories: scan.coverage.unsupported_categories.clone(),
+        analysis: ResolutionAnalysis::Performed,
+        items,
+        unresolved_candidates,
+        // The scan's own truncation and an assembly that could not publish what it found both
+        // leave the report a reliable prefix: each candidate behind either stop was neither
+        // published nor counted as undecided.
+        has_more: scan.has_more || assembly_stopped,
+        returned_items,
+        reads: published_reads(&closure),
+        coverage,
+        execution: with_usage(execution, budget.usage()),
+        diagnostics,
+    })
+}
+
+/// What one scanned candidate contributes to the report.
+///
+/// A candidate the search resolved to *another* declaration contributes nothing and is not one
+/// of these: it is a decided candidate that is simply not a reference to the queried
+/// declaration.
+enum Contribution {
+    /// The candidate really is a reference to the queried declaration.
+    ///
+    /// Boxed because an item carries a whole raw symbol, origin and resolution and this enum is
+    /// handed around as one value, exactly like [`crate::members::MemberDecision`] boxes its
+    /// location.
+    Reference(Box<DeclarationRefItem>),
+    /// The query could not decide whether the candidate is a reference, and says why.
+    Undecided(&'static str),
+}
+
+/// Why a candidate found after a resolution stop stays undecided.
+const STOPPED_BEFORE_THIS_CANDIDATE: &str =
+    "the resolution stopped before this candidate was decided";
+/// Why the candidate that hit the resolution stop stays undecided.
+const STOPPED_AT_THIS_CANDIDATE: &str = "the resolution stopped at this candidate";
+
+/// Why a candidate whose evidence carries no instruction-level member kind stays undecided.
+const NO_INSTRUCTION_KIND_IN_EVIDENCE: &str =
+    "this use site's instruction-level member kind is not part of its evidence";
+
+/// One stop diagnostic, located at the candidate it stopped on.
+fn at_candidate(mut diagnostic: Diagnostic, item: &XrefItem) -> Diagnostic {
+    diagnostic.provenance = Some(item.source.clone());
+    diagnostic
+}
+
+/// The stop a refused publication leaves behind.
+struct PublicationStop {
+    /// The terminal execution of the refused charge, reported as `Partial`/`Cancelled`/`Failed`.
+    execution: ExecutionReport,
+    /// The diagnostic that explains it; control metadata, published uncharged.
+    diagnostic: Diagnostic,
+}
+
+/// Charges one entry of this report.
+///
+/// One item, one resolution diagnostic and one closure diagnostic each cost one `ResultItems`,
+/// and the charge happens before the entry is published — the same discipline the P1 scan
+/// applies to the items and domain diagnostics it returns. `None` means the charge was
+/// accepted; `Some(stop)` means the budget refused it, which ends the assembly.
+fn charge_entry(budget: &mut Budget) -> Option<PublicationStop> {
+    match budget.charge(CountedBudgetDimension::ResultItems, 1) {
+        Ok(()) => None,
+        Err(error) => {
+            let (execution, diagnostic) = terminal(&error, budget.usage());
+            Some(PublicationStop {
+                execution,
+                diagnostic,
+            })
+        }
+    }
+}
+
+/// Charges one resolution diagnostic and publishes it.
+///
+/// Every diagnostic this query produces — the rule diagnostics 2.3 returned for a declaration,
+/// the undecided-candidate diagnostics, and the closure's own branch warnings — enters the
+/// report the way a P1 item or domain diagnostic does: it costs one `ResultItems`, charged
+/// before it is published. The environment plane and the diagnostics that explain a stop are
+/// not charged here: they describe the request or the interruption rather than a result, and a
+/// stop that could not pay for its own explanation would hide why the run ended.
+///
+/// `None` means the diagnostic was published. `Some(stop)` means the charge was refused: the
+/// refused diagnostic is not published, and the caller publishes the stop uncharged where it
+/// decides (at the candidate, or after the last one).
+fn charge_and_publish(
+    diagnostic: Diagnostic,
+    diagnostics: &mut Vec<Diagnostic>,
+    budget: &mut Budget,
+) -> Option<PublicationStop> {
+    match charge_entry(budget) {
+        None => {
+            diagnostics.push(diagnostic);
+            None
+        }
+        Some(stop) => Some(stop),
+    }
+}
+
+/// Queues one stop diagnostic, keeping the report free of an exact repeat.
+///
+/// A resolution stop and the publication of the same candidate can hit the same dimension with
+/// the same counts at the same use site; the second copy adds no fact, and the report already
+/// says that the run stopped, why, and where. Two *different* stops — another dimension, or
+/// another candidate — are both kept.
+fn push_stop_diagnostic(diagnostics: &mut Vec<Diagnostic>, diagnostic: Diagnostic) {
+    if diagnostics.last() != Some(&diagnostic) {
+        diagnostics.push(diagnostic);
+    }
+}
+
+/// Diagnostic code of one candidate a declaration-reference query could not decide.
+///
+/// The candidate is not a reference to the declaration and it is not an excluded candidate
+/// either. The report counts unresolved candidates but publishes no item for them, so this
+/// diagnostic is where their physical use site stays locatable: its provenance is the
+/// candidate's own `source`.
+const CANDIDATE_UNRESOLVED: &str = "resolution_candidate_unresolved";
+
+/// Diagnostic of one candidate the query could not decide, at the candidate's own use site.
+fn unresolved_candidate_diagnostic(
+    item: &XrefItem,
+    referenced: &SymbolRef,
+    reason: &str,
+) -> Diagnostic {
+    Diagnostic {
+        code: CANDIDATE_UNRESOLVED.to_string(),
+        severity: DiagnosticSeverity::Warning,
+        message: format!(
+            "candidate use site {}::{} is unresolved ({reason}), so it is neither a reference to \
+             the queried declaration nor an excluded candidate",
+            member_owner(referenced),
+            member_name(referenced)
+        ),
+        provenance: Some(item.source.clone()),
+    }
+}
+
+/// Why one member search left a candidate undecided.
+///
+/// Every non-`Resolved` decision says the search reached no declaration it could compare with
+/// the query's own; a candidate that resolved to a *different* declaration is not undecided
+/// and never reaches this mapping.
+fn undecided_reason(decision: &crate::members::MemberDecision) -> &'static str {
+    use crate::members::MemberDecision;
+    match decision {
+        MemberDecision::Resolved(_) => "the declaration this candidate resolves to",
+        MemberDecision::Missing => "no class of the searched hierarchy declares this member",
+        MemberDecision::OwnerAmbiguous(_) => {
+            "the owner class cannot be told apart at its selection position"
+        }
+        MemberDecision::DeclarationAmbiguous(_) => {
+            "the declaring class declares this member more than once"
+        }
+        MemberDecision::KindMismatch => "the reference kind contradicts the declaration",
+        MemberDecision::DefaultConflict => "two or more interface defaults are maximally specific",
+        MemberDecision::AccessDenied => "the member is not accessible to a known caller",
+        MemberDecision::ArrayOwner => "the owner is an array type",
+    }
+}
+
+/// The raw name and descriptor of a member declaration, or `None` for a class symbol.
+fn member_shape(member: &SymbolRef) -> Option<(JvmBytes, JvmBytes)> {
+    match member {
+        SymbolRef::Field {
+            name, descriptor, ..
+        }
+        | SymbolRef::Method {
+            name, descriptor, ..
+        } => Some((name.clone(), descriptor.clone())),
+        SymbolRef::Class { .. } => None,
+    }
+}
+
+/// The class that declares the two signature-polymorphic methods (JVMS 2.9).
+const METHOD_HANDLE: &[u8] = b"java/lang/invoke/MethodHandle";
+/// The name of the first signature-polymorphic method.
+const INVOKE: &[u8] = b"invoke";
+/// The name of the second signature-polymorphic method.
+const INVOKE_EXACT: &[u8] = b"invokeExact";
+
+/// The owner and name of a declaration whose call sites choose their own descriptor.
+///
+/// JVMS 2.9 defines exactly two methods this way, and only on `java/lang/invoke/MethodHandle`:
+/// a call site of theirs names the method by name and picks the descriptor, so the declaration
+/// is found without comparing descriptors at all. Answering `Some` here is what makes the scan
+/// use [`crate::xref::CandidateFilter::SignaturePolymorphic`] instead of a member shape. The
+/// rule mirrors 2.3's own name-only branch, which the same owner and names select.
+fn signature_polymorphic_shape(member: &SymbolRef) -> Option<(JvmBytes, JvmBytes)> {
+    let SymbolRef::Method { owner, name, .. } = member else {
+        return None;
+    };
+    let signature_polymorphic =
+        owner.0 == METHOD_HANDLE && (name.0 == INVOKE || name.0 == INVOKE_EXACT);
+    signature_polymorphic.then(|| (owner.clone(), name.clone()))
+}
+
+/// The member symbol one candidate item names, or `None` for a class or literal target.
+fn member_symbol(target: &XrefTarget) -> Option<&SymbolRef> {
+    match target {
+        XrefTarget::Symbol { value } => match value {
+            SymbolRef::Field { .. } | SymbolRef::Method { .. } => Some(value),
+            SymbolRef::Class { .. } => None,
+        },
+        XrefTarget::Literal { .. } => None,
+    }
+}
+
+/// The member use one candidate's own instruction states.
+///
+/// The use site is the only place the instruction-level kind lives, so the query maps the
+/// operation of an item back onto the member rules instead of inventing one: the `invoke*`
+/// family keeps its kind and a field access keeps its direction. `ldc` is the boundary case —
+/// a method handle records its own reference kind in the class bytes, which this item's
+/// evidence does not carry, so a method handle stays undecided while a *field* handle is
+/// resolved as the read it is (the field rules do not read the use kind at all, so nothing is
+/// invented by it). `invokedynamic` names a dynamic call site whose symbol carries no owner,
+/// which the member search answers with `Missing`.
+fn member_use_of(
+    operation: XrefOperation,
+    referenced: &SymbolRef,
+) -> Option<crate::members::MemberUse> {
+    use crate::members::MemberUse;
+    match (referenced, operation) {
+        (SymbolRef::Field { .. }, XrefOperation::GetField | XrefOperation::GetStatic) => {
+            Some(MemberUse::FieldRead)
+        }
+        (SymbolRef::Field { .. }, XrefOperation::PutField | XrefOperation::PutStatic) => {
+            Some(MemberUse::FieldWrite)
+        }
+        (SymbolRef::Field { .. }, XrefOperation::Ldc) => Some(MemberUse::FieldRead),
+        (SymbolRef::Method { .. }, XrefOperation::InvokeVirtual) => Some(MemberUse::InvokeVirtual),
+        (SymbolRef::Method { .. }, XrefOperation::InvokeSpecial) => Some(MemberUse::InvokeSpecial),
+        (SymbolRef::Method { .. }, XrefOperation::InvokeStatic) => Some(MemberUse::InvokeStatic),
+        (SymbolRef::Method { .. }, XrefOperation::InvokeInterface) => {
+            Some(MemberUse::InvokeInterface)
+        }
+        (SymbolRef::Method { .. }, XrefOperation::InvokeDynamic) => Some(MemberUse::InvokeDynamic),
+        _ => None,
+    }
+}
+
+/// Whether one resolved declaration is the declaration the query names.
+///
+/// The three dimensions are the query's own: the loader the declaration was read from, the
+/// physical definition it was read from, and the member symbol itself. The symbol's owner is
+/// the declaring class's own internal name, so a `Sub.foo` reference that resolves to
+/// `Base.foo` compares equal to a `Base.foo` declaration while the same name under another
+/// loader or definition does not.
+fn same_declaration(found: &ResolvedMemberRef, asked: &ResolvedMemberRef) -> bool {
+    found.loader == asked.loader
+        && found.definition == asked.definition
+        && found.member == asked.member
+}
+
+/// Physical use site of one candidate item, in the shared origin vocabulary.
+///
+/// A class-file coordinate maps onto the origin member that says the same thing: the method
+/// and BCI of an instruction are a `MethodPoint`, the range of an attribute fact is a
+/// `ClassRange` of the class it was read from, and a fact the reader located by offset alone
+/// keeps the range its evidence recorded (or the whole class, when it recorded none). The
+/// container-relative locations (`Container`, `Entry`, `Resource`) carry no class-file
+/// coordinate, and no member candidate is one, so they contribute no origin member.
+fn origin_of(item: &XrefItem) -> OriginSet {
+    let mut origin = OriginSet::default();
+    match &item.source.location {
+        Location::Code { method, bci } => origin.insert(OriginMember::MethodPoint {
+            method: method.clone(),
+            bci: *bci,
+        }),
+        Location::Attribute { owner, span, .. } => origin.insert(OriginMember::ClassRange {
+            definition: owner.clone(),
+            span: span.clone(),
+        }),
+        Location::ClassOffset { definition, .. } => match &item.evidence.span {
+            Some(span) => origin.insert(OriginMember::ClassRange {
+                definition: definition.clone(),
+                span: span.clone(),
+            }),
+            None => origin.insert(OriginMember::ClassFile {
+                definition: definition.clone(),
+            }),
+        },
+        Location::Container { .. } | Location::Entry { .. } | Location::Resource { .. } => {}
+    }
+    origin
+}
+
+/// Owner bytes of one member symbol, for a message that must not invent one.
+fn member_owner(symbol: &SymbolRef) -> String {
+    match symbol {
+        SymbolRef::Field { owner, .. } | SymbolRef::Method { owner, .. } => escaped(&owner.0),
+        SymbolRef::Class { owner } => escaped(&owner.0),
+    }
+}
+
+/// Name and descriptor of one member symbol, for a message that must not invent them.
+fn member_name(symbol: &SymbolRef) -> String {
+    match symbol {
+        SymbolRef::Field {
+            name, descriptor, ..
+        }
+        | SymbolRef::Method {
+            name, descriptor, ..
+        } => format!("{}:{}", escaped(&name.0), escaped(&descriptor.0)),
+        SymbolRef::Class { .. } => "class".to_string(),
+    }
+}
+
+/// Report of a declaration-reference query that performed nothing.
+///
+/// The state is the honest unavailable one: the request shape and its environment were
+/// validated, no artifact byte was read, no candidate was found or excluded, and `coverage`
+/// stays `not_requested`. It is the answer for a rejected environment and for a declaration
+/// this query states no candidate rule for.
+fn unavailable_declaration_reference_report(
+    query: &DeclarationRefQuery,
+    budget: &Budget,
+    problems: Vec<EnvironmentProblem>,
+    environment_identity: EnvironmentIdentity,
+    capability: &str,
+) -> DeclarationRefReport {
     let mut diagnostics = environment_diagnostics(&problems);
     diagnostics.push(unavailable_diagnostic(
         RESOLUTION_NOT_IMPLEMENTED,
-        "declaration-reference resolution",
+        capability,
     ));
     DeclarationRefReport {
         environment_identity,

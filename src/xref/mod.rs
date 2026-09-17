@@ -42,15 +42,15 @@ use crate::error::{Error, Result};
 use crate::model::{
     ByteSpan, ClassBytesId, ContainerId, ContainerOrigin, Coverage, CoverageDimension,
     CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity, Digest, ExecutionReport,
-    Location, PhysicalClassLocation, PhysicalDefinitionId, PhysicalVariant, Provenance, SnapshotId,
-    TerminationReason, physical_variant_for_path,
+    JvmBytes, Location, PhysicalClassLocation, PhysicalDefinitionId, PhysicalVariant, Provenance,
+    SnapshotId, SymbolRef, TerminationReason, physical_variant_for_path,
 };
 use crate::query::{
-    ConsumerKind, QUERY_ENGINE_SCHEMA, QueryBoundary, QueryCoverage, QueryCursor, QueryPage,
-    QueryRelation, QueryRequest, XrefCertainty, XrefItem, cursor_digest, not_requested_coverage,
-    unsupported_categories,
+    ConsumerKind, ConsumerSchema, LiteralValue, QUERY_ENGINE_SCHEMA, QueryBoundary, QueryCoverage,
+    QueryCursor, QueryPage, QueryRelation, QueryRequest, QueryTarget, XrefCertainty, XrefItem,
+    XrefTarget, cursor_digest, not_requested_coverage, unsupported_categories,
 };
-use crate::view::PhysicalScope;
+use crate::view::{PhysicalScope, PhysicalView};
 
 /// Relations whose definition/dispatch resolution P1 does not perform but whose raw
 /// constant-pool candidates are still answerable facts.
@@ -92,6 +92,116 @@ pub(crate) struct ScanResult {
     pub(crate) diagnostics: Vec<Diagnostic>,
 }
 
+/// How a sub-scan decides whether one candidate it found answers the scan.
+///
+/// This is the one place that decision lives, so every consumer sub-scan applies the same
+/// rule and none of them compares targets on its own: [`CandidateFilter::Exact`] is the
+/// behaviour `Engine::query` has always had (exact equality on the raw bytes the request
+/// names), and the two shape filters are the wider candidate rule a declaration-reference
+/// scan needs — a member reference is a candidate whenever the dimensions its declaration can
+/// be found under match, whatever owner the site spells.
+#[derive(Clone, Debug)]
+pub(crate) enum CandidateFilter {
+    /// The request's own target: the candidate must carry the same raw bytes.
+    Exact(QueryTarget),
+    /// The raw shape of one member reference: a `SymbolRef::Method`/`SymbolRef::Field` whose
+    /// name and descriptor bytes are equal.
+    ///
+    /// The owner deliberately does not take part. `Sub.foo` may resolve to the declaration
+    /// `Base.foo`, so filtering by the declaration's own owner would drop exactly the use
+    /// sites a declaration-reference query exists to find; the owner of each candidate is
+    /// read from the item instead, and comparing the two is the caller's resolution step.
+    MemberShape {
+        name: JvmBytes,
+        descriptor: JvmBytes,
+    },
+    /// The shape of one signature-polymorphic method: a `SymbolRef::Method` whose owner and
+    /// name bytes are equal, whatever descriptor the site spells.
+    ///
+    /// JVMS 2.9 makes the call site's descriptor the site's own choice — `MethodHandle.invoke`
+    /// and `invokeExact` are matched by name at resolution — so comparing descriptors would
+    /// turn a real, resolvable use site into "not even a candidate": a silent false negative
+    /// under a report that claims complete coverage. The owner *is* part of the identity here,
+    /// which is not in tension with `MemberShape` ignoring it: signature polymorphism is
+    /// defined for exactly one owner, so a site on any other owner does not answer this shape
+    /// at all.
+    SignaturePolymorphic { owner: JvmBytes, name: JvmBytes },
+}
+
+impl CandidateFilter {
+    /// The target the scan's own request carries.
+    ///
+    /// `Exact` is the caller's target. A shape filter names no target: the dimensions it
+    /// leaves out (an owner, a descriptor) are exactly the ones it does not compare, so there
+    /// is no complete reference symbol to state. The scan's request still carries one because
+    /// `QueryRequest` states a target, and the resource sub-scan is the only consumer that
+    /// still compares against it — a resource fact is a class symbol or a literal, and neither
+    /// can equal the member symbol stated here — so this value is never published and never
+    /// matched.
+    fn request_target(&self) -> QueryTarget {
+        match self {
+            Self::Exact(target) => target.clone(),
+            Self::MemberShape { name, descriptor } => QueryTarget::Symbol {
+                value: SymbolRef::Method {
+                    owner: JvmBytes(Vec::new()),
+                    name: name.clone(),
+                    descriptor: descriptor.clone(),
+                },
+            },
+            Self::SignaturePolymorphic { owner, name } => QueryTarget::Symbol {
+                value: SymbolRef::Method {
+                    owner: owner.clone(),
+                    name: name.clone(),
+                    descriptor: JvmBytes(Vec::new()),
+                },
+            },
+        }
+    }
+}
+
+/// Raw name and descriptor of one member symbol, or `None` for a symbol that has neither.
+///
+/// A class symbol names one type, so it carries no member shape and never answers a
+/// member-shaped candidate.
+fn member_shape(symbol: &SymbolRef) -> Option<(&JvmBytes, &JvmBytes)> {
+    match symbol {
+        SymbolRef::Field {
+            name, descriptor, ..
+        }
+        | SymbolRef::Method {
+            name, descriptor, ..
+        } => Some((name, descriptor)),
+        SymbolRef::Class { .. } => None,
+    }
+}
+
+/// Raw owner and name of one *method* symbol, or `None` for any other symbol.
+///
+/// A field symbol does not answer a method-shaped candidate, and a class symbol carries no
+/// member at all.
+fn method_owner_and_name(symbol: &SymbolRef) -> Option<(&JvmBytes, &JvmBytes)> {
+    match symbol {
+        SymbolRef::Method { owner, name, .. } => Some((owner, name)),
+        SymbolRef::Field { .. } | SymbolRef::Class { .. } => None,
+    }
+}
+
+/// Candidate scan output: the items one filter found, and what the scan really did.
+///
+/// This is a query scan without the page view: the caller states its own item limit and
+/// continuation, so the scan publishes every candidate it found and reports whether it
+/// stopped before the end of the range instead of issuing a cursor.
+pub(crate) struct CandidateScan {
+    pub(crate) items: Vec<XrefItem>,
+    /// Whether the scan stopped before the end of the range (an item limit, a budget or
+    /// cancellation stop, or a provider that did not finish), so `items` must not be
+    /// presented as the whole result.
+    pub(crate) has_more: bool,
+    pub(crate) coverage: QueryCoverage,
+    pub(crate) execution: ExecutionReport,
+    pub(crate) diagnostics: Vec<Diagnostic>,
+}
+
 /// Runs the XRef scan for one validated request.
 pub(crate) fn scan(
     snapshot: &ArtifactSnapshot,
@@ -127,145 +237,51 @@ pub(crate) fn scan(
     // The sub-scans see the evidence probe; this `scan` reports everything under the
     // caller's request.
     let probe = evidence_probe_request(request);
-    let mut ctx = ScanContext::new(snapshot, &probe, budget);
-
-    // The provider's own terminal state, if any, already limits this run.
-    let mut issue: Option<ExecutionReport> = match &provider.execution {
-        ExecutionReport::Complete { .. } => None,
-        other => Some(other.clone()),
-    };
-    // Provider diagnostics were billed by the provider itself (P0 discipline: each
-    // result counts once), so they are carried over without a second charge.
-    let mut diagnostics: Vec<Diagnostic> = provider.diagnostics.clone();
-    let mut items: Vec<XrefItem> = Vec::new();
-    let mut examined: Vec<ExaminedContainer> = Vec::new();
-    let mut boundary: Option<QueryBoundary> = None;
-    let mut pending: Option<QueryBoundary> = request
-        .cursor
-        .as_ref()
-        .map(|cursor| cursor.boundary.clone());
-    let mut skip_items = 0_u64;
-    let mut stopped_early = false;
-    let mut published = 0_u64;
-    let mut scanned_items = 0_u64;
-    let mut unknown_candidates = 0_u64;
-    let mut standalone_examined = 0_u64;
-
-    'units: for unit in &provider.units {
-        // Units before the cursor boundary were published by an earlier page: they
-        // are neither re-read nor re-billed here.
-        if let Some(resume) = &pending {
-            if resume.container != *unit.origin() || resume.ordinal != unit.ordinal() {
-                continue;
-            }
-            skip_items = resume.item_index;
-            pending = None;
-        }
-        // Cooperative interruption is checked before any unit work, so a cancelled
-        // or exhausted request never reports more than the published prefix.
-        if let Err(error) = ctx.budget().poll() {
-            issue = merge_issue(issue, terminal_execution(&error, ctx.usage()));
-            diagnostics.push(terminal_diagnostic(&error, Some(unit)));
-            break 'units;
-        }
-        // A full page stops the scan instead of looking for the next item: the page
-        // limit must bound the work, so `has_more` stays a conservative "stopped
-        // before the end of the range" and a continuation may still be empty.
-        if request.max_items != 0 && published >= request.max_items {
-            stopped_early = true;
-            break 'units;
-        }
-
-        ctx.begin_unit();
-        let mut unit_items = Vec::new();
-        let scan_error = scan_unit(&mut ctx, unit, &mut unit_items).err();
-        // The probe answered as a raw constant-pool probe, but the caller asked a relation
-        // P1 does not resolve. Each item keeps the caller's relation and stays an
-        // unanalysed candidate: derivation, consumer, operation, certainty and evidence
-        // are the facts the probe found, and nothing here expands or resolves them.
-        if keeps_pool_evidence(request.relation) {
-            for item in &mut unit_items {
-                item.relation = request.relation;
-            }
-        }
-        record_examined(&mut examined, unit);
-        if let Some(length) = ctx.materialized_length(unit) {
-            standalone_examined = length;
-        }
-
-        for (index, item) in unit_items.into_iter().enumerate() {
-            let unknown = item.certainty == XrefCertainty::Unknown;
-            if (index as u64) < skip_items {
-                // Replayed prefix of a continuation: already published and billed, so
-                // it counts as scanned but is neither published nor charged again.
-                scanned_items += 1;
-                unknown_candidates += u64::from(unknown);
-                continue;
-            }
-            if request.max_items != 0 && published >= request.max_items {
-                stopped_early = true;
-                break 'units;
-            }
-            if let Err(error) = ctx.charge_result_item() {
-                issue = merge_issue(issue, terminal_execution(&error, ctx.usage()));
-                diagnostics.push(terminal_diagnostic(&error, Some(unit)));
-                break 'units;
-            }
-            published += 1;
-            scanned_items += 1;
-            unknown_candidates += u64::from(unknown);
-            boundary = Some(QueryBoundary {
-                container: unit.origin().clone(),
-                ordinal: unit.ordinal(),
-                item_index: index as u64 + 1,
-            });
-            items.push(item);
-        }
-        skip_items = 0;
-
-        let unit_diagnostics = ctx.take_diagnostics();
-        for diagnostic in unit_diagnostics {
-            if let Err(error) = ctx.charge_result_item() {
-                issue = merge_issue(issue, terminal_execution(&error, ctx.usage()));
-                diagnostics.push(terminal_diagnostic(&error, Some(unit)));
-                break 'units;
-            }
-            diagnostics.push(diagnostic);
-        }
-
-        if let Some(error) = scan_error {
-            issue = merge_issue(issue, terminal_execution(&error, ctx.usage()));
-            diagnostics.push(terminal_diagnostic(&error, Some(unit)));
-            break 'units;
-        }
-    }
+    let mut ctx = ScanContext::new(
+        snapshot,
+        &probe,
+        CandidateFilter::Exact(request.target.clone()),
+        budget,
+    );
+    let pass = scan_units(
+        &mut ctx,
+        &provider,
+        request,
+        request
+            .cursor
+            .as_ref()
+            .map(|cursor| cursor.boundary.clone()),
+    );
 
     // A boundary that does not exist in a complete unit stream cannot describe this
     // snapshot/view/relation/schema binding. An incomplete provider may simply not
     // have reached it yet, and reports a partial status instead.
-    if pending.is_some() && matches!(provider.execution, ExecutionReport::Complete { .. }) {
+    if pass.resume_pending && matches!(provider.execution, ExecutionReport::Complete { .. }) {
         return Err(Error::invalid_input(
             "query_cursor_mismatch",
             "cursor boundary does not exist in this snapshot/view/relation/schema binding",
         ));
     }
 
-    let has_more = stopped_early || issue.is_some();
+    let has_more = pass.stopped_early || pass.issue.is_some();
     let cursor = if has_more {
-        boundary
+        pass.boundary
             .map(|boundary| build_cursor(snapshot.id(), request, boundary))
             .transpose()?
     } else {
         None
     };
-    let (scanned_ranges, skipped_ranges) = provider.coverage_parts(&examined, standalone_examined);
+    let (scanned_ranges, skipped_ranges) =
+        provider.coverage_parts(&pass.examined, pass.standalone_examined);
     // `complete_within_schema` needs both: no interruption or page limit, and no
     // known range left unexamined (a skip can also come from a continued page or
     // from a schema whose producers never read a standalone CLASS root).
-    let complete =
-        issue.is_none() && !stopped_early && unsupported.is_empty() && skipped_ranges.is_empty();
+    let complete = pass.issue.is_none()
+        && !pass.stopped_early
+        && unsupported.is_empty()
+        && skipped_ranges.is_empty();
     let execution = with_usage(
-        issue.unwrap_or(ExecutionReport::Complete {
+        pass.issue.unwrap_or(ExecutionReport::Complete {
             usage: budget.usage(),
         }),
         budget.usage(),
@@ -287,22 +303,276 @@ pub(crate) fn scan(
         },
         consumer_schema: request.consumers.clone(),
         unsupported_categories: unsupported,
-        scanned_items,
-        unknown_candidates,
+        scanned_items: pass.scanned_items,
+        unknown_candidates: pass.unknown_candidates,
     };
+    let mut diagnostics = provider.diagnostics.clone();
+    diagnostics.extend(pass.diagnostics);
     Ok(ScanResult {
         page: QueryPage {
             has_more,
-            returned_items: u64::try_from(items.len()).map_err(|_| {
+            returned_items: u64::try_from(pass.items.len()).map_err(|_| {
                 Error::invalid_input("query_size_overflow", "page item count does not fit u64")
             })?,
             cursor,
         },
-        items,
+        items: pass.items,
         coverage,
         execution,
         diagnostics,
     })
+}
+
+/// Scans one snapshot for every candidate that answers `filter`.
+///
+/// This is the scan `Engine::query` runs — the same provider enumeration, the same consumer
+/// sub-scan order, the same item coordinates, the same billing — read through a candidate
+/// filter instead of one exact target, and without the page and the cursor: the caller states
+/// its own item limit and continuation, so this entry publishes what it found and reports
+/// whether it stopped before the end of the range.
+///
+/// `max_items` is the caller's own limit and works exactly like `Engine::query`'s page limit:
+/// the scan stops before publishing more items, its artifact coverage turns `Partial`, and the
+/// execution does not change because of it. The caller publishes the truncation as its own
+/// `has_more`; no cursor is issued for it.
+pub(crate) fn scan_candidates(
+    snapshot: &ArtifactSnapshot,
+    scope: &PhysicalScope,
+    consumers: &ConsumerSchema,
+    filter: CandidateFilter,
+    max_items: u64,
+    budget: &mut Budget,
+) -> Result<CandidateScan> {
+    let request = QueryRequest {
+        relation: QueryRelation::MentionsSymbol,
+        target: filter.request_target(),
+        physical: PhysicalView {
+            snapshot: snapshot.id().clone(),
+            scope: scope.clone(),
+        },
+        consumers: consumers.clone(),
+        max_items,
+        // The caller owns the continuation too, and a declaration-reference query has none.
+        cursor: None,
+    };
+    if request.consumers.kinds.is_empty() {
+        return Ok(CandidateScan {
+            items: Vec::new(),
+            has_more: false,
+            coverage: QueryCoverage {
+                dimensions: not_requested_coverage(),
+                consumer_schema: request.consumers.clone(),
+                unsupported_categories: Vec::new(),
+                scanned_items: 0,
+                unknown_candidates: 0,
+            },
+            execution: ExecutionReport::Complete {
+                usage: budget.usage(),
+            },
+            diagnostics: Vec::new(),
+        });
+    }
+    let provider = ProviderScan::collect(snapshot, &request, budget)?;
+    let unsupported = unsupported_categories(&request.consumers);
+    let mut ctx = ScanContext::new(snapshot, &request, filter, budget);
+    let pass = scan_units(&mut ctx, &provider, &request, None);
+    let (scanned_ranges, skipped_ranges) =
+        provider.coverage_parts(&pass.examined, pass.standalone_examined);
+    let complete = pass.issue.is_none()
+        && !pass.stopped_early
+        && unsupported.is_empty()
+        && skipped_ranges.is_empty();
+    let has_more = pass.stopped_early || pass.issue.is_some();
+    let execution = with_usage(
+        pass.issue.unwrap_or(ExecutionReport::Complete {
+            usage: budget.usage(),
+        }),
+        budget.usage(),
+    );
+    let coverage = QueryCoverage {
+        dimensions: Coverage {
+            artifact_structural: CoverageDimension {
+                state: if complete {
+                    CoverageState::CompleteWithinSchema
+                } else {
+                    CoverageState::Partial
+                },
+                scanned: scanned_ranges,
+                skipped: skipped_ranges,
+                uninterpreted_extensions: Vec::new(),
+            },
+            runtime_resolution: CoverageDimension::not_requested(),
+            dynamic_analysis: CoverageDimension::not_requested(),
+        },
+        consumer_schema: request.consumers.clone(),
+        unsupported_categories: unsupported,
+        scanned_items: pass.scanned_items,
+        unknown_candidates: pass.unknown_candidates,
+    };
+    let mut diagnostics = provider.diagnostics.clone();
+    diagnostics.extend(pass.diagnostics);
+    Ok(CandidateScan {
+        has_more,
+        items: pass.items,
+        coverage,
+        execution,
+        diagnostics,
+    })
+}
+
+/// Outcome of one pass over the provider's units.
+///
+/// The pass reports what the scan really did, in the terms both entries need: the items it
+/// published in scan order, whether a limit or a stop kept it from reaching the end of the
+/// range, the position it last published, the containers and bytes it examined, and the stops
+/// and diagnostics it produced. The caller decides what those facts mean for its own report
+/// (a page and a cursor, or a candidate list).
+struct UnitPass {
+    items: Vec<XrefItem>,
+    /// Position immediately after the last published item.
+    boundary: Option<QueryBoundary>,
+    /// The item limit stopped the pass.
+    stopped_early: bool,
+    /// A continuation boundary no unit of this stream matched.
+    resume_pending: bool,
+    /// The stop that ended the pass early, if any.
+    issue: Option<ExecutionReport>,
+    diagnostics: Vec<Diagnostic>,
+    examined: Vec<ExaminedContainer>,
+    standalone_examined: u64,
+    scanned_items: u64,
+    unknown_candidates: u64,
+}
+
+/// Walks the provider's units and runs every consumer sub-scan on each one.
+///
+/// This is the whole scan both entries share, so the order (containers in provider order,
+/// entries by ordinal, then the fixed consumer sub-scan order inside one unit), the billing
+/// (one `ResultItems` per published item and per domain diagnostic, charged by this pass
+/// alone) and the stop semantics (the prefix published before a refused charge, a limit or an
+/// interruption stays) cannot drift between them. `request` carries the item limit and the
+/// relation; `resume` is the boundary a continuation replays from.
+fn scan_units(
+    ctx: &mut ScanContext<'_>,
+    provider: &ProviderScan,
+    request: &QueryRequest,
+    resume: Option<QueryBoundary>,
+) -> UnitPass {
+    // The provider's own terminal state, if any, already limits this run.
+    let mut pass = UnitPass {
+        items: Vec::new(),
+        boundary: None,
+        stopped_early: false,
+        resume_pending: false,
+        issue: match &provider.execution {
+            ExecutionReport::Complete { .. } => None,
+            other => Some(other.clone()),
+        },
+        diagnostics: Vec::new(),
+        examined: Vec::new(),
+        standalone_examined: 0,
+        scanned_items: 0,
+        unknown_candidates: 0,
+    };
+    let mut pending = resume;
+    let mut skip_items = 0_u64;
+    let mut published = 0_u64;
+
+    'units: for unit in &provider.units {
+        // Units before the cursor boundary were published by an earlier page: they
+        // are neither re-read nor re-billed here.
+        if let Some(resume) = &pending {
+            if resume.container != *unit.origin() || resume.ordinal != unit.ordinal() {
+                continue;
+            }
+            skip_items = resume.item_index;
+            pending = None;
+        }
+        // Cooperative interruption is checked before any unit work, so a cancelled
+        // or exhausted request never reports more than the published prefix.
+        if let Err(error) = ctx.budget().poll() {
+            pass.issue = merge_issue(pass.issue, terminal_execution(&error, ctx.usage()));
+            pass.diagnostics
+                .push(terminal_diagnostic(&error, Some(unit)));
+            break 'units;
+        }
+        // A full page stops the scan instead of looking for the next item: the page
+        // limit must bound the work, so `has_more` stays a conservative "stopped
+        // before the end of the range" and a continuation may still be empty.
+        if request.max_items != 0 && published >= request.max_items {
+            pass.stopped_early = true;
+            break 'units;
+        }
+
+        ctx.begin_unit();
+        let mut unit_items = Vec::new();
+        let scan_error = scan_unit(ctx, unit, &mut unit_items).err();
+        // The probe answered as a raw constant-pool probe, but the caller asked a relation
+        // P1 does not resolve. Each item keeps the caller's relation and stays an
+        // unanalysed candidate: derivation, consumer, operation, certainty and evidence
+        // are the facts the probe found, and nothing here expands or resolves them.
+        if keeps_pool_evidence(request.relation) {
+            for item in &mut unit_items {
+                item.relation = request.relation;
+            }
+        }
+        record_examined(&mut pass.examined, unit);
+        if let Some(length) = ctx.materialized_length(unit) {
+            pass.standalone_examined = length;
+        }
+
+        for (index, item) in unit_items.into_iter().enumerate() {
+            let unknown = item.certainty == XrefCertainty::Unknown;
+            if (index as u64) < skip_items {
+                // Replayed prefix of a continuation: already published and billed, so
+                // it counts as scanned but is neither published nor charged again.
+                pass.scanned_items += 1;
+                pass.unknown_candidates += u64::from(unknown);
+                continue;
+            }
+            if request.max_items != 0 && published >= request.max_items {
+                pass.stopped_early = true;
+                break 'units;
+            }
+            if let Err(error) = ctx.charge_result_item() {
+                pass.issue = merge_issue(pass.issue, terminal_execution(&error, ctx.usage()));
+                pass.diagnostics
+                    .push(terminal_diagnostic(&error, Some(unit)));
+                break 'units;
+            }
+            published += 1;
+            pass.scanned_items += 1;
+            pass.unknown_candidates += u64::from(unknown);
+            pass.boundary = Some(QueryBoundary {
+                container: unit.origin().clone(),
+                ordinal: unit.ordinal(),
+                item_index: index as u64 + 1,
+            });
+            pass.items.push(item);
+        }
+        skip_items = 0;
+
+        let unit_diagnostics = ctx.take_diagnostics();
+        for diagnostic in unit_diagnostics {
+            if let Err(error) = ctx.charge_result_item() {
+                pass.issue = merge_issue(pass.issue, terminal_execution(&error, ctx.usage()));
+                pass.diagnostics
+                    .push(terminal_diagnostic(&error, Some(unit)));
+                break 'units;
+            }
+            pass.diagnostics.push(diagnostic);
+        }
+
+        if let Some(error) = scan_error {
+            pass.issue = merge_issue(pass.issue, terminal_execution(&error, ctx.usage()));
+            pass.diagnostics
+                .push(terminal_diagnostic(&error, Some(unit)));
+            break 'units;
+        }
+    }
+
+    pass.resume_pending = pending.is_some();
+    pass
 }
 
 /// Fixed consumer sub-scan order inside one unit.
@@ -500,6 +770,9 @@ fn hex_bytes(bytes: &[u8]) -> String {
 pub(super) struct ScanContext<'a> {
     snapshot: &'a ArtifactSnapshot,
     request: &'a QueryRequest,
+    /// How a candidate answers this scan; every sub-scan asks this context instead of
+    /// comparing targets itself.
+    filter: CandidateFilter,
     budget: &'a mut Budget,
     diagnostics: Vec<Diagnostic>,
     materialized: Vec<MaterializedUnit>,
@@ -509,11 +782,13 @@ impl<'a> ScanContext<'a> {
     fn new(
         snapshot: &'a ArtifactSnapshot,
         request: &'a QueryRequest,
+        filter: CandidateFilter,
         budget: &'a mut Budget,
     ) -> Self {
         Self {
             snapshot,
             request,
+            filter,
             budget,
             diagnostics: Vec::new(),
             materialized: Vec::new(),
@@ -522,6 +797,66 @@ impl<'a> ScanContext<'a> {
 
     pub(super) fn request(&self) -> &QueryRequest {
         self.request
+    }
+
+    /// Whether one candidate a sub-scan found answers the active filter.
+    ///
+    /// A candidate is stated in the two dimensions a query target has — a symbol and a
+    /// literal — and a sub-scan passes the dimensions its own product carries, so one entry
+    /// of a class file can answer a symbol request and a descriptor-type request without the
+    /// two being confused. `Exact` compares the raw bytes of the dimension the request names;
+    /// `MemberShape` answers a member symbol whose raw name and descriptor bytes are equal,
+    /// whatever owner it spells; `SignaturePolymorphic` answers a method symbol whose owner and
+    /// name bytes are equal, whatever descriptor the site spells.
+    pub(super) fn candidate_matches(
+        &self,
+        symbol: Option<&SymbolRef>,
+        literal: Option<&LiteralValue>,
+    ) -> bool {
+        self.published_target(symbol, literal).is_some()
+    }
+
+    /// The target one published item carries for a candidate that answered the filter.
+    ///
+    /// Under `Exact` the candidate's own value *is* the request's target (matching is
+    /// equality), so this publishes exactly the item P1 always published. Under a shape filter
+    /// the candidate's own symbol is the one fact the item must keep: the filter compares only
+    /// some of the symbol's dimensions on purpose, so the dimensions it does not compare (the
+    /// owner under `MemberShape`, the descriptor under `SignaturePolymorphic`) can only come
+    /// back through the candidate. `None` means the candidate does not answer the filter at
+    /// all, which is the same decision [`ScanContext::candidate_matches`] reports.
+    pub(super) fn published_target(
+        &self,
+        symbol: Option<&SymbolRef>,
+        literal: Option<&LiteralValue>,
+    ) -> Option<XrefTarget> {
+        match &self.filter {
+            CandidateFilter::Exact(QueryTarget::Symbol { value }) => {
+                (symbol == Some(value)).then(|| XrefTarget::Symbol {
+                    value: value.clone(),
+                })
+            }
+            CandidateFilter::Exact(QueryTarget::Literal { value }) => (literal == Some(value))
+                .then(|| XrefTarget::Literal {
+                    value: value.clone(),
+                }),
+            CandidateFilter::MemberShape { name, descriptor } => {
+                let symbol = symbol?;
+                let (found_name, found_descriptor) = member_shape(symbol)?;
+                (found_name.0 == name.0 && found_descriptor.0 == descriptor.0).then(|| {
+                    XrefTarget::Symbol {
+                        value: symbol.clone(),
+                    }
+                })
+            }
+            CandidateFilter::SignaturePolymorphic { owner, name } => {
+                let symbol = symbol?;
+                let (found_owner, found_name) = method_owner_and_name(symbol)?;
+                (found_owner.0 == owner.0 && found_name.0 == name.0).then(|| XrefTarget::Symbol {
+                    value: symbol.clone(),
+                })
+            }
+        }
     }
 
     /// Whether the request asks for this consumer category.
@@ -906,7 +1241,12 @@ fn terminal_execution(error: &Error, usage: UsageSnapshot) -> ExecutionReport {
     }
 }
 
-fn with_usage(execution: ExecutionReport, usage: UsageSnapshot) -> ExecutionReport {
+/// Restates one execution report under the usage of the request it ends.
+///
+/// The stop is decided at one point of a request and published at its end, so the counts a
+/// caller reads are the ones the whole request consumed. The declaration-reference query
+/// merges its own stops into a scan's execution the same way, so the mapping lives here once.
+pub(crate) fn with_usage(execution: ExecutionReport, usage: UsageSnapshot) -> ExecutionReport {
     match execution {
         ExecutionReport::Complete { .. } => ExecutionReport::Complete { usage },
         ExecutionReport::Partial { reason, .. } => ExecutionReport::Partial { reason, usage },
