@@ -1,0 +1,7 @@
+# The fuzz workspace pins its own nightly, independent of the main workspace's
+# stable/MSRV 1.88.0 policy: `-Zsanitizer=address` and libFuzzer's coverage
+# instrumentation are nightly-only. `rustup` resolves this file for every command run
+# in this directory, so `cargo fuzz run <target>` cannot silently fall back to stable.
+[toolchain]
+channel = "nightly-2026-07-20"
+profile = "minimal"

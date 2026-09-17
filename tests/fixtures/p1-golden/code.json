@@ -1,0 +1,717 @@
+{
+  "fixture": {
+    "blake3": "f77b8b60b936fe0b67bd815a9add304ab2d3ad432d55d5bfcbdc52062d8222a7",
+    "bytes": 196,
+    "name": "code",
+    "source": "hand-built in tests/p1_xref_golden.rs::code_fixture (one used and one unused Methodref, one string and one integer ldc)"
+  },
+  "replays": [
+    {
+      "kind": "query",
+      "name": "x0-unused-methodref-candidate",
+      "report": {
+        "analysis": {
+          "kind": "performed"
+        },
+        "consumers": {
+          "kinds": [
+            "invocation"
+          ],
+          "version": 1
+        },
+        "coverage": {
+          "consumer_schema": {
+            "kinds": [
+              "invocation"
+            ],
+            "version": 1
+          },
+          "dimensions": {
+            "artifact_structural": {
+              "scanned": [
+                {
+                  "end": 196,
+                  "label": "standalone_class:xref_scan_bytes",
+                  "start": 0
+                }
+              ],
+              "skipped": [],
+              "state": "complete_within_schema",
+              "uninterpreted_extensions": []
+            },
+            "dynamic_analysis": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            },
+            "runtime_resolution": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            }
+          },
+          "scanned_items": 1,
+          "unknown_candidates": 0,
+          "unsupported_categories": []
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 0,
+            "attribute_bytes": 26,
+            "class_bytes": 196,
+            "code_bytes": 0,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 196,
+            "read_bytes": 196,
+            "result_items": 1
+          }
+        },
+        "items": [
+          {
+            "certainty": "exact",
+            "consumer": null,
+            "derivation": "constant_pool_candidate",
+            "evidence": {
+              "attribute": null,
+              "bci": null,
+              "constant_pool_index": 15,
+              "opcode": null,
+              "span": {
+                "length": 5,
+                "start": 113
+              },
+              "via": []
+            },
+            "operation": "constant_pool_entry",
+            "relation": "constant_pool_contains",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "definition": {
+                  "class_bytes": {
+                    "digest": "f77b8b60b936fe0b67bd815a9add304ab2d3ad432d55d5bfcbdc52062d8222a7",
+                    "length": 196
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "f77b8b60b936fe0b67bd815a9add304ab2d3ad432d55d5bfcbdc52062d8222a7"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                },
+                "kind": "class_offset",
+                "offset": 113
+              }
+            },
+            "target": {
+              "kind": "symbol",
+              "value": {
+                "descriptor": [
+                  40,
+                  41,
+                  86
+                ],
+                "kind": "method",
+                "name": [
+                  110,
+                  101,
+                  118,
+                  101,
+                  114
+                ],
+                "owner": [
+                  112,
+                  47,
+                  85,
+                  110,
+                  117,
+                  115,
+                  101,
+                  100
+                ]
+              }
+            }
+          }
+        ],
+        "page": {
+          "cursor": null,
+          "has_more": false,
+          "returned_items": 1
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "f77b8b60b936fe0b67bd815a9add304ab2d3ad432d55d5bfcbdc52062d8222a7"
+        },
+        "relation": "constant_pool_contains"
+      },
+      "request": {
+        "consumers": {
+          "kinds": [
+            "invocation"
+          ],
+          "version": 1
+        },
+        "cursor": null,
+        "max_items": 0,
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "f77b8b60b936fe0b67bd815a9add304ab2d3ad432d55d5bfcbdc52062d8222a7"
+        },
+        "relation": "constant_pool_contains",
+        "target": {
+          "kind": "symbol",
+          "value": {
+            "descriptor": [
+              40,
+              41,
+              86
+            ],
+            "kind": "method",
+            "name": [
+              110,
+              101,
+              118,
+              101,
+              114
+            ],
+            "owner": [
+              112,
+              47,
+              85,
+              110,
+              117,
+              115,
+              101,
+              100
+            ]
+          }
+        }
+      }
+    },
+    {
+      "kind": "query",
+      "name": "x1-unused-methodref-is-not-a-call",
+      "report": {
+        "analysis": {
+          "kind": "performed"
+        },
+        "consumers": {
+          "kinds": [
+            "invocation"
+          ],
+          "version": 1
+        },
+        "coverage": {
+          "consumer_schema": {
+            "kinds": [
+              "invocation"
+            ],
+            "version": 1
+          },
+          "dimensions": {
+            "artifact_structural": {
+              "scanned": [
+                {
+                  "end": 196,
+                  "label": "standalone_class:xref_scan_bytes",
+                  "start": 0
+                }
+              ],
+              "skipped": [],
+              "state": "complete_within_schema",
+              "uninterpreted_extensions": []
+            },
+            "dynamic_analysis": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            },
+            "runtime_resolution": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            }
+          },
+          "scanned_items": 0,
+          "unknown_candidates": 0,
+          "unsupported_categories": []
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 0,
+            "attribute_bytes": 52,
+            "class_bytes": 196,
+            "code_bytes": 8,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 196,
+            "read_bytes": 196,
+            "result_items": 0
+          }
+        },
+        "items": [],
+        "page": {
+          "cursor": null,
+          "has_more": false,
+          "returned_items": 0
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "f77b8b60b936fe0b67bd815a9add304ab2d3ad432d55d5bfcbdc52062d8222a7"
+        },
+        "relation": "mentions_symbol"
+      },
+      "request": {
+        "consumers": {
+          "kinds": [
+            "invocation"
+          ],
+          "version": 1
+        },
+        "cursor": null,
+        "max_items": 0,
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "f77b8b60b936fe0b67bd815a9add304ab2d3ad432d55d5bfcbdc52062d8222a7"
+        },
+        "relation": "mentions_symbol",
+        "target": {
+          "kind": "symbol",
+          "value": {
+            "descriptor": [
+              40,
+              41,
+              86
+            ],
+            "kind": "method",
+            "name": [
+              110,
+              101,
+              118,
+              101,
+              114
+            ],
+            "owner": [
+              112,
+              47,
+              85,
+              110,
+              117,
+              115,
+              101,
+              100
+            ]
+          }
+        }
+      }
+    },
+    {
+      "kind": "query",
+      "name": "x1-invocation-coordinates",
+      "report": {
+        "analysis": {
+          "kind": "performed"
+        },
+        "consumers": {
+          "kinds": [
+            "invocation"
+          ],
+          "version": 1
+        },
+        "coverage": {
+          "consumer_schema": {
+            "kinds": [
+              "invocation"
+            ],
+            "version": 1
+          },
+          "dimensions": {
+            "artifact_structural": {
+              "scanned": [
+                {
+                  "end": 196,
+                  "label": "standalone_class:xref_scan_bytes",
+                  "start": 0
+                }
+              ],
+              "skipped": [],
+              "state": "complete_within_schema",
+              "uninterpreted_extensions": []
+            },
+            "dynamic_analysis": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            },
+            "runtime_resolution": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            }
+          },
+          "scanned_items": 1,
+          "unknown_candidates": 0,
+          "unsupported_categories": []
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 0,
+            "attribute_bytes": 52,
+            "class_bytes": 196,
+            "code_bytes": 8,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 196,
+            "read_bytes": 196,
+            "result_items": 1
+          }
+        },
+        "items": [
+          {
+            "certainty": "exact",
+            "consumer": "invocation",
+            "derivation": "structural_consumer",
+            "evidence": {
+              "attribute": [
+                67,
+                111,
+                100,
+                101
+              ],
+              "bci": 0,
+              "constant_pool_index": 12,
+              "opcode": 182,
+              "span": {
+                "length": 3,
+                "start": 182
+              },
+              "via": []
+            },
+            "operation": "invoke_virtual",
+            "relation": "mentions_symbol",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "bci": 0,
+                "kind": "code",
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    105,
+                    110
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "f77b8b60b936fe0b67bd815a9add304ab2d3ad432d55d5bfcbdc52062d8222a7",
+                      "length": 196
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "f77b8b60b936fe0b67bd815a9add304ab2d3ad432d55d5bfcbdc52062d8222a7"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                }
+              }
+            },
+            "target": {
+              "kind": "symbol",
+              "value": {
+                "descriptor": [
+                  40,
+                  41,
+                  86
+                ],
+                "kind": "method",
+                "name": [
+                  114,
+                  117,
+                  110
+                ],
+                "owner": [
+                  112,
+                  47,
+                  84,
+                  97,
+                  114,
+                  103,
+                  101,
+                  116
+                ]
+              }
+            }
+          }
+        ],
+        "page": {
+          "cursor": null,
+          "has_more": false,
+          "returned_items": 1
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "f77b8b60b936fe0b67bd815a9add304ab2d3ad432d55d5bfcbdc52062d8222a7"
+        },
+        "relation": "mentions_symbol"
+      },
+      "request": {
+        "consumers": {
+          "kinds": [
+            "invocation"
+          ],
+          "version": 1
+        },
+        "cursor": null,
+        "max_items": 0,
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "f77b8b60b936fe0b67bd815a9add304ab2d3ad432d55d5bfcbdc52062d8222a7"
+        },
+        "relation": "mentions_symbol",
+        "target": {
+          "kind": "symbol",
+          "value": {
+            "descriptor": [
+              40,
+              41,
+              86
+            ],
+            "kind": "method",
+            "name": [
+              114,
+              117,
+              110
+            ],
+            "owner": [
+              112,
+              47,
+              84,
+              97,
+              114,
+              103,
+              101,
+              116
+            ]
+          }
+        }
+      }
+    },
+    {
+      "kind": "query",
+      "name": "literal-value-string",
+      "report": {
+        "analysis": {
+          "kind": "performed"
+        },
+        "consumers": {
+          "kinds": [
+            "constant"
+          ],
+          "version": 1
+        },
+        "coverage": {
+          "consumer_schema": {
+            "kinds": [
+              "constant"
+            ],
+            "version": 1
+          },
+          "dimensions": {
+            "artifact_structural": {
+              "scanned": [
+                {
+                  "end": 196,
+                  "label": "standalone_class:xref_scan_bytes",
+                  "start": 0
+                }
+              ],
+              "skipped": [],
+              "state": "complete_within_schema",
+              "uninterpreted_extensions": []
+            },
+            "dynamic_analysis": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            },
+            "runtime_resolution": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            }
+          },
+          "scanned_items": 1,
+          "unknown_candidates": 0,
+          "unsupported_categories": []
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 0,
+            "attribute_bytes": 78,
+            "class_bytes": 392,
+            "code_bytes": 8,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 392,
+            "read_bytes": 392,
+            "result_items": 1
+          }
+        },
+        "items": [
+          {
+            "certainty": "exact",
+            "consumer": "constant",
+            "derivation": "structural_consumer",
+            "evidence": {
+              "attribute": [
+                67,
+                111,
+                100,
+                101
+              ],
+              "bci": 3,
+              "constant_pool_index": 17,
+              "opcode": 18,
+              "span": {
+                "length": 2,
+                "start": 185
+              },
+              "via": []
+            },
+            "operation": "ldc",
+            "relation": "literal_value",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "bci": 3,
+                "kind": "code",
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    105,
+                    110
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "f77b8b60b936fe0b67bd815a9add304ab2d3ad432d55d5bfcbdc52062d8222a7",
+                      "length": 196
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "f77b8b60b936fe0b67bd815a9add304ab2d3ad432d55d5bfcbdc52062d8222a7"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                }
+              }
+            },
+            "target": {
+              "kind": "literal",
+              "value": {
+                "kind": "string",
+                "value": [
+                  104,
+                  101,
+                  108,
+                  108,
+                  111
+                ]
+              }
+            }
+          }
+        ],
+        "page": {
+          "cursor": null,
+          "has_more": false,
+          "returned_items": 1
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "f77b8b60b936fe0b67bd815a9add304ab2d3ad432d55d5bfcbdc52062d8222a7"
+        },
+        "relation": "literal_value"
+      },
+      "request": {
+        "consumers": {
+          "kinds": [
+            "constant"
+          ],
+          "version": 1
+        },
+        "cursor": null,
+        "max_items": 0,
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "f77b8b60b936fe0b67bd815a9add304ab2d3ad432d55d5bfcbdc52062d8222a7"
+        },
+        "relation": "literal_value",
+        "target": {
+          "kind": "literal",
+          "value": {
+            "kind": "string",
+            "value": [
+              104,
+              101,
+              108,
+              108,
+              111
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

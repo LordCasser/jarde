@@ -20,6 +20,11 @@ allow = [
   "CC0-1.0",
   "MIT",
   "MIT-0",
+  # `libfuzzer-sys` vendors LLVM's libFuzzer runtime under the University of
+  # Illinois/NCSA permissive license. It is only reachable from the test-only
+  # `fuzz` workspace (its own workspace root, never a production dependency);
+  # the allowance is recorded here so one policy file stays authoritative.
+  "NCSA",
   "Unicode-3.0",
   "Unicode-DFS-2016",
   "Unlicense",

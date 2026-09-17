@@ -1,0 +1,44 @@
+# Standalone, test-only fuzz workspace for the P1 bounded query and artifact-tree /
+# multi-release entries (design 3.3).
+#
+# The `[workspace]` table below makes this directory its own workspace root. That is the
+# whole point: `libfuzzer-sys`, its `cc` build dependency and the nightly compiler never
+# become members of the main workspace, so they cannot enter the production dependency
+# tree or raise the MSRV 1.88.0 surface. `fuzz/Cargo.lock` is committed so the tools and
+# the runtime library stay pinned.
+
+[workspace]
+
+[package]
+name = "jarde-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+# The libFuzzer runtime, pinned: the smoke gate must not change under our feet.
+libfuzzer-sys = "=0.4.13"
+
+[dependencies.jarde]
+# Path dependency *with* an exact version: a bare path dependency is reported as a
+# wildcard by `cargo deny check bans` (the root policy sets `wildcards = "deny"`), and the
+# rest of the repository pins versions exactly.
+path = ".."
+version = "=0.1.0"
+
+[[bin]]
+name = "query"
+path = "fuzz_targets/query.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "artifact_tree"
+path = "fuzz_targets/artifact_tree.rs"
+test = false
+doc = false
+bench = false

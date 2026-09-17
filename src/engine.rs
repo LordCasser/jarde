@@ -90,6 +90,15 @@ impl Engine {
         crate::multi_release::select(snapshot, view, budget)
     }
 
+    pub fn query(
+        &self,
+        snapshot: &ArtifactSnapshot,
+        request: &crate::query::QueryRequest,
+        budget: &mut Budget,
+    ) -> Result<crate::query::QueryReport> {
+        crate::query::execute(snapshot, request, budget)
+    }
+
     pub fn inspect_header(
         &self,
         snapshot: &ArtifactSnapshot,

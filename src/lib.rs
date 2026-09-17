@@ -13,6 +13,7 @@ pub mod model;
 pub mod multi_release;
 pub mod query;
 pub mod view;
+pub mod xref;
 
 pub use artifact::*;
 pub use budget::{

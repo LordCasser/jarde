@@ -1,0 +1,3670 @@
+{
+  "fixture": {
+    "blake3": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+    "bytes": 1014,
+    "name": "multi-release",
+    "source": "hand-built in tests/p1_xref_golden.rs::mr_fixture (Manifest Multi-Release: true, base/v11/v17 p/Join.class each calling p/All.run)"
+  },
+  "replays": [
+    {
+      "kind": "multi_release",
+      "name": "select-java-8",
+      "report": {
+        "containers": [
+          {
+            "coverage": {
+              "artifact_structural": {
+                "scanned": [
+                  {
+                    "end": 4,
+                    "label": "central_directory_entries",
+                    "start": 0
+                  }
+                ],
+                "skipped": [],
+                "state": "complete_within_schema",
+                "uninterpreted_extensions": []
+              },
+              "dynamic_analysis": {
+                "scanned": [],
+                "skipped": [],
+                "state": "not_requested",
+                "uninterpreted_extensions": []
+              },
+              "runtime_resolution": {
+                "scanned": [
+                  {
+                    "end": 1,
+                    "label": "container:root:multi_release_selection_entries",
+                    "start": 0
+                  },
+                  {
+                    "end": 2,
+                    "label": "container:root:multi_release_selection_entries",
+                    "start": 1
+                  },
+                  {
+                    "end": 2,
+                    "label": "container:root:multi_release_compliance_entries",
+                    "start": 1
+                  },
+                  {
+                    "end": 3,
+                    "label": "container:root:multi_release_selection_entries",
+                    "start": 2
+                  },
+                  {
+                    "end": 3,
+                    "label": "container:root:multi_release_compliance_entries",
+                    "start": 2
+                  },
+                  {
+                    "end": 4,
+                    "label": "container:root:multi_release_selection_entries",
+                    "start": 3
+                  },
+                  {
+                    "end": 4,
+                    "label": "container:root:multi_release_compliance_entries",
+                    "start": 3
+                  }
+                ],
+                "skipped": [],
+                "state": "complete_within_schema",
+                "uninterpreted_extensions": []
+              }
+            },
+            "entries": [
+              {
+                "class_evidence": null,
+                "compliance": {
+                  "kind": "not_applicable"
+                },
+                "decision": {
+                  "kind": "selected"
+                },
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    77,
+                    65,
+                    78,
+                    73,
+                    70,
+                    69,
+                    83,
+                    84,
+                    46,
+                    77,
+                    70
+                  ]
+                },
+                "logical_path": [
+                  77,
+                  69,
+                  84,
+                  65,
+                  45,
+                  73,
+                  78,
+                  70,
+                  47,
+                  77,
+                  65,
+                  78,
+                  73,
+                  70,
+                  69,
+                  83,
+                  84,
+                  46,
+                  77,
+                  70
+                ],
+                "variant": {
+                  "kind": "base"
+                }
+              },
+              {
+                "class_evidence": {
+                  "access_flags": 33,
+                  "major_version": 52,
+                  "minor_version": 0,
+                  "this_class": {
+                    "escaped": "p/Join",
+                    "raw": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ],
+                    "utf16": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ]
+                  }
+                },
+                "compliance": {
+                  "kind": "not_applicable"
+                },
+                "decision": {
+                  "kind": "selected"
+                },
+                "entry": {
+                  "ordinal": 1,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "logical_path": [
+                  112,
+                  47,
+                  74,
+                  111,
+                  105,
+                  110,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ],
+                "variant": {
+                  "kind": "base"
+                }
+              },
+              {
+                "class_evidence": {
+                  "access_flags": 33,
+                  "major_version": 55,
+                  "minor_version": 0,
+                  "this_class": {
+                    "escaped": "p/Join",
+                    "raw": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ],
+                    "utf16": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ]
+                  }
+                },
+                "compliance": {
+                  "kind": "conformant_within_checks"
+                },
+                "decision": {
+                  "kind": "inactive",
+                  "reason": "target_below_nine"
+                },
+                "entry": {
+                  "ordinal": 2,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    118,
+                    101,
+                    114,
+                    115,
+                    105,
+                    111,
+                    110,
+                    115,
+                    47,
+                    49,
+                    49,
+                    47,
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "logical_path": [
+                  112,
+                  47,
+                  74,
+                  111,
+                  105,
+                  110,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ],
+                "variant": {
+                  "kind": "versioned",
+                  "release": 11
+                }
+              },
+              {
+                "class_evidence": {
+                  "access_flags": 33,
+                  "major_version": 61,
+                  "minor_version": 0,
+                  "this_class": {
+                    "escaped": "p/Join",
+                    "raw": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ],
+                    "utf16": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ]
+                  }
+                },
+                "compliance": {
+                  "kind": "conformant_within_checks"
+                },
+                "decision": {
+                  "kind": "inactive",
+                  "reason": "target_below_nine"
+                },
+                "entry": {
+                  "ordinal": 3,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    118,
+                    101,
+                    114,
+                    115,
+                    105,
+                    111,
+                    110,
+                    115,
+                    47,
+                    49,
+                    55,
+                    47,
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "logical_path": [
+                  112,
+                  47,
+                  74,
+                  111,
+                  105,
+                  110,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ],
+                "variant": {
+                  "kind": "versioned",
+                  "release": 17
+                }
+              }
+            ],
+            "execution": {
+              "status": "complete",
+              "usage": {
+                "archive_entries": 14,
+                "attribute_bytes": 0,
+                "class_bytes": 382,
+                "code_bytes": 0,
+                "entry_bytes": 428,
+                "input_bytes": 0,
+                "nested_depth": 0,
+                "output_bytes": 0,
+                "read_bytes": 428,
+                "result_items": 12
+              }
+            },
+            "manifest": {
+              "attribute_name": [
+                77,
+                117,
+                108,
+                116,
+                105,
+                45,
+                82,
+                101,
+                108,
+                101,
+                97,
+                115,
+                101
+              ],
+              "attribute_value": [
+                116,
+                114,
+                117,
+                101
+              ],
+              "entries": [
+                {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    77,
+                    65,
+                    78,
+                    73,
+                    70,
+                    69,
+                    83,
+                    84,
+                    46,
+                    77,
+                    70
+                  ]
+                }
+              ],
+              "state": "active"
+            },
+            "origin": {
+              "root_container": "root",
+              "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+              "steps": []
+            },
+            "selections": [
+              {
+                "logical_path": [
+                  77,
+                  69,
+                  84,
+                  65,
+                  45,
+                  73,
+                  78,
+                  70,
+                  47,
+                  77,
+                  65,
+                  78,
+                  73,
+                  70,
+                  69,
+                  83,
+                  84,
+                  46,
+                  77,
+                  70
+                ],
+                "outcome": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      77,
+                      69,
+                      84,
+                      65,
+                      45,
+                      73,
+                      78,
+                      70,
+                      47,
+                      77,
+                      65,
+                      78,
+                      73,
+                      70,
+                      69,
+                      83,
+                      84,
+                      46,
+                      77,
+                      70
+                    ]
+                  },
+                  "kind": "selected"
+                }
+              },
+              {
+                "logical_path": [
+                  112,
+                  47,
+                  74,
+                  111,
+                  105,
+                  110,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ],
+                "outcome": {
+                  "entry": {
+                    "ordinal": 1,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "selected"
+                }
+              }
+            ]
+          }
+        ],
+        "coverage": {
+          "artifact_structural": {
+            "scanned": [
+              {
+                "end": 4,
+                "label": "central_directory_entries",
+                "start": 0
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          },
+          "dynamic_analysis": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          },
+          "runtime_resolution": {
+            "scanned": [
+              {
+                "end": 1,
+                "label": "container:root:multi_release_selection_entries",
+                "start": 0
+              },
+              {
+                "end": 2,
+                "label": "container:root:multi_release_selection_entries",
+                "start": 1
+              },
+              {
+                "end": 2,
+                "label": "container:root:multi_release_compliance_entries",
+                "start": 1
+              },
+              {
+                "end": 3,
+                "label": "container:root:multi_release_selection_entries",
+                "start": 2
+              },
+              {
+                "end": 3,
+                "label": "container:root:multi_release_compliance_entries",
+                "start": 2
+              },
+              {
+                "end": 4,
+                "label": "container:root:multi_release_selection_entries",
+                "start": 3
+              },
+              {
+                "end": 4,
+                "label": "container:root:multi_release_compliance_entries",
+                "start": 3
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          }
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 14,
+            "attribute_bytes": 0,
+            "class_bytes": 382,
+            "code_bytes": 0,
+            "entry_bytes": 428,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 0,
+            "read_bytes": 428,
+            "result_items": 12
+          }
+        },
+        "physical": {
+          "kind": "snapshot",
+          "report": {
+            "coverage": {
+              "artifact_structural": {
+                "scanned": [
+                  {
+                    "end": 4,
+                    "label": "central_directory_entries",
+                    "start": 0
+                  }
+                ],
+                "skipped": [],
+                "state": "complete_within_schema",
+                "uninterpreted_extensions": []
+              },
+              "dynamic_analysis": {
+                "scanned": [],
+                "skipped": [],
+                "state": "not_requested",
+                "uninterpreted_extensions": []
+              },
+              "runtime_resolution": {
+                "scanned": [],
+                "skipped": [],
+                "state": "not_requested",
+                "uninterpreted_extensions": []
+              }
+            },
+            "diagnostics": [],
+            "entries": [
+              {
+                "compressed_size": 46,
+                "compression": "stored",
+                "compression_method": 0,
+                "crc32": 1570773839,
+                "flags": {
+                  "data_descriptor": true,
+                  "encrypted": false,
+                  "raw_bits": 8,
+                  "strong_encryption": false
+                },
+                "id": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    77,
+                    65,
+                    78,
+                    73,
+                    70,
+                    69,
+                    83,
+                    84,
+                    46,
+                    77,
+                    70
+                  ]
+                },
+                "layout": {
+                  "central_header_offset": 710,
+                  "compressed_data": {
+                    "length": 46,
+                    "start": 50
+                  },
+                  "local_header_offset": 0
+                },
+                "nested_archive": "not_candidate",
+                "signature_metadata": {
+                  "kind": "manifest",
+                  "verification": "not_verified"
+                },
+                "uncompressed_size": 46
+              },
+              {
+                "compressed_size": 128,
+                "compression": "stored",
+                "compression_method": 0,
+                "crc32": 3706334276,
+                "flags": {
+                  "data_descriptor": true,
+                  "encrypted": false,
+                  "raw_bits": 8,
+                  "strong_encryption": false
+                },
+                "id": {
+                  "ordinal": 1,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "layout": {
+                  "central_header_offset": 776,
+                  "compressed_data": {
+                    "length": 128,
+                    "start": 154
+                  },
+                  "local_header_offset": 112
+                },
+                "nested_archive": "not_candidate",
+                "signature_metadata": null,
+                "uncompressed_size": 128
+              },
+              {
+                "compressed_size": 127,
+                "compression": "stored",
+                "compression_method": 0,
+                "crc32": 2926262126,
+                "flags": {
+                  "data_descriptor": true,
+                  "encrypted": false,
+                  "raw_bits": 8,
+                  "strong_encryption": false
+                },
+                "id": {
+                  "ordinal": 2,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    118,
+                    101,
+                    114,
+                    115,
+                    105,
+                    111,
+                    110,
+                    115,
+                    47,
+                    49,
+                    49,
+                    47,
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "layout": {
+                  "central_header_offset": 834,
+                  "compressed_data": {
+                    "length": 127,
+                    "start": 361
+                  },
+                  "local_header_offset": 298
+                },
+                "nested_archive": "not_candidate",
+                "signature_metadata": null,
+                "uncompressed_size": 127
+              },
+              {
+                "compressed_size": 127,
+                "compression": "stored",
+                "compression_method": 0,
+                "crc32": 2713384592,
+                "flags": {
+                  "data_descriptor": true,
+                  "encrypted": false,
+                  "raw_bits": 8,
+                  "strong_encryption": false
+                },
+                "id": {
+                  "ordinal": 3,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    118,
+                    101,
+                    114,
+                    115,
+                    105,
+                    111,
+                    110,
+                    115,
+                    47,
+                    49,
+                    55,
+                    47,
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "layout": {
+                  "central_header_offset": 913,
+                  "compressed_data": {
+                    "length": 127,
+                    "start": 567
+                  },
+                  "local_header_offset": 504
+                },
+                "nested_archive": "not_candidate",
+                "signature_metadata": null,
+                "uncompressed_size": 127
+              }
+            ],
+            "execution": {
+              "status": "complete",
+              "usage": {
+                "archive_entries": 4,
+                "attribute_bytes": 0,
+                "class_bytes": 0,
+                "code_bytes": 0,
+                "entry_bytes": 0,
+                "input_bytes": 0,
+                "nested_depth": 0,
+                "output_bytes": 0,
+                "read_bytes": 0,
+                "result_items": 4
+              }
+            },
+            "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+          }
+        },
+        "verification": "not_performed",
+        "view": {
+          "load_domain": {
+            "delegation": {
+              "kind": "parent_first"
+            },
+            "external_override": "none",
+            "loader": "golden",
+            "module_mode": {
+              "kind": "class_path"
+            },
+            "parent_loader": null,
+            "roots": [
+              {
+                "kind": "snapshot",
+                "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+              }
+            ],
+            "runtime_transformation": "none"
+          },
+          "physical": {
+            "scope": {
+              "kind": "snapshot_all"
+            },
+            "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+          },
+          "profile": {
+            "java_release": 8,
+            "layout": {
+              "kind": "generic"
+            },
+            "multi_release": {
+              "kind": "enabled"
+            }
+          }
+        }
+      },
+      "view": {
+        "load_domain": {
+          "delegation": {
+            "kind": "parent_first"
+          },
+          "external_override": "none",
+          "loader": "golden",
+          "module_mode": {
+            "kind": "class_path"
+          },
+          "parent_loader": null,
+          "roots": [
+            {
+              "kind": "snapshot",
+              "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+            }
+          ],
+          "runtime_transformation": "none"
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+        },
+        "profile": {
+          "java_release": 8,
+          "layout": {
+            "kind": "generic"
+          },
+          "multi_release": {
+            "kind": "enabled"
+          }
+        }
+      }
+    },
+    {
+      "kind": "multi_release",
+      "name": "select-java-11",
+      "report": {
+        "containers": [
+          {
+            "coverage": {
+              "artifact_structural": {
+                "scanned": [
+                  {
+                    "end": 4,
+                    "label": "central_directory_entries",
+                    "start": 0
+                  }
+                ],
+                "skipped": [],
+                "state": "complete_within_schema",
+                "uninterpreted_extensions": []
+              },
+              "dynamic_analysis": {
+                "scanned": [],
+                "skipped": [],
+                "state": "not_requested",
+                "uninterpreted_extensions": []
+              },
+              "runtime_resolution": {
+                "scanned": [
+                  {
+                    "end": 1,
+                    "label": "container:root:multi_release_selection_entries",
+                    "start": 0
+                  },
+                  {
+                    "end": 2,
+                    "label": "container:root:multi_release_selection_entries",
+                    "start": 1
+                  },
+                  {
+                    "end": 2,
+                    "label": "container:root:multi_release_compliance_entries",
+                    "start": 1
+                  },
+                  {
+                    "end": 3,
+                    "label": "container:root:multi_release_selection_entries",
+                    "start": 2
+                  },
+                  {
+                    "end": 3,
+                    "label": "container:root:multi_release_compliance_entries",
+                    "start": 2
+                  },
+                  {
+                    "end": 4,
+                    "label": "container:root:multi_release_selection_entries",
+                    "start": 3
+                  },
+                  {
+                    "end": 4,
+                    "label": "container:root:multi_release_compliance_entries",
+                    "start": 3
+                  }
+                ],
+                "skipped": [],
+                "state": "complete_within_schema",
+                "uninterpreted_extensions": []
+              }
+            },
+            "entries": [
+              {
+                "class_evidence": null,
+                "compliance": {
+                  "kind": "not_applicable"
+                },
+                "decision": {
+                  "kind": "selected"
+                },
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    77,
+                    65,
+                    78,
+                    73,
+                    70,
+                    69,
+                    83,
+                    84,
+                    46,
+                    77,
+                    70
+                  ]
+                },
+                "logical_path": [
+                  77,
+                  69,
+                  84,
+                  65,
+                  45,
+                  73,
+                  78,
+                  70,
+                  47,
+                  77,
+                  65,
+                  78,
+                  73,
+                  70,
+                  69,
+                  83,
+                  84,
+                  46,
+                  77,
+                  70
+                ],
+                "variant": {
+                  "kind": "base"
+                }
+              },
+              {
+                "class_evidence": {
+                  "access_flags": 33,
+                  "major_version": 52,
+                  "minor_version": 0,
+                  "this_class": {
+                    "escaped": "p/Join",
+                    "raw": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ],
+                    "utf16": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ]
+                  }
+                },
+                "compliance": {
+                  "kind": "not_applicable"
+                },
+                "decision": {
+                  "kind": "shadowed",
+                  "winners": [
+                    {
+                      "ordinal": 2,
+                      "origin": {
+                        "root_container": "root",
+                        "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                        "steps": []
+                      },
+                      "raw_name": [
+                        77,
+                        69,
+                        84,
+                        65,
+                        45,
+                        73,
+                        78,
+                        70,
+                        47,
+                        118,
+                        101,
+                        114,
+                        115,
+                        105,
+                        111,
+                        110,
+                        115,
+                        47,
+                        49,
+                        49,
+                        47,
+                        112,
+                        47,
+                        74,
+                        111,
+                        105,
+                        110,
+                        46,
+                        99,
+                        108,
+                        97,
+                        115,
+                        115
+                      ]
+                    }
+                  ]
+                },
+                "entry": {
+                  "ordinal": 1,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "logical_path": [
+                  112,
+                  47,
+                  74,
+                  111,
+                  105,
+                  110,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ],
+                "variant": {
+                  "kind": "base"
+                }
+              },
+              {
+                "class_evidence": {
+                  "access_flags": 33,
+                  "major_version": 55,
+                  "minor_version": 0,
+                  "this_class": {
+                    "escaped": "p/Join",
+                    "raw": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ],
+                    "utf16": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ]
+                  }
+                },
+                "compliance": {
+                  "kind": "conformant_within_checks"
+                },
+                "decision": {
+                  "kind": "selected"
+                },
+                "entry": {
+                  "ordinal": 2,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    118,
+                    101,
+                    114,
+                    115,
+                    105,
+                    111,
+                    110,
+                    115,
+                    47,
+                    49,
+                    49,
+                    47,
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "logical_path": [
+                  112,
+                  47,
+                  74,
+                  111,
+                  105,
+                  110,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ],
+                "variant": {
+                  "kind": "versioned",
+                  "release": 11
+                }
+              },
+              {
+                "class_evidence": {
+                  "access_flags": 33,
+                  "major_version": 61,
+                  "minor_version": 0,
+                  "this_class": {
+                    "escaped": "p/Join",
+                    "raw": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ],
+                    "utf16": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ]
+                  }
+                },
+                "compliance": {
+                  "kind": "conformant_within_checks"
+                },
+                "decision": {
+                  "kind": "inactive",
+                  "reason": "release_above_target"
+                },
+                "entry": {
+                  "ordinal": 3,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    118,
+                    101,
+                    114,
+                    115,
+                    105,
+                    111,
+                    110,
+                    115,
+                    47,
+                    49,
+                    55,
+                    47,
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "logical_path": [
+                  112,
+                  47,
+                  74,
+                  111,
+                  105,
+                  110,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ],
+                "variant": {
+                  "kind": "versioned",
+                  "release": 17
+                }
+              }
+            ],
+            "execution": {
+              "status": "complete",
+              "usage": {
+                "archive_entries": 14,
+                "attribute_bytes": 0,
+                "class_bytes": 382,
+                "code_bytes": 0,
+                "entry_bytes": 428,
+                "input_bytes": 0,
+                "nested_depth": 0,
+                "output_bytes": 0,
+                "read_bytes": 428,
+                "result_items": 12
+              }
+            },
+            "manifest": {
+              "attribute_name": [
+                77,
+                117,
+                108,
+                116,
+                105,
+                45,
+                82,
+                101,
+                108,
+                101,
+                97,
+                115,
+                101
+              ],
+              "attribute_value": [
+                116,
+                114,
+                117,
+                101
+              ],
+              "entries": [
+                {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    77,
+                    65,
+                    78,
+                    73,
+                    70,
+                    69,
+                    83,
+                    84,
+                    46,
+                    77,
+                    70
+                  ]
+                }
+              ],
+              "state": "active"
+            },
+            "origin": {
+              "root_container": "root",
+              "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+              "steps": []
+            },
+            "selections": [
+              {
+                "logical_path": [
+                  77,
+                  69,
+                  84,
+                  65,
+                  45,
+                  73,
+                  78,
+                  70,
+                  47,
+                  77,
+                  65,
+                  78,
+                  73,
+                  70,
+                  69,
+                  83,
+                  84,
+                  46,
+                  77,
+                  70
+                ],
+                "outcome": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      77,
+                      69,
+                      84,
+                      65,
+                      45,
+                      73,
+                      78,
+                      70,
+                      47,
+                      77,
+                      65,
+                      78,
+                      73,
+                      70,
+                      69,
+                      83,
+                      84,
+                      46,
+                      77,
+                      70
+                    ]
+                  },
+                  "kind": "selected"
+                }
+              },
+              {
+                "logical_path": [
+                  112,
+                  47,
+                  74,
+                  111,
+                  105,
+                  110,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ],
+                "outcome": {
+                  "entry": {
+                    "ordinal": 2,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      77,
+                      69,
+                      84,
+                      65,
+                      45,
+                      73,
+                      78,
+                      70,
+                      47,
+                      118,
+                      101,
+                      114,
+                      115,
+                      105,
+                      111,
+                      110,
+                      115,
+                      47,
+                      49,
+                      49,
+                      47,
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "selected"
+                }
+              }
+            ]
+          }
+        ],
+        "coverage": {
+          "artifact_structural": {
+            "scanned": [
+              {
+                "end": 4,
+                "label": "central_directory_entries",
+                "start": 0
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          },
+          "dynamic_analysis": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          },
+          "runtime_resolution": {
+            "scanned": [
+              {
+                "end": 1,
+                "label": "container:root:multi_release_selection_entries",
+                "start": 0
+              },
+              {
+                "end": 2,
+                "label": "container:root:multi_release_selection_entries",
+                "start": 1
+              },
+              {
+                "end": 2,
+                "label": "container:root:multi_release_compliance_entries",
+                "start": 1
+              },
+              {
+                "end": 3,
+                "label": "container:root:multi_release_selection_entries",
+                "start": 2
+              },
+              {
+                "end": 3,
+                "label": "container:root:multi_release_compliance_entries",
+                "start": 2
+              },
+              {
+                "end": 4,
+                "label": "container:root:multi_release_selection_entries",
+                "start": 3
+              },
+              {
+                "end": 4,
+                "label": "container:root:multi_release_compliance_entries",
+                "start": 3
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          }
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 14,
+            "attribute_bytes": 0,
+            "class_bytes": 382,
+            "code_bytes": 0,
+            "entry_bytes": 428,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 0,
+            "read_bytes": 428,
+            "result_items": 12
+          }
+        },
+        "physical": {
+          "kind": "snapshot",
+          "report": {
+            "coverage": {
+              "artifact_structural": {
+                "scanned": [
+                  {
+                    "end": 4,
+                    "label": "central_directory_entries",
+                    "start": 0
+                  }
+                ],
+                "skipped": [],
+                "state": "complete_within_schema",
+                "uninterpreted_extensions": []
+              },
+              "dynamic_analysis": {
+                "scanned": [],
+                "skipped": [],
+                "state": "not_requested",
+                "uninterpreted_extensions": []
+              },
+              "runtime_resolution": {
+                "scanned": [],
+                "skipped": [],
+                "state": "not_requested",
+                "uninterpreted_extensions": []
+              }
+            },
+            "diagnostics": [],
+            "entries": [
+              {
+                "compressed_size": 46,
+                "compression": "stored",
+                "compression_method": 0,
+                "crc32": 1570773839,
+                "flags": {
+                  "data_descriptor": true,
+                  "encrypted": false,
+                  "raw_bits": 8,
+                  "strong_encryption": false
+                },
+                "id": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    77,
+                    65,
+                    78,
+                    73,
+                    70,
+                    69,
+                    83,
+                    84,
+                    46,
+                    77,
+                    70
+                  ]
+                },
+                "layout": {
+                  "central_header_offset": 710,
+                  "compressed_data": {
+                    "length": 46,
+                    "start": 50
+                  },
+                  "local_header_offset": 0
+                },
+                "nested_archive": "not_candidate",
+                "signature_metadata": {
+                  "kind": "manifest",
+                  "verification": "not_verified"
+                },
+                "uncompressed_size": 46
+              },
+              {
+                "compressed_size": 128,
+                "compression": "stored",
+                "compression_method": 0,
+                "crc32": 3706334276,
+                "flags": {
+                  "data_descriptor": true,
+                  "encrypted": false,
+                  "raw_bits": 8,
+                  "strong_encryption": false
+                },
+                "id": {
+                  "ordinal": 1,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "layout": {
+                  "central_header_offset": 776,
+                  "compressed_data": {
+                    "length": 128,
+                    "start": 154
+                  },
+                  "local_header_offset": 112
+                },
+                "nested_archive": "not_candidate",
+                "signature_metadata": null,
+                "uncompressed_size": 128
+              },
+              {
+                "compressed_size": 127,
+                "compression": "stored",
+                "compression_method": 0,
+                "crc32": 2926262126,
+                "flags": {
+                  "data_descriptor": true,
+                  "encrypted": false,
+                  "raw_bits": 8,
+                  "strong_encryption": false
+                },
+                "id": {
+                  "ordinal": 2,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    118,
+                    101,
+                    114,
+                    115,
+                    105,
+                    111,
+                    110,
+                    115,
+                    47,
+                    49,
+                    49,
+                    47,
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "layout": {
+                  "central_header_offset": 834,
+                  "compressed_data": {
+                    "length": 127,
+                    "start": 361
+                  },
+                  "local_header_offset": 298
+                },
+                "nested_archive": "not_candidate",
+                "signature_metadata": null,
+                "uncompressed_size": 127
+              },
+              {
+                "compressed_size": 127,
+                "compression": "stored",
+                "compression_method": 0,
+                "crc32": 2713384592,
+                "flags": {
+                  "data_descriptor": true,
+                  "encrypted": false,
+                  "raw_bits": 8,
+                  "strong_encryption": false
+                },
+                "id": {
+                  "ordinal": 3,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    118,
+                    101,
+                    114,
+                    115,
+                    105,
+                    111,
+                    110,
+                    115,
+                    47,
+                    49,
+                    55,
+                    47,
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "layout": {
+                  "central_header_offset": 913,
+                  "compressed_data": {
+                    "length": 127,
+                    "start": 567
+                  },
+                  "local_header_offset": 504
+                },
+                "nested_archive": "not_candidate",
+                "signature_metadata": null,
+                "uncompressed_size": 127
+              }
+            ],
+            "execution": {
+              "status": "complete",
+              "usage": {
+                "archive_entries": 4,
+                "attribute_bytes": 0,
+                "class_bytes": 0,
+                "code_bytes": 0,
+                "entry_bytes": 0,
+                "input_bytes": 0,
+                "nested_depth": 0,
+                "output_bytes": 0,
+                "read_bytes": 0,
+                "result_items": 4
+              }
+            },
+            "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+          }
+        },
+        "verification": "not_performed",
+        "view": {
+          "load_domain": {
+            "delegation": {
+              "kind": "parent_first"
+            },
+            "external_override": "none",
+            "loader": "golden",
+            "module_mode": {
+              "kind": "class_path"
+            },
+            "parent_loader": null,
+            "roots": [
+              {
+                "kind": "snapshot",
+                "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+              }
+            ],
+            "runtime_transformation": "none"
+          },
+          "physical": {
+            "scope": {
+              "kind": "snapshot_all"
+            },
+            "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+          },
+          "profile": {
+            "java_release": 11,
+            "layout": {
+              "kind": "generic"
+            },
+            "multi_release": {
+              "kind": "enabled"
+            }
+          }
+        }
+      },
+      "view": {
+        "load_domain": {
+          "delegation": {
+            "kind": "parent_first"
+          },
+          "external_override": "none",
+          "loader": "golden",
+          "module_mode": {
+            "kind": "class_path"
+          },
+          "parent_loader": null,
+          "roots": [
+            {
+              "kind": "snapshot",
+              "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+            }
+          ],
+          "runtime_transformation": "none"
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+        },
+        "profile": {
+          "java_release": 11,
+          "layout": {
+            "kind": "generic"
+          },
+          "multi_release": {
+            "kind": "enabled"
+          }
+        }
+      }
+    },
+    {
+      "kind": "multi_release",
+      "name": "select-java-17",
+      "report": {
+        "containers": [
+          {
+            "coverage": {
+              "artifact_structural": {
+                "scanned": [
+                  {
+                    "end": 4,
+                    "label": "central_directory_entries",
+                    "start": 0
+                  }
+                ],
+                "skipped": [],
+                "state": "complete_within_schema",
+                "uninterpreted_extensions": []
+              },
+              "dynamic_analysis": {
+                "scanned": [],
+                "skipped": [],
+                "state": "not_requested",
+                "uninterpreted_extensions": []
+              },
+              "runtime_resolution": {
+                "scanned": [
+                  {
+                    "end": 1,
+                    "label": "container:root:multi_release_selection_entries",
+                    "start": 0
+                  },
+                  {
+                    "end": 2,
+                    "label": "container:root:multi_release_selection_entries",
+                    "start": 1
+                  },
+                  {
+                    "end": 2,
+                    "label": "container:root:multi_release_compliance_entries",
+                    "start": 1
+                  },
+                  {
+                    "end": 3,
+                    "label": "container:root:multi_release_selection_entries",
+                    "start": 2
+                  },
+                  {
+                    "end": 3,
+                    "label": "container:root:multi_release_compliance_entries",
+                    "start": 2
+                  },
+                  {
+                    "end": 4,
+                    "label": "container:root:multi_release_selection_entries",
+                    "start": 3
+                  },
+                  {
+                    "end": 4,
+                    "label": "container:root:multi_release_compliance_entries",
+                    "start": 3
+                  }
+                ],
+                "skipped": [],
+                "state": "complete_within_schema",
+                "uninterpreted_extensions": []
+              }
+            },
+            "entries": [
+              {
+                "class_evidence": null,
+                "compliance": {
+                  "kind": "not_applicable"
+                },
+                "decision": {
+                  "kind": "selected"
+                },
+                "entry": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    77,
+                    65,
+                    78,
+                    73,
+                    70,
+                    69,
+                    83,
+                    84,
+                    46,
+                    77,
+                    70
+                  ]
+                },
+                "logical_path": [
+                  77,
+                  69,
+                  84,
+                  65,
+                  45,
+                  73,
+                  78,
+                  70,
+                  47,
+                  77,
+                  65,
+                  78,
+                  73,
+                  70,
+                  69,
+                  83,
+                  84,
+                  46,
+                  77,
+                  70
+                ],
+                "variant": {
+                  "kind": "base"
+                }
+              },
+              {
+                "class_evidence": {
+                  "access_flags": 33,
+                  "major_version": 52,
+                  "minor_version": 0,
+                  "this_class": {
+                    "escaped": "p/Join",
+                    "raw": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ],
+                    "utf16": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ]
+                  }
+                },
+                "compliance": {
+                  "kind": "not_applicable"
+                },
+                "decision": {
+                  "kind": "shadowed",
+                  "winners": [
+                    {
+                      "ordinal": 3,
+                      "origin": {
+                        "root_container": "root",
+                        "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                        "steps": []
+                      },
+                      "raw_name": [
+                        77,
+                        69,
+                        84,
+                        65,
+                        45,
+                        73,
+                        78,
+                        70,
+                        47,
+                        118,
+                        101,
+                        114,
+                        115,
+                        105,
+                        111,
+                        110,
+                        115,
+                        47,
+                        49,
+                        55,
+                        47,
+                        112,
+                        47,
+                        74,
+                        111,
+                        105,
+                        110,
+                        46,
+                        99,
+                        108,
+                        97,
+                        115,
+                        115
+                      ]
+                    }
+                  ]
+                },
+                "entry": {
+                  "ordinal": 1,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "logical_path": [
+                  112,
+                  47,
+                  74,
+                  111,
+                  105,
+                  110,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ],
+                "variant": {
+                  "kind": "base"
+                }
+              },
+              {
+                "class_evidence": {
+                  "access_flags": 33,
+                  "major_version": 55,
+                  "minor_version": 0,
+                  "this_class": {
+                    "escaped": "p/Join",
+                    "raw": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ],
+                    "utf16": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ]
+                  }
+                },
+                "compliance": {
+                  "kind": "conformant_within_checks"
+                },
+                "decision": {
+                  "kind": "shadowed",
+                  "winners": [
+                    {
+                      "ordinal": 3,
+                      "origin": {
+                        "root_container": "root",
+                        "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                        "steps": []
+                      },
+                      "raw_name": [
+                        77,
+                        69,
+                        84,
+                        65,
+                        45,
+                        73,
+                        78,
+                        70,
+                        47,
+                        118,
+                        101,
+                        114,
+                        115,
+                        105,
+                        111,
+                        110,
+                        115,
+                        47,
+                        49,
+                        55,
+                        47,
+                        112,
+                        47,
+                        74,
+                        111,
+                        105,
+                        110,
+                        46,
+                        99,
+                        108,
+                        97,
+                        115,
+                        115
+                      ]
+                    }
+                  ]
+                },
+                "entry": {
+                  "ordinal": 2,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    118,
+                    101,
+                    114,
+                    115,
+                    105,
+                    111,
+                    110,
+                    115,
+                    47,
+                    49,
+                    49,
+                    47,
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "logical_path": [
+                  112,
+                  47,
+                  74,
+                  111,
+                  105,
+                  110,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ],
+                "variant": {
+                  "kind": "versioned",
+                  "release": 11
+                }
+              },
+              {
+                "class_evidence": {
+                  "access_flags": 33,
+                  "major_version": 61,
+                  "minor_version": 0,
+                  "this_class": {
+                    "escaped": "p/Join",
+                    "raw": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ],
+                    "utf16": [
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110
+                    ]
+                  }
+                },
+                "compliance": {
+                  "kind": "conformant_within_checks"
+                },
+                "decision": {
+                  "kind": "selected"
+                },
+                "entry": {
+                  "ordinal": 3,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    118,
+                    101,
+                    114,
+                    115,
+                    105,
+                    111,
+                    110,
+                    115,
+                    47,
+                    49,
+                    55,
+                    47,
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "logical_path": [
+                  112,
+                  47,
+                  74,
+                  111,
+                  105,
+                  110,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ],
+                "variant": {
+                  "kind": "versioned",
+                  "release": 17
+                }
+              }
+            ],
+            "execution": {
+              "status": "complete",
+              "usage": {
+                "archive_entries": 14,
+                "attribute_bytes": 0,
+                "class_bytes": 382,
+                "code_bytes": 0,
+                "entry_bytes": 428,
+                "input_bytes": 0,
+                "nested_depth": 0,
+                "output_bytes": 0,
+                "read_bytes": 428,
+                "result_items": 12
+              }
+            },
+            "manifest": {
+              "attribute_name": [
+                77,
+                117,
+                108,
+                116,
+                105,
+                45,
+                82,
+                101,
+                108,
+                101,
+                97,
+                115,
+                101
+              ],
+              "attribute_value": [
+                116,
+                114,
+                117,
+                101
+              ],
+              "entries": [
+                {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    77,
+                    65,
+                    78,
+                    73,
+                    70,
+                    69,
+                    83,
+                    84,
+                    46,
+                    77,
+                    70
+                  ]
+                }
+              ],
+              "state": "active"
+            },
+            "origin": {
+              "root_container": "root",
+              "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+              "steps": []
+            },
+            "selections": [
+              {
+                "logical_path": [
+                  77,
+                  69,
+                  84,
+                  65,
+                  45,
+                  73,
+                  78,
+                  70,
+                  47,
+                  77,
+                  65,
+                  78,
+                  73,
+                  70,
+                  69,
+                  83,
+                  84,
+                  46,
+                  77,
+                  70
+                ],
+                "outcome": {
+                  "entry": {
+                    "ordinal": 0,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      77,
+                      69,
+                      84,
+                      65,
+                      45,
+                      73,
+                      78,
+                      70,
+                      47,
+                      77,
+                      65,
+                      78,
+                      73,
+                      70,
+                      69,
+                      83,
+                      84,
+                      46,
+                      77,
+                      70
+                    ]
+                  },
+                  "kind": "selected"
+                }
+              },
+              {
+                "logical_path": [
+                  112,
+                  47,
+                  74,
+                  111,
+                  105,
+                  110,
+                  46,
+                  99,
+                  108,
+                  97,
+                  115,
+                  115
+                ],
+                "outcome": {
+                  "entry": {
+                    "ordinal": 3,
+                    "origin": {
+                      "root_container": "root",
+                      "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                      "steps": []
+                    },
+                    "raw_name": [
+                      77,
+                      69,
+                      84,
+                      65,
+                      45,
+                      73,
+                      78,
+                      70,
+                      47,
+                      118,
+                      101,
+                      114,
+                      115,
+                      105,
+                      111,
+                      110,
+                      115,
+                      47,
+                      49,
+                      55,
+                      47,
+                      112,
+                      47,
+                      74,
+                      111,
+                      105,
+                      110,
+                      46,
+                      99,
+                      108,
+                      97,
+                      115,
+                      115
+                    ]
+                  },
+                  "kind": "selected"
+                }
+              }
+            ]
+          }
+        ],
+        "coverage": {
+          "artifact_structural": {
+            "scanned": [
+              {
+                "end": 4,
+                "label": "central_directory_entries",
+                "start": 0
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          },
+          "dynamic_analysis": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          },
+          "runtime_resolution": {
+            "scanned": [
+              {
+                "end": 1,
+                "label": "container:root:multi_release_selection_entries",
+                "start": 0
+              },
+              {
+                "end": 2,
+                "label": "container:root:multi_release_selection_entries",
+                "start": 1
+              },
+              {
+                "end": 2,
+                "label": "container:root:multi_release_compliance_entries",
+                "start": 1
+              },
+              {
+                "end": 3,
+                "label": "container:root:multi_release_selection_entries",
+                "start": 2
+              },
+              {
+                "end": 3,
+                "label": "container:root:multi_release_compliance_entries",
+                "start": 2
+              },
+              {
+                "end": 4,
+                "label": "container:root:multi_release_selection_entries",
+                "start": 3
+              },
+              {
+                "end": 4,
+                "label": "container:root:multi_release_compliance_entries",
+                "start": 3
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          }
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 14,
+            "attribute_bytes": 0,
+            "class_bytes": 382,
+            "code_bytes": 0,
+            "entry_bytes": 428,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 0,
+            "read_bytes": 428,
+            "result_items": 12
+          }
+        },
+        "physical": {
+          "kind": "snapshot",
+          "report": {
+            "coverage": {
+              "artifact_structural": {
+                "scanned": [
+                  {
+                    "end": 4,
+                    "label": "central_directory_entries",
+                    "start": 0
+                  }
+                ],
+                "skipped": [],
+                "state": "complete_within_schema",
+                "uninterpreted_extensions": []
+              },
+              "dynamic_analysis": {
+                "scanned": [],
+                "skipped": [],
+                "state": "not_requested",
+                "uninterpreted_extensions": []
+              },
+              "runtime_resolution": {
+                "scanned": [],
+                "skipped": [],
+                "state": "not_requested",
+                "uninterpreted_extensions": []
+              }
+            },
+            "diagnostics": [],
+            "entries": [
+              {
+                "compressed_size": 46,
+                "compression": "stored",
+                "compression_method": 0,
+                "crc32": 1570773839,
+                "flags": {
+                  "data_descriptor": true,
+                  "encrypted": false,
+                  "raw_bits": 8,
+                  "strong_encryption": false
+                },
+                "id": {
+                  "ordinal": 0,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    77,
+                    65,
+                    78,
+                    73,
+                    70,
+                    69,
+                    83,
+                    84,
+                    46,
+                    77,
+                    70
+                  ]
+                },
+                "layout": {
+                  "central_header_offset": 710,
+                  "compressed_data": {
+                    "length": 46,
+                    "start": 50
+                  },
+                  "local_header_offset": 0
+                },
+                "nested_archive": "not_candidate",
+                "signature_metadata": {
+                  "kind": "manifest",
+                  "verification": "not_verified"
+                },
+                "uncompressed_size": 46
+              },
+              {
+                "compressed_size": 128,
+                "compression": "stored",
+                "compression_method": 0,
+                "crc32": 3706334276,
+                "flags": {
+                  "data_descriptor": true,
+                  "encrypted": false,
+                  "raw_bits": 8,
+                  "strong_encryption": false
+                },
+                "id": {
+                  "ordinal": 1,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "layout": {
+                  "central_header_offset": 776,
+                  "compressed_data": {
+                    "length": 128,
+                    "start": 154
+                  },
+                  "local_header_offset": 112
+                },
+                "nested_archive": "not_candidate",
+                "signature_metadata": null,
+                "uncompressed_size": 128
+              },
+              {
+                "compressed_size": 127,
+                "compression": "stored",
+                "compression_method": 0,
+                "crc32": 2926262126,
+                "flags": {
+                  "data_descriptor": true,
+                  "encrypted": false,
+                  "raw_bits": 8,
+                  "strong_encryption": false
+                },
+                "id": {
+                  "ordinal": 2,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    118,
+                    101,
+                    114,
+                    115,
+                    105,
+                    111,
+                    110,
+                    115,
+                    47,
+                    49,
+                    49,
+                    47,
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "layout": {
+                  "central_header_offset": 834,
+                  "compressed_data": {
+                    "length": 127,
+                    "start": 361
+                  },
+                  "local_header_offset": 298
+                },
+                "nested_archive": "not_candidate",
+                "signature_metadata": null,
+                "uncompressed_size": 127
+              },
+              {
+                "compressed_size": 127,
+                "compression": "stored",
+                "compression_method": 0,
+                "crc32": 2713384592,
+                "flags": {
+                  "data_descriptor": true,
+                  "encrypted": false,
+                  "raw_bits": 8,
+                  "strong_encryption": false
+                },
+                "id": {
+                  "ordinal": 3,
+                  "origin": {
+                    "root_container": "root",
+                    "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                    "steps": []
+                  },
+                  "raw_name": [
+                    77,
+                    69,
+                    84,
+                    65,
+                    45,
+                    73,
+                    78,
+                    70,
+                    47,
+                    118,
+                    101,
+                    114,
+                    115,
+                    105,
+                    111,
+                    110,
+                    115,
+                    47,
+                    49,
+                    55,
+                    47,
+                    112,
+                    47,
+                    74,
+                    111,
+                    105,
+                    110,
+                    46,
+                    99,
+                    108,
+                    97,
+                    115,
+                    115
+                  ]
+                },
+                "layout": {
+                  "central_header_offset": 913,
+                  "compressed_data": {
+                    "length": 127,
+                    "start": 567
+                  },
+                  "local_header_offset": 504
+                },
+                "nested_archive": "not_candidate",
+                "signature_metadata": null,
+                "uncompressed_size": 127
+              }
+            ],
+            "execution": {
+              "status": "complete",
+              "usage": {
+                "archive_entries": 4,
+                "attribute_bytes": 0,
+                "class_bytes": 0,
+                "code_bytes": 0,
+                "entry_bytes": 0,
+                "input_bytes": 0,
+                "nested_depth": 0,
+                "output_bytes": 0,
+                "read_bytes": 0,
+                "result_items": 4
+              }
+            },
+            "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+          }
+        },
+        "verification": "not_performed",
+        "view": {
+          "load_domain": {
+            "delegation": {
+              "kind": "parent_first"
+            },
+            "external_override": "none",
+            "loader": "golden",
+            "module_mode": {
+              "kind": "class_path"
+            },
+            "parent_loader": null,
+            "roots": [
+              {
+                "kind": "snapshot",
+                "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+              }
+            ],
+            "runtime_transformation": "none"
+          },
+          "physical": {
+            "scope": {
+              "kind": "snapshot_all"
+            },
+            "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+          },
+          "profile": {
+            "java_release": 17,
+            "layout": {
+              "kind": "generic"
+            },
+            "multi_release": {
+              "kind": "enabled"
+            }
+          }
+        }
+      },
+      "view": {
+        "load_domain": {
+          "delegation": {
+            "kind": "parent_first"
+          },
+          "external_override": "none",
+          "loader": "golden",
+          "module_mode": {
+            "kind": "class_path"
+          },
+          "parent_loader": null,
+          "roots": [
+            {
+              "kind": "snapshot",
+              "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+            }
+          ],
+          "runtime_transformation": "none"
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+        },
+        "profile": {
+          "java_release": 17,
+          "layout": {
+            "kind": "generic"
+          },
+          "multi_release": {
+            "kind": "enabled"
+          }
+        }
+      }
+    },
+    {
+      "kind": "query",
+      "name": "query-all-physical-variants",
+      "report": {
+        "analysis": {
+          "kind": "performed"
+        },
+        "consumers": {
+          "kinds": [
+            "invocation"
+          ],
+          "version": 1
+        },
+        "coverage": {
+          "consumer_schema": {
+            "kinds": [
+              "invocation"
+            ],
+            "version": 1
+          },
+          "dimensions": {
+            "artifact_structural": {
+              "scanned": [
+                {
+                  "end": 4,
+                  "label": "central_directory_entries",
+                  "start": 0
+                },
+                {
+                  "end": 4,
+                  "label": "container:root:xref_scan_entries",
+                  "start": 0
+                }
+              ],
+              "skipped": [],
+              "state": "complete_within_schema",
+              "uninterpreted_extensions": []
+            },
+            "dynamic_analysis": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            },
+            "runtime_resolution": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            }
+          },
+          "scanned_items": 3,
+          "unknown_candidates": 0,
+          "unsupported_categories": []
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 13,
+            "attribute_bytes": 132,
+            "class_bytes": 382,
+            "code_bytes": 12,
+            "entry_bytes": 382,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 0,
+            "read_bytes": 382,
+            "result_items": 7
+          }
+        },
+        "items": [
+          {
+            "certainty": "exact",
+            "consumer": "invocation",
+            "derivation": "structural_consumer",
+            "evidence": {
+              "attribute": [
+                67,
+                111,
+                100,
+                101
+              ],
+              "bci": 0,
+              "constant_pool_index": 10,
+              "opcode": 184,
+              "span": {
+                "length": 3,
+                "start": 118
+              },
+              "via": []
+            },
+            "operation": "invoke_static",
+            "relation": "mentions_symbol",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "bci": 0,
+                "kind": "code",
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    105,
+                    110
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "c9b29d5d6438c6cfd410a6fdab85bb37ca211cb2539b395bf6ddf42aa17e10b5",
+                      "length": 128
+                    },
+                    "location": {
+                      "entry": {
+                        "ordinal": 1,
+                        "origin": {
+                          "root_container": "root",
+                          "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                          "steps": []
+                        },
+                        "raw_name": [
+                          112,
+                          47,
+                          74,
+                          111,
+                          105,
+                          110,
+                          46,
+                          99,
+                          108,
+                          97,
+                          115,
+                          115
+                        ]
+                      },
+                      "kind": "archive_entry"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                }
+              }
+            },
+            "target": {
+              "kind": "symbol",
+              "value": {
+                "descriptor": [
+                  40,
+                  41,
+                  86
+                ],
+                "kind": "method",
+                "name": [
+                  114,
+                  117,
+                  110
+                ],
+                "owner": [
+                  112,
+                  47,
+                  65,
+                  108,
+                  108
+                ]
+              }
+            }
+          },
+          {
+            "certainty": "exact",
+            "consumer": "invocation",
+            "derivation": "structural_consumer",
+            "evidence": {
+              "attribute": [
+                67,
+                111,
+                100,
+                101
+              ],
+              "bci": 0,
+              "constant_pool_index": 10,
+              "opcode": 184,
+              "span": {
+                "length": 3,
+                "start": 117
+              },
+              "via": []
+            },
+            "operation": "invoke_static",
+            "relation": "mentions_symbol",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "bci": 0,
+                "kind": "code",
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    105,
+                    110
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "3223cd58b9db9479de73e9596f56756a4eacfc525c8087e8cee3e35d6044d84e",
+                      "length": 127
+                    },
+                    "location": {
+                      "entry": {
+                        "ordinal": 2,
+                        "origin": {
+                          "root_container": "root",
+                          "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                          "steps": []
+                        },
+                        "raw_name": [
+                          77,
+                          69,
+                          84,
+                          65,
+                          45,
+                          73,
+                          78,
+                          70,
+                          47,
+                          118,
+                          101,
+                          114,
+                          115,
+                          105,
+                          111,
+                          110,
+                          115,
+                          47,
+                          49,
+                          49,
+                          47,
+                          112,
+                          47,
+                          74,
+                          111,
+                          105,
+                          110,
+                          46,
+                          99,
+                          108,
+                          97,
+                          115,
+                          115
+                        ]
+                      },
+                      "kind": "archive_entry"
+                    },
+                    "variant": {
+                      "kind": "multi_release",
+                      "version": 11
+                    }
+                  }
+                }
+              }
+            },
+            "target": {
+              "kind": "symbol",
+              "value": {
+                "descriptor": [
+                  40,
+                  41,
+                  86
+                ],
+                "kind": "method",
+                "name": [
+                  114,
+                  117,
+                  110
+                ],
+                "owner": [
+                  112,
+                  47,
+                  65,
+                  108,
+                  108
+                ]
+              }
+            }
+          },
+          {
+            "certainty": "exact",
+            "consumer": "invocation",
+            "derivation": "structural_consumer",
+            "evidence": {
+              "attribute": [
+                67,
+                111,
+                100,
+                101
+              ],
+              "bci": 0,
+              "constant_pool_index": 10,
+              "opcode": 184,
+              "span": {
+                "length": 3,
+                "start": 117
+              },
+              "via": []
+            },
+            "operation": "invoke_static",
+            "relation": "mentions_symbol",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "bci": 0,
+                "kind": "code",
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    109,
+                    97,
+                    105,
+                    110
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "f4c5284cf03b32a0d7ecb26e6484d4b645456bb49a929b53306ba28858def532",
+                      "length": 127
+                    },
+                    "location": {
+                      "entry": {
+                        "ordinal": 3,
+                        "origin": {
+                          "root_container": "root",
+                          "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                          "steps": []
+                        },
+                        "raw_name": [
+                          77,
+                          69,
+                          84,
+                          65,
+                          45,
+                          73,
+                          78,
+                          70,
+                          47,
+                          118,
+                          101,
+                          114,
+                          115,
+                          105,
+                          111,
+                          110,
+                          115,
+                          47,
+                          49,
+                          55,
+                          47,
+                          112,
+                          47,
+                          74,
+                          111,
+                          105,
+                          110,
+                          46,
+                          99,
+                          108,
+                          97,
+                          115,
+                          115
+                        ]
+                      },
+                      "kind": "archive_entry"
+                    },
+                    "variant": {
+                      "kind": "multi_release",
+                      "version": 17
+                    }
+                  }
+                }
+              }
+            },
+            "target": {
+              "kind": "symbol",
+              "value": {
+                "descriptor": [
+                  40,
+                  41,
+                  86
+                ],
+                "kind": "method",
+                "name": [
+                  114,
+                  117,
+                  110
+                ],
+                "owner": [
+                  112,
+                  47,
+                  65,
+                  108,
+                  108
+                ]
+              }
+            }
+          }
+        ],
+        "page": {
+          "cursor": null,
+          "has_more": false,
+          "returned_items": 3
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+        },
+        "relation": "mentions_symbol"
+      },
+      "request": {
+        "consumers": {
+          "kinds": [
+            "invocation"
+          ],
+          "version": 1
+        },
+        "cursor": null,
+        "max_items": 0,
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+        },
+        "relation": "mentions_symbol",
+        "target": {
+          "kind": "symbol",
+          "value": {
+            "descriptor": [
+              40,
+              41,
+              86
+            ],
+            "kind": "method",
+            "name": [
+              114,
+              117,
+              110
+            ],
+            "owner": [
+              112,
+              47,
+              65,
+              108,
+              108
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

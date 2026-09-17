@@ -4,7 +4,7 @@ use crate::artifact::{
     ArtifactKind, ArtifactSnapshot, ArtifactTreeReport, EnumerationReport, PhysicalEntry,
     budget_dimension_code,
 };
-use crate::budget::{Budget, CountedBudgetDimension};
+use crate::budget::{Budget, BudgetDimension, CountedBudgetDimension};
 use crate::classfile::{VerificationStatus, probe_minimal_header};
 use crate::error::{Error, Result};
 use crate::model::{
@@ -20,6 +20,8 @@ use std::collections::{BTreeMap, HashMap};
 const MANIFEST: &[u8] = b"META-INF/MANIFEST.MF";
 const VERSION_PREFIX: &[u8] = b"META-INF/versions/";
 const ACC_PUBLIC: u16 = 0x0001;
+const SELECTION_METRIC: &str = "multi_release_selection_entries";
+const COMPLIANCE_METRIC: &str = "multi_release_compliance_entries";
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -351,78 +353,56 @@ pub(crate) fn select(
     let mut diagnostics = Vec::new();
     let mut runtime_scanned = Vec::new();
     let mut runtime_skipped = Vec::new();
-    let mut aggregate_issue = physical_execution(&physical).clone();
-    let containers: Vec<(
-        ContainerOrigin,
-        Vec<PhysicalEntry>,
-        Coverage,
-        ExecutionReport,
-    )> = match &physical {
-        MultiReleasePhysicalEvidence::Snapshot { report } => vec![(
-            root_origin(snapshot),
-            report.entries.clone(),
-            report.coverage.clone(),
-            report.execution.clone(),
-        )],
-        MultiReleasePhysicalEvidence::ArtifactTree { report } => report
-            .containers
-            .iter()
-            .map(|c| {
-                (
-                    c.origin.clone(),
-                    c.entries.clone(),
-                    c.coverage.clone(),
-                    c.execution.clone(),
-                )
-            })
-            .collect(),
-    };
-    for (origin, entries, physical_coverage, physical_execution) in containers {
+    // The aggregate only reports the outcome; it is preset with the physical provider's own
+    // execution and must never decide whether this run may keep inspecting containers.
+    let mut aggregate = Issues::new(physical_execution(&physical));
+    let mut pending = container_inputs(snapshot, &physical).into_iter();
+    for input in pending.by_ref() {
+        if !produces_report(&input.coverage, &input.execution) {
+            // An established container that enumerated no ordinal and did not complete
+            // cannot support a Manifest/selection claim; only its physical evidence stands.
+            declare_unprocessed(&input, &mut runtime_skipped);
+            if blocks(priority_of(&input.execution)) {
+                break;
+            }
+            continue;
+        }
         if let Err(error) = budget.charge(CountedBudgetDimension::ResultItems, 2) {
-            set_issue(&mut aggregate_issue, &error, budget, false);
-            skip_entries(&origin, &entries, &mut runtime_skipped)?;
+            push_terminal(&mut diagnostics, &error, None);
+            aggregate.record(&error, budget);
+            declare_unprocessed(&input, &mut runtime_skipped);
             break;
         }
         let processed = process_container(
             snapshot,
             view,
-            origin,
-            entries,
-            physical_coverage,
-            physical_execution,
+            input.origin,
+            input.entries,
+            input.coverage,
+            input.execution,
             budget,
         );
         diagnostics.extend(processed.diagnostics);
         runtime_scanned.extend(processed.scanned);
         runtime_skipped.extend(processed.skipped);
-        merge_execution(&mut aggregate_issue, &processed.report.execution);
+        aggregate.merge(&processed.report.execution);
+        // Only this container's own interruption may stop the container loop: a complete
+        // container is worth inspecting even when the physical aggregate already stopped.
+        let stop = blocks(priority_of(&processed.report.execution));
         reports.push(processed.report);
-        if must_stop(&aggregate_issue) {
+        if stop {
             break;
         }
     }
-    if matches!(
-        view.profile.multi_release,
-        MultiReleasePolicy::Custom { .. }
-    ) {
-        aggregate_issue = ExecutionReport::Failed {
-            reason: TerminationReason::Unsupported {
-                code: "multi_release_custom_policy".into(),
-            },
-            usage: budget.usage(),
-        };
-    } else if matches!(view.profile.multi_release, MultiReleasePolicy::Unknown) {
-        aggregate_issue = ExecutionReport::Failed {
-            reason: TerminationReason::Unsupported {
-                code: "multi_release_unknown_policy".into(),
-            },
-            usage: budget.usage(),
-        };
-    } else {
-        aggregate_issue = with_usage(aggregate_issue, budget);
+    // Every container this run never processed — rejected by the report rule above, refused
+    // its reservation, or never reached — still declares its known ordinals as skipped, on
+    // top of the physical suffix its provider did not enumerate.
+    for input in pending {
+        declare_unprocessed(&input, &mut runtime_skipped);
     }
+    let execution = aggregate.finish(budget);
     let structural = physical_coverage(&physical).artifact_structural.clone();
-    let complete = matches!(aggregate_issue, ExecutionReport::Complete { .. });
+    let complete = matches!(execution, ExecutionReport::Complete { .. });
     Ok(MultiReleaseViewReport {
         view: view.clone(),
         physical,
@@ -441,10 +421,41 @@ pub(crate) fn select(
             },
             dynamic_analysis: CoverageDimension::not_requested(),
         },
-        execution: aggregate_issue,
+        execution,
         diagnostics,
         verification: VerificationStatus::NotPerformed,
     })
+}
+
+struct ContainerInput {
+    origin: ContainerOrigin,
+    entries: Vec<PhysicalEntry>,
+    coverage: Coverage,
+    execution: ExecutionReport,
+}
+
+fn container_inputs(
+    snapshot: &ArtifactSnapshot,
+    physical: &MultiReleasePhysicalEvidence,
+) -> Vec<ContainerInput> {
+    match physical {
+        MultiReleasePhysicalEvidence::Snapshot { report } => vec![ContainerInput {
+            origin: root_origin(snapshot),
+            entries: report.entries.clone(),
+            coverage: report.coverage.clone(),
+            execution: report.execution.clone(),
+        }],
+        MultiReleasePhysicalEvidence::ArtifactTree { report } => report
+            .containers
+            .iter()
+            .map(|container| ContainerInput {
+                origin: container.origin.clone(),
+                entries: container.entries.clone(),
+                coverage: container.coverage.clone(),
+                execution: container.execution.clone(),
+            })
+            .collect(),
+    }
 }
 
 struct Processed {
@@ -464,131 +475,143 @@ fn process_container(
     budget: &mut Budget,
 ) -> Processed {
     let physical_complete = matches!(physical_execution, ExecutionReport::Complete { .. });
-    let unsupported = match view.profile.multi_release {
-        MultiReleasePolicy::Custom { .. } => Some(MultiReleaseUnknownReason::CustomPolicy),
-        MultiReleasePolicy::Unknown => Some(MultiReleaseUnknownReason::UnknownPolicy),
-        _ => None,
-    };
+    let unsupported = unsupported_policy(view);
     let classified: Vec<_> = entries.iter().map(classify).collect();
-    let mut diagnostics = Vec::new();
-    let manifests: Vec<_> = classified
+    let manifest_indexes: Vec<usize> = classified
         .iter()
-        .filter(|e| ascii_eq(&e.physical.id.raw_name.0, MANIFEST))
+        .enumerate()
+        .filter(|(_, entry)| ascii_eq(&entry.physical.id.raw_name.0, MANIFEST))
+        .map(|(index, _)| index)
         .collect();
-    let (manifest, manifest_issue) = if unsupported.is_some() {
-        (ManifestEvidence {
-            entries: manifests.iter().map(|e| e.physical.id.clone()).collect(),
+    let mut diagnostics = Vec::new();
+    let mut issues = Issues::new(&physical_execution);
+    let manifest_outcome = match unsupported {
+        Some(_) => ManifestOutcome::preserved(ManifestEvidence {
+            entries: manifest_indexes
+                .iter()
+                .map(|index| classified[*index].physical.id.clone())
+                .collect(),
             state: ManifestState::Unknown,
             attribute_name: None,
             attribute_value: None,
-        }, None)
-    } else {
-        read_manifest(
+        }),
+        None => read_manifest(
             snapshot,
-            &manifests,
+            &classified,
+            &manifest_indexes,
             physical_complete,
             budget,
             &mut diagnostics,
-        )
+            &mut issues,
+        ),
     };
+    let manifest = manifest_outcome.evidence.clone();
     let mut evidence: Vec<MultiReleaseEntryEvidence> = classified
         .iter()
-        .map(|c| initial_evidence(c, unsupported, physical_complete, &manifest, view))
+        .map(|entry| {
+            initial_evidence(
+                entry,
+                unsupported.map(|(reason, _)| reason),
+                physical_complete,
+                &manifest,
+                view,
+            )
+        })
         .collect();
-    let mut groups: BTreeMap<Vec<u8>, Vec<usize>> = BTreeMap::new();
-    for (index, c) in classified.iter().enumerate() {
-        if c.directory
-            || c.meta_inf
-            || matches!(c.variant, MultiReleaseEntryVariant::InvalidVersioned { .. })
-        {
-            continue;
-        }
-        if let Some(path) = &c.logical {
-            groups.entry(path.clone()).or_default().push(index);
-        }
-    }
-    mark_duplicates(&classified, &mut evidence, &mut diagnostics, budget);
-    let mut selections = Vec::new();
-    for (path, indexes) in &groups {
-        let outcome = choose(
-            indexes,
+    let (group_of, groups) = collect_groups(&classified);
+    if !issues.items_exhausted() {
+        mark_duplicates(
             &classified,
             &mut evidence,
-            view,
-            physical_complete,
-            &manifest,
-            unsupported,
-        );
-        if budget
-            .charge(CountedBudgetDimension::ResultItems, 1)
-            .is_ok()
-        {
-            selections.push(MultiReleaseSelection {
-                logical_path: ArchiveNameBytes(path.clone()),
-                outcome,
-            });
-        }
-    }
-    if unsupported.is_none() {
-        probe_compliance(
-            snapshot,
-            &classified,
-            &mut evidence,
-            physical_complete,
-            budget,
             &mut diagnostics,
+            budget,
+            &mut issues,
         );
     }
-    let mut returned = Vec::new();
-    let mut interrupted = None;
-    for item in evidence {
-        match budget.charge(CountedBudgetDimension::ResultItems, 1) {
-            Ok(()) => returned.push(item),
-            Err(e) => {
-                interrupted = Some(e);
-                break;
+    let outcomes: Vec<MultiReleaseSelectionOutcome> = groups
+        .iter()
+        .map(|group| {
+            choose(
+                &group.indexes,
+                &classified,
+                &mut evidence,
+                view,
+                physical_complete,
+                &manifest,
+                unsupported.map(|(reason, _)| reason),
+            )
+        })
+        .collect();
+    let mut returned: Vec<MultiReleaseEntryEvidence> = Vec::new();
+    if !issues.items_exhausted() {
+        let mut index = 0;
+        for item in evidence {
+            match budget.charge(CountedBudgetDimension::ResultItems, 1) {
+                Ok(()) => {
+                    returned.push(item);
+                    index += 1;
+                }
+                Err(error) => {
+                    push_terminal(&mut diagnostics, &error, Some(classified[index].physical));
+                    issues.record(&error, budget);
+                    break;
+                }
             }
         }
     }
-    let mut execution = if let Some(error) = interrupted.as_ref() {
-        execution_for(error, budget, false)
-    } else if let Some(error) = manifest_issue.as_ref() {
-        execution_for(error, budget, false)
-    } else {
-        physical_execution.clone()
-    };
-    if let Some(reason) = unsupported {
-        execution = ExecutionReport::Failed {
-            reason: TerminationReason::Unsupported {
-                code: if reason == MultiReleaseUnknownReason::CustomPolicy {
-                    "multi_release_custom_policy"
-                } else {
-                    "multi_release_unknown_policy"
+    let mut selections = Vec::new();
+    let mut selection_halt = None;
+    if !issues.items_exhausted() {
+        for (position, group) in groups.iter().enumerate() {
+            match budget.charge(CountedBudgetDimension::ResultItems, 1) {
+                Ok(()) => selections.push(MultiReleaseSelection {
+                    logical_path: ArchiveNameBytes(group.logical.clone()),
+                    outcome: outcomes[position].clone(),
+                }),
+                Err(error) => {
+                    push_terminal(
+                        &mut diagnostics,
+                        &error,
+                        Some(classified[group.indexes[0]].physical),
+                    );
+                    issues.record(&error, budget);
+                    selection_halt = Some(group.min_ordinal);
+                    break;
                 }
-                .into(),
-            },
-            usage: budget.usage(),
-        };
+            }
+        }
     }
-    let scanned: Vec<_> = returned
-        .iter()
-        .flat_map(|e| {
-            [
-                range(&origin, "multi_release_selection_entries", e.entry.ordinal),
-                range(&origin, "multi_release_compliance_entries", e.entry.ordinal),
-            ]
-        })
-        .collect();
-    let skipped: Vec<CoverageRange> = entries
-        .iter()
-        .filter(|entry| !returned.iter().any(|e| e.entry == entry.id))
-        .flat_map(|e| {
-            [
-                range(&origin, "multi_release_selection_entries", e.id.ordinal),
-                range(&origin, "multi_release_compliance_entries", e.id.ordinal),
-            ]
-        })
-        .collect();
+    let mut probe_states = vec![ProbeState::Untouched; classified.len()];
+    if !issues.items_exhausted() && !issues.blocked() && physical_complete && unsupported.is_none()
+    {
+        probe_compliance(
+            snapshot,
+            &classified,
+            &mut returned,
+            &mut probe_states,
+            budget,
+            &mut diagnostics,
+            &mut issues,
+        );
+    }
+    if let Some((_, code)) = unsupported {
+        issues.override_with(ExecutionReport::Failed {
+            reason: TerminationReason::Unsupported { code: code.into() },
+            usage: budget.usage(),
+        });
+    }
+    let execution = issues.finish(budget);
+    let (scanned, mut skipped) = coverage_ranges(
+        &origin,
+        &classified,
+        &returned,
+        &probe_states,
+        selection_halt,
+        &groups,
+        &group_of,
+        manifest_outcome.read_interrupted,
+    );
+    skipped.extend(physical_coverage.artifact_structural.skipped.clone());
     let coverage = Coverage {
         artifact_structural: physical_coverage.artifact_structural,
         runtime_resolution: CoverageDimension {
@@ -610,12 +633,145 @@ fn process_container(
             entries: returned,
             selections,
             coverage,
-            execution: with_usage(execution, budget),
+            execution,
         },
         diagnostics,
         scanned,
         skipped,
     }
+}
+
+/// A logical-path group of physical candidates, ordered by its minimum ordinal.
+struct Group {
+    min_ordinal: u64,
+    logical: Vec<u8>,
+    indexes: Vec<usize>,
+}
+
+fn collect_groups(classified: &[Classified<'_>]) -> (Vec<Option<usize>>, Vec<Group>) {
+    let mut lookup: HashMap<Vec<u8>, usize> = HashMap::new();
+    let mut group_of = vec![None; classified.len()];
+    let mut groups: Vec<Group> = Vec::new();
+    for (index, entry) in classified.iter().enumerate() {
+        if entry.directory
+            || entry.meta_inf
+            || matches!(
+                entry.variant,
+                MultiReleaseEntryVariant::InvalidVersioned { .. }
+            )
+        {
+            continue;
+        }
+        let Some(path) = entry.logical.clone() else {
+            continue;
+        };
+        match lookup.get(&path) {
+            Some(position) => {
+                groups[*position].indexes.push(index);
+                group_of[index] = Some(*position);
+            }
+            None => {
+                let position = groups.len();
+                groups.push(Group {
+                    min_ordinal: entry.physical.id.ordinal,
+                    logical: path.clone(),
+                    indexes: vec![index],
+                });
+                lookup.insert(path, position);
+                group_of[index] = Some(position);
+            }
+        }
+    }
+    (group_of, groups)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn coverage_ranges(
+    origin: &ContainerOrigin,
+    classified: &[Classified<'_>],
+    returned: &[MultiReleaseEntryEvidence],
+    probe_states: &[ProbeState],
+    selection_halt: Option<u64>,
+    groups: &[Group],
+    group_of: &[Option<usize>],
+    manifest_read_interrupted: bool,
+) -> (Vec<CoverageRange>, Vec<CoverageRange>) {
+    let mut scanned = Vec::new();
+    let mut skipped = Vec::new();
+    for (index, entry) in classified.iter().enumerate() {
+        let ordinal = entry.physical.id.ordinal;
+        let decision_returned = match group_of[index] {
+            None => true,
+            Some(position) => selection_halt.is_none_or(|halt| groups[position].min_ordinal < halt),
+        };
+        // A Manifest candidate whose read was interrupted has no Manifest decision
+        // evidence, so its ordinal is not claimed as scanned path evidence.
+        let manifest_interrupted =
+            manifest_read_interrupted && ascii_eq(&entry.physical.id.raw_name.0, MANIFEST);
+        if index < returned.len() && decision_returned && !manifest_interrupted {
+            scanned.push(range(origin, SELECTION_METRIC, ordinal));
+        } else {
+            skipped.push(range(origin, SELECTION_METRIC, ordinal));
+        }
+        // A probe target is declared even before it was touched, and an ordinal that was
+        // probed in another role — a Base serving as a public predecessor — is declared
+        // too, so an attempted check never disappears from the compliance dimension.
+        let probe_state = probe_states[index];
+        if is_probe_applicable(entry) || probe_state != ProbeState::Untouched {
+            if probe_state == ProbeState::Completed {
+                scanned.push(range(origin, COMPLIANCE_METRIC, ordinal));
+            } else {
+                skipped.push(range(origin, COMPLIANCE_METRIC, ordinal));
+            }
+        }
+    }
+    (scanned, skipped)
+}
+
+/// How far the bounded Header probe got for one ordinal, which decides the compliance
+/// dimension of the runtime coverage: a completed check is scanned, an attempted but
+/// unfinished one is skipped, and an ordinal the probe never touched is only declared when
+/// it is a probe target by itself.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ProbeState {
+    /// The probe never looked at this ordinal.
+    Untouched,
+    /// The probe was attempted but was interrupted before it could produce a verdict.
+    Interrupted,
+    /// The probe ran to a verdict, which is recorded on the entry evidence.
+    Completed,
+}
+
+fn unsupported_policy(view: &RuntimeView) -> Option<(MultiReleaseUnknownReason, &'static str)> {
+    match view.profile.multi_release {
+        MultiReleasePolicy::Custom { .. } => Some((
+            MultiReleaseUnknownReason::CustomPolicy,
+            "multi_release_custom_policy",
+        )),
+        MultiReleasePolicy::Unknown => Some((
+            MultiReleaseUnknownReason::UnknownPolicy,
+            "multi_release_unknown_policy",
+        )),
+        MultiReleasePolicy::Disabled | MultiReleasePolicy::Enabled => None,
+    }
+}
+
+fn is_probe_applicable(entry: &Classified<'_>) -> bool {
+    matches!(entry.variant, MultiReleaseEntryVariant::Versioned { .. })
+        && !entry.meta_inf
+        && entry
+            .logical
+            .as_deref()
+            .is_some_and(|path| path.ends_with(b".class"))
+}
+
+fn produces_report(coverage: &Coverage, execution: &ExecutionReport) -> bool {
+    coverage
+        .artifact_structural
+        .scanned
+        .iter()
+        .any(|range| range.end > range.start)
+        || matches!(execution, ExecutionReport::Complete { .. })
 }
 
 fn classify(entry: &PhysicalEntry) -> Classified<'_> {
@@ -736,8 +892,19 @@ fn initial_evidence(
             },
         )
     } else {
+        // A versioned class is only ever Conformant once a bounded Header probe really
+        // proved it; until then the compliance evidence stays unknown.
         let compliance = if matches!(c.variant, MultiReleaseEntryVariant::Versioned { .. }) {
-            MultiReleaseCompliance::ConformantWithinChecks
+            if c.logical
+                .as_deref()
+                .is_some_and(|path| path.ends_with(b".class"))
+            {
+                MultiReleaseCompliance::Unknown {
+                    reason: MultiReleaseComplianceUnknownReason::ProbeInterrupted,
+                }
+            } else {
+                MultiReleaseCompliance::ConformantWithinChecks
+            }
         } else {
             MultiReleaseCompliance::NotApplicable
         };
@@ -862,78 +1029,135 @@ fn choose(
     }
 }
 
+/// Manifest evidence plus whether the candidate read itself was interrupted, which decides
+/// whether the Manifest ordinal can be claimed as scanned path evidence.
+struct ManifestOutcome {
+    evidence: ManifestEvidence,
+    read_interrupted: bool,
+}
+
+impl ManifestOutcome {
+    fn preserved(evidence: ManifestEvidence) -> Self {
+        Self {
+            evidence,
+            read_interrupted: false,
+        }
+    }
+
+    fn interrupted(evidence: ManifestEvidence) -> Self {
+        Self {
+            evidence,
+            read_interrupted: true,
+        }
+    }
+}
+
 fn read_manifest(
     snapshot: &ArtifactSnapshot,
-    manifests: &[&Classified<'_>],
+    classified: &[Classified<'_>],
+    manifest_indexes: &[usize],
     physical_complete: bool,
     budget: &mut Budget,
     diagnostics: &mut Vec<MultiReleaseReportDiagnostic>,
-) -> (ManifestEvidence, Option<Error>) {
-    let ids = manifests
+    issues: &mut Issues,
+) -> ManifestOutcome {
+    let entries = manifest_indexes
         .iter()
-        .map(|e| e.physical.id.clone())
+        .map(|index| classified[*index].physical.id.clone())
         .collect::<Vec<_>>();
-    for manifest in manifests {
-        if manifest.physical.id.raw_name.0 != MANIFEST {
-            push_domain(
+    let unknown = |state: ManifestState| ManifestEvidence {
+        entries: entries.clone(),
+        state,
+        attribute_name: None,
+        attribute_value: None,
+    };
+    for index in manifest_indexes {
+        if issues.items_exhausted() {
+            break;
+        }
+        let manifest = &classified[*index];
+        if manifest.physical.id.raw_name.0 != MANIFEST
+            && let Err(error) = push_domain(
                 diagnostics,
                 MultiReleaseDiagnosticCode::MultiReleaseManifestNoncanonicalPath,
                 "Manifest path uses non-canonical ASCII case",
                 Some(manifest.physical),
                 budget,
-            );
+            )
+        {
+            push_terminal(diagnostics, &error, Some(manifest.physical));
+            issues.record(&error, budget);
+            break;
         }
     }
     if !physical_complete {
-        return (ManifestEvidence {
-            entries: ids,
-            state: ManifestState::Unknown,
-            attribute_name: None,
-            attribute_value: None,
-        }, None);
+        return ManifestOutcome::preserved(unknown(ManifestState::Unknown));
     }
-    if manifests.is_empty() {
-        return (ManifestEvidence {
-            entries: ids,
+    if manifest_indexes.is_empty() {
+        return ManifestOutcome::preserved(ManifestEvidence {
+            entries,
             state: ManifestState::Missing,
             attribute_name: None,
             attribute_value: None,
-        }, None);
+        });
     }
-    if manifests.len() > 1 {
-        for e in manifests {
-            push_domain(
+    if manifest_indexes.len() > 1 {
+        for index in manifest_indexes {
+            if issues.items_exhausted() {
+                break;
+            }
+            let manifest = &classified[*index];
+            if let Err(error) = push_domain(
                 diagnostics,
                 MultiReleaseDiagnosticCode::MultiReleaseManifestDuplicate,
                 "multiple case-equivalent Manifest entries",
-                Some(e.physical),
+                Some(manifest.physical),
                 budget,
-            );
+            ) {
+                push_terminal(diagnostics, &error, Some(manifest.physical));
+                issues.record(&error, budget);
+                break;
+            }
         }
-        return (ManifestEvidence {
-            entries: ids,
-            state: ManifestState::Ambiguous,
-            attribute_name: None,
-            attribute_value: None,
-        }, None);
+        return ManifestOutcome::preserved(unknown(ManifestState::Ambiguous));
     }
-    let materialized = match snapshot.read_entry_internal(manifests[0].physical, budget) {
-        Ok(v) => v,
+    let manifest = &classified[manifest_indexes[0]];
+    let materialized = match snapshot.read_entry_internal(manifest.physical, budget) {
+        Ok(value) => value,
         Err(error) => {
-            diagnostics.push(MultiReleaseReportDiagnostic::Terminal {
-                diagnostic: terminal(&error, Some(manifests[0].physical)),
-            });
-            return (ManifestEvidence {
-                entries: ids,
-                state: ManifestState::Unknown,
-                attribute_name: None,
-                attribute_value: None,
-            }, Some(error));
+            push_terminal(diagnostics, &error, Some(manifest.physical));
+            issues.record(&error, budget);
+            return ManifestOutcome::interrupted(unknown(ManifestState::Unknown));
         }
     };
-    match parse_manifest(&materialized.bytes, budget) {
-        ManifestParse::Parsed(Some((name, value))) => (ManifestEvidence {
-            entries: ids,
+    let parsed = match parse_manifest(&materialized.bytes, budget) {
+        ManifestParse::Interrupted(error) => {
+            push_terminal(diagnostics, &error, Some(manifest.physical));
+            issues.record(&error, budget);
+            return ManifestOutcome::interrupted(unknown(ManifestState::Unknown));
+        }
+        ManifestParse::Malformed => {
+            if !issues.items_exhausted()
+                && let Err(error) = push_domain(
+                    diagnostics,
+                    MultiReleaseDiagnosticCode::MultiReleaseManifestMalformed,
+                    "Manifest main section is malformed or has duplicate Multi-Release attributes",
+                    Some(manifest.physical),
+                    budget,
+                )
+            {
+                push_terminal(diagnostics, &error, Some(manifest.physical));
+                issues.record(&error, budget);
+            }
+            // The malformed main section is a proven domain fact; the interrupted
+            // diagnostic accounting only makes the surrounding execution non-Complete.
+            return ManifestOutcome::preserved(unknown(ManifestState::Malformed));
+        }
+        ManifestParse::Parsed(attribute) => attribute,
+    };
+    ManifestOutcome::preserved(match parsed {
+        Some((name, value)) => ManifestEvidence {
+            entries,
             state: if ascii_eq(&value, b"true") {
                 ManifestState::Active
             } else {
@@ -941,40 +1165,14 @@ fn read_manifest(
             },
             attribute_name: Some(ArchiveNameBytes(name)),
             attribute_value: Some(ArchiveNameBytes(value)),
-        }, None),
-        ManifestParse::Parsed(None) => (ManifestEvidence {
-            entries: ids,
+        },
+        None => ManifestEvidence {
+            entries,
             state: ManifestState::Inactive,
             attribute_name: None,
             attribute_value: None,
-        }, None),
-        ManifestParse::Interrupted(error) => {
-            diagnostics.push(MultiReleaseReportDiagnostic::Terminal {
-                diagnostic: terminal(&error, Some(manifests[0].physical)),
-            });
-            (ManifestEvidence {
-                entries: ids,
-                state: ManifestState::Unknown,
-                attribute_name: None,
-                attribute_value: None,
-            }, Some(error))
-        }
-        ManifestParse::Malformed => {
-            push_domain(
-                diagnostics,
-                MultiReleaseDiagnosticCode::MultiReleaseManifestMalformed,
-                "Manifest main section is malformed or has duplicate Multi-Release attributes",
-                Some(manifests[0].physical),
-                budget,
-            );
-            (ManifestEvidence {
-                entries: ids,
-                state: ManifestState::Malformed,
-                attribute_name: None,
-                attribute_value: None,
-            }, None)
-        }
-    }
+        },
+    })
 }
 
 type ManifestAttribute = Option<(Vec<u8>, Vec<u8>)>;
@@ -985,11 +1183,16 @@ enum ManifestParse {
     Interrupted(Error),
 }
 
+/// Single pass over the raw main section: no per-line copy is materialized, and only the
+/// matching `Multi-Release` `(name, value)` bytes are retained.
 fn parse_manifest(bytes: &[u8], budget: &Budget) -> ManifestParse {
     if bytes.contains(&0) {
         return ManifestParse::Malformed;
     }
-    let mut logical: Vec<Vec<u8>> = Vec::new();
+    let mut name_bytes: Option<Vec<u8>> = None;
+    let mut value_bytes: Option<Vec<u8>> = None;
+    let mut current_is_attribute = false;
+    let mut has_logical_line = false;
     let mut start = 0;
     let mut main_terminated = false;
     while start < bytes.len() {
@@ -1003,7 +1206,7 @@ fn parse_manifest(bytes: &[u8], budget: &Budget) -> ManifestParse {
         if end == bytes.len() {
             return ManifestParse::Malformed;
         }
-        let line = bytes[start..end].to_vec();
+        let line = &bytes[start..end];
         if bytes[end] == b'\r' && bytes.get(end + 1) == Some(&b'\n') {
             end += 1;
         }
@@ -1012,36 +1215,43 @@ fn parse_manifest(bytes: &[u8], budget: &Budget) -> ManifestParse {
             main_terminated = true;
             break;
         }
-        if line.first() == Some(&b' ') {
-            let Some(last) = logical.last_mut() else {
+        if line[0] == b' ' {
+            // Single-space continuation: an orphan continuation has no logical line yet.
+            if !has_logical_line {
                 return ManifestParse::Malformed;
-            };
-            last.extend_from_slice(&line[1..]);
-        } else {
-            logical.push(line);
+            }
+            if current_is_attribute && let Some(value) = value_bytes.as_mut() {
+                value.extend_from_slice(&line[1..]);
+            }
+            continue;
         }
-    }
-    if !main_terminated {
-        return ManifestParse::Malformed;
-    }
-    let mut found = None;
-    for line in logical {
-        let Some(colon) = line.iter().position(|b| *b == b':') else {
+        has_logical_line = true;
+        current_is_attribute = false;
+        let Some(colon) = line.iter().position(|byte| *byte == b':') else {
             return ManifestParse::Malformed;
         };
         if line.get(colon + 1) != Some(&b' ') {
             return ManifestParse::Malformed;
         }
         let name = &line[..colon];
-        let value = &line[colon + 2..];
-        if ascii_eq(name, b"Multi-Release") {
-            if found.is_some() {
-                return ManifestParse::Malformed;
-            }
-            found = Some((name.to_vec(), value.to_vec()));
+        if !ascii_eq(name, b"Multi-Release") {
+            continue;
         }
+        if name_bytes.is_some() {
+            return ManifestParse::Malformed;
+        }
+        name_bytes = Some(name.to_vec());
+        value_bytes = Some(line[colon + 2..].to_vec());
+        current_is_attribute = true;
     }
-    ManifestParse::Parsed(found)
+    if !main_terminated {
+        return ManifestParse::Malformed;
+    }
+    match (name_bytes, value_bytes) {
+        (None, None) => ManifestParse::Parsed(None),
+        (Some(name), Some(value)) => ManifestParse::Parsed(Some((name, value))),
+        _ => ManifestParse::Malformed,
+    }
 }
 
 fn mark_duplicates(
@@ -1049,6 +1259,7 @@ fn mark_duplicates(
     evidence: &mut [MultiReleaseEntryEvidence],
     diagnostics: &mut Vec<MultiReleaseReportDiagnostic>,
     budget: &mut Budget,
+    issues: &mut Issues,
 ) {
     let mut map: HashMap<(Vec<u8>, u64), Vec<usize>> = HashMap::new();
     for (i, item) in c.iter().enumerate() {
@@ -1065,20 +1276,40 @@ fn mark_duplicates(
         };
         map.entry((path.clone(), level)).or_default().push(i);
     }
-    for indexes in map.values().filter(|v| v.len() > 1) {
-        for &i in indexes {
-            evidence[i].compliance = MultiReleaseCompliance::NonConformant;
-            push_domain(
+    let mut duplicates: Vec<Vec<usize>> = map
+        .into_values()
+        .filter(|indexes| indexes.len() > 1)
+        .collect();
+    duplicates.sort_by_key(|indexes| indexes[0]);
+    for indexes in duplicates {
+        for &i in &indexes {
+            merge_compliance(
+                &mut evidence[i].compliance,
+                MultiReleaseCompliance::NonConformant,
+            );
+        }
+        for &i in &indexes {
+            if issues.items_exhausted() {
+                return;
+            }
+            if let Err(error) = push_domain(
                 diagnostics,
                 MultiReleaseDiagnosticCode::MultiReleaseDuplicateCandidate,
                 "duplicate candidate at the same logical path and release level",
                 Some(c[i].physical),
                 budget,
-            );
+            ) {
+                push_terminal(diagnostics, &error, Some(c[i].physical));
+                issues.record(&error, budget);
+                return;
+            }
         }
     }
     for (i, item) in c.iter().enumerate() {
         if let MultiReleaseEntryVariant::InvalidVersioned { issue } = item.variant {
+            if issues.items_exhausted() {
+                return;
+            }
             let code = match issue {
                 MultiReleaseVersionPathIssue::ReleaseBelowNine => {
                     MultiReleaseDiagnosticCode::MultiReleaseVersionBelowNine
@@ -1088,22 +1319,36 @@ fn mark_duplicates(
                 }
                 _ => MultiReleaseDiagnosticCode::MultiReleaseVersionPathInvalid,
             };
-            push_domain(
+            if let Err(error) = push_domain(
                 diagnostics,
                 code,
                 "invalid multi-release version path",
                 Some(item.physical),
                 budget,
-            );
+            ) {
+                push_terminal(diagnostics, &error, Some(item.physical));
+                issues.record(&error, budget);
+                return;
+            }
         } else if item.meta_inf {
-            push_domain(
+            merge_compliance(
+                &mut evidence[i].compliance,
+                MultiReleaseCompliance::NonConformant,
+            );
+            if issues.items_exhausted() {
+                return;
+            }
+            if let Err(error) = push_domain(
                 diagnostics,
                 MultiReleaseDiagnosticCode::MultiReleaseMetaInfResource,
                 "versioned META-INF resources are not selectable",
                 Some(item.physical),
                 budget,
-            );
-            evidence[i].compliance = MultiReleaseCompliance::NonConformant;
+            ) {
+                push_terminal(diagnostics, &error, Some(item.physical));
+                issues.record(&error, budget);
+                return;
+            }
         }
     }
 }
@@ -1111,11 +1356,12 @@ fn mark_duplicates(
 fn probe_compliance(
     snapshot: &ArtifactSnapshot,
     c: &[Classified<'_>],
-    evidence: &mut [MultiReleaseEntryEvidence],
-    physical_complete: bool,
+    returned: &mut [MultiReleaseEntryEvidence],
+    probe_states: &mut [ProbeState],
     budget: &mut Budget,
     diagnostics: &mut Vec<MultiReleaseReportDiagnostic>,
-) -> Option<Error> {
+    issues: &mut Issues,
+) {
     let module = c.iter().any(|x| {
         x.logical.as_deref() == Some(b"module-info.class")
             && matches!(
@@ -1123,137 +1369,326 @@ fn probe_compliance(
                 MultiReleaseEntryVariant::Base | MultiReleaseEntryVariant::Versioned { .. }
             )
     });
-    let mut base_probes: HashMap<usize, std::result::Result<crate::classfile::MinimalHeaderFacts, Error>> = HashMap::new();
-    for i in 0..c.len() {
-        let release = match c[i].variant {
-            MultiReleaseEntryVariant::Versioned { release }
-                if c[i].logical.as_deref().is_some_and(|p| p.ends_with(b".class")) && !c[i].meta_inf => release,
-            _ => continue,
+    let mut base_probes: HashMap<
+        usize,
+        std::result::Result<crate::classfile::MinimalHeaderFacts, Error>,
+    > = HashMap::new();
+    for i in 0..returned.len() {
+        if issues.items_exhausted() {
+            return;
+        }
+        if !is_probe_applicable(&c[i]) {
+            continue;
+        }
+        let MultiReleaseEntryVariant::Versioned { release } = c[i].variant else {
+            continue;
         };
         let materialized = match snapshot.read_entry_internal(c[i].physical, budget) {
-            Ok(v) => v,
+            Ok(value) => value,
             Err(error) => {
-                merge_compliance(&mut evidence[i].compliance, MultiReleaseCompliance::Unknown {
-                    reason: MultiReleaseComplianceUnknownReason::ProbeInterrupted,
-                });
-                diagnostics.push(MultiReleaseReportDiagnostic::Terminal {
-                    diagnostic: terminal(&error, Some(c[i].physical)),
-                });
-                if stops_probes(&error) { mark_remaining_probe_unknown(c, evidence, i + 1); return Some(error); }
-                return Some(error);
+                probe_states[i] = ProbeState::Interrupted;
+                merge_compliance(
+                    &mut returned[i].compliance,
+                    MultiReleaseCompliance::Unknown {
+                        reason: MultiReleaseComplianceUnknownReason::ProbeInterrupted,
+                    },
+                );
+                push_terminal(diagnostics, &error, Some(c[i].physical));
+                issues.record(&error, budget);
+                mark_remaining_probe_unknown(c, returned, i + 1);
+                return;
             }
         };
         let facts = match probe_minimal_header(&materialized.bytes, budget) {
-            Ok(v) => v,
+            Ok(facts) => facts,
             Err(Error::InvalidInput { .. }) => {
-                merge_compliance(&mut evidence[i].compliance, MultiReleaseCompliance::NonConformant);
-                push_domain(diagnostics, MultiReleaseDiagnosticCode::MultiReleaseClassMalformed,
-                    "versioned class has a malformed minimal Header", Some(c[i].physical), budget);
+                probe_states[i] = ProbeState::Completed;
+                merge_compliance(
+                    &mut returned[i].compliance,
+                    MultiReleaseCompliance::NonConformant,
+                );
+                if let Err(charge_error) = push_domain(
+                    diagnostics,
+                    MultiReleaseDiagnosticCode::MultiReleaseClassMalformed,
+                    "versioned class has a malformed minimal Header",
+                    Some(c[i].physical),
+                    budget,
+                ) {
+                    push_terminal(diagnostics, &charge_error, Some(c[i].physical));
+                    issues.record(&charge_error, budget);
+                    mark_remaining_probe_unknown(c, returned, i + 1);
+                    return;
+                }
                 continue;
             }
             Err(error) => {
-                merge_compliance(&mut evidence[i].compliance, MultiReleaseCompliance::Unknown {
-                    reason: MultiReleaseComplianceUnknownReason::ProbeInterrupted,
-                });
-                diagnostics.push(MultiReleaseReportDiagnostic::Terminal { diagnostic: terminal(&error, Some(c[i].physical)) });
-                if stops_probes(&error) { mark_remaining_probe_unknown(c, evidence, i + 1); }
-                return Some(error);
+                probe_states[i] = ProbeState::Interrupted;
+                merge_compliance(
+                    &mut returned[i].compliance,
+                    MultiReleaseCompliance::Unknown {
+                        reason: MultiReleaseComplianceUnknownReason::ProbeInterrupted,
+                    },
+                );
+                push_terminal(diagnostics, &error, Some(c[i].physical));
+                issues.record(&error, budget);
+                mark_remaining_probe_unknown(c, returned, i + 1);
+                return;
             }
         };
-        evidence[i].class_evidence = Some(MultiReleaseClassEvidence {
+        probe_states[i] = ProbeState::Completed;
+        returned[i].class_evidence = Some(MultiReleaseClassEvidence {
             major_version: facts.major_version,
             minor_version: facts.minor_version,
             access_flags: facts.access_flags,
             this_class: facts.this_class.clone(),
         });
         if u128::from(facts.major_version) > u128::from(release) + 44 {
-            merge_compliance(&mut evidence[i].compliance, MultiReleaseCompliance::NonConformant);
-            if let Err(error) = push_domain(diagnostics, MultiReleaseDiagnosticCode::MultiReleaseClassVersionTooNew,
-                "classfile major exceeds release + 44", Some(c[i].physical), budget) {
-                diagnostics.push(MultiReleaseReportDiagnostic::Terminal { diagnostic: terminal(&error, Some(c[i].physical)) });
-                mark_remaining_probe_unknown(c, evidence, i + 1);
-                return Some(error);
+            merge_compliance(
+                &mut returned[i].compliance,
+                MultiReleaseCompliance::NonConformant,
+            );
+            if let Err(error) = push_domain(
+                diagnostics,
+                MultiReleaseDiagnosticCode::MultiReleaseClassVersionTooNew,
+                "classfile major exceeds release + 44",
+                Some(c[i].physical),
+                budget,
+            ) {
+                push_terminal(diagnostics, &error, Some(c[i].physical));
+                issues.record(&error, budget);
+                mark_remaining_probe_unknown(c, returned, i + 1);
+                return;
             }
         }
-        if facts.access_flags & ACC_PUBLIC == 0 { continue; }
-        let path = c[i].logical.as_ref().unwrap();
-        let roots = c.iter().enumerate().filter(|(_, x)| x.logical.as_ref() == Some(path)
-            && matches!(x.variant, MultiReleaseEntryVariant::Base)).map(|(n, _)| n).collect::<Vec<_>>();
-        if roots.len() > 1 {
-            merge_compliance(&mut evidence[i].compliance, MultiReleaseCompliance::Unknown {
-                reason: MultiReleaseComplianceUnknownReason::PredecessorAmbiguous,
-            });
+        if facts.access_flags & ACC_PUBLIC == 0 {
+            merge_compliance(
+                &mut returned[i].compliance,
+                MultiReleaseCompliance::ConformantWithinChecks,
+            );
             continue;
         }
-        if roots.is_empty() {
+        let Some(path) = c[i].logical.as_ref() else {
+            continue;
+        };
+        let roots = c
+            .iter()
+            .enumerate()
+            .filter(|(_, x)| {
+                x.logical.as_ref() == Some(path)
+                    && matches!(x.variant, MultiReleaseEntryVariant::Base)
+            })
+            .map(|(n, _)| n)
+            .collect::<Vec<_>>();
+        if roots.len() > 1 {
+            merge_compliance(
+                &mut returned[i].compliance,
+                MultiReleaseCompliance::Unknown {
+                    reason: MultiReleaseComplianceUnknownReason::PredecessorAmbiguous,
+                },
+            );
+            continue;
+        }
+        let Some(root) = roots.first().copied() else {
             if module {
-                merge_compliance(&mut evidence[i].compliance, MultiReleaseCompliance::Unknown {
-                    reason: MultiReleaseComplianceUnknownReason::ModuleExportsNotInspected,
-                });
-            } else if physical_complete {
-                merge_compliance(&mut evidence[i].compliance, MultiReleaseCompliance::NonConformant);
-                if let Err(error) = push_domain(diagnostics, MultiReleaseDiagnosticCode::MultiReleasePublicPredecessorMissing,
-                    "public versioned class has no root predecessor", Some(c[i].physical), budget) {
-                    diagnostics.push(MultiReleaseReportDiagnostic::Terminal { diagnostic: terminal(&error, Some(c[i].physical)) });
-                    mark_remaining_probe_unknown(c, evidence, i + 1);
-                    return Some(error);
+                merge_compliance(
+                    &mut returned[i].compliance,
+                    MultiReleaseCompliance::Unknown {
+                        reason: MultiReleaseComplianceUnknownReason::ModuleExportsNotInspected,
+                    },
+                );
+            } else {
+                merge_compliance(
+                    &mut returned[i].compliance,
+                    MultiReleaseCompliance::NonConformant,
+                );
+                if let Err(error) = push_domain(
+                    diagnostics,
+                    MultiReleaseDiagnosticCode::MultiReleasePublicPredecessorMissing,
+                    "public versioned class has no root predecessor",
+                    Some(c[i].physical),
+                    budget,
+                ) {
+                    push_terminal(diagnostics, &error, Some(c[i].physical));
+                    issues.record(&error, budget);
+                    mark_remaining_probe_unknown(c, returned, i + 1);
+                    return;
                 }
             }
             continue;
-        }
-        let root = roots[0];
-        if !base_probes.contains_key(&root) {
-            let result = snapshot.read_entry_internal(c[root].physical, budget)
+        };
+        if let std::collections::hash_map::Entry::Vacant(slot) = base_probes.entry(root) {
+            // The probe only runs over a complete evidence prefix, so a probed base is
+            // always present in `returned`; the index guard keeps that invariant explicit.
+            let result = snapshot
+                .read_entry_internal(c[root].physical, budget)
                 .and_then(|bytes| probe_minimal_header(&bytes.bytes, budget));
-            if let Ok(base) = &result {
-                evidence[root].class_evidence = Some(MultiReleaseClassEvidence {
-                    major_version: base.major_version, minor_version: base.minor_version,
-                    access_flags: base.access_flags, this_class: base.this_class.clone(),
-                });
+            match &result {
+                Ok(base) => {
+                    probe_states[root] = ProbeState::Completed;
+                    if root < returned.len() {
+                        returned[root].class_evidence = Some(MultiReleaseClassEvidence {
+                            major_version: base.major_version,
+                            minor_version: base.minor_version,
+                            access_flags: base.access_flags,
+                            this_class: base.this_class.clone(),
+                        });
+                    }
+                }
+                Err(Error::InvalidInput { .. }) => {
+                    // A malformed predecessor is a non-conformance of the versioned candidate
+                    // that needed it, not of the plain Base entry, whose closed-table state
+                    // stays `NotApplicable`. The Base ordinal still counts as checked.
+                    probe_states[root] = ProbeState::Completed;
+                }
+                Err(_) => {
+                    // The predecessor read or Header probe was attempted and interrupted, so
+                    // the Base ordinal is a probe target and is declared as skipped.
+                    probe_states[root] = ProbeState::Interrupted;
+                }
             }
-            base_probes.insert(root, result);
+            slot.insert(result);
         }
         match base_probes.get(&root).unwrap() {
-            Ok(base) if base.access_flags & ACC_PUBLIC != 0 && base.this_class == facts.this_class => {}
+            Ok(base)
+                if base.access_flags & ACC_PUBLIC != 0 && base.this_class == facts.this_class =>
+            {
+                merge_compliance(
+                    &mut returned[i].compliance,
+                    MultiReleaseCompliance::ConformantWithinChecks,
+                );
+            }
             Err(Error::InvalidInput { .. }) => {
-                merge_compliance(&mut evidence[root].compliance, MultiReleaseCompliance::NonConformant);
-                if !diagnostics.iter().any(|d| diagnostic_for_entry(d, MultiReleaseDiagnosticCode::MultiReleaseClassMalformed, &c[root].physical.id)) {
-                    if let Err(error) = push_domain(diagnostics, MultiReleaseDiagnosticCode::MultiReleaseClassMalformed,
-                        "root predecessor has a malformed minimal Header", Some(c[root].physical), budget) {
-                        diagnostics.push(MultiReleaseReportDiagnostic::Terminal { diagnostic: terminal(&error, Some(c[root].physical)) });
-                        mark_remaining_probe_unknown(c, evidence, i + 1); return Some(error);
-                    }
+                if root < returned.len()
+                    && !has_domain_diagnostic(
+                        diagnostics,
+                        MultiReleaseDiagnosticCode::MultiReleaseClassMalformed,
+                        &c[root].physical.id,
+                    )
+                    && let Err(charge_error) = push_domain(
+                        diagnostics,
+                        MultiReleaseDiagnosticCode::MultiReleaseClassMalformed,
+                        "root predecessor has a malformed minimal Header",
+                        Some(c[root].physical),
+                        budget,
+                    )
+                {
+                    push_terminal(diagnostics, &charge_error, Some(c[root].physical));
+                    issues.record(&charge_error, budget);
+                    mark_remaining_probe_unknown(c, returned, i + 1);
+                    return;
                 }
                 if module {
-                    merge_compliance(&mut evidence[i].compliance, MultiReleaseCompliance::Unknown { reason: MultiReleaseComplianceUnknownReason::ModuleExportsNotInspected });
+                    merge_compliance(
+                        &mut returned[i].compliance,
+                        MultiReleaseCompliance::Unknown {
+                            reason: MultiReleaseComplianceUnknownReason::ModuleExportsNotInspected,
+                        },
+                    );
                 } else {
-                    merge_compliance(&mut evidence[i].compliance, MultiReleaseCompliance::NonConformant);
-                    if let Err(error) = push_domain(diagnostics, MultiReleaseDiagnosticCode::MultiReleasePublicPredecessorMismatch,
-                        "root predecessor is malformed", Some(c[i].physical), budget) {
-                        diagnostics.push(MultiReleaseReportDiagnostic::Terminal { diagnostic: terminal(&error, Some(c[i].physical)) });
-                        mark_remaining_probe_unknown(c, evidence, i + 1); return Some(error);
+                    merge_compliance(
+                        &mut returned[i].compliance,
+                        MultiReleaseCompliance::NonConformant,
+                    );
+                    if let Err(charge_error) = push_domain(
+                        diagnostics,
+                        MultiReleaseDiagnosticCode::MultiReleasePublicPredecessorMismatch,
+                        "root predecessor is malformed",
+                        Some(c[i].physical),
+                        budget,
+                    ) {
+                        push_terminal(diagnostics, &charge_error, Some(c[i].physical));
+                        issues.record(&charge_error, budget);
+                        mark_remaining_probe_unknown(c, returned, i + 1);
+                        return;
                     }
                 }
             }
-            Ok(_) if module => merge_compliance(&mut evidence[i].compliance, MultiReleaseCompliance::Unknown { reason: MultiReleaseComplianceUnknownReason::ModuleExportsNotInspected }),
+            Ok(_) if module => merge_compliance(
+                &mut returned[i].compliance,
+                MultiReleaseCompliance::Unknown {
+                    reason: MultiReleaseComplianceUnknownReason::ModuleExportsNotInspected,
+                },
+            ),
             Ok(_) => {
-                merge_compliance(&mut evidence[i].compliance, MultiReleaseCompliance::NonConformant);
-                if let Err(error) = push_domain(diagnostics, MultiReleaseDiagnosticCode::MultiReleasePublicPredecessorMismatch,
-                    "root predecessor is not public with the same this_class", Some(c[i].physical), budget) {
-                    diagnostics.push(MultiReleaseReportDiagnostic::Terminal { diagnostic: terminal(&error, Some(c[i].physical)) });
-                    mark_remaining_probe_unknown(c, evidence, i + 1); return Some(error);
+                merge_compliance(
+                    &mut returned[i].compliance,
+                    MultiReleaseCompliance::NonConformant,
+                );
+                if let Err(error) = push_domain(
+                    diagnostics,
+                    MultiReleaseDiagnosticCode::MultiReleasePublicPredecessorMismatch,
+                    "root predecessor is not public with the same this_class",
+                    Some(c[i].physical),
+                    budget,
+                ) {
+                    push_terminal(diagnostics, &error, Some(c[i].physical));
+                    issues.record(&error, budget);
+                    mark_remaining_probe_unknown(c, returned, i + 1);
+                    return;
                 }
             }
             Err(error) => {
                 let error = error.clone();
-                merge_compliance(&mut evidence[i].compliance, MultiReleaseCompliance::Unknown { reason: MultiReleaseComplianceUnknownReason::ProbeInterrupted });
-                diagnostics.push(MultiReleaseReportDiagnostic::Terminal { diagnostic: terminal(&error, Some(c[root].physical)) });
-                if stops_probes(&error) { mark_remaining_probe_unknown(c, evidence, i + 1); }
-                return Some(error);
+                // The candidate's own Header facts are known, but its compliance verdict is
+                // not: the interrupted predecessor check leaves this ordinal unfinished.
+                probe_states[i] = ProbeState::Interrupted;
+                merge_compliance(
+                    &mut returned[i].compliance,
+                    MultiReleaseCompliance::Unknown {
+                        reason: MultiReleaseComplianceUnknownReason::ProbeInterrupted,
+                    },
+                );
+                push_terminal(diagnostics, &error, Some(c[root].physical));
+                issues.record(&error, budget);
+                mark_remaining_probe_unknown(c, returned, i + 1);
+                return;
             }
         }
     }
-    None
+}
+
+/// Every remaining applicable candidate of an interrupted probe keeps the unknown
+/// compliance it had; a proven nonconformance is never downgraded.
+fn mark_remaining_probe_unknown(
+    c: &[Classified<'_>],
+    evidence: &mut [MultiReleaseEntryEvidence],
+    from_index: usize,
+) {
+    for (index, item) in c.iter().enumerate().skip(from_index) {
+        if index >= evidence.len() {
+            break;
+        }
+        if !is_probe_applicable(item) {
+            continue;
+        }
+        merge_compliance(
+            &mut evidence[index].compliance,
+            MultiReleaseCompliance::Unknown {
+                reason: MultiReleaseComplianceUnknownReason::ProbeInterrupted,
+            },
+        );
+    }
+}
+
+/// `NonConformant` absorbs every later observation, and no other state can turn a proof
+/// back into a weaker one. `Unknown(ProbeInterrupted)` only ever states "not probed yet",
+/// so any concrete observation replaces it, while every other `Unknown` absorbs
+/// `ConformantWithinChecks` and `NotApplicable`.
+fn merge_compliance(current: &mut MultiReleaseCompliance, incoming: MultiReleaseCompliance) {
+    fn rank(compliance: &MultiReleaseCompliance) -> u8 {
+        match compliance {
+            MultiReleaseCompliance::NonConformant => 4,
+            MultiReleaseCompliance::Unknown {
+                reason: MultiReleaseComplianceUnknownReason::ProbeInterrupted,
+            } => 1,
+            MultiReleaseCompliance::Unknown { .. } => 3,
+            MultiReleaseCompliance::ConformantWithinChecks => 2,
+            MultiReleaseCompliance::NotApplicable => 0,
+        }
+    }
+    if rank(&incoming) > rank(current) {
+        *current = incoming;
+    }
 }
 
 fn push_domain(
@@ -1262,21 +1697,43 @@ fn push_domain(
     message: &str,
     entry: Option<&PhysicalEntry>,
     budget: &mut Budget,
-) {
-    if budget
-        .charge(CountedBudgetDimension::ResultItems, 1)
-        .is_ok()
-    {
-        out.push(MultiReleaseReportDiagnostic::Domain {
-            diagnostic: MultiReleaseDiagnostic {
-                code,
-                severity: code.severity(),
-                message: message.into(),
-                provenance: entry.map(provenance),
-            },
-        });
-    }
+) -> Result<()> {
+    budget.charge(CountedBudgetDimension::ResultItems, 1)?;
+    out.push(MultiReleaseReportDiagnostic::Domain {
+        diagnostic: MultiReleaseDiagnostic::new(code, message, entry.map(provenance)),
+    });
+    Ok(())
 }
+
+fn push_terminal(
+    out: &mut Vec<MultiReleaseReportDiagnostic>,
+    error: &Error,
+    entry: Option<&PhysicalEntry>,
+) {
+    out.push(MultiReleaseReportDiagnostic::Terminal {
+        diagnostic: terminal(error, entry),
+    });
+}
+
+fn has_domain_diagnostic(
+    diagnostics: &[MultiReleaseReportDiagnostic],
+    code: MultiReleaseDiagnosticCode,
+    entry: &PhysicalEntryId,
+) -> bool {
+    diagnostics.iter().any(|item| match item {
+        MultiReleaseReportDiagnostic::Domain { diagnostic } => {
+            diagnostic.code == code
+                && diagnostic.provenance.as_ref().is_some_and(|provenance| {
+                    matches!(
+                        &provenance.location,
+                        Location::Entry { id, .. } if id == entry
+                    )
+                })
+        }
+        MultiReleaseReportDiagnostic::Terminal { .. } => false,
+    })
+}
+
 fn provenance(entry: &PhysicalEntry) -> Provenance {
     Provenance {
         location: Location::Entry {
@@ -1290,7 +1747,7 @@ fn terminal(error: &Error, entry: Option<&PhysicalEntry>) -> Diagnostic {
         code: match error {
             Error::InvalidInput { code, .. } | Error::Unsupported { code, .. } => code.clone(),
             Error::BudgetExceeded { dimension, .. } => {
-                format!("budget_exceeded_{dimension:?}").to_ascii_lowercase()
+                format!("budget_exceeded_{}", budget_dimension_code(*dimension))
             }
             Error::Cancelled { .. } => "cancelled".into(),
             Error::Io { operation, .. } => operation.clone(),
@@ -1317,24 +1774,23 @@ fn range(origin: &ContainerOrigin, suffix: &str, ordinal: u64) -> CoverageRange 
         end: ordinal.saturating_add(1),
     }
 }
-fn skip_entries(
-    origin: &ContainerOrigin,
-    entries: &[PhysicalEntry],
-    out: &mut Vec<CoverageRange>,
-) -> Result<()> {
-    for e in entries {
-        out.push(range(
-            origin,
-            "multi_release_selection_entries",
-            e.id.ordinal,
-        ));
-        out.push(range(
-            origin,
-            "multi_release_compliance_entries",
-            e.id.ordinal,
-        ));
+fn unprocessed_ranges(origin: &ContainerOrigin, entries: &[PhysicalEntry]) -> Vec<CoverageRange> {
+    let mut ranges = Vec::new();
+    for entry in entries {
+        ranges.push(range(origin, SELECTION_METRIC, entry.id.ordinal));
+        if is_probe_applicable(&classify(entry)) {
+            ranges.push(range(origin, COMPLIANCE_METRIC, entry.id.ordinal));
+        }
     }
-    Ok(())
+    ranges
+}
+
+/// A container this run never produced a report for: every ordinal it did enumerate is
+/// declared skipped in both MR dimensions, followed by the physical suffix its provider
+/// itself did not enumerate (label and bounds kept verbatim).
+fn declare_unprocessed(input: &ContainerInput, out: &mut Vec<CoverageRange>) {
+    out.extend(unprocessed_ranges(&input.origin, &input.entries));
+    out.extend(input.coverage.artifact_structural.skipped.clone());
 }
 fn root_origin(snapshot: &ArtifactSnapshot) -> ContainerOrigin {
     ContainerOrigin {
@@ -1415,8 +1871,13 @@ fn execution_for(error: &Error, budget: &Budget, failed: bool) -> ExecutionRepor
         }
     }
 }
-fn priority(e: &ExecutionReport) -> u8 {
-    match e {
+/// A blocking issue is a budget or cancellation error that really prevented progress.
+fn blocks(priority: u8) -> bool {
+    priority >= 3
+}
+
+fn priority_of(execution: &ExecutionReport) -> u8 {
+    match execution {
         ExecutionReport::Cancelled { .. } => 4,
         ExecutionReport::Partial {
             reason: TerminationReason::BudgetExceeded { .. },
@@ -1434,25 +1895,197 @@ fn priority(e: &ExecutionReport) -> u8 {
         _ => 1,
     }
 }
-fn merge_execution(current: &mut ExecutionReport, incoming: &ExecutionReport) {
-    if priority(incoming) > priority(current) {
-        *current = incoming.clone();
+
+fn merge_issue(slot: &mut Option<ExecutionReport>, incoming: ExecutionReport) {
+    match slot {
+        Some(current) if priority_of(current) >= priority_of(&incoming) => {}
+        _ => *slot = Some(incoming),
     }
 }
-fn set_issue(current: &mut ExecutionReport, error: &Error, budget: &Budget, failed: bool) {
-    merge_execution(current, &execution_for(error, budget, failed));
+
+/// Highest-priority issue of one container or of the aggregate report. The first issue of
+/// the winning priority is kept, `usage` is refreshed when the report is finalized, a
+/// blocking budget or cancellation error stops later work, and an exhausted result-item
+/// budget stops later non-terminal items (terminal diagnostics stay control metadata).
+struct Issues {
+    best: Option<ExecutionReport>,
+    items_exhausted: bool,
 }
-fn must_stop(e: &ExecutionReport) -> bool {
-    matches!(
-        e,
-        ExecutionReport::Cancelled { .. }
+
+impl Issues {
+    fn new(initial: &ExecutionReport) -> Self {
+        Self {
+            best: Some(initial.clone()),
+            items_exhausted: false,
+        }
+    }
+
+    /// No further entry evidence, selection, or domain diagnostic can be charged.
+    fn items_exhausted(&self) -> bool {
+        self.items_exhausted
+    }
+
+    /// Work was stopped by a budget or cancellation error that really prevented progress.
+    fn blocked(&self) -> bool {
+        self.best
+            .as_ref()
+            .is_some_and(|report| blocks(priority_of(report)))
+    }
+
+    fn record(&mut self, error: &Error, budget: &Budget) {
+        if matches!(
+            error,
+            Error::BudgetExceeded {
+                dimension: BudgetDimension::ResultItems,
+                ..
+            }
+        ) {
+            self.items_exhausted = true;
+        }
+        merge_issue(&mut self.best, execution_for(error, budget, false));
+    }
+
+    /// Merges an issue the caller already fully evaluated. Reporting only: the caller decides
+    /// whether this issue stops its own work.
+    fn merge(&mut self, report: &ExecutionReport) {
+        merge_issue(&mut self.best, report.clone());
+    }
+
+    /// The policy verdict is the reason this probe never ran, so it also wins over an equally
+    /// ranked issue; a higher-ranked issue (cancellation or a blocking budget) still stands.
+    fn override_with(&mut self, report: ExecutionReport) {
+        match &self.best {
+            Some(current) if priority_of(current) > priority_of(&report) => {}
+            _ => self.best = Some(report),
+        }
+    }
+
+    fn finish(self, budget: &Budget) -> ExecutionReport {
+        let report = self.best.unwrap_or(ExecutionReport::Complete {
+            usage: budget.usage(),
+        });
+        with_usage(report, budget)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::budget::UsageSnapshot;
+
+    fn unsupported(code: &str) -> ExecutionReport {
+        ExecutionReport::Failed {
+            reason: TerminationReason::Unsupported { code: code.into() },
+            usage: UsageSnapshot::default(),
+        }
+    }
+
+    fn partial(dimension: BudgetDimension) -> ExecutionReport {
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded { dimension },
+            usage: UsageSnapshot::default(),
+        }
+    }
+
+    fn issue_of(report: ExecutionReport) -> Issues {
+        Issues::new(&report)
+    }
+
+    fn code_of(issues: &Issues) -> String {
+        match issues.best.as_ref().unwrap() {
+            ExecutionReport::Failed {
+                reason: TerminationReason::Unsupported { code },
+                ..
+            }
             | ExecutionReport::Partial {
-                reason: TerminationReason::BudgetExceeded { .. },
+                reason: TerminationReason::Unsupported { code },
                 ..
-            }
-            | ExecutionReport::Failed {
-                reason: TerminationReason::BudgetExceeded { .. },
-                ..
-            }
-    )
+            } => code.clone(),
+            other => format!("{other:?}"),
+        }
+    }
+
+    /// The policy verdict explains why no standard probe ran, so it also replaces an equally
+    /// ranked unsupported issue instead of being outranked by it.
+    #[test]
+    fn policy_verdict_replaces_an_equally_ranked_unsupported_issue() {
+        let mut issues = issue_of(unsupported("physical_unsupported_probe"));
+        issues.override_with(unsupported("multi_release_custom_policy"));
+        assert_eq!(code_of(&issues), "multi_release_custom_policy");
+    }
+
+    /// Cancellation and a blocking budget really prevented the work, so they stay.
+    #[test]
+    fn a_blocking_issue_outranks_the_policy_verdict() {
+        for blocking in [
+            ExecutionReport::Cancelled {
+                usage: UsageSnapshot::default(),
+            },
+            partial(BudgetDimension::ReadBytes),
+        ] {
+            let mut issues = issue_of(blocking.clone());
+            issues.override_with(unsupported("multi_release_unknown_policy"));
+            assert_eq!(issues.best, Some(blocking));
+        }
+    }
+
+    /// Equal priorities keep the issue that appeared first, for merged and recorded issues.
+    #[test]
+    fn the_first_issue_of_a_priority_wins() {
+        let mut issues = issue_of(unsupported("first_unsupported"));
+        issues.merge(&unsupported("second_unsupported"));
+        assert_eq!(code_of(&issues), "first_unsupported");
+        let mut issues = issue_of(partial(BudgetDimension::ReadBytes));
+        issues.merge(&partial(BudgetDimension::ClassBytes));
+        assert_eq!(issues.best, Some(partial(BudgetDimension::ReadBytes)));
+        // A strictly higher priority still wins over the earlier issue.
+        issues.merge(&ExecutionReport::Cancelled {
+            usage: UsageSnapshot::default(),
+        });
+        assert_eq!(
+            issues.best,
+            Some(ExecutionReport::Cancelled {
+                usage: UsageSnapshot::default()
+            })
+        );
+    }
+
+    /// Every budget dimension blocks further work, but only the result-item dimension also
+    /// stops item charges: terminal diagnostics stay control metadata.
+    #[test]
+    fn result_item_exhaustion_stops_items_and_blocks_further_work() {
+        let mut issues = issue_of(ExecutionReport::Complete {
+            usage: UsageSnapshot::default(),
+        });
+        assert!(!issues.items_exhausted() && !issues.blocked());
+        let budget = Budget::new(test_limits());
+        issues.record(
+            &Error::BudgetExceeded {
+                dimension: BudgetDimension::ResultItems,
+                limit: 0,
+                consumed: 0,
+                requested: 1,
+            },
+            &budget,
+        );
+        assert!(issues.items_exhausted());
+        assert!(issues.blocked());
+        assert_eq!(issues.best, Some(partial(BudgetDimension::ResultItems)));
+    }
+
+    fn test_limits() -> crate::budget::Limits {
+        crate::budget::Limits {
+            input_bytes: 1 << 24,
+            archive_entries: 1_000,
+            entry_bytes: 1 << 24,
+            read_bytes: 1 << 24,
+            class_bytes: 1 << 24,
+            attribute_bytes: 1 << 24,
+            code_bytes: 1 << 24,
+            result_items: 1_000,
+            output_bytes: 1 << 24,
+            nested_depth: 8,
+            elapsed_millis: u64::MAX,
+        }
+    }
 }

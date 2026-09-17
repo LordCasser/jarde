@@ -103,3 +103,67 @@ jobs:
         uses: EmbarkStudios/cargo-deny-action@v2.1.1
         with:
           command: check
+
+  fuzz-smoke:
+    name: fuzz smoke
+    runs-on: ubuntu-24.04
+    # Bounded smoke gate only (design 3.3): it proves that the committed corpus and the
+    # two targets survive a short single-worker libFuzzer run without panicking, without
+    # crossing a public budget and without claiming completeness for damaged input. It is
+    # not a security or coverage proof: 20 seconds per target, no continuous fuzzing, no
+    # corpus accumulation between runs. The local gate runs the same targets for 60
+    # seconds; only the time budget differs.
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Install nightly-2026-07-20
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2026-07-20
+
+      - name: Install cargo-fuzz 0.13.2
+        run: cargo install cargo-fuzz --version 0.13.2 --locked
+
+      - name: Prepare the C++ and sanitizer toolchain
+        run: |
+          # The ubuntu-24.04 image already ships clang/llvm and gcc, and the nightly
+          # toolchain ships the AddressSanitizer runtime for x86_64-unknown-linux-gnu, so
+          # no package install is required. The versions are printed for the record; add
+          # `sudo apt-get install -y clang` here if a future image drops clang.
+          clang --version
+          clang++ --version
+          cargo --version
+
+      - name: Check the committed corpus against the targets
+        # Replays every committed seed once and asserts the seed facts (a valid seed
+        # really answers the fixed requests, a damaged one is reported instead of
+        # claiming completeness). A corpus that only reached `open` failures would still
+        # "pass" a pure libFuzzer smoke, this step is what keeps it honest.
+        run: cargo +nightly-2026-07-20 test --manifest-path fuzz/Cargo.toml --locked
+
+      - name: Run the bounded query smoke
+        run: |
+          # New corpus entries and crash artifacts must not land in the tracked tree:
+          # the run starts from a scratch copy of the committed corpus, and crash inputs
+          # go to the ignored fuzz/artifacts/<target>/ directory.
+          mkdir -p "$RUNNER_TEMP/corpus/query"
+          cp -r fuzz/corpus/query/. "$RUNNER_TEMP/corpus/query/"
+          cd fuzz
+          cargo +nightly-2026-07-20 fuzz run query "$RUNNER_TEMP/corpus/query" -- \
+            -max_total_time=20 -max_len=65536 -rss_limit_mb=512 -timeout=10 -workers=1 -print_final_stats=1
+
+      - name: Run the bounded artifact-tree smoke
+        run: |
+          mkdir -p "$RUNNER_TEMP/corpus/artifact_tree"
+          cp -r fuzz/corpus/artifact_tree/. "$RUNNER_TEMP/corpus/artifact_tree/"
+          cd fuzz
+          cargo +nightly-2026-07-20 fuzz run artifact_tree "$RUNNER_TEMP/corpus/artifact_tree" -- \
+            -max_total_time=20 -max_len=65536 -rss_limit_mb=512 -timeout=10 -workers=1 -print_final_stats=1
+
+      - name: Ensure the smoke runs left the tracked tree unchanged
+        # Mirrors the `stable` job's `git diff --exit-code`, and also fails on a new
+        # *untracked* file outside the ignored fuzz paths (a corpus entry written into
+        # the tracked corpus directory would show up here).
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"

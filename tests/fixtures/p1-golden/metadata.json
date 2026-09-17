@@ -1,0 +1,1023 @@
+{
+  "fixture": {
+    "blake3": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c",
+    "bytes": 232,
+    "name": "metadata",
+    "source": "hand-built in tests/p1_xref_golden.rs::metadata_fixture (superclass, interface, field descriptor, Signature and a class-level annotation whose type has no CONSTANT_Class)"
+  },
+  "replays": [
+    {
+      "kind": "query",
+      "name": "type-single-sup",
+      "report": {
+        "analysis": {
+          "kind": "performed"
+        },
+        "consumers": {
+          "kinds": [
+            "type"
+          ],
+          "version": 1
+        },
+        "coverage": {
+          "consumer_schema": {
+            "kinds": [
+              "type"
+            ],
+            "version": 1
+          },
+          "dimensions": {
+            "artifact_structural": {
+              "scanned": [
+                {
+                  "end": 232,
+                  "label": "standalone_class:xref_scan_bytes",
+                  "start": 0
+                }
+              ],
+              "skipped": [],
+              "state": "complete_within_schema",
+              "uninterpreted_extensions": []
+            },
+            "dynamic_analysis": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            },
+            "runtime_resolution": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            }
+          },
+          "scanned_items": 2,
+          "unknown_candidates": 0,
+          "unsupported_categories": []
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 0,
+            "attribute_bytes": 60,
+            "class_bytes": 696,
+            "code_bytes": 0,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 696,
+            "read_bytes": 696,
+            "result_items": 2
+          }
+        },
+        "items": [
+          {
+            "certainty": "exact",
+            "consumer": "type",
+            "derivation": "structural_consumer",
+            "evidence": {
+              "attribute": null,
+              "bci": null,
+              "constant_pool_index": 4,
+              "opcode": null,
+              "span": {
+                "length": 3,
+                "start": 36
+              },
+              "via": []
+            },
+            "operation": "super_class",
+            "relation": "mentions_symbol",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "definition": {
+                  "class_bytes": {
+                    "digest": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c",
+                    "length": 232
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                },
+                "kind": "class_offset",
+                "offset": 36
+              }
+            },
+            "target": {
+              "kind": "symbol",
+              "value": {
+                "kind": "class",
+                "owner": [
+                  112,
+                  47,
+                  83,
+                  117,
+                  112
+                ]
+              }
+            }
+          },
+          {
+            "certainty": "exact",
+            "consumer": "type",
+            "derivation": "structural_consumer",
+            "evidence": {
+              "attribute": null,
+              "bci": null,
+              "constant_pool_index": 8,
+              "opcode": null,
+              "span": {
+                "length": 10,
+                "start": 56
+              },
+              "via": []
+            },
+            "operation": "field_descriptor",
+            "relation": "mentions_symbol",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "definition": {
+                  "class_bytes": {
+                    "digest": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c",
+                    "length": 232
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                },
+                "kind": "class_offset",
+                "offset": 56
+              }
+            },
+            "target": {
+              "kind": "symbol",
+              "value": {
+                "kind": "class",
+                "owner": [
+                  112,
+                  47,
+                  83,
+                  117,
+                  112
+                ]
+              }
+            }
+          }
+        ],
+        "page": {
+          "cursor": null,
+          "has_more": false,
+          "returned_items": 2
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+        },
+        "relation": "mentions_symbol"
+      },
+      "request": {
+        "consumers": {
+          "kinds": [
+            "type"
+          ],
+          "version": 1
+        },
+        "cursor": null,
+        "max_items": 0,
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+        },
+        "relation": "mentions_symbol",
+        "target": {
+          "kind": "symbol",
+          "value": {
+            "kind": "class",
+            "owner": [
+              112,
+              47,
+              83,
+              117,
+              112
+            ]
+          }
+        }
+      }
+    },
+    {
+      "kind": "query",
+      "name": "type-and-annotation-combined-sup",
+      "report": {
+        "analysis": {
+          "kind": "performed"
+        },
+        "consumers": {
+          "kinds": [
+            "type",
+            "signature",
+            "annotation",
+            "inner_nest"
+          ],
+          "version": 1
+        },
+        "coverage": {
+          "consumer_schema": {
+            "kinds": [
+              "type",
+              "signature",
+              "annotation",
+              "inner_nest"
+            ],
+            "version": 1
+          },
+          "dimensions": {
+            "artifact_structural": {
+              "scanned": [
+                {
+                  "end": 232,
+                  "label": "standalone_class:xref_scan_bytes",
+                  "start": 0
+                }
+              ],
+              "skipped": [],
+              "state": "complete_within_schema",
+              "uninterpreted_extensions": []
+            },
+            "dynamic_analysis": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            },
+            "runtime_resolution": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            }
+          },
+          "scanned_items": 2,
+          "unknown_candidates": 0,
+          "unsupported_categories": []
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 0,
+            "attribute_bytes": 80,
+            "class_bytes": 696,
+            "code_bytes": 0,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 696,
+            "read_bytes": 696,
+            "result_items": 2
+          }
+        },
+        "items": [
+          {
+            "certainty": "exact",
+            "consumer": "type",
+            "derivation": "structural_consumer",
+            "evidence": {
+              "attribute": null,
+              "bci": null,
+              "constant_pool_index": 4,
+              "opcode": null,
+              "span": {
+                "length": 3,
+                "start": 36
+              },
+              "via": []
+            },
+            "operation": "super_class",
+            "relation": "mentions_symbol",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "definition": {
+                  "class_bytes": {
+                    "digest": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c",
+                    "length": 232
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                },
+                "kind": "class_offset",
+                "offset": 36
+              }
+            },
+            "target": {
+              "kind": "symbol",
+              "value": {
+                "kind": "class",
+                "owner": [
+                  112,
+                  47,
+                  83,
+                  117,
+                  112
+                ]
+              }
+            }
+          },
+          {
+            "certainty": "exact",
+            "consumer": "type",
+            "derivation": "structural_consumer",
+            "evidence": {
+              "attribute": null,
+              "bci": null,
+              "constant_pool_index": 8,
+              "opcode": null,
+              "span": {
+                "length": 10,
+                "start": 56
+              },
+              "via": []
+            },
+            "operation": "field_descriptor",
+            "relation": "mentions_symbol",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "definition": {
+                  "class_bytes": {
+                    "digest": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c",
+                    "length": 232
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                },
+                "kind": "class_offset",
+                "offset": 56
+              }
+            },
+            "target": {
+              "kind": "symbol",
+              "value": {
+                "kind": "class",
+                "owner": [
+                  112,
+                  47,
+                  83,
+                  117,
+                  112
+                ]
+              }
+            }
+          }
+        ],
+        "page": {
+          "cursor": null,
+          "has_more": false,
+          "returned_items": 2
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+        },
+        "relation": "mentions_symbol"
+      },
+      "request": {
+        "consumers": {
+          "kinds": [
+            "type",
+            "signature",
+            "annotation",
+            "inner_nest"
+          ],
+          "version": 1
+        },
+        "cursor": null,
+        "max_items": 0,
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+        },
+        "relation": "mentions_symbol",
+        "target": {
+          "kind": "symbol",
+          "value": {
+            "kind": "class",
+            "owner": [
+              112,
+              47,
+              83,
+              117,
+              112
+            ]
+          }
+        }
+      }
+    },
+    {
+      "kind": "query",
+      "name": "signature-single-string",
+      "report": {
+        "analysis": {
+          "kind": "performed"
+        },
+        "consumers": {
+          "kinds": [
+            "signature"
+          ],
+          "version": 1
+        },
+        "coverage": {
+          "consumer_schema": {
+            "kinds": [
+              "signature"
+            ],
+            "version": 1
+          },
+          "dimensions": {
+            "artifact_structural": {
+              "scanned": [
+                {
+                  "end": 232,
+                  "label": "standalone_class:xref_scan_bytes",
+                  "start": 0
+                }
+              ],
+              "skipped": [],
+              "state": "complete_within_schema",
+              "uninterpreted_extensions": []
+            },
+            "dynamic_analysis": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            },
+            "runtime_resolution": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            }
+          },
+          "scanned_items": 1,
+          "unknown_candidates": 0,
+          "unsupported_categories": []
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 0,
+            "attribute_bytes": 28,
+            "class_bytes": 232,
+            "code_bytes": 0,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 232,
+            "read_bytes": 232,
+            "result_items": 1
+          }
+        },
+        "items": [
+          {
+            "certainty": "exact",
+            "consumer": "signature",
+            "derivation": "structural_consumer",
+            "evidence": {
+              "attribute": [
+                83,
+                105,
+                103,
+                110,
+                97,
+                116,
+                117,
+                114,
+                101
+              ],
+              "bci": null,
+              "constant_pool_index": 11,
+              "opcode": null,
+              "span": {
+                "length": 41,
+                "start": 89
+              },
+              "via": []
+            },
+            "operation": "generic_signature",
+            "relation": "mentions_symbol",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "definition": {
+                  "class_bytes": {
+                    "digest": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c",
+                    "length": 232
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                },
+                "kind": "class_offset",
+                "offset": 89
+              }
+            },
+            "target": {
+              "kind": "symbol",
+              "value": {
+                "kind": "class",
+                "owner": [
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  83,
+                  116,
+                  114,
+                  105,
+                  110,
+                  103
+                ]
+              }
+            }
+          }
+        ],
+        "page": {
+          "cursor": null,
+          "has_more": false,
+          "returned_items": 1
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+        },
+        "relation": "mentions_symbol"
+      },
+      "request": {
+        "consumers": {
+          "kinds": [
+            "signature"
+          ],
+          "version": 1
+        },
+        "cursor": null,
+        "max_items": 0,
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+        },
+        "relation": "mentions_symbol",
+        "target": {
+          "kind": "symbol",
+          "value": {
+            "kind": "class",
+            "owner": [
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              83,
+              116,
+              114,
+              105,
+              110,
+              103
+            ]
+          }
+        }
+      }
+    },
+    {
+      "kind": "query",
+      "name": "annotation-single-ann",
+      "report": {
+        "analysis": {
+          "kind": "performed"
+        },
+        "consumers": {
+          "kinds": [
+            "annotation"
+          ],
+          "version": 1
+        },
+        "coverage": {
+          "consumer_schema": {
+            "kinds": [
+              "annotation"
+            ],
+            "version": 1
+          },
+          "dimensions": {
+            "artifact_structural": {
+              "scanned": [
+                {
+                  "end": 232,
+                  "label": "standalone_class:xref_scan_bytes",
+                  "start": 0
+                }
+              ],
+              "skipped": [],
+              "state": "complete_within_schema",
+              "uninterpreted_extensions": []
+            },
+            "dynamic_analysis": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            },
+            "runtime_resolution": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            }
+          },
+          "scanned_items": 1,
+          "unknown_candidates": 0,
+          "unsupported_categories": []
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 0,
+            "attribute_bytes": 32,
+            "class_bytes": 232,
+            "code_bytes": 0,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 232,
+            "read_bytes": 232,
+            "result_items": 1
+          }
+        },
+        "items": [
+          {
+            "certainty": "exact",
+            "consumer": "annotation",
+            "derivation": "structural_consumer",
+            "evidence": {
+              "attribute": [
+                82,
+                117,
+                110,
+                116,
+                105,
+                109,
+                101,
+                86,
+                105,
+                115,
+                105,
+                98,
+                108,
+                101,
+                65,
+                110,
+                110,
+                111,
+                116,
+                97,
+                116,
+                105,
+                111,
+                110,
+                115
+              ],
+              "bci": null,
+              "constant_pool_index": 14,
+              "opcode": null,
+              "span": {
+                "length": 10,
+                "start": 170
+              },
+              "via": []
+            },
+            "operation": "annotation",
+            "relation": "mentions_symbol",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "definition": {
+                  "class_bytes": {
+                    "digest": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c",
+                    "length": 232
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                },
+                "kind": "class_offset",
+                "offset": 170
+              }
+            },
+            "target": {
+              "kind": "symbol",
+              "value": {
+                "kind": "class",
+                "owner": [
+                  112,
+                  47,
+                  65,
+                  110,
+                  110
+                ]
+              }
+            }
+          }
+        ],
+        "page": {
+          "cursor": null,
+          "has_more": false,
+          "returned_items": 1
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+        },
+        "relation": "mentions_symbol"
+      },
+      "request": {
+        "consumers": {
+          "kinds": [
+            "annotation"
+          ],
+          "version": 1
+        },
+        "cursor": null,
+        "max_items": 0,
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+        },
+        "relation": "mentions_symbol",
+        "target": {
+          "kind": "symbol",
+          "value": {
+            "kind": "class",
+            "owner": [
+              112,
+              47,
+              65,
+              110,
+              110
+            ]
+          }
+        }
+      }
+    },
+    {
+      "kind": "query",
+      "name": "annotation-and-signature-combined-ann",
+      "report": {
+        "analysis": {
+          "kind": "performed"
+        },
+        "consumers": {
+          "kinds": [
+            "signature",
+            "annotation"
+          ],
+          "version": 1
+        },
+        "coverage": {
+          "consumer_schema": {
+            "kinds": [
+              "signature",
+              "annotation"
+            ],
+            "version": 1
+          },
+          "dimensions": {
+            "artifact_structural": {
+              "scanned": [
+                {
+                  "end": 232,
+                  "label": "standalone_class:xref_scan_bytes",
+                  "start": 0
+                }
+              ],
+              "skipped": [],
+              "state": "complete_within_schema",
+              "uninterpreted_extensions": []
+            },
+            "dynamic_analysis": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            },
+            "runtime_resolution": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            }
+          },
+          "scanned_items": 1,
+          "unknown_candidates": 0,
+          "unsupported_categories": []
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 0,
+            "attribute_bytes": 40,
+            "class_bytes": 232,
+            "code_bytes": 0,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 232,
+            "read_bytes": 232,
+            "result_items": 1
+          }
+        },
+        "items": [
+          {
+            "certainty": "exact",
+            "consumer": "annotation",
+            "derivation": "structural_consumer",
+            "evidence": {
+              "attribute": [
+                82,
+                117,
+                110,
+                116,
+                105,
+                109,
+                101,
+                86,
+                105,
+                115,
+                105,
+                98,
+                108,
+                101,
+                65,
+                110,
+                110,
+                111,
+                116,
+                97,
+                116,
+                105,
+                111,
+                110,
+                115
+              ],
+              "bci": null,
+              "constant_pool_index": 14,
+              "opcode": null,
+              "span": {
+                "length": 10,
+                "start": 170
+              },
+              "via": []
+            },
+            "operation": "annotation",
+            "relation": "mentions_symbol",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "definition": {
+                  "class_bytes": {
+                    "digest": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c",
+                    "length": 232
+                  },
+                  "location": {
+                    "kind": "standalone_root",
+                    "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+                  },
+                  "variant": {
+                    "kind": "base"
+                  }
+                },
+                "kind": "class_offset",
+                "offset": 170
+              }
+            },
+            "target": {
+              "kind": "symbol",
+              "value": {
+                "kind": "class",
+                "owner": [
+                  112,
+                  47,
+                  65,
+                  110,
+                  110
+                ]
+              }
+            }
+          }
+        ],
+        "page": {
+          "cursor": null,
+          "has_more": false,
+          "returned_items": 1
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+        },
+        "relation": "mentions_symbol"
+      },
+      "request": {
+        "consumers": {
+          "kinds": [
+            "signature",
+            "annotation"
+          ],
+          "version": 1
+        },
+        "cursor": null,
+        "max_items": 0,
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "c1cea3460167ede4d03e47725ed96ce4eecd1e03387f1523da5a054caaa58c4c"
+        },
+        "relation": "mentions_symbol",
+        "target": {
+          "kind": "symbol",
+          "value": {
+            "kind": "class",
+            "owner": [
+              112,
+              47,
+              65,
+              110,
+              110
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

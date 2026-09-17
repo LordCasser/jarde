@@ -1,0 +1,871 @@
+{
+  "fixture": {
+    "blake3": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47",
+    "bytes": 731,
+    "name": "bootstrap",
+    "source": "real javac 23.0.1 --release 8 lambda, tests/fixtures/b2-bootstrap-descriptor/v8/LambdaSample.class (SHA-256 9588c94b91d6da16750e52969c6557dcf416a4d1929c796f47d52e142fac4083)"
+  },
+  "replays": [
+    {
+      "kind": "query",
+      "name": "bootstrap-implementation-handle",
+      "report": {
+        "analysis": {
+          "kind": "performed"
+        },
+        "consumers": {
+          "kinds": [
+            "bootstrap"
+          ],
+          "version": 1
+        },
+        "coverage": {
+          "consumer_schema": {
+            "kinds": [
+              "bootstrap"
+            ],
+            "version": 1
+          },
+          "dimensions": {
+            "artifact_structural": {
+              "scanned": [
+                {
+                  "end": 731,
+                  "label": "standalone_class:xref_scan_bytes",
+                  "start": 0
+                }
+              ],
+              "skipped": [],
+              "state": "complete_within_schema",
+              "uninterpreted_extensions": []
+            },
+            "dynamic_analysis": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            },
+            "runtime_resolution": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            }
+          },
+          "scanned_items": 1,
+          "unknown_candidates": 0,
+          "unsupported_categories": []
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 0,
+            "attribute_bytes": 198,
+            "class_bytes": 731,
+            "code_bytes": 19,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 731,
+            "read_bytes": 731,
+            "result_items": 1
+          }
+        },
+        "items": [
+          {
+            "certainty": "exact",
+            "consumer": "bootstrap",
+            "derivation": "bootstrap_edge",
+            "evidence": {
+              "attribute": [
+                66,
+                111,
+                111,
+                116,
+                115,
+                116,
+                114,
+                97,
+                112,
+                77,
+                101,
+                116,
+                104,
+                111,
+                100,
+                115
+              ],
+              "bci": 0,
+              "constant_pool_index": 21,
+              "opcode": 186,
+              "span": {
+                "length": 4,
+                "start": 194
+              },
+              "via": [
+                {
+                  "argument_index": null,
+                  "bootstrap_index": null,
+                  "constant_pool_index": 7
+                },
+                {
+                  "argument_index": 1,
+                  "bootstrap_index": 0,
+                  "constant_pool_index": 21
+                }
+              ]
+            },
+            "operation": "bootstrap_argument",
+            "relation": "mentions_symbol",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "bci": 0,
+                "kind": "code",
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    114,
+                    117,
+                    110
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47",
+                      "length": 731
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                }
+              }
+            },
+            "target": {
+              "kind": "symbol",
+              "value": {
+                "descriptor": [
+                  40,
+                  41,
+                  86
+                ],
+                "kind": "method",
+                "name": [
+                  108,
+                  97,
+                  109,
+                  98,
+                  100,
+                  97,
+                  36,
+                  114,
+                  117,
+                  110,
+                  36,
+                  48
+                ],
+                "owner": [
+                  76,
+                  97,
+                  109,
+                  98,
+                  100,
+                  97,
+                  83,
+                  97,
+                  109,
+                  112,
+                  108,
+                  101
+                ]
+              }
+            }
+          }
+        ],
+        "page": {
+          "cursor": null,
+          "has_more": false,
+          "returned_items": 1
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47"
+        },
+        "relation": "mentions_symbol"
+      },
+      "request": {
+        "consumers": {
+          "kinds": [
+            "bootstrap"
+          ],
+          "version": 1
+        },
+        "cursor": null,
+        "max_items": 0,
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47"
+        },
+        "relation": "mentions_symbol",
+        "target": {
+          "kind": "symbol",
+          "value": {
+            "descriptor": [
+              40,
+              41,
+              86
+            ],
+            "kind": "method",
+            "name": [
+              108,
+              97,
+              109,
+              98,
+              100,
+              97,
+              36,
+              114,
+              117,
+              110,
+              36,
+              48
+            ],
+            "owner": [
+              76,
+              97,
+              109,
+              98,
+              100,
+              97,
+              83,
+              97,
+              109,
+              112,
+              108,
+              101
+            ]
+          }
+        }
+      }
+    },
+    {
+      "kind": "query",
+      "name": "type-methodtype-from-the-bootstrap-descriptor",
+      "report": {
+        "analysis": {
+          "kind": "performed"
+        },
+        "consumers": {
+          "kinds": [
+            "type"
+          ],
+          "version": 1
+        },
+        "coverage": {
+          "consumer_schema": {
+            "kinds": [
+              "type"
+            ],
+            "version": 1
+          },
+          "dimensions": {
+            "artifact_structural": {
+              "scanned": [
+                {
+                  "end": 731,
+                  "label": "standalone_class:xref_scan_bytes",
+                  "start": 0
+                }
+              ],
+              "skipped": [],
+              "state": "complete_within_schema",
+              "uninterpreted_extensions": []
+            },
+            "dynamic_analysis": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            },
+            "runtime_resolution": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            }
+          },
+          "scanned_items": 1,
+          "unknown_candidates": 0,
+          "unsupported_categories": []
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 0,
+            "attribute_bytes": 485,
+            "class_bytes": 2193,
+            "code_bytes": 38,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 2193,
+            "read_bytes": 2193,
+            "result_items": 1
+          }
+        },
+        "items": [
+          {
+            "certainty": "exact",
+            "consumer": "type",
+            "derivation": "bootstrap_edge",
+            "evidence": {
+              "attribute": [
+                66,
+                111,
+                111,
+                116,
+                115,
+                116,
+                114,
+                97,
+                112,
+                77,
+                101,
+                116,
+                104,
+                111,
+                100,
+                115
+              ],
+              "bci": 0,
+              "constant_pool_index": 24,
+              "opcode": 186,
+              "span": {
+                "length": 4,
+                "start": 208
+              },
+              "via": [
+                {
+                  "argument_index": null,
+                  "bootstrap_index": null,
+                  "constant_pool_index": 7
+                },
+                {
+                  "argument_index": null,
+                  "bootstrap_index": 0,
+                  "constant_pool_index": 24
+                }
+              ]
+            },
+            "operation": "bootstrap_method",
+            "relation": "mentions_symbol",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "bci": 0,
+                "kind": "code",
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    114,
+                    117,
+                    110
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47",
+                      "length": 731
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                }
+              }
+            },
+            "target": {
+              "kind": "symbol",
+              "value": {
+                "kind": "class",
+                "owner": [
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  105,
+                  110,
+                  118,
+                  111,
+                  107,
+                  101,
+                  47,
+                  77,
+                  101,
+                  116,
+                  104,
+                  111,
+                  100,
+                  84,
+                  121,
+                  112,
+                  101
+                ]
+              }
+            }
+          }
+        ],
+        "page": {
+          "cursor": null,
+          "has_more": false,
+          "returned_items": 1
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47"
+        },
+        "relation": "mentions_symbol"
+      },
+      "request": {
+        "consumers": {
+          "kinds": [
+            "type"
+          ],
+          "version": 1
+        },
+        "cursor": null,
+        "max_items": 0,
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47"
+        },
+        "relation": "mentions_symbol",
+        "target": {
+          "kind": "symbol",
+          "value": {
+            "kind": "class",
+            "owner": [
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              105,
+              110,
+              118,
+              111,
+              107,
+              101,
+              47,
+              77,
+              101,
+              116,
+              104,
+              111,
+              100,
+              84,
+              121,
+              112,
+              101
+            ]
+          }
+        }
+      }
+    },
+    {
+      "kind": "query",
+      "name": "bootstrap-only-methodtype-is-not-a-type-fact",
+      "report": {
+        "analysis": {
+          "kind": "performed"
+        },
+        "consumers": {
+          "kinds": [
+            "bootstrap"
+          ],
+          "version": 1
+        },
+        "coverage": {
+          "consumer_schema": {
+            "kinds": [
+              "bootstrap"
+            ],
+            "version": 1
+          },
+          "dimensions": {
+            "artifact_structural": {
+              "scanned": [
+                {
+                  "end": 731,
+                  "label": "standalone_class:xref_scan_bytes",
+                  "start": 0
+                }
+              ],
+              "skipped": [],
+              "state": "complete_within_schema",
+              "uninterpreted_extensions": []
+            },
+            "dynamic_analysis": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            },
+            "runtime_resolution": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            }
+          },
+          "scanned_items": 0,
+          "unknown_candidates": 0,
+          "unsupported_categories": []
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 0,
+            "attribute_bytes": 198,
+            "class_bytes": 731,
+            "code_bytes": 19,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 731,
+            "read_bytes": 731,
+            "result_items": 0
+          }
+        },
+        "items": [],
+        "page": {
+          "cursor": null,
+          "has_more": false,
+          "returned_items": 0
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47"
+        },
+        "relation": "mentions_symbol"
+      },
+      "request": {
+        "consumers": {
+          "kinds": [
+            "bootstrap"
+          ],
+          "version": 1
+        },
+        "cursor": null,
+        "max_items": 0,
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47"
+        },
+        "relation": "mentions_symbol",
+        "target": {
+          "kind": "symbol",
+          "value": {
+            "kind": "class",
+            "owner": [
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              105,
+              110,
+              118,
+              111,
+              107,
+              101,
+              47,
+              77,
+              101,
+              116,
+              104,
+              111,
+              100,
+              84,
+              121,
+              112,
+              101
+            ]
+          }
+        }
+      }
+    },
+    {
+      "kind": "query",
+      "name": "invocation-dynamic-site",
+      "report": {
+        "analysis": {
+          "kind": "performed"
+        },
+        "consumers": {
+          "kinds": [
+            "invocation"
+          ],
+          "version": 1
+        },
+        "coverage": {
+          "consumer_schema": {
+            "kinds": [
+              "invocation"
+            ],
+            "version": 1
+          },
+          "dimensions": {
+            "artifact_structural": {
+              "scanned": [
+                {
+                  "end": 731,
+                  "label": "standalone_class:xref_scan_bytes",
+                  "start": 0
+                }
+              ],
+              "skipped": [],
+              "state": "complete_within_schema",
+              "uninterpreted_extensions": []
+            },
+            "dynamic_analysis": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            },
+            "runtime_resolution": {
+              "scanned": [],
+              "skipped": [],
+              "state": "not_requested",
+              "uninterpreted_extensions": []
+            }
+          },
+          "scanned_items": 1,
+          "unknown_candidates": 0,
+          "unsupported_categories": []
+        },
+        "diagnostics": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "archive_entries": 0,
+            "attribute_bytes": 180,
+            "class_bytes": 731,
+            "code_bytes": 19,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "nested_depth": 0,
+            "output_bytes": 731,
+            "read_bytes": 731,
+            "result_items": 1
+          }
+        },
+        "items": [
+          {
+            "certainty": "exact",
+            "consumer": "invocation",
+            "derivation": "structural_consumer",
+            "evidence": {
+              "attribute": [
+                67,
+                111,
+                100,
+                101
+              ],
+              "bci": 0,
+              "constant_pool_index": 7,
+              "opcode": 186,
+              "span": {
+                "length": 5,
+                "start": 651
+              },
+              "via": []
+            },
+            "operation": "invoke_dynamic",
+            "relation": "mentions_symbol",
+            "resolution": "not_requested",
+            "source": {
+              "location": {
+                "bci": 0,
+                "kind": "code",
+                "method": {
+                  "descriptor": [
+                    40,
+                    41,
+                    86
+                  ],
+                  "name": [
+                    114,
+                    117,
+                    110
+                  ],
+                  "owner": {
+                    "class_bytes": {
+                      "digest": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47",
+                      "length": 731
+                    },
+                    "location": {
+                      "kind": "standalone_root",
+                      "snapshot": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47"
+                    },
+                    "variant": {
+                      "kind": "base"
+                    }
+                  }
+                }
+              }
+            },
+            "target": {
+              "kind": "symbol",
+              "value": {
+                "descriptor": [
+                  40,
+                  41,
+                  76,
+                  106,
+                  97,
+                  118,
+                  97,
+                  47,
+                  108,
+                  97,
+                  110,
+                  103,
+                  47,
+                  82,
+                  117,
+                  110,
+                  110,
+                  97,
+                  98,
+                  108,
+                  101,
+                  59
+                ],
+                "kind": "method",
+                "name": [
+                  114,
+                  117,
+                  110
+                ],
+                "owner": []
+              }
+            }
+          }
+        ],
+        "page": {
+          "cursor": null,
+          "has_more": false,
+          "returned_items": 1
+        },
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47"
+        },
+        "relation": "mentions_symbol"
+      },
+      "request": {
+        "consumers": {
+          "kinds": [
+            "invocation"
+          ],
+          "version": 1
+        },
+        "cursor": null,
+        "max_items": 0,
+        "physical": {
+          "scope": {
+            "kind": "snapshot_all"
+          },
+          "snapshot": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47"
+        },
+        "relation": "mentions_symbol",
+        "target": {
+          "kind": "symbol",
+          "value": {
+            "descriptor": [
+              40,
+              41,
+              76,
+              106,
+              97,
+              118,
+              97,
+              47,
+              108,
+              97,
+              110,
+              103,
+              47,
+              82,
+              117,
+              110,
+              110,
+              97,
+              98,
+              108,
+              101,
+              59
+            ],
+            "kind": "method",
+            "name": [
+              114,
+              117,
+              110
+            ],
+            "owner": []
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,8 +1,9 @@
 use clap::Parser;
 use jarde::{
-    ArtifactInput, Budget, ClassTarget, CountedBudgetDimension, Engine, EngineBytecodeReport,
-    EngineHeaderReport, EnumerationReport, Error, InspectionMode, JvmBytes, Limits, MethodSelector,
-    PhysicalEntry, UsageSnapshot,
+    ArtifactInput, Budget, ClassTarget, ConsumerSchema, CountedBudgetDimension, Engine,
+    EngineBytecodeReport, EngineHeaderReport, EnumerationReport, Error, InspectionMode, JvmBytes,
+    Limits, MethodSelector, PhysicalEntry, PhysicalScope, PhysicalView, QueryCursor, QueryRelation,
+    QueryReport, QueryRequest, QueryTarget, UsageSnapshot,
 };
 use serde::{Deserialize, Serialize};
 use std::ffi::OsStr;
@@ -76,6 +77,26 @@ enum Operation {
         target: Target,
         selector: Selector,
     },
+    /// One P1 query request.
+    ///
+    /// The request carries the same fields as the library [`QueryRequest`] except for the
+    /// snapshot identity: this adapter opens `input_path` itself, so the caller declares the
+    /// physical scope it wants scanned and the effective `PhysicalView`, including the snapshot
+    /// it resolved to, is echoed back in the report. A continuation replays the `cursor` value
+    /// from an earlier response verbatim, which is how a cursor that belongs to another input
+    /// stays detectable instead of being rewritten.
+    Query {
+        relation: QueryRelation,
+        target: QueryTarget,
+        physical: PhysicalScope,
+        consumers: ConsumerSchema,
+        /// `0` means "no page limit"; the scan still obeys `limits`.
+        max_items: u64,
+        /// Boxed so the request enum stays small: a cursor binds the whole query identity,
+        /// and this adapter holds exactly one request at a time.
+        #[serde(default)]
+        cursor: Option<Box<QueryCursor>>,
+    },
 }
 
 #[derive(Deserialize)]
@@ -128,6 +149,7 @@ enum OperationResult {
     Enumeration { report: EnumerationReport },
     Header { report: EngineHeaderReport },
     Bytecode { report: EngineBytecodeReport },
+    Query { report: QueryReport },
 }
 
 #[derive(Serialize)]
@@ -266,6 +288,32 @@ fn execute(
         Operation::InspectMethodBytecode { target, selector } => engine
             .inspect_method_bytecode(&snapshot, target.as_core(), selector.into(), budget)
             .map(|report| OperationResult::Bytecode { report }),
+        Operation::Query {
+            relation,
+            target,
+            physical,
+            consumers,
+            max_items,
+            cursor,
+        } => {
+            let request = QueryRequest {
+                relation,
+                target,
+                // The snapshot is the one this invocation opened; the caller only declares the
+                // scope. Validation, relation dispatch, paging and coverage all stay in the
+                // library, so the adapter never filters or re-scans a result.
+                physical: PhysicalView {
+                    snapshot: snapshot.id().clone(),
+                    scope: physical,
+                },
+                consumers,
+                max_items,
+                cursor: cursor.map(|cursor| *cursor),
+            };
+            engine
+                .query(&snapshot, &request, budget)
+                .map(|report| OperationResult::Query { report })
+        }
     }
 }
 
