@@ -634,17 +634,17 @@ pub struct HeaderRead {
 
 1. **触发**：`ResolutionRequest.dispatch = Some(DispatchScope { scope, consumers })`。声明解析照常执行（2.1 + 2.3）；dispatch 只在声明 `Resolved` 时计算，否则 `dispatch = None` 并保留 `dispatch_not_implemented` 之外的现有语义（声明未解析时给 `resolution_dispatch_no_declaration` 说明性诊断）。
 2. **候选发现（CHA-lite，只读 Header）**：枚举 `scope` 覆盖的 Header（`PhysicalScope::SnapshotAll` 或 `ArtifactTree`），对每个类用闭包解析其超类/接口链；若链上包含声明的 owner 且该类**自身声明**了同名同 descriptor 的成员，则该成员是一个候选（实现或覆盖）。接口声明 → 候选是该接口的具体实现方法；类声明 → 候选是覆盖该方法的子类方法。**只读 Header，不读任何 Body**（`usage.method_bodies == 0`），受 `ClassHeaders`/`DependencyDepth`/`ResultItems`/取消约束。
-3. **每个候选带 open-world 证据**（`DispatchCandidate { member, evidence }`，证据取自 `OpenWorldEvidence`）：`ExternalSubclass`（范围内存在 `LoadRoot::External` 或未提供内容的 root，可能有未见的子类）、`UnknownLoader`（`Domains` 之外可能有别的 loader 加载同一类）、`RuntimeTransformation`/`ExternalOverride`（`RuntimeUncertainty != None`）、`MissingDependency`（链上有 `Missing`）、`OrderedRoot { index }`（该候选来自有序 root 的第 index 个位置，提示同层可能有别的定义）。
+3. **每个候选带 open-world 证据**（`DispatchCandidate { member, evidence }`，证据取自 `OpenWorldEvidence`）：`ExternalSubclass`（范围内存在 `LoadRoot::External` 或未提供内容的 root，可能有未见的子类）、`UnknownLoader`（`Domains` 之外可能有别的 loader 加载同一类）、`RuntimeTransformation`/`ExternalOverride`（`RuntimeUncertainty != None`）、`MissingDependency`（链上有 `Missing`）、`OrderedRoot { index }`（**仅当 `index > 0`**：该候选来自第 index 个 root，之前的 root 本可以定义却被跳过，因此同层可能有别的定义；`index == 0` 之前没有任何位置，**不构成**开放性证据，否则任何查找都会把 `open_world` 顶成 `true`）。
 4. **`open_world` 的判定**：只要出现上述任一证据（或范围内存在不可判定位置/预算停止）→ `open_world = true`；**单一候选也照样 `open_world = true`**，报告里没有任何"唯一目标"字段，调用方只能从 `candidates` + `open_world` + 证据自行判断。预算/取消停止时 `execution` 为对应 `Partial`/`Cancelled` 且 `open_world = true`（未知范围本身就是开放世界证据）。
 5. **与 2.4 的边界**：声明引用查询回答"哪些 use-site 指向该声明"；dispatch 回答"该声明在该范围内的已知实现/覆盖"。两者不互相替代，也不共享结果缓存（各自独立计费）。
 
 ### 2.5 的验收
 
-- **多实现**：接口 + 范围内两个实现 → 两个候选、各自 evidence（若范围完整且无 uncertainty，`open_world = false`）；再补一个 `RuntimeTransformation::Possible` 的同一 fixture → `open_world = true` 而候选集合不变（证明 open-world 是独立平面）；
+- **多实现**：接口 + 范围内两个实现 → 两个候选、各自 evidence；当两个实现都来自 `roots` 的第 0 个位置、范围完整且环境无 uncertainty 时 `open_world = false`（这条同时固定上一条 `index == 0` 的语义）；再补一个 `RuntimeTransformation::Possible` 的同一 fixture → `open_world = true` 而候选集合不变（证明 open-world 是独立平面）；
 - **外部子类**：环境含 `External` root → `ExternalSubclass` 证据 + `open_world = true`，即使范围内只有一个候选；
 - **未知 loader/transformer**：`Domains` 未覆盖的 loader 或 `external_override`/`runtime_transformation != None` → 对应证据；
 - **单一已知候选不声称唯一**：断言报告结构上不存在"唯一目标"（无该字段）+ `open_world` 语义；
-- **只读 Header**：`usage.method_bodies == 0`、`usage.class_headers > 0`、`reads` 的 reason 含 `DispatchScope`；
+- **只读 Header**：证据是 `usage.code_bytes == 0`（或与同 consumers 的同范围 P1 扫描计费相等），**不是** `method_bodies == 0`——该维度在 3.x 接通前没有计费点，用它当证据是恒真断言（2.2/2.3 复核已两次纠正同一错误）；同时断言 `usage.class_headers > 0` 与 `reads` 的 reason 含 `DispatchScope`；
 - **预算/取消**：`ClassHeaders` 或 `ResultItems` 停止 → 保留已发现候选 + `open_world = true` + `Partial`；
 - **回归**：`Engine::query` 的既有行为与证据不变（P1 golden），`resolve_symbol` 的类符号路径不变（2.1 证据），`dispatch = None` 的请求不产生 dispatch 相关诊断。
 
