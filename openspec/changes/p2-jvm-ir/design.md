@@ -538,8 +538,10 @@ pub struct HeaderRead {
    - 字段：声明类自身 → 其超接口（递归）→ 其超类（递归）；
    - 方法（class method resolution）：声明类 → 超类链 → 超接口的 **maximally-specific** 集合；
    - 方法（interface method resolution，owner 是接口）：该接口 → 其超接口的全部 maximally-specific 集合。
-   每步都用 `ReadReason::HierarchyClosure` 读 Header（同 (definition, loader) 去重，2.2 的闭包机器）。
-3. **reason 语义（2.3 起生效）**：`ParentChain` 表示"沿声明/owner 的 `super_class` 链向上"读到的 Header，`HierarchyClosure` 表示"沿接口图（`interfaces`/超接口）"读到的 Header，`MemberOwner` 表示请求成员的 owner 定义本身，`RequestedDefinition` 表示请求目标自身，`DispatchScope` 归 2.5，`DriverMethodBody` 归 3.x。因此两个变体都有真实生产者，不得留未产出的公共 variant。
+   每步都经 2.2 的闭包机器读 Header（同 (definition, loader) 去重），reason 按第 3 条：`super_class` 边派 `ParentChain`、`interfaces` 边派 `HierarchyClosure`、按身份直接命名的定义（成员 owner 与 use-site 所在类）派 `MemberOwner`。
+   **maximally-specific 必须按 JVMS 5.4.3.3/5.4.3.4 的原定义**：候选是"名字与描述符都匹配、且**既非 `ACC_PRIVATE` 也非 `ACC_STATIC`**"的声明，再在其中剔除被严格子接口声明覆盖者；
+   因此 `static`/`private` 的接口声明**不参与**该集合（JVMS 注："Superinterface methods that are private and static are ignored by resolution"）。集合为空即回退为 lookup 失败（→ `Missing`），不得因此误报 `resolution_default_conflict`。owner 自身（直接点名）的声明不受此过滤影响：`invokestatic` 点名 static 接口方法必须解析成功，`invokeinterface` 点名 static 则按调用种类规则报 ICCE。
+3. **reason 语义（2.3 起生效）**：`ParentChain` 表示"沿声明/owner 的 `super_class` 链向上"读到的 Header，`HierarchyClosure` 表示"沿接口图（`interfaces`/超接口）"读到的 Header，`MemberOwner` 表示**按身份直接命名**而读取的定义（请求成员的 owner 定义，以及访问规则所需的 use-site 所在类），`RequestedDefinition` 表示请求目标自身，`DispatchScope` 归 2.5，`DriverMethodBody` 归 3.x。因此两个变体都有真实生产者，不得留未产出的公共 variant。
 4. **判定**（与 `specs/demand-resolver` 的 7 状态对齐）：
    - 唯一命中（字段；或方法在 class/超类链上唯一）→ `Resolved`；
    - 方法只有接口候选时，取 maximally-specific 集合：**恰好一个非抽象** → `Resolved`（该 default 方法）；**多个非抽象**（Java 8 default conflict）→ `IncompatibleClassChange` + `resolution_default_conflict` 诊断；**全部抽象** → `Resolved`（那个抽象声明）+ Warning `resolution_method_is_abstract`（JVMS：解析成功，AME 发生在调用时，不由解析阶段伪造）；
@@ -549,7 +551,8 @@ pub struct HeaderRead {
    - `InvokeStatic` 要求静态方法，`InvokeVirtual`/`InvokeInterface`/`InvokeSpecial` 要求实例方法（`<init>` 仅 `InvokeSpecial`）；
    - `FieldRead`/`FieldWrite` 中 static 指令（`GetStatic`/`PutStatic`）要求静态字段，实例指令要求实例字段——由 2.4/2.5 的 use-site 提供指令级种类时使用；
    - class method resolution 命中接口方法或 interface method resolution 命中类方法 → `IncompatibleClassChange` + `resolution_kind_mismatch`；
-   - `InvokeSpecial` 命中抽象方法 → 同上（JVMS 5.4.3.3 对 invokespecial 的额外约束）。
+   - `InvokeSpecial` 命中抽象方法 → 同上（JVMS 5.4.3.3 对 invokespecial 的额外约束）；
+   - `InvokeStatic`/`InvokeSpecial` 对 **class 与 interface owner 都合法**（Java 8 起的 static interface method 与 `I.super.m()`）；`InvokeDynamic` 的 `owner` 只是搜索起点——`CONSTANT_InvokeDynamic` 没有方法引用可约束，故不施加调用种类规则。
 6. **访问规则**（JVMS 5.4.4，与解析分开）：调用方类名由 `CallerContext.enclosing`（其 `owner` 定义读 `this_class`）得到；运行时包 = (loader, 包名)。`public` 通过；`private` 要求同类；`protected` 要求同类/同包/子类；包私有要求同包。**判定不通过 → `Inaccessible` + `resolution_access_denied` 诊断**；调用方类未知（无 `enclosing`）时**不做访问判定**，返回 `Resolved` + Warning `resolution_access_not_checked`（不谎称已检查）。
 7. **明确的 unsupported 分支**：
    - **signature-polymorphic**（`java/lang/invoke/MethodHandle` 的 `invoke`/`invokeExact`，JVMS 2.9）：调用点 descriptor 与声明不同，故按 **name 匹配**解析到声明并返回 `Resolved`，同时给 Warning `resolution_signature_polymorphic`（`target` 保留调用点描述符、`resolved.member` 是声明描述符，两者都在报告里可见）；
@@ -560,7 +563,8 @@ pub struct HeaderRead {
 - 诊断码：`resolution_default_conflict`（多个非抽象 default）、`resolution_kind_mismatch`（调用种类/owner 种类/静态性/`<init>`/abstract+`InvokeSpecial`）、`resolution_access_denied`、`resolution_access_not_checked`、`resolution_signature_polymorphic`、`resolution_array_owner`、`resolution_hierarchy_missing`（层级某层 Missing）、`resolution_hierarchy_ambiguous`（层级某层 Ambiguous）、`resolution_hierarchy_cycle`（层级环，与 2.2 共享）、以及既有的 `resolution_method_is_abstract`。
 - **语义近似（有意，记入 spec 边界，不得被当作 JVMS 完全实现）**：解析期报 default conflict 而 JVMS 8 把它放在 invocation selection；interface owner 不隐式继承 `java/lang/Object` 的方法（未命中即 `Missing`）；只检查成员自身的访问标志，不检查声明类的可访问性（JVMS 5.4.3.1）；调用方定义不一致或内容未提供属 stop（`state = None` + `Failed`），不是 `NotChecked`；字段的 static/instance 指令级规则留给 2.4/2.5（`MemberUse` 不含指令级种类）。
 - **schema 限制**：`ResolvedMemberRef` 没有类内坐标，同一 owner 内同名同描述符的重复声明只能表达为相同的 refs（由用例固定）；`Ambiguous` 与 `resolved` 互斥（只在 `Resolved` 时发布 `resolved`）。
-- **计费**：成员解析使 `analysis_steps` 与 `dependency_depth` 成为真实输入，因此成员请求必须给非零值（否则第一步即 `BudgetExceeded`）；`reads` 的 reason 集合按上一条语义产生。
+- **计费**：成员解析使 `analysis_steps` 成为真实输入，因此成员请求必须给非零值（否则第一步即 `BudgetExceeded`）；`dependency_depth = 0` 仍允许读取成员 owner 自身（深度 0 不观察深度）。`reads` 的 reason 集合按上一条语义产生。
+- **coverage 求和语义**：成员请求的 `runtime_resolution` 区间是**该次请求内各次查找已检查位置之和**（每次查找自身的 `[0, examined)` 与未决 `[examined, positions)` 拼接），不是单次查找的区间；任一查找有未决分支即为 `Partial`。
 
 ### 2.3 的验收
 
