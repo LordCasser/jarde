@@ -16,7 +16,7 @@
 
 ## 3. Raw CFG 与有界 legacy normalization
 
-- [ ] 3.1 完成 petgraph 候选准入：复核候选版本/维护状态并验证 MSRV 1.88、许可/feature、平行异常边、不可达节点、自环、多出口、稳定排序和预算/取消粒度；通过后引入并仅调整 CI 的 petgraph 禁令，保存依赖树与准入证据，未通过须记录可复现阻碍和替代比较
+- [x] 3.1 完成 petgraph 候选准入：复核候选版本/维护状态并验证 MSRV 1.88、许可/feature、平行异常边、不可达节点、自环、多出口、稳定排序和预算/取消粒度；通过后引入并仅调整 CI 的 petgraph 禁令，保存依赖树与准入证据，未通过须记录可复现阻碍和替代比较（2026-09-18 完成并独立复核 Approve：准入证据见 verification 的 3.1 节；依赖以 `=0.8.3` + `std`-only 引入，两个 lock 只新增不升级，CI 只删 petgraph 禁令并加双向 feature 断言；无生产代码引用；登记 A17 守卫缺口与升级门槛两项债务，守卫在 3.3 落地时补）
 - [ ] 3.2 实现固定 phase/PassDescriptor 静态依赖与 invalidation 校验；用缺失前置、环、错误顺序和 CFG 变更后拒用旧分析的反例验证，不引入动态调度框架
 - [ ] 3.3 实现 raw CFG、指令级 throw sites、handler order、保护区间和 effect facts；用分支/switch/不可达块/重叠 handlers 验证异常边来源及 locals/effect 状态，P1 原 BCI 与引用数量不变（A09、A17）
 - [ ] 3.4 实现 raw returnAddress/调用上下文分析；真实历史 finally、共享/嵌套子程序和异常路径须有可核对的返回点及受影响 locals，非法 51+ jsr/ret 明确违规（A09）

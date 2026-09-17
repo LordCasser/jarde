@@ -107,6 +107,16 @@
 
 复现入口：`/tmp/p2-petgraph-probe/`（`ADMISSION-EVIDENCE.md` 汇总；`algoprobe` 含 10 个行为测试、规模/深度/顺序探针；`feature-matrix.txt`、`scale-*.txt`、`depth-thresholds.txt`、`order-run*.txt`）。该目录是临时证据，不入库；本节的表格与命令是长期记录。
 
+**依赖引入（2026-09-18，与准入证据同片）**
+
+- `Cargo.toml`：`petgraph = { version = "=0.8.3", default-features = false, features = ["std"] }`（精确版本 + 最小 feature；依赖声明处注释说明「准入已通过、首个消费者是 3.3」）。全仓库 `*.rs` 中 `petgraph` 出现 **0 次**：引入不等于可用，3.1/3.2 都不产出图形算法调用。
+- 依赖树（`cargo tree --workspace --all-features --locked -e normal` 的唯一差异）：`petgraph v0.8.3 → fixedbitset v0.5.7`、`hashbrown v0.15.5 → foldhash v0.1.5`、`indexmap v2.14.2`（复用既有）。**没有** `rayon`/`serde-1`/`cc`/`bindgen` 进入生产树；`indexmap`/`hashbrown 0.17.1` 本就在树中（经 noak）。
+- lockfile：`Cargo.lock` 与 `fuzz/Cargo.lock` 各 34 insertions / 1 deletion——新增 4 个包与 jarde 依赖表项，唯一删除行是 `indexmap` 依赖表的 `"hashbrown"` → `"hashbrown 0.17.1"` 消歧；**没有任何既有包被顺带升级**（复核者用 (name, version) 集合与依赖表逐条重算确认）。`fuzz/Cargo.lock` 必须同改：`fuzz` 是独立 workspace 且以 `path = ".."` 依赖根 crate，不改会让 CI 的 `--locked` 步骤直接失败（复核者在副本上还原该文件复现了 exit 101）。
+- CI：normal-tree 禁令只删 `petgraph([^[:alnum:]_]|$)|` 一项（其余 **18** 个边界逐字节未动）；feature-tree 步骤加**双向**断言——正向 `grep -F 'petgraph feature "std"'`、负向禁止 `graphmap|stable_graph|matrix_graph|rayon|serde-1|serde|serde_derive|all|quickcheck|dot_parser|unstable|generate`。复核者端到端证实：把 `default-features = false` 删掉后该步骤 exit 1 而 normal-tree 步骤仍 exit 0（即这条负向断言不可替代），把 `features = ["std"]` 换成 `[]` 也能被抓到；18 个注入的假边界行 18/18 命中，`petgraph`/`jvmti-sys`/`rayon_core_extra`/`redisx` 等近似名不误报。
+- 证据：fmt 干净；clippy `-D warnings` 0 警告；`cargo test --workspace --all-targets --all-features --locked` = **487 passed / 0 failed / 1 ignored**（含 CI 第二 seed）；`rustup run 1.88.0 cargo check --workspace --all-targets --locked` 通过；两个 workspace 的 `cargo deny` 四段 ok（唯一新增告警是 hashbrown 0.15.5/0.17.1 的 `duplicate` warn，即 `multiple-versions = "warn"` 的既有策略，未改 `deny.toml`）；`ci.yml` 两段脚本本地等价复跑 exit 0。
+- 独立复核结论：**Approve**（依赖引入本身正确；关键声称均可独立复现，CI 负向断言的实际强度高于声称）。
+- 登记债务：**A17 守卫缺口已由复核者证实**——引入依赖后，在受守卫文件（如 `src/query.rs`）里 `use petgraph::…` 并构图**能编译且守卫测试仍通过**（改动前该代码根本无法编译）。`tasks.md` 3.1 限定「仅调整 CI 禁令」，守卫扩展属 P2 退出前项，因此不阻塞本片勾选，但**必须在 3.3 首个消费者落地时同步补守卫**（把图算法 crate 的导入加入 `p2_tokens_in` 的 token 表，并用「注入 `use petgraph::…` → 测试转红」证伪）；另：normal-tree 禁令移除 petgraph 后，第二个 petgraph 版本只剩 `cargo-deny` 的 warn 可见；升级门槛（重推 feature 名清单）依赖人工，属升级前清单项。
+
 未验证/遗留：`simple_fast` 最坏 O(|V|²) 未复现（block 上限是唯一保险）；递归/栈只测了链状深图；跨平台（CI 的 Linux x86_64）未复跑；依赖引入后需重跑 MSRV、两个图的 `cargo deny` 与 feature-tree 断言。
 
 ### 2.3 成员解析（JVMS 5.4.3 / 5.4.4）与调用种类规则
