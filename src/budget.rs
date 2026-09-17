@@ -21,6 +21,25 @@ pub enum CountedBudgetDimension {
     OutputBytes,
 }
 
+impl CountedBudgetDimension {
+    /// Every counted dimension in declaration order.
+    ///
+    /// Callers that must cover all counted dimensions (zero-usage assertions, result
+    /// schema dumps) iterate this list instead of naming fields, so a new dimension is
+    /// added in one place together with its `Limits`/`UsageSnapshot` field.
+    pub const ALL: [Self; 9] = [
+        Self::InputBytes,
+        Self::ArchiveEntries,
+        Self::EntryBytes,
+        Self::ReadBytes,
+        Self::ClassBytes,
+        Self::AttributeBytes,
+        Self::CodeBytes,
+        Self::ResultItems,
+        Self::OutputBytes,
+    ];
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum BudgetDimension {
@@ -116,6 +135,15 @@ impl Limits {
             CountedBudgetDimension::OutputBytes => self.output_bytes,
         }
     }
+
+    /// Limit of one counted dimension, addressed by value.
+    ///
+    /// Callers that need the whole table (CLI schema, budget checks over
+    /// [`CountedBudgetDimension::ALL`]) read it through this accessor instead of matching
+    /// fields themselves, so a new dimension only has to be added here.
+    pub fn counted_limit(&self, dimension: CountedBudgetDimension) -> u64 {
+        self.get(dimension)
+    }
 }
 
 impl UsageSnapshot {
@@ -131,6 +159,15 @@ impl UsageSnapshot {
             CountedBudgetDimension::ResultItems => self.result_items,
             CountedBudgetDimension::OutputBytes => self.output_bytes,
         }
+    }
+
+    /// Counted usage of one dimension, addressed by value.
+    ///
+    /// `NestedDepth` and `ElapsedMillis` are not counted dimensions: the high-water mark
+    /// lives in [`UsageSnapshot::nested_depth`] and the wall clock in
+    /// [`UsageSnapshot::elapsed_millis`].
+    pub fn counted_usage(&self, dimension: CountedBudgetDimension) -> u64 {
+        self.get(dimension)
     }
 
     fn add(&mut self, dimension: CountedBudgetDimension, amount: u64) -> Option<()> {
@@ -423,5 +460,45 @@ mod tests {
             BudgetDimension::from(CountedBudgetDimension::ReadBytes),
             BudgetDimension::ReadBytes
         );
+    }
+
+    #[test]
+    fn counted_dimensions_are_addressed_by_value() {
+        let mut budget = Budget::new(limits(7));
+        budget
+            .charge(CountedBudgetDimension::ResultItems, 2)
+            .unwrap();
+        let usage = budget.usage();
+
+        // `ALL` is the counted set itself, not a subset of it, and it keeps the
+        // declaration order the usage table uses.
+        let counted = CountedBudgetDimension::ALL
+            .iter()
+            .map(|dimension| BudgetDimension::from(*dimension))
+            .collect::<Vec<_>>();
+        assert_eq!(
+            counted,
+            vec![
+                BudgetDimension::InputBytes,
+                BudgetDimension::ArchiveEntries,
+                BudgetDimension::EntryBytes,
+                BudgetDimension::ReadBytes,
+                BudgetDimension::ClassBytes,
+                BudgetDimension::AttributeBytes,
+                BudgetDimension::CodeBytes,
+                BudgetDimension::ResultItems,
+                BudgetDimension::OutputBytes,
+            ]
+        );
+
+        for dimension in CountedBudgetDimension::ALL {
+            let expected = if dimension == CountedBudgetDimension::ResultItems {
+                2
+            } else {
+                0
+            };
+            assert_eq!(usage.counted_usage(dimension), expected, "{dimension:?}");
+            assert_eq!(budget.limits().counted_limit(dimension), 7, "{dimension:?}");
+        }
     }
 }

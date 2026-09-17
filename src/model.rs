@@ -293,6 +293,49 @@ pub struct PhysicalMethodId {
     pub descriptor: JvmBytes,
 }
 
+/// Physical anchors of one generated IR artifact, in generation order.
+///
+/// Members are kept in the order the artifacts were produced and are deduplicated by
+/// equality. Every member is a physical coordinate: a class file identity, a range in
+/// class-file bytes, or a method point. A generated node that comes from several
+/// original BCIs keeps one member per original location instead of collapsing them.
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct OriginSet {
+    pub members: Vec<OriginMember>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum OriginMember {
+    /// A whole class file, without a narrower range.
+    ClassFile { definition: PhysicalDefinitionId },
+    /// A byte range in a class file. `span` is always a class-file coordinate, never a
+    /// container- or entry-relative one.
+    ClassRange {
+        definition: PhysicalDefinitionId,
+        span: ByteSpan,
+    },
+    /// A bytecode index inside a method body.
+    ///
+    /// Synonymous with [`Location::Code`] but a separate type, so no IR field can pass an
+    /// entry-relative [`Location::Entry`] span where a code coordinate is required.
+    MethodPoint { method: PhysicalMethodId, bci: u32 },
+}
+
+impl OriginSet {
+    /// Records one member, keeping first-appearance order and dropping exact repeats.
+    pub fn insert(&mut self, member: OriginMember) {
+        if !self.members.contains(&member) {
+            self.members.push(member);
+        }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.members.is_empty()
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum SymbolRef {
@@ -407,6 +450,18 @@ pub struct Coverage {
     pub artifact_structural: CoverageDimension,
     pub runtime_resolution: CoverageDimension,
     pub dynamic_analysis: CoverageDimension,
+}
+
+impl Coverage {
+    /// Coverage of a request that performed no pass at all: every dimension is
+    /// `NotRequested`, so nothing can be read as a completed or partial range.
+    pub fn not_requested() -> Self {
+        Self {
+            artifact_structural: CoverageDimension::not_requested(),
+            runtime_resolution: CoverageDimension::not_requested(),
+            dynamic_analysis: CoverageDimension::not_requested(),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]

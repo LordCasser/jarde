@@ -57,7 +57,9 @@ jobs:
         run: cargo test --test jvm_bytecode_oracle --locked -- --ignored --exact jdk25_instruction_boundaries_match_public_bytecode_inspection
 
       - name: Run public API example
-        run: cargo run --example inspect_class_header --locked -- tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class
+        run: |
+          cargo run --example inspect_class_header --locked -- tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class
+          cargo run --example resolve_and_analyze --locked -- tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class
 
       - name: Check resolved feature tree
         run: |

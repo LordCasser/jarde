@@ -135,6 +135,55 @@ impl Engine {
             coverage,
         })
     }
+
+    /// Demand-bound symbol resolution under an explicit environment (P2 entry point).
+    ///
+    /// The request shape is checked first: a snapshot the content does not provide or a
+    /// target whose kind contradicts the reference use is an input error
+    /// (`resolution_snapshot_mismatch`, `resolution_target_use_mismatch`). Environment
+    /// problems are not an error; they are part of the report. This slice performs no
+    /// resolution and reads no artifact byte, so the report is the honest unavailable
+    /// state for a legal request.
+    pub fn resolve_symbol(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &crate::resolver::ResolutionRequest,
+        budget: &mut Budget,
+    ) -> Result<crate::resolver::ResolutionReport> {
+        crate::resolver::validate_request(content, request)?;
+        Ok(crate::resolver::resolution_report(content, request, budget))
+    }
+
+    /// Declaration-reference scan under an explicit environment (P2 entry point).
+    ///
+    /// Same request-level check as [`Engine::resolve_symbol`]; this slice performs no scan
+    /// and reads no artifact byte.
+    pub fn declaration_references(
+        &self,
+        content: &[ArtifactSnapshot],
+        query: &crate::resolver::DeclarationRefQuery,
+        budget: &mut Budget,
+    ) -> Result<crate::resolver::DeclarationRefReport> {
+        crate::resolver::validate_declaration_reference_query(content, query)?;
+        Ok(crate::resolver::declaration_reference_report(
+            content, query, budget,
+        ))
+    }
+
+    /// Method IR analysis under an explicit environment (P2 entry point).
+    ///
+    /// An empty stage set is an input error (`analysis_no_stages`); every other mismatch
+    /// is checked like [`Engine::resolve_symbol`]. This slice performs no phase and reads
+    /// no artifact byte, so the report lists the scheduled phases as `NotPerformed`.
+    pub fn analyze_method(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &crate::ir::MethodAnalysisRequest,
+        budget: &mut Budget,
+    ) -> Result<crate::ir::MethodAnalysisReport> {
+        crate::ir::validate_request(content, request)?;
+        Ok(crate::ir::analysis_report(content, request, budget))
+    }
 }
 
 fn header_coverage(class_length: u64) -> Coverage {
