@@ -62,4 +62,6 @@
 - `PROPTEST_RNG_SEED=5350648285461741570 cargo test --workspace --all-targets --all-features --locked`：通过；最终候选合计 **113 passed / 0 failed / 1 ignored**，ignored 项仍为显式 JDK 25 oracle。
 - `openspec validate --all --strict --no-interactive`：**8 passed / 0 failed**；`git diff --check`：通过。
 - 独立只读 review 首轮发现 Boot/WAR 大小写、provider authorization、root/child failure、ResultItems 与 replay budget 等边界；修正后又针对 pending container 和 per-candidate coverage 做两轮反例复核。最终独立复核结论为 **Approve P1 1.2**。
-- 最终本地交付检查记录约 **9.3 GiB available memory**、文件系统约 **103 GiB available**，`target/` 的 `du` 字节数为 `1,606,243,938`；远端 CI 通过后再执行 `cargo clean` 并补录释放量。
+- 最终本地交付检查记录约 **9.3 GiB available memory**、文件系统约 **103 GiB available**，清理前 `target/` 的 `du` 字节数为 `1,606,243,938`。
+- 实现 commit `96e0aa6c6ee8b80a49effd2c09095f1cfa26cfde` 的 [GitHub Actions run `35179012712`](https://github.com/LordCasser/jarde/actions/runs/35179012712) 为 **success**；Linux x86_64 上 stable/test/specification、MSRV 1.88.0 与 supply-chain 三个 job 全部通过。
+- 远端 CI 通过后执行 `cargo clean`，Cargo 报告移除 **4,491 files / 1.7 GiB**；清理后 `target/` 已不存在，文件系统仍约 **103 GiB available**。
