@@ -133,11 +133,11 @@ fn jdk25_instruction_boundaries_match_public_bytecode_inspection() {
     let class_path = temp.0.join("OracleFixture.class");
     let source =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/JvmBytecodeOracle.java");
-    let process = Command::new("/usr/bin/java")
+    let process = Command::new("java")
         .arg(&source)
         .arg(&class_path)
         .output()
-        .expect("execute /usr/bin/java");
+        .expect("execute java from PATH");
     assert!(
         process.status.success(),
         "Java oracle failed:\nstdout:\n{}\nstderr:\n{}",

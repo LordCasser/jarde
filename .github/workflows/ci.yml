@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_BUILD_JOBS: "1"
+  CARGO_INCREMENTAL: "0"
+  RUST_TEST_THREADS: "1"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  stable:
+    name: stable / test and specification
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install stable Rust with lint components
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Install Temurin 25.0.4+7
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25.0.4+7
+
+      - name: Install Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+      - name: Run Clippy
+        run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+
+      - name: Run workspace tests with two fixed independent seeds (pass 1)
+        env:
+          PROPTEST_RNG_SEED: "5350648285461741569"
+        run: cargo test --workspace --all-targets --all-features --locked
+
+      - name: Run workspace tests with two fixed independent seeds (pass 2)
+        env:
+          PROPTEST_RNG_SEED: "5350648285461741570"
+        run: cargo test --workspace --all-targets --all-features --locked
+
+      - name: Run ignored JDK 25 instruction-boundary oracle
+        run: cargo test --test jvm_bytecode_oracle --locked -- --ignored --exact jdk25_instruction_boundaries_match_public_bytecode_inspection
+
+      - name: Run public API example
+        run: cargo run --example inspect_class_header --locked -- tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class
+
+      - name: Check resolved feature tree
+        run: |
+          cargo tree --workspace --all-features --locked -e features > "$RUNNER_TEMP/feature-tree.txt"
+          grep -F 'blake3 feature "pure"' "$RUNNER_TEMP/feature-tree.txt"
+          grep -F 'flate2 feature "rust_backend"' "$RUNNER_TEMP/feature-tree.txt"
+
+      - name: Check normal dependency tree boundary
+        run: |
+          cargo tree --workspace --all-features --locked -e normal > "$RUNNER_TEMP/normal-tree.txt"
+          if grep -E '(^|[[:space:]├└─])(tokio([^[:alnum:]_]|$)|async-std([^[:alnum:]_]|$)|rayon([^[:alnum:]_]|$)|petgraph([^[:alnum:]_]|$)|sqlx([^[:alnum:]_]|$)|rusqlite([^[:alnum:]_]|$)|tree-sitter([^[:alnum:]_]|$)|reverse-engine-backend-api([^[:alnum:]_]|$)|ristretto_vm([^[:alnum:]_]|$)|jni([^[:alnum:]_]|$)|jvm([^[:alnum:]_]|$)|reqwest([^[:alnum:]_]|$)|hyper([^[:alnum:]_]|$)|ureq([^[:alnum:]_]|$)|surf([^[:alnum:]_]|$)|diesel([^[:alnum:]_]|$)|sea-orm([^[:alnum:]_]|$)|mongodb([^[:alnum:]_]|$)|redis([^[:alnum:]_]|$))' "$RUNNER_TEMP/normal-tree.txt"; then
+            echo 'unexpected production dependency crossed the P0 boundary' >&2
+            exit 1
+          fi
+
+      - name: Install OpenSpec 1.11.0
+        run: npm install --global @fission-ai/openspec@1.11.0
+
+      - name: Validate OpenSpec strictly
+        run: openspec validate --all --strict --no-interactive
+
+      - name: Ensure tracked files remain unchanged
+        run: git diff --exit-code
+
+  msrv:
+    name: MSRV 1.88.0
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust 1.88.0
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.88.0
+      - name: Check workspace on MSRV
+        run: cargo check --workspace --all-targets --locked
+
+  supply-chain:
+    name: supply chain
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check advisories, licenses, bans, and sources
+        uses: EmbarkStudios/cargo-deny-action@v2.1.1
+        with:
+          command: check
