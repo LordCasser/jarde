@@ -758,7 +758,7 @@ pub(crate) struct PassDescriptor {
 
 - **计数口径**：在**真实入口**（`analyze_method`）上记录每个阶段的读取与构造次数：Header 读取（`ClassHeaders`）、Body 读取（`MethodBodies`，此片起成为真实计费维度）、以及解析/CFG/SSA/Region/AST 构造计数。
 - **必须证明为零的项**：单个方法分析不得加载无关 Body（`method_bodies` 只计目标方法）；P1 的 X0/X1 路径不得启动 resolver/CFG/SSA/Region/Java AST（构造计数为零，且 `Engine::query` 的输出与重放名单逐字段不变）。
-- **A17 守卫必须覆盖图算法依赖**：3.1 已证实「在受守卫文件里 `use petgraph::…` 并构图」能编译且不被现有 token 表捕获。3.3 首个消费者落地时同步把图算法 crate（petgraph 及其算法入口）加入 `p2_tokens_in` 的 token 表，并用「注入 `use petgraph::…` → 守卫测试转红」证伪；5.2 的构造计数是这条性质的行为侧证据，两者都要有。
+- **A17 守卫必须覆盖图算法依赖**：3.1 已证实「在受守卫文件里 `use petgraph::…` 并构图」能编译且不被现有 token 表捕获（守卫位于 `tests/p2_contracts.rs` 的 `p2_tokens_in`，其外部 crate 面的清单是 `A17_IMPORT_TOKENS`）。3.3 首个消费者落地时，把 `petgraph::`、`petgraph as`、`extern crate petgraph` 三个 token 加入 `A17_IMPORT_TOKENS`（`petgraph::` 同时覆盖 `use petgraph::algo::…` 与全限定路径 `petgraph::graph::Graph`），并用「注入 `use petgraph::…` → 守卫测试转红」证伪；5.2 的构造计数是这条性质的行为侧证据，两者都要有。
 - **确定性**：同一输入重复运行两次，报告的**身份与顺序逐字段一致**（除 `elapsed_millis`）——这同时是 3.1 那条「所有输出按 (物理定义, BCI) 自排序」的可证伪点。
 - **验收**：无关 Body 为零、X1 构造计数为零、重复运行一致，各一条可证伪用例（用变异证明断言有牙齿）。
 
