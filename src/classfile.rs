@@ -28,6 +28,14 @@ pub struct MemberHeader {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub(crate) struct MinimalHeaderFacts {
+    pub major_version: u16,
+    pub minor_version: u16,
+    pub access_flags: u16,
+    pub this_class: JvmString,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct ClassHeader {
     pub major_version: u16,
     pub minor_version: u16,
@@ -183,6 +191,34 @@ pub struct BytecodeInspection {
     pub diagnostics: Vec<Diagnostic>,
     pub verification: VerificationStatus,
     pub stopped_at: Option<BytecodeStop>,
+}
+
+pub(crate) fn probe_minimal_header(
+    bytes: &[u8],
+    budget: &mut Budget,
+) -> Result<MinimalHeaderFacts> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::ClassBytes, to_u64(bytes.len())?)?;
+    validate_constant_pool_slots(bytes, budget)?;
+    let class = Class::new(bytes).map_err(map_decode_error)?;
+    if class.buffer_size() != bytes.len() {
+        return Err(Error::invalid_input(
+            "classfile_trailing_bytes",
+            "class structure has trailing bytes",
+        ));
+    }
+    let pool = class.pool();
+    let this_class = jvm_string_mstr(
+        pool.retrieve(class.this_class())
+            .map_err(map_decode_error)?
+            .name,
+    )?;
+    Ok(MinimalHeaderFacts {
+        major_version: class.version().major,
+        minor_version: class.version().minor,
+        access_flags: class.access_flags().bits(),
+        this_class,
+    })
 }
 
 /// Reads declaration-level structure and applies the implemented version-only P0 gate.

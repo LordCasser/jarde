@@ -81,6 +81,15 @@ impl Engine {
         snapshot.enumerate_artifact_tree(budget)
     }
 
+    pub fn select_multi_release(
+        &self,
+        snapshot: &ArtifactSnapshot,
+        view: &crate::view::RuntimeView,
+        budget: &mut Budget,
+    ) -> Result<crate::multi_release::MultiReleaseViewReport> {
+        crate::multi_release::select(snapshot, view, budget)
+    }
+
     pub fn inspect_header(
         &self,
         snapshot: &ArtifactSnapshot,

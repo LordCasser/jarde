@@ -770,6 +770,28 @@ impl ArtifactSnapshot {
         })
     }
 
+    pub(crate) fn read_entry_internal(
+        &self,
+        entry: &PhysicalEntry,
+        budget: &mut Budget,
+    ) -> Result<MaterializedEntry> {
+        if entry.id.origin.steps.is_empty() {
+            self.read_entry_with_hooks(
+                entry,
+                budget,
+                MaterializationAccounting::Intermediate,
+                |_| {},
+                |_| {},
+            )
+        } else {
+            self.read_nested_entry_with_accounting(
+                entry,
+                budget,
+                MaterializationAccounting::Intermediate,
+            )
+        }
+    }
+
     pub fn read_entry(
         &self,
         entry: &PhysicalEntry,
@@ -1111,6 +1133,19 @@ impl ArtifactSnapshot {
         entry: &PhysicalEntry,
         budget: &mut Budget,
     ) -> Result<MaterializedEntry> {
+        self.read_nested_entry_with_accounting(
+            entry,
+            budget,
+            MaterializationAccounting::CallerOutput,
+        )
+    }
+
+    fn read_nested_entry_with_accounting(
+        &self,
+        entry: &PhysicalEntry,
+        budget: &mut Budget,
+        final_accounting: MaterializationAccounting,
+    ) -> Result<MaterializedEntry> {
         if self.kind != ArtifactKind::Zip || entry.id.snapshot() != &self.id {
             return Err(Error::invalid_input(
                 "entry_snapshot_mismatch",
@@ -1197,7 +1232,7 @@ impl ArtifactSnapshot {
         let mut materialized = temporary.read_entry_with_hooks(
             &local_entry,
             budget,
-            MaterializationAccounting::CallerOutput,
+            final_accounting,
             |_| {},
             |_| {},
         )?;
@@ -1538,7 +1573,7 @@ struct EnumerationProgress {
     known_end: Option<u64>,
 }
 
-const fn budget_dimension_code(dimension: BudgetDimension) -> &'static str {
+pub(crate) const fn budget_dimension_code(dimension: BudgetDimension) -> &'static str {
     match dimension {
         BudgetDimension::InputBytes => "input_bytes",
         BudgetDimension::ArchiveEntries => "archive_entries",

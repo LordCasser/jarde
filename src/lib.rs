@@ -10,6 +10,7 @@ pub mod classfile;
 pub mod engine;
 pub mod error;
 pub mod model;
+pub mod multi_release;
 pub mod query;
 pub mod view;
 
@@ -21,5 +22,6 @@ pub use classfile::*;
 pub use engine::*;
 pub use error::{Error, Result};
 pub use model::*;
+pub use multi_release::*;
 pub use query::*;
 pub use view::*;
