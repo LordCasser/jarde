@@ -41,7 +41,7 @@
 
 ### 远端 CI
 
-本切片提交后推送 `main`，其 CI run 与 SHA 记录如下（stable 含 ignored JDK 25 oracle、MSRV 1.88.0、双 workspace supply-chain、fuzz smoke 四个 job）。
+本切片以两个提交推送 `main`：`0406178`（实现与测试）与 `6fc1674`（本 change 的契约与验证记录）。CI run [`35247034235`](https://github.com/LordCasser/jarde/actions/runs/35247034235) 在 `6fc1674` 上四个 job 全部 success：`stable / test and specification`（含 ignored JDK 25 指令边界 oracle 与两条公共示例）、`MSRV 1.88.0`、`supply chain`（根与 fuzz 两个依赖图）、`fuzz smoke`。
 
 ## 尚未关闭
 

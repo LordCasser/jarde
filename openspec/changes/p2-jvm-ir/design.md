@@ -339,6 +339,50 @@ impl Engine {
 - 反例（A17）：`Engine::query` 的 physical X0/X1 不启动 resolver/IR（源码级守卫 + 未接线）；
 - 正例：`representation=Bytecode`、`syntax_status=NotJava`、`compile_status=NotAttempted`、`verification=NotPerformed`、`quality`、`coverage`、`execution` 在同一报告里分别取值且互不推断。
 
+## 1.2 契约：类型化操作数与目标校验（reader 层，保持 crate-private）
+
+1.1 的类型化操作数只在 reader 层，**不进入公共 schema**：`classfile::InstructionFact` 与公共 `inspect_method_bytecode` 的输出保持不变（P0/P1 契约不动，golden/CLI 无需改），新增事实只在 `pub(crate)` 范围内。
+
+- **同一薄适配、不另建 decoder**：在现有 `method_code_facts` 的 noak 指令事件 walk 里同时产出 `pub(crate) struct InstructionOperands`，并与 `instructions` 同序同长地放进 `MethodCodeFacts.operands`：
+
+  ```rust
+  pub(crate) struct InstructionOperands {
+      pub(crate) immediate: Option<ImmediateValue>,        // bipush/sipush/ldc 族/iconst… 的常量
+      pub(crate) local: Option<LocalOperand>,              // { index: u16, wide: bool }
+      pub(crate) increment: Option<i32>,                   // iinc 的有符号增量
+      pub(crate) constant_pool_index: Option<u16>,         // 与 InstructionFact 同值
+      pub(crate) branch_offset: Option<i32>,               // 相对分支偏移（编码值）
+      pub(crate) switch: Option<SwitchOperands>,           // tableswitch/lookupswitch
+  }
+  pub(crate) enum ImmediateValue { Int(i32), Long(i64), Float(u32), Double(u64) }   // 浮点用位模式
+  pub(crate) enum SwitchOperands {
+      Table { default_offset: i32, low: i32, high: i32, offsets: Vec<i32> },
+      Lookup { default_offset: i32, pairs: Vec<(i32, i32)> },   // (match, offset)
+  }
+  ```
+
+  不得从展示文本恢复操作数，也不得靠再次遍历字节流重建语义；宽度与既有 `instruction_width` 口径保持一致。
+- **保留原始宽度**：操作数按 JVMS 宽度解码（wide 前缀、iinc、ldc/ldc_w/ldc2_w、bipush/sipush、invokeinterface 的 count、multianewarray 的 dimensions 等），所有 `u16/u32` 转换用 checked 运算；越界或形状不符返回带 BCI 的结构化错误，不产生部分操作数。
+- **目标校验独立于 CFG**：`MethodCodeFacts::control_flow_targets(&self) -> Result<Vec<ControlFlowTarget>>`，以同一方法的指令起点集合为准，把相对 branch/switch offset 换算成绝对 BCI（checked），逐条产出：
+
+  ```rust
+  pub(crate) struct ControlFlowTarget {
+      pub(crate) instruction_bci: u32,   // 发出该目标的指令
+      pub(crate) kind: ControlFlowTargetKind,
+      pub(crate) target_bci: u32,
+  }
+  pub(crate) enum ControlFlowTargetKind {
+      Branch { offset: i32 },
+      SwitchDefault,
+      SwitchCase { index: u32, key: i32 },   // tableswitch 的 key 由 low+index 给出，lookupswitch 直接给 key
+      Handler { ordinal: u32 },
+  }
+  ```
+
+  校验规则：目标必须落在某个指令起点（跳入操作数即非起点 → 无效）、不得越出 `code_length`、`handler_pc` 必须是起点、保护区间为半开区间且 `end` 允许等于 `code_length`、`start <= end`。**1.2 不构建 CFG**（3.x 才做），只交付可复核的校验事实与错误。
+- **错误语义**：无效目标/溢出/形状不符各给稳定 code + 原 BCI 的定位诊断，不 panic、不静默跳过该指令；已有错误码（`classfile_instruction_*`）优先复用，必要时才新增。
+- **1.2 的验收**：wide/iinc、正负相对分支、tableswitch 的 default/key/target、lookupswitch 的 default/pair、handler 边界（含 `end == code_length` 与 `start > end` 反例）、非法目标（跳入操作数/越界/溢出）反例、以及 P0 既有指令边界 oracle 与全部既有测试不回归；不要求也不允许 1.2 引入 CFG/SSA/AST 或改动公共输出。
+
 ## Risks / Trade-offs
 
 - [Risk] frame/phi/origin 或 jsr 克隆乘法膨胀 → 分配前计费及高扇出/多槽位用例；P1 输入有界不代替 IR 上界证明。
