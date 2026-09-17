@@ -8,10 +8,11 @@
 //!    resolved for real through the declared search order — here the caller's only root is
 //!    this standalone CLASS file, which declares its own name — so the report names the
 //!    selected position, the header read it caused and the demand that caused it,
-//! 3. `Engine::resolve_symbol` on a member symbol and `Engine::declaration_references` /
-//!    `Engine::analyze_method` on one explicit `ResolutionEnvironment`: the reports say
-//!    `NotPerformed` / `Failed { Unsupported }` / `NotRequested` and list the scheduled
-//!    method-analysis phases as `NotPerformed`,
+//! 3. `Engine::resolve_symbol` on a member symbol, which the member slice (2.3) resolves for
+//!    real: the report names the declaration the search selected, the class header it was read
+//!    from and the reason for that read, while `Engine::declaration_references` and
+//!    `Engine::analyze_method` still answer `NotPerformed` / `Failed { Unsupported }` /
+//!    `NotRequested` and list the scheduled method-analysis phases as `NotPerformed`,
 //! 4. the product planes of one report (`representation`, `quality`, `syntax_status`,
 //!    `compile_status`, `semantic_validation`, `verification`, `body`) printed side by
 //!    side; the body stays `NotInspected` because nothing was located or read, and
@@ -49,9 +50,16 @@ fn limits() -> Limits {
         code_bytes: 4 * 1024 * 1024,
         result_items: 100_000,
         output_bytes: 32 * 1024 * 1024,
-        // The class-name lookup reads one header per attempt; every other P2 dimension stays
-        // at the fail-closed default, because this example performs no closure and no IR work.
+        // The class-name lookup reads one header per attempt, and the member search (2.3)
+        // charges one analysis step per class it processes and one dependency depth per layer
+        // above the class it starts from. The steps must be funded for any member request; the
+        // depth only has to be for a search that climbs (this example's declaration sits in the
+        // class the reference names, which is depth 0 and needs no allowance at all). Every
+        // other P2 dimension stays at the fail-closed default, because this example performs no
+        // IR work.
         class_headers: 1_000,
+        dependency_depth: 16,
+        analysis_steps: 100_000,
         nested_depth: 8,
         elapsed_millis: 30_000,
         ..Limits::default()
@@ -168,17 +176,17 @@ fn run(path: PathBuf) -> jarde::Result<()> {
         enclosing: Some(method.clone()),
     };
     let target = SymbolRef::Method {
-        owner: bytes(b"java/lang/Object"),
-        name: bytes(b"<init>"),
-        descriptor: bytes(b"()V"),
+        owner: bytes(b"HistoricalControlFlow"),
+        name: bytes(b"finallyPath"),
+        descriptor: bytes(b"(I)I"),
     };
 
-    // 1. One symbol resolution request under a legal environment.
+    // 1. One member resolution request under a legal environment.
     let mut budget = Budget::new(limits());
     let request = ResolutionRequest {
         environment: environment.clone(),
         target: target.clone(),
-        use_kind: ReferenceUse::InvokeSpecial,
+        use_kind: ReferenceUse::InvokeVirtual,
         caller: caller.clone(),
         dispatch: None,
     };
@@ -205,9 +213,26 @@ fn run(path: PathBuf) -> jarde::Result<()> {
             .map(|diagnostic| diagnostic.code.as_str())
             .collect::<Vec<_>>(),
     );
+    println!(
+        "resolve_symbol.member: reads={:?}",
+        report
+            .reads
+            .iter()
+            .map(|read| (read.loader.0.as_str(), read.reason))
+            .collect::<Vec<_>>(),
+    );
     print_usage("resolve_symbol", &budget.usage());
     assert!(report.environment_problems.is_empty());
-    assert!(report.state.is_none());
+    assert_eq!(report.state, Some(ResolutionState::Resolved));
+    assert_eq!(
+        report
+            .resolved
+            .as_ref()
+            .expect("a resolved member publishes its declaration")
+            .member,
+        target,
+        "the declaration the search selected is the reference's own method"
+    );
 
     // 2. One class-name lookup under the same environment. The caller's only root is this
     //    standalone CLASS file, which declares its own name, so the lookup selects it through

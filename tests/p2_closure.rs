@@ -48,6 +48,11 @@ fn limits() -> Limits {
         result_items: 10_000,
         class_headers: 100,
         nested_depth: 4,
+        // The member search (2.3) charges one step per class it processes and observes the
+        // dependency depth of every layer above the class it starts from; the class lookups
+        // under test charge neither.
+        dependency_depth: 4,
+        analysis_steps: 1_000,
         elapsed_millis: u64::MAX,
         ..Limits::default()
     }
@@ -581,7 +586,11 @@ fn a_read_is_recorded_for_the_definition_whose_bytes_were_read() {
 }
 
 #[test]
-fn a_member_symbol_reads_no_header() {
+fn a_member_symbol_is_searchable_and_reads_only_the_classes_it_needs() {
+    // 2.2 pinned that a member symbol reads nothing while 2.3 was unimplemented. 2.3 resolves
+    // it, and what stays true is the closure's own rule: the request reads the class the
+    // reference names and nothing else, and it records that read under the reason that caused
+    // it.
     let bytes = class_bytes(b"p/S", 52);
     let snapshot = open(zip_of(&[(b"p/S.class", &bytes)]));
     let environment = single_loader(&snapshot);
@@ -602,12 +611,26 @@ fn a_member_symbol_reads_no_header() {
     let mut budget = Budget::new(limits());
     let report = resolve(std::slice::from_ref(&snapshot), &request, &mut budget);
 
-    assert_eq!(report.analysis, ResolutionAnalysis::NotPerformed);
-    assert!(
-        report.reads.is_empty(),
-        "a capability that did not run cannot have read a header"
+    assert_eq!(report.analysis, ResolutionAnalysis::Performed);
+    assert_eq!(
+        report.state,
+        Some(ResolutionState::Missing),
+        "the fixture class declares no `m`, so the member search decides Missing"
     );
-    assert_eq!(class_headers(&report), 0);
+    assert!(
+        report.target == request.target,
+        "the raw symbol is preserved when nothing is found"
+    );
+    assert_eq!(
+        report.reads,
+        vec![HeaderRead {
+            loader: loader("app"),
+            definition: archive_definition(&snapshot, b"p/S.class", &bytes),
+            reason: ReadReason::MemberOwner,
+        }],
+        "the class the reference names is the only class the search had to read"
+    );
+    assert_eq!(class_headers(&report), 1);
     assert_reads_within_attempts(&report);
 }
 

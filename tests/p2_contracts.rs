@@ -8,9 +8,11 @@
 //!    into a unique resolution (`state = None`) — including the caller-loader check, which is
 //!    decided by the request-level entries because the caller identity is part of the request
 //!    and not of the environment,
-//! 2. the three entry points reject request-level mismatches as input errors and answer
-//!    legal requests with the honest unavailable state: `NotPerformed` / `Failed {
-//!    Unsupported }` / three-dimensional `NotRequested` coverage and zero counted usage,
+//! 2. the three entry points reject request-level mismatches as input errors and answer a
+//!    request they cannot perform with the honest unavailable state: `NotPerformed` / `Failed {
+//!    Unsupported }` / three-dimensional `NotRequested` coverage and zero counted usage —
+//!    which is the state of a rejected environment for the resolution entry, of the declaration
+//!    query (2.4) and of the method analysis (3.x), while 2.1–2.3 perform real lookups,
 //! 3. the result planes (representation, quality, syntax, compile, semantic evidence,
 //!    verification, coverage, execution) are reported side by side and none is inferred
 //!    from another,
@@ -62,6 +64,9 @@ fn limits() -> Limits {
 
 /// Every counted limit is zero, so *any* byte read, item or output byte a P2 entry point
 /// charged would fail the request instead of producing a report.
+///
+/// The wall clock is zero as well, so a budget stop under these limits can be the clock; a test
+/// that wants to name the dimension a *work* charge refused funds the clock explicitly.
 fn zero_limits() -> Limits {
     Limits {
         input_bytes: 0,
@@ -491,6 +496,9 @@ fn invalid_input_code(error: &Error) -> Option<&str> {
 
 /// A report that performed nothing may not carry a unique resolution, a partial range or a
 /// charged counted dimension.
+///
+/// This is the state of a request whose environment the validator rejected: no capability
+/// runs, so nothing can be resolved and nothing can be read.
 fn assert_nothing_was_performed(report: &ResolutionReport) {
     assert_eq!(report.analysis, ResolutionAnalysis::NotPerformed);
     assert!(
@@ -1232,7 +1240,10 @@ fn unsupported_module_modes_and_delegations_are_policy_problems() {
         assert_problem_report(&fixture, environment, &["unsupported_policy"]);
     }
 
-    // The two supported policies of this slice stay silent.
+    // The two supported policies of this slice stay silent, and a valid environment starts the
+    // member resolution (2.3) instead of answering with the unavailable state: the zero budget
+    // stops the search at its first charged step. The clock is funded so the refusal is that
+    // charge and not the wall clock the all-zero fixture would hit first.
     for delegation in [DelegationPolicy::ParentFirst, DelegationPolicy::ChildFirst] {
         let declared = domain_with(
             &app,
@@ -1245,7 +1256,31 @@ fn unsupported_module_modes_and_delegations_are_policy_problems() {
         let (problems, _) =
             validate_environment(std::slice::from_ref(&fixture.snapshot), &environment);
         assert_eq!(problems, Vec::new(), "delegation {delegation:?}");
-        assert_problem_report(&fixture, environment, &[]);
+
+        let mut budget = Budget::new(Limits {
+            elapsed_millis: u64::MAX,
+            ..zero_limits()
+        });
+        let report = Engine::new()
+            .resolve_symbol(
+                std::slice::from_ref(&fixture.snapshot),
+                &request(environment),
+                &mut budget,
+            )
+            .expect("a legal request is answered, not raised");
+        assert_eq!(report.environment_problems, Vec::new());
+        assert_eq!(
+            report.analysis,
+            ResolutionAnalysis::Performed,
+            "a valid environment no longer answers with the unavailable state"
+        );
+        assert_eq!(report.state, Some(ResolutionState::BudgetExceeded));
+        assert_eq!(
+            diagnostic_codes(&report.diagnostics),
+            vec!["budget_exceeded_analysis_steps"],
+            "the member search's first charged step is one analysis step"
+        );
+        assert!(counted_usage_is_zero(&budget.usage()));
     }
 }
 
@@ -1349,7 +1384,9 @@ fn reference_use_must_describe_the_same_member_kind_as_the_target() {
         Some("resolution_target_use_mismatch")
     );
 
-    // The same request with a matching kind is legal, and still performs nothing.
+    // The same request with a matching kind is legal, so it is not refused and the resolution
+    // really starts: this environment provides no `java/lang/Object`, and the zero budget stops
+    // the search at its first step instead of answering as if nothing had been requested.
     let report = Engine::new()
         .resolve_symbol(
             content,
@@ -1357,7 +1394,9 @@ fn reference_use_must_describe_the_same_member_kind_as_the_target() {
             &mut Budget::new(zero_limits()),
         )
         .expect("a matching target and use kind is a legal request");
-    assert_nothing_was_performed(&report);
+    assert_eq!(report.analysis, ResolutionAnalysis::Performed);
+    assert_eq!(report.state, Some(ResolutionState::BudgetExceeded));
+    assert!(report.resolved.is_none());
 }
 
 #[test]
@@ -1390,7 +1429,12 @@ fn analysis_request_must_name_at_least_one_stage() {
 // ---------------------------------------------------------------------------
 
 #[test]
-fn resolution_reports_the_unavailable_capability_without_reading_anything() {
+fn resolution_stops_a_member_request_at_its_first_budgeted_step() {
+    // 1.1 pinned the honest unavailable state of a legal member request while no member slice
+    // existed. 2.3 performs that resolution, so the same zero budget now reaches the member
+    // rules and stops them at their first step: the stop *is* the semantic decision
+    // (`BudgetExceeded`), the execution carries the same stop, and the request still reads no
+    // byte and records no read.
     let fixture = fixture();
     let environment = healthy_environment(&fixture);
     let mut request = request(environment.clone());
@@ -1399,7 +1443,12 @@ fn resolution_reports_the_unavailable_capability_without_reading_anything() {
         consumers: ConsumerSchema::new(1, [ConsumerKind::Invocation]),
     });
 
-    let mut budget = Budget::new(zero_limits());
+    // The clock is funded, so the stop names the work the search asked for instead of the
+    // all-zero wall clock.
+    let mut budget = Budget::new(Limits {
+        elapsed_millis: u64::MAX,
+        ..zero_limits()
+    });
     let report = Engine::new()
         .resolve_symbol(
             std::slice::from_ref(&fixture.snapshot),
@@ -1408,10 +1457,17 @@ fn resolution_reports_the_unavailable_capability_without_reading_anything() {
         )
         .expect("a legal request is answered, not raised");
 
-    assert_nothing_was_performed(&report);
+    assert_eq!(report.analysis, ResolutionAnalysis::Performed);
+    assert_eq!(report.state, Some(ResolutionState::BudgetExceeded));
+    assert!(report.resolved.is_none());
+    assert!(report.candidates.is_empty());
     assert!(
         report.dispatch.is_none(),
         "an unperformed candidate enumeration must not look like an empty one"
+    );
+    assert!(
+        report.reads.is_empty(),
+        "the refused step happens before any header is read"
     );
     assert_eq!(report.target, constructor());
     assert_eq!(report.use_kind, ReferenceUse::InvokeSpecial);
@@ -1427,14 +1483,19 @@ fn resolution_reports_the_unavailable_capability_without_reading_anything() {
     );
     assert_eq!(report.environment_problems, Vec::new());
     assert_eq!(
-        unsupported_code(&report.execution),
-        Some("resolution_not_implemented")
-    );
-    assert_eq!(
         diagnostic_codes(&report.diagnostics),
-        vec!["resolution_not_implemented"]
+        vec!["dispatch_not_implemented", "budget_exceeded_analysis_steps"],
+        "the requested capability is named first, then the stop that ended the resolution"
     );
-    assert!(report.diagnostics[0].severity == DiagnosticSeverity::Error);
+    assert!(matches!(
+        report.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::AnalysisSteps
+            },
+            ..
+        }
+    ));
     assert!(counted_usage_is_zero(&budget.usage()));
 }
 

@@ -39,6 +39,9 @@ use crate::view::{LoaderId, PhysicalScope};
 use serde::{Deserialize, Serialize};
 
 /// Capability name of the resolution entry points while they are not implemented.
+///
+/// It survives the member slice (2.3) as the honest state of a request whose environment the
+/// validator rejected: a rejected environment never yields a definition, so no lookup starts.
 pub(crate) const RESOLUTION_NOT_IMPLEMENTED: &str = "resolution_not_implemented";
 
 /// Capability name of the dispatch-candidate enumeration this slice does not perform.
@@ -144,21 +147,25 @@ pub struct ResolvedMemberRef {
 /// Why one class header was read by the closure that served a request.
 ///
 /// The reason names the demand, not the outcome: a header read while expanding a hierarchy is
-/// recorded as `HierarchyClosure` even when the name it was demanded for turned out to
-/// resolve to that definition, and a read that happened before the search stopped keeps the
-/// demand that caused it.
+/// recorded as the edge that reached it — a `super_class` step is `ParentChain`, an `interfaces`
+/// step is `HierarchyClosure` — even when the name it was demanded for turned out to resolve to
+/// that definition, and a read that happened before the search stopped keeps the demand that
+/// caused it. A class the request names by identity (the member's owner, the use site's
+/// enclosing class) is a `MemberOwner` read even when a hierarchy edge reaches the same class
+/// later, because the closure memo keeps the reason of the read that really happened.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ReadReason {
     /// The request target itself.
     RequestedDefinition,
-    /// One step up a `super_class` chain.
+    /// A class reached along a `super_class` edge (the type's parent chain).
     ParentChain,
-    /// One class of a superclass/interface closure expansion.
+    /// A class reached along an `interfaces`/superinterface edge (the interface graph).
     HierarchyClosure,
     /// One class of an explicitly scoped candidate enumeration (2.5).
     DispatchScope,
-    /// The owner a member resolution landed on (2.3).
+    /// A class the member rules read by identity: the member reference's owner, and the class
+    /// that declares the use site's enclosing method (2.3).
     MemberOwner,
     /// The target method's body — the only reason that upgrades to a body read (3.x).
     DriverMethodBody,
@@ -215,7 +222,9 @@ pub struct ResolutionReport {
     pub use_kind: ReferenceUse,
     pub caller: CallerContext,
     pub analysis: ResolutionAnalysis,
-    /// `None` exactly when `analysis == NotPerformed`.
+    /// The semantic decision, or `None` when the run reached none: a capability that never ran
+    /// (`analysis = NotPerformed`) and a run that stopped before deciding (`analysis =
+    /// Performed` with `execution` `Cancelled`/`Failed`) both leave this `None` (invariant 3).
     pub state: Option<ResolutionState>,
     pub resolved: Option<ResolvedMemberRef>,
     /// Only definitions that are indistinguishable at one selection position.
@@ -311,23 +320,27 @@ pub(crate) fn validate_declaration_reference_query(
 /// Result of one legally shaped resolution request.
 ///
 /// A class symbol in an environment whose declarations are usable is looked up by
-/// [`crate::providers`] and the lookup is mapped into the schema's own planes. The mapping rule
-/// is invariant 3: `state = Some(v)` exactly when the run reached a semantic decision, and
-/// `state = None` covers both a capability that never ran (`analysis = NotPerformed`) and a run
-/// that stopped before deciding (`analysis = Performed` with `execution` `Cancelled`/`Failed`/
-/// `Partial`).
+/// [`crate::providers`] and the lookup is mapped into the schema's own planes; a member symbol
+/// (2.3) is resolved by [`crate::members`], which searches the class and interface paths of
+/// JVMS 5.4.3 and then holds the selected declaration to the invocation-kind and access rules.
+/// The mapping rule is invariant 3: `state = Some(v)` exactly when the run reached a semantic
+/// decision, and `state = None` covers both a capability that never ran
+/// (`analysis = NotPerformed`) and a run that stopped before deciding (`analysis = Performed`
+/// with `execution` `Cancelled`/`Failed`/`Partial`).
 ///
-/// Concretely: `Resolved`, `Missing` and `Ambiguous` are the lookup's three decisions, and a
-/// budget stop is the fourth (`BudgetExceeded`, with the same stop in `execution`). A
-/// cancellation is `execution = Cancelled` with `state = None`; a damaged candidate or a
-/// stopped listing is `execution = Failed { Error { code } }` with `state = None` and a
-/// diagnostic that names the origin. `Inaccessible` and `IncompatibleClassChange` are reserved
-/// for the access and link rules of 2.3/2.5 — a read failure never occupies a semantic state.
+/// Concretely: for a class symbol, `Resolved`, `Missing` and `Ambiguous` are the lookup's three
+/// decisions; for a member symbol the 2.3 rule table adds `Inaccessible` (the access rules
+/// denied the reference) and `IncompatibleClassChange` (the invocation kind contradicts the
+/// declaration or the hierarchy, or two defaults conflict) and `UnsupportedPolicy` (an owner
+/// kind this slice does not resolve). In both paths a budget stop is the fourth decision
+/// (`BudgetExceeded`, with the same stop in `execution`). A cancellation is
+/// `execution = Cancelled` with `state = None`; a damaged candidate or a stopped listing is
+/// `execution = Failed { Error { code } }` with `state = None` and a diagnostic that names the
+/// origin — a read failure never occupies a semantic state.
 ///
-/// Everything else keeps the honest unavailable state: a member symbol is resolved by 2.3, and
-/// an environment the validator rejected never yields a unique definition (invariant 2), so
-/// neither one starts a search. Environment problems are part of the report; they are never an
-/// `Err` and never a fallback search order.
+/// A rejected environment never yields a unique definition (invariant 2), so it keeps the
+/// honest unavailable state; environment problems are part of the report and are never an `Err`
+/// and never a fallback search order.
 pub(crate) fn resolution_report(
     content: &[ArtifactSnapshot],
     request: &ResolutionRequest,
@@ -336,7 +349,7 @@ pub(crate) fn resolution_report(
     let (problems, environment_identity) =
         validate_environment_with_caller(content, &request.environment, &request.caller);
     let mut diagnostics = environment_diagnostics(&problems);
-    let Some(target) = performable_class(&request.target, &problems) else {
+    let Some(performable) = performable_target(&request.target, request.use_kind, &problems) else {
         diagnostics.push(unavailable_diagnostic(
             RESOLUTION_NOT_IMPLEMENTED,
             "demand-bound symbol resolution",
@@ -374,56 +387,111 @@ pub(crate) fn resolution_report(
         diagnostics.push(dispatch_not_implemented_diagnostic());
     }
     let mut closure = HeaderClosure::new(content, &request.environment);
-    let answer = closure.demand(&target.0, HeaderDemand::RequestedDefinition, budget);
-    let extent = answer
-        .searched
-        .expect("the first demand of a fresh closure performs the search it answers");
-    let reads = published_reads(&closure);
-    let concluded = answer.decision.is_ok();
-    let usage = budget.usage();
-    let (analysis, state, resolved, candidates, execution) = match answer.decision {
-        Ok(handle) => {
-            let lookup = &closure.resolution(handle).lookup;
-            let state = match lookup.state {
-                HeaderLookupState::Found => ResolutionState::Resolved,
-                HeaderLookupState::Missing => ResolutionState::Missing,
-                HeaderLookupState::Ambiguous => ResolutionState::Ambiguous,
-            };
-            let resolved = lookup.location.as_ref().map(|location| {
-                resolved_class(&location.loader, &location.definition, &request.target)
-            });
-            let candidates = lookup
-                .candidates
-                .iter()
-                .map(|location| {
-                    resolved_class(&location.loader, &location.definition, &request.target)
-                })
-                .collect();
-            (
-                ResolutionAnalysis::Performed,
-                Some(state),
-                resolved,
-                candidates,
-                ExecutionReport::Complete { usage },
-            )
+    let (analysis, state, resolved, candidates, coverage, execution) = match performable {
+        Performable::Class(name) => {
+            let answer = closure.demand(&name.0, HeaderDemand::RequestedDefinition, budget);
+            let extent = answer
+                .searched
+                .expect("the first demand of a fresh closure performs the search it answers");
+            let concluded = answer.decision.is_ok();
+            let usage = budget.usage();
+            match answer.decision {
+                Ok(handle) => {
+                    let lookup = &closure.resolution(handle).lookup;
+                    let state = match lookup.state {
+                        HeaderLookupState::Found => ResolutionState::Resolved,
+                        HeaderLookupState::Missing => ResolutionState::Missing,
+                        HeaderLookupState::Ambiguous => ResolutionState::Ambiguous,
+                    };
+                    let resolved = lookup.location.as_ref().map(|location| {
+                        resolved_class(&location.loader, &location.definition, &request.target)
+                    });
+                    let candidates = lookup
+                        .candidates
+                        .iter()
+                        .map(|location| {
+                            resolved_class(&location.loader, &location.definition, &request.target)
+                        })
+                        .collect();
+                    let coverage =
+                        search_coverage(extent.examined, extent.positions, concluded, true);
+                    (
+                        ResolutionAnalysis::Performed,
+                        Some(state),
+                        resolved,
+                        candidates,
+                        coverage,
+                        ExecutionReport::Complete { usage },
+                    )
+                }
+                Err(error) => {
+                    let (execution, diagnostic) = terminal(&error, usage);
+                    // The lookup ran and stopped before a semantic decision. Only a budget stop
+                    // *is* a decision (`BudgetExceeded`, because the declared bounds are what
+                    // decided the answer); a cancellation and a damaged candidate or stopped
+                    // listing stay `state = None` and are recorded as the interruption they are,
+                    // so `Inaccessible`/`IncompatibleClassChange` keep their access and link
+                    // meaning.
+                    let state = matches!(error, Error::BudgetExceeded { .. })
+                        .then_some(ResolutionState::BudgetExceeded);
+                    diagnostics.push(diagnostic);
+                    let coverage =
+                        search_coverage(extent.examined, extent.positions, concluded, true);
+                    (
+                        ResolutionAnalysis::Performed,
+                        state,
+                        None,
+                        Vec::new(),
+                        coverage,
+                        execution,
+                    )
+                }
+            }
         }
-        Err(error) => {
-            let (execution, diagnostic) = terminal(&error, usage);
-            // The lookup ran and stopped before a semantic decision. Only a budget stop *is* a
-            // decision (`BudgetExceeded`, because the declared bounds are what decided the
-            // answer); a cancellation and a damaged candidate or stopped listing stay
-            // `state = None` and are recorded as the interruption they are, so
-            // `Inaccessible`/`IncompatibleClassChange` keep their access and link meaning.
-            let state = matches!(error, Error::BudgetExceeded { .. })
-                .then_some(ResolutionState::BudgetExceeded);
-            diagnostics.push(diagnostic);
-            (
-                ResolutionAnalysis::Performed,
-                state,
-                None,
-                Vec::new(),
-                execution,
-            )
+        Performable::Member(target, use_kind) => {
+            let outcome = crate::members::resolve_member(
+                &mut closure,
+                target,
+                use_kind,
+                &request.caller,
+                budget,
+            );
+            let extent = closure.searched_extent();
+            let usage = budget.usage();
+            match outcome {
+                Ok(outcome) => {
+                    let (state, resolved, candidates) =
+                        member_planes(&outcome.decision, &request.target);
+                    diagnostics.extend(outcome.diagnostics);
+                    // An owner kind this slice does not resolve covers no range of the requested
+                    // resolution, so the plane is partial even though the decision itself is
+                    // complete: the request asked for a range that was never searched.
+                    let covered = outcome.hierarchy_complete
+                        && !matches!(outcome.decision, crate::members::MemberDecision::ArrayOwner);
+                    (
+                        ResolutionAnalysis::Performed,
+                        Some(state),
+                        resolved,
+                        candidates,
+                        search_coverage(extent.examined, extent.positions, true, covered),
+                        ExecutionReport::Complete { usage },
+                    )
+                }
+                Err(error) => {
+                    let (execution, diagnostic) = terminal(&error, usage);
+                    let state = matches!(error, Error::BudgetExceeded { .. })
+                        .then_some(ResolutionState::BudgetExceeded);
+                    diagnostics.push(diagnostic);
+                    (
+                        ResolutionAnalysis::Performed,
+                        state,
+                        None,
+                        Vec::new(),
+                        search_coverage(extent.examined, extent.positions, false, false),
+                        execution,
+                    )
+                }
+            }
         }
     };
     // The closure's own diagnostics belong to this report: a refused cyclic hierarchy names
@@ -441,8 +509,8 @@ pub(crate) fn resolution_report(
         resolved,
         candidates,
         dispatch: None,
-        reads,
-        coverage: search_coverage(extent.examined, extent.positions, concluded),
+        reads: published_reads(&closure),
+        coverage,
         execution,
         diagnostics,
     }
@@ -464,6 +532,7 @@ fn published_reads(closure: &HeaderClosure<'_>) -> Vec<HeaderRead> {
                 HeaderDemand::RequestedDefinition => ReadReason::RequestedDefinition,
                 HeaderDemand::ParentChain => ReadReason::ParentChain,
                 HeaderDemand::HierarchyClosure => ReadReason::HierarchyClosure,
+                HeaderDemand::MemberOwner => ReadReason::MemberOwner,
             },
         })
         .collect()
@@ -471,15 +540,132 @@ fn published_reads(closure: &HeaderClosure<'_>) -> Vec<HeaderRead> {
 
 /// The class symbol this slice performs a lookup for, if any.
 ///
-/// A member symbol belongs to 2.3, and a rejected environment never yields a unique definition
-/// (invariant 2), so neither one starts a search.
-fn performable_class<'a>(
+/// A rejected environment never yields a unique definition (invariant 2), so it starts no
+/// search at all. A member symbol is the 2.3 path and needs the reference use mapped into the
+/// member vocabulary.
+fn performable_target<'a>(
     target: &'a SymbolRef,
+    use_kind: ReferenceUse,
     problems: &[EnvironmentProblem],
-) -> Option<&'a JvmBytes> {
+) -> Option<Performable<'a>> {
+    if !problems.is_empty() {
+        return None;
+    }
     match target {
-        SymbolRef::Class { owner } if problems.is_empty() => Some(owner),
-        _ => None,
+        SymbolRef::Class { owner } => Some(Performable::Class(owner)),
+        // A class reference names no member: the entry point rejects that pairing
+        // (`resolution_target_use_mismatch`) before a report is built, so `None` here is
+        // unreachable from `Engine::resolve_symbol`, and a report built by hand keeps the honest
+        // unavailable state instead of inventing a member rule for a class reference.
+        SymbolRef::Field { .. } | SymbolRef::Method { .. } => {
+            member_use(use_kind).map(|use_kind| Performable::Member(target, use_kind))
+        }
+    }
+}
+
+/// What one request can perform.
+enum Performable<'a> {
+    /// A class symbol: one class-name lookup (2.1/2.2).
+    Class(&'a JvmBytes),
+    /// A member symbol: the member rules of 2.3, held to this reference use.
+    Member(&'a SymbolRef, crate::members::MemberUse),
+}
+
+/// The crate-private member vocabulary of one public reference use.
+///
+/// The mapping lives at the boundary that owns the public vocabulary, and it is exhaustive: a
+/// reference kind added later fails to compile here until its member rule is stated. A class
+/// reference names no member, so it maps to nothing.
+fn member_use(use_kind: ReferenceUse) -> Option<crate::members::MemberUse> {
+    Some(match use_kind {
+        ReferenceUse::FieldRead => crate::members::MemberUse::FieldRead,
+        ReferenceUse::FieldWrite => crate::members::MemberUse::FieldWrite,
+        ReferenceUse::InvokeStatic => crate::members::MemberUse::InvokeStatic,
+        ReferenceUse::InvokeSpecial => crate::members::MemberUse::InvokeSpecial,
+        ReferenceUse::InvokeVirtual => crate::members::MemberUse::InvokeVirtual,
+        ReferenceUse::InvokeInterface => crate::members::MemberUse::InvokeInterface,
+        ReferenceUse::InvokeDynamic => crate::members::MemberUse::InvokeDynamic,
+        ReferenceUse::ClassReference => return None,
+    })
+}
+
+/// The report planes of one member decision.
+///
+/// `resolved` and `Ambiguous` are mutually exclusive by construction: `resolved` is published
+/// for `Resolved` only — the access and link rejections say why the reference may not use the
+/// member, and publishing a selected declaration next to a non-`Resolved` state would read as a
+/// resolution — while an ambiguous position publishes its candidates and no `resolved` at all.
+/// The declaration a rejection refused is still named in the diagnostic that refused it.
+fn member_planes(
+    decision: &crate::members::MemberDecision,
+    target: &SymbolRef,
+) -> (
+    ResolutionState,
+    Option<ResolvedMemberRef>,
+    Vec<ResolvedMemberRef>,
+) {
+    use crate::members::MemberDecision;
+    match decision {
+        MemberDecision::Resolved(location) => (
+            ResolutionState::Resolved,
+            Some(resolved_member(location)),
+            Vec::new(),
+        ),
+        MemberDecision::Missing => (ResolutionState::Missing, None, Vec::new()),
+        MemberDecision::OwnerAmbiguous(owners) => (
+            ResolutionState::Ambiguous,
+            None,
+            // The candidates are class definitions, so each one carries the raw reference as it
+            // was asked, exactly like the class-symbol path publishes an ambiguous position.
+            owners
+                .iter()
+                .map(|owner| ResolvedMemberRef {
+                    loader: owner.loader.clone(),
+                    definition: owner.definition.clone(),
+                    member: target.clone(),
+                })
+                .collect(),
+        ),
+        MemberDecision::DeclarationAmbiguous(locations) => (
+            ResolutionState::Ambiguous,
+            None,
+            locations.iter().map(resolved_member).collect(),
+        ),
+        MemberDecision::KindMismatch | MemberDecision::DefaultConflict => {
+            (ResolutionState::IncompatibleClassChange, None, Vec::new())
+        }
+        MemberDecision::AccessDenied => (ResolutionState::Inaccessible, None, Vec::new()),
+        MemberDecision::ArrayOwner => (ResolutionState::UnsupportedPolicy, None, Vec::new()),
+    }
+}
+
+/// One resolved member: the **declaration** the search selected.
+///
+/// The owner is the declaring class's own internal name (which may differ from the reference's
+/// owner), the name and descriptor are the declaration's raw bytes, and the loader and physical
+/// definition are those of the header the declaration was read from. `report.target` keeps the
+/// raw reference, so a signature-polymorphic call site shows both descriptors side by side.
+fn resolved_member(location: &crate::members::MemberLocation) -> ResolvedMemberRef {
+    use crate::members::MemberKind;
+    let owner = location.declaring_class.clone();
+    let name = location.name.clone();
+    let descriptor = location.descriptor.clone();
+    let member = match location.kind {
+        MemberKind::Field => SymbolRef::Field {
+            owner,
+            name,
+            descriptor,
+        },
+        MemberKind::Method => SymbolRef::Method {
+            owner,
+            name,
+            descriptor,
+        },
+    };
+    ResolvedMemberRef {
+        loader: location.loader.clone(),
+        definition: location.definition.clone(),
+        member,
     }
 }
 
@@ -500,14 +686,27 @@ fn resolved_class(
     }
 }
 
-/// Resolution coverage of one performed lookup.
+/// Resolution coverage of one performed search.
 ///
-/// The resolution plane reports the prefix of the effective order the search examined and,
-/// when the search stopped, the positions it never reached. A concluded lookup declares the
+/// The resolution plane reports the prefix of the effective order the searches examined and,
+/// when a search stopped, the positions it never reached. A concluded lookup declares the
 /// positions its decision covers and nothing as skipped: the order stops there by rule, because
-/// the first position that holds a candidate is the definition. The request declares no artifact
-/// range of its own, so the artifact and dynamic planes stay `NotRequested`.
-fn search_coverage(examined: u32, positions: u32, concluded: bool) -> Coverage {
+/// the first position that holds a candidate is the definition. A member request runs one search
+/// per class it reads, so the numbers are the sums the closure accumulated — every search starts
+/// at position 0 of the same declared order, so a skipped range counts unexamined search
+/// positions across those searches.
+///
+/// `hierarchy_complete` is the member search's own extent: a branch of the hierarchy that could
+/// not be read leaves the coverage partial even though a decision was reached, and those
+/// branches are named by the diagnostics that found them (their size is unknown, so no skipped
+/// range can state them). The request declares no artifact range of its own, so the artifact and
+/// dynamic planes stay `NotRequested`.
+fn search_coverage(
+    examined: u32,
+    positions: u32,
+    concluded: bool,
+    hierarchy_complete: bool,
+) -> Coverage {
     const LABEL: &str = "provider_search_position";
     let mut scanned = Vec::new();
     let mut skipped = Vec::new();
@@ -528,7 +727,7 @@ fn search_coverage(examined: u32, positions: u32, concluded: bool) -> Coverage {
     Coverage {
         artifact_structural: CoverageDimension::not_requested(),
         runtime_resolution: CoverageDimension {
-            state: if concluded {
+            state: if concluded && hierarchy_complete {
                 CoverageState::CompleteWithinSchema
             } else {
                 CoverageState::Partial

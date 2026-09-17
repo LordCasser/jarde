@@ -11,6 +11,7 @@ pub mod engine;
 pub mod environment;
 pub mod error;
 pub mod ir;
+mod members;
 pub mod model;
 pub mod multi_release;
 mod providers;

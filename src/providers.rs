@@ -59,6 +59,9 @@ use std::collections::VecDeque;
 /// Suffix every archive entry of a class carries; the comparison is byte-exact.
 const CLASS_SUFFIX: &[u8] = b".class";
 
+/// Diagnostic code of a cyclic hierarchy, shared by the closure walk and the member search.
+pub(crate) const HIERARCHY_CYCLE: &str = "resolution_hierarchy_cycle";
+
 /// One physical position with the definition it selected or read.
 ///
 /// The position is a declaration coordinate: the loader that owns the root, the root's index
@@ -265,17 +268,20 @@ pub(crate) fn lookup_class_header(
 pub(crate) enum HeaderDemand {
     /// The request target itself.
     RequestedDefinition,
-    /// One step up a `super_class` chain (2.3 member resolution).
-    ///
-    /// The parent-chain walk of this slice is not called by a report entry point yet; 2.3
-    /// consumes it, and its semantics are pinned by this module's tests.
-    #[allow(dead_code)]
+    /// A class reached along a `super_class` edge of the hierarchy being searched, and the top
+    /// of such a chain when the walk itself reads it.
     ParentChain,
-    /// One class of a superclass/interface closure expansion (2.3/2.5).
-    ///
-    /// Like [`HeaderDemand::ParentChain`], the closure walk is consumed by 2.3/2.5.
-    #[allow(dead_code)]
+    /// A class reached along an `interfaces`/superinterface edge of the hierarchy being
+    /// searched: the interface graph, never the class chain.
     HierarchyClosure,
+    /// A class the request names by identity and reads directly, instead of reaching it along a
+    /// hierarchy edge: the class a member reference names as its owner, and the class that
+    /// declares the use site's enclosing method.
+    ///
+    /// The second one is the only class a request reads by physical definition rather than by
+    /// name — the request carries it as a definition, and its name is what reading the header
+    /// finds out — so [`HeaderClosure::read_definition`] serves it.
+    MemberOwner,
 }
 
 /// One header this request read, with the demand that read it.
@@ -353,6 +359,8 @@ pub(crate) struct HeaderClosure<'a> {
     resolutions: Vec<ClassResolution>,
     reads: Vec<HeaderReadRecord>,
     diagnostics: Vec<Diagnostic>,
+    /// Positions examined and declared by every class-name search this request really ran.
+    searched: (u64, u64),
 }
 
 impl<'a> HeaderClosure<'a> {
@@ -367,6 +375,7 @@ impl<'a> HeaderClosure<'a> {
             resolutions: Vec::new(),
             reads: Vec::new(),
             diagnostics: Vec::new(),
+            searched: (0, 0),
         }
     }
 
@@ -402,6 +411,8 @@ impl<'a> HeaderClosure<'a> {
             examined: search.examined,
             positions: search.positions,
         });
+        self.searched.0 = self.searched.0.saturating_add(u64::from(search.examined));
+        self.searched.1 = self.searched.1.saturating_add(u64::from(search.positions));
         match search.lookup {
             Ok(lookup) => {
                 self.resolutions.push(ClassResolution {
@@ -458,6 +469,63 @@ impl<'a> HeaderClosure<'a> {
         &self.reads
     }
 
+    /// Reads one class header the request names by identity instead of by name.
+    ///
+    /// The member slice (2.3) needs the class that declares the use site's enclosing method.
+    /// A request carries that class as a physical definition, never as a name — the name is
+    /// what reading the header finds out — so no class-name search can be its entry point.
+    /// The read is one header attempt like any other (charged before the bytes are read and
+    /// recorded under the demand that needed it), and a definition this request already read
+    /// is answered from the memo: the same `(definition, loader)` binding is charged once per
+    /// request, exactly like a repeated name.
+    pub(crate) fn read_definition(
+        &mut self,
+        loader: &LoaderId,
+        definition: &PhysicalDefinitionId,
+        demand: HeaderDemand,
+        budget: &mut Budget,
+    ) -> Result<ClassHeaderFacts> {
+        if let Some(index) = self.read_by_definition(loader, definition) {
+            return Ok(self
+                .resolutions
+                .get(index)
+                .and_then(|resolution| resolution.lookup.header.clone())
+                .expect("a remembered definition published the header it was read for"));
+        }
+        let facts = read_definition_header(self.content, definition, budget)?;
+        self.record_read(loader, definition, demand);
+        Ok(facts)
+    }
+
+    /// The index of a decided lookup that selected one `(loader, definition)` binding.
+    fn read_by_definition(
+        &self,
+        loader: &LoaderId,
+        definition: &PhysicalDefinitionId,
+    ) -> Option<usize> {
+        self.resolutions.iter().position(|resolution| {
+            &resolution.loader == loader
+                && resolution
+                    .lookup
+                    .location
+                    .as_ref()
+                    .is_some_and(|location| &location.definition == definition)
+        })
+    }
+
+    /// How far the class-name searches of this request reached, in total.
+    ///
+    /// The 2.1 lookup publishes the extent of its one search; a request that reads a whole
+    /// hierarchy runs one search per class it reads, so the resolution plane publishes their
+    /// sum. Every demand searches the same declared order from position 0, so the sum counts
+    /// examined positions across searches, not distinct positions.
+    pub(crate) fn searched_extent(&self) -> SearchExtent {
+        SearchExtent {
+            examined: u32::try_from(self.searched.0).unwrap_or(u32::MAX),
+            positions: u32::try_from(self.searched.1).unwrap_or(u32::MAX),
+        }
+    }
+
     /// Diagnostics this request itself produced, in generation order.
     ///
     /// The report layer owns the published diagnostic list, so a walk that refuses an edge
@@ -477,22 +545,29 @@ impl<'a> HeaderClosure<'a> {
 
     /// Walks the `super_class` chain of `root`, one class per layer.
     ///
-    /// Every layer is demanded with [`HeaderDemand::ParentChain`].
+    /// Every layer is a `super_class` edge, so every layer is demanded with
+    /// [`HeaderDemand::ParentChain`]. `root_reason` is the demand of the root layer itself: the
+    /// caller states why it needed that class (`MemberOwner` for the class a member rule names),
+    /// because the root has no incoming edge to derive it from.
     #[allow(dead_code)]
-    pub(crate) fn parent_chain(&self, root: &[u8]) -> HierarchyWalk {
-        HierarchyWalk::new(root, WalkEdges::ParentChain, HeaderDemand::ParentChain)
+    pub(crate) fn parent_chain(&self, root: &[u8], root_reason: HeaderDemand) -> HierarchyWalk {
+        HierarchyWalk::new(root, WalkEdges::ParentChain, root_reason)
     }
 
     /// Walks every superclass and interface of `root`, breadth-first.
     ///
-    /// Every layer is demanded with [`HeaderDemand::HierarchyClosure`].
+    /// The reason of each layer above the root follows the edge that reached it: the
+    /// `super_class` edge is [`HeaderDemand::ParentChain`] and each `interfaces` edge is
+    /// [`HeaderDemand::HierarchyClosure`], so one walk that follows both edges publishes both
+    /// reasons instead of labelling its whole expansion with one of them. `root_reason` is the
+    /// demand of the root layer itself, which no edge reached.
     #[allow(dead_code)]
-    pub(crate) fn hierarchy_closure(&self, root: &[u8]) -> HierarchyWalk {
-        HierarchyWalk::new(
-            root,
-            WalkEdges::SupertypeClosure,
-            HeaderDemand::HierarchyClosure,
-        )
+    pub(crate) fn hierarchy_closure(
+        &self,
+        root: &[u8],
+        root_reason: HeaderDemand,
+    ) -> HierarchyWalk {
+        HierarchyWalk::new(root, WalkEdges::SupertypeClosure, root_reason)
     }
 }
 
@@ -505,10 +580,14 @@ enum WalkEdges {
     SupertypeClosure,
 }
 
-/// One layer waiting to be expanded: the name to demand and the path that reached it.
+/// One layer waiting to be expanded: the name to demand, the reason that reached it and the
+/// path that reached it.
 #[allow(dead_code)]
 struct PendingLayer {
     name: JvmBytes,
+    /// Why this layer is read: the demand of the edge that queued it, or the walk's own root
+    /// reason for the layer the walk starts from.
+    demand: HeaderDemand,
     /// The classes already on the supertype path that reached this layer. The length is the
     /// layer's dependency depth — the root has an empty path, because the root is the starting
     /// point of the walk and not a step up.
@@ -538,6 +617,12 @@ pub(crate) struct WalkGaps {
 /// the root the walk was created for, so a caller that already demanded the root gets it back
 /// from the memo without a second read.
 ///
+/// Every layer above the root is demanded with the reason of the edge that reached it: a
+/// `super_class` edge is [`HeaderDemand::ParentChain`] and an `interfaces` edge is
+/// [`HeaderDemand::HierarchyClosure`], so a walk that follows both edges publishes both reasons
+/// instead of labelling its whole expansion with one of them. The root layer has no incoming
+/// edge, so the caller states its reason when it creates the walk.
+///
 /// Each layer above the root calls [`Budget::observe_dependency_depth`] **before** the layer is
 /// demanded — a depth stop therefore leaves the layers already returned as the trustworthy
 /// prefix and reads none of the rest — and each layer charges one `AnalysisSteps` before it is
@@ -547,7 +632,8 @@ pub(crate) struct WalkGaps {
 #[allow(dead_code)]
 pub(crate) struct HierarchyWalk {
     edges: WalkEdges,
-    reason: HeaderDemand,
+    /// Reason of the layer the walk starts from, which no edge reached.
+    root_reason: HeaderDemand,
     pending: VecDeque<PendingLayer>,
     /// Names this walk already expanded, so a shared supertype is not expanded twice.
     visited: Vec<JvmBytes>,
@@ -564,12 +650,13 @@ pub(crate) struct HierarchyWalk {
 #[allow(dead_code)]
 impl HierarchyWalk {
     /// A walk with its root layer pending.
-    fn new(root: &[u8], edges: WalkEdges, reason: HeaderDemand) -> Self {
+    fn new(root: &[u8], edges: WalkEdges, root_reason: HeaderDemand) -> Self {
         Self {
             edges,
-            reason,
+            root_reason,
             pending: VecDeque::from([PendingLayer {
                 name: JvmBytes(root.to_vec()),
+                demand: root_reason,
                 ancestors: Vec::new(),
             }]),
             visited: Vec::new(),
@@ -623,7 +710,7 @@ impl HierarchyWalk {
         }
         budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
         let handle = closure
-            .demand(&layer.name.0, self.reason, budget)
+            .demand(&layer.name.0, layer.demand, budget)
             .decision?;
         self.visited.push(layer.name.clone());
         match closure.resolution(handle).lookup.state {
@@ -642,7 +729,8 @@ impl HierarchyWalk {
         layer: &PendingLayer,
     ) {
         let loader = closure.resolution(handle).loader.clone();
-        for child in supertype_names(closure.resolution(handle), self.edges) {
+        for edge in supertype_edges(closure.resolution(handle), self.edges) {
+            let child = edge.name;
             if layer.name == child || layer.ancestors.contains(&child) {
                 // `A -> B -> A`: the name is already on the path that reached it, so this
                 // hierarchy is cyclic (illegal) and expanding it would never terminate.
@@ -661,33 +749,51 @@ impl HierarchyWalk {
             ancestors.push(layer.name.clone());
             self.pending.push_back(PendingLayer {
                 name: child,
+                demand: edge.demand,
                 ancestors,
             });
         }
     }
 }
 
-/// The supertype names one decision declares, in expansion order.
+/// One supertype edge of a class, with the demand that reading its target stands for.
+///
+/// The reason follows the edge: a `super_class` edge is a parent-chain step and an `interfaces`
+/// edge is an interface-closure step, which is what keeps the two read reasons of the report
+/// apart for a walk that follows both.
+#[allow(dead_code)]
+struct SupertypeEdge {
+    name: JvmBytes,
+    demand: HeaderDemand,
+}
+
+/// The supertype edges one decision declares, in expansion order.
 ///
 /// The superclass is queued before the interfaces, so both walks visit the class chain of a
 /// layer before its interface fan-out. A decision that is not `Found` declares nothing.
 ///
 /// Consumed by [`HierarchyWalk`] (2.3/2.5).
 #[allow(dead_code)]
-fn supertype_names(resolution: &ClassResolution, edges: WalkEdges) -> Vec<JvmBytes> {
+fn supertype_edges(resolution: &ClassResolution, edges: WalkEdges) -> Vec<SupertypeEdge> {
     let Some(header) = resolution.lookup.header.as_ref() else {
         return Vec::new();
     };
-    let mut names = Vec::new();
+    let mut edges_out = Vec::new();
     if let Some(super_class) = &header.facts.super_class {
-        names.push(JvmBytes(super_class.raw().0.clone()));
+        edges_out.push(SupertypeEdge {
+            name: JvmBytes(super_class.raw().0.clone()),
+            demand: HeaderDemand::ParentChain,
+        });
     }
     if edges == WalkEdges::SupertypeClosure {
         for interface in &header.facts.interfaces {
-            names.push(JvmBytes(interface.raw().0.clone()));
+            edges_out.push(SupertypeEdge {
+                name: JvmBytes(interface.raw().0.clone()),
+                demand: HeaderDemand::HierarchyClosure,
+            });
         }
     }
-    names
+    edges_out
 }
 
 /// The diagnostic of a cyclic supertype edge.
@@ -707,7 +813,7 @@ fn cycle_diagnostic(loader: &LoaderId, layer: &PendingLayer, repeated: &JvmBytes
     path.push(escaped(&layer.name.0));
     path.push(escaped(&repeated.0));
     Diagnostic {
-        code: "resolution_hierarchy_cycle".to_string(),
+        code: HIERARCHY_CYCLE.to_string(),
         severity: DiagnosticSeverity::Warning,
         message: format!(
             "loader `{}`: `{}` is its own supertype ({}); a cyclic hierarchy is illegal, so this \
@@ -1053,6 +1159,137 @@ fn standalone_probe(
     )))
 }
 
+/// Reads one definition's header by identity: the bytes the definition names, parsed the way
+/// every other header read is parsed.
+///
+/// The definition carries its own snapshot and container coordinates, so no search order is
+/// involved and no position is examined. What the read does keep is the discipline of every
+/// other read: the attempt is charged before the bytes are read, an incomplete listing cannot
+/// prove an entry absent, and the bytes at the definition's own location must be the bytes the
+/// definition names (a definition whose content changed under the same coordinate would
+/// otherwise be measured against a class the request never named).
+fn read_definition_header(
+    content: &[ArtifactSnapshot],
+    definition: &PhysicalDefinitionId,
+    budget: &mut Budget,
+) -> Result<ClassHeaderFacts> {
+    let label = definition_label(definition);
+    let Some(snapshot) = content
+        .iter()
+        .find(|candidate| candidate.id() == definition.snapshot())
+    else {
+        return Err(problem_error(
+            EnvironmentProblemCode::ContentNotProvided,
+            format!("{label} names content the request does not provide; the class cannot be read"),
+        ));
+    };
+    charge_header_attempt(budget)?;
+    let (bytes, digest) = match &definition.location {
+        PhysicalClassLocation::ArchiveEntry { entry } => {
+            let listed = listed_entry(snapshot, entry, &label, budget)?;
+            let materialized = snapshot
+                .read_entry_internal(&listed, budget)
+                .map_err(|error| at_origin(error, &label))?;
+            (materialized.bytes, materialized.content_digest)
+        }
+        PhysicalClassLocation::StandaloneRoot { .. } => {
+            let bytes = snapshot
+                .root_bytes(budget)
+                .map_err(|error| at_origin(error, &label))?;
+            let digest = Digest(blake3::hash(&bytes).to_hex().to_string());
+            (bytes, digest)
+        }
+    };
+    let length = u64::try_from(bytes.len()).map_err(|_| {
+        Error::invalid_input("class_size_overflow", "class length does not fit u64")
+    })?;
+    require_definition_bytes(definition, &digest, length, &label)?;
+    let facts = class_facts(&bytes, budget).map_err(|error| at_origin(error, &label))?;
+    Ok(ClassHeaderFacts { facts })
+}
+
+/// The listed entry one definition names, so its bytes can be read.
+///
+/// A flat entry comes from the snapshot's own listing and a nested one from the container that
+/// holds it. Both listings have to be complete: an incomplete listing cannot prove that the
+/// entry is absent, and reading its prefix as "the definition is gone" would be a guess.
+fn listed_entry(
+    snapshot: &ArtifactSnapshot,
+    entry: &PhysicalEntryId,
+    label: &str,
+    budget: &mut Budget,
+) -> Result<PhysicalEntry> {
+    if entry.origin.steps.is_empty() {
+        let report = snapshot.enumerate(budget)?;
+        require_complete_listing(budget, &report.execution, &report.diagnostics, label)?;
+        return report
+            .entries
+            .into_iter()
+            .find(|candidate| candidate.id == *entry)
+            .ok_or_else(|| missing_entry(label));
+    }
+    let report = snapshot.enumerate_artifact_tree(budget)?;
+    let Some(container) = report
+        .containers
+        .iter()
+        .find(|container| container.origin == entry.origin)
+    else {
+        require_complete_listing(budget, &report.execution, &report.diagnostics, label)?;
+        return Err(missing_entry(label));
+    };
+    require_complete_listing(budget, &container.execution, &report.diagnostics, label)?;
+    container
+        .entries
+        .iter()
+        .find(|candidate| candidate.id == *entry)
+        .cloned()
+        .ok_or_else(|| missing_entry(label))
+}
+
+fn missing_entry(label: &str) -> Error {
+    problem_error(
+        EnvironmentProblemCode::ContentNotProvided,
+        format!("{label} is not an entry of the provided snapshot"),
+    )
+}
+
+/// The bytes at a definition's own location must be the bytes that definition names.
+fn require_definition_bytes(
+    definition: &PhysicalDefinitionId,
+    digest: &Digest,
+    length: u64,
+    label: &str,
+) -> Result<()> {
+    if definition.class_bytes.digest == *digest && definition.class_bytes.length == length {
+        return Ok(());
+    }
+    Err(Error::invalid_input(
+        "class_definition_mismatch",
+        format!(
+            "{label} announces {} bytes with digest `{}`, but the provided content holds \
+             {length} bytes with digest `{}`; the definition does not describe the bytes at its \
+             own location",
+            definition.class_bytes.length, definition.class_bytes.digest.0, digest.0
+        ),
+    ))
+}
+
+/// Human-readable coordinate of one class definition, for the messages of the reads that name
+/// it by identity rather than by a search position.
+fn definition_label(definition: &PhysicalDefinitionId) -> String {
+    match &definition.location {
+        PhysicalClassLocation::ArchiveEntry { entry } => format!(
+            "the class definition at {} of snapshot `{}`",
+            entry_label(entry),
+            definition.snapshot().0
+        ),
+        PhysicalClassLocation::StandaloneRoot { snapshot } => format!(
+            "the standalone CLASS definition of snapshot `{}`",
+            snapshot.0
+        ),
+    }
+}
+
 /// A listing that stopped early cannot decide a position.
 ///
 /// The listing keeps its own evidence (execution reason and diagnostics); the lookup propagates
@@ -1262,7 +1499,10 @@ fn entry_label(entry: &PhysicalEntryId) -> String {
 
 /// Byte-safe display of a raw name, so a message cannot carry a broken line or hide which bytes
 /// it means.
-fn escaped(raw: &[u8]) -> String {
+///
+/// Shared with the member slice, which names raw owner, name and descriptor bytes in the
+/// diagnostics of its own rules.
+pub(crate) fn escaped(raw: &[u8]) -> String {
     use std::fmt::Write as _;
     let mut escaped = String::new();
     for &byte in raw {
@@ -1952,7 +2192,9 @@ mod tests {
             ..closure_limits()
         });
         let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
-        let mut walk = closure.parent_chain(b"p/A");
+        // The caller names p/A for a member rule, so the root layer is that rule's own read and
+        // every step above it is a parent-chain read.
+        let mut walk = closure.parent_chain(b"p/A", HeaderDemand::MemberOwner);
 
         let mut expanded = Vec::new();
         let stop = walk_handles(&mut closure, &mut walk, &mut budget, &mut expanded)
@@ -1985,12 +2227,19 @@ mod tests {
             3,
             "reads only hold the layers that were really read"
         );
-        assert!(
+        assert_eq!(
             closure
                 .reads()
                 .iter()
-                .all(|read| read.demand == HeaderDemand::ParentChain),
-            "every read of this walk is a parent-chain read"
+                .map(|read| read.demand)
+                .collect::<Vec<_>>(),
+            vec![
+                HeaderDemand::MemberOwner,
+                HeaderDemand::ParentChain,
+                HeaderDemand::ParentChain,
+            ],
+            "the root layer keeps the caller's own reason; every step above it is a \
+             parent-chain read"
         );
         assert_eq!(budget.usage().class_headers, 3);
         assert_eq!(
@@ -2041,7 +2290,7 @@ mod tests {
         let environment = app_environment(&snapshot);
         let mut budget = Budget::new(closure_limits());
         let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
-        let mut walk = closure.hierarchy_closure(b"p/C");
+        let mut walk = closure.hierarchy_closure(b"p/C", HeaderDemand::MemberOwner);
 
         let mut expanded = Vec::new();
         walk_handles(&mut closure, &mut walk, &mut budget, &mut expanded)
@@ -2073,8 +2322,29 @@ mod tests {
             "the interfaces of the interfaces are the deepest layer"
         );
         assert!(closure.diagnostics().is_empty());
+        assert_eq!(
+            closure
+                .reads()
+                .iter()
+                .map(|read| read.demand)
+                .collect::<Vec<_>>(),
+            vec![
+                // The root layer: the class the caller named.
+                HeaderDemand::MemberOwner,
+                // p/Base, then java/lang/Object: both reached along a `super_class` edge.
+                HeaderDemand::ParentChain,
+                // p/I1 and p/I2: reached along an `interfaces` edge.
+                HeaderDemand::HierarchyClosure,
+                HeaderDemand::HierarchyClosure,
+                HeaderDemand::ParentChain,
+                // p/I3 and p/I4: the interfaces of the interfaces.
+                HeaderDemand::HierarchyClosure,
+                HeaderDemand::HierarchyClosure,
+            ],
+            "one walk that follows both edges publishes both reasons, in read order: the reason \
+             names the edge that reached the layer, never the walk as a whole"
+        );
         for (index, read) in closure.reads().iter().enumerate() {
-            assert_eq!(read.demand, HeaderDemand::HierarchyClosure);
             for other in &closure.reads()[index + 1..] {
                 assert_ne!(
                     (&read.loader, &read.definition),
@@ -2102,7 +2372,7 @@ mod tests {
         let environment = app_environment(&snapshot);
         let mut budget = Budget::new(closure_limits());
         let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
-        let mut walk = closure.hierarchy_closure(b"p/C");
+        let mut walk = closure.hierarchy_closure(b"p/C", HeaderDemand::MemberOwner);
 
         let mut expanded = Vec::new();
         walk_handles(&mut closure, &mut walk, &mut budget, &mut expanded)
@@ -2145,7 +2415,7 @@ mod tests {
         let environment = app_environment(&snapshot);
         let mut budget = Budget::new(closure_limits());
         let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
-        let mut walk = closure.hierarchy_closure(b"p/A");
+        let mut walk = closure.hierarchy_closure(b"p/A", HeaderDemand::MemberOwner);
 
         let mut expanded = Vec::new();
         walk_handles(&mut closure, &mut walk, &mut budget, &mut expanded)
@@ -2196,7 +2466,7 @@ mod tests {
         cancelled.cancel();
         let mut budget = Budget::with_cancellation_token(closure_limits(), cancelled);
         let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
-        let mut walk = closure.parent_chain(b"p/A");
+        let mut walk = closure.parent_chain(b"p/A", HeaderDemand::RequestedDefinition);
         let stop = walk
             .next(&mut closure, &mut budget)
             .expect_err("a cancelled request reads nothing");
@@ -2209,7 +2479,7 @@ mod tests {
         let token = CancellationToken::new();
         let mut budget = Budget::with_cancellation_token(closure_limits(), token.clone());
         let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
-        let mut walk = closure.parent_chain(b"p/A");
+        let mut walk = closure.parent_chain(b"p/A", HeaderDemand::RequestedDefinition);
         let root = walk
             .next(&mut closure, &mut budget)
             .expect("the root layer is read")
@@ -2292,7 +2562,8 @@ mod tests {
         // `ReadReason::ParentChain` names one step up the *type's* `super_class` chain, so this
         // walk reads the class chain and never an interface: it answers "what does this class
         // extend", which is a different question from the supertype closure the fan-out test
-        // covers.
+        // covers. The root layer is the class the caller named, so it keeps that caller's own
+        // reason.
         let snapshot = open(zip(&[
             (
                 b"p/C.class",
@@ -2314,7 +2585,7 @@ mod tests {
         let environment = app_environment(&snapshot);
         let mut budget = Budget::new(closure_limits());
         let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
-        let mut walk = closure.parent_chain(b"p/C");
+        let mut walk = closure.parent_chain(b"p/C", HeaderDemand::RequestedDefinition);
 
         let mut expanded = Vec::new();
         walk_handles(&mut closure, &mut walk, &mut budget, &mut expanded)
@@ -2331,12 +2602,18 @@ mod tests {
             "p/I is never read by a parent-chain walk, even though p/C implements it"
         );
         assert_eq!(closure.reads().len(), 3);
-        assert!(
+        assert_eq!(
             closure
                 .reads()
                 .iter()
-                .all(|read| read.demand == HeaderDemand::ParentChain),
-            "every read of this walk names the parent-chain demand"
+                .map(|read| read.demand)
+                .collect::<Vec<_>>(),
+            vec![
+                HeaderDemand::RequestedDefinition,
+                HeaderDemand::ParentChain,
+                HeaderDemand::ParentChain,
+            ],
+            "the root keeps the caller's reason and every step above it is a parent-chain read"
         );
         assert_eq!(
             walk.gaps(),
@@ -2435,7 +2712,7 @@ mod tests {
         let environment = app_environment(&snapshot);
         let mut budget = Budget::new(closure_limits());
         let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
-        let mut walk = closure.hierarchy_closure(b"p/C");
+        let mut walk = closure.hierarchy_closure(b"p/C", HeaderDemand::MemberOwner);
 
         let mut expanded = Vec::new();
         walk_handles(&mut closure, &mut walk, &mut budget, &mut expanded)
@@ -2481,7 +2758,7 @@ mod tests {
         let environment = app_environment(&snapshot);
         let mut budget = Budget::new(closure_limits());
         let mut closure = HeaderClosure::new(std::slice::from_ref(&snapshot), &environment);
-        let mut walk = closure.hierarchy_closure(b"p/A");
+        let mut walk = closure.hierarchy_closure(b"p/A", HeaderDemand::MemberOwner);
 
         let mut expanded = Vec::new();
         walk_handles(&mut closure, &mut walk, &mut budget, &mut expanded)
