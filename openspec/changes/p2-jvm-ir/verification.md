@@ -150,6 +150,17 @@
 - 远端 CI：实现与文档提交 `12e735c`、`915bd6f` 推送 `main` 后，CI run [`35285853954`](https://github.com/LordCasser/jarde/actions/runs/35285853954) 四个 job 全部 success——**2.x 全片（2.1–2.5）至此完成、复核并全绿**。
 - 独立复核结论：**Approve**（三轮）。登记债务：`skipped` 在多次查找共享请求时是「未检查位置」的保守上界（高报未决、绝不低报；5.3 收紧为逐查找集合或在 golden 固定）；`resolve_symbol` 的判定证据字段不单独计费（契约已明确口径，由绝对账单边界守护）；`DependencyDepth` 在 dispatch 级的停止现已有用例；`resolve_symbol` 报告里 `resolved`/`candidates` 无逐条计费；范围枚举每次 demand 重跑容器枚举（P5 索引前）；range 的中途取消公开不可构造（预取消已覆盖）；`SnapshotAll` 与 `ArtifactTree` 的差异已有对照用例。
 
+### 3.2 Pass 契约与 invalidation 校验
+
+- 交付：新增 crate-private `src/passes.rs`（`IrPhase`/`FactKind`/`PassBudgetClass`/`PassDescriptor`/`PASSES` 静态表/`FactLedger`/`validate_requested_stages`）；`src/engine.rs` 在 `ir::validate_request` 之后接入启动校验（错误为 `Error::InvalidInput{code}`）；`src/lib.rs` 加私有模块。**没有动态注册、插件、运行时图或 `dyn`**（复核者 grep 全文件零命中，唯一「图」是判定成环用的局部 Kahn 草稿，不参与排序）。
+- 表（一 phase 一 pass，按 `IrPhase` 升序，执行顺序即表顺序）：`raw_facts`（产 `Instructions`/`ExceptionTable`，不计费——解码是 reader 的工作，字节已按 `ClassBytes`/`AttributeBytes`/`CodeBytes` 收过费）、`raw_cfg`（产 `RawCfg`/`ThrowSites`/`Effects`，计 `[Blocks, Steps]`）、`legacy_normalization`（产 `CallContexts`，计 `[Steps]`）、`canonical_cfg`（产 `CanonicalCfg`，失效 `Effects`/`Frames`/`Ssa`，计 `[Clones]`）、`frame`、`ssa`（重算 `Effects`）。
+- 校验语义：phase 降序 → `ir_pass_order_invalid`（同 phase 多 pass 合法，为 3.3–4.x 拆 phase 留门）；整表的 producer→consumer 环 → `ir_pass_graph_cycle`；**被调度前缀**的缺前置 → `ir_pass_prerequisite_missing`；使用未重算的失效事实 → `ir_stale_fact`。顺序/成环是整表性质，缺前置只判前缀——复核者用自建非法表逐条最小触发验证，并确认固定表下四个码经 `analyze_method` **均不可达**（合法请求永远走不到）。
+- 失败隔离：`apply` 先全量检查 `requires`、再记 `invalidates`、再 `produces`、最后单调推进 `last_completed`（`max`，重入不回退）；被拒时一个事实都不发布、`invalidates` 一项都不落地，ledger 恰等于「该 pass 之前的前缀」（复核者用 replay 对照证明）。
+- 反例与证伪：实现者 5 组变异（前置校验跳过、表逆序、`invalidates` 被忽略、映射错位、先发布后检查）；复核者 10 组变异（含 `invalidates` 空实现、同 phase 也算降序、成环检查直接 Ok、前缀取 min、校验器拒绝一切请求）——除两项外全部被捕获；**M8「删掉 `engine.rs` 的校验调用」与 M10「交换两条校验调用顺序」存活**，即该接入在公共路径上行为不可观测（已登记）。
+- 复核发现的契约表达力缺口（**3.3 开工前必修，已修**）：`budget` 原为单一类别，无法表达 raw CFG 同时计 `IrItems`+`IrEdges`+`AnalysisSteps`——按字面实现会**静默漏计 `AnalysisSteps`**，违反 1.3 的超限验收。契约改为维度集合（`Blocks = IrItems + IrEdges`、空集合 = 不计费），并新增金标断言 `every_pass_declares_exactly_the_dimensions_it_bills` 与重入单调性断言 `re_entering_an_earlier_phase_never_lowers_the_last_completed_phase`（两组变异各被对应新断言捕获）。
+- 证据：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **540 passed / 0 failed / 1 ignored**（27 个 suite 全 ok；lib 160→162、`p2_passes` 4），`cargo test --test p1_xref_golden --locked` = 5；由主 Agent 独立复跑确认。
+- 独立复核结论：**Approve**（无必修项；D1 契约缺口已在 3.3 前修正）。登记债务：**`engine.rs` 的接入不可观测**（删掉调用或换序都无测试变红，且前缀规则在 `ir::scheduled_stages` 与 `passes::validate_schedule` 各有一份实现——5.1 必须以校验器返回的表前缀作为唯一执行/阶段来源，并把「报告 `stages` == 校验器前缀」写成断言）；`Effects` 目前无消费者（其失效在运行时不被强制，故契约已写明「事实的消费者必须写进 `requires`」）；`progress()` 的 `no phase completed yet` 分支与空集合分支仓内无覆盖（探针证明可达且正确）；本片的计费语句只有声明，真实计费点从 3.3 起。
+
 ## P2 验收映射现状（滚动更新）
 
 按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
