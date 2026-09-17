@@ -10,7 +10,7 @@
 
 - [x] 2.1 实现不可变 CLASS/JAR 和平台 Header providers、domain/parent/root 映射与内容身份；以 ParentFirst/ChildFirst、同名有序 root、同位置歧义、缺失/循环 parent、未知策略和 module mode fixtures 验证选择与诊断（A14）（2026-09-18 完成并独立复核 Approve：crate-private `providers.rs` 实现递归 delegation 定序 + 字节精确候选 + 首个命中不回退 + 读取尝试计费；类符号查找接入 `resolve_symbol`；新增 `CallerLoaderMismatch` 与「有判定才有 state」的平面规则；复核的 9 组变异 + 10 条独立探针中 M8 缺口已补测；证据见 verification 的 2.1 节）
 - [x] 2.2 实现按需 Header 闭包、读取 reason 与去重；用深链/高扇出/缺失依赖/循环引用验证预算和取消，证明无关 Body 读取为零、同 bytes 不同 loader/origin 不合并（A14、A16）（2026-09-18 完成并独立复核 Approve：`HeaderClosure` 键 `(loader, internal_name)` 去重 + 三分需求 + 深度/预算/取消在扩展前停止；三报告加 `reads` 记录实际读取的 `(definition, loader)` 与理由；复核指出的恒真 Body 证据与 6 类缺测语义已补；证据见 verification 的 2.2 节）
-- [ ] 2.3 实现字段、class/interface method、访问/静态性、构造器及 invokespecial 解析；用合法/非法对照和 Java 8 default conflict fixtures 验证状态，signature-polymorphic/数组方法有明确支持或 unsupported 分支，不以同名递归替代规则（A11）
+- [x] 2.3 实现字段、class/interface method、访问/静态性、构造器及 invokespecial 解析；用合法/非法对照和 Java 8 default conflict fixtures 验证状态，signature-polymorphic/数组方法有明确支持或 unsupported 分支，不以同名递归替代规则（A11）（2026-09-18 完成并独立复核 Approve：`members.rs` 三条搜索路径 + maximally-specific（按 JVMS 排除 static/private）+ 访问与调用种类规则 + sig-poly/数组 owner；首轮 Reject 的 maximally-specific 缺陷与声明序缺测已修正；`ReadReason` 按语义拆分；证据见 verification 的 2.3 节）
 - [ ] 2.4 实现显式运行环境的声明引用查询，复用结构 consumer；Base.foo 查询须发现 Sub owner 的真实 use-site，未使用 CP 不算引用，缺失依赖及预算停止保留未决候选。验证 P1 MentionsSymbol 仍区分原符号（A11）
 - [ ] 2.5 分离声明 resolution 与已知范围 dispatch；用多实现、外部子类、未知 loader/transformer 验证 open-world，单一已知候选不声称唯一运行目标。完成本片只读复核与交接（A11、A16）
 

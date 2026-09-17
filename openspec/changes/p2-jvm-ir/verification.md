@@ -109,8 +109,17 @@
 
 未验证/遗留：`simple_fast` 最坏 O(|V|²) 未复现（block 上限是唯一保险）；递归/栈只测了链状深图；跨平台（CI 的 Linux x86_64）未复跑；依赖引入后需重跑 MSRV、两个图的 `cargo deny` 与 feature-tree 断言。
 
+### 2.3 成员解析（JVMS 5.4.3 / 5.4.4）与调用种类规则
+
+- 交付：新增 crate-private `src/members.rs`（字段/class method/interface method 三条搜索路径、maximally-specific 集合、访问与调用种类规则、sig-poly 与数组 owner 分支）；`src/resolver.rs` 把成员符号从 `NotPerformed` 接成真解析（`resolved` 只在 `Resolved` 发布，声明符号与请求符号都可见）；`src/providers.rs` 增加 `SupertypeEdge` 与 root reason 参数，使 `ReadReason` 按语义拆分（`super_class` 边 → `ParentChain`、`interfaces` 边 → `HierarchyClosure`、按身份命名 → `MemberOwner`，两个变体都有真实生产者、映射仍穷尽）。
+- 语义：字段（自身 → 超接口递归 → 超类）、class method（类链 → 超接口 maximally-specific）、interface method（该接口 → 其超接口）；**maximally-specific 按 JVMS 5.4.3.3/5.4.3.4 排除 `ACC_STATIC`/`ACC_PRIVATE`**（集合为空即 `Missing`，不误报 conflict），owner 直接点名的 static 仍可解析（`invokestatic` → `Resolved`，`invokeinterface` → ICCE）；default conflict → `IncompatibleClassChange`；全抽象 → `Resolved` + Warning；访问规则按 JVMS 5.4.4 且"调用方未知/层级读不全"时报 `resolution_access_not_checked` 而不谎称已检查；sig-poly 按 name 匹配并给出 `target`/`resolved.member` 描述符不同的证据；数组 owner → `UnsupportedPolicy`。
+- 反例与证伪：首轮复核 **Reject**——发现接口步未排除 `ACC_STATIC`/`ACC_PRIVATE`（合法 Java 8 的 static+default 组合被误报 `resolution_default_conflict`；类 owner 形态把应 `Missing` 的引用判成 ICCE），并指出"直接超接口声明序"零覆盖（变异 M3a 在 37 条全绿下存活）。修正后复核 **Approve**：上轮 2 条失败探针转绿，6 组新变异（顺序反转、只过滤 static、过滤泄漏进 `matching()`、完全不过滤、`InvokeDynamic` 误加规则、空集改报 conflict）与上轮存活变异 M3a 全部被捕获；owner 点名 static/private、类链未被误过滤等边界由探针独立复核。
+- 证据：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **453 passed / 0 failed / 1 ignored**（`p2_members` 46、lib 145、`p2_closure` 10、`p2_contracts` 29）；示例 exit 0；由主 Agent 独立复跑确认。
+- 语义边界（已写入 `specs/demand-resolver` 的边界段，不得读作 JVMS 完全实现）：default conflict 在解析期报告（JVMS 8 放在 invocation selection）；interface owner 不隐式继承 `java/lang/Object` 的方法；只检查成员自身声明的可访问性（不查声明类，JVMS 5.4.3.1）；`InvokeDynamic` 的 owner 只是搜索起点；同一 owner 内同名同描述符重复声明只能表达为 `Ambiguous`。
+- 登记的债务：调用方层级成环时 `subtype_of` 静默跳过 → 判 `Inaccessible` 且无环诊断（与声明侧不对称）；sig-poly 在调用点描述符恰好等于声明描述符时仍发"两者按规则不同"的文案；`read_definition` 的记录挂在请求声明的 `caller.loader` 上（`PhysicalDefinitionId` 不含 loader，API 内不可校验）；成员 coverage 的求和语义与"推导有效序之前停止则区间为空"已写入契约；`HierarchyWalk` 的逐层 reason 仍只由 `providers` 的 lib 单测固定（公开消费者是 2.5）。
+
 ## 第一片（1.1–1.3）状态与闸口
 
 - 1.1、1.2、1.3 均已完成、独立复核 **Approve** 并有各自 CI 记录；第一片的退出条件（reader 类型化操作数、预算维度、结果/请求契约可用）已满足。第一片整体以提交 `0cba0d6`（实现）+ `6344508`（文档）推送，CI run [`35253446169`](https://github.com/LordCasser/jarde/actions/runs/35253446169) 四个 job 全部 success（`stable` 含 ignored JDK 25 oracle、`MSRV 1.88.0`、双 workspace `supply chain`、`fuzz smoke`）。
-- 2.3 起未开始（2.1、2.2 已完成并复核 Approve）。按 `tasks.md`，2.x 各片逐项实现、验证并只读复核后再交接。
+- 2.4 起未开始（2.1–2.3 已完成并复核 Approve）。按 `tasks.md`，2.x 各片逐项实现、验证并只读复核后再交接。
 - 债务池（登记，不阻塞）：1.2 的操作数存储放大与未完整解码前缀语义（3.x 消费前收紧）、`fuzz/README.md` 措辞、P2 维度真实膨胀由 3.5/4.3 验收、`query-api` 与 `analysis-contracts` 的 spec delta 在 P2 归档时同步主规格。
