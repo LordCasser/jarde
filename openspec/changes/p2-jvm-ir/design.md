@@ -710,6 +710,30 @@ pub(crate) struct PassDescriptor {
 - **PostCondition**：CanonicalCFG 的每个块都可通过 origin 映射回原始 BCI（含克隆块的一对多），且不存在未被任何上下文覆盖的孤立克隆。
 - **验收（3.5）**：真实历史 finally（ECJ 45–48 语料，含共享子程序）、嵌套子程序、异常路径上的 `jsr`、恰好/超界克隆、取消与预算停止、以及"规范化不改变 P1 XRef 次数"的对照。
 
+## 4.1–4.3 契约：Frame、未初始化值与 stack/local SSA
+
+### 4.1 描述符驱动的 Frame（缺 debug/StackMap 也能算）
+
+- **输入**：`CanonicalCFG` + 每个块的入口状态（locals 槽类型、栈形状、异常入口的 locals 快照）。指令语义来自 `InstructionOperands`（1.2）与一份按 opcode 的稠密表（push/pop 类别与数量），**不从展示文本恢复语义**。
+- **类型格（crate-private）**：`FrameValue::{UninitializedThis, Uninitialized{new_site}, Int, Float, Long, Double, Null, Reference{class}, Unknown}`；category-2（`Long`/`Double`）占两槽；`Unknown` 是**保守保留**而不是通配（合并时不把 `Unknown` 与具名引用合并成具名引用）。
+- **合流**：同一块多个 predecessor（正常与异常分开）逐槽合并——相同类型取自身；`Null` 与 `Reference` 取 `Reference`；不同类引用且范围外不可判定取 `Unknown`（P2 不做类型层次合并的闭世界假设）；`Reference` 与 `Int` 之类的**矛盾**是结构化错误（`ir_frame_inconsistent`），不是静默取一个。
+- **不变量（本地）**：每个块的入口状态 = 前驱出口状态的合流；栈深在 JVM 上限内；`dup`/`swap`/`pop` 族按类别配对（category-2 的 `dup2` 语义必须显式覆盖）；`invoke*` 的参数量与返回类型由 descriptor 决定；`<init>` 的返回值是 `UninitializedThis` 转换点。
+- **`verification` 恒为 `NotPerformed`**：本片只做本地不变量，`semantic_validation` 先 `Unproven`，在 4.3 有不变量证据后可升为 `LocalInvariants`。缺 `StackMapTable`/`LineNumberTable`/`LVT` 不构成失败理由（按契约从 descriptor 与数据流推导）。
+
+### 4.2 未初始化值、handler 入口与引用合流
+
+- **`new`/`<init>` 链**：`new` 产出 `Uninitialized{new_site}`；只有同一 `new_site` 的 `invokespecial <init>` 能把它转成 `Reference`，且转换只对该站点之后同一栈槽/局部槽生效；跨块传播时 `Uninitialized{new_site}` 的站点身份必须保留（不同 `new` 站点的未初始化值不可合并）。
+- **`UninitializedThis`**：构造器入口的 `this` 状态；在 `invokespecial <init>`（自身或父类）之前不得用于 `getfield` 等方法（`ir_frame_this_used_before_init`）；`<init>` 返回后转成 `Reference{this_class}`。
+- **handler 入口**：异常 handler 的入口 locals 状态来自 **每个 throwing instruction 在该点**的 locals（不是块尾状态）；栈只有该 handler 的异常类型；多个 throw site 进同一 handler 时按 4.1 的合流规则合并。**locals 与 effect 必须来自同一个 throw site**，不得混用（契约的风险表已列）。
+- **保守保留**：任何无法判定的状态（缺依赖、未知引用、超出步骤预算）都保留为 `Unknown` 或明确停止，不伪造确定类型。
+
+### 4.3 stack/local SSA、phi 与 effect 顺序
+
+- **形状**：每个块入口的 `Phi` 节点按（predecessor 边）取值，正常与异常 predecessor 都参与；locals 与 stack 分别建 SSA（stack SSA 在块边界按栈深对齐，深度不一致即错误）。
+- **不变量**：每个 value 恰有一个定义（phi 是定义）；每个 use 都能追溯到定义（def-use 双向一致）；phi 输入数 = 该块 predecessor 数（含异常边）；phi 的类型 = 输入类型的合流（与 4.1 同一规则）；category-2 值的两槽在 SSA 里作为一个值处理。
+- **origin 与 effect 顺序**：每个 SSA 值带 `OriginSet`（`MethodPoint` 指向产生它的指令 BCI）；effect 顺序按**指令级 throw site** 记录（异常边上的 effect 属于该 throw site，不属于块尾）；规范化克隆产生的值保留全部原始 BCI。
+- **计费与停止**：`IrItems` 按 frame 槽、SSA 值、phi 输入、origin 成员计；`IrEdges` 按 CFG 边与 def-use 边计；工作列表迭代计 `AnalysisSteps`；停止时保留**最后有效阶段**（`stages` 到该阶段为止），不发布半初始化 facts。
+- **4.3 验收**：diamond/loop/不可约控制流/异常合流各一组；高扇出 phi（多 predecessor + 多异常边）与多槽位样本验证 `IrItems`/`IrEdges` 上界；矛盾输入返回 `ir_frame_inconsistent` 或 `ir_ssa_inconsistent` + 最后有效阶段；`verification` 保持 `NotPerformed`（除非 5.3 的差分证据另行支撑）。
 ## Risks / Trade-offs
 
 - [Risk] frame/phi/origin 或 jsr 克隆乘法膨胀 → 分配前计费及高扇出/多槽位用例；P1 输入有界不代替 IR 上界证明。
