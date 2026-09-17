@@ -119,6 +119,23 @@
 - 语义边界（已写入 `specs/demand-resolver` 的边界段，不得读作 JVMS 完全实现）：default conflict 在解析期报告（JVMS 8 放在 invocation selection）；interface owner 不隐式继承 `java/lang/Object` 的方法；只检查成员自身声明的可访问性（不查声明类，JVMS 5.4.3.1）；`InvokeDynamic` 的 owner 只是搜索起点；同一 owner 内同名同描述符重复声明只能表达为 `Ambiguous`。
 - 登记的债务：调用方层级成环时 `subtype_of` 静默跳过 → 判 `Inaccessible` 且无环诊断（与声明侧不对称）；sig-poly 在调用点描述符恰好等于声明描述符时仍发"两者按规则不同"的文案；`read_definition` 的记录挂在请求声明的 `caller.loader` 上（`PhysicalDefinitionId` 不含 loader，API 内不可校验）；成员 coverage 的求和语义与"推导有效序之前停止则区间为空"已写入契约；`HierarchyWalk` 的逐层 reason 仍只由 `providers` 的 lib 单测固定（公开消费者是 2.5）。
 
+## P2 验收映射现状（滚动更新）
+
+按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
+
+| 验收 | 承担任务 | 现状 | 还缺什么（退出 P2 前必须补） |
+| --- | --- | --- | --- |
+| A11 Base.foo / Sub CP owner | 2.3、2.4 | **部分**：2.3 已实现并复核成员解析（含 `Resolved`/`Missing`/`Ambiguous`/`Inaccessible`/ICCE 与"缺失依赖不变否定"，有 46 条用例与探针）；2.4 的声明引用查询实现中 | 2.4 的 `Base.foo` 在 `Sub` 调用的端到端对照（`mentions_symbol` 仍按原始符号）、未使用 CP 不算引用、未决候选不当已排除；2.5 的 dispatch/open-world |
+| A14 全范围中断/缺失依赖 | 1.3、2.1、2.2、2.3、2.5、5.1 | **部分**：18 项预算维度与两个高水位就位；2.1/2.2/2.3 的停止语义（`Partial`/`Cancelled`/`BudgetExceeded` + 前缀）有实证 | 2.5 的 scope 枚举预算；5.1 的库/CLI 一致性与终止语义逐字段一致 |
+| A16 单方法按需边界 | 2.2、2.3、5.2 | **部分**：`reads` 记录 (definition, loader) 与理由；成员搜索不读 Body（`code_bytes == 0` 有真实对照） | 5.2 的实际入口读取/构造计数（不加载无关 Body、不建全局 XRef） |
+| A17 X1 零 CFG/SSA/AST | 1.1、5.2 | **部分**：源码级守卫（`query`/`xref` 不得引用 P2 模块与类型，含推导的类型名单与注入自检） | 5.2 的构造计数（resolver/CFG/SSA/Region/AST 次数为零）；petgraph 引入后守卫需覆盖新依赖位置 |
+| A09 历史 jsr/finally | 3.3–3.5 | **未开始** | raw CFG/returnAddress/有界规范化 + 真实历史 finally 语料 |
+| A10 缺失 StackMap/debug | 4.1–4.3 | **未开始** | Frame 推导、版本合法性诊断、`NotPerformed` 语义 |
+| A13 成员级失败 | 5.1 | **未开始** | 同类正常与失败方法并存、五平面分开报告 |
+| A18 输入变化 | P0/P1 已覆盖 | **保持** | 每个缓存/并行阶段引入时回归（P5） |
+
+结论：2.x 完成前不宣称任何 P2 验收通过；上表在每片收口时更新。
+
 ## 第一片（1.1–1.3）状态与闸口
 
 - 1.1、1.2、1.3 均已完成、独立复核 **Approve** 并有各自 CI 记录；第一片的退出条件（reader 类型化操作数、预算维度、结果/请求契约可用）已满足。第一片整体以提交 `0cba0d6`（实现）+ `6344508`（文档）推送，CI run [`35253446169`](https://github.com/LordCasser/jarde/actions/runs/35253446169) 四个 job 全部 success（`stable` 含 ignored JDK 25 oracle、`MSRV 1.88.0`、双 workspace `supply chain`、`fuzz smoke`）。
