@@ -66,8 +66,21 @@
 
 本切片以两个提交推送 `main`：`0406178`（实现与测试）与 `6fc1674`（本 change 的契约与验证记录）。CI run [`35247034235`](https://github.com/LordCasser/jarde/actions/runs/35247034235) 在 `6fc1674` 上四个 job 全部 success：`stable / test and specification`（含 ignored JDK 25 指令边界 oracle 与两条公共示例）、`MSRV 1.88.0`、`supply chain`（根与 fuzz 两个依赖图）、`fuzz smoke`。1.2 的提交与 CI 在其小节内记录。
 
+## 2.x 切片
+
+### 2.1 Header providers 与搜索顺序
+
+- 交付：新增 crate-private `src/providers.rs`（有效序列、位置展开、候选匹配、读取与计费；`resolver → providers → {view, environment, artifact, classfile, budget, model, error}`，无反向边、不新增公共类型）；`src/resolver.rs` 的类符号查找接入（成员符号仍 `NotPerformed`）；`src/environment.rs` 新增 `CallerLoaderMismatch`（闭集 9 项）；`PhysicalVariant` 路径派生从 `src/xref/mod.rs` **原样搬到** `src/model.rs`（`pub(crate) physical_variant_for_path`，P1 与 P2 共享同一身份规则，行为不变、P1 golden 全绿）。
+- 搜索模型（契约）：`ChildFirst` 的 loader 序为 `roots(l) ++ R(parent)`、`ParentFirst` 为 `R(parent) ++ roots(l)`，每个 loader 内部按 `roots` 声明顺序；混合链按各自 delegation 递归展开。root 内候选是 `raw_name == internal_name + b".class"`（字节精确、大小写敏感、目录名以 `/` 结尾天然不匹配）；standalone CLASS root 按 `this_class` 比对；ArtifactTree 只在 origin 相等的 container 内搜索。**首个匹配胜出且不回退**（解码失败、读取失败、listing 停摆、预算/取消都不回退）；`Ambiguous` 只出现在同一选择位置（同名不同字节，以及同名同字节的重复 entry，不按 ordinal 猜）。
+- 平面映射（本轮修正，按 `specs/demand-resolver` 的"另行记录输入损坏、取消和实际 execution"）：`state = Some` 当且仅当到达语义判定；取消 = `Performed` + `None` + `Cancelled`；输入损坏/listing 停摆/读取失败 = `Performed` + `None` + `Failed{Error{code}}` + 带 origin 诊断；预算停止 = `Some(BudgetExceeded)`；能力未运行（成员符号、环境被拒）= `NotPerformed` + `None`。`Inaccessible`/`IncompatibleClassChange` 在解析路径上不再被占用（保留给 2.3/2.5 的访问与链接规则）。
+- 计费与覆盖：每次 Header **读取尝试**计一次 `ClassHeaders`（含失败尝试、Ambiguous 的每个候选、standalone 不匹配）；枚举/读取沿用既有维度，不新建索引；performed 查找按"首个命中即停"记 `runtime_resolution` 为 `CompleteWithinSchema` + `scanned=[0,examined)` 且无 skipped，仅预算/取消/损坏才 `Partial` + `skipped=[examined,positions)`。任一 1.1 环境问题都拒绝整次查找（零读取）。
+- 能力码：类查找执行时若请求带 `dispatch`，追加 `dispatch_not_implemented`（Warning，2.5 消失）；成员符号仍是 `resolution_not_implemented`（2.3 落地后消失）。
+- 反例与证伪：实现者 3 组变异（ParentFirst/ChildFirst 写反、损坏候选静默回退、Ambiguous 取首个）与主 Agent 契约修正后的 3 组变异（损坏映射改回 `Inaccessible`、取消改回 `NotPerformed`、去掉 `CallerLoaderMismatch`）全部被捕获；复核者另做 9 组变异 + 10 条独立探针（混合链 6 种 delegation 组合、字节精确候选与 MR 路径变体、3 候选歧义与 container 作用域、EOCD 结构损坏、读取层 CRC 损坏、无关 domain 拒绝、member/dispatch 平面、MR/uncertainty 未应用、caller 双检查组合），其中 8 组被交付物测试捕获；**M8（把计费移到读取成功后）只被探针捕获**，已按复核要求补一条"读取层失败"用例（失败尝试计一次 `ClassHeaders`、不回退、`scanned=[]`/`skipped=[0,positions)`）。
+- 证据：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **385 passed / 0 failed / 1 ignored**（`p2_resolution` 16、`p2_contracts` 29、`src/providers.rs` lib 单测 7），示例 exit 0 并打印 `state=Resolved`/`class_headers=1`；由主 Agent 独立复跑确认。
+- 独立复核结论：**Approve**（"必须改"两项：本条记录与读取层失败用例，均已处理）。登记的债务：`output_bytes` 在 standalone（`root_bytes`）与 ZIP/tree（`read_entry_internal`）之间口径不对称，2.2/5.3 按维度断言前须先钉死；skipped 的语义是"未达判定的 position"而非"未触及"；带目录属性但名字不以 `/` 结尾的 entry 会被当候选并报解码失败（artifact 层无目录位）；ArtifactTree position 每次查找都枚举整棵树（2.2 多次查找会重复计费，P5 索引前）；`MethodAnalysisRequest` 侧没有"无 caller 时不报"的显式用例；2.1 不应用 `RuntimeProfile` 的 release/multi-release 与 uncertainty 判定（MR 由 `select_multi_release` 提供，uncertain-runtime 诊断归 2.5）。
+
 ## 第一片（1.1–1.3）状态与闸口
 
 - 1.1、1.2、1.3 均已完成、独立复核 **Approve** 并有各自 CI 记录；第一片的退出条件（reader 类型化操作数、预算维度、结果/请求契约可用）已满足。第一片整体以提交 `0cba0d6`（实现）+ `6344508`（文档）推送，CI run [`35253446169`](https://github.com/LordCasser/jarde/actions/runs/35253446169) 四个 job 全部 success（`stable` 含 ignored JDK 25 oracle、`MSRV 1.88.0`、双 workspace `supply chain`、`fuzz smoke`）。
-- 2.x–5.x 全部未开始。进入 2.x 前按 `tasks.md` 的"第一轮仅做 1.1–1.3，验证并只读复核后再进入 2.x"交接：2.1 起需要 provider 读取与 Header 闭包，属新的实现片，需单独交接与复核。
+- 2.2 起未开始（2.1 已完成并复核 Approve）。按 `tasks.md`，2.x 各片逐项实现、验证并只读复核后再交接。
 - 债务池（登记，不阻塞）：1.2 的操作数存储放大与未完整解码前缀语义（3.x 消费前收紧）、`fuzz/README.md` 措辞、P2 维度真实膨胀由 3.5/4.3 验收、`query-api` 与 `analysis-contracts` 的 spec delta 在 P2 归档时同步主规格。

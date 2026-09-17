@@ -425,11 +425,12 @@ impl Engine {
 
 ### 搜索模型
 
-- **搜索顺序完全由 domain 表决定**：`ParentFirst` 的有效序列是"最顶层祖先 → … → 调用方 loader"的链（每个 loader 内部按 `LoadDomain.roots` 声明顺序）；`ChildFirst` 是"调用方 loader → 其 parent → … → 最顶层祖先"。`Custom`/`Unknown` 与 `ModuleMode != ClassPath` 已在 1.1 判为 `UnsupportedPolicy`，2.1 不猜顺序。
+- **搜索顺序完全由 domain 表决定**，按递归式定义（`R(parent)` 为空链时即中止）：`ChildFirst` 的 loader 序列为 `roots(l) ++ R(parent)`，`ParentFirst` 为 `R(parent) ++ roots(l)`；每个 loader 内部按 `LoadDomain.roots` 声明顺序。混合链即各 loader 按**自己的** delegation 递归展开（等价于"ChildFirst 组按调用方→顶层在前、ParentFirst 组按顶层→调用方在后"），不是整条链统一方向。`Custom`/`Unknown` 与 `ModuleMode != ClassPath` 已在 1.1 判为 `UnsupportedPolicy`，2.1 不猜顺序。
 - **一个 root 内的候选**：ZIP/ArtifactTree root 的候选是 raw name 恰为 `internal_name + b".class"`（字节精确、大小写敏感，沿用 P1 的候选纪律）的非目录 entry，按 container 顺序 + entry ordinal 升序；standalone CLASS root 的候选是它自身（读 root 字节并以 `this_class` 原始字节比对名字）。
 - **首个匹配即胜出，不回退**：按有效序列遇到的第一个有候选的 root 决定结果；该候选损坏时报告该失败，**不得**继续到后面的 root（JVM 语义：搜索顺序先到的定义就是那个定义）。
 - **Ambiguous 仅指同一选择位置无法区分**：同一個 root 内同名且字节不同的多个 entry（重复路径或嵌套容器同路径）→ `Ambiguous` 并列出各自 origin；同一 root 内同名同字节的重复 entry 也视为无法区分（不按 ordinal 猜）。
-- **Missing 是事实**：全部 root 都没有该名字 → `Missing`（不是错误）；`LoadRoot::External` 与未提供内容的 root 使该位置不可判定，按 1.1 的 `EnvironmentProblem` 报告并不参与猜测。
+- **Missing 是事实**：全部参与位置都没有该名字 → `Missing`（不是错误）。
+- **任一 1.1 环境问题都拒绝整次查找**：返回 `NotPerformed` + `state = None` + `Failed{Unsupported{resolution_not_implemented}}` + 该问题的同 code 诊断，且**零读取**（`LoadRoot::External` 与未提供内容的 root 因此不是"该位置不可判定"而是整次拒绝）；这条比"只跳过该位置"更强，2.2 的按位置展开必须先与它对齐。
 
 ### 类型（crate-private，报告层复用 1.1 的公共状态）
 
@@ -502,6 +503,8 @@ pub struct HeaderRead {
 - **位置**：查找机器在新增的 crate-private `src/providers.rs`（`resolver → providers → {view, environment, artifact, classfile, budget, model, error}`，无反向边），报告装配留在 `src/resolver.rs`；不新增公共类型。
 - **有效序列**：从 `runtime.load_domain` 沿 `parent_loader` 收集链，再**按每个 loader 自己的 delegation 定序**（ParentFirst 父序列在前、ChildFirst 本 loader 在前），最后按各 domain 的 `roots` 声明顺序展开位置。混合链按各自声明（不是整条链统一方向）。
 - **计费与覆盖**：读取尝试记 `ClassHeaders`；枚举/读取沿用既有 `archive_entries`/`read_bytes`/`class_bytes`/`attribute_bytes`/`entry_bytes`/`output_bytes`/`result_items`；performed 查找把已检查位置记入 **`runtime_resolution`** 维度的 `provider_search_position` 区间（未检查部分 skipped → `Partial`），`artifact_structural`/`dynamic_analysis` 保持 `NotRequested`。
+- **不应用运行 profile**：2.1 的 `Resolved` 只表示"按 raw name 选中的物理定义"；`RuntimeProfile` 的 release/multi-release 与 `external_override`/`runtime_transformation` 判定不在 2.1 执行（MR 选择由 `Engine::select_multi_release` 单独提供，uncertain-runtime 诊断归 2.5）。
+- **覆盖语义**：结论成立的查找 = 按规则在**首个命中处停下**，因此 `runtime_resolution` 为 `CompleteWithinSchema`、`scanned = [0, examined)` 且**无 skipped**；只有预算/取消/损坏导致的停止才是 `Partial` + `skipped = [examined, positions)`。skipped 的单位语义是"未达判定的 position"（含被拒绝搜索的那一个，故 union 覆盖全部 position 而无空洞）。
 - **能力码**：环境被拒时仍是 1.1 的 `resolution_not_implemented`（能力未运行）；类查找执行时若请求带 `dispatch`，追加 **`dispatch_not_implemented`（Warning）** 并在 2.5 消失；成员符号仍是 `resolution_not_implemented`（2.3 落地后消失）。
 - **共享身份规则**：`PhysicalVariant` 路径派生（`META-INF/versions/<N>/`）从 `src/xref/mod.rs` **原样搬**到 `src/model.rs`（`pub(crate) physical_variant_for_path`），使 P1 与 P2 对同一 entry 得到同一身份；行为不变（P1 golden 全绿）。
 - **crate-private facts 的 dead_code allow**：`HeaderLookup.header`/`ClassHeaderFacts`/`HeaderLocation.entry` 由 2.2 消费，沿用 `classfile` crate-private facts 的既有约定。
@@ -515,6 +518,41 @@ pub struct HeaderRead {
 - **预算/取消**：预取消与中途取消分别得到 `Cancelled`，`usage` 与 `reads` 一致（`reads.len() <= class_headers`）。
 - **无关 Body 读取为零**：闭包请求后断言 `usage.method_bodies == 0`（除非显式请求目标方法 Body），且 `reads` 的 reason 集合不超过本次请求允许的理由。
 - **同 bytes 不同 origin/loader 不合并**：同一 class 字节放在两个 loader 的 roots 下，`reads` 与解析结果分别是两条记录/两个 `ResolvedMemberRef`。
+
+## 2.3 契约：成员解析（JVMS 5.4.3）、访问与调用种类规则
+
+2.3 在 2.1 的 Header 查找之上实现**成员声明解析**：给定 `SymbolRef`（Field/Method）、`ReferenceUse` 与调用方身份，按 JVMS 5.4.3 找出声明所在类与成员；不实现 dispatch（2.5）。
+
+### 解析过程（结构性近似 + 明确状态，不猜）
+
+1. **owner 解析**：用 2.1 的查找解析 `SymbolRef` 的 owner 类（必须 `Resolved`；否则继承该状态）。
+2. **按种类搜索**（JVMS 5.4.3.2/5.4.3.3/5.4.3.4）：
+   - 字段：声明类自身 → 其超接口（递归）→ 其超类（递归）；
+   - 方法（class method resolution）：声明类 → 超类链 → 超接口的 **maximally-specific** 集合；
+   - 方法（interface method resolution，owner 是接口）：该接口 → 其超接口的全部 maximally-specific 集合。
+   每步都用 `ReadReason::HierarchyClosure` 读 Header（同 (definition, loader) 去重，2.2 的闭包机器）。
+3. **判定**（与 `specs/demand-resolver` 的 7 状态对齐）：
+   - 唯一命中（字段；或方法在 class/超类链上唯一）→ `Resolved`；
+   - 方法只有接口候选时，取 maximally-specific 集合：**恰好一个非抽象** → `Resolved`（该 default 方法）；**多个非抽象**（Java 8 default conflict）→ `IncompatibleClassChange` + `resolution_default_conflict` 诊断；**全部抽象** → `Resolved`（那个抽象声明）+ Warning `resolution_method_is_abstract`（JVMS：解析成功，AME 发生在调用时，不由解析阶段伪造）；
+   - 什么都没找到 → `Missing`（保留原始 `SymbolRef`/descriptor/origin，不伪造空成员）；
+   - 同一步骤内多个无法区分的候选（同一类里同名同描述符重复声明）→ `Ambiguous` + 各自 origin。
+4. **调用种类规则**（`ReferenceUse`；违反即 `IncompatibleClassChange` + 具名诊断）：
+   - `InvokeStatic` 要求静态方法，`InvokeVirtual`/`InvokeInterface`/`InvokeSpecial` 要求实例方法（`<init>` 仅 `InvokeSpecial`）；
+   - `FieldRead`/`FieldWrite` 中 static 指令（`GetStatic`/`PutStatic`）要求静态字段，实例指令要求实例字段——由 2.4/2.5 的 use-site 提供指令级种类时使用；
+   - class method resolution 命中接口方法或 interface method resolution 命中类方法 → `IncompatibleClassChange` + `resolution_kind_mismatch`；
+   - `InvokeSpecial` 命中抽象方法 → 同上（JVMS 5.4.3.3 对 invokespecial 的额外约束）。
+5. **访问规则**（JVMS 5.4.4，与解析分开）：调用方类名由 `CallerContext.enclosing`（其 `owner` 定义读 `this_class`）得到；运行时包 = (loader, 包名)。`public` 通过；`private` 要求同类；`protected` 要求同类/同包/子类；包私有要求同包。**判定不通过 → `Inaccessible` + `resolution_access_denied` 诊断**；调用方类未知（无 `enclosing`）时**不做访问判定**，返回 `Resolved` + Warning `resolution_access_not_checked`（不谎称已检查）。
+6. **明确的 unsupported 分支**：
+   - **signature-polymorphic**（`java/lang/invoke/MethodHandle` 的 `invoke`/`invokeExact`，JVMS 2.9）：调用点 descriptor 与声明不同，故按 **name 匹配**解析到声明并返回 `Resolved`，同时给 Warning `resolution_signature_polymorphic`（`target` 保留调用点描述符、`resolved.member` 是声明描述符，两者都在报告里可见）；
+   - **数组 owner**（`[` 开头，如 `[I.clone()`）：P2 不实现数组类型方法解析 → `UnsupportedPolicy` + `resolution_array_owner` 诊断（不伪造 Object.clone）。
+
+### 2.3 的验收
+
+- 合法/非法对照：静态 vs 实例（各一条 ICCE 反例）、private/protected/包私有/跨包与跨 loader 的访问对照（含"无 `enclosing` 时给 `Resolved` + `resolution_access_not_checked`"）、`<init>` 只经 `InvokeSpecial`、抽象方法解析成功但带 Warning；
+- **Java 8 default conflict**：一个接口提供 default、两个接口各提供 default（conflict → `IncompatibleClassChange`）、抽象-only（`Resolved` + Warning）、子接口覆盖父接口 default（唯一非抽象 → `Resolved`）；
+- signature-polymorphic 与数组 owner 各一条（含 `target` 与 `resolved.member` 描述符不同的断言）；
+- 跨 loader：同一 owner 名在两个 loader 命中不同定义时，解析结果跟随 2.1 的选择（不合并）；
+- 每条正例同时断言 items/状态/诊断/`reads` 的 reason 集合（`HierarchyClosure` 出现）、`usage.class_headers` 与"不读无关 Body"（`usage.method_bodies == 0`）。
 
 ## Risks / Trade-offs
 
