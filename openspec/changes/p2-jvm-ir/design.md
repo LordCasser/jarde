@@ -119,6 +119,12 @@ P2 实际只产生 `representation=Bytecode`、`syntax_status=NotJava`、`compil
 | `src/model.rs` | `OriginSet`/`OriginMember`（共享身份层，与 P1 把 `PhysicalDefinitionId` 加进 model 同一先例） | 既有 `model` 内部依赖，无新增边 |
 | `src/environment.rs`（新） | 运行环境绑定、provider 声明、环境身份与环境问题码 | `artifact`、`error`、`model`、`view` |
 | `src/resolver.rs`（新） | 解析请求/报告、声明引用查询请求/报告 | 上述 + `budget` + `query::{ConsumerKind, ConsumerSchema, XrefOperation}` 词汇表 + `xref::{scan_candidates, with_usage}`（2.4 起） |
+| `src/providers.rs`（2.1/2.2 起，crate-private） | 有效搜索序、位置展开、候选匹配与读取、按需 Header 闭包与 `WalkGaps` | `artifact`、`budget`、`classfile`、`environment`、`error`、`model`、`view`（不引用 `resolver`，报告装配留在 resolver） |
+| `src/members.rs`（2.3 起，crate-private） | JVMS 5.4.3 三条搜索路径、maximally-specific 集合、访问与调用种类规则 | `providers`、`classfile`、`error`、`model`（用 crate-private 的 `MemberUse` 镜像避免依赖 `resolver`） |
+| `src/dispatch.rs`（2.5 起，crate-private） | 范围枚举（P1 scope 词汇）、CHA-lite 候选发现、open-world 事实分类 | `providers`、`artifact`、`environment`、`error`、`model`、`view` |
+| `src/passes.rs`（3.2 起计划，crate-private） | pass 描述表与启动校验（前置/invalidation/顺序） | `ir`（阶段与事实词汇）、`error` |
+| `src/cfg.rs`（3.3 起计划，crate-private） | raw CFG、指令级 throw site、handler 顺序、effect facts；3.4/3.5 的 returnAddress 与有界规范化 | `classfile`（1.2 的操作数事实）、`passes`、`budget`、`error`、`model`、`petgraph`（准入见 3.1；**不得**被 `query`/`xref` 引用） |
+| `src/frames.rs`、`src/ssa.rs`（4.x 起计划，crate-private） | descriptor 驱动的 Frame、未初始化值合流、stack/local SSA 与 phi | `cfg`、`passes`、`budget`、`error`、`model` |
 | `src/ir.rs`（新） | 方法分析请求/报告、阶段与产物状态 | `artifact`、`budget`、`environment`、`classfile`（`VerificationStatus`）、`error`、`model`、`resolver`（`HeaderRead`/`ReadReason` 词汇，2.2 起）、`view` |
 | `src/engine.rs` | 三个薄委托入口 | 上述 |
 | `src/query.rs`、`src/xref/**` | **不得**引用 `environment`/`resolver`/`ir`，也不得经 crate 根 re-export 的路径引用 P2 类型（A17：physical X0/X1 不启动 resolver/IR） | — |
@@ -678,6 +684,7 @@ pub struct HeaderRead {
 ```rust
 pub(crate) enum IrPhase { RawFacts = 1, RawCfg, LegacyNormalization, CanonicalCfg, Frame, Ssa }
 pub(crate) enum FactKind { Instructions, ExceptionTable, ThrowSites, RawCfg, CallContexts, CanonicalCfg, Frames, Ssa, Effects }
+pub(crate) enum PassBudgetClass { Blocks, Steps, Clones, None }  // IrItems / AnalysisSteps / NormalizationClones / 不计费
 pub(crate) struct PassDescriptor {
     pub(crate) phase: IrPhase,
     pub(crate) name: &'static str,
@@ -689,6 +696,7 @@ pub(crate) struct PassDescriptor {
 ```
 
 - **描述表是静态常量**（`&'static [PassDescriptor]`），按 `IrPhase` 升序声明；引擎只按该表顺序执行，**没有动态注册、插件或运行时图**。
+- **阶段词汇一一对应**：公共的 `AnalysisStage`（1.1）与 crate-private 的 `IrPhase` 是 1:1 映射（同序、同名），`IrPhase::RawFacts = 1` 起编；请求里的 `requested_stages` 直接投影成阶段前缀，不引入第二套编号。
 - **启动校验**：请求的阶段集合在开跑前解析成"该表的前缀"（与 1.1 的 `scheduled_stages` 同规则），并检查每个被调度 pass 的 `requires` 都能由**更早的已调度 pass** 产出；缺失前置、`IrPhase` 逆序、`requires` 与 `produces` 冲突、表自身成环都在**启动时**返回结构化错误（`ir_pass_prerequisite_missing` / `ir_pass_order_invalid` / `ir_pass_graph_cycle`），不执行任何半初始化 IR。
 - **invalidation**：任何 pass 声明了非空 `invalidates` 时，其"之后"的既得事实必须被丢弃（`CanonicalCfg` 改变异常边即让 `Frames`/`Ssa`/`Effects` 失效），后续阶段若要使用必须重算或拒绝使用。运行时用一个"已产出事实集合"检查：使用未被重算的失效事实即 `ir_stale_fact`（结构化错误），不是静默沿用。
 - **失败隔离与最后有效阶段**：某个 pass 因输入损坏/预算/取消停止时，`stages` 记录到该阶段为止的 `Completed`/`Partial`/`Failed`，**不发布**半初始化 facts（与 1.1 `StageResult` 语义一致）。
