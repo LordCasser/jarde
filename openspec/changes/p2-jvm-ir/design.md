@@ -193,7 +193,7 @@ pub struct ResolvedMemberRef {           // 2.3/2.5 扩展必须先改本节
     pub member: SymbolRef,
 }
 pub enum OpenWorldEvidence { ExternalSubclass, UnknownLoader, RuntimeTransformation, MissingDependency, OrderedRoot { index: u32 } }
-pub struct DispatchCandidate { pub member: ResolvedMemberRef, pub evidence: OpenWorldEvidence }
+pub struct DispatchCandidate { pub member: ResolvedMemberRef, pub evidence: Option<OpenWorldEvidence> }  // None = 无开放性事实（例如来自第 0 个 root）
 pub struct DispatchReport { pub scope: PhysicalScope, pub candidates: Vec<DispatchCandidate>, pub open_world: bool }
 pub struct ResolutionReport {
     pub environment_identity: EnvironmentIdentity,
@@ -511,6 +511,8 @@ pub struct HeaderRead {
 
 ### 2.2 实现记录与已知边界
 
+- **范围的发布方式**：单次查找的 extent 由 2.1 的 `HeaderSearch` 提供；请求级的覆盖由 `HeaderClosure::searched_extent()` 对**一次请求内各次查找求和**发布（2.3 起沿用、2.5 的 scope 枚举同样如此）。memo 命中的需求不再返回 extent，所以覆盖平面必须走这个求和入口，而不是读某次 demand 的返回值。
+
 - 闭包键 `(loader, internal name)` 的 loader 分量在当前公开路径上**不可证伪**：一次请求只有一个搜索起点（`CallerContext` 不移动起点，1.1 又以 `CallerLoaderMismatch` 拒绝分叉），因此「只按 name 去重」的变异存活；同一防线的另两条（记录用定义所在 loader、记录去重）已被捕获。该分量的可观测条件是「出现第一个以非 `runtime.load_domain.loader` 发起需求的调用方」（可能晚于 2.5），届时应补一条让该分量可观测的用例。
 - 层级展开（`ParentChain`/`HierarchyClosure`、`WalkGaps`、环诊断）在本切片无公开入口，语义由 `providers` 的 lib 单测固定，消费者是 2.3/2.5（相关项带 `#[allow(dead_code)]`，移除即产生 9 条 warning）；复核指出的四类未固定语义（`parent_chain` 不跟接口、损坏/读取失败不入记录、Ambiguous 每候选一条、停止的需求不被记忆）已由补测固定。
 - 公开层只能构造预取消与预算停止；「两个 demand 之间被取消」由 lib 两层之间的用例证明。
@@ -641,7 +643,7 @@ pub struct HeaderRead {
 ### 2.5 的验收
 
 - **多实现**：接口 + 范围内两个实现 → 两个候选、各自 evidence；当两个实现都来自 `roots` 的第 0 个位置、范围完整且环境无 uncertainty 时 `open_world = false`（这条同时固定上一条 `index == 0` 的语义）；再补一个 `RuntimeTransformation::Possible` 的同一 fixture → `open_world = true` 而候选集合不变（证明 open-world 是独立平面）；
-- **外部子类**：环境含 `External` root → `ExternalSubclass` 证据 + `open_world = true`，即使范围内只有一个候选；
+- **外部子类**：分类由 `dispatch` 的纯函数固定（`External`/未提供内容的 root → `ExternalSubclass`，有单元用例），但**公开路径不可达**——只要环境里出现 `External` root，1.1 的环境校验就整次拒绝该请求（`NotPerformed` + `state = None` + `dispatch = None` + 零读取），公开用例钉住的是这条交互；两者合起来才是这条验收的证据，缺一不可；
 - **未知 loader/transformer**：`Domains` 未覆盖的 loader 或 `external_override`/`runtime_transformation != None` → 对应证据；
 - **单一已知候选不声称唯一**：断言报告结构上不存在"唯一目标"（无该字段）+ `open_world` 语义；
 - **只读 Header**：证据是 `usage.code_bytes == 0`（或与同 consumers 的同范围 P1 扫描计费相等），**不是** `method_bodies == 0`——该维度在 3.x 接通前没有计费点，用它当证据是恒真断言（2.2/2.3 复核已两次纠正同一错误）；同时断言 `usage.class_headers > 0` 与 `reads` 的 reason 含 `DispatchScope`；
