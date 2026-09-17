@@ -26,4 +26,6 @@
 
 - 独立只读 review 首轮指出可任意构造的 `ResolvedDefinitionId` 会把请求视图误表述为已选择事实；该类型已从本阶段删除，并补强 standalone JSON 与所有 Unknown policy 的测试。
 - 修正后独立复核未发现阻塞问题，确认可勾选 P1 1.1。
-- 全程没有并行 Cargo。最终本地记录为约 **3.8 GiB available memory**、`target/` 的 `du` 字节数为 `682,057,299`；本 slice 提交和远端 CI 完成后执行 `cargo clean`。
+- 全程没有并行 Cargo。最终本地记录为约 **3.8 GiB available memory**、`target/` 的 `du` 字节数为 `682,057,299`。
+- 实现 commit `8df41f74b9c931cee3d568d69ffd9fcbfb0b919e` 的 [GitHub Actions run `35172590694`](https://github.com/LordCasser/jarde/actions/runs/35172590694) 为 **success**；Linux x86_64 上 stable、MSRV 1.88.0 与 supply-chain 三个 job 全部通过。
+- 远端 CI 通过后执行 `cargo clean`，Cargo 报告移除 **1,239 files / 738.0 MiB**；清理前 `target/` 为 `682,057,299` bytes，清理后已不存在。
