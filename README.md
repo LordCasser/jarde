@@ -1,6 +1,6 @@
 # jarde
 
-`jarde` 是纯 Rust、同步、library-first 的 JVM artifact 有界静态检查底座。当前处于 **P0 最终验证与归档阶段**：已实现不可变 CLASS/JAR/WAR 快照、顶层物理 ZIP entry 枚举与读取、classfile Header inspection、按方法的原始指令边界 inspection、预算/协作取消、公共 `Engine` 和单请求 JSON CLI；README、五维支持矩阵、低内存 CI、公共示例与实际验证记录已经完成，尚待 P0 3.5 最终复核和 OpenSpec 归档。
+`jarde` 是纯 Rust、同步、library-first 的 JVM artifact 有界静态检查底座。**P0 已完成并归档**：不可变 CLASS/JAR/WAR 快照、顶层物理 ZIP entry 枚举与读取、classfile Header inspection、按方法的原始指令边界 inspection、预算/协作取消、公共 `Engine`、单请求 JSON CLI、支持矩阵、低内存 CI、公共示例与验证记录均已落地。P1–P5 仍为 planned / not implemented。
 
 这不是反编译器的完成版本。X1 引用扫描、运行时选择、resolution、nested archive 递归、CFG/SSA/IR、Java recovery/runtime view 均未实现。`Strict` 支持 45.x–51.x 与 52.0，且只表示 **version-only gate 下的结构读取和方法指令 inspection**，不是完整 dialect validation 或 JVM verifier；52 的非零 minor 不属于 Java 8 profile，`Strict` 拒绝。53–71、preview 与 future release 可由 `Forensic` 读取边界可靠的 Header 结构，但能力分别标为 `StructuralProbeOnly`、`UnsupportedPreview`、`FutureRelease`；`Strict` 均拒绝。完整、逐输入类型与版本的边界见[五维支持矩阵](docs/support-matrix.md)。
 
@@ -64,9 +64,10 @@ Library 可用 `Budget::with_cancellation_token` / `CancellationToken` 注入协
 ## 规格与验证
 
 - [五维支持矩阵](docs/support-matrix.md)
-- [P0 实际验证记录](openspec/changes/establish-p0-foundation/verification.md)
+- [P0 实际验证记录](openspec/changes/archive/2026-09-17-establish-p0-foundation/verification.md)
 - [OpenSpec 入口](openspec/README.md)
-- [P0 proposal / design / tasks](openspec/changes/establish-p0-foundation/)
+- [P0 归档 proposal / design / tasks](openspec/changes/archive/2026-09-17-establish-p0-foundation/)
+- [已生效的 P0 主规格](openspec/specs/)
 - [架构验收映射](openspec/acceptance.md)
 - [技术栈与依赖选型](openspec/dependencies.md)
 - [架构基线](JVM_Rust_Engine_Final_Architecture.md)

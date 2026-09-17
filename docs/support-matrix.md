@@ -1,6 +1,6 @@
 # P0 五维支持矩阵
 
-本页是 P0 用户可见能力状态的单一事实源。它描述当前实现，不是未来路线承诺；验收要求仍以 [OpenSpec P0 specs/tasks](../openspec/changes/establish-p0-foundation/) 为准，实际执行证据见 [verification.md](../openspec/changes/establish-p0-foundation/verification.md)。
+本页是 P0 用户可见能力状态的单一事实源。它描述当前实现，不是未来路线承诺；验收要求以[已生效的 P0 主规格](../openspec/specs/)和[归档 tasks](../openspec/changes/archive/2026-09-17-establish-p0-foundation/tasks.md)为准，实际执行证据见[归档 verification.md](../openspec/changes/archive/2026-09-17-establish-p0-foundation/verification.md)。
 
 ## 状态词
 

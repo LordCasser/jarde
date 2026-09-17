@@ -25,7 +25,7 @@
 - 显式 JDK oracle：**1 passed**；OpenJDK runtime `25.0.4+7`，固定动态 fixture 为 classfile 52.0，SHA-256 `04ea6ad5115a0c17d4bd604ef262f8110e417efa8725f39c9de9641565c2b345`，scope `instruction_boundary_only_not_verification`。
 - `openspec validate --all --strict --no-interactive`：**6 passed / 0 failed**。
 - 生产依赖 tree 检查与源码边界检查：仅 P0 artifact、budget、classfile、engine、model、error 与薄 CLI；无 query、resolver、XRef、CFG、SSA、AST、IR、Decompiler、JVM、网络、async 或数据库运行时。
-- 历史 corpus：ECJ 4.6.1 生成的 8 个 45.3–52.0 fixture 全部通过；精确 SHA-256、大小和 provenance 见 [`tests/fixtures/historical/README.md`](../../../tests/fixtures/historical/README.md)。
+- 历史 corpus：ECJ 4.6.1 生成的 8 个 45.3–52.0 fixture 全部通过；精确 SHA-256、大小和 provenance 见 [`tests/fixtures/historical/README.md`](../../../../tests/fixtures/historical/README.md)。
 - 构建目录 `target/`：约 **2.0 GiB**。
 - classfile 性质测试明确设置 `failure_persistence: None`，避免在工作区写入持久失败数据库；MUTF-8 256 cases，任意 0–64 byte 指令向量 512 cases。
 
@@ -62,5 +62,24 @@
 - `stable / test and specification`：全部步骤 success，包括 stable fmt、clippy、两个固定 proptest seed 的全 workspace tests、显式 JDK 25 oracle、公共示例、feature/normal dependency tree 门禁、OpenSpec strict validation 和 tracked diff 检查。
 - `MSRV 1.88.0`：success；`supply chain`：success，后者实际构建并运行 `EmbarkStudios/cargo-deny-action@v2.1.1`。
 - runner 为 Linux x86_64、固定 `ubuntu-24.04`。该 run 与本地 Linux aarch64 证据共同满足 3.4 的平台、CI、示例与实际测试记录门槛。
+- 3.4 完成记录 commit `c659ee218370f22fe99e64675202abdba29f0c2c` 触发的 [run `35169222351`](https://github.com/LordCasser/jarde/actions/runs/35169222351) 亦为 **success**；stable、MSRV 1.88.0 与 supply-chain 三个 job 全部通过。
+
+## 3.5 最终本地门禁
+
+在 `cargo clean` 后的 commit `c659ee218370f22fe99e64675202abdba29f0c2c` 上，以 `CARGO_BUILD_JOBS=1`、`CARGO_INCREMENTAL=0`、`RUST_TEST_THREADS=1` 串行执行：
+
+- `cargo fmt --all -- --check` 与 `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`：通过。
+- 两个固定 proptest seed 的 `cargo test --workspace --all-targets --all-features --locked`：每轮 **90 passed / 0 failed / 1 ignored**。
+- 显式 JDK 25 oracle：**1 passed**，runtime `25.0.4+7`、fixture hash 与 scope 保持不变。
+- 公共 Header example：通过，输出 `HistoricalControlFlow`、classfile `52.0`、3 个方法、`NotPerformed`，且 `code_bytes=0`。
+- `cargo +1.88.0 check --workspace --all-targets --locked`：通过。
+- feature tree、normal production dependency boundary、官方 `cargo-deny 0.20.2 --offline --locked --all-features check`、OpenSpec 1.11.0 strict validation、actionlint 1.7.12 与 `git diff --check`：全部通过；cargo-deny 仍只有四个未遇到 allowlist license warning，四类门禁均为 `ok`。
+- 清洁构建后的 `target/` 为约 **671 MiB**；验证期间最低记录仍有约 **7.0 GiB available memory**，未并行运行 Cargo，也未触发 OOM。归档完成后再次执行 `cargo clean`，Cargo 报告移除 **1,866 files / 819.2 MiB**（`du` 前值 `697,925,932` bytes），`target/` 已清空。
+
+## 归档结果
+
+- `openspec archive establish-p0-foundation --yes`：成功；13/13 tasks complete。
+- 已创建主规格 `openspec/specs/analysis-contracts/spec.md`、`artifact-snapshots/spec.md`、`classfile-inspection/spec.md`，共应用 **13 added requirements**。
+- change 归档路径为 `openspec/changes/archive/2026-09-17-establish-p0-foundation/`；归档后 `openspec validate --all --strict --no-interactive` 覆盖 3 个主规格与 5 个后续 active changes。
 
 低内存验证必须继续串行。独立 GitHub jobs 可使用不同 runner 并行，但每个 runner 不并行启动 Cargo。

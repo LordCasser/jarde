@@ -24,4 +24,4 @@
 
 ## Impact
 
-已建立宿主无关的核心 crate `jarde` 和薄包装 `crates/jarde-cli`；外部 `reverse-engine` 如需接入，应由其独立 adapter/backend crate 单向依赖 `jarde`，不把 MCP 或宿主协议反向引入核心。底层复用 noak、rawzip、flate2、blake3、serde、thiserror、clap；评估版本、准入测试和排除项记录于 [依赖选型](../../dependencies.md)。本 change 不实现 XRef、runtime selection、resolver、CFG/SSA 或 Java 恢复，后续能力分别验收。P0 Foundation 与交付任务 3.1–3.4 已按 `tasks.md` 实现并验证；仅剩 3.5 的最终复核、主规格同步和归档。未勾选任务和未通过验收的能力仍视为未实现。
+已建立宿主无关的核心 crate `jarde` 和薄包装 `crates/jarde-cli`；外部 `reverse-engine` 如需接入，应由其独立 adapter/backend crate 单向依赖 `jarde`，不把 MCP 或宿主协议反向引入核心。底层复用 noak、rawzip、flate2、blake3、serde、thiserror、clap；评估版本、准入测试和排除项记录于 [依赖选型](../../../dependencies.md)。本 change 不实现 XRef、runtime selection、resolver、CFG/SSA 或 Java 恢复，后续能力分别验收。P0 Foundation 与交付任务 3.1–3.5 已按 `tasks.md` 实现并验证；本 change 已归档，三个 capability 已同步为主规格。后续阶段和未通过验收的能力仍视为未实现。
