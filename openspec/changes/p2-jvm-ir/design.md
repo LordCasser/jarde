@@ -566,9 +566,9 @@ pub struct HeaderRead {
 - **语义近似（有意，记入 spec 边界，不得被当作 JVMS 完全实现）**：解析期报 default conflict 而 JVMS 8 把它放在 invocation selection；interface owner 不隐式继承 `java/lang/Object` 的方法（未命中即 `Missing`）；只检查成员自身的访问标志，不检查声明类的可访问性（JVMS 5.4.3.1）；调用方定义不一致或内容未提供属 stop（`state = None` + `Failed`），不是 `NotChecked`；字段的 static/instance 指令级规则留给 2.4/2.5（`MemberUse` 不含指令级种类）。
 - **schema 限制**：`ResolvedMemberRef` 没有类内坐标，同一 owner 内同名同描述符的重复声明只能表达为相同的 refs（由用例固定）；`Ambiguous` 与 `resolved` 互斥（只在 `Resolved` 时发布 `resolved`）。
 - **scope 校验**：`validate_declaration_reference_query` 必须校验 `PhysicalScope::ArtifactTree { root_container }` 的 root（与 P1 的 `query_artifact_tree_root_mismatch` 同一规则），不得接受会被静默忽略的容器名。
-- **计费纪律**：解析侧每发布 1 条 `items` 与**每发布 1 条进入该报告的诊断**（未决诊断与 2.3 的规则诊断都算）前，各计一次 `ResultItems`——与 P1 的「每个返回 item = 1、每条域诊断 = 1」同口径；装配中途预算耗尽时保留已发布前缀并把 execution 标为 `Partial{BudgetExceeded{ResultItems}}`。
+- **计费纪律**：解析侧每发布 1 条 `items` 与**每发布 1 条进入该报告的诊断**（未决诊断、2.3 的规则诊断、以及闭包自报的诊断如 `resolution_hierarchy_cycle`）前，各计一次 `ResultItems`——与 P1 的「每个返回 item = 1、每条域诊断 = 1」同口径；装配中途预算耗尽时保留已发布前缀并把 execution 标为 `Partial{BudgetExceeded{ResultItems}}`。
 - **停止归属**：解析停止（如 `ClassHeaders`）与装配停止（`ResultItems`）同时发生时，`execution` 报**先发生的解析停止**，装配停止由 `has_more` 与覆盖平面的 `Partial` 表达。
-- **不收费的两类元数据**（与 P1 的 `query_relation_unsupported`／terminal diagnostic 同纪律）：环境平面诊断（`environment_problems` 及其镜像诊断，被拒环境必须零字节零计费）与**停止解释**诊断（`budget_exceeded_*`/`cancelled`/结构错误码）——它们解释请求或中断，不能自付，否则报告会失去停止原因。
+- **不收费的三类元数据**（与 P1 的 `query_relation_unsupported`／terminal diagnostic 同纪律）：环境平面诊断（`environment_problems` 及其镜像诊断，被拒环境必须零字节零计费）、**停止解释**诊断（`budget_exceeded_*`/`cancelled`/结构错误码——它们解释请求或中断，不能自付，否则报告会失去停止原因）、以及**范围未运行**的说明性诊断（如 `resolution_dispatch_no_declaration`，它解释某平面为何没有运行）。
 - **计数与诊断成对**：`unresolved_candidates` 与进入报告的未决诊断严格一一对应；装配被拒的候选既不进 `items` 也不计数，其 use-site 由停止诊断保留。
 - **Class 符号的声明查询**：候选规则只对成员声明定义，因此 Class 符号的 `DeclarationRefQuery` 与被拒环境一样返回 1.1 的诚实不可用状态（`resolution_not_implemented` + `NotRequested`），不读字节。
 - **计费**：成员解析使 `analysis_steps` 成为真实输入，因此成员请求必须给非零值（否则第一步即 `BudgetExceeded`）；`dependency_depth = 0` 仍允许读取成员 owner 自身（深度 0 不观察深度）。`reads` 的 reason 集合按上一条语义产生。
@@ -615,6 +615,8 @@ pub struct HeaderRead {
 
 ### 2.4 实现记录与已知边界
 
+- **closure 自身诊断从 2.5 起有真实生产者**：dispatch 的层级 walk 会自报 `resolution_hierarchy_cycle`（每条环边一条）。因此 2.4 登记的「计费循环当前无生产者」不再成立：该循环必须按上面的计费纪律收费，并有**逐条计费**的用例（同一 fixture 有环 vs 无环，`result_items` 差值等于新增诊断数）。
+
 - **closure 自身诊断的计费是前瞻性条款**：`HeaderClosure::record_diagnostic` 目前只由 `hierarchy_closure` 驱动，而 2.3/2.4 都逐类 `demand`、不启用该 walk，因此解析侧末尾那段 closure 诊断循环**当前无生产者**（代码 fail-safe，2.5 接上后生效）。不得把它当作已测试行为；若复核要求，可在该循环加注释说明。
 - 声明查询入口无 hook，**中途取消**不可构造（预取消已覆盖）；`SignaturePolymorphic` 与 `MemberShape` 共享 2.3 的 name-only 近似（有意）。
 - 测试写入器在本片修掉一个真实缺陷：接口项原先在常量池落盘之后才 intern，会产生非法索引的 class；修复后接口/`BootstrapMethods`/`InvokeDynamic` 才能被正确写入（幂等性与既有 fixture 字节由复核者独立对照确认）。
@@ -635,10 +637,11 @@ pub struct HeaderRead {
 ### 语义
 
 1. **触发**：`ResolutionRequest.dispatch = Some(DispatchScope { scope, consumers })`。声明解析照常执行（2.1 + 2.3）；dispatch 只在声明 `Resolved` 时计算，否则 `dispatch = None` 并保留 `dispatch_not_implemented` 之外的现有语义（声明未解析时给 `resolution_dispatch_no_declaration` 说明性诊断）。
-2. **候选发现（CHA-lite，只读 Header）**：枚举 `scope` 覆盖的 Header（`PhysicalScope::SnapshotAll` 或 `ArtifactTree`），对每个类用闭包解析其超类/接口链；若链上包含声明的 owner 且该类**自身声明**了同名同 descriptor 的成员，则该成员是一个候选（实现或覆盖）。接口声明 → 候选是该接口的具体实现方法；类声明 → 候选是覆盖该方法的子类方法。**只读 Header，不读任何 Body**（`usage.method_bodies == 0`），受 `ClassHeaders`/`DependencyDepth`/`ResultItems`/取消约束。
+2. **候选发现（CHA-lite，只读 Header）**：枚举 `scope` 覆盖的 Header（`PhysicalScope::SnapshotAll` 或 `ArtifactTree`），对每个类用闭包解析其超类/接口链；若链上包含声明的 owner（**严格在其之上**，因此声明类自身与同名重复定义都不是自己的 override）且该类**自身声明**了同 kind/name/descriptor 的成员，则该成员是一个候选（实现或覆盖）。**候选规则是结构性的，不筛成员标志**：private/static/abstract 的声明与 `<init>` 之类特殊名字都会被发布为候选（P2 不在 dispatch 平面重做 2.3 的规则判定），调用方必须结合 `open_world` 与证据自行判断。**只读 Header，不读任何 Body**（证据是 `usage.code_bytes == 0`，不是尚无计费点的 `method_bodies`），受 `ClassHeaders`/`DependencyDepth`/`ResultItems`/取消约束。
 3. **每个候选带 open-world 证据**（`DispatchCandidate { member, evidence }`，证据取自 `OpenWorldEvidence`）：`ExternalSubclass`（范围内存在 `LoadRoot::External` 或未提供内容的 root，可能有未见的子类）、`UnknownLoader`（`Domains` 之外可能有别的 loader 加载同一类）、`RuntimeTransformation`/`ExternalOverride`（`RuntimeUncertainty != None`）、`MissingDependency`（链上有 `Missing`）、`OrderedRoot { index }`（**仅当 `index > 0`**：该候选来自第 index 个 root，之前的 root 本可以定义却被跳过，因此同层可能有别的定义；`index == 0` 之前没有任何位置，**不构成**开放性证据，否则任何查找都会把 `open_world` 顶成 `true`）。
 4. **`open_world` 的判定**：只要出现上述任一证据（或范围内存在不可判定位置/预算停止）→ `open_world = true`；**单一候选也照样 `open_world = true`**，报告里没有任何"唯一目标"字段，调用方只能从 `candidates` + `open_world` + 证据自行判断。预算/取消停止时 `execution` 为对应 `Partial`/`Cancelled` 且 `open_world = true`（未知范围本身就是开放世界证据）。
-5. **与 2.4 的边界**：声明引用查询回答"哪些 use-site 指向该声明"；dispatch 回答"该声明在该范围内的已知实现/覆盖"。两者不互相替代，也不共享结果缓存（各自独立计费）。
+5. **平面组合（停止只落在 execution）**：dispatch 平面停止时，`state` 仍是**声明解析**的判定（通常 `Resolved`），停止由 `execution`（`Partial`/`Failed`/`Cancelled`）与 `open_world = true` 表达。不变量 3 里「预算停止 = `Some(BudgetExceeded)`」描述的是**判定平面自身**的停止；声明已判定之后，后续平面在自己的 `execution` 上报告停止，不改写 `state`。
+6. **与 2.4 的边界**：声明引用查询回答"哪些 use-site 指向该声明"；dispatch 回答"该声明在该范围内的已知实现/覆盖"。两者不互相替代，也不共享结果缓存（各自独立计费）。
 
 ### 2.5 的验收
 
@@ -647,7 +650,8 @@ pub struct HeaderRead {
 - **未知 loader/transformer**：`Domains` 未覆盖的 loader 或 `external_override`/`runtime_transformation != None` → 对应证据；
 - **单一已知候选不声称唯一**：断言报告结构上不存在"唯一目标"（无该字段）+ `open_world` 语义；
 - **只读 Header**：证据是 `usage.code_bytes == 0`（或与同 consumers 的同范围 P1 扫描计费相等），**不是** `method_bodies == 0`——该维度在 3.x 接通前没有计费点，用它当证据是恒真断言（2.2/2.3 复核已两次纠正同一错误）；同时断言 `usage.class_headers > 0` 与 `reads` 的 reason 含 `DispatchScope`；
-- **预算/取消**：`ClassHeaders` 或 `ResultItems` 停止 → 保留已发现候选 + `open_world = true` + `Partial`；
+- **预算/取消**：`ClassHeaders`/`DependencyDepth` 或 `ResultItems` 停止 → 保留已发现候选 + `open_world = true` + `execution` 为对应 `Partial`，且**查找停**的路径上 `runtime_resolution` 为 `Partial` + `skipped = [examined, positions)`（`ResultItems` 是发布阶段的停止，不产生伪造的 skipped）；
+- **结构性候选规则**：private/static/abstract 声明与 `<init>` 都会被发布（一条用例固定该边界，避免读者以为 dispatch 已做规则筛选）；
 - **回归**：`Engine::query` 的既有行为与证据不变（P1 golden），`resolve_symbol` 的类符号路径不变（2.1 证据），`dispatch = None` 的请求不产生 dispatch 相关诊断。
 
 ## 3.1 准入证据与使用约束（petgraph 0.8.3）

@@ -37,7 +37,7 @@
 - **WHEN** 同一选择位置存在无法区分的重复定义，且给定策略不能确定唯一选择
 - **THEN** 返回 Ambiguous 与各自 origin，不按 hash 或遍历偶然顺序覆盖
 
-解析的已知语义边界（P2 的显式近似，不得被读作 JVMS 的完全实现）：maximally-specific 集合按 JVMS 5.4.3.3/5.4.3.4 排除 `ACC_STATIC`/`ACC_PRIVATE` 的接口声明；interface owner 不隐式继承 `java/lang/Object` 的方法（未命中即 Missing）；default conflict 在解析期即报告（JVMS 8 把它放在 invocation selection 阶段）；只检查成员自身声明的可访问性，不检查声明类的可访问性（JVMS 5.4.3.1）；`InvokeDynamic` 的 owner 只是搜索起点，不施加调用种类规则；同一 owner 内同名同描述符的重复声明只能表达为无法区分的候选（Ambiguous）。
+已知范围 dispatch 的候选规则是**结构性**的：范围内自身声明同 kind/name/descriptor、且声明 owner 严格位于其超类型路径之上的类即候选，不筛 private/static/abstract 标志，也不排除 `<init>` 之类特殊名字——调用方必须结合 `open_world` 与候选证据判断，不得把候选集合读作已按规则筛选的运行时目标集合。解析的已知语义边界（P2 的显式近似，不得被读作 JVMS 的完全实现）：maximally-specific 集合按 JVMS 5.4.3.3/5.4.3.4 排除 `ACC_STATIC`/`ACC_PRIVATE` 的接口声明；interface owner 不隐式继承 `java/lang/Object` 的方法（未命中即 Missing）；default conflict 在解析期即报告（JVMS 8 把它放在 invocation selection 阶段）；只检查成员自身声明的可访问性，不检查声明类的可访问性（JVMS 5.4.3.1）；`InvokeDynamic` 的 owner 只是搜索起点，不施加调用种类规则；同一 owner 内同名同描述符的重复声明只能表达为无法区分的候选（Ambiguous）。
 
 #### Scenario: Invocation kind affects resolution
 
