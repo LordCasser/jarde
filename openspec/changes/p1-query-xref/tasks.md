@@ -2,7 +2,7 @@
 
 - [x] 1.1 定义 query relation、consumer schema、PhysicalView/RuntimeView、LoadDomain 和有向 origin chain；将物理定义身份迁移为显式 standalone root/archive entry，并用 API 类型测试覆盖 A06/A07
 - [x] 1.2 实现显式 artifact-tree 的 bounded nested/Boot provider、nested entry 重读与 `nested_depth` 高水位预算，复用 rawzip/flate2 和 P0 snapshot；用 DEFLATED nested fixture 验证 A08
-- [ ] 1.3 实现 MR-JAR 版本选择与不合规归档诊断；用 Java 8/11/17 三视图 fixture 验证 A06
+- [ ] 1.3 实现按 container、Manifest evidence 和唯一 winning level 派生的标准 MR-JAR selection report，以及有界路径/class Header 合规诊断；用 Java 8/11/17 三视图 fixture 验证 A06；不得引入 XRef/resolver、loader/module resolution、API 等价、verifier 或跨 container 消歧
 
 ## 2. Structural XRef
 

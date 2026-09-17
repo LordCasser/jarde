@@ -5,7 +5,7 @@
 ## What Changes
 
 - 增加 X0/X1 查询编译器，覆盖代码、metadata、bootstrap 和标准资源 consumer。
-- 增加嵌套容器候选、MR-JAR 物理/运行视图和 Boot 布局策略；物理 entry 先完整枚举，再按显式 RuntimeProfile 选择。
+- 增加嵌套容器候选、MR-JAR 物理/运行视图和 Boot 布局策略；物理 entry 先完整枚举，MR provider 再以每个 container 的 Manifest evidence 和显式 RuntimeProfile 生成独立 selection report，不能把 RuntimeView 请求本身当作已选择事实。
 - 增加结构引用证据、coverage、Unknown/Partial、分页和取消结果，保证预算不足不伪造 NoMatch 或 Complete。
 - 保持 X1 不构建 CFG、SSA、Java AST，也不读取无关方法 Body。
 
