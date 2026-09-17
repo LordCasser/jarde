@@ -134,6 +134,7 @@ P2 实际只产生 `representation=Bytecode`、`syntax_status=NotJava`、`compil
 - **provider 是命名声明**：`HeaderProvider.roots` 的每个 root 必须等于某个参与 domain 的 `roots` 条目（等值校验），否则 `ProviderRootUnbound`；选择依据以 loader + root 序号 + provider id 记录。
 - **`LoadRoot::External{id}` 只表示"声明但不可读"**：使相关解析为 `Missing` 或未决，绝不当作可读定义或扁平 root 列表。
 - **调用方 domain 唯一**：`runtime.load_domain` 必须在 `domains` 中有且仅有一个 loader 相等的条目，且两者全等；缺失或重复都记 `DuplicateLoader`（message 区分两种），不全等记 `CallerDomainMismatch`。
+- **调用方 loader 一致**：`CallerContext.loader` 必须等于 `runtime.load_domain.loader`（两者都声称调用方身份，不允许静默分叉），否则记 `CallerLoaderMismatch` 且不产生任何解析结果。
 - **校验范围就是 domain 表**：`runtime.load_domain` 自身没有全等条目时只报上述问题，不再校验它自己的 roots/policy（1.1 有意如此；2.1 若把它当作唯一拒绝入口须扩展）。`RuntimeProfile` 的 profile 能力（release/multi-release/layout）与 `LoadDomain` 的 `external_override`/`runtime_transformation` 判定归 2.x，1.1 不报 `UnsupportedPolicy`。`ProviderId` 允许重复（1.1 无唯一性规则）。
 - **不去重合并同内容不同绑定**：去重键是 (物理定义, loader)；同一 snapshot 被多个 loader 引用时分别处理。
 
@@ -154,7 +155,7 @@ pub struct CallerContext {
     pub enclosing: Option<PhysicalMethodId>,   // 调用点所在方法；声明查询可以为 None
 }
 #[derive(...)] pub enum EnvironmentProblemCode {   // 闭集，序列化为 snake_case
-    DuplicateLoader, CallerDomainMismatch, MissingParent, ParentCycle,
+    DuplicateLoader, CallerDomainMismatch, CallerLoaderMismatch, MissingParent, ParentCycle,
     UnsupportedPolicy, UnreadableRoot, ContentNotProvided, ProviderRootUnbound,
 }
 pub enum EnvironmentSubject { Loader(LoaderId), Provider(ProviderId), Root { loader: LoaderId, index: u32 }, Symbol(SymbolRef) }
@@ -298,7 +299,7 @@ pub enum OriginMember {
 
 1. 解析与方法分析只能在显式绑定 `ResolutionEnvironment` 且入口提供 `content` 时启动；P1 physical X0/X1 没有这些字段，因此永不启动 resolver/IR，也不隐式采用宿主 classpath（A17）。
 2. 环境校验失败不产生唯一解析结果：domain 唯一性、父可解析、parent 无环、caller domain 全等、provider root 归属于某 domain、内容可提供、未支持 policy 与不可读 `External` 各给 `EnvironmentProblem` + 同 code 诊断（环境诊断按问题顺序排在能力码诊断之前、severity 为 `Error`），并保留原始符号与未完成范围。
-3. 平面分离：`analysis`（能力是否运行）、`state`（语义判定）、`coverage`（范围）、`execution`（终止）、产物状态（representation/quality/syntax_status/compile_status/semantic_validation/verification）互不推断；语义状态集不含 `NotPerformed`，取消由 `execution = Cancelled` + `state = None` 表达，预算停止用 `state = BudgetExceeded` 并同时进 execution。
+3. 平面分离：`analysis`（能力是否运行）、`state`（语义判定）、`coverage`（范围）、`execution`（终止）、产物状态（representation/quality/syntax_status/compile_status/semantic_validation/verification）互不推断。`state = Some(v)` **当且仅当**本次运行到达了一个语义判定；`state = None` 覆盖两种情形：能力根本没运行（`analysis = NotPerformed`），或运行了但未及判定就停止（`analysis = Performed` + `execution` 为 `Cancelled`/`Failed`/`Partial`）。因此取消是 `state = None` + `execution = Cancelled`，输入损坏是 `state = None` + `execution = Failed{Error{code}}` + 带 origin 的诊断（与 `specs/demand-resolver` 的"另行记录输入损坏、取消和实际 execution"一致，不占用语义状态）；预算停止有判定，用 `state = BudgetExceeded` 并同时进 execution。`Inaccessible`/`IncompatibleClassChange` **保留给访问与链接规则**（2.3/2.5），不得用来表示读取失败。
 4. `OriginSet` 只锚定物理 class/method 与 class offset/BCI；`MethodPoint` 与 `Location::Code` 同义但独立类型，不使用有口径债务的 `Location::Entry.span` 作为 Code 坐标；规范化产生一对多 origin 时保留全部原始 BCI。
 5. 一个请求共享一个 `Budget` 生命周期；计费先于分配/排队/加边/克隆；fallback 不 reset、不重读完整 Body；`DependencyDepth` 与容器 `NestedDepth` 相互独立。
 6. 未实现、不支持、缺失依赖、预算停止、取消与输入损坏分别用 `analysis`/`state`/`environment_problems`/`diagnostics`/`execution` 表达；不得 panic、返回空结果或伪造唯一解析。
@@ -495,6 +496,15 @@ pub struct HeaderRead {
 - **深度**：每向上一层（parent 链或接口闭包）调用 `Budget::observe_dependency_depth`（1.3 已交付），超限即停并保留可信前缀；`DependencyDepth` 与 `nested_depth` 独立。
 - **计费**：Header 读取尝试记 `ClassHeaders`；方法 Body 读取尝试记 `MethodBodies`（2.2 只允许 `DriverMethodBody` 一个理由，其他理由出现在 3.x/4.x 的分析阶段）；工作列表迭代记 `AnalysisSteps`。**不读无关 Body**：闭包只读 Header，Body 读取必须带显式 reason 且只有目标方法。
 - **停止语义**：预算耗尽/取消/缺失依赖都在**下一次扩展前**停止，`execution` 为 `Partial`/`Cancelled`（`TerminationReason::BudgetExceeded { dimension }` 或 `Cancelled`），`coverage` 保留已扫描范围并把未完成部分记 skipped；不得把停止报告成 `Missing` 或空闭包。
+
+### 2.1 实现要点（供复核与后续切片对齐）
+
+- **位置**：查找机器在新增的 crate-private `src/providers.rs`（`resolver → providers → {view, environment, artifact, classfile, budget, model, error}`，无反向边），报告装配留在 `src/resolver.rs`；不新增公共类型。
+- **有效序列**：从 `runtime.load_domain` 沿 `parent_loader` 收集链，再**按每个 loader 自己的 delegation 定序**（ParentFirst 父序列在前、ChildFirst 本 loader 在前），最后按各 domain 的 `roots` 声明顺序展开位置。混合链按各自声明（不是整条链统一方向）。
+- **计费与覆盖**：读取尝试记 `ClassHeaders`；枚举/读取沿用既有 `archive_entries`/`read_bytes`/`class_bytes`/`attribute_bytes`/`entry_bytes`/`output_bytes`/`result_items`；performed 查找把已检查位置记入 **`runtime_resolution`** 维度的 `provider_search_position` 区间（未检查部分 skipped → `Partial`），`artifact_structural`/`dynamic_analysis` 保持 `NotRequested`。
+- **能力码**：环境被拒时仍是 1.1 的 `resolution_not_implemented`（能力未运行）；类查找执行时若请求带 `dispatch`，追加 **`dispatch_not_implemented`（Warning）** 并在 2.5 消失；成员符号仍是 `resolution_not_implemented`（2.3 落地后消失）。
+- **共享身份规则**：`PhysicalVariant` 路径派生（`META-INF/versions/<N>/`）从 `src/xref/mod.rs` **原样搬**到 `src/model.rs`（`pub(crate) physical_variant_for_path`），使 P1 与 P2 对同一 entry 得到同一身份；行为不变（P1 golden 全绿）。
+- **crate-private facts 的 dead_code allow**：`HeaderLookup.header`/`ClassHeaderFacts`/`HeaderLocation.entry` 由 2.2 消费，沿用 `classfile` crate-private facts 的既有约定。
 
 ### 2.2 的验收
 
