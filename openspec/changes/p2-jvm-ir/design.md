@@ -743,6 +743,43 @@ pub(crate) struct PassDescriptor {
 - **origin 与 effect 顺序**：每个 SSA 值带 `OriginSet`（`MethodPoint` 指向产生它的指令 BCI）；effect 顺序按**指令级 throw site** 记录（异常边上的 effect 属于该 throw site，不属于块尾）；规范化克隆产生的值保留全部原始 BCI。
 - **计费与停止**：`IrItems` 按 frame 槽、SSA 值、phi 输入、origin 成员计；`IrEdges` 按 CFG 边与 def-use 边计；工作列表迭代计 `AnalysisSteps`；停止时保留**最后有效阶段**（`stages` 到该阶段为止），不发布半初始化 facts。
 - **4.3 验收**：diamond/loop/不可约控制流/异常合流各一组；高扇出 phi（多 predecessor + 多异常边）与多槽位样本验证 `IrItems`/`IrEdges` 上界；矛盾输入返回 `ir_frame_inconsistent` 或 `ir_ssa_inconsistent` + 最后有效阶段；`verification` 保持 `NotPerformed`（除非 5.3 的差分证据另行支撑）。
+## 5.1–5.4 契约：库/CLI 接通、入口计数、golden/fuzz 与归档
+
+### 5.1 方法分析库与薄 JSON CLI
+
+- **库入口**：`Engine::analyze_method` 从 1.1 的诚实不可用变为真分析，按顺序执行 3.2 的 pass 表（到请求阶段为止）：`RawFacts → RawCfg → (LegacyNormalization → CanonicalCfg) → Frame → Ssa`。
+- **五平面各自独立**（不变量 7）：`representation`（`Bytecode`；`Canonical` 只在 3.5 成功时出现）、`quality`（`Conservative`/`Fallback`）、`syntax_status`（`NotJava`：P2 不恢复 Java）、`compile_status`（`NotAttempted`）、`semantic_validation`（无证据时 `Unproven`，有本地不变量证据时 `LocalInvariants`，差分证据归 5.3）、`verification`（**恒 `NotPerformed`**，直到 5.3 的差分证据单独支撑）。
+- **body 状态**：`MethodBodyState::{NotInspected, Present, DeclaredWithoutBody { no_body_kind }}`；`abstract`/`native` 方法没有 Body 是**事实**而非失败（`stages` 全 `NotPerformed`、`representation = Bytecode`、`execution = Complete`），诊断说明原因。
+- **失败隔离**：同一类里正常方法与失败方法并存时，各方法报告互不影响（一个方法的 `Failed`/`Partial` 不改另一个的 `Complete`）；类级 Header 失败不伪造任何方法结果。
+- **CLI**：`jarde-cli` 增 `method` operation（薄转发，JSON 形状与库报告逐字段一致），沿用既有的单请求/单响应与错误码约定；协议错误仍是 transport 级 `error`，报告内的停止仍在成功响应内的 `Partial`/`Cancelled`。
+- **验收**：库/CLI 对同一请求的报告**逐字段一致**（可序列化对比，除 `elapsed_millis`）；`Bytecode`/`Conservative`/`Fallback`、`NotJava`、`NotAttempted`、abstract/native、阶段 coverage/execution、成员失败隔离各至少一条端到端用例。
+
+### 5.2 入口计数：只读需要的字节（A14/A16/A17）
+
+- **计数口径**：在**真实入口**（`analyze_method`）上记录每个阶段的读取与构造次数：Header 读取（`ClassHeaders`）、Body 读取（`MethodBodies`，此片起成为真实计费维度）、以及解析/CFG/SSA/Region/AST 构造计数。
+- **必须证明为零的项**：单个方法分析不得加载无关 Body（`method_bodies` 只计目标方法）；P1 的 X0/X1 路径不得启动 resolver/CFG/SSA/Region/Java AST（构造计数为零，且 `Engine::query` 的输出与重放名单逐字段不变）。
+- **A17 守卫必须覆盖图算法依赖**：3.1 已证实「在受守卫文件里 `use petgraph::…` 并构图」能编译且不被现有 token 表捕获。3.3 首个消费者落地时同步把图算法 crate（petgraph 及其算法入口）加入 `p2_tokens_in` 的 token 表，并用「注入 `use petgraph::…` → 守卫测试转红」证伪；5.2 的构造计数是这条性质的行为侧证据，两者都要有。
+- **确定性**：同一输入重复运行两次，报告的**身份与顺序逐字段一致**（除 `elapsed_millis`）——这同时是 3.1 那条「所有输出按 (物理定义, BCI) 自排序」的可证伪点。
+- **验收**：无关 Body 为零、X1 构造计数为零、重复运行一致，各一条可证伪用例（用变异证明断言有牙齿）。
+
+### 5.3 P2 golden、性质与有预算 fuzz
+
+- **固定 replay 名单**（golden）：`tests/fixtures/` 下的 45–52 历史 class（含 ECJ 语料的 `jsr`/`ret` finally）、缺失依赖/debug 的样本、非法版本样本、共享子程序样本、异常重叠样本，以及资源边界样本（超预算、深链、高扇出）。每条记录**执行状态与阶段不变量**，不只记录形状：`stages` 的 `Completed`/`Partial`/`Failed`、`quality`、`representation`、`verification`、`coverage`、以及 origin 映射（克隆块的一对多）都必须可核对。
+- **性质测试**：对生成的合法/非法方法体断言阶段不变量——blocks/edges 覆盖可达集、SSA 的 def-use 双向一致、phi 输入数 = predecessor 数、origin 可回溯到原始 BCI，以及停止可解释（每个 `Partial`/`Cancelled`/`Failed` 都有对应诊断与已发布前缀）。
+- **有预算 fuzz**：复用维护后的 harness（P1 的 `exercise_query` 模式与 `observe` 钩子），对方法分析入口断言**状态与阶段不变量**，而不只是不 panic；语料包含 3.4/3.5 的 `jsr`/`ret` 与异常重叠形态。
+- **验收**：golden 名单可复现、性质测试有变异证伪、fuzz 在固定时长内对不同输入断言不变量且不 panic；新增 harness 与 P1 的既有门禁共存（不替换 P1 的 fuzz target）。
+
+### 5.4 文档、门禁与归档
+
+- 同步五维支持矩阵（resolution 从 Partial 到完成、decompilation-quality 从 NotImplemented 到 P2 的实际能力、output-level 增加方法分析报告）、README、`openspec/acceptance.md` 的 A09/A10/A11/A13/A14/A16/A17 行与 `docs/` 既有文档；**不得宣称 Java 恢复、Region 分析或 verifier 通过**。
+- 运行并记录：`cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`、`cargo test --workspace --all-targets --all-features --locked`、oracle（JDK 25，ignored 用例）、MSRV 1.88、两个 workspace 的 supply-chain、**规定时长 fuzz**（既有 smoke 与新增 target 各跑满规定秒数）、`openspec validate --all --strict`、`git diff --exit-code`。
+- 归档前置：把本 change 的 spec deltas 同步进 `openspec/specs/`（`analysis-contracts` 的 Purpose 修改、`demand-resolver`/`jvm-ir`/`conservative-output` 的新增能力），记录精确 commit 与 CI run、以及各片的只读复核结论；确认验收映射表里 A09–A11、A13、A14、A16、A17 全部从「部分」变为「通过」且各有指向验证记录的证据链接。
+
+### 5.1–5.4 的风险与失败后果
+
+- **只读需要的字节**是本 change 的边界承诺：若 5.2 的构造计数发现某阶段越界（例如 resolver 启动时枚举全 scope 的 Header），正确处置是**收窄该阶段的触发条件**并把成本计入下一个阶段，而不是放宽计数口径或删除断言。
+- **golden 名单如果只记录形状**（例如只断言 `stages` 长度），3.5 的 origin 一对多与 4.3 的 phi 不变量就会失去回归保护——5.3 的验收明确要求状态与不变量，缺一则视为未完成。
+- 归档时若 `analysis-contracts` 的 Purpose 仍写 P1 口径，后续读者会把 P2 的行为当成未文档化的偏离；该 Purpose 修改是 5.4 的显式前置。
 ## Risks / Trade-offs
 
 - [Risk] frame/phi/origin 或 jsr 克隆乘法膨胀 → 分配前计费及高扇出/多槽位用例；P1 输入有界不代替 IR 上界证明。
