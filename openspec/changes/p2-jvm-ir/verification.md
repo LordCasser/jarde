@@ -80,8 +80,16 @@
 - 远端 CI：实现与文档提交 `2d25ce0`、`07b771b` 推送 `main` 后，CI run [`35258105942`](https://github.com/LordCasser/jarde/actions/runs/35258105942) 四个 job 全部 success。
 - 独立复核结论：**Approve**（"必须改"两项：本条记录与读取层失败用例，均已处理）。登记的债务：`output_bytes` 在 standalone（`root_bytes`）与 ZIP/tree（`read_entry_internal`）之间口径不对称，2.2/5.3 按维度断言前须先钉死；skipped 的语义是"未达判定的 position"而非"未触及"；带目录属性但名字不以 `/` 结尾的 entry 会被当候选并报解码失败（artifact 层无目录位）；ArtifactTree position 每次查找都枚举整棵树（2.2 多次查找会重复计费，P5 索引前）；`MethodAnalysisRequest` 侧没有"无 caller 时不报"的显式用例；2.1 不应用 `RuntimeProfile` 的 release/multi-release 与 uncertainty 判定（MR 由 `select_multi_release` 提供，uncertain-runtime 诊断归 2.5）。
 
+### 2.2 按需 Header 闭包、读取 reason 与去重
+
+- 交付：`src/providers.rs` 的 `HeaderClosure`（键 `(loader, internal_name)` 记忆已判定需求、`HeaderDemand::{RequestedDefinition, ParentChain, HierarchyClosure}`、`parent_chain`/`hierarchy_closure` 展开、`WalkGaps{missing, ambiguous, cycles}` 与停止粘滞）；`src/resolver.rs` 的 `ReadReason`（6 项 snake_case）与 `HeaderRead{loader, definition, reason}`，三个报告各加 `reads`（**类型面 additive，wire 面是 `deny_unknown_fields` 下的必填新字段**，按 1.3 先例记为有意的 schema 变更）；类符号路径改经闭包并发布 `reads`。
+- 语义：同 (definition, loader) 只记一次（reason 取首次读取的需求）、只有成功读取且取得定义身份才入记录、Ambiguous 每个候选各一条、standalone 声明别名也记；读取尝试记 `ClassHeaders`、层级展开每层记 `AnalysisSteps` 并在**扩展前**观察 `dependency_depth`；闭包不读任何 Body（公开证据是 `code_bytes == 0`，配 `inspect_method_bytecode` 的非零对照）；停止时 `reads` 与 `coverage` 一起发布可信前缀，停止的需求不被记忆（重问会重新搜索）。
+- 反例与证伪：实现者 6 组变异（记忆键去掉 loader 分量、记录用起点 loader、去掉记录去重、去掉深度观察、"扩展后停止"、停止报告成 Missing）中 5 组被捕获；复核者 20 组变异 + 5 条独立探针（深链 limit∈{0,1,2,3}、真实 class 的 body 计费对照、Ambiguous 超类、损坏候选、停止后重问等）中 10 组被交付测试捕获，其余 6 类语义（`parent_chain` 不跟接口、损坏/读取失败不入记录、Ambiguous 每候选一条、停止的需求不被记忆、`gaps.ambiguous`、自环诊断）由**复核指出缺测**后补齐（6 组新变异逐一证伪）。复核另指出公开用例曾用恒真的 `method_bodies == 0` 充当"不读 Body"证据（该维度在 3.x 前无计费点），已改为 `code_bytes == 0` + 真实 body 路径对照。
+- 证据：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **407 passed / 0 failed / 1 ignored**，`cargo test --lib` = **145**、`p2_closure` = **10**；示例输出 `resolve_symbol.class: reads=[("app", RequestedDefinition)]`；由主 Agent 独立复跑确认。
+- 独立复核结论：**Approve**（三项"必须改"：`ir.rs` 公开 doc 与 `ReadReason::DriverMethodBody` 自相矛盾、恒真的 Body 证据、4 处语义无测试；均已关闭）。登记债务：闭包键 loader 分量在当前公开路径不可证伪（触发条件是"出现第一个以非调用方 loader 发起需求的调用方"，可能晚于 2.5）；`remembered`/`record_read`/`visited` 的线性扫描在 2.5 全 scope 枚举前需索引（P5）；`analysis_steps` 耗尽路径无用例；`providers.rs` 3 处冗余 `#[allow(dead_code)]`；`method_bodies` 在 3.x 接通计费前没有计费点，任何以它证明"不读 Body"的断言都不成立。
+
 ## 第一片（1.1–1.3）状态与闸口
 
 - 1.1、1.2、1.3 均已完成、独立复核 **Approve** 并有各自 CI 记录；第一片的退出条件（reader 类型化操作数、预算维度、结果/请求契约可用）已满足。第一片整体以提交 `0cba0d6`（实现）+ `6344508`（文档）推送，CI run [`35253446169`](https://github.com/LordCasser/jarde/actions/runs/35253446169) 四个 job 全部 success（`stable` 含 ignored JDK 25 oracle、`MSRV 1.88.0`、双 workspace `supply chain`、`fuzz smoke`）。
-- 2.2 起未开始（2.1 已完成并复核 Approve）。按 `tasks.md`，2.x 各片逐项实现、验证并只读复核后再交接。
+- 2.3 起未开始（2.1、2.2 已完成并复核 Approve）。按 `tasks.md`，2.x 各片逐项实现、验证并只读复核后再交接。
 - 债务池（登记，不阻塞）：1.2 的操作数存储放大与未完整解码前缀语义（3.x 消费前收紧）、`fuzz/README.md` 措辞、P2 维度真实膨胀由 3.5/4.3 验收、`query-api` 与 `analysis-contracts` 的 spec delta 在 P2 归档时同步主规格。

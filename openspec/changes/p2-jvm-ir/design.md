@@ -119,7 +119,7 @@ P2 实际只产生 `representation=Bytecode`、`syntax_status=NotJava`、`compil
 | `src/model.rs` | `OriginSet`/`OriginMember`（共享身份层，与 P1 把 `PhysicalDefinitionId` 加进 model 同一先例） | 既有 `model` 内部依赖，无新增边 |
 | `src/environment.rs`（新） | 运行环境绑定、provider 声明、环境身份与环境问题码 | `artifact`、`error`、`model`、`view` |
 | `src/resolver.rs`（新） | 解析请求/报告、声明引用查询请求/报告 | 上述 + `budget` + `query::{ConsumerKind, ConsumerSchema, XrefOperation}` 词汇表 |
-| `src/ir.rs`（新） | 方法分析请求/报告、阶段与产物状态 | `artifact`、`budget`、`environment`、`classfile`（`VerificationStatus`）、`error`、`model`、`view` |
+| `src/ir.rs`（新） | 方法分析请求/报告、阶段与产物状态 | `artifact`、`budget`、`environment`、`classfile`（`VerificationStatus`）、`error`、`model`、`resolver`（`HeaderRead`/`ReadReason` 词汇，2.2 起）、`view` |
 | `src/engine.rs` | 三个薄委托入口 | 上述 |
 | `src/query.rs`、`src/xref/**` | **不得**引用 `environment`/`resolver`/`ir`，也不得经 crate 根 re-export 的路径引用 P2 类型（A17：physical X0/X1 不启动 resolver/IR） | — |
 
@@ -475,7 +475,7 @@ pub(crate) struct HeaderLookup {
 #[serde(rename_all = "snake_case")]
 pub enum ReadReason {
     RequestedDefinition,   // 请求目标自身
-    ParentChain,           // 沿 parent_loader 链解析出的定义
+    ParentChain,           // 沿类型的 super_class 链解析出的定义（不是 loader 链）
     HierarchyClosure,      // 父类/接口闭包（2.3 的成员解析需要）
     DispatchScope,         // 显式 CHA 范围枚举（2.5）
     MemberOwner,           // 成员解析命中的 owner
@@ -488,7 +488,7 @@ pub struct HeaderRead {
 }
 ```
 
-`ResolutionReport`/`DeclarationRefReport`/`MethodAnalysisReport` 各增 `pub reads: Vec<HeaderRead>`：按**实际发生顺序**、同 (definition, loader, reason) 只记一次（重复使用同一个已读 Header 不重复记录）。失败尝试不产生记录（其证据是 `environment_problems`/诊断）；`ClassHeaders` 仍按**尝试**计数（1.3 口径），因此 `reads.len() <= usage.class_headers` 恒成立，该不等式本身是 2.2 的一条断言。`elapsed`/`coverage` 语义不变；本字段是**additive 公共变更**，1.1 的既有测试需同步（记进 verification）。
+`ResolutionReport`/`DeclarationRefReport`/`MethodAnalysisReport` 各增 `pub reads: Vec<HeaderRead>`：按**实际发生顺序**、同 **(definition, loader)** 只记一次（reason 取首次读到该绑定的需求）；只有**成功读取且取得定义身份**才入记录（被拒绝的尝试、损坏与读取层失败不入记录），Ambiguous 的每个候选各记一条，standalone 声明别名同样记录。**变更口径**：类型面是 additive；wire 面是 `deny_unknown_fields` 下的**必填新字段**（缺 `reads` 的旧 JSON 会被拒），按 1.3 的先例记为有意的 schema 变更，不是兼容性承诺。（重复使用同一个已读 Header 不重复记录）。失败尝试不产生记录（其证据是 `environment_problems`/诊断）；`ClassHeaders` 仍按**尝试**计数（1.3 口径），因此 `reads.len() <= usage.class_headers` 恒成立，该不等式本身是 2.2 的一条断言。`elapsed`/`coverage` 语义不变；本字段是**additive 公共变更**，1.1 的既有测试需同步（记进 verification）。
 
 ### 闭包算法与去重
 
@@ -509,6 +509,12 @@ pub struct HeaderRead {
 - **共享身份规则**：`PhysicalVariant` 路径派生（`META-INF/versions/<N>/`）从 `src/xref/mod.rs` **原样搬**到 `src/model.rs`（`pub(crate) physical_variant_for_path`），使 P1 与 P2 对同一 entry 得到同一身份；行为不变（P1 golden 全绿）。
 - **crate-private facts 的 dead_code allow**：`HeaderLookup.header`/`ClassHeaderFacts`/`HeaderLocation.entry` 由 2.2 消费，沿用 `classfile` crate-private facts 的既有约定。
 
+### 2.2 实现记录与已知边界
+
+- 闭包键 `(loader, internal name)` 的 loader 分量在当前公开路径上**不可证伪**：一次请求只有一个搜索起点（`CallerContext` 不移动起点，1.1 又以 `CallerLoaderMismatch` 拒绝分叉），因此「只按 name 去重」的变异存活；同一防线的另两条（记录用定义所在 loader、记录去重）已被捕获。该分量的可观测条件是「出现第一个以非 `runtime.load_domain.loader` 发起需求的调用方」（可能晚于 2.5），届时应补一条让该分量可观测的用例。
+- 层级展开（`ParentChain`/`HierarchyClosure`、`WalkGaps`、环诊断）在本切片无公开入口，语义由 `providers` 的 lib 单测固定，消费者是 2.3/2.5（相关项带 `#[allow(dead_code)]`，移除即产生 9 条 warning）；复核指出的四类未固定语义（`parent_chain` 不跟接口、损坏/读取失败不入记录、Ambiguous 每候选一条、停止的需求不被记忆）已由补测固定。
+- 公开层只能构造预取消与预算停止；「两个 demand 之间被取消」由 lib 两层之间的用例证明。
+
 ### 2.2 的验收
 
 - **深链**：父类链深度超过 `dependency_depth` → 终止维度为 `DependencyDepth`、保留前缀、`reads` 只含已读深度。
@@ -517,7 +523,9 @@ pub struct HeaderRead {
 - **循环引用**：A→B→A 的继承环（非法 class）→ 不无限扩展（去重键终止）、给出可定位诊断。
 - **预算/取消**：预取消与中途取消分别得到 `Cancelled`，`usage` 与 `reads` 一致（`reads.len() <= class_headers`）。
 - **无关 Body 读取为零**：闭包请求后断言 `usage.method_bodies == 0`（除非显式请求目标方法 Body），且 `reads` 的 reason 集合不超过本次请求允许的理由。
-- **同 bytes 不同 origin/loader 不合并**：同一 class 字节放在两个 loader 的 roots 下，`reads` 与解析结果分别是两条记录/两个 `ResolvedMemberRef`。
+- **同 bytes 不同 origin/loader 不合并**：同一 class 字节放在两个 loader 的 roots 下时，分别以各自环境请求会得到两次各自的选择与两条记录（单请求只有一个搜索起点，故「一次请求内两条记录」不是本片的形态）。
+- **深度 0 的边界**：闭包目标自身是依赖深度 0、即使 `dependency_depth = 0` 也允许读取；停止时 `reads` 与 `coverage` 一起发布可信前缀。
+- **不读无关 Body 的证据是 `code_bytes == 0`**（配一条真实 body 读取路径的对照，例如同一 fixture 经 `inspect_method_bytecode` 得到非零 `code_bytes`）；`method_bodies` 在 3.x 接通计费前没有计费点，因此不能单独作为该证据。
 
 ## 2.3 契约：成员解析（JVMS 5.4.3）、访问与调用种类规则
 
