@@ -162,6 +162,36 @@
 - 远端 CI：实现与文档提交 `2bc0ea6`、`8d74ce4` 推送 `main` 后，CI run [`35287796487`](https://github.com/LordCasser/jarde/actions/runs/35287796487) 四个 job 全部 success。
 - 独立复核结论：**Approve**（无必修项；D1 契约缺口已在 3.3 前修正）。登记债务：**`engine.rs` 的接入不可观测**（删掉调用或换序都无测试变红，且前缀规则在 `ir::scheduled_stages` 与 `passes::validate_schedule` 各有一份实现——5.1 必须以校验器返回的表前缀作为唯一执行/阶段来源，并把「报告 `stages` == 校验器前缀」写成断言）；`Effects` 目前无消费者（其失效在运行时不被强制，故契约已写明「事实的消费者必须写进 `requires`」）；`progress()` 的 `no phase completed yet` 分支与空集合分支仓内无覆盖（探针证明可达且正确）；本片的计费语句只有声明，真实计费点从 3.3 起。
 
+## 债务登记（滚动，归档前逐条处置）
+
+各片复核登记的边角与已知边界集中在此，避免归档时丢失。**每条都必须有一条处置**：已修、转为显式契约边界、指派到具体后续任务、或明确接受并写进文档。
+
+| # | 债务 | 来源 | 处置 |
+| --- | --- | --- | --- |
+| D01 | `artifact_tree` 的 fuzz 峰值 RSS 470–500 MB 对 512 MB 限额（余量 2–8%） | P1 验证 | 保持观察：CI 未 OOM；**禁止用缩短运行掩盖**，一旦 OOM 先留证据（`/usr/bin/time -l` / CI 日志）再按 design 的处置顺序决策；5.3/5.4 需带证据复核 |
+| D02 | `control_flow_targets` 在截断方法体上 sound-but-incomplete | 1.2 复核 | **3.3 处理**：raw CFG 必须读 `execution`/`stopped_at` 并把图标为不完全 |
+| D03 | `newarray` atype、`multianewarray` dimensions、`invokeinterface` count 未保留 | 1.2 补充 | 接受为边界（P2 不需要）；若 4.x 需要须先扩 reader 事实 |
+| D04 | 操作数事实 ≈80 B/指令，只按 `CodeBytes` 计费 | 1.2 | 接受：1.3 的 churn 表已记录；如需更细粒度须改 1.3 口径 |
+| D05 | `Location::Entry.span` 坐标与其它来源不一致；record component 的 descriptor 类别不一致 | P1 | 接受为既有边界；5.4 文档同步时在支持矩阵的已知边界里点名 |
+| D06 | `has_more = true` 且 `cursor = null` 的组合 | P1 | 已在支持矩阵写明（停止且未发布新项时调用方需重试同一请求）；5.1/5.3 的 golden 覆盖该形态 |
+| D07 | 重复物化 / 方法体解两遍（P1 `Type`-only 请求、2.x 的多次枚举） | P1/2.2 | 归 P5（索引）；2.2/2.5 已登记为「2.5 全 scope 枚举前需索引」 |
+| D08 | `output_bytes` 在 standalone root（`root_bytes`）与 ZIP/tree entry 之间口径不对称 | 2.1 复核 | 接受并已写入支持矩阵；5.3 按维度断言前须引用该口径 |
+| D09 | `skipped` 是整请求求和的**保守上界**（高报未决、绝不低报） | 2.2/2.5 复核 | 已写进 2.5 契约；**5.3** 要么收紧为逐查找集合，要么在 golden 里固定该上界语义 |
+| D10 | 闭包键 `(loader, name)` 的 loader 分量在公开路径不可证伪 | 2.2 复核 | 已写进契约：可观测条件是「出现第一个以非调用方 loader 发起需求的调用方」（可能晚于 2.5） |
+| D11 | `providers` 的 `remembered`/`record_read`/`visited` 线性扫描 | 2.2 复核 | 归 P5（索引）；规模受 `class_headers`/`analysis_steps`/`elapsed_millis` 约束 |
+| D12 | `method_bodies` 在 3.x 接通计费前没有计费点 | 2.2/2.3 复核 | **3.3 起接通**（本片让 `analyze_method` 真有工作）；在此之前任何「以 `method_bodies == 0` 证明不读 Body」的断言都不成立（已改用 `code_bytes`） |
+| D13 | `subtype_of` 遇到调用方层级成环时静默跳过 → `Inaccessible` 且无环诊断 | 2.3 复核 | 接受为不对称边界；若 5.x 需要诊断须先给调用方层级加环码 |
+| D14 | signature-polymorphic 警告在调用点描述符恰好等于声明描述符时文案仍称「两者按规则不同」 | 2.3 复核 | 低优先：改文案或在 5.4 文档里说明 |
+| D15 | `read_definition` 的记录挂在请求声明的 `caller.loader` 上（`PhysicalDefinitionId` 不含 loader，API 内不可校验） | 2.3 复核 | 接受为边界（按请求输入语义）；若 5.x 需要严格校验须扩身份模型 |
+| D16 | `DeclarationRefQuery.consumers.version` 不校验（`Engine::query` 会拒绝非 1） | 2.4 复核 | 接受；若要统一，属小改动，5.4 前决定 |
+| D17 | 「解析到别的声明」无独立报告桶（只能由 `reads`/usage 观察） | 2.4 复核 | 已写进契约（报告不设第三个桶）；5.3 的 golden 覆盖该形态 |
+| D18 | `ResolutionReport.resolved`/`candidates` 不单独计费 | 2.5 复核 | 已写进契约（判定证据字段不重复收费）；由绝对账单边界守护 |
+| D19 | petgraph A17 守卫缺口：受守卫文件里 `use petgraph::…` 不被捕获 | 3.1 复核 | **3.3 处理**：把 `petgraph::`/`petgraph as`/`extern crate petgraph` 加进 `A17_IMPORT_TOKENS` 并证伪 |
+| D20 | 第二个 petgraph 版本只剩 `cargo-deny` 的 warn 可见；升级门槛（重推 feature 名清单）依赖人工 | 3.1 复核 | 记入升级清单；升级时必须重跑 3.1 的行为证据 |
+| D21 | `engine.rs` 的 pass 校验接入在公共路径不可观测；前缀规则在 `ir::scheduled_stages` 与 `passes::validate_schedule` 各有一份 | 3.2 复核 | **5.1 处理**：以校验器返回的表前缀作为唯一执行/阶段来源，并断言「报告 `stages` == 校验器前缀」 |
+| D22 | `Effects` 目前无消费者（其失效在运行时不被强制） | 3.2 复核 | 契约已写「事实的消费者必须写进 `requires`」；4.x 接通消费者时须同步 |
+| D23 | `progress()` 的「尚无 phase 完成」分支与空集合分支仓内无覆盖 | 3.2 复核 | 探针证明可达且正确；5.1 装配真实 `stages` 时会走到 |
+| D24 | `analysis-contracts` 的 Purpose 仍是 P1 口径；`query-api` 仍称 P2 会处理 `references_definition` | P1/P2 记录 | **5.4 归档前必修**：同步 Purpose，并把 `query-api` 的那句改成与实现一致 |
 ## P2 验收映射现状（滚动更新）
 
 按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
