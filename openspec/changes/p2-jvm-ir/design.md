@@ -114,14 +114,16 @@ P2 实际只产生 `representation=Bytecode`、`syntax_status=NotJava`、`compil
 
 ### 模块与依赖方向
 
-| 文件 | 内容 | 依赖 |
+| 文件 | 内容 | 依赖（实际 import；禁止项见下） |
 | --- | --- | --- |
-| `src/model.rs` | `OriginSet`/`OriginMember`（共享身份层，与 P1 把 `PhysicalDefinitionId` 加进 model 同一先例） | 无新增依赖 |
-| `src/environment.rs`（新） | 运行环境绑定、provider 声明、环境身份与环境问题码 | `view`、`model`、`budget`、`error` |
-| `src/resolver.rs`（新） | 解析请求/报告、声明引用查询请求/报告 | 上述 + `query::{ConsumerKind, ConsumerSchema, XrefOperation}` 词汇表 |
-| `src/ir.rs`（新） | 方法分析请求/报告、阶段与产物状态 | `environment`、`model`、`budget`、`error` |
+| `src/model.rs` | `OriginSet`/`OriginMember`（共享身份层，与 P1 把 `PhysicalDefinitionId` 加进 model 同一先例） | 既有 `model` 内部依赖，无新增边 |
+| `src/environment.rs`（新） | 运行环境绑定、provider 声明、环境身份与环境问题码 | `artifact`、`error`、`model`、`view` |
+| `src/resolver.rs`（新） | 解析请求/报告、声明引用查询请求/报告 | 上述 + `budget` + `query::{ConsumerKind, ConsumerSchema, XrefOperation}` 词汇表 |
+| `src/ir.rs`（新） | 方法分析请求/报告、阶段与产物状态 | `artifact`、`budget`、`environment`、`classfile`（`VerificationStatus`）、`error`、`model`、`view` |
 | `src/engine.rs` | 三个薄委托入口 | 上述 |
-| `src/query.rs`、`src/xref/**` | **不得**引用 `environment`/`resolver`/`ir`（A17：physical X0/X1 不启动 resolver/IR） | — |
+| `src/query.rs`、`src/xref/**` | **不得**引用 `environment`/`resolver`/`ir`，也不得经 crate 根 re-export 的路径引用 P2 类型（A17：physical X0/X1 不启动 resolver/IR） | — |
+
+1.1 允许的 additive 公共项（不是新类型，故不再单列契约）：`validate_environment`、`EnvironmentProblemCode::{ALL, as_str}`、`ReferenceUse::matches_symbol`、`AnalysisStage::ALL`、`OriginSet::{insert, is_empty}`、`Coverage::not_requested`、`CountedBudgetDimension::ALL`、`Limits::counted_limit`、`UsageSnapshot::counted_usage`。任何 `ALL` 列表必须配一个测试期穷尽 `match`，使“新增 variant 漏加 ALL”编译失败（1.3 的零计费断言依赖它）。
 
 类型级依赖 `resolver → query` 只借用词汇表；反向依赖（`query`/`xref` 引用 P2 模块）被禁止，且由源码级守卫测试检查。
 
@@ -131,7 +133,8 @@ P2 实际只产生 `representation=Bytecode`、`syntax_status=NotJava`、`compil
 - **可读内容由入口提供的不可变 snapshot 给出**：`LoadRoot::Snapshot{snapshot}` / `ArtifactTree` 的字节按 `SnapshotId` 在入口参数 `content` 中匹配；匹配不到 → `ContentNotProvided`，不猜测、不联网、不用宿主 classpath。
 - **provider 是命名声明**：`HeaderProvider.roots` 的每个 root 必须等于某个参与 domain 的 `roots` 条目（等值校验），否则 `ProviderRootUnbound`；选择依据以 loader + root 序号 + provider id 记录。
 - **`LoadRoot::External{id}` 只表示"声明但不可读"**：使相关解析为 `Missing` 或未决，绝不当作可读定义或扁平 root 列表。
-- **调用方 domain 唯一**：`runtime.load_domain` 必须在 `domains` 中有且仅有一个 loader 相等的条目，且两者全等；否则 `DuplicateLoader` / `CallerDomainMismatch`。
+- **调用方 domain 唯一**：`runtime.load_domain` 必须在 `domains` 中有且仅有一个 loader 相等的条目，且两者全等；缺失或重复都记 `DuplicateLoader`（message 区分两种），不全等记 `CallerDomainMismatch`。
+- **校验范围就是 domain 表**：`runtime.load_domain` 自身没有全等条目时只报上述问题，不再校验它自己的 roots/policy（1.1 有意如此；2.1 若把它当作唯一拒绝入口须扩展）。`RuntimeProfile` 的 profile 能力（release/multi-release/layout）与 `LoadDomain` 的 `external_override`/`runtime_transformation` 判定归 2.x，1.1 不报 `UnsupportedPolicy`。`ProviderId` 允许重复（1.1 无唯一性规则）。
 - **不去重合并同内容不同绑定**：去重键是 (物理定义, loader)；同一 snapshot 被多个 loader 引用时分别处理。
 
 ### 类型骨架
@@ -245,12 +248,18 @@ pub enum AnalysisStage {                 // 声明顺序即固定 phase 顺序
 pub enum StageState { NotRequested, NotPerformed, Completed, Partial, Failed { code: String } }
 pub struct StageResult { pub stage: AnalysisStage, pub state: StageState }
 pub enum Representation { Bytecode }     // P2 只产生 Bytecode；Java/Mixed 属 P3
-pub enum Quality { Conservative, Fallback }              // 判定规则在 3.5/5.1 落地前必须在此钉死
+pub enum Quality { Conservative, Fallback }              // 判定规则在 3.5/5.1 落地前必须在此钉死；
+                                        // analysis=NotPerformed 时无产物，取 Fallback 只表示非 Conservative，
+                                        // 不得据此推断做过降级恢复
 pub enum SyntaxStatus { NotJava }
 pub enum CompileStatus { NotAttempted }
 pub enum SemanticValidation { LocalInvariants, FixtureDifferential, Unproven }  // 报告记录最强适用证据
 pub enum NoBodyKind { Abstract, Native }
-pub enum MethodBodyState { Present, DeclaredWithoutBody { kind: NoBodyKind } }
+pub enum MethodBodyState {
+    NotInspected,                                  // 尚未定位/读取 Body（本切片即此状态）
+    Present,
+    DeclaredWithoutBody { no_body_kind: NoBodyKind },   // 内部 tag 与字段不得同名，见不变量 7
+}
 pub struct MethodAnalysisRequest {
     pub environment: ResolutionEnvironment,
     pub method: PhysicalMethodId,
@@ -288,16 +297,18 @@ pub enum OriginMember {
 ### 必须保持的不变量
 
 1. 解析与方法分析只能在显式绑定 `ResolutionEnvironment` 且入口提供 `content` 时启动；P1 physical X0/X1 没有这些字段，因此永不启动 resolver/IR，也不隐式采用宿主 classpath（A17）。
-2. 环境校验失败不产生唯一解析结果：domain 唯一性、父可解析、parent 无环、caller domain 全等、provider root 归属于某 domain、内容可提供、未支持 policy 与不可读 `External` 各给 `EnvironmentProblem` + 同 code 诊断，并保留原始符号与未完成范围。
+2. 环境校验失败不产生唯一解析结果：domain 唯一性、父可解析、parent 无环、caller domain 全等、provider root 归属于某 domain、内容可提供、未支持 policy 与不可读 `External` 各给 `EnvironmentProblem` + 同 code 诊断（环境诊断按问题顺序排在能力码诊断之前、severity 为 `Error`），并保留原始符号与未完成范围。
 3. 平面分离：`analysis`（能力是否运行）、`state`（语义判定）、`coverage`（范围）、`execution`（终止）、产物状态（representation/quality/syntax_status/compile_status/semantic_validation/verification）互不推断；语义状态集不含 `NotPerformed`，取消由 `execution = Cancelled` + `state = None` 表达，预算停止用 `state = BudgetExceeded` 并同时进 execution。
 4. `OriginSet` 只锚定物理 class/method 与 class offset/BCI；`MethodPoint` 与 `Location::Code` 同义但独立类型，不使用有口径债务的 `Location::Entry.span` 作为 Code 坐标；规范化产生一对多 origin 时保留全部原始 BCI。
 5. 一个请求共享一个 `Budget` 生命周期；计费先于分配/排队/加边/克隆；fallback 不 reset、不重读完整 Body；`DependencyDepth` 与容器 `NestedDepth` 相互独立。
 6. 未实现、不支持、缺失依赖、预算停止、取消与输入损坏分别用 `analysis`/`state`/`environment_problems`/`diagnostics`/`execution` 表达；不得 panic、返回空结果或伪造唯一解析。
-7. serde：unit-only 枚举 → snake_case 字符串；带载荷枚举 → `tag = "kind"`；请求/身份/成员类型加 `deny_unknown_fields`（与 P1 一致）。
-8. `max_items` 截断与 P1 页限同一映射（coverage `Partial`、execution 仍 `Complete`、`has_more = true`），但不复用 P1 游标、不承诺续页等价。
-9. P2 的公共 IR 面是状态、覆盖与诊断；IR 载荷（raw facts/CFG/Frame/SSA 值）在 P2 保持 crate-private，5.1 若需要公开计数会先在本节加类型。
-10. `Engine::query` 的关系语义在 P2 不变：`references_definition`/`may_dispatch_to` 仍返回 `UnsupportedAnalysis`。把它们接到 resolver 需要先改 `query-api` 主规格与 `QueryResolution`，不属 P2 默认范围。
-11. P2 的 fuzz/性质不变量不得照抄 P1 的蕴含式（P1 要求 `CompleteWithinSchema ⇒ execution Complete ∧ skipped 空`）；P2 允许"bytecode 覆盖完整 + 某 IR 阶段 `NotPerformed`/`Failed`"，5.3 必须按各平面分别断言。
+7. serde：unit-only 枚举 → snake_case 字符串；带载荷枚举 → `tag = "kind"`；请求/身份/成员类型加 `deny_unknown_fields`（与 P1 一致）。两处已核实的例外：`MethodBodyState::DeclaredWithoutBody` 的内部 tag 与载荷字段不得同名，线格式固定为 `{"kind":"declared_without_body","no_body_kind":"abstract|native"}`；`EnvironmentSubject` 用外部标记（`{"loader":…}` / `{"provider":…}` / `{"root":{"loader":…,"index":…}}` / `{"symbol":{…}}`），因为 `tag = "kind"` 无法序列化字符串载荷的 newtype variant。带载荷枚举一律**不加** `deny_unknown_fields`（与 `model` 的既有枚举一致）；`{"kind":"declared_without_body","kind":"native"}` 被拒是 serde 的重复字段错误，与此无关。
+8. `MethodBodyState` 只描述 Body 是否被定位/读取：未读（含预算/取消/未到该阶段）一律 `NotInspected`；Body 已读取则为 `Present` 或 `DeclaredWithoutBody{..}`，此后阶段未请求或未完成只由 `stages`/`analysis` 表达，不改变 `body`。`representation`/`syntax_status`/`compile_status`/`verification` 是本阶段的能力基线，不是"已完成"的声明：是否运行由 `analysis`/`stages` 表达，因此 `body = NotInspected` 与 `representation = Bytecode` 可以并存。
+9. `MethodAnalysisReport.loader` 是**调用方运行 domain 的 loader**（方法定义所在 loader 属解析结果，不由该字段声称）；`MethodAnalysisReport` 没有 `analysis` 字段，能力是否运行只由 `stages` 表达；`stages` 只列**已调度**阶段，未调度阶段不产生 `NotRequested` 条目（1.1 中 `StageState::NotRequested` 不可达）。
+10. `max_items` 截断与 P1 页限同一映射（coverage `Partial`、execution 仍 `Complete`、`has_more = true`），但不复用 P1 游标、不承诺续页等价。
+11. P2 的公共 IR 面是状态、覆盖与诊断；IR 载荷（raw facts/CFG/Frame/SSA 值）在 P2 保持 crate-private，5.1 若需要公开计数会先在本节加类型。
+12. `Engine::query` 的关系语义在 P2 不变：`references_definition`/`may_dispatch_to` 仍返回 `UnsupportedAnalysis`。把它们接到 resolver 需要先改 `query-api` 主规格与 `QueryResolution`，不属 P2 默认范围。
+13. P2 的 fuzz/性质不变量不得照抄 P1 的蕴含式（P1 要求 `CompleteWithinSchema ⇒ execution Complete ∧ skipped 空`）；P2 允许"bytecode 覆盖完整 + 某 IR 阶段 `NotPerformed`/`Failed`"，5.3 必须按各平面分别断言。
 
 ### 1.1 的入口与诚实不可用状态
 
@@ -313,7 +324,9 @@ impl Engine {
 
 - 请求级失配返回 `Err(Error::invalid_input(..))`：`resolution_snapshot_mismatch`（`runtime.physical.snapshot` 不在 `content` 中）、`resolution_target_use_mismatch`（`SymbolRef` 与 `ReferenceUse` 不自洽，例如 `ClassReference` 配方法符号）、`analysis_no_stages`（空 `stages`）。**环境问题不是 `Err`**，它们进 `environment_problems` 与报告。
 - 1.1 对合法请求的诚实状态：`analysis = NotPerformed`、`state = None`（解析）或 `stages` 全 `NotPerformed`（分析）、`execution = Failed { reason: Unsupported { code: "resolution_not_implemented" / "method_analysis_not_implemented" } }` + 同 code 诊断、三维 `coverage = NotRequested`、所有 counted 维度 usage 为 0（`elapsed_millis` 除外）。code 用能力名，2.x/3.x 落地后消失，相关测试随之退役。
-- A17 的可证伪检查：源码级守卫测试断言 `src/query.rs` 与 `src/xref/**` 不含 `crate::environment`/`crate::resolver`/`crate::ir` 记号；5.2 以构造计数补强。
+- 1.1 的三个入口**不轮询 Budget**（不启动任何工作），因此预先取消的 token 也会返回 `Failed{Unsupported{…}}` 而不是 `Cancelled`；`Cancelled` 语义从 2.x 起才有承载者，5.3 的性质不得对 1.1 写“取消 ⇒ Cancelled”的蕴含式。
+- A17 的可证伪检查：源码级守卫测试断言 `src/query.rs` 与 `src/xref/**`（目录枚举，含新增文件）不含 `crate::environment`/`crate::resolver`/`crate::ir` 记号，也不含经 crate 根 re-export 的 P2 类型名；匹配前归一化 `::` 两侧空白；P2 类型名单必须由 `src/environment.rs`/`resolver.rs`/`ir.rs` 的公开类型**推导并自证完整**（漏一个就失败），而不是手写清单。该守卫是 token 级近似（注释里复述不变量也会命中；别名、raw identifier、`#[path]` 包含等拼写层面不保证覆盖），A17 的构造级证据由 5.2 的构造计数补强。
+- 1.1 的正例只证明各平面**可以分别取值**（同一报告里各取不同值、互不推断），不证明跨取值组合的语义；跨取值由 5.x 的阶段结果补强。
 
 ### 1.3 负责的预算维度（名字固定，字段由 1.3 加入）
 
@@ -343,4 +356,4 @@ P2 本轮只修改规划与过时的 OpenSpec 阶段上下文，不新增 P2 代
 
 重复 unit/Code 物化和 Type-only 二次解码继续归 P5；has_more=true/cursor=null、record descriptor 类别、Entry.span、MR/tree aggregate 优先级和冗余 allow 等分别维护，不顺便清理。P2 通过直接 Header、显式停止状态和 class/BCI origin 避开这些依赖；实际受阻再以最小独立 change 修正，不能悄悄改变 query 契约。
 
-`query-api` 主规格写的"`references_definition` 由 P2 的 resolver 处理"在本阶段不兑现：P2 只提供独立的、显式运行环境的解析与声明引用入口，`Engine::query` 的关系语义保持 `UnsupportedAnalysis`（不变量 10）。把 query 接线到 resolver 需要先改该主规格与 `QueryResolution`，属独立变更，不在 P2 的 20 项任务内。P2 归档时只同步本 change 的三份 capability spec，不修改 `query-api` 的既有措辞。
+`query-api` 主规格写的"`references_definition` 由 P2 的 resolver 处理"在本阶段不兑现：P2 只提供独立的、显式运行环境的解析与声明引用入口，`Engine::query` 的关系语义保持 `UnsupportedAnalysis`（不变量 12）。把 query 接线到 resolver 需要先改该主规格与 `QueryResolution`，属独立变更，不在 P2 的 20 项任务内。P2 归档时只同步本 change 的三份 capability spec，不修改 `query-api` 的既有措辞。
