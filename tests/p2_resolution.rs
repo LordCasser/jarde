@@ -1377,7 +1377,11 @@ fn unreadable_and_unprovided_roots_are_problems_not_positions() {
 }
 
 #[test]
-fn a_dispatch_request_is_named_as_unperformed_while_the_lookup_still_runs() {
+fn a_dispatch_request_over_a_class_symbol_names_the_missing_member_declaration() {
+    // 2.5 enumerates the known overrides of a *resolved member declaration*. A class symbol is a
+    // type, not a member declaration, so the lookup still runs and still resolves the class, and
+    // the requested range is answered with no dispatch at all plus the diagnostic that says why
+    // — never with an empty candidate list that would read as "nothing overrides it".
     let (fixture, environment) = ordered_roots(DelegationPolicy::ParentFirst);
     let mut request = class_request(environment, &loader("app"), b"p/S");
     request.dispatch = Some(DispatchScope {
@@ -1389,11 +1393,11 @@ fn a_dispatch_request_is_named_as_unperformed_while_the_lookup_still_runs() {
     assert_eq!(report.state, Some(ResolutionState::Resolved));
     assert!(
         report.dispatch.is_none(),
-        "an unperformed candidate enumeration must not look like an empty one"
+        "a range no member declaration resolved must not look like an empty one"
     );
     assert_eq!(
         diagnostic_codes(&report.diagnostics),
-        vec!["dispatch_not_implemented"]
+        vec!["resolution_dispatch_no_declaration"]
     );
     assert_eq!(
         report.diagnostics[0].severity,

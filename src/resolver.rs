@@ -5,17 +5,19 @@
 //! bytes; nothing here normalizes an owner, name or descriptor.
 //!
 //! This module owns the request/report shape and maps a performed lookup into it.
-//! [`validate_request`] checks the request shape, [`resolution_report`] answers one request:
-//! a class symbol in an environment the validator accepted is looked up for real by the
-//! 2.2 closure over [`crate::providers`], every header that lookup really read is published as
-//! a [`HeaderRead`], every other request keeps the honest unavailable state of the schema
-//! slice (`NotPerformed` / `state = None` / `Failed { Unsupported }`), and no report ever
-//! claims a result the closure did not produce.
+//! [`validate_request`] checks the request shape, [`resolution_report`] answers one request: a
+//! class symbol in an environment the validator accepted is looked up for real by the 2.2
+//! closure over [`crate::providers`], a member symbol is resolved by the 2.3 rules over
+//! [`crate::members`], a request that asks for dispatch candidates runs the 2.5 plane over
+//! [`crate::dispatch`] once its declaration resolved, every header the request really read is
+//! published as a [`HeaderRead`], and a request no slice can perform keeps the honest
+//! unavailable state (`NotPerformed` / `state = None` / `Failed { Unsupported }`) instead of
+//! claiming a result the closure did not produce.
 //!
-//! Two capability codes still name what this engine slice does not do: a member symbol reports
-//! `resolution_not_implemented` (2.3 implements it) and a request that also asks for dispatch
-//! candidates reports `dispatch_not_implemented` as a warning (2.5 implements it). Both disappear
-//! with the capability they name.
+//! One capability code still names what no slice implements: a request whose environment the
+//! validator rejected reports `resolution_not_implemented`, because a rejected environment never
+//! yields a definition and no search may start from it. It disappears only when a slice decides
+//! what a rejected environment can honestly answer.
 //!
 //! The module borrows vocabulary from `query` ([`ConsumerKind`], [`ConsumerSchema`],
 //! [`XrefOperation`]) and never the other way round: `query` and `xref` must not know that
@@ -23,6 +25,7 @@
 
 use crate::artifact::{ArtifactSnapshot, budget_dimension_code};
 use crate::budget::{Budget, CountedBudgetDimension, UsageSnapshot};
+use crate::dispatch::{self, DeclarationShape, DispatchEvidence, DispatchOutcome, DispatchStop};
 use crate::environment::{
     CallerContext, EnvironmentIdentity, EnvironmentProblem, ResolutionEnvironment,
     environment_diagnostics, require_content_snapshot, unavailable_diagnostic,
@@ -42,17 +45,18 @@ use serde::{Deserialize, Serialize};
 
 /// Capability name of the resolution entry points while they are not implemented.
 ///
-/// It survives the member slice (2.3) as the honest state of a request whose environment the
-/// validator rejected, and the declaration-query slice (2.4) as the state of a declaration
-/// this query states no candidate rule for: a rejected environment never yields a definition,
-/// so no lookup starts, and a class symbol is not a member declaration.
+/// It survives the member slice (2.3), the declaration-query slice (2.4) and the dispatch slice
+/// (2.5) as the honest state of a request whose environment the validator rejected, and as the
+/// state of a declaration a query states no candidate rule for: a rejected environment never
+/// yields a definition, so no lookup starts, and a class symbol is not a member declaration.
 pub(crate) const RESOLUTION_NOT_IMPLEMENTED: &str = "resolution_not_implemented";
 
-/// Capability name of the dispatch-candidate enumeration this slice does not perform.
+/// Diagnostic code of a dispatch request whose declaration did not resolve.
 ///
-/// Reported as a warning next to a performed declaration lookup, and replaced by the real
-/// `DispatchReport` in 2.5.
-const DISPATCH_NOT_IMPLEMENTED: &str = "dispatch_not_implemented";
+/// A warning next to the resolution that really ran: the request asked for known candidates
+/// inside a range, and a range without a resolved member declaration has nothing to enumerate
+/// overrides of, so `dispatch` stays absent instead of looking like an empty candidate list.
+const DISPATCH_NO_DECLARATION: &str = "resolution_dispatch_no_declaration";
 
 /// Access or invocation kind of a reference: the input of the resolution rules.
 ///
@@ -91,6 +95,12 @@ impl ReferenceUse {
 }
 
 /// Explicit physical range of a known-candidate dispatch request.
+///
+/// The range is the P1 scope vocabulary (`SnapshotAll` or a tree root), and `consumers` is the
+/// structural-consumer schema a later refinement would read use sites with. The CHA-lite plane
+/// of 2.5 enumerates class headers only, so it reads no consumer fact and consumes no consumer
+/// byte: the field stays part of the request schema the design fixed for the whole dispatch
+/// capability.
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct DispatchScope {
@@ -190,7 +200,18 @@ pub struct HeaderRead {
     pub reason: ReadReason,
 }
 
-/// Why a candidate cannot be proven to be the only runtime target.
+/// Why one known candidate stands under an open world.
+///
+/// The variants are the facts the range itself states, never a verdict about the candidate:
+/// [`OpenWorldEvidence::ExternalSubclass`] and [`OpenWorldEvidence::UnknownLoader`] name
+/// content and loaders the request cannot see, [`OpenWorldEvidence::RuntimeTransformation`]
+/// names a runtime the snapshot does not prove, [`OpenWorldEvidence::MissingDependency`] names
+/// an unread supertype of that candidate's own closure, and
+/// [`OpenWorldEvidence::OrderedRoot`] names the declared root position the candidate's own
+/// lookup was decided at — past the first position, which means this loader's ordered roots
+/// really hold more than one position for the name's layer, so the same layer may hold another
+/// definition. A candidate decided at the very first position states nothing of that kind, and
+/// a candidate the plane can state completely carries no evidence at all.
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum OpenWorldEvidence {
@@ -201,14 +222,29 @@ pub enum OpenWorldEvidence {
     OrderedRoot { index: u32 },
 }
 
+/// One known candidate of a dispatch request.
+///
+/// The member is the candidate class's own declaration of the resolved member (its owner is that
+/// class's internal name), and `evidence` is the open-world fact the candidate stands under:
+/// `None` when the plane can state the candidate completely, which is what lets a complete range
+/// answer `open_world = false`. There is deliberately no field that names one runtime target —
+/// a single candidate is one known candidate, never a proven target.
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct DispatchCandidate {
     pub member: ResolvedMemberRef,
-    pub evidence: OpenWorldEvidence,
+    pub evidence: Option<OpenWorldEvidence>,
 }
 
 /// Known candidates of an explicitly scoped dispatch request.
+///
+/// Present exactly when the request asked for a range and its member declaration resolved. The
+/// plane answers "which overrides or implementations of this declaration exist inside this
+/// range", so `candidates` may hold one entry or several and `open_world` says whether the plane
+/// can state the range completely: it is true as soon as one candidate stands under an
+/// open-world fact, as soon as the range holds a position this request could not decide, and as
+/// soon as the plane stopped. There is no "unique target" field to read instead — a caller
+/// decides for itself from `candidates` and the evidence.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct DispatchReport {
@@ -319,6 +355,11 @@ pub struct DeclarationRefReport {
 }
 
 /// Request-level checks of a resolution request: shape only, no artifact access.
+///
+/// A dispatch range is checked the way the P1 query and the declaration query check their own
+/// scope: the only root a fresh snapshot establishes is its own root container, so a range that
+/// names another one cannot describe this snapshot and is refused instead of being silently
+/// ignored (2.3's scope rule, applied to the dispatch plane).
 pub(crate) fn validate_request(
     content: &[ArtifactSnapshot],
     request: &ResolutionRequest,
@@ -333,6 +374,15 @@ pub(crate) fn validate_request(
                 request.use_kind,
                 symbol_kind(&request.target)
             ),
+        ));
+    }
+    if let Some(dispatch) = &request.dispatch
+        && let PhysicalScope::ArtifactTree { root_container } = &dispatch.scope
+        && root_container.0 != "root"
+    {
+        return Err(Error::invalid_input(
+            "query_artifact_tree_root_mismatch",
+            "dispatch scope tree root does not match the snapshot root container",
         ));
     }
     Ok(())
@@ -396,6 +446,11 @@ pub(crate) fn resolution_report(
             RESOLUTION_NOT_IMPLEMENTED,
             "demand-bound symbol resolution",
         ));
+        // A dispatch report would claim a performed candidate enumeration, and this request
+        // performed nothing at all, so the requested range is named and no dispatch is claimed.
+        if request.dispatch.is_some() {
+            diagnostics.push(dispatch_no_declaration_diagnostic());
+        }
         return ResolutionReport {
             environment_identity,
             environment_problems: problems,
@@ -406,8 +461,6 @@ pub(crate) fn resolution_report(
             state: None,
             resolved: None,
             candidates: Vec::new(),
-            // A dispatch report would claim a performed candidate enumeration, so a request
-            // whose declaration was not resolved reports no dispatch at all.
             dispatch: None,
             // Nothing was demanded, so nothing was read.
             reads: Vec::new(),
@@ -422,19 +475,15 @@ pub(crate) fn resolution_report(
         };
     };
 
-    // `dispatch = Some(..)` also asks for `KnownCandidates` inside one explicit scope. This
-    // slice resolves the declaration only, so the request is not answered in silence: the
-    // report names the capability that did not run and claims no candidate.
-    if request.dispatch.is_some() {
-        diagnostics.push(dispatch_not_implemented_diagnostic());
-    }
     let mut closure = HeaderClosure::new(content, &request.environment);
-    let (analysis, state, resolved, candidates, coverage, execution) = match performable {
+    // A refused charge during the publication of a resolution result: the entries already
+    // published stay, and the stop is the execution the report has to name. It is recorded at
+    // the phase that refused (2.3's rule diagnostics or the closure's own diagnostics), so the
+    // earliest stop keeps governing `execution`.
+    let mut rule_stop: Option<ExecutionReport> = None;
+    let (analysis, state, resolved, candidates, concluded, covered, execution) = match performable {
         Performable::Class(name) => {
             let answer = closure.demand(&name.0, HeaderDemand::RequestedDefinition, budget);
-            let extent = answer
-                .searched
-                .expect("the first demand of a fresh closure performs the search it answers");
             let concluded = answer.decision.is_ok();
             let usage = budget.usage();
             match answer.decision {
@@ -455,14 +504,13 @@ pub(crate) fn resolution_report(
                             resolved_class(&location.loader, &location.definition, &request.target)
                         })
                         .collect();
-                    let coverage =
-                        search_coverage(extent.examined, extent.positions, concluded, true);
                     (
                         ResolutionAnalysis::Performed,
                         Some(state),
                         resolved,
                         candidates,
-                        coverage,
+                        concluded,
+                        true,
                         ExecutionReport::Complete { usage },
                     )
                 }
@@ -477,14 +525,13 @@ pub(crate) fn resolution_report(
                     let state = matches!(error, Error::BudgetExceeded { .. })
                         .then_some(ResolutionState::BudgetExceeded);
                     diagnostics.push(diagnostic);
-                    let coverage =
-                        search_coverage(extent.examined, extent.positions, concluded, true);
                     (
                         ResolutionAnalysis::Performed,
                         state,
                         None,
                         Vec::new(),
-                        coverage,
+                        concluded,
+                        true,
                         execution,
                     )
                 }
@@ -498,13 +545,27 @@ pub(crate) fn resolution_report(
                 &request.caller,
                 budget,
             );
-            let extent = closure.searched_extent();
             let usage = budget.usage();
             match outcome {
                 Ok(outcome) => {
                     let (state, resolved, candidates) =
                         member_planes(&outcome.decision, &request.target);
-                    diagnostics.extend(outcome.diagnostics);
+                    // Every rule diagnostic 2.3 produced is a resolution result like any other
+                    // entry of the report, so it costs one `ResultItems` before it is published
+                    // (the same discipline the declaration-reference query applies to its own
+                    // rule diagnostics). A refused charge keeps the diagnostics already
+                    // published and ends the request's publication, which is why the stop it
+                    // leaves behind is handed back uncharged.
+                    for rule in outcome.diagnostics {
+                        match charge_and_publish(rule, &mut diagnostics, budget) {
+                            None => {}
+                            Some(stop) => {
+                                push_stop_diagnostic(&mut diagnostics, stop.diagnostic);
+                                rule_stop = Some(stop.execution);
+                                break;
+                            }
+                        }
+                    }
                     // An owner kind this slice does not resolve covers no range of the requested
                     // resolution, so the plane is partial even though the decision itself is
                     // complete: the request asked for a range that was never searched.
@@ -515,7 +576,8 @@ pub(crate) fn resolution_report(
                         Some(state),
                         resolved,
                         candidates,
-                        search_coverage(extent.examined, extent.positions, true, covered),
+                        true,
+                        covered,
                         ExecutionReport::Complete { usage },
                     )
                 }
@@ -529,17 +591,98 @@ pub(crate) fn resolution_report(
                         state,
                         None,
                         Vec::new(),
-                        search_coverage(extent.examined, extent.positions, false, false),
+                        false,
+                        false,
                         execution,
                     )
                 }
             }
         }
     };
+    // The 2.5 dispatch plane runs only over a declaration that really resolved: a candidate is an
+    // override of a resolved member declaration, so a class symbol, a rejected environment and
+    // every non-`Resolved` state publish no dispatch at all instead of an empty candidate list.
+    // A request whose publication already stopped starts no plane either: the stop ended the
+    // report, and a range this request could not pay for is not a range it searched — `dispatch`
+    // stays absent, exactly like a request that stopped before the plane, and the stop explains
+    // why.
+    let mut dispatch = None;
+    let mut dispatch_incomplete = false;
+    let mut dispatch_execution = None;
+    let mut dispatch_search_stopped = false;
+    match (
+        request.dispatch.as_ref().filter(|_| rule_stop.is_none()),
+        state,
+        resolved.as_ref(),
+    ) {
+        (Some(scope), Some(ResolutionState::Resolved), Some(declaration)) => {
+            match declaration_shape(declaration) {
+                Some(shape) => {
+                    let outcome = dispatch::dispatch_candidates(
+                        content,
+                        &request.environment,
+                        &mut closure,
+                        &scope.scope,
+                        &shape,
+                        budget,
+                    );
+                    // The open-world answer is the plane's own field: the plane sets it when it
+                    // stopped, so a test that observes `open_world` after a stop observes the
+                    // plane's rule and not a second copy of it in this layer.
+                    dispatch_execution =
+                        publish_dispatch(&outcome, &mut diagnostics, budget.usage());
+                    dispatch_search_stopped = outcome
+                        .stop
+                        .as_ref()
+                        .is_some_and(DispatchStop::ended_a_search);
+                    dispatch_incomplete = outcome.stop.is_some()
+                        || outcome.undecided_positions
+                        || outcome.unread_branches;
+                    dispatch = Some(DispatchReport {
+                        scope: scope.scope.clone(),
+                        candidates: outcome.candidates.iter().map(dispatch_candidate).collect(),
+                        open_world: outcome.open_world,
+                    });
+                }
+                // A class symbol is a type, not a member declaration: the candidate rules 2.5
+                // states are member rules, so the range is named and no candidate is claimed.
+                None => diagnostics.push(dispatch_no_declaration_diagnostic()),
+            }
+        }
+        (Some(_), _, _) => diagnostics.push(dispatch_no_declaration_diagnostic()),
+        (None, _, _) => {}
+    }
     // The closure's own diagnostics belong to this report: a refused cyclic hierarchy names
     // the classes and loader it refused, and dropping it would hide the reason a closure is
     // short.
-    diagnostics.extend(closure.diagnostics().iter().cloned());
+    let mut closure_stop: Option<ExecutionReport> = None;
+    for diagnostic in closure.diagnostics().to_vec() {
+        match charge_and_publish(diagnostic, &mut diagnostics, budget) {
+            None => {}
+            Some(stop) => {
+                push_stop_diagnostic(&mut diagnostics, stop.diagnostic);
+                closure_stop = Some(stop.execution);
+                break;
+            }
+        }
+    }
+    // Coverage is published after every search this request ran, so a dispatch range's lookups
+    // are part of the same plane's sum. An undecided or stopped range is a prefix of the range
+    // the request asked for, which is partial however the declaration itself was decided — and
+    // so is a range whose publication stopped: the answer is a prefix of what the plane found.
+    //
+    // `concluded` is the search's own statement, and only a stop that ended a *search* revokes
+    // it (see [`DispatchStop::ended_a_search`]): the searches that ran before a refused
+    // `ResultItems` charge reached their own conclusions, so their remaining declared positions
+    // are not unsearched range, and a skipped range would claim a search this request never
+    // left unfinished.
+    let extent = closure.searched_extent();
+    let coverage = search_coverage(
+        extent.examined,
+        extent.positions,
+        concluded && !dispatch_search_stopped,
+        covered && !dispatch_incomplete && rule_stop.is_none() && closure_stop.is_none(),
+    );
     ResolutionReport {
         environment_identity,
         environment_problems: problems,
@@ -550,11 +693,104 @@ pub(crate) fn resolution_report(
         state,
         resolved,
         candidates,
-        dispatch: None,
+        dispatch,
         reads: published_reads(&closure),
         coverage,
-        execution,
+        // The usage snapshot of the whole request: the dispatch range's own reads and published
+        // candidates happened after the resolution built its execution, so the report publishes
+        // the final usage under whatever execution the request ended with. The earliest stop
+        // governs: a refused rule diagnostic, then a plane that stopped searching, then the
+        // closure diagnostics a refused charge kept out of the report.
+        execution: with_usage(
+            rule_stop
+                .or(dispatch_execution)
+                .or(closure_stop)
+                .unwrap_or(execution),
+            budget.usage(),
+        ),
         diagnostics,
+    }
+}
+
+/// Publishes one dispatch outcome into the report's own planes.
+///
+/// The range's listing diagnostics and the stop explanation enter `diagnostics`; the returned
+/// execution is the one the report has to publish instead of the resolution's own, and it is
+/// present exactly when the plane stopped. The open-world answer is not answered here: the plane
+/// states it (including the fact a stop adds, because a stopped plane covers an unknown part of
+/// the range) and the report publishes the plane's own field, so the two can never disagree.
+fn publish_dispatch(
+    outcome: &DispatchOutcome,
+    diagnostics: &mut Vec<Diagnostic>,
+    usage: UsageSnapshot,
+) -> Option<ExecutionReport> {
+    diagnostics.extend(outcome.diagnostics.iter().cloned());
+    let stop = outcome.stop.as_ref()?;
+    Some(match stop {
+        // The listing's own execution already names its stop; only its usage snapshot is
+        // replaced, so the report's usage is the usage of the whole request.
+        DispatchStop::Truncated(execution) => with_usage(execution.clone(), usage),
+        DispatchStop::Refused(error) => {
+            let (execution, diagnostic) = terminal(error, usage);
+            diagnostics.push(diagnostic);
+            execution
+        }
+    })
+}
+
+/// The member shape a dispatch request enumerates overrides of.
+///
+/// A class symbol names a type, not a member declaration, so it has no shape: the candidate
+/// rules of 2.5 are member rules and there is nothing to compare a class against.
+fn declaration_shape(declaration: &ResolvedMemberRef) -> Option<DeclarationShape<'_>> {
+    match &declaration.member {
+        SymbolRef::Field {
+            owner,
+            name,
+            descriptor,
+        } => Some(DeclarationShape {
+            kind: crate::members::MemberKind::Field,
+            owner: &owner.0,
+            name: &name.0,
+            descriptor: &descriptor.0,
+        }),
+        SymbolRef::Method {
+            owner,
+            name,
+            descriptor,
+        } => Some(DeclarationShape {
+            kind: crate::members::MemberKind::Method,
+            owner: &owner.0,
+            name: &name.0,
+            descriptor: &descriptor.0,
+        }),
+        SymbolRef::Class { .. } => None,
+    }
+}
+
+/// One crate-private candidate as the report publishes it.
+fn dispatch_candidate(candidate: &dispatch::DispatchCandidate) -> DispatchCandidate {
+    DispatchCandidate {
+        member: ResolvedMemberRef {
+            loader: candidate.loader.clone(),
+            definition: candidate.definition.clone(),
+            member: candidate.member.clone(),
+        },
+        evidence: candidate.evidence.map(open_world_evidence),
+    }
+}
+
+/// The crate-private evidence vocabulary as the public one.
+///
+/// The mapping is exhaustive at the boundary that owns the public vocabulary, so an evidence
+/// kind added later fails to compile until it is mapped.
+fn open_world_evidence(evidence: DispatchEvidence) -> OpenWorldEvidence {
+    match evidence {
+        DispatchEvidence::ExternalSubclass => OpenWorldEvidence::ExternalSubclass,
+        DispatchEvidence::UnknownLoader => OpenWorldEvidence::UnknownLoader,
+        DispatchEvidence::RuntimeTransformation => OpenWorldEvidence::RuntimeTransformation,
+        DispatchEvidence::MissingDependency => OpenWorldEvidence::MissingDependency,
+        DispatchEvidence::OrderedRoot { index } => OpenWorldEvidence::OrderedRoot { index },
     }
 }
 
@@ -575,6 +811,7 @@ fn published_reads(closure: &HeaderClosure<'_>) -> Vec<HeaderRead> {
                 HeaderDemand::ParentChain => ReadReason::ParentChain,
                 HeaderDemand::HierarchyClosure => ReadReason::HierarchyClosure,
                 HeaderDemand::MemberOwner => ReadReason::MemberOwner,
+                HeaderDemand::DispatchScope => ReadReason::DispatchScope,
             },
         })
         .collect()
@@ -829,18 +1066,21 @@ fn terminal(error: &Error, usage: UsageSnapshot) -> (ExecutionReport, Diagnostic
     }
 }
 
-/// The diagnostic of a requested dispatch enumeration that this slice does not perform.
+/// The diagnostic of a dispatch request whose declaration did not resolve.
 ///
-/// Warning, not `Error`: the declaration lookup in the same request did run, so this diagnostic
-/// reports a requested range that was not covered rather than a rejected request. 2.5 replaces
-/// it with a real `DispatchReport` and the code disappears with the capability.
-fn dispatch_not_implemented_diagnostic() -> Diagnostic {
+/// Warning, not `Error`: the declaration resolution in the same request really ran, so this
+/// diagnostic names a range that was not enumerated rather than a rejected request. It covers
+/// every reason a dispatch plane cannot run — a rejected environment, a class symbol, a
+/// declaration the member rules decided otherwise, or a resolution that stopped — and no
+/// candidate is claimed with it.
+fn dispatch_no_declaration_diagnostic() -> Diagnostic {
     Diagnostic {
-        code: DISPATCH_NOT_IMPLEMENTED.to_string(),
+        code: DISPATCH_NO_DECLARATION.to_string(),
         severity: DiagnosticSeverity::Warning,
-        message: "the request also asks for known dispatch candidates inside an explicit scope; \
-                  this engine slice resolves the declaration only, so `dispatch` stays empty and \
-                  no runtime target is claimed"
+        message: "the request also asks for known dispatch candidates inside an explicit scope, \
+                  but no member declaration resolved: the dispatch plane enumerates the known \
+                  overrides and implementations of a resolved member declaration, so `dispatch` \
+                  stays absent and no runtime target is claimed"
             .to_string(),
         provenance: None,
     }

@@ -1435,7 +1435,10 @@ fn resolution_stops_a_member_request_at_its_first_budgeted_step() {
     // existed. 2.3 performs that resolution, so the same zero budget now reaches the member
     // rules and stops them at their first step: the stop *is* the semantic decision
     // (`BudgetExceeded`), the execution carries the same stop, and the request still reads no
-    // byte and records no read.
+    // byte and records no read. 2.5 enumerates the requested dispatch range only over a
+    // declaration that resolved, so the stop also leaves `dispatch` absent — named by
+    // `resolution_dispatch_no_declaration` after the stop that produced it — instead of
+    // publishing an empty candidate list.
     let fixture = fixture();
     let environment = healthy_environment(&fixture);
     let mut request = request(environment.clone());
@@ -1464,7 +1467,7 @@ fn resolution_stops_a_member_request_at_its_first_budgeted_step() {
     assert!(report.candidates.is_empty());
     assert!(
         report.dispatch.is_none(),
-        "an unperformed candidate enumeration must not look like an empty one"
+        "a range without a resolved declaration must not look like an empty one"
     );
     assert!(
         report.reads.is_empty(),
@@ -1485,8 +1488,12 @@ fn resolution_stops_a_member_request_at_its_first_budgeted_step() {
     assert_eq!(report.environment_problems, Vec::new());
     assert_eq!(
         diagnostic_codes(&report.diagnostics),
-        vec!["dispatch_not_implemented", "budget_exceeded_analysis_steps"],
-        "the requested capability is named first, then the stop that ended the resolution"
+        vec![
+            "budget_exceeded_analysis_steps",
+            "resolution_dispatch_no_declaration"
+        ],
+        "the stop that ended the resolution is published first, then the range that could not \
+         be enumerated over it"
     );
     assert!(matches!(
         report.execution,

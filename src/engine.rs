@@ -138,16 +138,20 @@ impl Engine {
 
     /// Demand-bound symbol resolution under an explicit environment (P2 entry point).
     ///
-    /// The request shape is checked first: a snapshot the content does not provide or a
-    /// target whose kind contradicts the reference use is an input error
-    /// (`resolution_snapshot_mismatch`, `resolution_target_use_mismatch`). Environment
+    /// The request shape is checked first: a snapshot the content does not provide, a target
+    /// whose kind contradicts the reference use, or a dispatch range whose tree root cannot
+    /// describe this snapshot is an input error (`resolution_snapshot_mismatch`,
+    /// `resolution_target_use_mismatch`, `query_artifact_tree_root_mismatch`). Environment
     /// problems are not an error; they are part of the report.
     ///
     /// A class symbol is looked up by name in the declared search order and the selected
-    /// definition is reported as `Resolved` / `Missing` / `Ambiguous` (2.1); a member symbol
-    /// keeps the honest unavailable state until the member slice implements it, and so does a
-    /// request whose environment the validator rejected, because a rejected environment never
-    /// yields a unique definition.
+    /// definition is reported as `Resolved` / `Missing` / `Ambiguous` (2.1); a member symbol is
+    /// resolved by the JVMS 5.4.3 member rules under the invocation-kind and access rules (2.3);
+    /// a request that also names a dispatch range (`request.dispatch`) enumerates the known
+    /// candidates of that range with their open-world evidence once its member declaration
+    /// resolved (2.5) — never a unique runtime target. A request whose environment the validator
+    /// rejected keeps the honest unavailable state, because a rejected environment never yields
+    /// a definition.
     pub fn resolve_symbol(
         &self,
         content: &[ArtifactSnapshot],

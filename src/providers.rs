@@ -282,6 +282,12 @@ pub(crate) enum HeaderDemand {
     /// name — the request carries it as a definition, and its name is what reading the header
     /// finds out — so [`HeaderClosure::read_definition`] serves it.
     MemberOwner,
+    /// One class of an explicitly scoped candidate enumeration (2.5).
+    ///
+    /// The enumeration names the classes the requested range covers — for the class itself and
+    /// as the starting point of its supertype walk — and every header it reads is one class of
+    /// that range.
+    DispatchScope,
 }
 
 /// One header this request read, with the demand that read it.
@@ -315,7 +321,11 @@ pub(crate) struct ClassResolution {
     pub(crate) lookup: HeaderLookup,
 }
 
-/// How far the effective order of one demand searched.
+/// How far class-name searches reached, in declared positions and examined ones.
+///
+/// It is the extent of one demand's own search where a caller reads it out of a
+/// [`HeaderSearch`], and the sum of every search a request really ran where
+/// [`HeaderClosure::searched_extent`] publishes it.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) struct SearchExtent {
     /// Positions examined to a decision.
@@ -329,10 +339,6 @@ pub(crate) struct SearchExtent {
 pub(crate) struct DemandAnswer {
     /// The class this demand decided, or the stop that ended it before deciding anything.
     pub(crate) decision: Result<ClassHandle>,
-    /// Extent of the effective order for the demand that really searched; `None` when the
-    /// request memo answered this demand instead of searching again. A stopped search still
-    /// reports its extent: the positions it examined and the ones it never reached.
-    pub(crate) searched: Option<SearchExtent>,
 }
 
 /// One request-scoped closure over class headers.
@@ -389,7 +395,8 @@ impl<'a> HeaderClosure<'a> {
     /// A key the request has not decided yet is searched by [`lookup_class_header`], the 2.1
     /// lookup; every header that search read is recorded under this demand's reason, including
     /// the headers read before a later position refused the search. A key the request already
-    /// decided is answered from the memo with the same handle and `searched = None`.
+    /// decided is answered from the memo with the same handle: no second search runs, so the
+    /// closure's own totals stay where the first search left them.
     pub(crate) fn demand(
         &mut self,
         name: &[u8],
@@ -400,17 +407,12 @@ impl<'a> HeaderClosure<'a> {
         if let Some(index) = self.remembered(&loader, name) {
             return DemandAnswer {
                 decision: Ok(ClassHandle(index)),
-                searched: None,
             };
         }
         let search = lookup_class_header(self.content, self.environment, name, budget);
         for location in &search.reads {
             self.record_read(&location.loader, &location.definition, demand);
         }
-        let searched = Some(SearchExtent {
-            examined: search.examined,
-            positions: search.positions,
-        });
         self.searched.0 = self.searched.0.saturating_add(u64::from(search.examined));
         self.searched.1 = self.searched.1.saturating_add(u64::from(search.positions));
         match search.lookup {
@@ -422,12 +424,10 @@ impl<'a> HeaderClosure<'a> {
                 });
                 DemandAnswer {
                     decision: Ok(ClassHandle(self.resolutions.len() - 1)),
-                    searched,
                 }
             }
             Err(error) => DemandAnswer {
                 decision: Err(error),
-                searched,
             },
         }
     }
@@ -2085,6 +2085,7 @@ mod tests {
             .demand(b"p/C", HeaderDemand::RequestedDefinition, &mut budget)
             .decision
             .expect("the fixture holds the name");
+        let searched = closure.searched_extent();
         let repeated = closure.demand(b"p/C", HeaderDemand::HierarchyClosure, &mut budget);
 
         assert_eq!(
@@ -2092,9 +2093,10 @@ mod tests {
             first,
             "one handle per (loader, internal name) key"
         );
-        assert!(
-            repeated.searched.is_none(),
-            "the memo answers without searching again"
+        assert_eq!(
+            closure.searched_extent(),
+            searched,
+            "the memo answers without searching again: no position is examined twice"
         );
         assert_eq!(budget.usage().class_headers, 1, "one read attempt in total");
         assert_eq!(
@@ -2672,9 +2674,10 @@ mod tests {
         // The same key asked again searches again on the fresh budget: a stop decided nothing,
         // so it must not be remembered as `Missing`, as an empty closure, or as a memo hit.
         let mut fresh = Budget::new(closure_limits());
+        let before = closure.searched_extent();
         let answer = closure.demand(b"p/S", HeaderDemand::RequestedDefinition, &mut fresh);
         assert!(
-            answer.searched.is_some(),
+            closure.searched_extent().positions > before.positions,
             "the second demand performed a search of its own instead of reading the stop out \
              of the memo"
         );
