@@ -1,1 +1,10 @@
 /target/
+/.atlas/
+.agents/skills/.openspec-target
+.DS_Store
+# Fuzz workspace build output and crash artifacts. The committed seeds under
+# `fuzz/corpus/` are the only corpus inputs that are tracked; a smoke run is
+# started against a scratch copy so new inputs never land in the repository.
+/fuzz/target/
+/fuzz/artifacts/
+/fuzz/coverage/
