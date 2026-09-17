@@ -554,6 +554,34 @@ pub struct HeaderRead {
 - 跨 loader：同一 owner 名在两个 loader 命中不同定义时，解析结果跟随 2.1 的选择（不合并）；
 - 每条正例同时断言 items/状态/诊断/`reads` 的 reason 集合（`HierarchyClosure` 出现）、`usage.class_headers` 与"不读无关 Body"（`usage.method_bodies == 0`）。
 
+## 2.4 契约：显式运行环境的声明引用查询（复用结构 consumer）
+
+2.4 交付"找出**解析到该声明**的全部真实 use-site"：不能按 `SymbolRef` 的 owner 精确筛选（`Sub.foo` 的 CP owner 是 `Sub`，却解析到 `Base.foo`），也不能把未使用的 CP 条目当引用。
+
+### 复用方式：给扫描机器加一个 crate-private 候选形态过滤器
+
+- 在 `src/xref/mod.rs` 增 crate-private `CandidateFilter`：`Exact(QueryTarget)`（现有行为，`Engine::query` 用它）与 `MemberShape { name: JvmBytes, descriptor: JvmBytes }`（按原始 name/descriptor 字节匹配 `SymbolRef::Method`/`Field`，**owner 不参与**）。`ScanContext` 持有当前过滤器，`code.rs`/`metadata.rs`/`bootstrap.rs` 的 `use_site_answers`/`asks_symbol`/`target_matches`/`answers` 改为调用同一 `ctx.candidate_matches(..)`（`resource.rs` 只做 literal，不参与）。
+- 新增 crate-private 入口 `xref::scan_candidates(snapshot, scope, consumers, filter, budget) -> CandidateScan { items, coverage, execution, diagnostics }`：复用同一 `ProviderScan` 与各 consumer 子扫描、同一计费与 ordering，但**不带分页/游标**（`DeclarationRefQuery` 用 `max_items` + `has_more` 表达截断，规则与 P1 页限一致：coverage `Partial`、execution 仍 `Complete`、不复用 P1 游标）。
+- **A17 方向不变**：`CandidateFilter` 与 `scan_candidates` 都不引用 resolver/ir；`src/query.rs` 与 `src/xref/**` 仍不含 P2 记号（守卫测试继续成立）。`Engine::query` 的行为与证据逐字段不变（P1 golden 全绿即证据）。
+- 每个候选的 `origin`/`consumer`/`operation`/`evidence` 直接沿用 P1 的 item 证据形状；resolver 侧只做"把候选的 owner 解析成声明并与目标比较"这一步。
+
+### 查询语义
+
+1. 候选来自结构 consumer（未使用的 CP 条目不是引用：`MemberShape` 只匹配**被 consumer 消费**的 use-site，因为过滤器作用在 use-site 判定上，不在池枚举上）。
+2. 对每个候选：解析其 owner（2.1 的查找 + 2.3 的成员规则），把解析出的声明与请求的 declaration 比较（loader + 定义身份 + 成员符号）。**只有解析到请求声明的候选进入 `items`**（`resolved` 即该声明、`state = Resolved`）；解析到别的声明的候选计入 `scanned` 但不进 `items`，因此 `items` 的每个条目都满足"该 use-site 确实指向请求声明"这一可复核断言。
+3. **未决候选不得当已排除**：候选的 owner 解析为 `Missing`/`BudgetExceeded`/取消/环境问题（或候选自身损坏）时计入 `unresolved_candidates` 并保留 `origin`，`coverage` 标 `Partial`，`has_more` 视截断而定；不得把它们算作"已排除"。
+4. `max_items` 截断：按 P1 页限规则（`returned_items`、`has_more`、coverage `Partial`、execution 不因此变 Partial）。
+5. **P1 语义不变**：`Engine::query` 的 `mentions_symbol` 仍按原始符号精确匹配（`Base.foo` 查询不返回 `Sub.foo` 的调用点），这是 A11 需要的对照证据。
+
+### 2.4 的验收
+
+- `Base.foo` 在 `Sub` 调用：`Engine::query(mentions_symbol, Base.foo)` 为空或只含声明侧证据，而声明引用查询返回 `Sub.foo` 的 use-site 且 `resolved` 指向 `Base`；
+- 未使用 CP 条目（同名同 descriptor 的 `Methodref` 无指令消费）不产生 `items`；
+- 候选 owner `Missing`（平台未提供）→ 计入 `unresolved_candidates`、coverage `Partial`，不出现在 `items`；
+- 预算停止（`ResultItems` 或 `ClassHeaders`）→ 保留可靠前缀 + `unresolved_candidates` 或 `has_more`，execution 为对应 `Partial`；
+- 跨 loader 同名类：两个 loader 各自命中时，声明引用查询按请求环境解析，不合并结果；
+- 每条正例断言 `items` 的 consumer/operation/origin（P1 证据形状）+ `reads` 的 reason 集合 + `usage.method_bodies == 0`。
+
 ## Risks / Trade-offs
 
 - [Risk] frame/phi/origin 或 jsr 克隆乘法膨胀 → 分配前计费及高扇出/多槽位用例；P1 输入有界不代替 IR 上界证明。
