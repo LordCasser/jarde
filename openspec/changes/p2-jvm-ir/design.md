@@ -349,10 +349,12 @@ impl Engine {
 | 位置 | 规模（2026-09-18 实测） | 要求的改法 |
 | --- | --- | --- |
 | `src/budget.rs` | `CountedBudgetDimension` 9 → 15、`BudgetDimension` 11 → 18、`try_from`、`Limits::counted_limit`/`get`、`UsageSnapshot::counted_usage`/`add`、`Budget::check_nested_depth` 旁新增高水位入口 | 生产改动即计费契约本身 |
-| `Limits { .. }` 字面量 | **73 处 / 24 个文件**（`src` 4 文件、`tests` 14、`crates` 2、`fuzz` 1、`examples` 2） | 1.1 已加 `counted_limit`/`counted_usage`；本切片再补 `Limits` 的构造器或 `Default`，让加维不再改字面量 |
+| `Limits { .. }` 字面量 | **73 处 / 24 个文件**（`src` 4、`tests` 14、`crates` 3、`fuzz` 1、`examples` 2），其中需改字段的结构体字面量 **42 处**（41 个 `Limits {` + CLI `From` 里的 1 个 `Self { }`） | 新增 `impl Default for Limits`（**全零，fail-closed**，文档写明"这是测试/工具的基底，不是隐式生产限额"）：P1 测试不回填新维度，各处以 `..Limits::default()` 收尾（一行改动），将来再加维只需改 `Default`；只有真正使用新维度的调用方显式赋值 |
+| 高水位维度入口 | `Budget::check_nested_depth` | 同形新增 `Budget::observe_dependency_depth(depth)`（比较后取 max、超限报 `BudgetDimension::DependencyDepth` 并保留 `consumed = depth-1`），两个高水位维度共用同一模式但互不影响 |
 | CLI 请求 schema | `crates/jarde-cli/src/main.rs::RequestLimits`（`deny_unknown_fields`、全字段必填） | 新维度**同样必填**（不引入静默默认值；CLI 会先接受、到 5.1 才使用），并同步 `From<RequestLimits> for Limits`；这是 CLI JSON 契约的**有意变更**，要写进 verification |
 | P1 golden | `tests/fixtures/p1-golden/*.json` 共 **24 个 usage 对象**（4/4/5/10/1） | 手工补齐新字段（golden 是 checked-in 期望，不得自动生成） |
 | fuzz harness | `fuzz/src/lib.rs::assert_usage` 逐维手写断言（加维不会编译失败 → 静默漏检） | 改为按 `CountedBudgetDimension::ALL` 遍历，使新增维度自动纳入上限断言 |
+| 其余逐维断言 | `tests/p1_query_bounds.rs::assert_within` 同类手写清单；`src/artifact.rs::budget_dimension_code` 的 7 个新诊断码字符串无锚定 | 两处都改为 `ALL` 驱动或加 serde 名对照断言（同一「加维不得静默漏检」纪律） |
 | 文档 | `docs/support-matrix.md` 的"十一项 limit"、README 的 limit 列表 | 更新为 18 项并说明哪些由 P2 使用 |
 
 `ALL` 的测试期穷尽 `match`（1.1 已为 `CountedBudgetDimension`/`EnvironmentProblemCode`/`AnalysisStage` 建立）必须扩到全部新增维度；`DependencyDepth` 与容器 `NestedDepth` 同为高水位，二者独立。

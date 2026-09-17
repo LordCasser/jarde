@@ -4,7 +4,7 @@
 
 - [x] 1.1 固定解析/声明查询与方法分析的请求、provider 绑定、阶段结果、origin 和预算计费契约；交付可编译的最小类型/API 及示例，验证缺少运行环境不能隐式启动解析，Bytecode/NotJava/NotPerformed 与 coverage/execution 可分别表达（A13、A17）（2026-09-17 完成：契约先经只读复核定稿，`src/environment.rs`/`resolver.rs`/`ir.rs` + 三个 `Engine` 入口 + 示例 + 28 条契约测试；实现复核首轮 Approve 的 F1–F4 与复审的 N1–N3/D1/D2 已关闭，证据见 verification 的 1.1 节）
 - [x] 1.2 在现有 noak reader 适配中提供内部类型化操作数与目标校验；用 wide/iinc、正负 branch、switch default/key/target、handler 边界、溢出/跳入操作数反例及 P0 oracle 回归验证，不另建 decoder（A09、A10）（2026-09-18 完成并独立复核 Approve：`InstructionOperands`/`control_flow_targets` 全 crate-private、公共输出与计费逐字段未变；保护区间按 JVMS 4.7.3 收紧；7 条补测关闭首轮 5 组盲点，9 个变异全部被捕获；证据见 verification 的 1.2 节）
-- [ ] 1.3 扩展现有 Budget 的闭包/IR 存储/边/步骤/克隆/依赖深度计费；验证零/恰好/超限、节点/槽位/边/克隆的计费样例、步骤耗尽、取消、预算不重置以及两类 depth 独立；真实 Frame/SSA 膨胀与 fallback 联调由 3.5/4.3 验收。记录第一片命令、反例和只读复核结果后再交接
+- [x] 1.3 扩展现有 Budget 的闭包/IR 存储/边/步骤/克隆/依赖深度计费；验证零/恰好/超限、节点/槽位/边/克隆的计费样例、步骤耗尽、取消、预算不重置以及两类 depth 独立；真实 Frame/SSA 膨胀与 fallback 联调由 3.5/4.3 验收。记录第一片命令、反例和只读复核结果后再交接（2026-09-18 完成并独立复核 Approve：15 个计费维度 + 第二个高水位 `dependency_depth`，42 处字面量、CLI 18 必填字段、5 份 golden 纯加法与 fuzz 断言全部同步；11 组变异证伪；证据见 verification 的 1.3 节）
 
 ## 2. Header providers 与声明解析
 

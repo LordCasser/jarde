@@ -21,7 +21,9 @@ P1 已归档，P0 reader 与 P1 query/view 已有实现和验证证据；P2 尚�
 
 ### Modified Capabilities
 
-无。新增能力通过显式运行环境的解析入口和方法分析入口提供；现有 `Engine::query` 保持 physical X0/X1 契约，不因有 resolver 就隐式执行解析。共享 reader 的 IR facts 先作为内部接口，沿用已有物理身份、BCI 和执行语义。若实现需要改变已有能力的可观察行为，先增补对应 spec delta，不以本计划授权未声明的主规格变更，也不为旧接口额外维护兼容层。
+- `analysis-contracts`：预算契约扩展——P2 1.3 增加六个计费维度与第二个非累加高水位维度 `dependency_depth`，并把这套维度同时写进 `Limits`/`UsageSnapshot`/终止维度枚举与库、CLI 两个请求 schema（显式、缺失即协议错误）。该 delta 只收紧"新增维度必须同时出现在两处并保持显式"这一条，不改变既有维度的语义。
+
+新增能力通过显式运行环境的解析入口和方法分析入口提供；现有 `Engine::query` 保持 physical X0/X1 契约，不因有 resolver 就隐式执行解析。共享 reader 的 IR facts 先作为内部接口，沿用已有物理身份、BCI 和执行语义。若实现需要改变已有能力的可观察行为，先增补对应 spec delta，不以本计划授权未声明的主规格变更，也不为旧接口额外维护兼容层。
 
 ## Impact
 

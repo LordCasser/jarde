@@ -50,10 +50,24 @@
 - 远端 CI：实现与文档提交 `9f618e6`、`e4f6bdb` 推送 `main` 后，CI run [`35251066394`](https://github.com/LordCasser/jarde/actions/runs/35251066394) 四个 job 全部 success（`stable` 含 ignored JDK 25 oracle、`MSRV 1.88.0`、双 workspace `supply chain`、`fuzz smoke`）。
 - 事故记录：本轮实现过程中，coder 在变异实验里误用 `git checkout -- src/classfile.rs` 回退了未提交实现，随后从会话快照恢复并重放本轮改动。主 Agent 独立核实：HEAD 仍为 `6f820ab`（未提交任何东西）、工作树两处改动完好、文件 sha256 `3ba8b359…` 与 coder 声称一致、`git show HEAD:src/classfile.rs` 仍是 P2 前基线、20 个 1.2 测试函数全部在位、全量测试与仓库语料测试通过。结论：无内容丢失；后续变异实验一律用文件副本还原，不得触碰 git。
 
-### 远端 CI
+### 1.3 预算维度扩展（含 churn 同步）
+
+- 维度面：`CountedBudgetDimension` 9 → 15（`ClassHeaders`/`MethodBodies`/`IrItems`/`IrEdges`/`AnalysisSteps`/`NormalizationClones`），`BudgetDimension` 11 → 18（新增非累加高水位 `DependencyDepth`，插在 `NestedDepth` 与 `ElapsedMillis` 之间）；`ALL`/`counted_limit`/`counted_usage`/`add`/`get`/`From`/`TryFrom` 全部同步，`TryFrom` 拒绝集恰为 `{NestedDepth, DependencyDepth, ElapsedMillis}`。新增 `Budget::observe_dependency_depth`（与 `check_nested_depth` 同形：超限报 `DependencyDepth` 且 `consumed = depth-1`，否则取 `max` 高水位），两者相互独立。新增 `impl Default for Limits`（**全零、fail-closed**，文档写明是测试/工具基底而非隐式生产限额）。
+- 计数单位按契约表：`ClassHeaders`/`MethodBodies` 计读取**尝试**（同 (definition, loader) 去重由调用方负责）；`IrItems`/`IrEdges`/`AnalysisSteps`/`NormalizationClones` 由 3.x/4.x 在分配/入队/加边/克隆**之前**计费；1.3 只交付维度与计费入口，生产代码暂无调用方（契约明示）。
+- churn 同步（契约表逐项）：42 处需改字段的 `Limits` 字面量（41 个 `Limits {` + CLI `From` 的 1 个 `Self { }`）全部更新——26 处加 `..Limits::default()`、其余经既有 helper 继承，既有维度取值逐字段未变；CLI `RequestLimits` 11 → 18 个**必填**字段（`deny_unknown_fields` 保留、无 `serde(default)`），`From` 穷尽 18 字段；5 个 P1 golden 的 24 个 usage 对象**纯加法**（7 个零值键按字母序插入，既有键值/顺序不变）；`fuzz/src/lib.rs::assert_usage` 改为 `CountedBudgetDimension::ALL` 遍历 + 两个 depth 单独断言；`docs/support-matrix.md`/`README.md` 更新为十八项并写明计数含义与"P2 维度尚未真正计费（归 3.5/4.3）"；另同步 `src/artifact.rs::budget_dimension_code`、`src/xref/bootstrap.rs::dimension_counts`、`src/classfile.rs` 的 usage 键集合断言（18 键，仍精确）、`examples/resolve_and_analyze.rs`。
+- **CLI JSON 契约的有意变更**（须记录）：请求对象从 11 项变为 18 项必填；旧请求现在返回协议错误（实测 11 字段请求 → `cli_request_json: missing field \`class_headers\``，17 字段缺 `dependency_depth` 同样被拒，未知键被 `deny_unknown_fields` 拒绝）。库侧 `Limits`/`UsageSnapshot` 同样逐字段必填，新键不能省略。README 两个示例已同步并实跑通过。
+- 反例与证伪（复核者独立复现 11 组变异，全部被捕获并用副本还原核对 sha256）：两个 depth 共用槽/共用 limit、`AnalysisSteps` 写入 `IrItems` 槽、`IrEdges` 写入 `IrItems` 槽、`Default` 非零、高水位改用赋值而非 `max`、`consumed` 去掉 `-1`、`ensure_within` 用 `<` 而非 `<=`、跳过取消检查、`ALL` 截断或换序（后者同时被两处锚点抓到）。
+- 主 Agent 的补充收口：`tests/p1_query_bounds.rs::assert_within` 改为 `ALL` 驱动（并新增自检 `the_within_bound_rejects_every_dimension_over_its_limit`，逐维验证"恰好通过 / 超一单位被拒"，同时与 `UsageSnapshot` 的序列化 schema 对表）；`budget_dimension_code` 的 18 个诊断码加穷尽 `match` + serde 名对照断言（此前新增码改错会静默出厂）。两处均以变异证伪（截断遍历、改回手写、错误码改名）。
+- 证据：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **361 passed / 0 failed / 1 ignored**，`cargo test --lib` = **126**、`cargo test -p jarde-cli` 全绿、fuzz workspace `cargo test` = **9**；由主 Agent 独立复跑确认。
+- 复核结论：**Approve**（实现满足契约；唯一阻塞项是本节尚未登记，已由本次写入关闭）。复核者另核对：golden 纯加法、既有断言未被削弱（`src/**`/`tests/**` 除契约相关外全为纯新增行）、`observe_dependency_depth`/`check_nested_depth` 归一化后同形且既有 `charge`/`check`/`poll`/`usage` 函数体与 HEAD 逐字节相同、`Cargo.*`/`deny.toml`/`.github/**`/`fuzz/Cargo.*` 未动、无新增依赖。
+- 债务（登记，不阻塞）：`fuzz/README.md` 关于"every `usage` field stays inside the limit"的措辞略宽（`elapsed_millis` 有意不查），下次文档同步顺手收紧；P2 六个计费维度与 `dependency_depth` 的真实派生膨胀停止行为由 3.5/4.3 验收（支持矩阵已声明）。
+
+
 
 本切片以两个提交推送 `main`：`0406178`（实现与测试）与 `6fc1674`（本 change 的契约与验证记录）。CI run [`35247034235`](https://github.com/LordCasser/jarde/actions/runs/35247034235) 在 `6fc1674` 上四个 job 全部 success：`stable / test and specification`（含 ignored JDK 25 指令边界 oracle 与两条公共示例）、`MSRV 1.88.0`、`supply chain`（根与 fuzz 两个依赖图）、`fuzz smoke`。1.2 的提交与 CI 在其小节内记录。
 
-## 尚未关闭
+## 第一片（1.1–1.3）状态与闸口
 
-- 1.2（reader 类型化操作数与目标校验）、1.3（预算维度扩展）未开始；2.x–5.x 全部未开始。本 change 的 20 项任务中只有 1.1 具备勾选条件。
+- 1.1、1.2、1.3 均已完成、独立复核 **Approve** 并有各自 CI 记录；第一片的退出条件（reader 类型化操作数、预算维度、结果/请求契约可用）已满足。
+- 2.x–5.x 全部未开始。进入 2.x 前按 `tasks.md` 的"第一轮仅做 1.1–1.3，验证并只读复核后再进入 2.x"交接：2.1 起需要 provider 读取与 Header 闭包，属新的实现片，需单独交接与复核。
+- 债务池（登记，不阻塞）：1.2 的操作数存储放大与未完整解码前缀语义（3.x 消费前收紧）、`fuzz/README.md` 措辞、P2 维度真实膨胀由 3.5/4.3 验收、`query-api` 与 `analysis-contracts` 的 spec delta 在 P2 归档时同步主规格。
