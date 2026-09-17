@@ -168,8 +168,8 @@ fn standalone_engine_reports_owned_source_and_usage() {
     let r = e
         .inspect_header(&s, ClassTarget::Root, &mut b, InspectionMode::Strict)
         .unwrap();
-    assert!(r.source.entry.is_none());
-    assert_eq!(r.source.snapshot, *s.id());
+    assert!(r.source.entry().is_none());
+    assert_eq!(r.source.snapshot(), s.id());
     assert_eq!(r.source.class_bytes.length, bytes.len() as u64);
     assert_eq!(
         r.source.class_bytes.digest.0,
@@ -285,7 +285,7 @@ fn zip_duplicate_origins_and_validation_are_preserved() {
             InspectionMode::Strict,
         )
         .unwrap();
-    assert_ne!(a.source.entry, d.source.entry);
+    assert_ne!(a.source.entry(), d.source.entry());
     assert_eq!(a.source.class_bytes, d.source.class_bytes);
     let mut forged = entries[0].clone();
     forged.id.raw_name.0 = b"bad".to_vec();
@@ -379,8 +379,11 @@ fn target_and_header_body_boundaries_are_preserved() {
         .unwrap();
     let fake = PhysicalEntry {
         id: PhysicalEntryId {
-            snapshot: standalone.id().clone(),
-            container_chain: vec![],
+            origin: ContainerOrigin {
+                snapshot: standalone.id().clone(),
+                root_container: ContainerId("root".into()),
+                steps: Vec::new(),
+            },
             ordinal: 0,
             raw_name: ArchiveNameBytes(b"A.class".to_vec()),
         },

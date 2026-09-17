@@ -8,9 +8,9 @@
 use crate::budget::{Budget, BudgetDimension, CountedBudgetDimension, UsageSnapshot};
 use crate::error::{Error, Result};
 use crate::model::{
-    ArchiveNameBytes, ByteSpan, ContainerId, Coverage, CoverageDimension, CoverageRange,
-    CoverageState, Diagnostic, DiagnosticSeverity, ExecutionReport, PhysicalEntryId, SnapshotId,
-    TerminationReason,
+    ArchiveNameBytes, ByteSpan, ContainerId, ContainerOrigin, Coverage, CoverageDimension,
+    CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity, ExecutionReport, PhysicalEntryId,
+    SnapshotId, TerminationReason,
 };
 use rawzip::ZipArchive;
 use serde::{Deserialize, Serialize};
@@ -323,8 +323,11 @@ impl ArtifactSnapshot {
                 Ok((
                     PhysicalEntry {
                         id: PhysicalEntryId {
-                            snapshot: self.id.clone(),
-                            container_chain: vec![ContainerId("root".into())],
+                            origin: ContainerOrigin {
+                                snapshot: self.id.clone(),
+                                root_container: ContainerId("root".into()),
+                                steps: Vec::new(),
+                            },
                             ordinal,
                             raw_name: ArchiveNameBytes(raw_name),
                         },
@@ -450,7 +453,7 @@ impl ArtifactSnapshot {
         L: FnMut(u64),
         F: FnMut(usize),
     {
-        if self.kind != ArtifactKind::Zip || entry.id.snapshot != self.id {
+        if self.kind != ArtifactKind::Zip || entry.id.snapshot() != &self.id {
             return Err(Error::invalid_input(
                 "entry_snapshot_mismatch",
                 "entry does not belong to this ZIP snapshot",
@@ -513,8 +516,11 @@ impl ArtifactSnapshot {
         let (data_start, data_end) = local.compressed_data_range();
         let authoritative = PhysicalEntry {
             id: PhysicalEntryId {
-                snapshot: self.id.clone(),
-                container_chain: vec![ContainerId("root".into())],
+                origin: ContainerOrigin {
+                    snapshot: self.id.clone(),
+                    root_container: ContainerId("root".into()),
+                    steps: Vec::new(),
+                },
                 ordinal: current,
                 raw_name: ArchiveNameBytes(header.file_path().as_bytes().to_vec()),
             },
@@ -1470,7 +1476,7 @@ mod tests {
         assert_eq!(report.entries.len(), 1);
 
         let entry = &report.entries[0];
-        assert_eq!(&entry.id.snapshot, snapshot.id());
+        assert_eq!(entry.id.snapshot(), snapshot.id());
         assert_eq!(entry.id.ordinal, 0);
         assert_eq!(entry.id.raw_name.0.as_slice(), entry_name);
         assert_eq!(entry.compression, EntryCompression::Stored);
@@ -1664,7 +1670,7 @@ mod tests {
 
         let mut variants = Vec::new();
         let mut origin = original.clone();
-        origin.id.container_chain = vec![ContainerId("forged-nested".into())];
+        origin.id.origin.root_container = ContainerId("forged-root".into());
         variants.push(origin);
         let mut flags = original.clone();
         flags.flags.encrypted = true;

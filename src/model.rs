@@ -170,11 +170,45 @@ impl ByteSpan {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
-pub struct PhysicalEntryId {
+#[serde(deny_unknown_fields)]
+pub struct ContainerOriginStep {
+    pub via_ordinal: u64,
+    pub via_raw_name: ArchiveNameBytes,
+    pub child_container: ContainerId,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ContainerOrigin {
     pub snapshot: SnapshotId,
-    pub container_chain: Vec<ContainerId>,
+    pub root_container: ContainerId,
+    pub steps: Vec<ContainerOriginStep>,
+}
+
+impl ContainerOrigin {
+    pub fn current_container(&self) -> &ContainerId {
+        self.steps
+            .last()
+            .map_or(&self.root_container, |step| &step.child_container)
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PhysicalEntryId {
+    pub origin: ContainerOrigin,
     pub ordinal: u64,
     pub raw_name: ArchiveNameBytes,
+}
+
+impl PhysicalEntryId {
+    pub fn snapshot(&self) -> &SnapshotId {
+        &self.origin.snapshot
+    }
+
+    pub fn container(&self) -> &ContainerId {
+        self.origin.current_container()
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
@@ -184,18 +218,52 @@ pub struct ClassBytesId {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
 pub enum PhysicalVariant {
-    Root,
+    Base,
     MultiRelease { version: u16 },
-    Nested { container_entry: PhysicalEntryId },
     Other { label: String },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum PhysicalClassLocation {
+    StandaloneRoot { snapshot: SnapshotId },
+    ArchiveEntry { entry: PhysicalEntryId },
+}
+
+impl PhysicalClassLocation {
+    pub fn snapshot(&self) -> &SnapshotId {
+        match self {
+            Self::StandaloneRoot { snapshot } => snapshot,
+            Self::ArchiveEntry { entry } => entry.snapshot(),
+        }
+    }
+
+    pub fn entry(&self) -> Option<&PhysicalEntryId> {
+        match self {
+            Self::StandaloneRoot { .. } => None,
+            Self::ArchiveEntry { entry } => Some(entry),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PhysicalDefinitionId {
-    pub entry: PhysicalEntryId,
+    pub location: PhysicalClassLocation,
     pub class_bytes: ClassBytesId,
     pub variant: PhysicalVariant,
+}
+
+impl PhysicalDefinitionId {
+    pub fn snapshot(&self) -> &SnapshotId {
+        self.location.snapshot()
+    }
+
+    pub fn entry(&self) -> Option<&PhysicalEntryId> {
+        self.location.entry()
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
@@ -283,12 +351,12 @@ impl Location {
     pub fn snapshot(&self) -> &SnapshotId {
         match self {
             Self::Container { snapshot, .. } => snapshot,
-            Self::Entry { id, .. } | Self::Resource { entry: id, .. } => &id.snapshot,
+            Self::Entry { id, .. } | Self::Resource { entry: id, .. } => id.snapshot(),
             Self::ClassOffset { definition, .. }
             | Self::Attribute {
                 owner: definition, ..
-            } => &definition.entry.snapshot,
-            Self::Code { method, .. } => &method.owner.entry.snapshot,
+            } => definition.snapshot(),
+            Self::Code { method, .. } => method.owner.snapshot(),
         }
     }
 }
@@ -396,8 +464,11 @@ mod tests {
 
     fn entry(ordinal: u64, name: &str) -> PhysicalEntryId {
         PhysicalEntryId {
-            snapshot: SnapshotId("snap-1".into()),
-            container_chain: vec![ContainerId("root".into())],
+            origin: ContainerOrigin {
+                snapshot: SnapshotId("snap-1".into()),
+                root_container: ContainerId("root".into()),
+                steps: Vec::new(),
+            },
             ordinal,
             raw_name: ArchiveNameBytes(name.as_bytes().to_vec()),
         }
@@ -436,14 +507,18 @@ mod tests {
             length: 4,
         };
         let left = PhysicalDefinitionId {
-            entry: entry(1, "a/A.class"),
+            location: PhysicalClassLocation::ArchiveEntry {
+                entry: entry(1, "a/A.class"),
+            },
             class_bytes: bytes.clone(),
-            variant: PhysicalVariant::Root,
+            variant: PhysicalVariant::Base,
         };
         let right = PhysicalDefinitionId {
-            entry: entry(2, "b/A.class"),
+            location: PhysicalClassLocation::ArchiveEntry {
+                entry: entry(2, "b/A.class"),
+            },
             class_bytes: bytes,
-            variant: PhysicalVariant::Root,
+            variant: PhysicalVariant::Base,
         };
         assert_ne!(left, right);
         assert_eq!(left.class_bytes, right.class_bytes);
@@ -452,12 +527,14 @@ mod tests {
     #[test]
     fn representative_contract_round_trips_as_readable_json() {
         let definition = PhysicalDefinitionId {
-            entry: entry(7, "A.class"),
+            location: PhysicalClassLocation::ArchiveEntry {
+                entry: entry(7, "A.class"),
+            },
             class_bytes: ClassBytesId {
                 digest: Digest("abc".into()),
                 length: 12,
             },
-            variant: PhysicalVariant::Root,
+            variant: PhysicalVariant::Base,
         };
         let report = (
             Provenance {
@@ -489,8 +566,11 @@ mod tests {
     #[test]
     fn raw_archive_and_jvm_bytes_round_trip_without_text_loss() {
         let entry = PhysicalEntryId {
-            snapshot: SnapshotId("snap-raw".into()),
-            container_chain: vec![ContainerId("root".into())],
+            origin: ContainerOrigin {
+                snapshot: SnapshotId("snap-raw".into()),
+                root_container: ContainerId("root".into()),
+                steps: Vec::new(),
+            },
             ordinal: 1,
             raw_name: ArchiveNameBytes(vec![0xff, 0x00, 0x80]),
         };
@@ -507,12 +587,14 @@ mod tests {
     #[test]
     fn provenance_derives_one_snapshot_from_location() {
         let definition = PhysicalDefinitionId {
-            entry: entry(2, "A.class"),
+            location: PhysicalClassLocation::ArchiveEntry {
+                entry: entry(2, "A.class"),
+            },
             class_bytes: ClassBytesId {
                 digest: Digest("d".into()),
                 length: 1,
             },
-            variant: PhysicalVariant::Root,
+            variant: PhysicalVariant::Base,
         };
         let provenance = Provenance {
             location: Location::ClassOffset {
@@ -527,12 +609,14 @@ mod tests {
     #[test]
     fn physical_code_location_uses_method_identity_only() {
         let definition = PhysicalDefinitionId {
-            entry: entry(3, "A.class"),
+            location: PhysicalClassLocation::ArchiveEntry {
+                entry: entry(3, "A.class"),
+            },
             class_bytes: ClassBytesId {
                 digest: Digest("d".into()),
                 length: 1,
             },
-            variant: PhysicalVariant::Root,
+            variant: PhysicalVariant::Base,
         };
         let location = Location::Code {
             method: PhysicalMethodId {
@@ -542,7 +626,7 @@ mod tests {
             },
             bci: 0,
         };
-        assert_eq!(location.snapshot(), &definition.entry.snapshot);
+        assert_eq!(location.snapshot(), definition.snapshot());
         let json = serde_json::to_string(&location).unwrap();
         assert!(json.contains("\"kind\":\"code\""));
         assert!(json.contains("\"descriptor\":[40,41,86]"));
@@ -554,14 +638,20 @@ mod tests {
             "kind": "code",
             "method": {
                 "owner": {
-                    "entry": {
-                        "snapshot": "snap-1",
-                        "container_chain": ["root"],
-                        "ordinal": 3,
-                        "raw_name": [65, 46, 99, 108, 97, 115, 115]
+                    "location": {
+                        "kind": "archive_entry",
+                        "entry": {
+                            "origin": {
+                                "snapshot": "snap-1",
+                                "root_container": "root",
+                                "steps": []
+                            },
+                            "ordinal": 3,
+                            "raw_name": [65, 46, 99, 108, 97, 115, 115]
+                        }
                     },
                     "class_bytes": {"digest": "d", "length": 1},
-                    "variant": "root"
+                    "variant": {"kind": "base"}
                 },
                 "kind": "field",
                 "name": [118, 97, 108, 117, 101],

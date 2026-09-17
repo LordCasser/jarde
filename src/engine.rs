@@ -11,7 +11,7 @@ use crate::classfile::{
 use crate::error::{Error, Result};
 use crate::model::{
     ClassBytesId, Coverage, CoverageDimension, CoverageRange, CoverageState, Digest,
-    ExecutionReport, PhysicalEntryId, SnapshotId,
+    ExecutionReport, PhysicalClassLocation,
 };
 use serde::{Deserialize, Serialize};
 
@@ -24,11 +24,20 @@ pub enum ClassTarget<'a> {
     Entry(&'a PhysicalEntry),
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub struct ClassSource {
-    pub snapshot: SnapshotId,
-    pub entry: Option<PhysicalEntryId>,
+    pub location: PhysicalClassLocation,
     pub class_bytes: ClassBytesId,
+}
+
+impl ClassSource {
+    pub fn snapshot(&self) -> &crate::model::SnapshotId {
+        self.location.snapshot()
+    }
+
+    pub fn entry(&self) -> Option<&crate::model::PhysicalEntryId> {
+        self.location.entry()
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -216,8 +225,9 @@ fn materialize(
             Ok((
                 bytes,
                 ClassSource {
-                    snapshot: snapshot.id().clone(),
-                    entry: None,
+                    location: PhysicalClassLocation::StandaloneRoot {
+                        snapshot: snapshot.id().clone(),
+                    },
                     class_bytes,
                 },
             ))
@@ -231,8 +241,9 @@ fn materialize(
             }
             let materialized = snapshot.read_entry(entry, budget)?;
             let source = ClassSource {
-                snapshot: snapshot.id().clone(),
-                entry: Some(materialized.entry),
+                location: PhysicalClassLocation::ArchiveEntry {
+                    entry: materialized.entry,
+                },
                 class_bytes: ClassBytesId {
                     digest: materialized.content_digest,
                     length: u64::try_from(materialized.bytes.len()).map_err(|_| {

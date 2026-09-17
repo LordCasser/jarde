@@ -10,6 +10,8 @@ pub mod classfile;
 pub mod engine;
 pub mod error;
 pub mod model;
+pub mod query;
+pub mod view;
 
 pub use artifact::*;
 pub use budget::{
@@ -19,3 +21,5 @@ pub use classfile::*;
 pub use engine::*;
 pub use error::{Error, Result};
 pub use model::*;
+pub use query::*;
+pub use view::*;

@@ -1,6 +1,6 @@
 # OpenSpec 规划入口
 
-P0–P5 的 proposal、design、specs 和 tasks 已建立。P0 已完成、验证并归档，三个 capability 已同步为主规格；P1–P5 仍为 planned / not implemented。阶段完成度以归档或 active tasks、实际代码和行为验收为准，在对应门槛满足前不发布能力或性能承诺。
+P0–P5 的 proposal、design、specs 和 tasks 已建立。P0 已完成、验证并归档，三个 capability 已同步为主规格；P1 已完成 1.1 的公共 query/view/identity 模型，其余 P1 行为及 P2–P5 仍未实现。阶段完成度以归档或 active tasks、实际代码和行为验收为准，在对应门槛满足前不发布能力或性能承诺。
 
 - [架构基线](../JVM_Rust_Engine_Final_Architecture.md)：产品目标、I1–I12、模型与管线。
 - [阶段路线](roadmap.md)：阶段依赖、范围与进入/出口门槛。
