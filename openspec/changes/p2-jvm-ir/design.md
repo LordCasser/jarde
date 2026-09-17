@@ -461,6 +461,51 @@ pub(crate) struct HeaderLookup {
 - fixtures：`ParentFirst`/`ChildFirst` 的顺序差异（同名类在两个 loader 各自 root 中的选择）、同一 loader 内同名有序 root 的优先、同 root 同名不同字节 → `Ambiguous`、缺失 parent / 循环 parent（走 1.1 的校验）、`UnsupportedPolicy`（module mode 与 Custom/Unknown）、`External` root 与未提供内容、standalone CLASS root 按 `this_class` 命中、同名同字节不同 origin 不合并、损坏候选不回退到后续 root（并给出该 root/entry 的 origin 诊断）。
 - 每个 fixture 断言选择结果（loader + root 下标 + definition 身份）、`ClassHeaders` 计数、以及失败时的状态与诊断码；报告层只映射 1.1 已定型的 `ResolutionState`，不新增公共 variant。
 
+## 2.2 契约：按需 Header 闭包、读取 reason 与去重
+
+2.2 把 2.1 的单次查找组织成**按需闭包**：只扩展解析与目标方法真正需要的 Header，并把每一次读取的身份与理由记进报告（A14/A16 的证据面）。
+
+### 读取记录（additive 公共字段；1.1 已交付的三个报告各增一个 `reads`）
+
+```rust
+// src/resolver.rs
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ReadReason {
+    RequestedDefinition,   // 请求目标自身
+    ParentChain,           // 沿 parent_loader 链解析出的定义
+    HierarchyClosure,      // 父类/接口闭包（2.3 的成员解析需要）
+    DispatchScope,         // 显式 CHA 范围枚举（2.5）
+    MemberOwner,           // 成员解析命中的 owner
+    DriverMethodBody,      // 目标方法 Body —— 唯一的 Body 升级理由
+}
+pub struct HeaderRead {
+    pub loader: LoaderId,
+    pub definition: PhysicalDefinitionId,   // 成功读取并获得身份才入记录
+    pub reason: ReadReason,
+}
+```
+
+`ResolutionReport`/`DeclarationRefReport`/`MethodAnalysisReport` 各增 `pub reads: Vec<HeaderRead>`：按**实际发生顺序**、同 (definition, loader, reason) 只记一次（重复使用同一个已读 Header 不重复记录）。失败尝试不产生记录（其证据是 `environment_problems`/诊断）；`ClassHeaders` 仍按**尝试**计数（1.3 口径），因此 `reads.len() <= usage.class_headers` 恒成立，该不等式本身是 2.2 的一条断言。`elapsed`/`coverage` 语义不变；本字段是**additive 公共变更**，1.1 的既有测试需同步（记进 verification）。
+
+### 闭包算法与去重
+
+- **起点**：请求目标所在 loader（`CallerContext.loader`）与目标内部名。展开顺序：目标自身 → 其 parent/interface（若目标需要成员解析，2.3 触发）→ 显式范围（仅 2.5 的 dispatch）。
+- **去重键是 (物理定义, loader)**：同一请求内同一绑定只读一次，同一 `definition` 在不同 loader 下是两条独立记录（同 bytes 不同 origin/loader **不得**合并）。
+- **深度**：每向上一层（parent 链或接口闭包）调用 `Budget::observe_dependency_depth`（1.3 已交付），超限即停并保留可信前缀；`DependencyDepth` 与 `nested_depth` 独立。
+- **计费**：Header 读取尝试记 `ClassHeaders`；方法 Body 读取尝试记 `MethodBodies`（2.2 只允许 `DriverMethodBody` 一个理由，其他理由出现在 3.x/4.x 的分析阶段）；工作列表迭代记 `AnalysisSteps`。**不读无关 Body**：闭包只读 Header，Body 读取必须带显式 reason 且只有目标方法。
+- **停止语义**：预算耗尽/取消/缺失依赖都在**下一次扩展前**停止，`execution` 为 `Partial`/`Cancelled`（`TerminationReason::BudgetExceeded { dimension }` 或 `Cancelled`），`coverage` 保留已扫描范围并把未完成部分记 skipped；不得把停止报告成 `Missing` 或空闭包。
+
+### 2.2 的验收
+
+- **深链**：父类链深度超过 `dependency_depth` → 终止维度为 `DependencyDepth`、保留前缀、`reads` 只含已读深度。
+- **高扇出**：一个类实现多个接口且接口再继承 → 每条 Header 只读一次、`reads` 无重复 (definition, loader)。
+- **缺失依赖**：闭包中某一层在全部 root 都 `Missing` → 记录该层状态、不伪造定义、`coverage` 标明未完成范围。
+- **循环引用**：A→B→A 的继承环（非法 class）→ 不无限扩展（去重键终止）、给出可定位诊断。
+- **预算/取消**：预取消与中途取消分别得到 `Cancelled`，`usage` 与 `reads` 一致（`reads.len() <= class_headers`）。
+- **无关 Body 读取为零**：闭包请求后断言 `usage.method_bodies == 0`（除非显式请求目标方法 Body），且 `reads` 的 reason 集合不超过本次请求允许的理由。
+- **同 bytes 不同 origin/loader 不合并**：同一 class 字节放在两个 loader 的 roots 下，`reads` 与解析结果分别是两条记录/两个 `ResolvedMemberRef`。
+
 ## Risks / Trade-offs
 
 - [Risk] frame/phi/origin 或 jsr 克隆乘法膨胀 → 分配前计费及高扇出/多槽位用例；P1 输入有界不代替 IR 上界证明。
