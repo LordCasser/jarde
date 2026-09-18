@@ -810,6 +810,6 @@ message=throw site ... block: CanonicalBlockId { bci: 3, path: [] } ... names a 
 
 ### 交接后半的观察
 
-- `ir_frame_deferred` 现在**只剩一个触发点**：「未初始化值被用在只有翻转才能使其可读的位置」（`p2_frame` 的构造函数用例仍走这条）。
+- `ir_frame_deferred` 现在只剩一个触发点：**未初始化 token 被当作已初始化引用使用**（`getfield`/`athrow`/`areturn`/`ifnull`/`checkcast`/`instanceof`/作为调用参数；以及不适用的 `<init>` 与「receiver 已是已初始化引用」的 `<init>`）。**4.2 后半落地后**：构造函数用例已从 `Partial` 转为 `Completed`，边界见证改由新增的真字节 `new Test; ifnull` 用例承接（全部断言原样保留）。
 - **一处需注意的测试事实**：`invokespecial <init>` 的接收者若为**未初始化**引用会 defer，故构造调用样本用的是 `null` 接收者——这是**有意**不对操作数合法性做校验（4.1 判定线），已在用例文档中写明。
 - **新疑点（未改，单列）**：融合实际只成对合并两节点、不走更长的单后继链（吸收一步后剩余边的 `from` 仍是已被吸收的节点，`from != &head` 立即 break）。探针跑遍 `jarde-jvm` 全部用例未触发更长链，故当前与「super block」的文档描述只有二元组成立；改它会改变所有 body 的图形态，不属本片。

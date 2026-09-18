@@ -147,10 +147,12 @@ fn report_unimplemented(
 /// instead of an invented one. `canonical_cfg` is 3.5's contract over exactly those contexts:
 /// the bounded clone normalization, which publishes a canonical graph, stops under
 /// `ir_legacy_normalization_unbounded` when its own bound is reached, and is the artifact that
-/// makes the report's quality plane `Conservative`. `frame` is 4.1's contract over that graph:
-/// the descriptor-driven slot state of every block the entry reaches, which stops under
-/// `ir_frame_deferred` where the initialization conversions of 4.2 are what a body needs
-/// and under `ir_frame_inconsistent` where the bytes contradict themselves.
+/// makes the report's quality plane `Conservative`. `frame` is 4.1–4.2's contract over that graph:
+/// the descriptor-driven slot state of every block the entry reaches, with the initialization
+/// conversions of a constructor call applied to every alias of the token it was given, which stops
+/// under `ir_frame_deferred` where an uninitialized value stands in a place that would need a
+/// conversion this build does not define and under `ir_frame_inconsistent` where the bytes
+/// contradict themselves.
 fn run_method_analysis(
     content: &[ArtifactSnapshot],
     request: &crate::ir::MethodAnalysisRequest,
@@ -475,6 +477,7 @@ fn run_method_analysis(
                     name: &request.method.name.0,
                     descriptor: &request.method.descriptor.0,
                     owner: &declaration.this_class,
+                    super_class: declaration.super_class.as_deref(),
                     pool: &declaration.pool,
                     loader: &request.environment.runtime.load_domain.loader,
                 };
@@ -502,11 +505,12 @@ fn run_method_analysis(
                         frame_table = Some(table);
                     }
                     Ok(FrameOutcome::Unsupported { message }) => {
-                        // A state this build does not prove yet — an uninitialized value used
-                        // where only 4.2's initialization conversion would make it readable. The
-                        // phases before this one keep their facts, no `Frames` fact is published,
-                        // and the reason is the frame slice's own boundary code rather than a
-                        // claim about the bytes.
+                        // A state this build does not prove — an uninitialized value used where
+                        // only an initialized reference is meaningful, which no conversion here
+                        // defines and which this pass does not call illegal either. The phases
+                        // before this one keep their facts, no `Frames` fact is published, and the
+                        // reason is the frame slice's own boundary code rather than a claim about
+                        // the bytes.
                         let code = IR_FRAME_DEFERRED.to_string();
                         run.stages[index].state = StageState::Partial;
                         run.diagnostics.push(Diagnostic {
@@ -622,6 +626,14 @@ struct FrameDeclaration {
     access_flags: u16,
     /// Internal name of the class the member is declared in (`this_class`).
     this_class: Vec<u8>,
+    /// Internal name of that class's superclass (`super_class`), absent for `java/lang/Object`.
+    ///
+    /// The frame pass reads it for one decision: whether an `invokespecial <init>` of that class
+    /// is one of the two constructor calls JVMS 4.9.2 lets an instance initialization method make
+    /// on its own uninitialized `this`. It is the class file's own name, taken from the one
+    /// header read this pass already performs — no second class is read to learn a superclass
+    /// chain this request does not hold.
+    super_class: Option<Vec<u8>>,
     /// The class file's constant pool, in index order.
     pool: Vec<CpEntryFacts>,
 }
@@ -725,6 +737,12 @@ fn read_driver_method(
         declaration: FrameDeclaration {
             access_flags: member.access_flags,
             this_class: read.header.facts.this_class.raw().0.clone(),
+            super_class: read
+                .header
+                .facts
+                .super_class
+                .as_ref()
+                .map(|name| name.raw().0.clone()),
             pool: std::mem::take(&mut read.header.facts.constant_pool),
         },
     })

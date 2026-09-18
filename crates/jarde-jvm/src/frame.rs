@@ -69,18 +69,41 @@
 //! enumerable [`LogicalInput`] per input so a later value-flow consumer counts logical
 //! predecessors instead of raw edges.
 //!
-//! # The 4.2 boundary that is left
+//! # Initialization
 //!
-//! The initialization conversions — flipping `uninitializedThis`/new-site aliases after a
-//! successful `invokespecial <init>` — are still 4.2's work, not this slice's. 4.1 therefore
-//! states the distinction and stops where a body needs the flip: an uninitialized value may only
-//! be **moved** by a pure stack operation (`astore`/`aload`, the `dup*` family, `pop*`, `swap`),
-//! and any other consumer of one stops the body. The exception successor of a constructor call
-//! needs no separate rule: its input is the state at that call, which the flip of the normal
-//! successor cannot reach because the flip is what the call itself does.
+//! A `new` pushes an uninitialized value whose token is the [`NewSite`] of the instruction — the
+//! canonical node it runs in plus its own BCI — and a constructor's local 0 starts as
+//! [`Value::UninitializedThis`]. Both are **tokens**, not types: a token is initialized by exactly
+//! one instruction, the `invokespecial <init>` that constructs the object, and that call converts
+//! **every alias** of the token it is given — in the locals and on the operand stack alike — into
+//! an initialized reference. Nothing else converts a token, so two `new` sites stay two tokens
+//! however their values are copied around, and a token only one path initialized is not the other
+//! path's value.
 //!
-//! That stop is [`FrameOutcome::Unsupported`] — this build does not prove the state yet — and the
-//! driver reports it under `ir_frame_deferred`, which is a different fact from the
+//! Whether a constructor call is **applicable** to the token it took is decided from the class
+//! file's own names, never from "an `<init>` was called": `UninitializedThis` is converted by an
+//! `<init>` of the class that declares this constructor or of its `super_class` — the two calls
+//! JVMS 4.9.2 lets an instance initialization method make on its own `this` — and a `new`-site
+//! token by an `<init>` of the class its own `new` allocates. Any other `<init>` call stops the
+//! body: no conversion is defined for it, and whether such a body is legal is the verifier's
+//! question rather than this pass's.
+//!
+//! Before that call, a token may be **moved** by a pure stack operation (`astore`/`aload`, the
+//! `dup*` family, `pop*`, `swap`), and `UninitializedThis` may be stored through — as the target
+//! of a `putfield` of a field **the class being constructed declares**, which is the one
+//! pre-initialization access JVMS 4.10.1.9 adds to the moves. Every other consumer of a token
+//! stops the body. The exception successor of a constructor call needs no rule of its own: its
+//! input is the state **at** the call, taken before the call takes effect, so the conversion of
+//! the normal successor cannot reach the handler.
+//!
+//! # The boundary that is left
+//!
+//! A token consumed where only an initialized reference is meaningful — `ifnull`, `areturn`,
+//! `athrow`, `getfield`, an invocation that is not the applicable `<init>` — still stops the body:
+//! this build neither decides whether such a body is legal (that is verification, and the report
+//! states `verification` as `NotPerformed`) nor has a state to continue with, so it neither
+//! guesses nor calls the bytes contradictory. That stop is [`FrameOutcome::Unsupported`], which
+//! the driver reports under `ir_frame_deferred` — a different fact from the
 //! [`FrameOutcome::Inconsistent`] a contradiction of the bytes produces. Silently skipping it, or
 //! reporting it as a contradiction, is what the split exists to prevent.
 
@@ -97,10 +120,11 @@ use crate::canonical::{
     CanonicalThrowSite,
 };
 
-/// Stop code of a body this build cannot state the frames of yet.
+/// Stop code of a body this build does not state the frames of.
 ///
-/// It means "4.2's initialization conversions are missing here", never "the bytecode is wrong":
-/// the driver publishes the phases before this one and no `Frames` fact.
+/// It means "an uninitialized value stands where only an initialized reference is meaningful, and
+/// this pass neither converts it nor decides whether the bytes are legal", never "the bytecode is
+/// wrong": the driver publishes the phases before this one and no `Frames` fact.
 pub(crate) const IR_FRAME_DEFERRED: &str = "ir_frame_deferred";
 
 /// Stop code of a body whose bytes contradict themselves.
@@ -134,6 +158,14 @@ pub(crate) struct FrameMethod<'a> {
     pub(crate) descriptor: &'a [u8],
     /// Internal name of the declaring class, the type of an initialized `this`.
     pub(crate) owner: &'a [u8],
+    /// Internal name of the declaring class's superclass — the class file's own `super_class` —
+    /// or `None` for `java/lang/Object`, which declares none.
+    ///
+    /// A constructor's `UninitializedThis` is converted by an `<init>` of the class itself or of
+    /// this class, the two calls JVMS 4.9.2 permits it, and that decision is the only reader.
+    /// The class file names exactly these two: the pass reads no other header and holds no
+    /// superclass chain.
+    pub(crate) super_class: Option<&'a [u8]>,
     /// The class file's own constant pool, the source of every descriptor the opcode alone
     /// cannot decide: the `invoke*` shapes, the field accesses, `ldc`, `checkcast` and the array
     /// creations. It is the header read's fact, handed over instead of read a second time.
@@ -373,9 +405,10 @@ enum PoolEffect {
     Field { write: bool, target: bool },
     /// An invocation: `receiver` says an object reference is consumed in front of the arguments.
     /// The descriptor decides the argument slots and the return value, and an `<init>` call
-    /// produces nothing here — the initialization conversion of its receiver is 4.2's.
+    /// produces nothing: what it does produce is the initialization of the token it was given,
+    /// which [`constructor_call`] converts when this call is the applicable one for that token.
     Invoke { receiver: bool },
-    /// `new`: push an uninitialized value whose new-site is this instruction's BCI.
+    /// `new`: push an uninitialized value whose site is this instruction, in this block.
     New,
     /// `newarray`: pop the length, push the array type of the element code.
     NewArray,
@@ -916,8 +949,9 @@ impl Frame {
     ///
     /// `moves` says whether the instruction is one of the pure stack operations
     /// (`astore`/`aload`, `dup*`, `pop*`, `swap`): those carry an uninitialized value without
-    /// interpreting it. Every other consumer of one stops the body — 4.2's initialization
-    /// analysis is what would make that state usable — so the run neither guesses nor calls the
+    /// interpreting it. A token of a `new` or of an uninitialized `this` reaches its initialized
+    /// state through the constructor call that constructs it and through nothing else, so every
+    /// other consumer of one stops the body — the run neither guesses a type for it nor calls the
     /// body inconsistent.
     fn pop_ty(&mut self, ty: Ty, bci: u32, opcode: u8, moves: bool) -> Norm<Value> {
         let value = self.take(bci, opcode)?;
@@ -925,8 +959,8 @@ impl Frame {
             if !moves || ty != Ty::Ref {
                 return Err(Problem::Unproven(format!(
                     "`{opcode:#04x}` at BCI {bci} consumes the uninitialized value {value:?} as \
-                     something other than a moved reference; the initialization conversions of \
-                     4.2 are what would make this state usable"
+                     something other than a moved reference; a token is moved, or converted by the \
+                     `<init>` call that constructs it, and this instruction does neither"
                 )));
             }
             return Ok(value);
@@ -937,6 +971,74 @@ impl Frame {
             ));
         }
         Ok(value)
+    }
+
+    /// Removes the receiver of an `invoke*`.
+    ///
+    /// This is the one operand a token may be: the applicable `invokespecial <init>` takes the
+    /// uninitialized value it converts, and the caller decides from the pool entry's own name
+    /// whether the call it took it for is that call. Every other consumer of a token is refused
+    /// here exactly as [`Frame::pop_ty`] refuses it, and an initialized reference is the ordinary
+    /// answer.
+    fn take_receiver(&mut self, bci: u32, opcode: u8) -> Norm<Value> {
+        let value = self.take(bci, opcode)?;
+        if value.is_uninitialized() || Ty::Ref.accepts(&value) {
+            return Ok(value);
+        }
+        inconsistent(format!(
+            "`{opcode:#04x}` at BCI {bci} needs a Ref where the stack holds {value:?}"
+        ))
+    }
+
+    /// Removes the target reference of a field access, under the one rule that lets an
+    /// uninitialized `this` be given to a `putfield` (JVMS 4.10.1.9).
+    ///
+    /// `own_field` is the caller's decision that the restricted form holds: the field is declared
+    /// by the class being constructed — the class whose instance initialization method this body
+    /// is, since nothing but that entry makes an uninitialized `this`. Only then may
+    /// `UninitializedThis` stand here, and it is the only token that may: a value a `new` produced
+    /// is constructed by its own `<init>` call, and JVMS 4.10.1.9 gives it no field assignment.
+    /// Everything else stops the body under the boundary code instead of being reported as a
+    /// contradiction of bytes this pass cannot call illegal — being certain of *that* is the
+    /// verifier's work.
+    fn pop_field_target(&mut self, bci: u32, opcode: u8, own_field: bool) -> Norm<()> {
+        let value = self.take(bci, opcode)?;
+        match value {
+            Value::UninitializedThis if own_field => Ok(()),
+            Value::UninitializedThis => Err(Problem::Unproven(format!(
+                "`{opcode:#04x}` at BCI {bci} stores the uninitialized `this` through a field the \
+                 class being constructed does not declare; the pre-initialization `putfield` of \
+                 JVMS 4.10.1.9 reaches only the declaring class's own fields"
+            ))),
+            value if value.is_uninitialized() => Err(Problem::Unproven(format!(
+                "`{opcode:#04x}` at BCI {bci} consumes the uninitialized value {value:?} as the \
+                 target of a field access; a value a `new` produced is initialized by its own \
+                 `<init>` call, and JVMS 4.10.1.9 gives it no field assignment"
+            ))),
+            value if Ty::Ref.accepts(&value) => Ok(()),
+            value => inconsistent(format!(
+                "`{opcode:#04x}` at BCI {bci} needs a Ref where the stack holds {value:?}"
+            )),
+        }
+    }
+
+    /// Converts every alias of one token into the initialized reference a constructor call
+    /// produced — in the locals and on the operand stack alike — and answers how many slots it
+    /// converted.
+    ///
+    /// Equality **is** the token's identity ([`Value::Uninitialized`] carries its [`NewSite`]),
+    /// which is what keeps two allocations apart: only the aliases of the token this call was
+    /// given are converted, while a value another `new` produced, or the `UninitializedThis` of
+    /// a constructor, is not this token and is left as it stands.
+    fn convert_token(&mut self, token: &Value, initialized: &Value) -> usize {
+        let mut converted = 0;
+        for slot in self.locals.iter_mut().chain(self.stack.iter_mut()) {
+            if slot == token {
+                *slot = initialized.clone();
+                converted += 1;
+            }
+        }
+        converted
     }
 
     /// Reads the local the operands name, which must hold a value of this slot class, and returns
@@ -957,8 +1059,8 @@ impl Frame {
             Value::UninitializedThis | Value::Uninitialized { .. } => {
                 Err(Problem::Unproven(format!(
                     "`{opcode:#04x}` at BCI {bci} reads the uninitialized value {value:?} from local \
-                 {index} as a {ty:?}; the initialization conversions of 4.2 are what would make \
-                 this state usable"
+                 {index} as a {ty:?}; a token is read as a reference, moved, or converted by the \
+                 `<init>` call that constructs it"
                 )))
             }
             value if ty.accepts(&value) => Ok(value),
@@ -1054,9 +1156,11 @@ fn merge_local(left: &Value, right: &Value) -> Value {
 ///
 /// The stack is the half that must agree: depth and slot classes decide whether the body can hold
 /// a value at all, so a disagreement here is `ir_frame_inconsistent` and not a `Top`.
-/// Uninitialized values are the one case this build does not decide — merging one with a different
-/// state is exactly the alias conversion 4.2 owns — so they stop the body under their own code
-/// instead of being reported as a contradiction.
+/// Uninitialized values are the one case this build does not decide: two tokens are two values,
+/// and a token reaches its initialized state only through the constructor call that was given
+/// *that* token, so a merge of them has no state that keeps either path's meaning. They stop the
+/// body under their own code instead of being reported as a contradiction, or being merged into a
+/// token no path holds.
 fn merge_stack(left: &[Value], right: &[Value], block: &CanonicalBlockId) -> Norm<Vec<Value>> {
     if left.len() != right.len() {
         return inconsistent(format!(
@@ -1351,6 +1455,162 @@ fn pool_method_descriptor(
     }
 }
 
+/// The class one `Fieldref` operand names as the field's declaring class.
+///
+/// The restricted `putfield` of JVMS 4.10.1.9 is decided on this name, and the kind is the one
+/// [`pool_field_descriptor`] already required of a field access.
+fn pool_field_owner<'a>(
+    method: &'a FrameMethod<'_>,
+    operands: &InstructionOperands,
+    bci: u32,
+    opcode: u8,
+) -> Norm<&'a [u8]> {
+    let entry = pool_entry(method.pool, operands, bci, opcode)?;
+    match &entry.kind {
+        CpEntryKind::FieldRef { owner, .. } => Ok(&owner.0),
+        other => inconsistent(format!(
+            "`{opcode:#04x}` at BCI {bci} names a {} entry where a field reference is required",
+            cp_kind_name(other)
+        )),
+    }
+}
+
+/// The class an `invokespecial <init>` constructs, when the entry it names is a constructor call
+/// at all.
+///
+/// `None` says "no initialization conversion is defined here": the instruction is not an
+/// `invokespecial`, or the name the constant pool gives the method is not `<init>` — the name is
+/// the entry's own fact, and an `invokevirtual` of a method called `<init>` is not a constructor
+/// call. The kind is the pairing [`pool_method_descriptor`] already required.
+fn constructor_target<'a>(
+    method: &'a FrameMethod<'_>,
+    operands: &InstructionOperands,
+    bci: u32,
+    opcode: u8,
+) -> Norm<Option<&'a [u8]>> {
+    if opcode != 0xb7 {
+        return Ok(None);
+    }
+    let entry = pool_entry(method.pool, operands, bci, opcode)?;
+    match &entry.kind {
+        CpEntryKind::MethodRef { owner, name, .. }
+        | CpEntryKind::InterfaceMethodRef { owner, name, .. }
+            if name.0.as_slice() == b"<init>" =>
+        {
+            Ok(Some(&owner.0))
+        }
+        _ => Ok(None),
+    }
+}
+
+/// The class one `new` site allocates, read from the instruction the site names.
+///
+/// The class is a fact of the **instruction**: two clones of one shared subroutine map back to
+/// one `new`, allocate one class, and are told apart by the token's other half ([`NewSite::block`]).
+/// Storing the name in the value would put a second copy of it in every alias — state the frame
+/// carries, merges and would have to charge for — so it is read here, from the decoded `new` the
+/// site points at, on the one instruction that needs it: the constructor call that converts the
+/// token.
+fn new_site_class(
+    method: &FrameMethod<'_>,
+    facts: &MethodCodeFacts,
+    new_site: &NewSite,
+    bci: u32,
+) -> Norm<Vec<u8>> {
+    let operands = facts.operands();
+    let position = facts
+        .instructions
+        .partition_point(|instruction| instruction.bci < new_site.bci);
+    let (Some(instruction), Some(operands)) =
+        (facts.instructions.get(position), operands.get(position))
+    else {
+        return inconsistent(format!(
+            "the uninitialized value a constructor call at BCI {bci} converts names the `new` at \
+             BCI {}, which is not an instruction with operand facts of this body",
+            new_site.bci
+        ));
+    };
+    let effective = operands.effective_opcode;
+    if instruction.bci != new_site.bci || effective != 0xbb {
+        return inconsistent(format!(
+            "the uninitialized value a constructor call at BCI {bci} converts names a `new` at \
+             BCI {}, where the decoded body holds `{effective:#04x}`",
+            new_site.bci
+        ));
+    }
+    pool_class_name(method, operands, new_site.bci, effective)
+}
+
+/// The initialization conversion an `invokespecial <init>` performs on the token it was given.
+///
+/// The call is **applicable** to one of the two tokens only when the class file says so.
+/// `UninitializedThis` is converted by an `<init>` of the class that declares this constructor or
+/// of its `super_class` — the two calls JVMS 4.9.2 lets an instance initialization method make on
+/// its own `this` — and a token from `new` by an `<init>` of the class that `new` allocated. Any
+/// other constructor call, and any invocation that does not name an `<init>` at all, stops the
+/// body: no conversion is defined for it, and whether such a body is legal is the verifier's
+/// question, which this pass does not answer.
+///
+/// On an applicable call the token becomes an initialized reference to the class the conversion
+/// is *of*: the class being constructed for `this` — its own class, whichever of the two allowed
+/// calls did it — and the allocated class for a `new` site. Every alias of the token is
+/// converted, in the locals and on the stack alike, and no other value is touched: the exception
+/// successor of this call keeps the token, because its input was taken before the call.
+fn constructor_call(
+    method: &FrameMethod<'_>,
+    facts: &MethodCodeFacts,
+    operands: &InstructionOperands,
+    bci: u32,
+    opcode: u8,
+    token: &Value,
+    frame: &mut Frame,
+) -> Norm<()> {
+    let Some(class) = constructor_target(method, operands, bci, opcode)? else {
+        return Err(Problem::Unproven(format!(
+            "`{opcode:#04x}` at BCI {bci} takes the uninitialized value {token:?} as its receiver \
+             and does not name an `<init>` of an `invokespecial`; only the constructor call that \
+             constructs a value may take one"
+        )));
+    };
+    let initialized = match token {
+        Value::UninitializedThis => {
+            if class != method.owner && Some(class) != method.super_class {
+                return Err(Problem::Unproven(format!(
+                    "`{opcode:#04x}` at BCI {bci} invokes the `<init>` of `{}` on the \
+                     uninitialized `this` of `{}`; the calls JVMS 4.9.2 lets a constructor make \
+                     on its own `this` are its own class's and its direct superclass's",
+                    String::from_utf8_lossy(class),
+                    String::from_utf8_lossy(method.owner)
+                )));
+            }
+            named(method.owner.to_vec(), method)
+        }
+        Value::Uninitialized { new_site } => {
+            let allocated = new_site_class(method, facts, new_site, bci)?;
+            if allocated.as_slice() != class {
+                return Err(Problem::Unproven(format!(
+                    "`{opcode:#04x}` at BCI {bci} invokes the `<init>` of `{}` on the value the \
+                     `new` at BCI {} allocated, which is a `{}`; only the allocated class's own \
+                     `<init>` constructs it",
+                    String::from_utf8_lossy(class),
+                    new_site.bci,
+                    String::from_utf8_lossy(&allocated)
+                )));
+            }
+            named(allocated, method)
+        }
+        // The caller asks this about an uninitialized value alone.
+        other => {
+            return inconsistent(format!(
+                "BCI {bci} asks for the initialization conversion of {other:?}, which is not an \
+                 uninitialized value"
+            ));
+        }
+    };
+    frame.convert_token(token, &initialized);
+    Ok(())
+}
+
 /// The constant-pool kinds one invocation opcode may name, as the refusal says them.
 ///
 /// `invokevirtual` is the call of a class method. Since SE 8 the two other opcodes that take one
@@ -1418,9 +1678,12 @@ fn array_of(name: &[u8]) -> Vec<u8> {
 ///
 /// `block` is the canonical node the instruction runs in, which is the context a value's identity
 /// needs: a `new` is told apart from the same original `new` in another clone of its subroutine by
-/// the node, not by the BCI ([`NewSite`]).
+/// the node, not by the BCI ([`NewSite`]). `facts` is the decoded body beside the operand facts,
+/// read when a constructor call needs the class its receiver's `new` allocated — a fact of the
+/// instruction, which the frame does not carry.
 fn apply(
     method: &FrameMethod<'_>,
+    facts: &MethodCodeFacts,
     entry: Entry,
     block: &CanonicalBlockId,
     bci: u32,
@@ -1479,7 +1742,9 @@ fn apply(
             }
             Ok(())
         }
-        Stack::Constant(effect) => apply_constant(method, effect, block, bci, operands, frame),
+        Stack::Constant(effect) => {
+            apply_constant(method, facts, effect, block, bci, operands, frame)
+        }
     }
 }
 
@@ -1619,6 +1884,7 @@ fn apply_form(form: Form, bci: u32, opcode: u8, frame: &mut Frame) -> Norm<()> {
 /// Applies one instruction whose shape the class file decides.
 fn apply_constant(
     method: &FrameMethod<'_>,
+    facts: &MethodCodeFacts,
     effect: PoolEffect,
     block: &CanonicalBlockId,
     bci: u32,
@@ -1699,7 +1965,15 @@ fn apply_constant(
                 // `putfield` consumes the value over the target; `putstatic` the value alone.
                 frame.pop_ty(ty, bci, opcode, false)?;
                 if target {
-                    frame.pop_ty(Ty::Ref, bci, opcode, false)?;
+                    // JVMS 4.10.1.9's one addition to the moves: an instance initialization method
+                    // may assign a field **its own class declares** through the `this` it has not
+                    // initialized yet. Holding an uninitialized `this` at all means this body *is*
+                    // such a method — it is the entry state of an `<init>` and nothing else makes
+                    // one — so the rule's two conditions reduce to the field's declaring class,
+                    // which is the class file's own name.
+                    let own_field =
+                        pool_field_owner(method, operands, bci, opcode)? == method.owner;
+                    frame.pop_field_target(bci, opcode, own_field)?;
                 }
                 Ok(())
             } else {
@@ -1718,11 +1992,27 @@ fn apply_constant(
                 frame.pop_ty(param.ty, bci, opcode, false)?;
             }
             if receiver {
-                // An `invokespecial <init>` is the call that flips its receiver's initialization
-                // state. This slice records the descriptor's shape — an `<init>` returns `void` —
-                // and stops on the receiver above instead of claiming the flip, which is 4.2's
-                // analysis.
-                frame.pop_ty(Ty::Ref, bci, opcode, false)?;
+                // An `invokespecial <init>` is the one instruction that may take an uninitialized
+                // receiver, and its normal completion is what converts every alias of the token it
+                // was given. Whether this call is the applicable one, and what it converts the
+                // token to, is decided from the class file's own names.
+                let target = frame.take_receiver(bci, opcode)?;
+                if target.is_uninitialized() {
+                    constructor_call(method, facts, operands, bci, opcode, &target, frame)?;
+                } else if constructor_target(method, operands, bci, opcode)?.is_some() {
+                    // An `<init>` call on a receiver that is already initialized. JVMS 4.9.2 says
+                    // an instance initialization method must never be invoked on an initialized
+                    // instance, and this pass has exactly one transition for a constructor call —
+                    // the conversion of a token — which does not apply here. Carrying on as if it
+                    // were an ordinary `void` call would be this pass reading a meaning into bytes
+                    // it cannot vouch for, so the body stops at the boundary instead.
+                    return Err(Problem::Unproven(format!(
+                        "`{opcode:#04x}` at BCI {bci} invokes an `<init>` on {target:?}, which is \
+                         not an uninitialized value; the only transition a constructor call has \
+                         here is the initialization of the value it constructs, and whether such a \
+                         call is legal at all is the verifier's question"
+                    )));
+                }
             }
             match returns {
                 Some(returns) => frame.push(value_of(returns.ty, returns.name, method), bci),
@@ -1909,8 +2199,8 @@ fn transfer_block(
         let row = TABLE[usize::from(operands.effective_opcode)];
         if let Some(site) = sites.get(&instruction.bci) {
             // The snapshot is taken *before* the instruction is applied: this is the state the
-            // site's own exception successor is entered with, and the state the 4.2 alias flip of
-            // a constructor call must not be able to reach.
+            // site's own exception successor is entered with, and the state the alias conversion
+            // of a constructor call must not be able to reach.
             throw_points.push(ThrowPoint {
                 bci: instruction.bci,
                 handlers: site.handlers.clone(),
@@ -1919,6 +2209,7 @@ fn transfer_block(
         }
         apply(
             method,
+            facts,
             row,
             &block.id,
             instruction.bci,
@@ -2022,7 +2313,8 @@ fn caught_reference(method: &FrameMethod<'_>, row: &CanonicalHandlerRow) -> Norm
 /// The frame the method's own entry block is entered with: the parameters in the slots their
 /// descriptor gives them, and `this` where the declaration puts it.
 ///
-/// A constructor's local 0 is [`Value::UninitializedThis`] — the token 4.2 flips — and every other
+/// A constructor's local 0 is [`Value::UninitializedThis`] — the token the constructor call of
+/// its own class or of its superclass converts — and every other
 /// instance method's is an initialized reference to the declaring class. The descriptor and the
 /// access flags decide both; nothing here guesses from the body.
 fn entry_frame(method: &FrameMethod<'_>, facts: &MethodCodeFacts) -> Norm<Frame> {
@@ -2070,9 +2362,10 @@ fn entry_frame(method: &FrameMethod<'_>, facts: &MethodCodeFacts) -> Norm<Frame>
 pub(crate) enum FrameOutcome {
     /// The frames of every block the method's entry reaches.
     Frames(Box<FrameTable>),
-    /// This build does not state the frames of this body yet: the initialization conversions
-    /// (`uninitializedThis` and new-site aliases) are 4.2's. The message names the value and the
-    /// instruction that needed them.
+    /// This build does not state the frames of this body: an uninitialized value stands where only
+    /// an initialized reference is meaningful, and this pass neither converts it nor decides
+    /// whether the bytes are legal. The message names the value and the instruction that needed
+    /// them.
     Unsupported { message: String },
     /// The body contradicts itself; the message names the slot and the class file's own operand.
     Inconsistent { message: String },
@@ -2522,6 +2815,7 @@ mod tests {
             name: b"method",
             descriptor,
             owner: b"Test",
+            super_class: Some(b"java/lang/Object"),
             pool: &fixture.pool,
             loader,
         }
@@ -3339,6 +3633,7 @@ mod tests {
             name: b"method",
             descriptor,
             owner: b"Test",
+            super_class: Some(b"java/lang/Object"),
             pool: &synthetic.pool,
             loader: &loader,
         };
@@ -3511,6 +3806,7 @@ mod tests {
             name: b"method",
             descriptor: b"(JD)V",
             owner: b"Test",
+            super_class: Some(b"java/lang/Object"),
             pool: &synthetic.pool,
             loader: &loader,
         };
@@ -3543,6 +3839,7 @@ mod tests {
             name: b"<init>",
             descriptor: b"()V",
             owner: b"Test",
+            super_class: Some(b"java/lang/Object"),
             pool: &synthetic.pool,
             loader: &loader,
         };
@@ -3622,12 +3919,16 @@ mod tests {
         );
     }
 
-    /// An uninitialized value may only be moved: consuming it as something else stops the body
-    /// under the 4.1 boundary code, and never as a contradiction of its bytes.
+    /// A token may only be moved: consuming one as an initialized reference stops the body under
+    /// this build's boundary code, and never as a contradiction of its bytes.
+    ///
+    /// That stop outlives the 4.2 conversions. What it reports is no longer "the conversion is
+    /// missing" but "no conversion is defined for this use, and whether such a body is legal at
+    /// all is the verifier's question, which this pass does not answer".
     #[test]
     fn consuming_an_uninitialized_value_stops_the_body() {
         // 0  new Test (constant pool 2)   stack <- uninitialized(0)
-        // 3  ifnull 6                     consumes it as a reference: 4.2's analysis, not this one
+        // 3  ifnull 6                     consumes it as a reference, which it is not yet
         // 6  return
         let fixture = fixture_body(
             &[
@@ -3639,8 +3940,8 @@ mod tests {
         );
         let message = unproven(frames_of(&fixture));
         assert!(
-            message.contains("uninitialized") && message.contains("4.2"),
-            "the stop names the state and the slice that owns it: {message}"
+            message.contains("uninitialized") && message.contains("moved, or converted"),
+            "the stop names the state and why this instruction may not take it: {message}"
         );
 
         // The same value moved by a pure stack operation is legal: `dup` then `pop` carries it.
@@ -3654,6 +3955,542 @@ mod tests {
             4,
         );
         assert!(matches!(frames_of(&fixture), FrameOutcome::Frames(_)));
+    }
+
+    // -- Initialization: the `new`/`<init>` chain and the uninitialized `this` -----------------
+
+    /// One `Methodref` naming a constructor of the caller's class: the entry an
+    /// `invokespecial <init>` names, whose class the conversions judge their target by.
+    fn constructor_ref(index: u16, owner: &[u8], descriptor: &[u8]) -> CpEntryFacts {
+        CpEntryFacts {
+            index,
+            span: ByteSpan::new(CODE_OFFSET, 0),
+            kind: CpEntryKind::MethodRef {
+                class_index: 0,
+                name_and_type_index: 0,
+                owner: JvmBytes(owner.to_vec()),
+                name: JvmBytes(b"<init>".to_vec()),
+                descriptor: JvmBytes(descriptor.to_vec()),
+            },
+        }
+    }
+
+    /// One `Fieldref` of a synthetic pool: the entry whose **declaring class** the restricted
+    /// `putfield` of JVMS 4.10.1.9 reads beside its descriptor.
+    fn field_ref(index: u16, owner: &[u8], name: &[u8], descriptor: &[u8]) -> CpEntryFacts {
+        CpEntryFacts {
+            index,
+            span: ByteSpan::new(CODE_OFFSET, 0),
+            kind: CpEntryKind::FieldRef {
+                class_index: 0,
+                name_and_type_index: 0,
+                owner: JvmBytes(owner.to_vec()),
+                name: JvmBytes(name.to_vec()),
+                descriptor: JvmBytes(descriptor.to_vec()),
+            },
+        }
+    }
+
+    /// The initialized reference a conversion produces for one class name, anchored to the loader
+    /// every fixture of this module uses.
+    fn initialized(name: &[u8]) -> Value {
+        Value::Ref(RefType::Named {
+            name: name.to_vec(),
+            loader: Box::new(LoaderId("app".to_string())),
+        })
+    }
+
+    /// The token of one value, or the panic that says it is not an uninitialized one.
+    fn token_of(value: &Value) -> &NewSite {
+        match value {
+            Value::Uninitialized { new_site } => new_site,
+            other => panic!("the slot must hold an uninitialized token, got {other:?}"),
+        }
+    }
+
+    /// One run of the pass over a **decoded** fixture body as the constructor of `Test`, whose
+    /// class file names `java/lang/Object` as its superclass.
+    fn constructor_of(fixture: &Fixture, descriptor: &[u8]) -> FrameOutcome {
+        let loader = LoaderId("app".to_string());
+        let method = FrameMethod {
+            access_flags: 0,
+            name: b"<init>",
+            descriptor,
+            owner: b"Test",
+            super_class: Some(b"java/lang/Object"),
+            pool: &fixture.pool,
+            loader: &loader,
+        };
+        frames(&fixture.facts, &fixture.canonical, &method, &mut budget())
+            .expect("a legal run is answered")
+    }
+
+    /// The same for one synthetic body.
+    fn constructor_frames(synthetic: &Synthetic, descriptor: &[u8]) -> FrameOutcome {
+        let loader = LoaderId("app".to_string());
+        let method = FrameMethod {
+            access_flags: 0,
+            name: b"<init>",
+            descriptor,
+            owner: b"Test",
+            super_class: Some(b"java/lang/Object"),
+            pool: &synthetic.pool,
+            loader: &loader,
+        };
+        frames(
+            &synthetic.facts,
+            &synthetic.canonical,
+            &method,
+            &mut budget(),
+        )
+        .expect("a legal run is answered")
+    }
+
+    /// The applicable `invokespecial <init>` converts **every alias** of the token it was given —
+    /// the locals and the operand stack alike — into an initialized reference, and it converts
+    /// only that token's aliases.
+    #[test]
+    fn a_constructor_call_initializes_every_alias_of_one_new_site() {
+        // 0  new Test (#2)                 stack <- the token of site 0
+        // 3  dup                           one alias into local 1
+        // 4  astore_1
+        // 5  dup                           one alias into local 2
+        // 6  astore_2
+        // 7  dup                           one alias stays on the stack
+        // 8  invokespecial Test.<init>()V (#18)  -- the applicable call
+        // 11 (the diamond's condition; both arms reach the join unchanged)
+        let (mut code, join) = diamond(
+            &[
+                0xbb, 0x00, 0x02, // new Test
+                0x59, 0x4c, // dup, astore_1
+                0x59, 0x4d, // dup, astore_2
+                0x59, // dup
+                0xb7, 0x00, 0x12, // invokespecial #18
+            ],
+            &[0x03, 0x57], // iconst_0, pop
+            &[0x03, 0x57],
+        );
+        code.push(0xb1); // return
+        let fixture = fixture_body(&code, 4);
+        let table = frames_or_panic(frames_of(&fixture));
+        let entry = entry_of(&table, join);
+        assert_eq!(
+            entry.locals[1],
+            initialized(b"Test"),
+            "the alias in local 1 is converted, not only the receiver that was consumed"
+        );
+        assert_eq!(
+            entry.locals[2],
+            initialized(b"Test"),
+            "and the alias in local 2 as well"
+        );
+        assert_eq!(
+            entry.stack,
+            vec![initialized(b"Test")],
+            "and the alias the call did not consume, which is still on the stack"
+        );
+    }
+
+    /// The conversion is one comparison against one token, and that is what makes "every alias"
+    /// exact: it reaches the locals and the operand stack alike, and it leaves every other value
+    /// as it stands — the token of another `new` included, however equal the two values' shapes
+    /// are.
+    #[test]
+    fn the_conversion_reaches_every_alias_and_no_other_value() {
+        let site = |bci| NewSite {
+            block: CanonicalBlockId {
+                bci: 0,
+                path: Vec::new(),
+            },
+            bci,
+        };
+        let token = Value::Uninitialized { new_site: site(0) };
+        let other = Value::Uninitialized { new_site: site(3) };
+        let mut frame = Frame {
+            locals: vec![token.clone(), other.clone(), Value::Top],
+            stack: vec![token.clone(), other.clone()],
+        };
+        let converted = frame.convert_token(&token, &Value::Int);
+        assert_eq!(
+            converted, 2,
+            "one alias in the locals and one on the stack, and no other slot"
+        );
+        assert_eq!(
+            frame.locals,
+            vec![Value::Int, other.clone(), Value::Top],
+            "the alias in local 0 is converted and local 1's own token is not"
+        );
+        assert_eq!(
+            frame.stack,
+            vec![Value::Int, other],
+            "the stack is read the same way"
+        );
+    }
+
+    /// Every move of the `dup`/`pop`/`swap` family and both local accesses carry a token without
+    /// interpreting it: `swap` exchanges it with a basic value, `pop` takes it, and `aload`/`astore`
+    /// carry it — and none of them converts it, because a token is converted by the constructor
+    /// call that constructs it and by nothing else.
+    #[test]
+    fn the_moves_carry_a_token_without_converting_it() {
+        // 0  new Test (#2)       stack <- the token of site 0
+        // 3  dup                 one alias into local 1
+        // 4  astore_1
+        // 5  iconst_0            a basic value to exchange with
+        // 6  swap                the token moves past it
+        // 7  pop                 ... and is taken as a value
+        // 8  pop
+        // 9  aload_1             the alias again, into local 2
+        // 10 astore_2
+        let (mut code, join) = diamond(
+            &[
+                0xbb, 0x00, 0x02, // new Test
+                0x59, 0x4c, // dup, astore_1
+                0x03, 0x5f, // iconst_0, swap
+                0x57, 0x57, // pop, pop
+                0x2b, 0x4d, // aload_1, astore_2
+            ],
+            &[0x03, 0x57], // iconst_0, pop
+            &[0x03, 0x57],
+        );
+        code.push(0xb1); // return
+        let fixture = fixture_body(&code, 3);
+        let table = frames_or_panic(frames_of(&fixture));
+        let entry = entry_of(&table, join);
+        let site = NewSite {
+            block: CanonicalBlockId {
+                bci: 0,
+                path: Vec::new(),
+            },
+            bci: 0,
+        };
+        assert_eq!(
+            token_of(&entry.locals[1]),
+            &site,
+            "the alias copied into local 1 is the token of the `new`, not a reference"
+        );
+        assert_eq!(
+            token_of(&entry.locals[2]),
+            &site,
+            "and the one `aload`/`astore` carried into local 2 is the same token"
+        );
+    }
+
+    /// Two `new`s of one class are two tokens: the constructor call of one converts its own
+    /// aliases and leaves the other value uninitialized.
+    #[test]
+    fn two_new_sites_are_two_tokens_one_call_does_not_convert() {
+        // 0  new Test (#2)                 site 0 -> local 1
+        // 3  astore_1
+        // 4  new Test (#2)                 site 4 -> local 2
+        // 7  astore_2
+        // 8  aload_1
+        // 9  invokespecial Test.<init>()V (#18)  -- constructs the value of local 1 only
+        let (mut code, join) = diamond(
+            &[
+                0xbb, 0x00, 0x02, // new Test
+                0x4c, // astore_1
+                0xbb, 0x00, 0x02, // new Test
+                0x4d, // astore_2
+                0x2b, // aload_1
+                0xb7, 0x00, 0x12, // invokespecial #18
+            ],
+            &[0x03, 0x57],
+            &[0x03, 0x57],
+        );
+        code.push(0xb1);
+        let fixture = fixture_body(&code, 4);
+        let table = frames_or_panic(frames_of(&fixture));
+        let entry = entry_of(&table, join);
+        assert_eq!(
+            entry.locals[1],
+            initialized(b"Test"),
+            "the site the call was given is initialized"
+        );
+        assert_eq!(
+            token_of(&entry.locals[2]).bci,
+            4,
+            "the other site is not converted by a call that never saw its token"
+        );
+        assert!(
+            entry.locals[2].is_uninitialized(),
+            "and it is still an uninitialized value: {:?}",
+            entry.locals[2]
+        );
+    }
+
+    /// Two paths that hold **different** tokens in one local reach their join with an unusable
+    /// slot rather than with one of the tokens: a token belongs to one `new` site and to no other,
+    /// so the local merge answers `Top` — the rule local merging always had — and a later read of
+    /// that slot is where the failure belongs.
+    #[test]
+    fn two_new_sites_of_two_paths_do_not_merge_into_one_token() {
+        let (mut code, join) = diamond(
+            &[],
+            &[0xbb, 0x00, 0x02, 0x4d], // new Test; astore_2
+            &[0xbb, 0x00, 0x02, 0x4d], // new Test; astore_2
+        );
+        code.push(0xb1);
+        let fixture = fixture_body(&code, 4);
+        let table = frames_or_panic(frames_of(&fixture));
+        assert_eq!(
+            entry_of(&table, join).locals[2],
+            Value::Top,
+            "the two sites are two tokens, and the slot answers neither of them"
+        );
+    }
+
+    /// A constructor's `this` is converted by an `<init>` of its own class or of its
+    /// `super_class` — the two calls JVMS 4.9.2 allows it — and the reference it becomes is the
+    /// class being constructed, whichever of the two calls did it.
+    #[test]
+    fn a_constructor_call_reaches_the_own_class_or_the_superclass() {
+        // 0  aload_0                        the uninitialized `this`
+        // 1  invokespecial Test.<init>()V (#18)      -- the class's own constructor
+        // 4  aload_0 / astore_1             the same `this`, now a reference
+        let (mut code, join) = diamond(
+            &[
+                0x2a, // aload_0
+                0xb7, 0x00, 0x12, // invokespecial #18
+                0x2a, 0x4c, // aload_0, astore_1
+            ],
+            &[0x03, 0x57],
+            &[0x03, 0x57],
+        );
+        code.push(0xb1);
+        let fixture = fixture_body(&code, 4);
+        let table = frames_or_panic(constructor_of(&fixture, b"()V"));
+        let entry = entry_of(&table, join);
+        assert_eq!(
+            entry.locals[0],
+            initialized(b"Test"),
+            "the receiver's own slot is converted by its class's `<init>`"
+        );
+        assert_eq!(
+            entry.locals[1],
+            initialized(b"Test"),
+            "and a load after the call pushes the initialized reference"
+        );
+
+        // The superclass's constructor is the other applicable call, and the class it converts
+        // `this` into is still the class being constructed.
+        let (mut code, join) = diamond(
+            &[
+                0x2a, // aload_0
+                0xb7, 0x00, 0x13, // invokespecial #19: java/lang/Object.<init>()V
+                0x2a, 0x4c, // aload_0, astore_1
+            ],
+            &[0x03, 0x57],
+            &[0x03, 0x57],
+        );
+        code.push(0xb1);
+        let fixture = fixture_body(&code, 4);
+        let table = frames_or_panic(constructor_of(&fixture, b"()V"));
+        let entry = entry_of(&table, join);
+        assert_eq!(
+            entry.locals[0],
+            initialized(b"Test"),
+            "`super.<init>` converts the `this` of the class being constructed, not of the \
+             superclass whose constructor ran"
+        );
+        assert_eq!(entry.locals[1], initialized(b"Test"));
+    }
+
+    /// The normal successor of a constructor call is converted and its **exception** successor is
+    /// not: the state a handler is entered with is the state at the call, taken before the call
+    /// took effect. The two successors of one instruction do not share a state.
+    #[test]
+    fn a_constructor_call_leaves_its_exception_input_unconverted() {
+        // A constructor of `Test` calling `super.<init>`: the block below performs the call and
+        // the record protects exactly that block, so both successors of the call are entered from
+        // it — the normal one through the diamond, the handler through the exception edge.
+        //
+        // 0    aload_0                       the uninitialized `this`
+        // 1..3 invokespecial java/lang/Object.<init>()V (#19)
+        // 4    iconst_0 / 5..6 ifeq 12
+        // 8    nop                           the then arm
+        // 9..11 goto 13
+        // 12   nop                           the else arm
+        // 13   return                        the join: two predecessors, so not fused away
+        // 14   pop / 15 return               the handler entry
+        let (mut code, join) = diamond(&[0x2a, 0xb7, 0x00, 0x13], &[0x00], &[0x00]);
+        code.push(0xb1); // return
+        code.push(0x57); // pop
+        code.push(0xb1); // return
+        let fixture = fixture_body(&code, 4);
+        let synthetic = with_handlers(
+            fixture.facts,
+            fixture.pool,
+            vec![ExceptionHandlerFact {
+                ordinal: 0,
+                start_bci: 0,
+                end_bci: 8,
+                handler_bci: 14,
+                catch_type_index: None,
+            }],
+        );
+        let table = frames_or_panic(constructor_frames(&synthetic, b"()V"));
+        let normal = entry_of(&table, join);
+        let handler = entry_of(&table, 14);
+        assert_eq!(
+            normal.locals[0],
+            initialized(b"Test"),
+            "the normal successor is entered with the converted `this`"
+        );
+        assert_eq!(
+            handler.locals[0],
+            Value::UninitializedThis,
+            "the handler is entered with the state at the call, not with the state the call \
+             completed into"
+        );
+        assert_eq!(
+            handler.stack,
+            vec![Value::Ref(RefType::Unknown)],
+            "its stack holds the single exception reference, as every handler entry does"
+        );
+        assert_ne!(
+            handler.locals[0], normal.locals[0],
+            "one instruction's two successors never share a state"
+        );
+    }
+
+    /// A constructor call that is not applicable to the token it was given stops the body under
+    /// the boundary code. The pass does not convert it "because an `<init>` was called", and it
+    /// does not report it as a contradiction either: whether such a body is legal is the
+    /// verifier's question, and the report's `verification` plane stays `NotPerformed`.
+    #[test]
+    fn a_constructor_call_that_is_not_applicable_stops_the_body() {
+        // 0  aload_0
+        // 1  invokespecial Other.<init>()V (#1): neither the own class nor the superclass
+        let synthetic = synthetic_body(
+            vec![local(0, 0x2a, 0), call(1, 0xb7, 1), plain(4, 0xb1)],
+            vec![constructor_ref(1, b"Other", b"()V")],
+            1,
+            5,
+        );
+        let message = unproven(constructor_frames(&synthetic, b"()V"));
+        assert!(
+            message.contains("Other") && message.contains("4.9.2"),
+            "the stop names the class the call names and the rule it is read against: {message}"
+        );
+
+        // A value a `new` made is constructed by its own class's `<init>` and by no other's.
+        let synthetic = synthetic_body(
+            vec![
+                call(0, 0xbb, 1), // new Test (#1)
+                plain(3, 0x59),   // dup
+                call(4, 0xb7, 2), // invokespecial Other.<init>()V (#2)
+                plain(7, 0xb1),
+            ],
+            vec![class_ref(1, b"Test"), constructor_ref(2, b"Other", b"()V")],
+            2,
+            8,
+        );
+        let message = unproven(synthetic_frames(&synthetic, b"()V"));
+        assert!(
+            message.contains("Other") && message.contains("Test"),
+            "the stop names both the class the call names and the one the `new` allocated: {message}"
+        );
+
+        // An invocation that is not an `<init>` at all is not a constructor call, whoever the
+        // receiver would be.
+        let synthetic = synthetic_body(
+            vec![
+                call(0, 0xbb, 1), // new Test (#1)
+                plain(3, 0x59),   // dup
+                call(4, 0xb6, 2), // invokevirtual Test.m()V (#2)
+                plain(7, 0xb1),
+            ],
+            vec![class_ref(1, b"Test"), method_ref(2, b"()V")],
+            2,
+            8,
+        );
+        let message = unproven(synthetic_frames(&synthetic, b"()V"));
+        assert!(
+            message.contains("<init>") && message.contains("does not name"),
+            "the stop says the call is not the constructor call: {message}"
+        );
+
+        // And an `<init>` call on a receiver that is already initialized: the pass has one
+        // transition for a constructor call, the conversion of a token, and no other — so it stops
+        // rather than reading an ordinary `void` call into bytes JVMS 4.9.2 forbids.
+        let synthetic = synthetic_body(
+            vec![
+                call(0, 0xbb, 1), // new Test (#1)
+                plain(3, 0x59),   // dup
+                call(4, 0xb7, 2), // invokespecial Test.<init>()V (#2): the token is converted
+                call(7, 0xb7, 2), // invokespecial Test.<init>()V (#2) again, on the reference
+                plain(10, 0xb1),
+            ],
+            vec![class_ref(1, b"Test"), constructor_ref(2, b"Test", b"()V")],
+            1,
+            11,
+        );
+        let message = unproven(synthetic_frames(&synthetic, b"()V"));
+        assert!(
+            message.contains("already") || message.contains("not an uninitialized value"),
+            "the stop names the receiver's state: {message}"
+        );
+    }
+
+    /// JVMS 4.10.1.9's second use of an uninitialized `this`: an instance initialization method
+    /// may assign a field **its own class declares** before any constructor call. The restricted
+    /// form is read from the two names the class file gives — the field's declaring class and the
+    /// class the method is declared in — plus the method's own name, and every other shape of the
+    /// same instruction stops.
+    #[test]
+    fn a_constructor_may_store_its_own_field_through_the_uninitialized_this() {
+        // 0  aload_0        the uninitialized `this`
+        // 1  iconst_0       the value
+        // 2  putfield #1
+        // 5  return
+        let own_field = vec![
+            local(0, 0x2a, 0),
+            plain(1, 0x03),
+            call(2, 0xb5, 1),
+            plain(5, 0xb1),
+        ];
+        let synthetic = synthetic_body(
+            own_field.clone(),
+            vec![field_ref(1, b"Test", b"x", b"I")],
+            1,
+            6,
+        );
+        assert!(
+            matches!(
+                constructor_frames(&synthetic, b"()V"),
+                FrameOutcome::Frames(_)
+            ),
+            "a field the class being constructed declares is the one the rule reaches"
+        );
+
+        // The same instruction on another class's field stops: the rule is about the class being
+        // constructed, not about `putfield` in general.
+        let synthetic = synthetic_body(own_field, vec![field_ref(1, b"Other", b"x", b"I")], 1, 6);
+        let message = unproven(constructor_frames(&synthetic, b"()V"));
+        assert!(
+            message.contains("uninitialized `this`") && message.contains("4.10.1.9"),
+            "the stop names the state and the rule that does not reach here: {message}"
+        );
+
+        // A value a `new` made has no `putfield` in its grammar at all: the rule is `this`'s.
+        let synthetic = synthetic_body(
+            vec![
+                call(0, 0xbb, 1), // new Test (#1)
+                plain(3, 0x59),   // dup
+                plain(4, 0x03),   // iconst_0
+                call(5, 0xb5, 2), // putfield Test.x:I (#2)
+                plain(8, 0xb1),
+            ],
+            vec![class_ref(1, b"Test"), field_ref(2, b"Test", b"x", b"I")],
+            2,
+            9,
+        );
+        let message = unproven(synthetic_frames(&synthetic, b"()V"));
+        assert!(
+            message.contains("target of a field access") && message.contains("4.10.1.9"),
+            "the stop says which value may not stand there and why: {message}"
+        );
     }
 
     /// A block entered through an exception edge is entered with the state its throw site hands
@@ -4116,18 +4953,18 @@ mod tests {
     /// before it is seen, a slot written only after it is not, and the handler holds the record's
     /// catch type.
     ///
-    /// The receiver is `null` where a legal class file would have an uninitialized reference: this
-    /// layer is not a verifier and says nothing about operand legality (4.1's 判定线 — the same
-    /// reason `aconst_null; instanceof #7` is analyzed). The legal receiver is a `new` token, and a
-    /// call on one stops the transfer until 4.2's alias conversion lands, so this is the shape that
-    /// reaches a constructor call's exception successor today.
+    /// The receiver is the legal one now that the initialization conversions are here: the
+    /// uninitialized `this` of a constructor, which the call converts on its normal completion. The
+    /// `null` receiver this test used while the conversion was missing no longer reaches the
+    /// handler at all — an `<init>` call on an initialized value has no transition in this pass,
+    /// and the case below states that stop.
     #[test]
     fn the_exception_input_of_a_constructor_call_is_the_state_at_the_call() {
         let synthetic = synthetic_body(
             vec![
                 plain(0, 0x08),    // iconst_5
                 local(1, 0x3c, 1), // istore_1   local1 = 5, written before the call
-                plain(2, 0x01),    // aconst_null: the receiver
+                local(2, 0x2a, 0), // aload_0: the uninitialized `this` of the constructor
                 call(3, 0xb7, 2),  // invokespecial #2 <init>()V (may raise)
                 plain(6, 0x08),    // iconst_5
                 local(7, 0x3d, 2), // istore_2   local2 = 5, written only after the call
@@ -4153,8 +4990,13 @@ mod tests {
                 catch_type_index: Some(3),
             }],
         );
-        let table = frames_or_panic(synthetic_frames(&synthetic, b"()V"));
+        let table = frames_or_panic(constructor_frames(&synthetic, b"()V"));
         let handler = entry_of(&table, 9);
+        assert_eq!(
+            handler.locals[0],
+            Value::UninitializedThis,
+            "the state at the call holds the token the call was about to convert"
+        );
         assert_eq!(
             handler.locals[1],
             Value::Int,
@@ -4194,8 +5036,8 @@ mod tests {
     /// back to the **same** original BCI — which is exactly why the token cannot be keyed by it —
     /// and what tells the two allocations apart is the canonical block the `new` runs in. Each
     /// call's continuation is where the token lands, and the two continuations differ only in it,
-    /// so the assertion is on the identity the token carries; the alias conversion that consumes
-    /// these tokens is 4.2's second half.
+    /// so the assertion is on the identity the token carries; neither body calls an `<init>`, so
+    /// no conversion is involved in what they leave behind.
     #[test]
     fn two_clones_of_one_subroutine_get_two_new_sites() {
         let synthetic = jsr_body(

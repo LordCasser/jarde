@@ -5903,10 +5903,11 @@ mod reader_facts_tests {
 ///
 /// It builds the smallest class the real reader path accepts: `Test.method()V` at a chosen
 /// class-file version whose `Code` attribute holds the caller's bytes verbatim. The constant
-/// pool also carries the entries an array-creation or interface-call fixture names — the class
-/// `[[I` at slot 9 and the interface method `run(J)V` at slot 15 — so a fixture can point at
-/// a real entry instead of a placeholder. Nothing here fabricates facts: the tests that use it
-/// read these bytes through `class_facts`/`method_code_facts`.
+/// pool also carries the entries an array-creation, interface-call or initialization fixture
+/// names — the class `[[I` at slot 9, the interface method `run(J)V` at slot 15, and the
+/// constructor calls `Test.<init>()V` at slot 18 and `java/lang/Object.<init>()V` at slot 19 — so
+/// a fixture can point at a real entry instead of a placeholder. Nothing here fabricates facts:
+/// the tests that use it read these bytes through `class_facts`/`method_code_facts`.
 ///
 /// The gate is a feature as well as `test` because this builder is shared across module
 /// boundaries that become crate boundaries: the raw-CFG and call-context tests move to
@@ -5927,7 +5928,7 @@ pub mod test_class {
         bytes.extend_from_slice(&0xcafebabe_u32.to_be_bytes());
         u16_be(&mut bytes, 0);
         u16_be(&mut bytes, major);
-        u16_be(&mut bytes, 16);
+        u16_be(&mut bytes, 20);
         utf8(&mut bytes, b"Test"); // 1
         class(&mut bytes, 1); // 2
         utf8(&mut bytes, b"java/lang/Object"); // 3
@@ -5947,6 +5948,20 @@ pub mod test_class {
         bytes.push(11); // 15: InterfaceMethodRef java/lang/Runnable.run:(J)V
         u16_be(&mut bytes, 11);
         u16_be(&mut bytes, 14);
+        // 16..19: the constructor calls the frame pass's initialization cases name — the class's
+        // own `Test.<init>()V` and the superclass's `java/lang/Object.<init>()V`, which share one
+        // name-and-type. They are appended **after** every entry above, so the fixtures that point
+        // at 2, 9, 11 or 15 keep pointing at what they name.
+        utf8(&mut bytes, b"<init>"); // 16
+        bytes.push(12); // 17: NameAndType <init>:()V
+        u16_be(&mut bytes, 16);
+        u16_be(&mut bytes, 6);
+        bytes.push(10); // 18: MethodRef Test.<init>:()V
+        u16_be(&mut bytes, 2);
+        u16_be(&mut bytes, 17);
+        bytes.push(10); // 19: MethodRef java/lang/Object.<init>:()V
+        u16_be(&mut bytes, 4);
+        u16_be(&mut bytes, 17);
         u16_be(&mut bytes, 0x0021);
         u16_be(&mut bytes, 2);
         u16_be(&mut bytes, 4);
