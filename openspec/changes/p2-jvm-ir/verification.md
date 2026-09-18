@@ -228,6 +228,7 @@
 - **0.5（假红治理）**：复核实测 6 次未变异全量运行中有 2 次仅因 `usage.elapsed_millis` 0 vs 1 失败。按 P1 golden 同款做法在比较前剔除该字段（两侧对称归一），审计出 **13 处 P2 + 1 处 P1** 同类站点（`p2_cfg` 7、`p2_return_address` 3、`p2_contracts`/`p2_passes`/`p2_resolution` 各 1、`p1_artifact_tree` 1），其余比较强度不变（含一条变异证明归一未削弱其他字段）。
 - **反例与证伪**：实现者 5 组 + 复核者 10 组变异；关键捕获包括「后继需求回到 runtime loader」（R1 用例转红）、「memo 键去掉 loader」、「walk 身份退化为按名」、「dispatch 祖先只比 owner 名」、「删掉 F1 核对」、「`started_at` 登记根键」（仅新 fixture 1 捕获，证实仓内原本无等价用例）。
 - **证据**：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked --no-fail-fast` = **596 passed / 0 failed / 1 ignored**（连跑 4 次一致），`p1_xref_golden` = 5；示例 exit 0；由主 Agent 独立复跑确认。
+- 远端 CI：实现与文档提交 `0d7906c`、`ed96928` 推送 `main` 后，CI run [`35311183845`](https://github.com/LordCasser/jarde/actions/runs/35311183845) 四个 job 全部 success。
 - **独立复核结论**：**Approve**（含复核者自建 13 条 fixture；其最担心的「字节相同定义不同被复用误接受」经专门 fixture 证伪为**正确拒绝**）。登记债务：D35（已处置）、D36、D37（已转 0.5 并完成）、D38（已修）。
 
 ## P2 验收映射现状（滚动更新）
