@@ -936,9 +936,12 @@ impl<'a> Walk<'a> {
                     budget,
                 )?;
             }
-            // A handler entry is not an ordinary successor: the record is kept in the coverage
-            // fact, and the walk does not fold the handler's own instructions into the body.
-            EdgeKind::Exception { .. } => {}
+            // A handler entry is not an ordinary fall-through, but it is not a dead end either:
+            // when a protected range covers instructions this context runs, the handler body
+            // executes under the same context and can write locals or change the return address
+            // before it rejoins the `ret`. Dropping the edge loses those writes, so the block it
+            // reaches is walked like any other.
+            EdgeKind::Exception { .. } => self.enqueue(worklist, (active, to), budget)?,
         }
         Ok(())
     }
@@ -1688,9 +1691,10 @@ mod tests {
     #[test]
     fn a_handler_entry_is_no_successor_and_its_range_is_recorded() {
         // The protected range [0, 11) spans the `jsr` at BCI 0 and covers the `invokevirtual`
-        // at BCI 8, so the handler at BCI 13 is a real entry — but not an ordinary successor of
-        // the subroutine: the walk keeps the record and does not fold `astore_2` into the
-        // subroutine's affected locals.
+        // at BCI 8, so the handler at BCI 13 is a real entry. It is not an ordinary successor:
+        // the walk keeps the record separately. But its body does run under this context, so the
+        // `astore_2` it performs is one of the locals the context's subroutine affects — the
+        // handler's own local belongs to the context that entered it.
         let facts = body(
             vec![
                 jsr(0, 7),         // -> BCI 7, return address 3
@@ -1730,9 +1734,9 @@ mod tests {
                 call_site_bci: 0,
                 return_bci: 3,
                 entry_bci: 7,
-                affected_locals: vec![1],
+                affected_locals: vec![1, 2],
             }],
-            "the handler's own local is not part of the subroutine"
+            "the handler's own local is part of the context whose range reached it"
         );
         assert_eq!(
             contexts.exception_coverage,
@@ -2363,6 +2367,101 @@ mod tests {
             ),
             "a `ret` reading the slot its own context stored establishes"
         );
+    }
+
+    #[test]
+    fn a_handler_that_writes_locals_before_the_ret_contributes_them() {
+        // The counterexample the review reproduced: the subroutine's `idiv` can throw, and the
+        // handler writes local 1 and local 2 before jumping back to the `ret`. Dropping the
+        // exception edge loses those writes, so the context claims to have touched only local 0
+        // while its own handler changed two more slots on the way to the same return.
+        //
+        //   0: jsr 4          return address (BCI 3) -> the subroutine
+        //   3: return
+        //   4: astore_0       the address goes into local 0
+        //   5: iconst_1
+        //   6: iconst_0
+        //   7: idiv           throws: protected by [5, 8)
+        //   8: pop
+        //   9: ret 0
+        //  11: astore_1       handler entry: writes local 1
+        //  12: iconst_0
+        //  13: istore 2       writes local 2
+        //  14: goto 9        back to the `ret`
+        let facts = body(
+            vec![
+                jsr(0, 4),
+                plain(3, 0xb1),
+                store(4, 0x4b, 0),
+                plain(5, 0x04),
+                plain(6, 0x03),
+                plain(7, 0x6c),
+                plain(8, 0x57),
+                ret(9, 0),
+                store(11, 0x4c, 1),
+                plain(12, 0x03),
+                store(13, 0x36, 2),
+                goto(14, -5),
+            ],
+            vec![catch(0, 5, 8, 11, None)],
+            17,
+        );
+        let raw = graph(&facts, &mut budget());
+        let contexts = established(&facts, &raw, 49);
+        assert_eq!(contexts.contexts.len(), 1, "one call site, one context");
+        assert_eq!(
+            contexts.contexts[0].affected_locals,
+            vec![0, 1, 2],
+            "the handler writes two locals before the `ret`, so the context touched all three"
+        );
+    }
+
+    #[test]
+    fn zz_r3b() {
+        let facts = body(
+            vec![
+                jsr(0, 4),
+                plain(3, 0xb1),
+                store(4, 0x4b, 0),
+                plain(5, 0x04),
+                plain(6, 0x03),
+                plain(7, 0x6c),
+                plain(8, 0x57),
+                ret(9, 0),
+                store(11, 0x4c, 1),
+                plain(12, 0x03),
+                store(13, 0x36, 2),
+                goto(14, -5),
+            ],
+            vec![catch(0, 5, 8, 11, None)],
+            17,
+        );
+        let raw = graph(&facts, &mut budget());
+        eprintln!(
+            "R3B blocks={:?}",
+            raw.cfg
+                .blocks
+                .iter()
+                .map(|b| (b.bci, b.end_bci))
+                .collect::<Vec<_>>()
+        );
+        eprintln!(
+            "R3B edges={:?}",
+            raw.cfg
+                .edges
+                .iter()
+                .map(|e| (e.from_bci, e.to_bci, e.kind))
+                .collect::<Vec<_>>()
+        );
+        eprintln!(
+            "R3B throw_sites={:?}",
+            raw.cfg
+                .throw_sites
+                .iter()
+                .map(|s| (s.bci, s.handlers.clone()))
+                .collect::<Vec<_>>()
+        );
+        eprintln!("R3B unreachable={:?}", raw.cfg.unreachable);
     }
 
     #[test]
