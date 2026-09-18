@@ -245,9 +245,15 @@ pub(crate) static PASSES: &[PassDescriptor] = &[
         budget: &[PassBudgetClass::Blocks, PassBudgetClass::Steps],
     },
     // 3.4: one context per `jsr` site with its return point and affected locals, derived from
-    // the raw graph and the exception coverage that crosses it. The walk is billed as analysis
-    // steps (repeated visits of a block are real work) and changes no fact. This is not the
-    // cloning pass: the clones belong to `canonical_cfg` (3.5), which bills `Clones`.
+    // the raw graph, the exception coverage that crosses it and the **effect facts of that
+    // graph** — which is why `Effects` is in `requires`: the pass reads `raw.effects`, and a
+    // fact a pass consumes without naming is a fact the stale check cannot see (the
+    // canonicalization invalidates the raw-graph effects, and only a declared consumer is
+    // refused while they are stale). The contexts, the plans and the per-context local sets are
+    // derived storage, billed per storage item (`Blocks`) — `IrEdges` included — and the walk
+    // is billed as analysis steps, because a repeated visit of a block is real work. The pass
+    // changes no fact: this is not the cloning pass, the clones belong to `canonical_cfg`
+    // (3.5), which bills `Clones`.
     PassDescriptor {
         phase: IrPhase::LegacyNormalization,
         name: "legacy_normalization",
@@ -256,16 +262,18 @@ pub(crate) static PASSES: &[PassDescriptor] = &[
             FactKind::ExceptionTable,
             FactKind::RawCfg,
             FactKind::ThrowSites,
+            FactKind::Effects,
         ],
         produces: &[FactKind::CallContexts],
         invalidates: &[],
-        budget: &[PassBudgetClass::Steps],
+        budget: &[PassBudgetClass::Blocks, PassBudgetClass::Steps],
     },
-    // 3.5: the bounded clone normalization, billed per clone node before it is created. It
-    // replaces the graph, so every fact derived from the old blocks and exception edges — the
-    // raw-graph effects, the frames, the SSA — is stale until a later pass recomputes it on the
-    // canonical graph: the frames by the `frame` pass and the SSA, with the canonical graph's
-    // effects, by the `ssa` pass, both below.
+    // 3.5: the bounded clone normalization, billed per clone node before it is created, per
+    // block and edge it rebuilds and per step of its clone worklist. It replaces the graph, so
+    // every fact derived from the old blocks and exception edges — the raw-graph effects, the
+    // frames, the SSA — is stale until a later pass recomputes it on the canonical graph: the
+    // frames by the `frame` pass and the SSA, with the canonical graph's effects, by the `ssa`
+    // pass, both below.
     PassDescriptor {
         phase: IrPhase::CanonicalCfg,
         name: "canonical_cfg",
@@ -278,11 +286,16 @@ pub(crate) static PASSES: &[PassDescriptor] = &[
         ],
         produces: &[FactKind::CanonicalCfg],
         invalidates: &[FactKind::Effects, FactKind::Frames, FactKind::Ssa],
-        budget: &[PassBudgetClass::Clones],
+        budget: &[
+            PassBudgetClass::Blocks,
+            PassBudgetClass::Steps,
+            PassBudgetClass::Clones,
+        ],
     },
     // 4.1/4.2: descriptor-driven frames over the canonical blocks (the stack shape comes from
     // the dense opcode table, not from `Effects`). Frame and local slots are IR storage items,
-    // charged before they are allocated.
+    // charged before they are allocated, and the fixpoint over the blocks walks a worklist
+    // (4.2's handler entries included), so the pass bills the worklist steps as well.
     PassDescriptor {
         phase: IrPhase::Frame,
         name: "frame",
@@ -293,11 +306,12 @@ pub(crate) static PASSES: &[PassDescriptor] = &[
         ],
         produces: &[FactKind::Frames],
         invalidates: &[],
-        budget: &[PassBudgetClass::Blocks],
+        budget: &[PassBudgetClass::Blocks, PassBudgetClass::Steps],
     },
     // 4.3: stack/local SSA values and phi inputs over the canonical graph and its frames,
-    // likewise charged as IR storage items. The effect facts are republished here because their
-    // order belongs to this pass and because the canonicalization dropped the raw-graph ones.
+    // likewise charged as IR storage items and as the steps of its worklist walk. The effect
+    // facts are republished here because their order belongs to this pass and because the
+    // canonicalization dropped the raw-graph ones.
     PassDescriptor {
         phase: IrPhase::Ssa,
         name: "ssa",
@@ -308,7 +322,7 @@ pub(crate) static PASSES: &[PassDescriptor] = &[
         ],
         produces: &[FactKind::Ssa, FactKind::Effects],
         invalidates: &[],
-        budget: &[PassBudgetClass::Blocks],
+        budget: &[PassBudgetClass::Blocks, PassBudgetClass::Steps],
     },
 ];
 
@@ -507,20 +521,40 @@ fn validate_phase_order(table: &[PassDescriptor]) -> Result<()> {
 /// Rejects a table whose `requires`/`produces` relation has a cycle — including the
 /// `requires`/`produces` conflict of a single pass, which is the smallest such cycle.
 ///
-/// The check is Kahn's algorithm over the producer → consumer edges of every required fact; a
-/// table without a cycle drains completely. Like the phase order, a cycle is a property of the
-/// *whole table*: it is rejected even when the cycle lies beyond the scheduled prefix. A
-/// requirement a *later* pass satisfies without a cycle in return (a backward edge) is not
-/// rejected here: that is `ir_pass_prerequisite_missing`, decided where the schedule is walked,
-/// because the fault is that the fact is not there *when the pass runs* — and the prefix walk
-/// judges only the scheduled passes, so a dangling `requires` outside the prefix is no error.
+/// What the graph answers is whether the declared order can satisfy every `requires`, so the
+/// edges are built with that question in mind, fact by fact and consumer by consumer:
+///
+/// * a `require` of a fact an **earlier** pass already produces is satisfiable in declaration
+///   order, and a producer *after* the consumer adds no edge to it. A fact may have more than
+///   one producer because its meaning follows the graph it was derived from — `Effects` are the
+///   raw graph's while `raw_cfg` produced them and the canonical graph's after `ssa` recomputed
+///   them (3.5 invalidates them in between) — so a consumer that names such a fact is served by
+///   the producer before it, and the later producer is not a second prerequisite;
+/// * a `require` no earlier pass produces keeps every producer as an edge, including a later
+///   one. A backward edge is then not a cycle by itself: that is `ir_pass_prerequisite_missing`,
+///   decided where the schedule is walked, because the fault is that the fact is not there *when
+///   the pass runs* — and the prefix walk judges only the scheduled passes, so a dangling
+///   `requires` outside the prefix is no error;
+/// * a pass that requires what it produces itself (the smallest cycle) and two passes that each
+///   need what the other publishes keep their cycle: neither `require` has an earlier producer,
+///   so both directions are edges.
+///
+/// The check is Kahn's algorithm over those edges; a table without a cycle drains completely.
+/// Like the phase order, a cycle is a property of the *whole table*: it is rejected even when
+/// the cycle lies beyond the scheduled prefix.
 fn validate_acyclic(table: &[PassDescriptor]) -> Result<()> {
     let mut indegree = vec![0usize; table.len()];
     let mut consumers: Vec<Vec<usize>> = vec![Vec::new(); table.len()];
     for (consumer, pass) in table.iter().enumerate() {
         for fact in pass.requires {
+            // Produced strictly before the consumer, so the fact is available to it in
+            // declaration order whatever the later producers of the same fact do.
+            let satisfied_earlier = table[..consumer]
+                .iter()
+                .any(|candidate| candidate.produces.contains(fact));
             for (producer, candidate) in table.iter().enumerate() {
-                if candidate.produces.contains(fact) {
+                if candidate.produces.contains(fact) && !(satisfied_earlier && producer > consumer)
+                {
                     consumers[producer].push(consumer);
                     indegree[consumer] += 1;
                 }
@@ -705,19 +739,24 @@ mod tests {
             },
             ExpectedPass {
                 name: "legacy_normalization",
-                budget: &[PassBudgetClass::Steps],
+                budget: &[PassBudgetClass::Blocks, PassBudgetClass::Steps],
                 requires: &[
                     FactKind::Instructions,
                     FactKind::ExceptionTable,
                     FactKind::RawCfg,
                     FactKind::ThrowSites,
+                    FactKind::Effects,
                 ],
                 produces: &[FactKind::CallContexts],
                 invalidates: &[],
             },
             ExpectedPass {
                 name: "canonical_cfg",
-                budget: &[PassBudgetClass::Clones],
+                budget: &[
+                    PassBudgetClass::Blocks,
+                    PassBudgetClass::Steps,
+                    PassBudgetClass::Clones,
+                ],
                 requires: &[
                     FactKind::Instructions,
                     FactKind::ExceptionTable,
@@ -730,7 +769,7 @@ mod tests {
             },
             ExpectedPass {
                 name: "frame",
-                budget: &[PassBudgetClass::Blocks],
+                budget: &[PassBudgetClass::Blocks, PassBudgetClass::Steps],
                 requires: &[
                     FactKind::Instructions,
                     FactKind::ExceptionTable,
@@ -741,7 +780,7 @@ mod tests {
             },
             ExpectedPass {
                 name: "ssa",
-                budget: &[PassBudgetClass::Blocks],
+                budget: &[PassBudgetClass::Blocks, PassBudgetClass::Steps],
                 requires: &[
                     FactKind::Instructions,
                     FactKind::CanonicalCfg,
@@ -806,10 +845,26 @@ mod tests {
             IrPhase::RawCfg,
             &[PassBudgetClass::Blocks, PassBudgetClass::Steps],
         ),
-        (IrPhase::LegacyNormalization, &[PassBudgetClass::Steps]),
-        (IrPhase::CanonicalCfg, &[PassBudgetClass::Clones]),
-        (IrPhase::Frame, &[PassBudgetClass::Blocks]),
-        (IrPhase::Ssa, &[PassBudgetClass::Blocks]),
+        (
+            IrPhase::LegacyNormalization,
+            &[PassBudgetClass::Blocks, PassBudgetClass::Steps],
+        ),
+        (
+            IrPhase::CanonicalCfg,
+            &[
+                PassBudgetClass::Blocks,
+                PassBudgetClass::Steps,
+                PassBudgetClass::Clones,
+            ],
+        ),
+        (
+            IrPhase::Frame,
+            &[PassBudgetClass::Blocks, PassBudgetClass::Steps],
+        ),
+        (
+            IrPhase::Ssa,
+            &[PassBudgetClass::Blocks, PassBudgetClass::Steps],
+        ),
     ];
 
     #[test]
@@ -948,6 +1003,106 @@ mod tests {
     }
 
     #[test]
+    fn a_fact_produced_twice_does_not_cycle_when_the_earlier_producer_serves_it() {
+        // `Effects` have two producers on purpose: the raw graph's by `raw_cfg` and, after the
+        // canonicalization invalidated them, the canonical graph's by `ssa`. The consumer between
+        // the two — `legacy_normalization` — is served by the earlier one, so the later producer
+        // is not a second prerequisite and the table must not be rejected: the graph answers
+        // whether the declared order can satisfy every `require`, and here it can.
+        let twice_produced = vec![
+            descriptor(
+                IrPhase::RawFacts,
+                "p1",
+                &[],
+                &[FactKind::Instructions, FactKind::Effects],
+                &[],
+            ),
+            descriptor(
+                IrPhase::RawCfg,
+                "c",
+                &[FactKind::Instructions, FactKind::Effects],
+                &[FactKind::RawCfg],
+                &[],
+            ),
+            descriptor(
+                IrPhase::Ssa,
+                "p2",
+                &[FactKind::RawCfg],
+                &[FactKind::Effects],
+                &[],
+            ),
+        ];
+        assert_eq!(
+            validate_schedule(&twice_produced, IrPhase::Ssa)
+                .expect("the earlier producer serves the consumer")
+                .len(),
+            3
+        );
+        // The real table is that shape, and this is the property a table-wide cycle rejection
+        // must not take away: `Effects` has a producer on either side of its consumer, and the
+        // consumer is served by the earlier one.
+        let producers: Vec<usize> = PASSES
+            .iter()
+            .enumerate()
+            .filter(|(_, pass)| pass.produces.contains(&FactKind::Effects))
+            .map(|(index, _)| index)
+            .collect();
+        let consumer = PASSES
+            .iter()
+            .position(|pass| pass.name == "legacy_normalization")
+            .expect("the real table declares the consumer");
+        assert_eq!(
+            producers.len(),
+            2,
+            "the raw graph's effects and the canonical graph's are produced by two passes"
+        );
+        assert!(
+            producers[0] < consumer && consumer < producers[1],
+            "the consumer sits between the two producers of `effects`"
+        );
+
+        // Take the earlier producer away and the same `require` is no longer satisfiable in
+        // declaration order: the later producer becomes the backward edge again, and the fault is
+        // the missing prerequisite at the moment the pass runs — not a cycle, because nothing in
+        // the table needs what the consumer publishes in return.
+        let only_later_producer = vec![
+            descriptor(IrPhase::RawFacts, "a", &[], &[FactKind::Instructions], &[]),
+            descriptor(IrPhase::RawCfg, "c", &[FactKind::Effects], &[], &[]),
+            descriptor(IrPhase::Ssa, "p2", &[], &[FactKind::Effects], &[]),
+        ];
+        let error = validate_schedule(&only_later_producer, IrPhase::Ssa)
+            .expect_err("only a later pass produces `effects`");
+        assert_eq!(
+            invalid_input_code(&error),
+            Some(IR_PASS_PREREQUISITE_MISSING),
+            "a backward edge is a missing prerequisite, not a cycle"
+        );
+        assert!(invalid_input_message(&error).contains("`c`"), "{error}");
+
+        // …while a genuine mutual dependency keeps its cycle: `c` needs what `d` publishes and
+        // `d` needs what `c` publishes, so neither `require` has an earlier producer and both
+        // directions stay edges — no declaration order satisfies them.
+        let mutual = vec![
+            descriptor(
+                IrPhase::RawFacts,
+                "c",
+                &[FactKind::Effects],
+                &[FactKind::RawCfg],
+                &[],
+            ),
+            descriptor(
+                IrPhase::RawCfg,
+                "d",
+                &[FactKind::RawCfg],
+                &[FactKind::Effects],
+                &[],
+            ),
+        ];
+        let error = validate_schedule(&mutual, IrPhase::RawCfg).expect_err("a real cycle");
+        assert_eq!(invalid_input_code(&error), Some(IR_PASS_GRAPH_CYCLE));
+    }
+
+    #[test]
     fn a_scheduled_pass_without_its_prerequisite_is_rejected() {
         // `b` requires a fact only the later `c` publishes. The dependency graph has no cycle
         // (a backward edge is not a cycle), so the fault is the missing prerequisite at the
@@ -995,6 +1150,94 @@ mod tests {
                 "the real table schedules up to {last:?}"
             );
         }
+    }
+
+    #[test]
+    fn a_pass_that_requires_effects_no_pass_produces_is_rejected() {
+        // Half of the consumer rule of 3.2: a pass that reads a fact must name it in `requires`,
+        // and naming a fact no pass of the schedule publishes is the missing prerequisite — not
+        // a silent read of an absent fact. An unproduced fact stays `NotProduced` (an
+        // `invalidates` entry for it would be a no-op), which is why the fault is named for what
+        // it is instead of being reported as a stale fact.
+        let table = vec![descriptor(
+            IrPhase::RawFacts,
+            "a",
+            &[FactKind::Effects],
+            &[FactKind::Instructions],
+            &[],
+        )];
+        let error = validate_schedule(&table, IrPhase::RawFacts).expect_err("nothing produces it");
+        assert_eq!(
+            invalid_input_code(&error),
+            Some(IR_PASS_PREREQUISITE_MISSING),
+            "an absent fact is a missing prerequisite, not a stale one"
+        );
+        let message = invalid_input_message(&error);
+        assert!(message.contains("`a`"), "{message}");
+        assert!(message.contains("`effects`"), "{message}");
+        assert!(message.contains("no phase completed yet"), "{message}");
+    }
+
+    #[test]
+    fn the_effects_consumer_is_refused_while_the_effects_are_stale() {
+        // The other half, on the real table: `Effects` are the effect facts of the graph they
+        // were derived from — the raw graph's while `raw_cfg` produced them, the canonical
+        // graph's after `ssa` recomputed them — and `legacy_normalization` reads the raw ones,
+        // so the pass declares `Effects`. 3.5 re-enters the canonicalization with a larger clone
+        // budget (a pass of an earlier phase applied again, which 3.2 admits), and every fact
+        // derived from the replaced graph goes stale. The consumer must then be refused while the
+        // effects are stale instead of reading an input that describes a graph that is gone —
+        // which is what declaring them buys: a consumer the ledger cannot see is a consumer
+        // invalidation does not protect.
+        let mut ledger = FactLedger::new();
+        for pass in validate_requested_stages(&AnalysisStage::ALL).expect("the pipeline schedules")
+        {
+            ledger.apply(pass).expect("the real table runs in order");
+        }
+
+        let legacy = pass_of(IrPhase::LegacyNormalization);
+        ledger
+            .apply(pass_of(IrPhase::CanonicalCfg))
+            .expect("the canonicalization still has its inputs");
+        assert_eq!(ledger.state(FactKind::Effects), FactState::Stale);
+        // The state after the retry, which a refused pass must leave untouched.
+        let after_the_retry = ledger.clone();
+
+        let error = ledger
+            .apply(legacy)
+            .expect_err("the effects of the replaced graph are not the pass's input");
+        assert_eq!(
+            invalid_input_code(&error),
+            Some(IR_STALE_FACT),
+            "a stale fact is the stale code, not the missing prerequisite"
+        );
+        let message = invalid_input_message(&error);
+        assert!(message.contains("`legacy_normalization`"), "{message}");
+        assert!(message.contains("`effects`"), "{message}");
+        // The refused pass published nothing: no call contexts of an input it could not obtain,
+        // and no change to the run's progress either. (`CallContexts` stays live from the first
+        // run — the refused pass did not get to publish a new value — and the equality is what
+        // says so, fact by fact and phase by phase.)
+        assert_eq!(ledger.state(FactKind::CallContexts), FactState::Live);
+        assert_eq!(
+            ledger, after_the_retry,
+            "a refused pass changes nothing at all"
+        );
+
+        // Recomputation is the way back, and the recomputer is the pass 3.2 names: the SSA
+        // republishes the effect facts of the canonical graph…
+        ledger
+            .apply(pass_of(IrPhase::Frame))
+            .expect("the frames of the canonical graph");
+        ledger
+            .apply(pass_of(IrPhase::Ssa))
+            .expect("the SSA republishes the canonical effects");
+        assert_eq!(ledger.state(FactKind::Effects), FactState::Live);
+        // …and only then does the consumer of the fact have its input again.
+        ledger
+            .apply(legacy)
+            .expect("the recomputed effects are the consumer's input");
+        assert_eq!(ledger.state(FactKind::CallContexts), FactState::Live);
     }
 
     #[test]
