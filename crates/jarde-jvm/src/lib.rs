@@ -32,6 +32,7 @@ mod frame;
 mod members;
 mod passes;
 mod providers;
+mod ssa;
 #[cfg(any(test, feature = "test-support"))]
 mod test_fixtures;
 

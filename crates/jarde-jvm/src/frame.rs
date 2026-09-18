@@ -278,7 +278,7 @@ pub(crate) enum Value {
 
 impl Value {
     /// Slots this value occupies where it is the first slot of the value.
-    fn slots(&self) -> usize {
+    pub(crate) fn slots(&self) -> usize {
         match self {
             Self::Long | Self::Double => 2,
             _ => 1,
@@ -840,7 +840,12 @@ impl Drop for CheckpointSeam {
 /// build that 4.2 closes, the second is something the method's own bytes decide. A run that gave
 /// up on an uninitialized value must never be reported as the second, and a body that contradicts
 /// itself must never be excused as the first.
-enum Problem {
+///
+/// The type is crate-visible because a later pass of the same pipeline consumes a helper of this
+/// module that can answer all three ([`caught_reference`]), and the split is what that caller has
+/// to keep apart: collapsing it on the way out would report a boundary of this build as a
+/// contradiction of the body, or the other way round.
+pub(crate) enum Problem {
     /// A stop the budget layer raised: a cancellation or an exhausted counted dimension.
     Budget(Error),
     /// The body contradicts itself: [`IR_FRAME_INCONSISTENT`].
@@ -873,6 +878,89 @@ struct Frame {
     locals: Vec<Value>,
     /// The operand stack, bottom first.
     stack: Vec<Value>,
+    /// Trace sink of the replay [`block_touches`] performs, `None` in every state this pass
+    /// computes, merges, compares or publishes: the trace is not part of a state's meaning and
+    /// no comparison of two states ever sees a sink. It is the one way 4.3 gets the slot
+    /// accesses of an instruction out of the dense table below instead of classifying opcodes a
+    /// second time, and it exists only while that replay runs.
+    touches: Option<Vec<SlotTouch>>,
+}
+
+/// The region of a frame one slot access names.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub(crate) enum SlotRegion {
+    /// A local slot, by `max_locals` index.
+    Local,
+    /// The operand stack, by slot depth from the bottom.
+    Stack,
+}
+
+/// One slot access of one instruction, recorded where this pass performs it.
+///
+/// A read carries the width of the value it took, a write the class of the value it stored, and
+/// both name the **first** slot of the value only: the upper half of a category-2 value is never
+/// an access of its own, which is what lets 4.3 hold one SSA value for the two slots. Recording
+/// at the frame's own mutation points is deliberate — the shapes of `pop2`, `dup2_x2` and their
+/// family follow the values on the stack, so a second, value-independent classification of the
+/// opcodes would be wrong for exactly those forms.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct SlotTouch {
+    pub(crate) region: SlotRegion,
+    /// Local index, or the stack depth of the value's first slot.
+    pub(crate) slot: u32,
+    /// Slots the value occupies: 1, or 2 for a category-2 value.
+    pub(crate) width: u32,
+    /// `true` for a write, `false` for a read.
+    pub(crate) write: bool,
+    /// Class of the value a write stores; `None` for a read, whose class the reader of the SSA
+    /// takes from the definition it resolved.
+    pub(crate) value: Option<Value>,
+}
+
+/// What one instruction of a block touches, in execution order.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct InstructionTouches {
+    pub(crate) bci: u32,
+    /// The effective opcode, as 1.2 records it for a `wide` form.
+    pub(crate) opcode: u8,
+    /// The operand-stack depth, in slots, the block's state has **after** this instruction. It is
+    /// the frame's own length, so the discards an instruction performs without reading anything —
+    /// `athrow` clears the stack, a `return` ends the block with it — are stated exactly and not
+    /// inferred from the accesses.
+    pub(crate) stack_after: u32,
+    pub(crate) accesses: Vec<SlotTouch>,
+}
+
+/// What one replay of a block produced.
+#[derive(Debug)]
+pub(crate) enum TouchesOutcome {
+    Touches(Vec<InstructionTouches>),
+    /// This build does not state the accesses of this body: the same boundary [`frames`] reports,
+    /// reached again by the replay.
+    Unsupported {
+        message: String,
+    },
+    /// The body contradicts itself, or the replay of a **published** entry state disagrees with
+    /// the frames this run published for it. The second is a defect of this build's own artifact
+    /// and not a claim about the bytes, and it is reported as a contradiction rather than
+    /// silently absorbed.
+    Inconsistent {
+        message: String,
+    },
+}
+
+/// One slot of the state a method's own entry block is entered with.
+///
+/// The caller's own contribution is a participant of that block's entry phis like any incoming
+/// edge: a body that branches back to BCI 0 merges the caller's state with the incoming one, and
+/// the edge alone does not state the caller's half. This is that half, as plain data, so the SSA
+/// does not have to name a frame state.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct EntrySlot {
+    pub(crate) region: SlotRegion,
+    /// Local index, or 0 for the one value of the entry state's operand stack.
+    pub(crate) slot: u32,
+    pub(crate) value: Value,
 }
 
 impl Frame {
@@ -889,6 +977,16 @@ impl Frame {
                  of {MAX_STACK_SLOTS}"
             ));
         }
+        if self.touches.is_some() {
+            let slot = depth - value.slots();
+            self.record(
+                SlotRegion::Stack,
+                slot,
+                value.slots(),
+                true,
+                Some(value.clone()),
+            );
+        }
         if value.slots() == 2 {
             self.stack.push(value);
             self.stack.push(Value::Second);
@@ -896,6 +994,26 @@ impl Frame {
             self.stack.push(value);
         }
         Ok(())
+    }
+
+    /// Records one access when a replay is tracing this frame; a no-op in every other run.
+    fn record(
+        &mut self,
+        region: SlotRegion,
+        slot: usize,
+        width: usize,
+        write: bool,
+        value: Option<Value>,
+    ) {
+        if let Some(touches) = self.touches.as_mut() {
+            touches.push(SlotTouch {
+                region,
+                slot: u32::try_from(slot).unwrap_or(u32::MAX),
+                width: u32::try_from(width).unwrap_or(u32::MAX),
+                write,
+                value,
+            });
+        }
     }
 
     /// Removes the top value, category-2 values included.
@@ -909,7 +1027,7 @@ impl Frame {
                 "the operand stack at BCI {bci} is empty where `{opcode:#04x}` takes a value"
             ));
         };
-        match top {
+        let value = match top {
             Value::Second => {
                 let Some(first) = self.stack.pop() else {
                     return inconsistent(format!(
@@ -931,7 +1049,12 @@ impl Frame {
                 "the operand stack at BCI {bci} holds no readable value"
             )),
             value => Ok(value),
+        }?;
+        if self.touches.is_some() {
+            let slot = self.stack.len();
+            self.record(SlotRegion::Stack, slot, value.slots(), false, None);
         }
+        Ok(value)
     }
 
     /// Removes the top value and requires it to be a category-1 computation type — the shape the
@@ -1038,7 +1161,36 @@ impl Frame {
     /// that number: the receiver the call was given is already out of the frame, so a token whose
     /// only alias it was converts none at all, and what the call leaves behind is the frame's own
     /// new state.
+    ///
+    /// The conversion is a definition of every slot it changes: a value-flow consumer sees the
+    /// alias holding a new value afterwards rather than a slot whose class changed under it, so
+    /// a traced replay records one write per converted slot.
     fn convert_token(&mut self, token: &Value, initialized: &Value) {
+        if self.touches.is_some() {
+            let mut converted: Vec<(SlotRegion, usize)> = Vec::new();
+            for (index, slot) in self.locals.iter_mut().enumerate() {
+                if slot == token {
+                    *slot = initialized.clone();
+                    converted.push((SlotRegion::Local, index));
+                }
+            }
+            for (depth, slot) in self.stack.iter_mut().enumerate() {
+                if slot == token {
+                    *slot = initialized.clone();
+                    converted.push((SlotRegion::Stack, depth));
+                }
+            }
+            for (region, slot) in converted {
+                self.record(
+                    region,
+                    slot,
+                    initialized.slots(),
+                    true,
+                    Some(initialized.clone()),
+                );
+            }
+            return;
+        }
         for slot in self.locals.iter_mut().chain(self.stack.iter_mut()) {
             if slot == token {
                 *slot = initialized.clone();
@@ -1060,7 +1212,16 @@ impl Frame {
             Value::Top | Value::Second => inconsistent(format!(
                 "`{opcode:#04x}` at BCI {bci} reads local {index}, which holds no readable value"
             )),
-            Value::UninitializedThis | Value::Uninitialized { .. } if ty == Ty::Ref => Ok(value),
+            Value::UninitializedThis | Value::Uninitialized { .. } if ty == Ty::Ref => {
+                self.record(
+                    SlotRegion::Local,
+                    usize::from(index),
+                    value.slots(),
+                    false,
+                    None,
+                );
+                Ok(value)
+            }
             Value::UninitializedThis | Value::Uninitialized { .. } => {
                 Err(Problem::Unproven(format!(
                     "`{opcode:#04x}` at BCI {bci} reads the uninitialized value {value:?} from local \
@@ -1068,7 +1229,16 @@ impl Frame {
                  `<init>` call that constructs it"
                 )))
             }
-            value if ty.accepts(&value) => Ok(value),
+            value if ty.accepts(&value) => {
+                self.record(
+                    SlotRegion::Local,
+                    usize::from(index),
+                    value.slots(),
+                    false,
+                    None,
+                );
+                Ok(value)
+            }
             value => inconsistent(format!(
                 "`{opcode:#04x}` at BCI {bci} reads local {index} as a {ty:?} where it holds \
                  {value:?}"
@@ -1111,6 +1281,15 @@ impl Frame {
                 }
                 _ => {}
             }
+        }
+        if self.touches.is_some() {
+            self.record(
+                SlotRegion::Local,
+                start,
+                value.slots(),
+                true,
+                Some(value.clone()),
+            );
         }
         self.locals[start] = value;
         if end > start + 1 {
@@ -1225,7 +1404,11 @@ fn merge_frame(current: &Frame, incoming: &Frame, block: &CanonicalBlockId) -> N
         .map(|(left, right)| merge_local(left, right))
         .collect();
     let stack = merge_stack(&current.stack, &incoming.stack, block)?;
-    Ok(Frame { locals, stack })
+    Ok(Frame {
+        locals,
+        stack,
+        touches: None,
+    })
 }
 
 /// One parameter of a method descriptor: its slot class, and the type the descriptor spells for a
@@ -2314,6 +2497,7 @@ fn exception_inputs(
             frame: Frame {
                 locals: point.locals.clone(),
                 stack: vec![thrown.clone()],
+                touches: None,
             },
         });
     }
@@ -2330,7 +2514,7 @@ fn exception_inputs(
 
 /// The reference a handler is entered with: the record's catch type, or a conservative unknown
 /// reference for a catch-all record.
-fn caught_reference(method: &FrameMethod<'_>, row: &CanonicalHandlerRow) -> Norm<Value> {
+pub(crate) fn caught_reference(method: &FrameMethod<'_>, row: &CanonicalHandlerRow) -> Norm<Value> {
     let Some(index) = row.catch_type_index else {
         // A catch-all record has no type: it catches anything, and the class file names nothing
         // this request could resolve to a type.
@@ -2399,6 +2583,7 @@ fn entry_frame(method: &FrameMethod<'_>, facts: &MethodCodeFacts) -> Norm<Frame>
     Ok(Frame {
         locals,
         stack: Vec::new(),
+        touches: None,
     })
 }
 
@@ -2523,6 +2708,132 @@ pub(crate) fn frames(
         Err(Problem::Inconsistent(message)) => Ok(FrameOutcome::Inconsistent { message }),
         Err(Problem::Unproven(message)) => Ok(FrameOutcome::Unsupported { message }),
     }
+}
+
+/// Whether one frame entry starts a value a consumer may hold on its own.
+///
+/// `Top` is no readable value at all and has no value of its own, and the upper half of a
+/// category-2 value belongs to the slot below it, so neither of them starts one: a consumer that
+/// took either for a value would invent a definition no instruction produced.
+pub(crate) fn starts_value(value: &Value) -> bool {
+    !matches!(value, Value::Top | Value::Second)
+}
+
+/// The slots the method's entry block is entered with, as plain data.
+///
+/// The caller's own contribution is a participant of that block's entry phis like an incoming
+/// edge is: a body that branches back to BCI 0 merges the caller's state with the incoming one,
+/// and the incoming edge alone does not state the caller's half. `None` is the boundary
+/// [`frames`] reports for the same state, which a run that published the frames of the entry
+/// block cannot reach.
+pub(crate) fn entry_slots(
+    method: &FrameMethod<'_>,
+    facts: &MethodCodeFacts,
+) -> Result<Option<Vec<EntrySlot>>> {
+    let state = match entry_frame(method, facts) {
+        Ok(state) => state,
+        Err(Problem::Budget(error)) => return Err(error),
+        Err(Problem::Inconsistent(_) | Problem::Unproven(_)) => return Ok(None),
+    };
+    let mut slots = Vec::new();
+    for (index, value) in state.locals.iter().enumerate() {
+        if !starts_value(value) {
+            continue;
+        }
+        slots.push(EntrySlot {
+            region: SlotRegion::Local,
+            slot: u32::try_from(index).unwrap_or(u32::MAX),
+            value: value.clone(),
+        });
+    }
+    for (depth, value) in state.stack.iter().enumerate() {
+        if !starts_value(value) {
+            continue;
+        }
+        slots.push(EntrySlot {
+            region: SlotRegion::Stack,
+            slot: u32::try_from(depth).unwrap_or(u32::MAX),
+            value: value.clone(),
+        });
+    }
+    Ok(Some(slots))
+}
+
+/// Replays one block over its **published** entry state and returns the slot accesses of each of
+/// its instructions, in execution order.
+///
+/// The replay is the same transfer the fixpoint ran, on the state the table published for that
+/// block: it exists so that a consumer reads the reads and writes of every instruction out of the
+/// one dense table that produced the frames, instead of classifying the opcodes a second time —
+/// the shapes of the `dup*`/`pop*`/`swap` family follow the values on the stack, so a
+/// value-independent classification would be wrong for exactly those forms. A failure here is
+/// therefore about this build's own artifact and not about the bytes: the frames of the block and
+/// its replay disagree.
+///
+/// Charges: one `AnalysisSteps` per instruction examined, like the transfer it replays, and one
+/// `IrItems` per recorded access before it is stored.
+pub(crate) fn block_touches(
+    facts: &MethodCodeFacts,
+    block: &CanonicalBlock,
+    entry: &BlockFrame,
+    method: &FrameMethod<'_>,
+    budget: &mut Budget,
+) -> Result<TouchesOutcome> {
+    match replay(facts, block, entry, method, budget) {
+        Ok(accesses) => Ok(TouchesOutcome::Touches(accesses)),
+        Err(Problem::Budget(error)) => Err(error),
+        Err(Problem::Inconsistent(message)) => Ok(TouchesOutcome::Inconsistent { message }),
+        Err(Problem::Unproven(message)) => Ok(TouchesOutcome::Unsupported { message }),
+    }
+}
+
+/// The replay itself, as [`block_touches`] documents it.
+fn replay(
+    facts: &MethodCodeFacts,
+    block: &CanonicalBlock,
+    entry: &BlockFrame,
+    method: &FrameMethod<'_>,
+    budget: &mut Budget,
+) -> Norm<Vec<InstructionTouches>> {
+    let mut frame = Frame {
+        locals: entry.locals.clone(),
+        stack: entry.stack.clone(),
+        touches: Some(Vec::new()),
+    };
+    let operands = facts.operands();
+    let mut instructions = Vec::new();
+    for index in instruction_indices(block, facts)? {
+        let instruction = &facts.instructions[index];
+        let operands = &operands[index];
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let row = TABLE[usize::from(operands.effective_opcode)];
+        apply(
+            method,
+            facts,
+            row,
+            &block.id,
+            instruction.bci,
+            operands,
+            &mut frame,
+        )?;
+        let touched = std::mem::take(
+            frame
+                .touches
+                .as_mut()
+                .expect("the replay is the one run that traces its own frame"),
+        );
+        budget.charge(
+            CountedBudgetDimension::IrItems,
+            u64::try_from(touched.len()).unwrap_or(u64::MAX),
+        )?;
+        instructions.push(InstructionTouches {
+            bci: instruction.bci,
+            opcode: operands.effective_opcode,
+            stack_after: u32::try_from(frame.stack.len()).unwrap_or(u32::MAX),
+            accesses: touched,
+        });
+    }
+    Ok(instructions)
 }
 
 /// The fixpoint itself, as [`frames`] documents it.
@@ -4154,6 +4465,7 @@ mod tests {
         let mut frame = Frame {
             locals: vec![token.clone(), other.clone(), Value::Top],
             stack: vec![token.clone(), other.clone()],
+            touches: None,
         };
         frame.convert_token(&token, &Value::Int);
         assert_eq!(

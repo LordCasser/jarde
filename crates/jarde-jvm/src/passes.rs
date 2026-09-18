@@ -113,8 +113,9 @@ impl IrPhase {
 /// skipping a hole in the pipeline. 3.3 implements `raw_facts` (the reader's own work, see the
 /// table) and `raw_cfg`, 3.4 adds `legacy_normalization` (the call contexts, which is not the
 /// cloning pass), 3.5 adds `canonical_cfg` (the bounded clone normalization that consumes
-/// exactly those contexts), and 4.1 adds `frame` (the descriptor-driven slot states over the
-/// canonical graph); 4.2/4.3 extend this list, and 5.1 deletes it with the last phase.
+/// exactly those contexts), 4.1 adds `frame` (the descriptor-driven slot states over the
+/// canonical graph) and 4.3 adds `ssa` (the stack/local names over those frames); 5.1 deletes
+/// this list with the last phase.
 pub(crate) fn implemented(phase: IrPhase) -> bool {
     matches!(
         phase,
@@ -123,6 +124,7 @@ pub(crate) fn implemented(phase: IrPhase) -> bool {
             | IrPhase::LegacyNormalization
             | IrPhase::CanonicalCfg
             | IrPhase::Frame
+            | IrPhase::Ssa
     )
 }
 
@@ -900,14 +902,15 @@ mod tests {
     }
 
     /// The phases this build implements: 3.3 runs `raw_facts` and `raw_cfg`, 3.4 adds the call
-    /// contexts of `legacy_normalization`, 3.5 the canonical CFG of `canonical_cfg`, and 4.1 the
-    /// frames of `frame`.
-    const IMPLEMENTED_PHASES: [IrPhase; 5] = [
+    /// contexts of `legacy_normalization`, 3.5 the canonical CFG of `canonical_cfg`, 4.1 the
+    /// frames of `frame`, and 4.3 the names of `ssa`.
+    const IMPLEMENTED_PHASES: [IrPhase; 6] = [
         IrPhase::RawFacts,
         IrPhase::RawCfg,
         IrPhase::LegacyNormalization,
         IrPhase::CanonicalCfg,
         IrPhase::Frame,
+        IrPhase::Ssa,
     ];
 
     #[test]

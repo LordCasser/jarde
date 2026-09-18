@@ -18,12 +18,13 @@ use jarde_reader::model::{
     Coverage, Diagnostic, DiagnosticSeverity, ExecutionReport, TerminationReason,
 };
 
-use crate::frame::{FrameOutcome, IR_FRAME_DEFERRED, IR_FRAME_INCONSISTENT};
+use crate::frame::{FrameMethod, FrameOutcome, IR_FRAME_DEFERRED, IR_FRAME_INCONSISTENT};
 use crate::ir::{
     MethodAnalysisReport, MethodAnalysisRequest, MethodBodyState, NoBodyKind, StageResult,
     StageState,
 };
 use crate::passes::{FactLedger, IR_PASS_NOT_IMPLEMENTED, IrPhase, PassDescriptor, implemented};
+use crate::ssa::{IR_SSA_INCONSISTENT, SsaOutcome};
 
 /// Access flags that declare a member without a body: `ACC_ABSTRACT` and `ACC_NATIVE`.
 const ACC_ABSTRACT: u16 = 0x0400;
@@ -196,6 +197,9 @@ fn run_method_analysis(
     // The frames 4.1 published. 4.2 is their first consumer, so the payload stays in this run
     // under the same plan the canonical graph is kept under; nothing in this build reads it back.
     let mut frame_table: Option<Box<crate::frame::FrameTable>> = None;
+    // The names 4.3 published, over exactly those frames and the canonical graph: the artifact the
+    // next slice consumes, kept in this run for the same reason.
+    let mut ssa_table: Option<Box<crate::ssa::SsaTable>> = None;
     for (index, pass) in scheduled.iter().enumerate() {
         if !implemented(pass.phase) {
             stop = stop.or(Some(report_unimplemented(
@@ -472,15 +476,7 @@ fn run_method_analysis(
                     }
                     break;
                 };
-                let method = crate::frame::FrameMethod {
-                    access_flags: declaration.access_flags,
-                    name: &request.method.name.0,
-                    descriptor: &request.method.descriptor.0,
-                    owner: &declaration.this_class,
-                    super_class: declaration.super_class.as_deref(),
-                    pool: &declaration.pool,
-                    loader: &request.environment.runtime.load_domain.loader,
-                };
+                let method = frame_method(request, declaration);
                 match crate::frame::frames(decoded, graph, &method, budget) {
                     Ok(FrameOutcome::Frames(table)) => {
                         if let Err(error) = ledger.apply(pass) {
@@ -554,14 +550,75 @@ fn run_method_analysis(
                     }
                 }
             }
-            _ => {
-                // A phase this build does not implement: the request is answered with the
-                // failure of that pass, and the phases behind it stay `NotPerformed` instead
-                // of looking performed.
-                stop = stop.or(Some(report_unimplemented(
-                    &mut run, index, pass.phase, budget,
-                )));
-                break;
+            IrPhase::Ssa => {
+                let (Some(decoded), Some(graph), Some(published), Some(declaration)) = (
+                    facts.as_ref(),
+                    canonical_cfg.as_ref(),
+                    frame_table.as_ref(),
+                    declaration.as_ref(),
+                ) else {
+                    // The pass requires what the passes before it publish, so a run that reached it
+                    // without them is the ledger's own `ir_pass_prerequisite_missing` (the schedule
+                    // validation makes it unreachable).
+                    if let Err(error) = ledger.apply(pass) {
+                        let (execution, diagnostic) = crate::ir::terminal(&error, budget.usage());
+                        run.stages[index].state = stage_state(&execution);
+                        run.diagnostics.push(diagnostic);
+                        stop = stop.or(Some(execution));
+                    }
+                    break;
+                };
+                let method = frame_method(request, declaration);
+                match crate::ssa::ssa(decoded, graph, published, &method, budget) {
+                    Ok(SsaOutcome::Ssa(names)) => {
+                        if let Err(error) = ledger.apply(pass) {
+                            let (execution, diagnostic) =
+                                crate::ir::terminal(&error, budget.usage());
+                            run.stages[index].state = stage_state(&execution);
+                            run.diagnostics.push(diagnostic);
+                            stop = stop.or(Some(execution));
+                            break;
+                        }
+                        // The names cover the decoded prefix, like every pass before this one: a
+                        // body whose decode stopped early gets the names of that prefix and says so.
+                        run.stages[index].state = if graph.completeness.is_complete() {
+                            StageState::Completed
+                        } else {
+                            StageState::Partial
+                        };
+                        // The table is a crate-private payload (invariant 11): the next slice reads
+                        // it, and 5.1 decides what becomes public. The effect facts it carries are
+                        // the canonical graph's own `Effects`, which this pass re-publishes — the
+                        // canonicalization invalidated the raw pass's copy.
+                        ssa_table = Some(names);
+                    }
+                    Ok(SsaOutcome::Inconsistent { message }) => {
+                        // The frames, the graph and the instructions of this body contradict each
+                        // other about a slot. Like every contradiction in this pipeline, it is an
+                        // error rather than a boundary of this build, nothing is published, and the
+                        // phases before this one keep their facts.
+                        let code = IR_SSA_INCONSISTENT.to_string();
+                        run.stages[index].state = StageState::Partial;
+                        run.diagnostics.push(Diagnostic {
+                            code: code.clone(),
+                            severity: DiagnosticSeverity::Error,
+                            message,
+                            provenance: None,
+                        });
+                        stop = stop.or(Some(ExecutionReport::Partial {
+                            reason: TerminationReason::Error { code },
+                            usage: budget.usage(),
+                        }));
+                        break;
+                    }
+                    Err(error) => {
+                        let (execution, diagnostic) = crate::ir::terminal(&error, budget.usage());
+                        run.stages[index].state = stage_state(&execution);
+                        run.diagnostics.push(diagnostic);
+                        stop = stop.or(Some(execution));
+                        break;
+                    }
+                }
             }
         }
     }
@@ -583,6 +640,15 @@ fn run_method_analysis(
             .as_ref()
             .is_none_or(|table| !table.blocks().is_empty()),
         "a published frame table holds at least the entry state"
+    );
+    // The same property for the names 4.3 published: a table of a body whose entry block the
+    // frames hold always names at least that block, so an empty one would mean the payload of this
+    // run lost the fact the ledger recorded.
+    debug_assert!(
+        ssa_table
+            .as_ref()
+            .is_none_or(|table| !table.blocks().is_empty()),
+        "a published SSA table names at least the entry block"
     );
     run.execution = match stop {
         // The usage of the whole request, under whichever termination stopped it first.
@@ -636,6 +702,30 @@ struct FrameDeclaration {
     super_class: Option<Vec<u8>>,
     /// The class file's constant pool, in index order.
     pool: Vec<CpEntryFacts>,
+}
+
+/// The declaration facts one IR pass reads beside the body and the graph, as the frame-family
+/// passes take them.
+///
+/// `frame` and `ssa` read the same view of the member and its class: the flags and name decide the
+/// entry frame, the descriptor decides the parameter slots and the `invoke*` shapes, the class's
+/// own name is the type of an initialized `this` and its superclass is the one other constructor
+/// call JVMS 4.9.2 permits, the pool is where every descriptor lives, and the loader is the anchor
+/// of this request's named references. One constructor keeps the two passes reading one view
+/// instead of two copies of it.
+fn frame_method<'a>(
+    request: &'a MethodAnalysisRequest,
+    declaration: &'a FrameDeclaration,
+) -> FrameMethod<'a> {
+    FrameMethod {
+        access_flags: declaration.access_flags,
+        name: &request.method.name.0,
+        descriptor: &request.method.descriptor.0,
+        owner: &declaration.this_class,
+        super_class: declaration.super_class.as_deref(),
+        pool: &declaration.pool,
+        loader: &request.environment.runtime.load_domain.loader,
+    }
 }
 
 /// Reads the driver method's class header and body, and fills the planes that follow from it.

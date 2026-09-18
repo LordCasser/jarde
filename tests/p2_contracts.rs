@@ -1677,9 +1677,9 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
     // driver method's class definition and decodes its body, `raw_cfg` builds the raw graph
     // over those facts, `legacy_normalization` establishes the `jsr`/`ret` call contexts (none
     // for this body: the 52 fixture inlines its `finally`), `canonical_cfg` normalizes the graph
-    // under them, `frame` derives the frames of that graph, and the first phase this build does
-    // not implement fails where the pipeline reaches it — the phases behind it stay
-    // `NotPerformed` rather than looking performed.
+    // under them, `frame` derives the frames of that graph, and the `ssa` names 4.3 derives over
+    // exactly those frames complete last. Every phase this build declares is implemented, so the
+    // request is answered with the whole pipeline performed.
     assert_eq!(
         report
             .stages
@@ -1692,9 +1692,7 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
             StageState::Completed,
             StageState::Completed,
             StageState::Completed,
-            StageState::Failed {
-                code: "ir_pass_not_implemented".to_string()
-            },
+            StageState::Completed,
         ]
     );
     assert_eq!(report.method, fixture.method);
@@ -1716,11 +1714,13 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
     );
     assert_eq!(
         unsupported_code(&report.execution),
-        Some("ir_pass_not_implemented")
+        None,
+        "every phase this build declares is implemented, so nothing is refused as unsupported"
     );
-    assert_eq!(
-        diagnostic_codes(&report.diagnostics),
-        vec!["ir_pass_not_implemented"]
+    assert!(
+        diagnostic_codes(&report.diagnostics).is_empty(),
+        "a completed pipeline reports no diagnostic: {:?}",
+        diagnostic_codes(&report.diagnostics)
     );
     assert_eq!(report.body, MethodBodyState::Present);
     assert_eq!(
@@ -1732,11 +1732,24 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
             content: vec![fixture.snapshot.id().clone()],
         }
     );
-    // The counted dimensions 3.3 uses are real now: one header read, one body attempt, and the
-    // IR items and steps of the raw graph. This fixture's body is straight-line code with a
-    // handler no instruction of its protected range can enter, so its raw graph really holds
-    // no edge; `tests/p2_cfg.rs` pins the edge charge on a body that has transfers.
+    // The counted dimensions 3.3 uses are real now: one header read, one body attempt, the IR
+    // items and steps of the raw graph, and the def-use edges 4.3 bills over the frames. This
+    // fixture's body is straight-line code with a handler no instruction of its protected range
+    // can enter, so neither the raw graph nor the canonical graph holds an edge; the edges this
+    // request bills are the names' own def-use edges, one per use, and a run that stops before
+    // the `ssa` phase bills none of them.
+    let mut frames_only = request.clone();
+    frames_only.stages = vec![AnalysisStage::Frame];
+    let mut frames_budget = Budget::new(analysis_limits());
+    Engine::new()
+        .analyze_method(
+            std::slice::from_ref(&fixture.snapshot),
+            &frames_only,
+            &mut frames_budget,
+        )
+        .expect("a legal request is answered, not raised");
     let usage = budget.usage();
+    assert_eq!(frames_budget.usage().ir_edges, 0, "no edge before 4.3");
     assert_eq!(usage.class_headers, 1);
     assert_eq!(usage.method_bodies, 1);
     assert!(
@@ -1744,7 +1757,12 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
         "the decoded instructions were charged"
     );
     assert!(usage.ir_items > 0, "the raw graph's items were charged");
-    assert_eq!(usage.ir_edges, 0, "this body holds no transfer to charge");
+    assert!(
+        usage.ir_edges > frames_budget.usage().ir_edges,
+        "4.3 bills one def-use edge per use: {} vs {}",
+        usage.ir_edges,
+        frames_budget.usage().ir_edges
+    );
     assert!(usage.analysis_steps > 0, "the raw pass ran a worklist");
 
     // A zero budget stops the first pass at its first charge: the prefix semantics of a budget
@@ -1892,11 +1910,32 @@ fn an_unread_body_is_not_inspected_never_a_body_fact() {
 fn result_planes_are_reported_side_by_side_and_never_inferred() {
     let fixture = fixture();
     let environment = healthy_environment(&fixture);
+    let content = std::slice::from_ref(&fixture.snapshot);
+    // The run this test states its planes about publishes the canonical graph and then stops
+    // inside a later phase on the step budget. The limit is the exact price of the phases up to
+    // that artifact plus one step, so the stop lands behind it — which is the one shape that still
+    // shows a produced artifact beside an unfinished run now that every phase this build declares
+    // is implemented.
+    let mut canonical_budget = Budget::new(analysis_limits());
+    Engine::new()
+        .analyze_method(
+            content,
+            &analysis_request(
+                &fixture,
+                environment.clone(),
+                vec![AnalysisStage::CanonicalCfg],
+            ),
+            &mut canonical_budget,
+        )
+        .expect("a legal request is answered, not raised");
+    let mut stopped = analysis_limits();
+    stopped.analysis_steps = canonical_budget.usage().analysis_steps + 1;
+    let mut budget = Budget::new(stopped);
     let report = Engine::new()
         .analyze_method(
-            std::slice::from_ref(&fixture.snapshot),
+            content,
             &analysis_request(&fixture, environment, vec![AnalysisStage::Ssa]),
-            &mut Budget::new(analysis_limits()),
+            &mut budget,
         )
         .expect("a legal request is answered, not raised");
 
@@ -1919,42 +1958,51 @@ fn result_planes_are_reported_side_by_side_and_never_inferred() {
         MethodBodyState::DeclaredWithoutBody { .. }
     ));
     // `quality` is a property of a produced artifact: it is `Conservative` here because a
-    // canonical CFG was produced, and it must not be read as a completed run — the phase this
-    // build does not implement still ends the request.
+    // canonical CFG was produced, and it must not be read as a completed run — a phase behind the
+    // artifact runs out of the step budget and stops the request.
     assert!(
         !matches!(report.execution, ExecutionReport::Complete { .. }),
         "a Conservative quality does not mean a completed run"
     );
 
-    // Capability, range, termination and verification are separate planes: five phases really
-    // completed and the body was fully covered, while a later phase this build does not
-    // implement ends the run as an unsupported capability — and none of that says anything
-    // about the product planes above.
-    let ExecutionReport::Failed {
-        reason: TerminationReason::Unsupported { code },
+    // Capability, range, termination and verification are separate planes: the phases up to the
+    // canonical graph really completed and the body was fully covered, while a later phase stops
+    // on the budget layer's step dimension — and none of that says anything about the product
+    // planes above.
+    let ExecutionReport::Partial {
+        reason:
+            TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::AnalysisSteps,
+            },
         ..
     } = &report.execution
     else {
-        panic!("the first unimplemented phase ends as `Failed {{ Unsupported }}`");
+        panic!(
+            "a phase behind the canonical graph stops on the step budget: {:?}",
+            report.execution
+        );
     };
-    assert_eq!(code, "ir_pass_not_implemented");
+    assert_eq!(
+        diagnostic_codes(&report.diagnostics),
+        vec!["budget_exceeded_analysis_steps"]
+    );
     assert_eq!(
         report
             .stages
             .iter()
             .filter(|stage| stage.state == StageState::Completed)
             .count(),
-        5,
-        "`raw_facts`, `raw_cfg`, `legacy_normalization`, `canonical_cfg` and `frame` completed"
+        4,
+        "`raw_facts`, `raw_cfg`, `legacy_normalization` and `canonical_cfg` completed"
     );
     assert_eq!(
         report.coverage.artifact_structural.state,
         CoverageState::CompleteWithinSchema,
-        "the bytecode range is complete even though a later phase is not implemented"
+        "the bytecode range is complete even though a later phase stopped"
     );
 
     // The planes do not imply one another: a complete bytecode range does not make the
-    // runtime plane complete, an unsupported capability does not become a budget stop, and a
+    // runtime plane complete, a budget stop does not become a refused capability, and a
     // present body does not grant semantic evidence or verification.
     assert_ne!(
         report.coverage.runtime_resolution.state,
@@ -1970,14 +2018,9 @@ fn result_planes_are_reported_side_by_side_and_never_inferred() {
         SemanticValidation::LocalInvariants
     );
     assert!(
-        !matches!(
-            report.execution,
-            ExecutionReport::Failed {
-                reason: TerminationReason::BudgetExceeded { .. },
-                ..
-            }
-        ),
-        "an unsupported capability is not a budget stop"
+        unsupported_code(&report.execution).is_none(),
+        "a stop of the budget layer is not a capability this build refuses: {:?}",
+        report.execution
     );
 }
 

@@ -42,8 +42,7 @@ use jarde::{
     MultiReleasePolicy, PhysicalDefinitionId, PhysicalMethodId, PhysicalScope, PhysicalVariant,
     PhysicalView, ProviderId, Quality, ReadReason, ReferenceUse, ResolutionAnalysis,
     ResolutionEnvironment, ResolutionRequest, ResolutionState, ResolvedMemberRef, RuntimeProfile,
-    RuntimeUncertainty, RuntimeView, SnapshotId, StageState, SymbolRef, TerminationReason,
-    UsageSnapshot,
+    RuntimeUncertainty, RuntimeView, SnapshotId, StageState, SymbolRef, UsageSnapshot,
 };
 use std::env;
 use std::path::{Path, PathBuf};
@@ -408,48 +407,45 @@ fn run(path: PathBuf) -> jarde::Result<()> {
     );
     // The body was located and read by this run, and the canonical CFG was built from the call
     // contexts the phase before it proved: a produced artifact is what makes `quality`
-    // `Conservative` rather than `Fallback`. The run stops at the first phase this build does
-    // not implement, so it ends as the unsupported capability it is — never as a completed
-    // pipeline.
+    // `Conservative` rather than `Fallback`. The phases over that artifact — the frames and the
+    // stack/local names 4.3 derives from them — run too, and every phase this build declares is
+    // implemented, so the pipeline is answered as a complete run.
     //
     // The shape is asserted rather than a count of completed phases: each phase this build
     // gains moves that count, and a number here would be asserting the build's progress instead
-    // of what the example is about. What has to hold is the prefix — everything up to the
-    // unimplemented phase ran and completed, nothing behind it ran.
+    // of what the example is about. What has to hold is the table: every scheduled phase ran and
+    // completed, and the run really reached its end.
     assert_eq!(report.body, MethodBodyState::Present);
     let states = report
         .stages
         .iter()
         .map(|stage| stage.state.clone())
         .collect::<Vec<_>>();
-    let unimplemented = states
-        .iter()
-        .position(|state| matches!(state, StageState::Failed { .. }))
-        .expect("this build does not implement every phase yet");
     assert!(
-        states[..unimplemented]
+        states
             .iter()
             .all(|state| matches!(state, StageState::Completed)),
-        "every phase before the unimplemented one completed: {states:?}"
+        "every scheduled phase completed: {states:?}"
     );
     assert!(
-        states[unimplemented + 1..]
-            .iter()
-            .all(|state| matches!(state, StageState::NotPerformed)),
-        "no phase behind the unimplemented one ran: {states:?}"
+        matches!(report.execution, ExecutionReport::Complete { .. }),
+        "the pipeline ran to its end: {:?}",
+        report.execution
     );
     assert_eq!(
         report.quality,
         Quality::Conservative,
         "a produced canonical CFG is the artifact `quality` classifies"
     );
-    assert!(matches!(
-        report.execution,
-        ExecutionReport::Failed {
-            reason: TerminationReason::Unsupported { .. },
-            ..
-        }
-    ));
+    assert!(
+        report.diagnostics.is_empty(),
+        "a run that completed every phase reports no diagnostic: {:?}",
+        report
+            .diagnostics
+            .iter()
+            .map(|diagnostic| diagnostic.code.as_str())
+            .collect::<Vec<_>>()
+    );
     assert_eq!(report.reads.len(), 1);
     assert_eq!(
         report.reads[0].reason,

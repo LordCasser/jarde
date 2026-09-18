@@ -140,16 +140,18 @@ impl Engine {
     /// serve is an input error (`ir_pass_prerequisite_missing`, `ir_pass_order_invalid`,
     /// `ir_pass_graph_cycle`, `ir_stale_fact`) rather than a half-initialized pipeline.
     ///
-    /// The scheduled passes of 3.x then really run, in table order and through the ledger:
+    /// The scheduled passes of 3.x–4.x then really run, in table order and through the ledger:
     /// `raw_facts` reads the driver method's class header and decodes its body (one
     /// `ClassHeaders` and one `MethodBodies` attempt, recorded under `DriverMethodBody`),
     /// `raw_cfg` builds the raw graph, its throw sites and its effect facts over those decoded
-    /// facts, and `legacy_normalization` builds the `jsr`/`ret` call contexts over that graph —
-    /// keeping the raw facts and reporting a dialect violation or an unestablished call graph
-    /// instead of publishing contexts it cannot justify. A rejected environment starts nothing;
-    /// a phase this build does not implement is `Failed { ir_pass_not_implemented }` wherever
-    /// the pipeline reaches it, and a stopped pass keeps every stage result it had already
-    /// produced.
+    /// facts, `legacy_normalization` builds the `jsr`/`ret` call contexts over that graph,
+    /// `canonical_cfg` normalizes the graph under exactly those contexts, `frame` derives the
+    /// operand stack and local state of every block it reaches, and `ssa` names the stack and
+    /// local slots of those frames through one explicit worklist. Every phase of the fixed table
+    /// is implemented, so a legal request is answered with the whole pipeline performed; a
+    /// stopped pass keeps every stage result it had already produced, and a phase this build does
+    /// not implement is `Failed { ir_pass_not_implemented }` wherever the pipeline reaches it —
+    /// which no phase of today's table is.
     pub fn analyze_method(
         &self,
         content: &[ArtifactSnapshot],

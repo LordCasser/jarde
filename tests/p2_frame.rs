@@ -188,8 +188,8 @@ fn assert_planes_stay_p1(report: &MethodAnalysisReport) {
 fn the_frame_phase_completes_a_body_without_any_debug_table() {
     // `finallyPath(I)I` of the 52 fixture is an instance method with real control flow. Its
     // `Code` attribute carries no `StackMapTable` and no local-variable table, so what the frame
-    // phase derives comes from the descriptors and the data flow alone — and the phase behind it
-    // is still the one this build does not implement.
+    // phase derives comes from the descriptors and the data flow alone — and the phase behind it,
+    // `ssa`, names exactly those frames and completes too.
     let fixture = fixture(b"finallyPath", b"(I)I");
     let (report, budget) = analyze(&fixture, vec![AnalysisStage::Ssa], limits());
     assert_eq!(
@@ -200,19 +200,22 @@ fn the_frame_phase_completes_a_body_without_any_debug_table() {
             StageState::Completed,
             StageState::Completed,
             StageState::Completed,
-            StageState::Failed {
-                code: "ir_pass_not_implemented".to_string()
-            },
+            StageState::Completed,
         ],
-        "the frame phase completed and `ssa` is the phase this build does not implement"
+        "the frame phase completed and `ssa` named the frames it published"
     );
-    assert_eq!(diagnostic_codes(&report), vec!["ir_pass_not_implemented"]);
+    assert!(
+        diagnostic_codes(&report).is_empty(),
+        "a completed pipeline reports no diagnostic: {:?}",
+        diagnostic_codes(&report)
+    );
     assert_eq!(report.quality, Quality::Conservative);
     assert_eq!(report.body, MethodBodyState::Present);
     assert_planes_stay_p1(&report);
 
     // The frames are derived storage and a worklist walk, so a request that reaches the phase
-    // bills strictly more than the same request without it on both dimensions its row declares.
+    // bills strictly more than the same request without it on both dimensions its row declares;
+    // the names 4.3 derives over them add the def-use edges its own row declares on top.
     let (_, without) = analyze(&fixture, vec![AnalysisStage::CanonicalCfg], limits());
     assert!(
         budget.usage().ir_items > without.usage().ir_items,
@@ -226,10 +229,11 @@ fn the_frame_phase_completes_a_body_without_any_debug_table() {
         budget.usage().analysis_steps,
         without.usage().analysis_steps
     );
-    assert_eq!(
+    assert!(
+        budget.usage().ir_edges > without.usage().ir_edges,
+        "4.1 builds no edge of its own and 4.3 bills one def-use edge per use: {} vs {}",
         budget.usage().ir_edges,
-        without.usage().ir_edges,
-        "this pass builds no edge of its own"
+        without.usage().ir_edges
     );
 }
 
@@ -239,8 +243,8 @@ fn a_constructor_completes_because_its_constructor_call_converts_the_this() {
     // conversion of that call is part of the frame slice. The fixture's `<init>` performs an
     // `invokespecial java/lang/Object.<init>()V` — the superclass's constructor, one of the two
     // calls the class file's own `super_class` makes applicable — so the body the boundary used to
-    // stop on is the body this run derives the frames of, and the phase behind it is still the one
-    // this build does not implement.
+    // stop on is the body this run derives the frames of, and 4.3 names the converted slots: the
+    // alias conversion is a definition, so the token reaches its initialized state as a new value.
     let fixture = fixture(b"<init>", b"()V");
     let (report, _) = analyze(&fixture, vec![AnalysisStage::Ssa], limits());
     assert_eq!(
@@ -251,13 +255,15 @@ fn a_constructor_completes_because_its_constructor_call_converts_the_this() {
             StageState::Completed,
             StageState::Completed,
             StageState::Completed,
-            StageState::Failed {
-                code: "ir_pass_not_implemented".to_string()
-            },
+            StageState::Completed,
         ],
-        "the constructor's frames are derived, and `ssa` is the phase this build does not implement"
+        "the constructor's frames are derived, and `ssa` named them"
     );
-    assert_eq!(diagnostic_codes(&report), vec!["ir_pass_not_implemented"]);
+    assert!(
+        diagnostic_codes(&report).is_empty(),
+        "a completed pipeline reports no diagnostic: {:?}",
+        diagnostic_codes(&report)
+    );
     assert_eq!(report.quality, Quality::Conservative);
     assert_eq!(report.body, MethodBodyState::Present);
     assert_planes_stay_p1(&report);
@@ -342,16 +348,14 @@ fn a_pre_initialization_putfield_of_the_own_name_is_accepted_without_any_declare
             StageState::Completed,
             StageState::Completed,
             StageState::Completed,
-            StageState::Failed {
-                code: "ir_pass_not_implemented".to_string()
-            },
+            StageState::Completed,
         ],
         "the frames come out of a body whose `putfield` names its own class, declared field or not"
     );
-    assert_eq!(
-        diagnostic_codes(&report),
-        vec!["ir_pass_not_implemented"],
-        "the boundary code is not among them: the instruction is read, not refused"
+    assert!(
+        diagnostic_codes(&report).is_empty(),
+        "no boundary code is among them: the instruction is read, not refused, and 4.3 names \
+         the frames it published"
     );
     assert_eq!(report.quality, Quality::Conservative);
     assert_eq!(report.body, MethodBodyState::Present);

@@ -173,9 +173,9 @@ fn analyze(
     (report, budget)
 }
 
-/// The full pipeline up to the last phase this build implements, cloned for the fake phase that
-/// stands behind `frame` in the stage list: `ssa` is still unimplemented, so a run that reaches it
-/// reports `ir_pass_not_implemented` for that phase alone.
+/// The full pipeline up to the last phases this build implements. 3.5's canonical graph is the
+/// artifact this file is about, and the two phases over it — `frame` and the `ssa` names 4.3
+/// derives — run and complete on these fixtures; nothing stands behind them in the stage list.
 fn pipeline(fixture: &Fixture) -> MethodAnalysisRequest {
     request(fixture, fixture.method.clone(), vec![AnalysisStage::Ssa])
 }
@@ -250,17 +250,15 @@ fn the_historical_finally_normalizes_with_one_clone_per_call_site() {
                 StageState::Completed,
                 StageState::Completed,
                 StageState::Completed,
-                StageState::Failed {
-                    code: "ir_pass_not_implemented".to_string()
-                },
+                StageState::Completed,
             ],
-            "classfile major {version}: the canonical phase completed and the ssa phase is the \
-             unimplemented one"
+            "classfile major {version}: the canonical phase completed and the names 4.3 derives \
+             over it completed too"
         );
-        assert_eq!(
-            diagnostic_codes(&report),
-            vec!["ir_pass_not_implemented"],
-            "classfile major {version}: nothing stopped before the unimplemented phase"
+        assert!(
+            diagnostic_codes(&report).is_empty(),
+            "classfile major {version}: nothing stopped anywhere in the pipeline: {:?}",
+            diagnostic_codes(&report)
         );
         assert_eq!(
             report.quality,
@@ -273,15 +271,9 @@ fn the_historical_finally_normalizes_with_one_clone_per_call_site() {
             "classfile major {version}: one clone node per call site of the shared subroutine"
         );
         assert!(
-            matches!(
-                report.execution,
-                ExecutionReport::Failed {
-                    reason: TerminationReason::Unsupported { ref code },
-                    ..
-                } if code == "ir_pass_not_implemented"
-            ),
-            "classfile major {version}: the run terminates on the phase this build does not \
-             implement, after the canonical one: {:?}",
+            matches!(report.execution, ExecutionReport::Complete { .. }),
+            "classfile major {version}: every phase this build implements ran, the canonical one \
+             and the frames and names over it: {:?}",
             report.execution
         );
 
@@ -341,9 +333,7 @@ fn the_modern_dialect_has_no_clone_to_bill() {
             StageState::Completed,
             StageState::Completed,
             StageState::Completed,
-            StageState::Failed {
-                code: "ir_pass_not_implemented".to_string()
-            },
+            StageState::Completed,
         ]
     );
     assert_eq!(report.quality, Quality::Conservative);
@@ -702,10 +692,8 @@ fn a_jsr_on_an_exception_path_and_nested_calls_normalize() {
             if handlers.is_empty() {
                 (
                     StageState::Completed,
-                    vec![StageState::Failed {
-                        code: "ir_pass_not_implemented".to_string(),
-                    }],
-                    vec!["ir_pass_not_implemented"],
+                    vec![StageState::Completed],
+                    Vec::new(),
                 )
             } else {
                 (

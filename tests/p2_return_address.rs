@@ -269,8 +269,8 @@ fn the_historical_jsr_finally_completes_the_call_context_pass() {
     // pass that turns that into call contexts is the third phase this build implements: it
     // completes, it is not refused, and it charges analysis steps of its own — while the
     // dimensions `raw_cfg` owns stay exactly what that pass charged. 3.5's `canonical_cfg` then
-    // consumes exactly those contexts and completes as well, so the frame phase behind it is the
-    // one this build does not implement.
+    // consumes exactly those contexts and completes as well, and 4.3 names the clones and the
+    // continuations of that graph in the last two phases.
     for version in 45..=48 {
         let fixture = fixture(historical(version));
         let pipeline = request(&fixture, fixture.method.clone(), vec![AnalysisStage::Ssa]);
@@ -283,16 +283,14 @@ fn the_historical_jsr_finally_completes_the_call_context_pass() {
                 StageState::Completed,
                 StageState::Completed,
                 StageState::Completed,
-                StageState::Failed {
-                    code: "ir_pass_not_implemented".to_string()
-                },
+                StageState::Completed,
             ],
-            "classfile major {version}: the five implemented phases really ran"
+            "classfile major {version}: every phase this build implements really ran"
         );
-        assert_eq!(
-            diagnostic_codes(&report),
-            vec!["ir_pass_not_implemented"],
-            "classfile major {version}: neither the dialect nor the call graph was refused"
+        assert!(
+            diagnostic_codes(&report).is_empty(),
+            "classfile major {version}: neither the dialect nor the call graph was refused: {:?}",
+            diagnostic_codes(&report)
         );
         assert_eq!(report.body, MethodBodyState::Present);
         // The canonical CFG is the artifact of this pipeline, so a run that published one is
@@ -373,9 +371,7 @@ fn the_modern_dialect_pays_nothing_for_its_empty_context_set() {
             StageState::Completed,
             StageState::Completed,
             StageState::Completed,
-            StageState::Failed {
-                code: "ir_pass_not_implemented".to_string()
-            },
+            StageState::Completed,
         ]
     );
     let without = request(
