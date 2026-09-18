@@ -29,8 +29,10 @@
 //! * [`Value::Second`] is the upper half of a category-2 value: it is the lower slot's, and
 //!   reading it on its own is as wrong as reading an unreadable local — which is why it is a
 //!   state of its own and not another `Top`;
-//! * [`Value::UninitializedThis`] and [`Value::Uninitialized`] carry the new-site BCI, so two
-//!   allocations are different values and never one;
+//! * [`Value::Uninitialized`] carries its [`NewSite`] — the **canonical** block the `new` runs in
+//!   plus its own BCI — so two allocations are different values and never one, including two
+//!   clones of one shared subroutine whose `new`s map back to the same original BCI;
+//!   [`Value::UninitializedThis`] is one token by definition and needs no site;
 //! * [`Value::Null`] is the null type, and [`Value::Ref`] is an initialized reference whose type
 //!   is either **named** — the class file spells it and the loader identity travels with it — or
 //!   unknown. An unknown reference is conservative but is *not* `Top` and is never a basic type:
@@ -54,23 +56,33 @@
 //! half of the pair invalidates the other half, which becomes `Top` — the previous two-slot
 //! value no longer exists, and no stale lower half may survive a store into its upper slot.
 //!
-//! # The 4.1 boundary
+//! # Handler entries
+//!
+//! A block entered through an exception edge is entered with a state this pass **derives**, not
+//! one it invents from the aggregated edge. The canonical edge of one exception-table record
+//! stands for every throw site of its source block that the record covers, so the state is taken
+//! per throw site: the block's transfer publishes the locals **each** of its throwing
+//! instructions is entered with — the state at the instruction, before it takes effect — and the
+//! edge contributes one input per such site, with a stack holding the single exception reference
+//! (the record's catch type, or a conservative unknown reference for a catch-all). The handler's
+//! entry state is the merge of those inputs with every other incoming one, and the block keeps an
+//! enumerable [`LogicalInput`] per input so a later value-flow consumer counts logical
+//! predecessors instead of raw edges.
+//!
+//! # The 4.2 boundary that is left
 //!
 //! The initialization conversions — flipping `uninitializedThis`/new-site aliases after a
-//! successful `invokespecial <init>`, and the handler entries, whose locals snapshot comes from
-//! per-throw-site state — are **4.2's** work, not this slice's. 4.1 therefore states the
-//! distinctions and stops where a body needs them:
+//! successful `invokespecial <init>` — are still 4.2's work, not this slice's. 4.1 therefore
+//! states the distinction and stops where a body needs the flip: an uninitialized value may only
+//! be **moved** by a pure stack operation (`astore`/`aload`, the `dup*` family, `pop*`, `swap`),
+//! and any other consumer of one stops the body. The exception successor of a constructor call
+//! needs no separate rule: its input is the state at that call, which the flip of the normal
+//! successor cannot reach because the flip is what the call itself does.
 //!
-//! * an uninitialized value may only be **moved** by a pure stack operation (`astore`/`aload`,
-//!   the `dup*` family, `pop*`, `swap`); any other consumer of one stops the body;
-//! * a block entered through an exception edge gets no invented entry state: the canonical
-//!   graph's exception edge aggregates a block's throw sites, and a state fabricated from it
-//!   would be exactly the "one state for several BCIs" mistake the design forbids.
-//!
-//! Both stops are [`FrameOutcome::Unsupported`] — this build does not prove the state yet —
-//! and the driver reports them under `ir_frame_deferred`, which is a different fact from
-//! the [`FrameOutcome::Inconsistent`] a contradiction of the bytes produces. Silently skipping
-//! either case, or reporting it as a contradiction, is what the split exists to prevent.
+//! That stop is [`FrameOutcome::Unsupported`] — this build does not prove the state yet — and the
+//! driver reports it under `ir_frame_deferred`, which is a different fact from the
+//! [`FrameOutcome::Inconsistent`] a contradiction of the bytes produces. Silently skipping it, or
+//! reporting it as a contradiction, is what the split exists to prevent.
 
 use std::collections::BTreeMap;
 use std::collections::VecDeque;
@@ -80,12 +92,15 @@ use jarde_reader::classfile::{CpEntryFacts, CpEntryKind, InstructionOperands, Me
 use jarde_reader::error::{Error, Result};
 use jarde_reader::view::LoaderId;
 
-use crate::canonical::{CanonicalBlock, CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind};
+use crate::canonical::{
+    CanonicalBlock, CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, CanonicalHandlerRow,
+    CanonicalThrowSite,
+};
 
 /// Stop code of a body this build cannot state the frames of yet.
 ///
-/// It means "4.2's initialization or handler-entry analysis is missing here", never "the
-/// bytecode is wrong": the driver publishes the phases before this one and no `Frames` fact.
+/// It means "4.2's initialization conversions are missing here", never "the bytecode is wrong":
+/// the driver publishes the phases before this one and no `Frames` fact.
 pub(crate) const IR_FRAME_DEFERRED: &str = "ir_frame_deferred";
 
 /// Stop code of a body whose bytes contradict themselves.
@@ -185,6 +200,22 @@ pub(crate) enum RefType {
     Unknown,
 }
 
+/// Identity of one `new`: the **canonical** block the instruction runs in, plus its own BCI.
+///
+/// The raw BCI alone is not an identity in a normalized body. A shared subroutine is cloned once
+/// per call site, and every clone maps back to the same original instructions — so two `new`s in
+/// two clones carry one BCI between them, and an alias keyed by it would read the two allocations
+/// as one token. The canonical block carries the call path that makes the clone, which is what
+/// keeps the two apart. `UninitializedThis` needs no site: a constructor's own `this` is one
+/// token by definition rather than one per allocation.
+#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub(crate) struct NewSite {
+    /// The canonical node the `new` runs in.
+    pub(crate) block: CanonicalBlockId,
+    /// BCI of the `new` instruction, inside the original code that node stands for.
+    pub(crate) bci: u32,
+}
+
 /// One slot's state.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) enum Value {
@@ -202,9 +233,10 @@ pub(crate) enum Value {
     Ref(RefType),
     /// The uninitialized `this` of a constructor, before its own constructor call.
     UninitializedThis,
-    /// An uninitialized value whose `new` runs at this BCI.
+    /// An uninitialized value whose `new` runs at this site: the identity every alias of the
+    /// value — and only that value — shares.
     Uninitialized {
-        new_site: u32,
+        new_site: NewSite,
     },
     /// The return address a `jsr` pushes, which `astore`/`aload` may carry like a reference.
     ReturnAddress,
@@ -989,6 +1021,17 @@ impl Frame {
 /// without a class hierarchy: two different names merge to a conservative unknown reference,
 /// `null` merges with a named reference into that reference, and the null type with itself stays
 /// the null type.
+/// The merge of two locals arrays entering one block: slot by slot, under the rule that a local
+/// this pass cannot decide becomes [`Value::Top`].
+///
+/// Two uninitialized values merge to `Top` here like any other disagreement, and that stays
+/// deliberate now that the exception inputs are computed: the token of a slot is either the same
+/// on both paths — and then the equality above already returned it — or the paths hold different
+/// states. After such a merge point, reading that slot is illegal on the path whose token is
+/// missing or uninitialized, so failing *at the read* is the precise place to fail, and a body
+/// that differs only in a local it never reads stays analyzable. The operand stack answers the
+/// same question differently on purpose ([`merge_stack`]): a stack disagreement is a shape the
+/// next instruction would misinterpret, while a dead local is not.
 fn merge_local(left: &Value, right: &Value) -> Value {
     if left == right {
         return left.clone();
@@ -1371,9 +1414,15 @@ fn array_of(name: &[u8]) -> Vec<u8> {
 /// not by the table row's stack sequence, because the value it moves is the local's own: whether a
 /// load pushes an uninitialized value or a return address is a fact of the slot, not of the
 /// opcode.
+/// Applies one instruction of a block.
+///
+/// `block` is the canonical node the instruction runs in, which is the context a value's identity
+/// needs: a `new` is told apart from the same original `new` in another clone of its subroutine by
+/// the node, not by the BCI ([`NewSite`]).
 fn apply(
     method: &FrameMethod<'_>,
     entry: Entry,
+    block: &CanonicalBlockId,
     bci: u32,
     operands: &InstructionOperands,
     frame: &mut Frame,
@@ -1430,7 +1479,7 @@ fn apply(
             }
             Ok(())
         }
-        Stack::Constant(effect) => apply_constant(method, effect, bci, operands, frame),
+        Stack::Constant(effect) => apply_constant(method, effect, block, bci, operands, frame),
     }
 }
 
@@ -1571,6 +1620,7 @@ fn apply_form(form: Form, bci: u32, opcode: u8, frame: &mut Frame) -> Norm<()> {
 fn apply_constant(
     method: &FrameMethod<'_>,
     effect: PoolEffect,
+    block: &CanonicalBlockId,
     bci: u32,
     operands: &InstructionOperands,
     frame: &mut Frame,
@@ -1679,7 +1729,15 @@ fn apply_constant(
                 None => Ok(()),
             }
         }
-        PoolEffect::New => frame.push(Value::Uninitialized { new_site: bci }, bci),
+        PoolEffect::New => frame.push(
+            Value::Uninitialized {
+                new_site: NewSite {
+                    block: block.clone(),
+                    bci,
+                },
+            },
+            bci,
+        ),
         PoolEffect::NewArray => {
             frame.pop_ty(Ty::Int, bci, opcode, false)?;
             let Some(atype) = operands.atype else {
@@ -1796,24 +1854,169 @@ fn instruction_indices(block: &CanonicalBlock, facts: &MethodCodeFacts) -> Norm<
     Ok(indices)
 }
 
-/// The exit state of one node: its entry state with every instruction it runs applied in order.
+/// One throwing instruction of a block, with the locals it is entered with.
+///
+/// The locals are the state **at** the instruction — before it takes effect — because that is the
+/// state its own exception successor is entered with. The block's exit state is not that state:
+/// instructions after this one may still have written the locals, and instructions before it may
+/// not have written them yet.
+#[derive(Clone, Debug)]
+struct ThrowPoint {
+    /// BCI of the instruction that may throw.
+    bci: u32,
+    /// Exception-table ordinals whose protected range covers that instruction, in declaration
+    /// order, as the canonical throw site of that BCI states them.
+    handlers: Vec<u32>,
+    /// The locals the instruction sees, before it takes effect.
+    locals: Vec<Value>,
+}
+
+/// What one run of a block leaves behind.
+#[derive(Debug)]
+struct Transfer {
+    /// The exit state: the entry state with every instruction of the block applied in order.
+    exit: Frame,
+    /// One entry per throw site of the block, in the order the block runs them.
+    throw_points: Vec<ThrowPoint>,
+}
+
+/// The exit state of one node and the state at each of its throw sites.
+///
+/// A throw site is what the canonical graph says may throw here — the same records the exception
+/// edges are built from — so the transfer reads the site list instead of guessing "may throw" a
+/// second time, and a site's own handlers decide which exception edge it feeds.
 fn transfer_block(
     method: &FrameMethod<'_>,
+    canonical: &CanonicalCfg,
     block: &CanonicalBlock,
     facts: &MethodCodeFacts,
     entry: Frame,
     budget: &mut Budget,
-) -> Norm<Frame> {
+) -> Norm<Transfer> {
     let mut frame = entry;
     let operands = facts.operands();
+    let sites: BTreeMap<u32, &CanonicalThrowSite> = canonical
+        .throw_sites
+        .iter()
+        .filter(|site| site.block == block.id)
+        .map(|site| (site.bci, site))
+        .collect();
+    let mut throw_points = Vec::with_capacity(sites.len());
     for index in instruction_indices(block, facts)? {
         let instruction = &facts.instructions[index];
         let operands = &operands[index];
         budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
         let row = TABLE[usize::from(operands.effective_opcode)];
-        apply(method, row, instruction.bci, operands, &mut frame)?;
+        if let Some(site) = sites.get(&instruction.bci) {
+            // The snapshot is taken *before* the instruction is applied: this is the state the
+            // site's own exception successor is entered with, and the state the 4.2 alias flip of
+            // a constructor call must not be able to reach.
+            throw_points.push(ThrowPoint {
+                bci: instruction.bci,
+                handlers: site.handlers.clone(),
+                locals: frame.locals.clone(),
+            });
+        }
+        apply(
+            method,
+            row,
+            &block.id,
+            instruction.bci,
+            operands,
+            &mut frame,
+        )?;
     }
-    Ok(frame)
+    Ok(Transfer {
+        exit: frame,
+        throw_points,
+    })
+}
+
+/// One input an exception edge carries into its handler.
+struct ExceptionInput {
+    /// BCI of the throwing instruction the input is taken at.
+    bci: u32,
+    /// The handler's entry state along this input.
+    frame: Frame,
+}
+
+/// The frames one exception edge carries into its handler: **one input per throw site** of the
+/// source block that the record covers.
+///
+/// The canonical edge aggregates a block's throw sites into a single edge — the raw graph keeps
+/// one edge per `(block, ordinal)` pair — and this is where that aggregation is undone: each site
+/// contributes the locals it is entered with plus a stack holding the single exception reference,
+/// which is the shape a handler is entered with (JVMS 4.10.1.6). The reference is the record's
+/// catch type when the class file names one, and a conservative unknown reference for a catch-all
+/// record, whose type no fact of this request establishes.
+fn exception_inputs(
+    method: &FrameMethod<'_>,
+    canonical: &CanonicalCfg,
+    block: &CanonicalBlock,
+    throw_points: &[ThrowPoint],
+    handler_ordinal: u32,
+) -> Norm<Vec<ExceptionInput>> {
+    let Some(row) = canonical
+        .handler_rows
+        .iter()
+        .find(|row| row.ordinal == handler_ordinal)
+    else {
+        return inconsistent(format!(
+            "block {:?} leaves through the exception edge of handler record {handler_ordinal}, \
+             which no handler row of the graph states",
+            block.id
+        ));
+    };
+    let thrown = caught_reference(method, row)?;
+    let mut inputs = Vec::new();
+    for point in throw_points {
+        if !point.handlers.contains(&handler_ordinal) {
+            continue;
+        }
+        inputs.push(ExceptionInput {
+            bci: point.bci,
+            frame: Frame {
+                locals: point.locals.clone(),
+                stack: vec![thrown.clone()],
+            },
+        });
+    }
+    if inputs.is_empty() {
+        return inconsistent(format!(
+            "block {:?} leaves through the exception edge of handler record {handler_ordinal} but \
+             holds no throw site that record covers: the edge and the sites are built from one \
+             fact and cannot disagree",
+            block.id
+        ));
+    }
+    Ok(inputs)
+}
+
+/// The reference a handler is entered with: the record's catch type, or a conservative unknown
+/// reference for a catch-all record.
+fn caught_reference(method: &FrameMethod<'_>, row: &CanonicalHandlerRow) -> Norm<Value> {
+    let Some(index) = row.catch_type_index else {
+        // A catch-all record has no type: it catches anything, and the class file names nothing
+        // this request could resolve to a type.
+        return Ok(Value::Ref(RefType::Unknown));
+    };
+    let entry = jarde_reader::classfile::cp_entry(method.pool, index).map_err(|error| {
+        Problem::Inconsistent(format!(
+            "handler record {} catches the constant-pool entry {index}: {error}",
+            row.ordinal
+        ))
+    })?;
+    match &entry.kind {
+        // The catch type's name is anchored to the request's loader exactly like every other
+        // reference a descriptor names; the equality of two named references compares the loader
+        // too, so a type from another loader never silently becomes this one.
+        CpEntryKind::Class { name, .. } => Ok(named(name.0.clone(), method)),
+        other => inconsistent(format!(
+            "handler record {} catches the {} entry {index} where the format requires a class type",
+            row.ordinal,
+            cp_kind_name(other)
+        )),
+    }
 }
 
 /// The frame the method's own entry block is entered with: the parameters in the slots their
@@ -1867,11 +2070,28 @@ fn entry_frame(method: &FrameMethod<'_>, facts: &MethodCodeFacts) -> Norm<Frame>
 pub(crate) enum FrameOutcome {
     /// The frames of every block the method's entry reaches.
     Frames(Box<FrameTable>),
-    /// This build does not state the frames of this body yet: the initialization conversions and
-    /// the handler entries are 4.2's. The message names which of the two stopped the run.
+    /// This build does not state the frames of this body yet: the initialization conversions
+    /// (`uninitializedThis` and new-site aliases) are 4.2's. The message names the value and the
+    /// instruction that needed them.
     Unsupported { message: String },
     /// The body contradicts itself; the message names the slot and the class file's own operand.
     Inconsistent { message: String },
+}
+
+/// One logical input of a block's entry state: where that state comes in from.
+///
+/// A logical input is finer than a canonical edge. One exception edge aggregates every throw site
+/// its record covers, and each of those sites hands the handler its *own* state, so a consumer
+/// that asks "how many values does this slot take here" must count these records and never the
+/// aggregated edges. The source block names the normalization context too, because a clone of a
+/// subroutine is a different node from the original and from another clone.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct LogicalInput {
+    /// The block the state comes from.
+    pub(crate) from: CanonicalBlockId,
+    /// BCI of the throwing instruction this input is taken at, for an input that arrives through
+    /// an exception edge; `None` for a plain transfer, whose state is the source's exit.
+    pub(crate) throw_site: Option<u32>,
 }
 
 /// The entry state of one canonical block.
@@ -1883,9 +2103,13 @@ pub(crate) struct BlockFrame {
     pub(crate) locals: Vec<Value>,
     /// The operand stack, bottom first.
     pub(crate) stack: Vec<Value>,
+    /// One record per logical input this state was merged from, ordered by source block and then
+    /// by throw site.
+    pub(crate) inputs: Vec<LogicalInput>,
 }
 
-/// The published artifact: the entry state of every block the entry reaches.
+/// The published artifact: the entry state of every block the entry reaches, each with the
+/// logical inputs it was merged from.
 ///
 /// The table is derived storage whose only consumers in this build are the later slices — 4.2's
 /// initialization analysis and 4.3's SSA — and 5.1 decides what becomes public, so it stays
@@ -1932,18 +2156,23 @@ impl FrameTable {
 
 /// Builds the frames of one canonical graph.
 ///
-/// The entry state of each block is the **merge of its predecessors' exit states**, computed by a
-/// worklist over the canonical transfers until nothing changes. `Frames` covers every block the
-/// entry reaches, so a body whose decode stopped early has the frames of its reliable prefix,
-/// exactly like the passes before this one. An unproven state and a contradiction are two
-/// different outcomes, and neither of them is silently absorbed into the other.
+/// The entry state of each block is the **merge of its inputs**, computed by a worklist over the
+/// canonical transfers until nothing changes. A plain transfer contributes its source's exit
+/// state; an exception transfer contributes one state per throw site of its source that the
+/// record covers, each with the locals of that site and a stack holding the single exception
+/// reference. `Frames` covers every block the entry reaches, so a body whose decode stopped early
+/// has the frames of its reliable prefix, exactly like the passes before this one. An unproven
+/// state and a contradiction are two different outcomes, and neither of them is silently absorbed
+/// into the other.
 ///
 /// Charges, in order: one `IrItems` per slot of a block's entry state **before** that state is
-/// stored (the locals array and the operand stack it is entered with), one more per merge that
-/// changes one, one `AnalysisSteps` per worklist pop and per instruction examined, and one
-/// `IrItems` for the published table. The operand stack an instruction builds *inside* a block is
-/// not derived storage: it never leaves that block's transfer and the JVM's own slot ceiling
-/// bounds it.
+/// stored (the locals array and the operand stack it is entered with), one `IrItems` per logical
+/// input record before that record is stored, one more per merge that changes one, one
+/// `AnalysisSteps` per worklist pop and per instruction examined, and one `IrItems` for the
+/// published table. The operand stack an instruction builds *inside* a block is not derived
+/// storage: it never leaves that block's transfer and the JVM's own slot ceiling bounds it. The
+/// locals a throw site is entered with are the input of the states this pass stores, not storage
+/// of their own — they are alive for one transfer and their merge is charged as a state.
 pub(crate) fn frames(
     facts: &MethodCodeFacts,
     canonical: &CanonicalCfg,
@@ -1996,6 +2225,11 @@ fn run(
     charge_frame(budget, &first)?;
     let mut entries: Vec<Option<Frame>> = vec![None; canonical.blocks.len()];
     let mut exits: Vec<Option<Frame>> = vec![None; canonical.blocks.len()];
+    // The logical inputs of each block, keyed by the block they come from: the inputs of one
+    // source are the block's own transfer plus the canonical facts, so re-processing that source
+    // replaces its records instead of appending a second copy of them.
+    let mut inputs: Vec<BTreeMap<CanonicalBlockId, Vec<LogicalInput>>> =
+        vec![BTreeMap::new(); canonical.blocks.len()];
     entries[entry] = Some(first);
     let mut worklist = VecDeque::from([entry]);
     while let Some(position) = worklist.pop_front() {
@@ -2005,37 +2239,57 @@ fn run(
         let entry_state = entries[position]
             .clone()
             .expect("a block is queued only after it has an entry state");
-        let exit = transfer_block(method, &block, facts, entry_state, budget)?;
-        if exits[position].as_ref() == Some(&exit) {
+        let transfer = transfer_block(method, canonical, &block, facts, entry_state, budget)?;
+        if exits[position].as_ref() == Some(&transfer.exit) {
             // The transfer is a function of the entry state, so an unchanged exit state cannot
-            // change any successor's: the work is done and re-enqueueing would repeat it.
+            // change any successor's — and the records below are a function of the block and the
+            // graph alone, which is why the first transfer of this block already left them.
             continue;
         }
-        exits[position] = Some(exit.clone());
+        exits[position] = Some(transfer.exit.clone());
         for (target, kind) in &successors[position] {
-            if let CanonicalEdgeKind::Exception { handler_ordinal } = kind {
-                return Err(Problem::Unproven(format!(
-                    "block {:?} is entered through the exception edge of handler record \
-                     {handler_ordinal} from block {:?}: the state a handler is entered with comes \
-                     from each throw site on its own, which is 4.2's analysis",
-                    canonical.blocks[*target].id, block.id
-                )));
-            }
-            match entries[*target].as_mut() {
-                None => {
-                    charge_frame(budget, &exit)?;
-                    entries[*target] = Some(exit.clone());
-                    worklist.push_back(*target);
-                }
-                Some(current) => {
-                    let merged = merge_frame(current, &exit, &canonical.blocks[*target].id)?;
-                    if merged != *current {
-                        charge_frame(budget, &merged)?;
-                        *current = merged;
+            // One exception edge carries one input per throw site it aggregates; every other edge
+            // carries the source's own exit state.
+            let contributions: Vec<(Frame, Option<u32>)> = match kind {
+                CanonicalEdgeKind::Exception { handler_ordinal } => exception_inputs(
+                    method,
+                    canonical,
+                    &block,
+                    &transfer.throw_points,
+                    *handler_ordinal,
+                )?
+                .into_iter()
+                .map(|input| (input.frame, Some(input.bci)))
+                .collect(),
+                CanonicalEdgeKind::Normal
+                | CanonicalEdgeKind::Call { .. }
+                | CanonicalEdgeKind::Return { .. } => vec![(transfer.exit.clone(), None)],
+            };
+            let target_id = &canonical.blocks[*target].id;
+            let mut records = Vec::with_capacity(contributions.len());
+            for (incoming, throw_site) in contributions {
+                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                records.push(LogicalInput {
+                    from: block.id.clone(),
+                    throw_site,
+                });
+                match entries[*target].as_mut() {
+                    None => {
+                        charge_frame(budget, &incoming)?;
+                        entries[*target] = Some(incoming);
                         worklist.push_back(*target);
+                    }
+                    Some(current) => {
+                        let merged = merge_frame(current, &incoming, target_id)?;
+                        if merged != *current {
+                            charge_frame(budget, &merged)?;
+                            *current = merged;
+                            worklist.push_back(*target);
+                        }
                     }
                 }
             }
+            inputs[*target].insert(block.id.clone(), records);
         }
     }
 
@@ -2062,7 +2316,7 @@ fn run(
         .max()
         .unwrap_or(0);
     let mut blocks = Vec::new();
-    for (position, state) in entries.into_iter().enumerate() {
+    for ((position, state), records) in entries.into_iter().enumerate().zip(inputs) {
         let Some(frame) = state else {
             continue;
         };
@@ -2070,6 +2324,7 @@ fn run(
             block: canonical.blocks[position].id.clone(),
             locals: frame.locals,
             stack: frame.stack,
+            inputs: records.into_values().flatten().collect(),
         });
     }
     budget.charge(CountedBudgetDimension::IrItems, 1)?;
@@ -3401,10 +3656,15 @@ mod tests {
         assert!(matches!(frames_of(&fixture), FrameOutcome::Frames(_)));
     }
 
-    /// A block entered through an exception edge gets no invented state: the canonical edge
-    /// aggregates a block's throw sites, and the per-throw-site input a handler needs is 4.2's.
+    /// A block entered through an exception edge is entered with the state its throw site hands
+    /// it: the locals of that site and the single exception reference on the stack — never a state
+    /// invented from the aggregated edge.
+    ///
+    /// Until the handler entries landed this body stopped under `ir_frame_deferred` with a message
+    /// naming the edge. The entry state it gets now is the stronger claim, so the assertion states
+    /// the state instead of the stop.
     #[test]
-    fn an_exception_edge_stops_the_body_at_the_4_2_boundary() {
+    fn an_exception_edge_is_entered_with_the_state_of_its_throw_site() {
         let synthetic = synthetic_body(
             vec![
                 plain(0, 0x03), // iconst_0
@@ -3418,25 +3678,39 @@ mod tests {
             4,
             6,
         );
-        let mut facts = synthetic.facts.clone();
-        facts.exception_handlers = vec![ExceptionHandlerFact {
-            ordinal: 0,
-            start_bci: 0,
-            end_bci: 3,
-            handler_bci: 4,
-            catch_type_index: None,
-        }];
-        facts.exception_handler_count = 1;
-        let canonical = canonical_of(&facts, 52);
-        let synthetic = Synthetic {
-            facts,
-            pool: synthetic.pool,
-            canonical,
-        };
-        let message = unproven(synthetic_frames(&synthetic, b"()V"));
-        assert!(
-            message.contains("exception edge") && message.contains("4.2"),
-            "the stop names the edge and the slice that owns it: {message}"
+        let synthetic = with_handlers(
+            synthetic.facts,
+            synthetic.pool,
+            vec![ExceptionHandlerFact {
+                ordinal: 0,
+                start_bci: 0,
+                end_bci: 3,
+                handler_bci: 4,
+                catch_type_index: None,
+            }],
+        );
+        let table = frames_or_panic(synthetic_frames(&synthetic, b"()V"));
+        let handler = entry_of(&table, 4);
+        assert_eq!(
+            handler.stack,
+            vec![Value::Ref(RefType::Unknown)],
+            "a catch-all record names no type, so the entry holds a conservative unknown reference"
+        );
+        assert_eq!(
+            handler.locals,
+            vec![Value::Top; 4],
+            "the handler is entered with the locals of the throwing instruction itself"
+        );
+        assert_eq!(
+            handler.inputs,
+            vec![LogicalInput {
+                from: CanonicalBlockId {
+                    bci: 0,
+                    path: Vec::new(),
+                },
+                throw_site: Some(2),
+            }],
+            "the single site of the block is the single logical input of the handler"
         );
     }
 
@@ -3544,9 +3818,9 @@ mod tests {
         assert_eq!(limit, 0);
     }
 
-    /// The pass bills the two dimensions its row declares and no other, and the states it stores
-    /// are what the item charge counts: one frame slot per entered block, one per merge that
-    /// changed a state, and one for the published table itself.
+    /// The pass bills the two dimensions its row declares and no other, and what it stores is what
+    /// the item charge counts: one frame slot per entered block, one per merge that changed a state,
+    /// one per logical input record, and one for the published table itself.
     #[test]
     fn the_pass_bills_exactly_its_declared_dimensions() {
         let (mut code, _) = diamond(&[], &[0x03, 0x3c], &[0x01, 0x4b]);
@@ -3561,17 +3835,441 @@ mod tests {
         let usage = budget.usage();
         let entered = u64::try_from(table.blocks().len()).expect("a small fixture");
         let locals = u64::try_from(table.locals_slots()).expect("a small fixture");
-        // Four entered blocks of four local slots, the one merge that changed the join's state,
-        // and the published table.
+        let records = table
+            .blocks()
+            .iter()
+            .map(|block| u64::try_from(block.inputs.len()).expect("a small fixture"))
+            .sum::<u64>();
+        // Four entered blocks of four local slots, the one merge that changed the join's state, the
+        // four logical inputs of this diamond's four edges, and the published table.
         assert_eq!(entered, 4);
         assert_eq!(locals, 4);
-        assert_eq!(usage.ir_items, entered * locals + locals + 1);
+        assert_eq!(records, 4);
+        assert_eq!(usage.ir_items, entered * locals + locals + 1 + records);
         assert_eq!(usage.ir_edges, 0, "this pass builds no edge of its own");
         assert!(usage.analysis_steps > 0, "the worklist ran");
         assert_eq!(
             table.deepest_stack(),
             0,
             "every block is entered empty here"
+        );
+    }
+
+    // -- Handler entries, throw sites and the identity of a `new` -------------------------
+
+    /// One body with the exception records the caller states, and the canonical graph derived from
+    /// those same facts again.
+    ///
+    /// The builder's class files carry no exception table, so the records are added here as the
+    /// facts the reader would have published: the frames pass reads them off the facts, and the raw
+    /// graph — and therefore the canonical graph — is built from them too.
+    fn with_handlers(
+        facts: MethodCodeFacts,
+        pool: Vec<CpEntryFacts>,
+        handlers: Vec<ExceptionHandlerFact>,
+    ) -> Synthetic {
+        let mut facts = facts;
+        facts.exception_handler_count = u32::try_from(handlers.len()).expect("a small fixture");
+        facts.exception_handlers = handlers;
+        let canonical = canonical_of(&facts, 52);
+        Synthetic {
+            facts,
+            pool,
+            canonical,
+        }
+    }
+
+    /// A body of the `jsr` era: only a class file of major ≤ 50 may hold a `jsr`/`ret`, and the
+    /// call-context walk reads the version to decide that.
+    fn jsr_body(
+        code: Vec<(InstructionFact, InstructionOperands)>,
+        pool: Vec<CpEntryFacts>,
+        max_locals: u16,
+        code_length: u32,
+    ) -> Synthetic {
+        let facts = MethodCodeFacts::from_parts(
+            50,
+            max_locals,
+            ByteSpan::new(CODE_OFFSET, u64::from(code_length)),
+            code,
+            Vec::new(),
+            0,
+            ExecutionReport::Complete {
+                usage: UsageSnapshot::default(),
+            },
+            None,
+        );
+        let canonical = canonical_of(&facts, 50);
+        Synthetic {
+            facts,
+            pool,
+            canonical,
+        }
+    }
+
+    /// One `Class` entry of a synthetic pool: the kind a `new` names and a handler record catches.
+    fn class_ref(index: u16, name: &[u8]) -> CpEntryFacts {
+        CpEntryFacts {
+            index,
+            span: ByteSpan::new(CODE_OFFSET, 0),
+            kind: CpEntryKind::Class {
+                name_index: 0,
+                name: JvmBytes(name.to_vec()),
+            },
+        }
+    }
+
+    /// One `Methodref` of a synthetic pool under the name the caller spells — `<init>`, which
+    /// [`method_ref`] does not write.
+    fn method_ref_named(index: u16, name: &[u8], descriptor: &[u8]) -> CpEntryFacts {
+        CpEntryFacts {
+            index,
+            span: ByteSpan::new(CODE_OFFSET, 0),
+            kind: CpEntryKind::MethodRef {
+                class_index: 0,
+                name_and_type_index: 0,
+                owner: JvmBytes(b"Test".to_vec()),
+                name: JvmBytes(name.to_vec()),
+                descriptor: JvmBytes(descriptor.to_vec()),
+            },
+        }
+    }
+
+    /// The counterexample this slice exists for: **two throw sites of one block** enter the same
+    /// handler, and each arrives with the locals of its own instruction.
+    ///
+    /// `local1` is an `int` at the first site and `null` at the second, `local2` is `5` at both, and
+    /// `local3` is written only **after** the last site. The handler is entered with `Top`, `Int`
+    /// and `Top`: a state built from the block's exit would carry the `null` of `local1` and the
+    /// `5` of `local3`, and one built from the block's entry would carry `Top` for `local2`. The
+    /// two sites are one canonical edge, which is why the logical inputs are not the edge count.
+    #[test]
+    fn two_throw_sites_of_one_block_enter_the_handler_with_their_own_locals() {
+        let fixture = fixture_body(
+            &[
+                0x08, // 0: iconst_5
+                0x3d, // 1: istore_2    local2 = 5
+                0x03, // 2: iconst_0
+                0x3c, // 3: istore_1    local1 = 0
+                0x03, 0x03, 0x6c, // 4: iconst_0, 5: iconst_0, 6: idiv  (site 1)
+                0x57, // 7: pop
+                0x01, // 8: aconst_null
+                0x4c, // 9: astore_1    local1 = null
+                0x03, 0x03, 0x6c, // 10: iconst_0, 11: iconst_0, 12: idiv  (site 2)
+                0x57, // 13: pop
+                0x08, // 14: iconst_5
+                0x3e, // 15: istore_3    local3 = 5, written after both sites
+                0xb1, // 16: return
+                0x4b, // 17: astore_0    (the handler entry)
+                0xb1, // 18: return
+            ],
+            4,
+        );
+        let synthetic = with_handlers(
+            fixture.facts,
+            fixture.pool,
+            vec![ExceptionHandlerFact {
+                ordinal: 0,
+                start_bci: 0,
+                end_bci: 17,
+                handler_bci: 17,
+                catch_type_index: None,
+            }],
+        );
+        assert_eq!(
+            synthetic
+                .canonical
+                .edges
+                .iter()
+                .filter(|edge| matches!(edge.kind, CanonicalEdgeKind::Exception { .. }))
+                .count(),
+            1,
+            "the graph aggregates the block's two throw sites into one exception edge"
+        );
+        let table = frames_or_panic(synthetic_frames(&synthetic, b"()V"));
+        let handler = entry_of(&table, 17);
+        assert_eq!(
+            handler.locals[1],
+            Value::Top,
+            "`int` at the first site, `null` at the second: the merge of the two sites and not the \
+             block's exit state"
+        );
+        assert_eq!(
+            handler.locals[2],
+            Value::Int,
+            "`5` at both sites, and `Top` in the block's entry state"
+        );
+        assert_eq!(
+            handler.locals[3],
+            Value::Top,
+            "`5` is written only after the last throw site, which therefore does not see it"
+        );
+        assert_eq!(
+            handler.stack,
+            vec![Value::Ref(RefType::Unknown)],
+            "a catch-all record: one conservative unknown reference and nothing else"
+        );
+        assert_eq!(
+            handler.inputs,
+            vec![
+                LogicalInput {
+                    from: CanonicalBlockId {
+                        bci: 0,
+                        path: Vec::new(),
+                    },
+                    throw_site: Some(6),
+                },
+                LogicalInput {
+                    from: CanonicalBlockId {
+                        bci: 0,
+                        path: Vec::new(),
+                    },
+                    throw_site: Some(12),
+                },
+            ],
+            "one logical input per throw site: a value flow over this handler has two inputs here \
+             and not the edge's one"
+        );
+    }
+
+    /// The locals a throw site contributes are the state **at** the instruction, before it takes
+    /// effect.
+    ///
+    /// The site list is the pass's own input, and this test states one on an `istore`: no
+    /// instruction that may throw writes a local in this slice, so no body can show that difference
+    /// by itself — 4.2's alias conversion is the one that will, and this is the snapshot point it
+    /// has to respect. The record makes the difference observable now: the `istore` at BCI 1 writes
+    /// `5` into local 1, so a snapshot taken *after* the instruction would hand the handler `5`
+    /// instead of the `Top` local 1 still holds at it.
+    #[test]
+    fn a_throw_site_contributes_the_state_before_its_instruction_takes_effect() {
+        let fixture = fixture_body(
+            &[
+                0x08, // 0: iconst_5
+                0x3c, // 1: istore_1  (local1 = 5; the site this test states)
+                0x03, 0x03, 0x6c, // 2: iconst_0, 3: iconst_0, 4: idiv  (a site of the body)
+                0xb1, // 5: return
+                0x4e, // 6: astore_3  (the handler entry)
+                0xb1, // 7: return
+            ],
+            4,
+        );
+        let mut synthetic = with_handlers(
+            fixture.facts,
+            fixture.pool,
+            vec![ExceptionHandlerFact {
+                ordinal: 0,
+                start_bci: 0,
+                end_bci: 6,
+                handler_bci: 6,
+                catch_type_index: None,
+            }],
+        );
+        let block = synthetic.canonical.blocks[0].id.clone();
+        assert_eq!(
+            block,
+            CanonicalBlockId {
+                bci: 0,
+                path: Vec::new(),
+            },
+            "the body is one block, so the site and the transfer are the same node"
+        );
+        assert_eq!(
+            synthetic.canonical.throw_sites.len(),
+            1,
+            "the body's own site is the `idiv` alone"
+        );
+        synthetic.canonical.throw_sites.push(CanonicalThrowSite {
+            bci: 1,
+            opcode: 0x3c,
+            block,
+            handlers: vec![0],
+            origin: jarde_reader::model::OriginSet::default(),
+        });
+        let table = frames_or_panic(synthetic_frames(&synthetic, b"()V"));
+        let handler = entry_of(&table, 6);
+        assert_eq!(
+            handler.locals[1],
+            Value::Top,
+            "the site at the `istore` is entered before the store: local 1 holds no readable value \
+             there, and only the state after it holds `5`"
+        );
+        assert_eq!(
+            handler.inputs.len(),
+            2,
+            "the injected site and the body's own site are two logical inputs of this handler"
+        );
+        assert_eq!(
+            handler.inputs[0],
+            LogicalInput {
+                from: CanonicalBlockId {
+                    bci: 0,
+                    path: Vec::new(),
+                },
+                throw_site: Some(1),
+            },
+            "the site the test states is the first input, by its own BCI"
+        );
+    }
+
+    /// The exception input of a constructor call is the state **at** the call: a slot written just
+    /// before it is seen, a slot written only after it is not, and the handler holds the record's
+    /// catch type.
+    ///
+    /// The receiver is `null` where a legal class file would have an uninitialized reference: this
+    /// layer is not a verifier and says nothing about operand legality (4.1's 判定线 — the same
+    /// reason `aconst_null; instanceof #7` is analyzed). The legal receiver is a `new` token, and a
+    /// call on one stops the transfer until 4.2's alias conversion lands, so this is the shape that
+    /// reaches a constructor call's exception successor today.
+    #[test]
+    fn the_exception_input_of_a_constructor_call_is_the_state_at_the_call() {
+        let synthetic = synthetic_body(
+            vec![
+                plain(0, 0x08),    // iconst_5
+                local(1, 0x3c, 1), // istore_1   local1 = 5, written before the call
+                plain(2, 0x01),    // aconst_null: the receiver
+                call(3, 0xb7, 2),  // invokespecial #2 <init>()V (may raise)
+                plain(6, 0x08),    // iconst_5
+                local(7, 0x3d, 2), // istore_2   local2 = 5, written only after the call
+                plain(8, 0xb1),    // return
+                local(9, 0x4e, 3), // astore_3: the handler entry
+                plain(10, 0xb1),   // return
+            ],
+            vec![
+                method_ref_named(2, b"<init>", b"()V"),
+                class_ref(3, b"java/lang/Throwable"),
+            ],
+            4,
+            11,
+        );
+        let synthetic = with_handlers(
+            synthetic.facts,
+            synthetic.pool,
+            vec![ExceptionHandlerFact {
+                ordinal: 0,
+                start_bci: 0,
+                end_bci: 9,
+                handler_bci: 9,
+                catch_type_index: Some(3),
+            }],
+        );
+        let table = frames_or_panic(synthetic_frames(&synthetic, b"()V"));
+        let handler = entry_of(&table, 9);
+        assert_eq!(
+            handler.locals[1],
+            Value::Int,
+            "the call was entered with local 1 = 5"
+        );
+        assert_eq!(
+            handler.locals[2],
+            Value::Top,
+            "local 2 is written only after the call, so the call's own state does not hold it"
+        );
+        assert_eq!(
+            handler.stack,
+            vec![Value::Ref(RefType::Named {
+                name: b"java/lang/Throwable".to_vec(),
+                loader: Box::new(LoaderId("app".to_string())),
+            })],
+            "the record's catch type is the entry's single reference"
+        );
+        assert_eq!(
+            handler.inputs,
+            vec![LogicalInput {
+                from: CanonicalBlockId {
+                    bci: 0,
+                    path: Vec::new(),
+                },
+                throw_site: Some(3),
+            }],
+            "the call is the one throwing instruction of this block"
+        );
+    }
+
+    /// Two clones of one shared subroutine each run their own `new`, and the two tokens are not the
+    /// same value.
+    ///
+    /// The body's subroutine is entered by the `jsr` at BCI 0 and by the `jsr` at BCI 3, so the
+    /// canonical graph clones the block that holds the `new` once per call site. Both clones map
+    /// back to the **same** original BCI — which is exactly why the token cannot be keyed by it —
+    /// and what tells the two allocations apart is the canonical block the `new` runs in. Each
+    /// call's continuation is where the token lands, and the two continuations differ only in it,
+    /// so the assertion is on the identity the token carries; the alias conversion that consumes
+    /// these tokens is 4.2's second half.
+    #[test]
+    fn two_clones_of_one_subroutine_get_two_new_sites() {
+        let synthetic = jsr_body(
+            vec![
+                branch(0, 0xa8, 7), // jsr 7: the first call site, continuation BCI 3
+                branch(3, 0xa8, 4), // jsr 7: the second call site, continuation BCI 6
+                plain(6, 0xb1),     // return
+                local(7, 0x4b, 0),  // astore_0: the subroutine entry, local0 = the return address
+                call(8, 0xbb, 2),   // new Test
+                local(11, 0x4c, 1), // astore_1: local1 = the new-site token
+                local(12, 0xa9, 0), // ret 0
+            ],
+            vec![class_ref(2, b"Test")],
+            2,
+            13,
+        );
+        let table = frames_or_panic(synthetic_frames(&synthetic, b"()V"));
+        let site = |bci: u32| match &entry_of(&table, bci).locals[1] {
+            Value::Uninitialized { new_site } => new_site.clone(),
+            other => panic!("local 1 at BCI {bci} holds the `new` token, found {other:?}"),
+        };
+        let (first, second) = (site(3), site(6));
+        assert_eq!(
+            (first.bci, second.bci),
+            (8, 8),
+            "both clones map back to one original `new`"
+        );
+        assert_ne!(
+            first, second,
+            "the BCI is the same and the token is not: the canonical site tells them apart"
+        );
+        assert_eq!(
+            (first.block.path, second.block.path),
+            (vec![0], vec![3]),
+            "each token carries the call path of the clone it was run in"
+        );
+        assert_eq!(
+            (first.block.bci, second.block.bci),
+            (7, 7),
+            "and both name the original block they were cloned from"
+        );
+    }
+
+    /// Every block records the logical inputs its entry state was merged from: the source block,
+    /// and the throw site when the input arrives through an exception edge.
+    #[test]
+    fn every_block_records_the_logical_inputs_it_was_merged_from() {
+        let (mut code, join) = diamond(&[], &[0x03, 0x3c], &[0x01, 0x4b]);
+        code.push(0xb1); // return
+        let fixture = fixture_body(&code, 4);
+        let table = frames_or_panic(frames_of(&fixture));
+        assert!(
+            entry_of(&table, 0).inputs.is_empty(),
+            "the method's entry block has no input"
+        );
+        assert_eq!(
+            entry_of(&table, join).inputs,
+            vec![
+                LogicalInput {
+                    from: CanonicalBlockId {
+                        bci: 4,
+                        path: Vec::new(),
+                    },
+                    throw_site: None,
+                },
+                LogicalInput {
+                    from: CanonicalBlockId {
+                        bci: 9,
+                        path: Vec::new(),
+                    },
+                    throw_site: None,
+                },
+            ],
+            "the join names both arms, with no throw site: a plain transfer is not an exception"
         );
     }
 }

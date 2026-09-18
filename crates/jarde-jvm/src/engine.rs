@@ -502,10 +502,11 @@ fn run_method_analysis(
                         frame_table = Some(table);
                     }
                     Ok(FrameOutcome::Unsupported { message }) => {
-                        // A state this build does not prove yet — the initialization conversions
-                        // and the handler entries are 4.2's. The phases before this one keep their
-                        // facts, no `Frames` fact is published, and the reason is the frame
-                        // slice's own boundary code rather than a claim about the bytes.
+                        // A state this build does not prove yet — an uninitialized value used
+                        // where only 4.2's initialization conversion would make it readable. The
+                        // phases before this one keep their facts, no `Frames` fact is published,
+                        // and the reason is the frame slice's own boundary code rather than a
+                        // claim about the bytes.
                         let code = IR_FRAME_DEFERRED.to_string();
                         run.stages[index].state = StageState::Partial;
                         run.diagnostics.push(Diagnostic {

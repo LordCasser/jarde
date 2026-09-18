@@ -614,6 +614,22 @@ fn exception_path_code() -> Vec<u8> {
     ]
 }
 
+/// The entry `goto`s into the protected range of record 0, so the block that holds the `idiv` is
+/// the entry block's unique successor and the fusion absorbs it: the shape whose exception table
+/// and throw site name a node the fusion moved.
+fn jump_into_protected_code() -> Vec<u8> {
+    vec![
+        0xa7, 0x00, 0x03, // 0: goto 3
+        0x03, // 3: iconst_0 (the protected range starts here)
+        0x03, // 4: iconst_0
+        0x6c, // 5: idiv (protected, and the throwing instruction)
+        0x57, // 6: pop (the protected range ends here)
+        0xb1, // 7: return
+        0x4b, // 8: astore_0 (the handler entry)
+        0xb1, // 9: return
+    ]
+}
+
 /// `jsr` at BCI 0 enters the routine at BCI 4, which calls the one at BCI 10.
 fn nested_calls_code() -> Vec<u8> {
     vec![
@@ -734,6 +750,33 @@ fn a_jsr_on_an_exception_path_and_nested_calls_normalize() {
             );
         }
     }
+}
+
+#[test]
+fn a_jump_into_a_protected_region_canonicalizes() {
+    // The fusion absorbs the block that holds the protected `idiv` into the entry block, and the
+    // exception table and the throw site of that instruction are built from the nodes *before*
+    // the fusion. Published unresolved, they name a node the graph no longer holds, the
+    // post-condition of the phase refuses the graph, and a body that is inside every bound it
+    // declares is reported as a bound failure: `Partial` under `ir_legacy_normalization_unbounded`
+    // with the phase behind it `NotPerformed`. The phase completes, and the code for a body that
+    // reached no bound of its own is absent.
+    let class = jsr_class(&jump_into_protected_code(), 8, &[(3, 6, 8, None)]);
+    let fixture = fixture_of_method(&class, b"illegal", b"()V");
+    let request = request(&fixture, fixture.method.clone(), vec![AnalysisStage::Ssa]);
+    let (report, _budget) = analyze(&fixture, &request, limits());
+    assert_eq!(
+        stage(&report, AnalysisStage::CanonicalCfg),
+        StageState::Completed,
+        "the whole body is inside the normalization's bounds: {:?}",
+        report.diagnostics
+    );
+    assert!(
+        !diagnostic_codes(&report).contains(&"ir_legacy_normalization_unbounded"),
+        "no bound of the normalization was reached: {:?}",
+        report.diagnostics
+    );
+    assert_eq!(report.quality, Quality::Conservative);
 }
 
 #[test]

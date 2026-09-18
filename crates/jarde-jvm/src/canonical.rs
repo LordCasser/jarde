@@ -336,12 +336,14 @@ impl CanonicalCfg {
 /// contexts are unproven or truncated cannot reach it (the driver stops the run before).
 ///
 /// Charges, in order: one `IrItems` per derived successor list and one `IrEdges` per entry of
-/// them, one `AnalysisSteps` per worklist pop, per raw transfer examined, per resolved `ret` and
-/// per step of the fusion and of the reachability walk, one `NormalizationClones` and one
-/// `IrItems` per created node (the block and the origin member its own BCI contributes) **before**
-/// the node exists, one `IrEdges` per canonical edge, one `IrItems` per handler row, per
-/// throw-site record and for the published artifact itself. The fusion moves origin members
-/// between nodes instead of creating them, so it charges steps and no second item.
+/// them, one `AnalysisSteps` per worklist pop, per raw transfer examined, per resolved `ret`, per
+/// step of the fusion and of the reachability walk and per identity the fusion resolves or the
+/// remapping moves, one `NormalizationClones` and one `IrItems` per created node (the block and
+/// the origin member its own BCI contributes) **before** the node exists, one `IrEdges` per
+/// canonical edge, one `IrItems` per handler row, per throw-site record and for the published
+/// artifact itself. The fusion moves origin members between nodes instead of creating them, and
+/// the remapping rewrites the records it was given in place, so neither of them charges a second
+/// item.
 pub(crate) fn canonical_cfg(
     facts: &MethodCodeFacts,
     raw: &RawCfgOutcome,
@@ -388,6 +390,8 @@ enum Phase {
     Handlers,
     /// The fusion of single-successor chains into super blocks.
     Fusion,
+    /// The exception table and the throw sites, resolved to the fused nodes.
+    Identities,
     /// The assembly of the published graph and its post-condition.
     Assembly,
 }
@@ -399,12 +403,13 @@ enum Phase {
 /// enforced: a variant left out of it would keep its checkpoint unproven and the sweep would
 /// still pass, because the sweep can only visit the phases it is given. Adding a phase therefore
 /// means adding it here as well.
-const PHASES: [Phase; 6] = [
+const PHASES: [Phase; 7] = [
     Phase::Payloads,
     Phase::Successors,
     Phase::Clone,
     Phase::Handlers,
     Phase::Fusion,
+    Phase::Identities,
     Phase::Assembly,
 ];
 
@@ -758,8 +763,8 @@ fn build(
     state.drain(&mut queue, budget)?;
 
     checkpoint(Phase::Handlers, budget)?;
-    let handler_rows = handler_rows(cfg, &state.drafts, method, budget)?;
-    let throw_sites = throw_sites(cfg, &state.drafts, method, budget)?;
+    let mut handler_rows = handler_rows(cfg, &state.drafts, method, budget)?;
+    let mut throw_sites = throw_sites(cfg, &state.drafts, method, budget)?;
 
     checkpoint(Phase::Fusion, budget)?;
     let CloneState {
@@ -768,7 +773,24 @@ fn build(
         clones,
         ..
     } = state;
-    let (drafts, edges) = fuse(drafts, edges, budget)?;
+    let Fused {
+        drafts,
+        edges,
+        owner,
+    } = fuse(drafts, edges, budget)?;
+
+    // The exception table and the throw sites were built while the drafts were still the cloning
+    // traversal's nodes, and the fusion has absorbed some of those nodes since. `owner` is the
+    // fusion's own record of where each of them went and the only authority over it, so the two
+    // records are resolved through it before they are published: a throw site or a protected
+    // range that keeps the pre-fusion id names an identity the graph does not hold.
+    //
+    // The post-condition must not be relaxed for them instead of resolving them. Weakening it
+    // would let `throw_sites` carry ids no node answers for, and 4.2 looks a throw site up under
+    // `site.block == block.id`: the sites of an absorbed block would not be reported as
+    // doubtful, they would silently stop being seen.
+    checkpoint(Phase::Identities, budget)?;
+    remap_identities(&mut throw_sites, &mut handler_rows, &owner, budget)?;
 
     checkpoint(Phase::Assembly, budget)?;
     let graph = assemble(
@@ -994,6 +1016,18 @@ fn throw_sites(
     Ok(sites)
 }
 
+/// What one fusion produced: the nodes it left, the edges between them, and its record of
+/// identity.
+struct Fused {
+    drafts: Vec<Draft>,
+    edges: Vec<EdgeDraft>,
+    /// Every draft the fusion started from, mapped to the node of [`Self::drafts`] that ends up
+    /// holding it. An absorbed draft is not one of those nodes, so this map - and not a draft
+    /// list, which no longer holds the absorbed drafts - is what every identity recorded before
+    /// the fusion has to be resolved through.
+    owner: BTreeMap<CanonicalBlockId, CanonicalBlockId>,
+}
+
 /// Fuses single-successor chains inside one call path into super blocks.
 ///
 /// A node is fused with its successor when the transfer between them is the only edge leaving
@@ -1001,11 +1035,17 @@ fn throw_sites(
 /// blocks and origins become one node's. The fusion is what makes an origin one-to-many for a
 /// region, and it never crosses a call boundary, because a `jsr` transfer is a `Call` edge
 /// between two different paths.
+///
+/// The [`Fused::owner`] map is closed before it is returned: each entry names a node of the
+/// returned draft list, never an intermediate a later step of the fusion absorbed.
+///
+/// One `AnalysisSteps` per entry the closure examines and per absorption step it follows, in
+/// addition to the per-node and per-fusion charges of the fusion itself.
 fn fuse(
     drafts: Vec<Draft>,
     edges: Vec<EdgeDraft>,
     budget: &mut Budget,
-) -> std::result::Result<(Vec<Draft>, Vec<EdgeDraft>), Norm> {
+) -> std::result::Result<Fused, Norm> {
     let mut outgoing: BTreeMap<CanonicalBlockId, Vec<usize>> = BTreeMap::new();
     let mut incoming: BTreeMap<CanonicalBlockId, Vec<usize>> = BTreeMap::new();
     for (index, (from, to, _)) in edges.iter().enumerate() {
@@ -1077,6 +1117,27 @@ fn fuse(
             incoming.remove(to);
         }
     }
+    // Every absorption is recorded one at a time, and a head can itself be absorbed afterwards,
+    // so an entry can name a node that is not a node of the fused graph. The map is closed here,
+    // before anything reads a node out of it: the edge endpoints below and every caller that
+    // resolves a pre-fusion identity need the node that ends up holding an identity, not the
+    // first head this map happens to name. The walk is finite because a fusion always points at
+    // a block that starts strictly behind the block it absorbs, so the chain descends in BCI and
+    // cannot cycle.
+    for id in &ids {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let mut head = owner.get(id).cloned().unwrap_or_else(|| id.clone());
+        loop {
+            match owner.get(&head).cloned() {
+                Some(next) if next != head => {
+                    budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                    head = next;
+                }
+                _ => break,
+            }
+        }
+        owner.insert(id.clone(), head);
+    }
     let mut fused = Vec::new();
     for draft in &drafts {
         if owner.get(&draft.id).cloned() == Some(draft.id.clone()) {
@@ -1098,7 +1159,57 @@ fn fuse(
             (from, to, kind)
         })
         .collect();
-    Ok((fused, edges))
+    Ok(Fused {
+        drafts: fused,
+        edges,
+        owner,
+    })
+}
+
+/// Resolves the identities of the exception table and of the throw sites to the fused nodes.
+///
+/// Both records are built from the drafts *before* the fusion, and the fusion absorbs some of
+/// those drafts: the map [`fuse`] returns is the only authority that says which node ends up
+/// holding a pre-fusion identity, and it is applied here rather than in a consumer because the
+/// ids cannot be checked for staleness afterwards - `{bci: 3}` reads like any other identity
+/// once the node that started at BCI 3 is gone, and 4.2 finds a throw site under
+/// `site.block == block.id`, so a site that keeps the absorbed id would silently drop out of the
+/// frame instead of being reported as doubtful.
+///
+/// Only the identities move: the BCI, the opcode and the handlers of a throw site stay what the
+/// bytes say, the ordinals and the handler BCIs of a row stay what the table says, two throw
+/// sites absorbed into one node stay two records, and a protected range whose blocks end up in
+/// one node names that node once. One `AnalysisSteps` per record and per identity a record
+/// holds: the lists are rewritten in place, so nothing here creates an item.
+fn remap_identities(
+    throw_sites: &mut [CanonicalThrowSite],
+    handler_rows: &mut [CanonicalHandlerRow],
+    owner: &BTreeMap<CanonicalBlockId, CanonicalBlockId>,
+    budget: &mut Budget,
+) -> std::result::Result<(), Norm> {
+    for site in throw_sites.iter_mut() {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        let head = owner
+            .get(&site.block)
+            .cloned()
+            .unwrap_or_else(|| site.block.clone());
+        site.block = head;
+    }
+    for row in handler_rows.iter_mut() {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        for block in row.protected.iter_mut() {
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            let head = owner.get(block).cloned().unwrap_or_else(|| block.clone());
+            *block = head;
+        }
+        row.protected.sort_unstable();
+        row.protected.dedup();
+        if let Some(handler) = row.handler.take() {
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            row.handler = Some(owner.get(&handler).cloned().unwrap_or(handler));
+        }
+    }
+    Ok(())
 }
 
 /// Assembles the published graph from the fused drafts.
@@ -2109,6 +2220,132 @@ mod tests {
             "every node still maps back to the block it starts at: {:#?}",
             graph.blocks
         );
+    }
+
+    #[test]
+    fn a_jump_into_a_protected_region_keeps_the_identity_the_fusion_moved() {
+        // The entry `goto`s into the protected region, so the block that holds the `idiv` is the
+        // entry block's unique successor and the fusion makes one node of the two:
+        //
+        //   0: goto 3       the entry, fused with the block it jumps into
+        //   3: iconst_0     the protected range of record 0 starts here
+        //   4: iconst_0
+        //   5: idiv         protected, and the throwing instruction of this body
+        //   6: pop          the protected range ends here
+        //   7: return
+        //   8: astore_0     the handler entry
+        //   9: return
+        //
+        // The exception table and the throw sites are derived from the drafts **before** the
+        // fusion, so after the fusion both still named the node that started at BCI 3 - the one
+        // the fusion had just absorbed into the node at BCI 0. The post-condition refused the
+        // graph, and the refusal was reported as `ir_legacy_normalization_unbounded`, a bound
+        // this body is nowhere near.
+        let facts = body(
+            vec![
+                instruction(
+                    0,
+                    0xa7,
+                    3,
+                    InstructionOperands {
+                        branch_offset: Some(3),
+                        ..operands(0xa7)
+                    },
+                ), // goto 3
+                plain(3, 0x03), // iconst_0
+                plain(4, 0x03), // iconst_0
+                plain(5, 0x6c), // idiv
+                plain(6, 0x57), // pop
+                plain(7, 0xb1), // return
+                plain(8, 0x4b), // astore_0: the handler entry
+                plain(9, 0xb1), // return
+            ],
+            vec![catch(0, 3, 6, 8, None)],
+            10,
+        );
+        let method = method();
+        let graph = normalize(&facts);
+        graph
+            .postcondition(&facts, &method)
+            .expect("every identity the graph publishes is an identity the graph holds");
+
+        // The fusion really happened, and it is what the two records below had to be resolved
+        // against: one node stands for the entry block and for the protected block.
+        assert_eq!(graph.blocks.len(), 2, "{:#?}", graph.blocks);
+        let entry = CanonicalBlockId {
+            bci: 0,
+            path: Vec::new(),
+        };
+        let head = graph
+            .blocks
+            .iter()
+            .find(|block| block.id == entry)
+            .expect("the entry is a node of the graph");
+        assert_eq!(
+            head.blocks,
+            vec![0, 3],
+            "the entry absorbed the protected block"
+        );
+
+        // The `idiv` keeps the coordinates the bytes give it and names the node the graph holds -
+        // the fused one, not the draft the fusion absorbed - so the site is still found under
+        // `site.block == block.id`.
+        assert_eq!(
+            graph
+                .throw_sites
+                .iter()
+                .map(|site| (
+                    site.bci,
+                    site.opcode,
+                    site.handlers.clone(),
+                    site.block.clone()
+                ))
+                .collect::<Vec<_>>(),
+            vec![(5, 0x6c, vec![0], entry.clone())],
+            "the throw site is resolved to the fused node and keeps its own coordinates"
+        );
+        // The record's protected range is that node too, and its handler entry keeps the ordinal
+        // and the original BCI of the table.
+        assert_eq!(graph.handler_rows.len(), 1);
+        let row = &graph.handler_rows[0];
+        assert_eq!(row.ordinal, 0);
+        assert_eq!(row.handler_bci, 8);
+        assert_eq!(row.protected, vec![entry.clone()]);
+        let handler = CanonicalBlockId {
+            bci: 8,
+            path: Vec::new(),
+        };
+        assert_eq!(row.handler, Some(handler.clone()));
+
+        // Every identity of the two records is a node of the published graph: this is the
+        // property the post-condition checks, and the one a record that kept the absorbed draft
+        // failed.
+        let nodes: BTreeSet<CanonicalBlockId> =
+            graph.blocks.iter().map(|block| block.id.clone()).collect();
+        for site in &graph.throw_sites {
+            assert!(
+                nodes.contains(&site.block),
+                "throw site {site:?} names no node of the graph"
+            );
+        }
+        for block in row.protected.iter().chain(row.handler.iter()) {
+            assert!(
+                nodes.contains(block),
+                "handler row {row:?} names no node of the graph: {block:?}"
+            );
+        }
+        // The record's exception transfer leaves the fused node, so the handler path is live
+        // rather than a truth table entry.
+        assert_eq!(
+            edges_from(&graph, &entry),
+            vec![&CanonicalEdge {
+                from: entry.clone(),
+                to: handler,
+                kind: CanonicalEdgeKind::Exception { handler_ordinal: 0 },
+            }],
+            "the exception edge leaves the node that holds the protected block"
+        );
+        assert!(graph.unreachable.is_empty());
     }
 
     #[test]
