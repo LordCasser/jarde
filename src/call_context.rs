@@ -871,7 +871,7 @@ impl<'a> Walk<'a> {
                     bci: ret_bci,
                     context: root,
                     reads: Some(read_slot),
-                    holds: first.map(|(_, _, store_bci, ..)| *store_bci as u16),
+                    holds: first.map(|(_, slot, ..)| *slot),
                 }));
             }
             let owners = self.returns.entry(ret_bci).or_default();
@@ -2545,6 +2545,14 @@ mod tests {
             message.contains("BCI 7"),
             "the stop names the `ret` that reads the overwritten slot: {message}"
         );
+        assert!(
+            message.contains("reads local 0"),
+            "the stop names the slot the `ret` read: {message}"
+        );
+        assert!(
+            !message.contains("local 6"),
+            "the stop names a local, never the BCI of a store: {message}"
+        );
 
         // The store that placed the address is seen again whenever a context's blocks are
         // revisited, and that is not an overwrite: a nested call's subroutine is walked once for
@@ -2728,6 +2736,172 @@ mod tests {
             "the handler rewrites the slot the `ret` reads: {outcome:?}"
         );
     }
+    #[test]
+    fn a_shared_subroutine_with_a_handler_keeps_one_context_per_call_site() {
+        // The combination the contract names but no test covered: two call sites share one
+        // subroutine, that subroutine stores the address once, and a handler covering a throw in
+        // its body writes a third local before rejoining the `ret`. Each call site keeps its own
+        // context - the token of one never merges with the token of the other - and the written
+        // set of each context includes the handler's local.
+        //
+        //   0: jsr 10       call site A, return address 3
+        //   3: jsr +7 -> 10  call site B, return address 6 - the same subroutine
+        //   6: return
+        //   7: nop; 8: nop; 9: nop
+        //  10: astore_1     the shared subroutine stores the address
+        //  11: iconst_1
+        //  12: iconst_0
+        //  13: idiv         covered by [11, 14)
+        //  14: ret 1
+        //  16: astore_2     handler entry: writes local 2
+        //  17: goto -3 -> 14
+        let facts = body(
+            vec![
+                jsr(0, 10),
+                jsr(3, 7),
+                plain(6, 0xb1),
+                plain(7, 0x00),
+                plain(8, 0x00),
+                plain(9, 0x00),
+                store(10, 0x4c, 1),
+                plain(11, 0x04),
+                plain(12, 0x03),
+                plain(13, 0x6c),
+                ret(14, 1),
+                store(16, 0x4d, 2),
+                goto(17, -3),
+            ],
+            vec![catch(0, 11, 14, 16, None)],
+            20,
+        );
+        let raw = graph(&facts, &mut budget());
+        let contexts = established(&facts, &raw, 49);
+        assert_eq!(
+            contexts.contexts.len(),
+            2,
+            "two call sites share the subroutine, so there are two contexts: {:#?}",
+            contexts.contexts
+        );
+        assert_eq!(
+            contexts
+                .contexts
+                .iter()
+                .map(|context| (context.call_site_bci, context.return_bci))
+                .collect::<Vec<_>>(),
+            vec![(0, 3), (3, 6)],
+            "each call site keeps its own return point"
+        );
+        assert!(
+            contexts
+                .contexts
+                .iter()
+                .all(|context| context.affected_locals == vec![1, 2]),
+            "every context writes the address slot and the handler's local: {:#?}",
+            contexts.contexts
+        );
+        assert_eq!(
+            contexts.returns.len(),
+            1,
+            "one `ret`, shared by both contexts"
+        );
+        assert_eq!(
+            contexts.returns[0].targets.len(),
+            2,
+            "the shared `ret` returns to each call site's own continuation"
+        );
+    }
+
+    #[test]
+    fn a_dead_return_point_does_not_block_a_live_call_site() {
+        // The reverse of the reachability triggers. A `ret` the walk never reaches is a fact the
+        // payload records - one entry with no targets - and it must not refuse a graph whose live
+        // call site is perfectly well proven. A pass that judged every `ret` of the decoded
+        // prefix the same way would refuse this body.
+        //
+        //   0: jsr 4        live call site, return address 3
+        //   3: return
+        //   4: astore_0     the address goes into local 0
+        //   5: ret 0        proven: the only writer of slot 0 is the store at 4
+        //   7: ret 1        unreachable: it follows a `ret`, so nothing jumps to it
+        let facts = body(
+            vec![
+                jsr(0, 4),
+                plain(3, 0xb1),
+                store(4, 0x4b, 0),
+                ret(5, 0),
+                ret(7, 1),
+            ],
+            Vec::new(),
+            9,
+        );
+        let raw = graph(&facts, &mut budget());
+        let contexts = established(&facts, &raw, 49);
+        assert_eq!(
+            contexts.contexts.len(),
+            1,
+            "the live call site still publishes"
+        );
+        assert_eq!(
+            contexts.returns.len(),
+            2,
+            "one entry per `ret` of the decoded prefix"
+        );
+        assert_eq!(
+            contexts.returns[0].ret_bci, 5,
+            "the live `ret` keeps its owner"
+        );
+        assert_eq!(
+            contexts.returns[0].targets.len(),
+            1,
+            "the live call site returns to BCI 3"
+        );
+        assert_eq!(
+            contexts.returns[1].ret_bci, 7,
+            "the dead `ret` is a published fact"
+        );
+        assert!(
+            contexts.returns[1].targets.is_empty(),
+            "nothing owns the dead `ret`: {:?}",
+            contexts.returns[1]
+        );
+    }
+
+    #[test]
+    fn a_dead_call_site_does_not_block_the_live_ones() {
+        // The other half of the same rule: a call site nothing reaches is still a fact of the
+        // decoded prefix - one context - but its missing `ret` cannot refuse the body, because
+        // the stage only judges what is reachable.
+        //
+        //   0: return       everything after this is unreachable
+        //   1: jsr +4 -> 5
+        //   4: return
+        //   5: astore_0     the subroutine stores the address
+        //   6: nop          and never returns
+        let facts = body(
+            vec![
+                plain(0, 0xb1),
+                jsr(1, 4),
+                plain(4, 0xb1),
+                store(5, 0x4b, 0),
+                plain(6, 0x00),
+            ],
+            Vec::new(),
+            7,
+        );
+        let raw = graph(&facts, &mut budget());
+        let contexts = established(&facts, &raw, 49);
+        assert_eq!(
+            contexts.contexts.len(),
+            1,
+            "the call site of the prefix is published even though nothing reaches it"
+        );
+        assert!(
+            contexts.returns.is_empty(),
+            "a subroutine that never returns owns no `ret`: {:?}",
+            contexts.returns
+        );
+    }
+
     #[test]
     fn one_item_short_of_the_items_stops_the_pass_and_exactly_enough_completes_it() {
         // The bound is exact: with one item less than a complete run charges, some charge of the
