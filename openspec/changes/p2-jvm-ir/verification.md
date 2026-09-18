@@ -282,6 +282,7 @@
   - **父级在写这条测试时的两次自纠**：我先把 34 的「组成」按代码推算写成表格，两次分别得出 37 与 33；随后用「逐站点清零并测差值」的探针实测，得到各站点贡献为 visited rows 12、plans 2、entry map 2、ret owners 4、written locals 2、assembly contexts 2、assembly returns 1、assembly coverage 2、published 1、cycle search 4——但这些**差值不可加**（清零一个 charge 会改变其后 charge 的取值），合计只有 32。因此最终**删掉整张组成表**，只保留「实测总数 34 + fixture 形状 + 明说该数字是测得的而非推导的」，并在注释里写明「按站点分解会是一份看似合理的虚构」。这条留在记录里，是因为它正是本轮要防的那类证据失真。
   - 复核者确认的其他事实：**判定语义未被改动**（逐处规范化骨架 diff：`ret` 归属、`affected_locals`、`Exception` 边处理均原样，R2/R3 仍待 3.4）；父级把 8 参收敛为 `Walked` **正当且未掩盖问题**（无新增 `allow`，映射关系逐字段等价）；`Vec<bool>` 实测 1 字节/项，故契约里「3 000 上下文约 9 MB」的量级引述准确。
   - **需登记的债务（复核者提出，未修）**：容器 header/capacity 仍是「先分配后计费」（`successors` 的 `vec![Vec::new(); blocks.len()]`、`Walk::new` 的三个集合、`assemble` 的三处 `with_capacity`），占实测 9 MB 的 2–5%；**6 处按元素计费中仅 `affected` 有可区分断言**（金标总数补上了 `plans` 一类，但 `coverage`/`contains` 等仍无逐项对照）。
+- 远端 CI：本轮修正与记录提交 `15e98ab`/`5a03d44`/`c84a434`/`4d7f7ad` 推送 `main` 后，CI run [`35330820020`](https://github.com/LordCasser/jarde/actions/runs/35330820020) 四个 job 全部 success。
 - **父级的过程失误（如实记录）**：在验证 B3 时我用了 `git checkout -- src/call_context.rs` 还原探针，**违反本仓库「禁用 git 还原类命令」的纪律**，把我当时**未提交**的 B1/B2 修正一并丢弃。发现后按提交基线重新施加两处修正（B1 文档、B2 阶段扫描），并加做了金标测试，全部改动重新验证后才提交。教训已确认：即使是被自己的探针污染的文件，也必须用文件副本还原。
 - 登记债务：本片**仍缺第三方 Approve**（复核给出 Reject，三项修正由父级完成并自证，尚未复审）；`Effects` 双生产者建模张力仍留 3.5。
 
