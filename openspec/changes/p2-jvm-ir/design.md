@@ -746,10 +746,12 @@ pub(crate) struct PassDescriptor {
 
 ### 3.4 raw returnAddress 与调用上下文
 
-- 对 45–52 且含 `jsr`/`jsr_w`/`ret` 的方法，建立**调用上下文**：每个 `jsr` 站点一个 `SubroutineContext { call_site_bci, return_bci, entry_bci, affected_locals }`；`ret` 的返回点来自该上下文而不是猜测（`CallContexts` 事实）。
-- 共享子程序（多个 `jsr` 指向同一 `entry_bci`）与嵌套子程序都要保留**各自上下文**；异常覆盖子程序（保护区间横跨 `jsr`）必须记录，不得把 handler 入口当成普通后继。
+- 对 45–52 且含 `jsr`/`jsr_w`/`ret` 的方法，建立**调用上下文**：每个 `jsr` 站点一个 `SubroutineContext { call_site_bci, return_bci, entry_bci, affected_locals }`；`ret` 的返回点来自该上下文而不是猜测（`CallContexts` 事实）。**"每个站点"不按可达性过滤**：raw 图判为不可达的调用点同样建立上下文并单列 `unreachable_call_sites`，因为共享子程序的全部返回点都要可核对；拒绝规则只作用于 raw 可达部分，死调用点不阻塞活调用点的分析。
+- 共享子程序（多个 `jsr` 指向同一 `entry_bci`）与嵌套子程序都要保留**各自上下文**；嵌套时外层上下文的 `affected_locals` 包含嵌套体写入，而 `ret` 只归属其自身上下文的返回点。异常覆盖子程序（保护区间横跨 `jsr`）必须记录，不得把 handler 入口当成普通后继（handler 入口与其 locals 不进入子程序遍历）。
 - **51+ 的 `jsr`/`jsr_w`/`ret`**：原始事实仍保留，但报告 dialect 违规（`ir_legacy_opcode_forbidden`），不进入 CanonicalCFG；`51+` 判定只由 classfile version 决定。
-- 无法建立完整上下文的（例如 `ret` 的返回点集合无法收敛或超出步骤预算）→ 保留 raw facts + `Fallback`，不伪造调用图。
+- 无法建立完整上下文的（例如 `ret` 的返回点集合无法收敛或超出步骤预算）→ 保留 raw facts + `Fallback`，不伪造调用图。3.4 把该情形的触发集合写死为五类，均报 `ir_call_context_unresolved`（Warning，execution `Partial{Error{code}}`，不发布 `CallContexts`）：返回点不在已解码前缀（截断体）、可达调用点的子程序体无 `ret`、可达 `ret` 无归属、调用点成环（嵌套无界）、以及 `wide` 包裹形态无法识别；步数超限仍走既有 `BudgetExceeded{AnalysisSteps}`。结构性不一致（raw 图与事实矛盾）另用 crate-private 的 `ir_call_context_inconsistent` 返回 `Err`，公共路径不可达。
+- **`wide` 的处置边界**：1.2 不保留 `wide` 包裹的 opcode，因此 `wide ret` 无法被识别——本片按"无法建立上下文"处理（保守方向：含 `wide` 形态但无 `jsr`/`ret` 的现代方法同样报 unresolved），**绝不静默出错**。正路是扩 1.2 保留 wrapped opcode，但那会牵动 3.3 的分块与 effect 分类并重跑其证据，属独立决策（见 `verification.md` 的债务登记）。
+- **计费**：`legacy_normalization` 只计 `AnalysisSteps`（与其 `budget` 声明 `[Steps]` 逐项相等）；`ir_items`/`ir_edges` 在本阶段为零。载荷（`returns`、`exception_coverage`、`unreachable_call_sites`）是 crate-private，公共面只有阶段状态与诊断（不变量 11）。
 
 ### 3.5 有界 jsr/ret 规范化与 CanonicalCFG
 
