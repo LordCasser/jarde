@@ -169,6 +169,7 @@
 - 计费：`raw_cfg` 的 `budget` 声明 `[Blocks, Steps]` 且与**实际计费维度逐项相等**（`IrItems` 块/handler/throw site/指令 effect、`IrEdges` 每条边、`AnalysisSteps` 每条入块指令与每次可达性迭代）；块上限 16 384 是 crate-private 常量（请求级控制是 `ir_items`，超限以 `BudgetExceeded{IrItems}` 停止并保留前缀）；`method_bodies` 只计目标方法一次；A17 守卫扩到 10 个 module token（含 `crate::cfg`/`crate::passes`）。
 - 反例与证伪：实现者 6 组变异（throw site 只取块尾、handler 顺序反转、忽略 `stopped_at`、去掉显式边排序、A17 注入、`may_throw` 恒真）；复核者 10 组变异 + 14 条自建 fixture（跨进程 SHA-256 确定性、块中段 throw site、switch 去重、混合体、16 385 块的护栏、截断两分支）。首轮结论 **Reject**：发现条件分支目标等于自身 fall-through 时**发出两条相同普通边并计两次费**（合法字节码触发），以及异常边 (块, 记录) 去重**零用例**、A17 token 未覆盖 `crate::cfg`/`crate::passes`（`use crate::cfg::raw_cfg;` 注入守卫仍绿）。四项修正后各自变异被对应新用例捕获。
 - 证据：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **565 passed / 0 failed / 1 ignored**（`p2_cfg` 9、`p2_contracts` 29、`p2_passes` 4、`p1_xref_golden` 5）；示例 exit 0 并输出 `stages=[RawFacts Completed, RawCfg Completed, LegacyNormalization Failed{ir_pass_not_implemented}, …]`、`usage method_bodies=1 ir_items=15 analysis_steps=12`；由主 Agent 独立复跑确认。
+- 远端 CI：实现与文档提交 `10e5c0c`、`66ee2d8` 推送 `main` 后，CI run [`35291411285`](https://github.com/LordCasser/jarde/actions/runs/35291411285) 四个 job 全部 success。
 - 独立复核结论：**Reject → 修正 → 待连续性确认**（首轮问题全部修正并有变异证据）。登记债务：D25（driver 读取按物理身份，5.1 决策）、D26（内部上限与请求上限只能靠消息文本区分）、D27（`wide` 包裹 opcode 属 1.2 边界）、D28（catch 类型不过滤，已入契约）。
 
 ## 债务登记（滚动，归档前逐条处置）
