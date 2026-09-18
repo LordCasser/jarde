@@ -311,6 +311,39 @@
 
 **六个前置修正全部完成并各自复核**；tasks 计 17/26。**3.4 是下一片**（`ret` 值流与异常路径），它也是 `layer-jarde-crates` 拆包的前置——按 design 的 Migration Plan，先验收 3.4 并固定绿色基线，再独立搬迁文件。
 
+### 3.4 returnAddress 值流与异常路径（R2/R3 修正，2026-09-18）
+
+**状态**：R2 与 R3 均已修正、落成永久回归并各自独立证伪；ECJ 历史 `jsr`/finally 语料仍 `Established`（共享子程序的关键对照）。**本片尚未勾选**——`layer-jarde-crates` 的前置要求是 3.4 验收完毕并固定基线，剩余项见末尾。
+
+#### R2：`ret` 只经「持有该上下文返回地址的槽」归属
+
+- **缺陷**：`Walk::visit` 遇到 `ret` 就把该 `ret` 记进当前 active 上下文，**不检查该 local 是否持有已证明的返回地址**。归属由「`ret` 可从该上下文到达」决定，而不是由「该槽里确有该调用点的 token」决定。
+- **修法**：`Walk` 增 `token_slots: Vec<Option<u16>>`——子程序**第一次**引用存储（`astore`/`astore_0..3`，`wide astore` 由 0.2 归一到 `astore`）的槽即该上下文的返回地址槽；`ret` 读取的 local 必须等于它，否则返回 `Unresolved`（`ir_call_context_unresolved`）且**不发布 `CallContexts`**。用「第一次」而非「任意一次」是必要的：后续 `astore` 写的是别的引用（实测中 `writes=2/3/4` 的变体正是被这条区分开）。
+- **停止语义**：新增 `UnprovenReturn` 判定类型（`bci`/`context`/`reads`/`holds`），沿 `visit → run → call_contexts` 传递后映射为 `Unresolved`，**不是** `Err`——它是关于字节的事实，不是 pass 的结构性失败；结构性不一致仍走 `ir_call_context_inconsistent`。
+- **永久回归**：`a_ret_whose_slot_never_held_the_return_address_is_unresolved`（复核者给的字节串 `0:jsr 4; 3:return; 4:astore_0; 5:ret 1`，v49）断言**不发布**且诊断含 `local 1` 与 `BCI 5`；**反方向**同形状但 `ret 0` 仍 `Established`（防止退化成「拒绝一切 `ret`」）。父级证伪：把归属退回 active 上下文 → 该用例转红。
+- **顺带修正的既有夹具**：`the_item_bill_charges_the_elements_of_a_context_set_and_not_the_outer_vector` 的两个变体在新规则下不再建立——它们的子程序把地址存进 local 1 而 `ret` 读 local 1 只在 `writes=1` 时成立。这不是规则错误，而是**该夹具本就属于 R2 要拒绝的那类输入**；已把地址槽固定为第一个 `astore_1`、其余槽只用于增长写集，并把差值断言由 3 改为 2（两个额外槽）。
+
+#### R3：handler 回接 `ret` 前的写入计入其上下文
+
+- **缺陷**：`Walk::step` 对 `EdgeKind::Exception` **整类丢弃**，于是子程序里被保护指令抛出后进入 handler、handler 写了局部变量再 `goto` 回 `ret` 的路径完全不参与分析，`affected_locals` 漏掉那些写入。
+- **修法**：异常边改为与普通边同样入队（`self.enqueue(worklist, (active, to), budget)?`）——handler **不是**普通 fall-through（`exception_coverage` 照旧单独记录），但**也不是死路**：它的方法体在同一上下文下执行，其 local 写入与返回地址变更必须参与分析。
+- **永久回归**：`a_handler_that_writes_locals_before_the_ret_contributes_them`（复核者给的字节串，v49，异常表 `[5,8)→11` catch_all）断言 `affected_locals == [0, 1, 2]`。修正前实测确为 `[0]`（与复核记录一致）。
+- **被修正的既有断言（如实记录）**：`a_handler_entry_is_no_successor_and_its_range_is_recorded` 原先断言 `affected_locals == [1]`，其注释原文即「does not fold `astore_2` into the subroutine's affected locals」——**它断言的就是 R3 认定为缺陷的行为**。已改为 `[1, 2]` 并更新注释：handler 的 local 属于经保护范围进入它的那个上下文。
+- 父级证伪：恢复丢弃异常边 → 上述两条同时转红。
+
+#### 证据
+
+- `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **620 passed / 0 failed / 1 ignored**（R2 提交 618、R3 提交 620）；`p1_xref_golden` = 5；`tests/p2_return_address.rs` 8 条全过（含历史 `jsr` finally 语料与环境方言对照）。
+- 提交：R2 = `aa7f918`、R3 = `ac12967`，均已推送 `main`。
+- **本机环境异常（如实记录）**：期间本机链接器失效——`xcrun --sdk macosx --show-sdk-path` 因 **Xcode 许可未接受**而失败，`cargo test` 在链接阶段报 `library 'System' not found`，与代码无关。绕行方式（不改动机器状态）：`SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk` 且把 `/Library/Developer/CommandLineTools/usr/bin` 置于 `PATH` 首位。**本片全部验证均在该绕行下完成**；这也意味着本机无法再复现「默认工具链可用」的前提，CI 侧不受影响（Linux runner）。
+
+#### 仍未完成（3.4 不能勾选的原因）
+
+- **逐触发的不可达边界未逐条落成用例**：契约要求「返回点不在已解码前缀 / 子程序体无 `ret` / 嵌套成环 / 宽形态缺口」四类**各配一条 fixture 并同时断言反方向**（死代码里的对应形态仍 `Established`）。仓内现有多条相关用例（`a_ret_no_call_context_owns_is_unresolved`、`a_body_whose_decode_stopped_keeps_its_call_graph_unresolved`、`call_sites_that_nest_through_each_other_are_unresolved`、`a_call_site_whose_body_owns_no_ret_is_unresolved`），但**反方向并非每条都有**，需逐类补齐后再勾选。
+- **共享/嵌套 + handler 回接 `ret` 的组合用例**：契约点名「共享/嵌套和 handler 回接 ret」为一组验收形态，目前 handler 用例是单上下文、共享用例无 handler，组合面未覆盖。
+- **独立只读复核**：R2/R3 由父级实现并自证（三次派发均未产出后接手），**尚无第三方 Approve**。
+- 契约里 `affected_locals` 仍表示**写集**，其名称与消费者需在勾选前写明（3.5 消费前必须澄清是否够用）。
+
 ## P2 验收映射现状（滚动更新）
 
 按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
