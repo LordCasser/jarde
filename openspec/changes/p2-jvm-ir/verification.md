@@ -396,7 +396,15 @@
 
 - 证据：`fmt`/`clippy -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **627 passed / 0 failed / 1 ignored**；`call_context` 单测 **35**；`p1_xref_golden` = 5。提交 `e50ed15`、`98d6788` 已推送；CI run [`35341736858`](https://github.com/LordCasser/jarde/actions/runs/35341736858) 四个 job 全部 success。
 - 四项修正各自的证伪（均在文件副本上做、`sha256sum -c` 还原）：M1 去掉可达性跳过 → 该用例转红；M2 去掉 `live` 过滤 → 死环用例转红（活环用例**仍拒绝**）；M3 把 `holds` 换回「存 BCI」写法 → 该用例转红；M4 为文档。
-- 仍未做的只有**终审对上表 M1–M4 的复核**（本轮尚未复审）。登记债务不变：值身份缺口（无可避免的无关引用被当作地址）归 4.x；同槽中转与「存储在到不了 `ret` 的臂上」两处保守拒绝随契约登记；`elapsed_millis` 并行竞态 flake（既有）与 0.3b 缺第三方连续复核未变。
+- **终审结论：Approve，3.4 已勾选**（第四轮复核者）。它自建样本实测四象限：活/死 ×「返回点未解码」与「嵌套成环」——①活站点+死未解码站点 → `Established` 且只为返回点已解码站点生成 context；②**可达**的未解码站点 → 仍 `Unresolved`；③死环 → `Established`（3 个 context，只发布活 `ret`）；④**活环 → 仍 `Unresolved`**。它另论证并尝试反例后确认 `live` 只过滤根、不过滤子节点**不会漏判**（活根的子女按构造可达），且 M3 的断言确有判别力（变异后唯一转红）。
+- 终审提出的唯一新增缺口——**「打印调用点 BCI」这一半修复无回归测试**——已补 `the_diagnostic_names_the_call_site_not_the_context_index`（构造下标 1 与调用点 BCI 7 不等的样本），证伪：改回 `root as u32` 即转红。
+- 证据：全仓 **628 passed / 0 failed / 1 ignored**；`call_context` 单测 **36**；`p1_xref_golden` = 5；提交 `24ae87e`。
+- 登记债务：
+  - **值身份缺口**（`aconst_null→astore_1→astore_0→ret 1` 判 `Established`）：无操作数栈值追踪，归 4.x Frame/SSA；不得声称 3.4 已证明值身份。
+  - **两处保守拒绝**：同槽中转（两次写入都携带地址）、存储在到不了 `ret` 的臂上——实现比 must-analysis 更严，只多拒不错收。
+  - **M1 跳过的站点在载荷中不可见**：返回点未解码且不可达的调用点既不生成 context、也不进 `unreachable_call_sites`；3.5 因此看不到它，若下游需要须另设表达。
+  - 既有：`elapsed_millis` 并行竞态 flake；0.3b 缺第三方连续复核。
+- 登记债务不变：值身份缺口（无可避免的无关引用被当作地址）归 4.x；同槽中转与「存储在到不了 `ret` 的臂上」两处保守拒绝随契约登记；`elapsed_millis` 并行竞态 flake（既有）与 0.3b 缺第三方连续复核未变。
 ## P2 验收映射现状（滚动更新）
 
 按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
