@@ -246,6 +246,15 @@
 - 远端 CI：实现与文档提交 `e43576c`、`aeaceba` 推送 `main` 后，CI run [`35312949739`](https://github.com/LordCasser/jarde/actions/runs/35312949739) 四个 job 全部 success；其中 `stable` 的 **`Run ignored JDK 25 instruction-boundary oracle` 步骤为 success**——这就是复核者指出的「P0 指令边界 oracle 只能由 CI 产出」的那条证据（本机无 JDK 25）。
 - **独立复核结论**：**Approve**（16 组变异 + 自建字节码探针，含 atype 全取值与越界、dimensions=0/255、count 不一致、`immediate` 不得混用的三组反例）。登记债务：wide 映射 totality 只有 debug 守卫（release 下未映射事件会退化为「前缀不决定任何分类」，靠版本钉死与升级门槛缓解）；`InstructionOperands::default()` 的 `effective_opcode` 是 `0x00`，夹具漏设会静默变成 `nop` 语义（靠测试 helper 的 `debug_assert` 兜底）；**4.1 需关闭 `multianewarray` 的 `stack_delta`**；**仓内缺少 category-2（双槽 ±2）的宽化对照断言**（行为已由复核者探针证明正确，待补进仓内回归）。
 
+### 0.4 raw CFG 的 BCI→块查法（非块首 `jsr`）
+
+- **缺陷**：`jsr` 可以出现在**块中间**（其前是同块的普通指令）。`cfg::jsr_continuations` 用精确匹配（`binary_search_by_key`，要求 BCI 恰为块起始）求 `from`，失败即 `continue` → **续块关系被静默丢掉** → 活调用点的续块被可达性真值表判为**不可达** → 3.4 对「子程序体无 `ret`」的非法字节码漏拒（报 `Established`）、并把活调用点误列为死。属**已勾选的 3.3** 里的缺陷，故单开 0.4 修正并配回归。
+- **根因是两种读法并存**：`cfg::block_position`（精确）与 `call_context::block_of`（`partition_point` 取最后一个起始 ≤ bci）。修正：新增唯一读法 `cfg::block_of<T>(blocks, bci, start_bci)`，`jsr_continuations` 的 `from`/`to` 都用它，`call_context` 的私有 `block_of` 改为一行委托（`None` 仍映射为 `ir_call_context_inconsistent`，消息不变）；`block_position` **保留**给按构造恒为块首的输入（已发布边的端点），并在文档里写明适用面与理由。
+- **正反两侧断言**：`cfg::a_jsr_inside_a_block_keeps_its_continuation_reachable`（非块首 `jsr` 的续块**不在** `unreachable`，同时一个真死块**仍在**表里）；`cfg::the_historical_finally_paths_keep_the_subroutine_return_reachable`（ECJ 45–48 真实字节，`unreachable == [11, 15]`——`ret` 返回到 8，故 `[8,11)` 不是死块）；`tests/p2_return_address.rs::a_live_call_site_behind_a_mid_block_jsr_is_still_refused`（非块首 `jsr` + 子程序体无 `ret` 的非法字节码必须被拒绝，不得 `Established`）。另补 `cfg::category_two_wide_local_accesses_match_their_short_forms`（D40：`wide lload/lstore` 的 `Some(2)`/`Some(-2)` 与窄化对照逐字段相同）。
+- **反例与证伪**：实现者 2 组 + 复核者 6 组变异。**捕获计数以复核者实测为准**：① `from`（及 `to`）退回精确匹配 → **3 红**（两条新 cfg 测 + 新 p2 测，且失败正是 `[8,12]` vs `[12]`、`[8,11,15]` vs `[11,15]`）；② **`block_of` 本体**退回精确匹配 → **8 红**（6 条 lib + 2 条集成，其中含**既有**的 `a_body_whose_decode_stopped_keeps_its_call_graph_unresolved`），实现者自报的「6 红」是 `--lib` 口径；③ **仅 `to`** 退回 → **0 红**（等价：`jsr` 是块结束者，其后继恒为 leader）；④ 仅 `call_context::block_of` 回退 → 4 红（**既有** call_context 单测）。父级另用文件副本独立复现过 ① 的两个数值。
+- **证据**：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **606 passed / 0 failed / 1 ignored**；`cargo test --test p1_xref_golden --locked` = 5；示例 exit 0；由主 Agent 独立复跑确认（含「唯一读法」的实际形态）。
+- **独立复核结论**：**Approve，无必须改项**。复核者另确认：生产代码里**没有第三处**「该按包含关系查却用了精确匹配」；合并**无语义漂移**（逐字等价 + `None` 映射与消息不变）；两条新断言有真实判别力（且「清空真值表」式伪修法同样会红）；既有断言**零放宽**（diff 的 9 条删除行无一为断言）。登记债务：**合并只做了一侧**——`call_context::successors` 仍自带精确匹配（同类输入的第三处读法，今天安全）；新 p2 测只钉 cfg 那一半（call_context 那一半由 4 条既有单测钉住），且它走 `Unresolved` 分支，故「活调用点被误列为 `unreachable_call_sites`」这一面仍无可观测断言；`ir_edges >= 2` 是宽松界。
+
 ## P2 验收映射现状（滚动更新）
 
 按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
