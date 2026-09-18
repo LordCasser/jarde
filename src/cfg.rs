@@ -51,14 +51,17 @@
 //! `IrItems`, so it stops as a budget refusal of the dimension that paid for the blocks, with
 //! the effective ceiling as its `limit`.
 //!
+//! # Opcodes
+//!
+//! Every opcode decision of this module — what ends a block, which transfer an instruction
+//! is, whether it may throw, what its stack delta is, and which local it reads or writes —
+//! reads [`InstructionOperands::effective_opcode`], never the raw
+//! [`InstructionFact::opcode`](crate::classfile::InstructionFact::opcode). A `wide` form is
+//! the opcode it wraps (0.2): `wide iload` is a load and `wide ret` ends its block exactly
+//! like the short forms, while the raw `0xc4` prefix decides nothing on its own.
+//!
 //! # Known boundaries
 //!
-//! * A `wide`-prefixed instruction does not name the opcode it wraps in the 1.2 facts, so it
-//!   is neither a block end nor a local read/write here: `wide iinc` is still classified
-//!   through its increment, while `wide iload`/`wide istore`/`wide ret` are not classified at
-//!   all. Only `wide ret` for a local index above 255 is semantically different from the
-//!   non-wide form, and the 1.2 contract is the place that has to retain the wrapped opcode
-//!   before this pass can decide it (the same route `newarray`'s atype would take).
 //! * The handler list of a throw site is structural. A caller that needs "which handler
 //!   really catches this" has to resolve the thrown type against the catch types.
 //!
@@ -249,11 +252,15 @@ pub(crate) struct EffectFacts {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct InstructionEffect {
     pub(crate) bci: u32,
+    /// The instruction's effective opcode
+    /// ([`crate::classfile::InstructionOperands::effective_opcode`]): the opcode a `wide` form
+    /// wraps, and the raw opcode otherwise. The raw `0xc4` prefix stays in the reader's own fact.
     pub(crate) opcode: u8,
     /// Locals this instruction reads, ascending, deduplicated: the operand 1.2 records for a
     /// load, `iinc` or `ret`, including the forms whose index is encoded in the opcode.
     ///
-    /// A `wide`-prefixed local access is in neither list; see the module's known boundaries.
+    /// A `wide`-prefixed access is classified by the opcode it wraps, so it is listed exactly
+    /// like the short form of that opcode.
     pub(crate) locals_read: Vec<u16>,
     /// Locals this instruction writes, ascending, deduplicated.
     pub(crate) locals_written: Vec<u16>,
@@ -261,10 +268,10 @@ pub(crate) struct InstructionEffect {
     ///
     /// The `None` cases are exactly the ones that need more than the opcode: an `invoke*`, a
     /// field access or an `ldc` needs the descriptor or the constant-pool tag the descriptor
-    /// table of 4.1 owns, `multianewarray` needs a dimension count 1.2 deliberately does not
-    /// retain, `athrow` clears the stack (a data-flow property, not a constant), and a `wide`
-    /// instruction needs the opcode it wraps. Those belong to the frame layer, not to this
-    /// pass.
+    /// table of 4.1 owns, `athrow` clears the stack (a data-flow property, not a constant), and
+    /// `multianewarray`'s delta is `1 - dimensions`, which the frame layer decides from the
+    /// reader's `dimensions` fact. Those belong to the frame layer, not to this pass; a `wide`
+    /// form *is* decided here, through the opcode it wraps.
     pub(crate) stack_delta: Option<i32>,
     /// Whether this instruction may raise an exception.
     pub(crate) may_throw: bool,
@@ -375,14 +382,19 @@ fn leader_flags(facts: &MethodCodeFacts, targets: &[ControlFlowTarget]) -> Resul
         // BCI 0 is the entry of the body: the first block is the entry block.
         *first = true;
     }
-    for (index, instruction) in facts.instructions.iter().enumerate() {
+    for (index, (instruction, operands)) in facts
+        .instructions
+        .iter()
+        .zip(facts.operands.iter())
+        .enumerate()
+    {
         // A transfer cannot fall through from inside a block, so the instruction after a
         // branch, a `goto`, a `jsr`, a `ret`, a switch, a return or an `athrow` starts one.
         // A `jsr` is included on purpose: control returns to the instruction after it through
         // the subroutine's `ret`, so it is a join point even though the raw graph has no edge
         // into it yet. The instruction list is contiguous (the reader validated the widths),
         // so the instruction after a block ender is exactly the one at `bci + width`.
-        if ends_block(instruction.opcode)
+        if ends_block(operands.effective_opcode)
             && let Some(next) = leaders.get_mut(index + 1)
         {
             debug_assert_eq!(
@@ -521,7 +533,9 @@ fn transfer_edges(
     for (block_index, (_, end)) in ranges.iter().copied().enumerate() {
         let block = blocks[block_index];
         let last = end - 1;
-        let opcode = facts.instructions[last].opcode;
+        // The instruction the block really ends with: a `wide` form is classified by the
+        // opcode it wraps, so `wide ret` leaves the block exactly like `ret` does.
+        let opcode = facts.operands[last].effective_opcode;
         // The instruction a block falls through to, when the block is not the last one: a
         // block only ends where a leader starts, so that instruction starts the next block.
         let fall_through = facts
@@ -630,8 +644,11 @@ fn throw_sites_and_handlers(
     for (block_index, (start, end)) in ranges.iter().copied().enumerate() {
         let block = blocks[block_index];
         let mut seen: Vec<u32> = Vec::new();
-        for instruction in &facts.instructions[start..end] {
-            if !may_throw(instruction.opcode) {
+        for (instruction, operands) in facts.instructions[start..end]
+            .iter()
+            .zip(facts.operands[start..end].iter())
+        {
+            if !may_throw(operands.effective_opcode) {
                 continue;
             }
             let feasible: Vec<u32> = handlers
@@ -644,7 +661,7 @@ fn throw_sites_and_handlers(
             budget.charge(CountedBudgetDimension::IrItems, 1)?;
             throw_sites.push(ThrowSite {
                 bci: instruction.bci,
-                opcode: instruction.opcode,
+                opcode: operands.effective_opcode,
                 block_bci: block.bci,
                 handlers: feasible.clone(),
             });
@@ -686,24 +703,20 @@ fn effect_facts(
     // whole list.
     let mut cursor = 0usize;
     for (instruction, operands) in facts.instructions.iter().zip(facts.operands.iter()) {
+        // The instruction's own opcode: for a `wide` form that is the opcode it wraps, which
+        // is what decides the local's direction (a `wide iload 300` reads local 300) and the
+        // stack delta, exactly like the short form of the same opcode.
+        let opcode = operands.effective_opcode;
         let (locals_read, locals_written) = match operands.local {
             Some(local) if operands.increment.is_some() => {
                 // `iinc` reads and writes the same local, and its increment is not a stack
                 // effect; `wide iinc` carries its increment the same way.
                 (vec![local.index], vec![local.index])
             }
-            // The wrapped opcode of a `wide` instruction is not part of the 1.2 facts, so its
-            // direction is not decided here (see the module's known boundaries).
-            Some(local) if !local.wide && is_load(instruction.opcode) => {
-                (vec![local.index], Vec::new())
-            }
-            Some(local) if !local.wide && is_store(instruction.opcode) => {
-                (Vec::new(), vec![local.index])
-            }
+            Some(local) if is_load(opcode) => (vec![local.index], Vec::new()),
+            Some(local) if is_store(opcode) => (Vec::new(), vec![local.index]),
             // `ret` names the local holding the return address: it reads it.
-            Some(local) if !local.wide && instruction.opcode == OPCODE_RET => {
-                (vec![local.index], Vec::new())
-            }
+            Some(local) if opcode == OPCODE_RET => (vec![local.index], Vec::new()),
             _ => (Vec::new(), Vec::new()),
         };
         let (may_throw, handlers) = match throw_sites
@@ -719,10 +732,10 @@ fn effect_facts(
         budget.charge(CountedBudgetDimension::IrItems, 1)?;
         instructions.push(InstructionEffect {
             bci: instruction.bci,
-            opcode: instruction.opcode,
+            opcode,
             locals_read,
             locals_written,
-            stack_delta: fixed_stack_delta(instruction.opcode),
+            stack_delta: fixed_stack_delta(opcode),
             may_throw,
             handlers,
         });
@@ -735,8 +748,9 @@ fn jsr_call_sites(facts: &MethodCodeFacts) -> Result<Vec<u32>> {
     let mut sites: Vec<u32> = facts
         .instructions
         .iter()
-        .filter(|instruction| is_jsr(instruction.opcode))
-        .map(|instruction| instruction.bci)
+        .zip(facts.operands.iter())
+        .filter(|(_, operands)| is_jsr(operands.effective_opcode))
+        .map(|(instruction, _)| instruction.bci)
         .collect();
     sites.sort_unstable();
     Ok(sites)
@@ -745,8 +759,13 @@ fn jsr_call_sites(facts: &MethodCodeFacts) -> Result<Vec<u32>> {
 /// The continuation of every `jsr`, as a block index: where the subroutine's `ret` returns.
 fn jsr_continuations(facts: &MethodCodeFacts, blocks: &[RawBlock]) -> Vec<Option<NodeIndex>> {
     let mut continuations = vec![None; blocks.len()];
-    for (index, instruction) in facts.instructions.iter().enumerate() {
-        if !is_jsr(instruction.opcode) {
+    for (index, (instruction, operands)) in facts
+        .instructions
+        .iter()
+        .zip(facts.operands.iter())
+        .enumerate()
+    {
+        if !is_jsr(operands.effective_opcode) {
             continue;
         }
         let Some(next) = facts.instructions.get(index + 1) else {
@@ -802,6 +821,11 @@ fn unreachable_blocks(
         .map(|(_, node)| graph[*node])
         .collect())
 }
+
+// The opcode predicates below all take the **effective** opcode
+// ([`crate::classfile::InstructionOperands::effective_opcode`]): the `wide` prefix is not an
+// instruction, so `wide iload`/`wide istore`/`wide ret` reach these predicates as `iload`,
+// `istore` and `ret`.
 
 /// Whether this opcode ends its block: an instruction whose transfer is not a plain
 /// fall-through to the instruction after it.
@@ -936,7 +960,8 @@ fn fixed_stack_delta(opcode: u8) -> Option<i32> {
         0xc0 | 0xc1 => 0,
         0xc2 | 0xc3 => -1,
         // What is left either needs more than the opcode (`ldc`, field access, invocations,
-        // `athrow`, `multianewarray`, `wide`) or is not an instruction.
+        // `athrow`, `multianewarray`) or is not an instruction. A `wide` form never reaches
+        // this table as `0xc4`: it arrives as the opcode it wraps.
         _ => return None,
     })
 }
@@ -1006,12 +1031,20 @@ mod tests {
     }
 
     /// One instruction fact with its typed operands, at `bci`, `width` bytes long.
+    ///
+    /// The fixture states the effective opcode itself: it is the raw opcode for every
+    /// instruction except a `wide` form, whose raw opcode is the prefix `0xc4` and whose
+    /// effective opcode is the one it wraps (0.2).
     fn instruction(
         bci: u32,
         opcode: u8,
         width: u32,
         operands: InstructionOperands,
     ) -> (InstructionFact, InstructionOperands) {
+        debug_assert!(
+            operands.effective_opcode == opcode || opcode == 0xc4,
+            "a fixture must state the opcode the classifications read"
+        );
         let start = CODE_OFFSET + u64::from(bci);
         (
             InstructionFact {
@@ -1026,9 +1059,17 @@ mod tests {
         )
     }
 
+    /// Operands of an instruction whose effective opcode is its raw opcode.
+    fn operands(opcode: u8) -> InstructionOperands {
+        InstructionOperands {
+            effective_opcode: opcode,
+            ..InstructionOperands::default()
+        }
+    }
+
     /// An operandless instruction (`nop`, a load of a fixed form, a return, …).
     fn plain(bci: u32, opcode: u8) -> (InstructionFact, InstructionOperands) {
-        instruction(bci, opcode, 1, InstructionOperands::default())
+        instruction(bci, opcode, 1, operands(opcode))
     }
 
     fn branch(bci: u32, opcode: u8, offset: i32) -> (InstructionFact, InstructionOperands) {
@@ -1038,17 +1079,25 @@ mod tests {
             3,
             InstructionOperands {
                 branch_offset: Some(offset),
-                ..InstructionOperands::default()
+                ..operands(opcode)
             },
         )
     }
 
-    /// One named local operand, in the short form unless `wide` says otherwise.
-    fn local(index: u16, wide: bool) -> InstructionOperands {
+    /// One named local operand of an instruction whose effective opcode is `effective_opcode`,
+    /// in the short form unless `wide` says otherwise.
+    fn local(index: u16, wide: bool, effective_opcode: u8) -> InstructionOperands {
         InstructionOperands {
             local: Some(LocalOperand { index, wide }),
+            effective_opcode,
             ..InstructionOperands::default()
         }
+    }
+
+    /// A `wide`-prefixed local access: the raw opcode is the prefix and the effective one is
+    /// the opcode it wraps.
+    fn wide_local(index: u16, wrapped_opcode: u8) -> InstructionOperands {
+        local(index, true, wrapped_opcode)
     }
 
     /// A `tableswitch` whose payload is read from the operands, with the padding its BCI
@@ -1073,7 +1122,7 @@ mod tests {
                     high,
                     offsets,
                 }),
-                ..InstructionOperands::default()
+                ..operands(OPCODE_TABLESWITCH)
             },
         )
     }
@@ -1455,7 +1504,7 @@ mod tests {
                 plain(3, 0xb1),           // return: the continuation of the call
                 plain(4, 0x00),           // nop
                 plain(5, 0x00),           // nop: the subroutine entry
-                instruction(6, OPCODE_RET, 2, local(1, false)),
+                instruction(6, OPCODE_RET, 2, local(1, false, OPCODE_RET)),
             ],
             Vec::new(),
             8,
@@ -1485,7 +1534,7 @@ mod tests {
     fn effects_classify_locals_throw_sites_and_stack_deltas() {
         let facts = body(
             vec![
-                instruction(0, 0x1b, 1, local(1, false)), // iload_1
+                instruction(0, 0x1b, 1, local(1, false, 0x1b)), // iload_1
                 instruction(
                     1,
                     0x84,
@@ -1496,16 +1545,16 @@ mod tests {
                             wide: false,
                         }),
                         increment: Some(1),
-                        ..InstructionOperands::default()
+                        ..operands(0x84)
                     },
                 ), // iinc 2 by 1
-                instruction(4, 0x3d, 1, local(2, false)), // istore_2
-                plain(5, 0x60),                           // iadd
-                plain(6, 0x6c),                           // idiv
-                plain(7, OPCODE_ATHROW),                  // athrow
-                instruction(8, 0x12, 2, InstructionOperands::default()), // ldc
-                instruction(10, 0xc4, 4, local(3, true)), // wide iload 3
-                plain(14, 0xac),                          // ireturn
+                instruction(4, 0x3d, 1, local(2, false, 0x3d)), // istore_2
+                plain(5, 0x60),                                 // iadd
+                plain(6, 0x6c),                                 // idiv
+                plain(7, OPCODE_ATHROW),                        // athrow
+                instruction(8, 0x12, 2, operands(0x12)),        // ldc
+                instruction(10, 0xc4, 4, wide_local(3, 0x15)),  // wide iload 3
+                plain(14, 0xac),                                // ireturn
             ],
             Vec::new(),
             15,
@@ -1539,8 +1588,21 @@ mod tests {
             "`ldc` needs the constant's own width"
         );
         assert!(effect(8).may_throw);
-        assert_eq!(effect(10).stack_delta, None, "`wide` hides its opcode");
-        assert!(effect(10).locals_read.is_empty());
+        assert_eq!(
+            effect(10).opcode,
+            0x15,
+            "a `wide iload` is the `iload` it wraps"
+        );
+        assert_eq!(
+            effect(10).stack_delta,
+            Some(1),
+            "the wrapped opcode decides the delta, exactly like `iload 3`"
+        );
+        assert_eq!(
+            effect(10).locals_read,
+            vec![3],
+            "the wrapped opcode decides the direction: the wide form reads its local"
+        );
         assert!(effect(10).locals_written.is_empty());
         assert!(!effect(10).may_throw);
         assert_eq!(effect(14).stack_delta, Some(-1));
@@ -1556,6 +1618,133 @@ mod tests {
         );
         assert!(effect(6).handlers.is_empty());
         assert!(effect(6).may_throw);
+    }
+
+    /// The decoded facts of one body built by the shared test class builder, through the real
+    /// reader: these bytes are decoded by the same path the engine uses, so the classification
+    /// below is exercised on reader facts rather than on hand-written ones.
+    fn decoded(code: &[u8], major: u16) -> MethodCodeFacts {
+        let bytes = crate::classfile::test_class::single_method(major, 8, 8, code);
+        let mut budget = Budget::new(Limits {
+            // The real reader charges the byte dimensions of this module's own fixture.
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            ..limits()
+        });
+        let header = crate::classfile::class_facts(&bytes, &mut budget)
+            .expect("the fixture is a class file");
+        let member = header
+            .methods
+            .first()
+            .expect("the fixture declares one method");
+        crate::classfile::method_code_facts(&bytes, member, &mut budget)
+            .expect("the fixture's body decodes")
+    }
+
+    #[test]
+    fn wide_forms_are_classified_exactly_like_the_short_forms_of_the_same_opcode() {
+        // Real bytes, one body, the four local-access instructions in both encodings:
+        //
+        //   0  iload 0          7  ret 0          23  wide ret 0
+        //   2  istore 0         9  wide iload 0   27  return
+        //   4  iinc 0, 1       13  wide istore 0
+        //                      17  wide iinc 0, 1
+        //
+        // The classification of each wide form must be the classification of the short form
+        // it wraps — a read, a write, read+write with no stack effect, or the end of a block
+        // with no raw edge — and the raw `0xc4` prefix must stay in the reader's fact.
+        let code = [
+            0x15, 0x00, // iload 0
+            0x36, 0x00, // istore 0
+            0x84, 0x00, 0x01, // iinc 0, 1
+            0xa9, 0x00, // ret 0
+            0xc4, 0x15, 0x00, 0x00, // wide iload 0
+            0xc4, 0x36, 0x00, 0x00, // wide istore 0
+            0xc4, 0x84, 0x00, 0x00, 0x00, 0x01, // wide iinc 0, 1
+            0xc4, 0xa9, 0x00, 0x00, // wide ret 0
+            0xb1, // return
+        ];
+        let facts = decoded(&code, 52);
+        assert!(matches!(facts.execution, ExecutionReport::Complete { .. }));
+        assert_eq!(facts.stopped_at, None);
+        assert_eq!(
+            facts
+                .instructions
+                .iter()
+                .map(|fact| fact.opcode)
+                .collect::<Vec<_>>(),
+            vec![0x15, 0x36, 0x84, 0xa9, 0xc4, 0xc4, 0xc4, 0xc4, 0xb1],
+            "the raw opcodes, byte for byte: the four wide forms keep the prefix"
+        );
+
+        let outcome = raw_cfg(&facts, &mut budget()).expect("the fixture is a valid body");
+        assert_eq!(
+            outcome
+                .cfg
+                .blocks
+                .iter()
+                .map(|block| (block.bci, block.end_bci))
+                .collect::<Vec<_>>(),
+            vec![(0, 9), (9, 27), (27, 28)],
+            "`ret` and `wide ret` alike end their block: the instruction after each starts one"
+        );
+        assert_eq!(
+            outcome.cfg.unresolved_returns,
+            Vec::<u32>::new(),
+            "`jsr` is what makes a return unresolved, and this body has none"
+        );
+        assert_eq!(
+            edge_tuples(&outcome.cfg),
+            Vec::<(u32, EdgeKind, u32)>::new(),
+            "a `ret` leaves no raw edge, and its wide form is a `ret`"
+        );
+
+        let effects = &outcome.effects.instructions;
+        let effect = |bci: u32| {
+            effects
+                .iter()
+                .find(|effect| effect.bci == bci)
+                .unwrap_or_else(|| panic!("no effect at BCI {bci}"))
+        };
+        for (short_bci, wide_bci) in [(0u32, 9u32), (2, 13), (4, 17), (7, 23)] {
+            let short = effect(short_bci);
+            let wide = effect(wide_bci);
+            assert_eq!(
+                InstructionEffect {
+                    bci: wide.bci,
+                    ..short.clone()
+                },
+                *wide,
+                "BCI {wide_bci} must classify exactly like the short form at BCI {short_bci}"
+            );
+        }
+        // The pairs are not two identical empty classifications: the wrapped opcode decides
+        // each of them, and the raw prefix decides none.
+        assert_eq!(
+            (effect(0).locals_read.clone(), effect(0).stack_delta),
+            (vec![0], Some(1))
+        );
+        assert_eq!(
+            (effect(2).locals_written.clone(), effect(2).stack_delta),
+            (vec![0], Some(-1))
+        );
+        assert_eq!(
+            (
+                effect(4).locals_read.clone(),
+                effect(4).locals_written.clone(),
+                effect(4).stack_delta
+            ),
+            (vec![0], vec![0], Some(0))
+        );
+        assert_eq!(
+            (effect(7).locals_read.clone(), effect(7).stack_delta),
+            (vec![0], Some(0))
+        );
+        assert!(
+            effects.iter().all(|effect| !effect.may_throw),
+            "a local access cannot enter a handler, wide or not"
+        );
     }
 
     #[test]

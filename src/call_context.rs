@@ -57,12 +57,9 @@
 //!   dialect violation (JVMS 4.9.1 keeps them for class files below 51.0): the raw facts stay
 //!   exactly as 3.3 built them, no context is published, and the run fails under
 //!   [`IR_LEGACY_OPCODE_FORBIDDEN`] so the method cannot enter a canonical CFG. The dialect is
-//!   decided by the class-file version alone.
-//! * a `wide`-prefixed instruction whose wrapped opcode the 1.2 facts do not retain (the
-//!   documented `wide` boundary of 1.2/3.3) could be a `wide ret`, which is a return no walk can
-//!   see. Nothing is published under [`IR_CALL_CONTEXT_UNRESOLVED`] instead of reporting a
-//!   context set that may be missing a return; the route to support it is the 1.2 fact, not a
-//!   guess here.
+//!   decided by the class-file version alone, and a `wide` form is classified by the opcode it
+//!   wraps (0.2), so `wide ret` is exactly as forbidden as `ret` — and a modern method whose
+//!   only `wide` forms are loads, stores or `iinc` has nothing to refuse.
 //! * a call site whose return address is not an instruction start of the decoded prefix (a
 //!   `jsr` at the end of a body whose decode stopped early), a reachable call site whose body
 //!   owns no `ret` (its return address is never used, so the return half of its transfer has no
@@ -111,9 +108,6 @@ pub(crate) const IR_CALL_CONTEXT_UNRESOLVED: &str = "ir_call_context_unresolved"
 /// reader of one body has to hear about a disagreement instead of reading a context set that
 /// silently dropped a call site.
 const IR_CALL_CONTEXT_INCONSISTENT: &str = "ir_call_context_inconsistent";
-
-/// `wide`: the prefix whose wrapped opcode 1.2 does not retain.
-const OPCODE_WIDE: u8 = 0xc4;
 
 /// One `jsr`/`jsr_w` call context: the raw return address and what its subroutine writes.
 #[allow(dead_code)]
@@ -220,7 +214,8 @@ pub(crate) fn call_contexts(
     let legacy = legacy_opcodes(facts);
 
     // The dialect first: a forbidden opcode is a certainty about the version, not a limitation
-    // of this build, and it is reported even when the same body also trips a `wide` boundary.
+    // of this build, and every legacy opcode is classified by the opcode it is — a `wide ret`
+    // reaches this arm as `ret`, exactly like the short form.
     if major_version >= FIRST_MODERN_MAJOR
         && let Some((bci, opcode)) = legacy.opcodes.first()
     {
@@ -230,15 +225,6 @@ pub(crate) fn call_contexts(
                  prefix holds it at BCI {bci}: the raw facts are kept, but this method builds no \
                  call contexts and must not be canonicalized",
                 opcode_name(*opcode)
-            ),
-        });
-    }
-    if let Some(bci) = legacy.ambiguous_wide.first() {
-        return Ok(CallContextOutcome::Unresolved {
-            message: format!(
-                "BCI {bci} holds a `wide`-prefixed instruction whose wrapped opcode the reader's \
-                 typed operands do not retain (1.2's registered `wide` boundary): it may be a \
-                 `wide ret`, so the return addresses of this method cannot be established"
             ),
         });
     }
@@ -380,36 +366,33 @@ fn empty_contexts() -> CallContexts {
 
 /// The legacy opcodes of one decoded prefix, in BCI order.
 struct LegacyOpcodes {
-    /// Every `jsr`/`jsr_w`/`ret` of the prefix as `(bci, opcode)`, ascending.
+    /// Every `jsr`/`jsr_w`/`ret` of the prefix as `(bci, effective opcode)`, ascending.
+    ///
+    /// A `wide ret` is one of them: the reader classifies a `wide` form by the opcode it wraps
+    /// (0.2), so the `ret` a `wide` prefix encodes is the same forbidden opcode here.
     opcodes: Vec<(u32, u8)>,
     /// The `jsr`/`jsr_w` sites alone, ascending.
     jsr_sites: Vec<u32>,
     /// The `ret` instructions alone, ascending.
     returns: Vec<u32>,
-    /// `wide`-prefixed instructions whose wrapped opcode 1.2 does not retain, ascending.
-    ///
-    /// `wide iinc` is not one of them: its increment is retained, so the opcode it wraps is
-    /// decided by the reader's own facts and it cannot be a `ret`.
-    ambiguous_wide: Vec<u32>,
 }
 
-/// The opcodes this pass is about, read from the instruction stream alone.
+/// The opcodes this pass is about, read from the instruction stream alone: the reader's
+/// effective opcode, never the raw one, because `0xc4` is a prefix and not a legacy opcode.
 fn legacy_opcodes(facts: &MethodCodeFacts) -> LegacyOpcodes {
     let mut opcodes = Vec::new();
     let mut jsr_sites = Vec::new();
     let mut returns = Vec::new();
-    let mut ambiguous_wide = Vec::new();
     for (instruction, operands) in facts.instructions.iter().zip(facts.operands.iter()) {
-        match instruction.opcode {
+        match operands.effective_opcode {
             OPCODE_JSR | OPCODE_JSR_W | OPCODE_RET => {
-                opcodes.push((instruction.bci, instruction.opcode));
-                if instruction.opcode == OPCODE_RET {
+                opcodes.push((instruction.bci, operands.effective_opcode));
+                if operands.effective_opcode == OPCODE_RET {
                     returns.push(instruction.bci);
                 } else {
                     jsr_sites.push(instruction.bci);
                 }
             }
-            OPCODE_WIDE if operands.increment.is_none() => ambiguous_wide.push(instruction.bci),
             _ => {}
         }
     }
@@ -417,7 +400,6 @@ fn legacy_opcodes(facts: &MethodCodeFacts) -> LegacyOpcodes {
         opcodes,
         jsr_sites,
         returns,
-        ambiguous_wide,
     }
 }
 
@@ -597,7 +579,9 @@ impl<'a> Walk<'a> {
     /// records covering it.
     fn visit(&mut self, active: usize, index: usize, written: &mut BTreeSet<u16>) {
         let instruction = &self.facts.instructions[index];
-        if instruction.opcode == OPCODE_RET {
+        // A `wide ret` is the same return the short form is: the reader classifies a `wide`
+        // form by the opcode it wraps (0.2).
+        if self.facts.operands[index].effective_opcode == OPCODE_RET {
             self.returns
                 .entry(instruction.bci)
                 .or_default()
@@ -829,12 +813,20 @@ mod tests {
     }
 
     /// One instruction fact with its typed operands, at `bci`, `width` bytes long.
+    ///
+    /// The fixture states the effective opcode itself: it is the raw opcode for every
+    /// instruction except a `wide` form, whose raw opcode is the prefix `0xc4` and whose
+    /// effective opcode is the one it wraps (0.2).
     fn instruction(
         bci: u32,
         opcode: u8,
         width: u32,
         operands: InstructionOperands,
     ) -> (InstructionFact, InstructionOperands) {
+        debug_assert!(
+            operands.effective_opcode == opcode || opcode == 0xc4,
+            "a fixture must state the opcode the classifications read"
+        );
         let start = CODE_OFFSET + u64::from(bci);
         (
             InstructionFact {
@@ -849,9 +841,17 @@ mod tests {
         )
     }
 
+    /// Operands of an instruction whose effective opcode is its raw opcode.
+    fn operands(opcode: u8) -> InstructionOperands {
+        InstructionOperands {
+            effective_opcode: opcode,
+            ..InstructionOperands::default()
+        }
+    }
+
     /// An operandless instruction (`nop`, `return`, …).
     fn plain(bci: u32, opcode: u8) -> (InstructionFact, InstructionOperands) {
-        instruction(bci, opcode, 1, InstructionOperands::default())
+        instruction(bci, opcode, 1, operands(opcode))
     }
 
     /// A `jsr` whose relative offset points `offset` bytes ahead of its own BCI.
@@ -862,38 +862,64 @@ mod tests {
             3,
             InstructionOperands {
                 branch_offset: Some(offset),
-                ..InstructionOperands::default()
+                ..operands(OPCODE_JSR)
             },
         )
     }
 
     /// A `ret` of one local, in the short form.
     fn ret(bci: u32, index: u16) -> (InstructionFact, InstructionOperands) {
-        instruction(bci, OPCODE_RET, 2, local(index, false))
+        instruction(bci, OPCODE_RET, 2, local(index, false, OPCODE_RET))
     }
 
     /// A store of one local, whose named operand is what makes it a write (the `_0`..`_3`
     /// forms name their local too, exactly like the reader records them).
     fn store(bci: u32, opcode: u8, index: u16) -> (InstructionFact, InstructionOperands) {
-        instruction(bci, opcode, 1, local(index, false))
+        instruction(bci, opcode, 1, local(index, false, opcode))
     }
 
     /// A load of one local with a byte operand, which is what makes it a read.
     fn load(bci: u32, opcode: u8, index: u16) -> (InstructionFact, InstructionOperands) {
-        instruction(bci, opcode, 2, local(index, false))
+        instruction(bci, opcode, 2, local(index, false, opcode))
     }
 
-    /// One named local operand, in the short form unless `wide` says otherwise.
-    fn local(index: u16, wide: bool) -> InstructionOperands {
+    /// One named local operand of an instruction whose effective opcode is `effective_opcode`,
+    /// in the short form unless `wide` says otherwise.
+    fn local(index: u16, wide: bool, effective_opcode: u8) -> InstructionOperands {
         InstructionOperands {
             local: Some(LocalOperand { index, wide }),
+            effective_opcode,
             ..InstructionOperands::default()
         }
     }
 
-    /// A `wide`-prefixed local access whose wrapped opcode the 1.2 facts do not retain.
-    fn wide(bci: u32, index: u16) -> (InstructionFact, InstructionOperands) {
-        instruction(bci, OPCODE_WIDE, 4, local(index, true))
+    /// A `wide`-prefixed local access: one event of the reader, with the prefix as the raw
+    /// opcode and the wrapped opcode as the one the classifications read.
+    fn wide_local(
+        bci: u32,
+        wrapped_opcode: u8,
+        index: u16,
+    ) -> (InstructionFact, InstructionOperands) {
+        instruction(bci, 0xc4, 4, local(index, true, wrapped_opcode))
+    }
+
+    /// A `wide iload` of one local.
+    fn wide_load(bci: u32, index: u16) -> (InstructionFact, InstructionOperands) {
+        /// `iload`.
+        const ILOAD: u8 = 0x15;
+        wide_local(bci, ILOAD, index)
+    }
+
+    /// A `wide istore` of one local.
+    fn wide_store(bci: u32, index: u16) -> (InstructionFact, InstructionOperands) {
+        /// `istore`.
+        const ISTORE: u8 = 0x36;
+        wide_local(bci, ISTORE, index)
+    }
+
+    /// A `wide ret` of one local.
+    fn wide_ret(bci: u32, index: u16) -> (InstructionFact, InstructionOperands) {
+        wide_local(bci, OPCODE_RET, index)
     }
 
     /// An `iinc` of one local.
@@ -907,7 +933,23 @@ mod tests {
             InstructionOperands {
                 local: Some(LocalOperand { index, wide: false }),
                 increment: Some(value),
-                ..InstructionOperands::default()
+                ..operands(IINC)
+            },
+        )
+    }
+
+    /// A `wide iinc` of one local.
+    fn wide_iinc(bci: u32, index: u16, value: i32) -> (InstructionFact, InstructionOperands) {
+        /// `iinc`.
+        const IINC: u8 = 0x84;
+        instruction(
+            bci,
+            0xc4,
+            6,
+            InstructionOperands {
+                local: Some(LocalOperand { index, wide: true }),
+                increment: Some(value),
+                ..operands(IINC)
             },
         )
     }
@@ -1109,13 +1151,18 @@ mod tests {
     #[test]
     fn the_modern_dialect_of_the_same_source_has_no_call_context() {
         // 52 compiles the same source with the `finally` inlined: no `jsr`, no `ret`, and the
-        // empty context set is the complete answer — charged as nothing.
+        // empty context set is the complete answer — charged as nothing. The fixture's opcodes
+        // are read the way the pass reads them: a `wide` form is the opcode it wraps.
         let (facts, major) = historical(V52, b"finallyPath");
-        assert!(facts.instructions.iter().all(|instruction| {
-            instruction.opcode != OPCODE_JSR
-                && instruction.opcode != OPCODE_JSR_W
-                && instruction.opcode != OPCODE_RET
-        }));
+        assert!(
+            facts
+                .operands
+                .iter()
+                .all(|operands| operands.effective_opcode != OPCODE_JSR
+                    && operands.effective_opcode != OPCODE_JSR_W
+                    && operands.effective_opcode != OPCODE_RET),
+            "the modern fixture holds no legacy opcode, wide or not"
+        );
         let raw = graph(&facts, &mut budget());
         let mut budget = budget();
         let outcome = call_contexts(&facts, &raw, major, &mut budget).expect("no opcode to refuse");
@@ -1276,7 +1323,7 @@ mod tests {
                     3,
                     InstructionOperands {
                         constant_pool_index: Some(20),
-                        ..InstructionOperands::default()
+                        ..operands(0xb6)
                     },
                 ), // invokevirtual: may throw, covered by record 0
                 ret(11, 1),
@@ -1316,80 +1363,176 @@ mod tests {
     }
 
     #[test]
-    fn a_wide_prefixed_instruction_leaves_the_call_graph_unresolved() {
-        // A `wide`-prefixed local access whose wrapped opcode 1.2 does not retain could be the
-        // `wide ret` of JVMS 6.5. The pass refuses to publish a context set that may be
-        // missing a return instead of reporting one silently.
+    fn a_wide_local_access_is_classified_by_the_opcode_it_wraps() {
+        // `wide` is a prefix (JVMS 6.5), not an instruction: the wrapped opcode decides. A
+        // `wide istore` writes its local, a `wide iinc` reads and writes its own and a
+        // `wide ret` is the return of its context — none of them was classifiable while the
+        // reader kept only the prefix, and all of them behave here like the short forms.
         let facts = body(
             vec![
-                jsr(0, 4),         // -> BCI 4, return address 3
-                plain(3, 0x00),    // nop
-                store(4, 0x4c, 1), // astore_1
-                wide(5, 300),      // wide <opcode> 300
-                ret(9, 1),
+                jsr(0, 3),           // -> BCI 3, return address 3
+                store(3, 0x4c, 1),   // astore_1: the return address
+                wide_store(4, 300),  // wide istore 300
+                wide_load(8, 7),     // wide iload 7: a read, so not an affected local
+                wide_iinc(12, 2, 1), // wide iinc 2, 1: reads and writes local 2
+                wide_ret(18, 1),     // wide ret 1: the return of this context
             ],
             Vec::new(),
-            11,
+            22,
         );
         let raw = graph(&facts, &mut budget());
-        let (code, message) = refusal(&facts, &raw, 45);
-        assert_eq!(code, IR_CALL_CONTEXT_UNRESOLVED);
-        assert!(
-            message.contains("BCI 5") && message.contains("wide"),
-            "{message}"
-        );
-
-        // `wide iinc` is not ambiguous: its increment is retained, so the opcode it wraps is
-        // decided by the reader's facts and the contexts are established as usual.
-        let facts = body(
-            vec![
-                jsr(0, 3),
-                store(3, 0x4c, 1), // astore_1
-                iinc(4, 300, 1),   // wide iinc of a local above 255
-                ret(7, 1),
-            ],
-            Vec::new(),
-            9,
-        );
-        let raw = graph(&facts, &mut budget());
+        let contexts = established(&facts, &raw, 45);
         assert_eq!(
-            established(&facts, &raw, 45).contexts,
+            contexts.contexts,
             vec![SubroutineContext {
                 call_site_bci: 0,
                 return_bci: 3,
                 entry_bci: 3,
-                affected_locals: vec![1, 300],
-            }]
+                affected_locals: vec![1, 2, 300],
+            }],
+            "the wide store, the wide `iinc` and the return address are the written locals; \
+             the wide load's local 7 is only read"
+        );
+        assert_eq!(
+            contexts.returns,
+            vec![SubroutineReturn {
+                ret_bci: 18,
+                targets: vec![CallTarget {
+                    call_site_bci: 0,
+                    return_bci: 3,
+                }],
+            }],
+            "the `wide ret` returns to the call site exactly like `ret` does"
         );
     }
 
     #[test]
-    fn a_wide_form_in_a_modern_body_is_refused_rather_than_read_as_empty() {
-        // A modern body whose only `wide` form need not be a legacy opcode at all: the wrapped
-        // opcode 1.2 drops could be the `ret` this dialect forbids, and a `wide ret` would be a
-        // return no walk can see. The pass reports its own unresolved state instead of claiming
-        // the empty context set — the conservative direction, and the reason 1.2's registered
-        // boundary (not a guess here) is the route to a narrower answer.
+    fn a_modern_body_classifies_its_wide_forms_by_the_opcode_they_wrap() {
+        // 0.2 closed a real gap here: a modern method whose only `wide` forms are loads,
+        // stores and `iinc` holds no legacy opcode at all, so the empty context set is its
+        // complete answer — it must not be refused as an undecidable `wide` boundary.
         let facts = body(
-            vec![store(0, 0x4b, 0), wide(1, 300), plain(5, 0xb1)],
+            vec![
+                store(0, 0x4b, 0),  // astore_0
+                wide_load(1, 300),  // wide iload 300
+                wide_iinc(5, 2, 1), // wide iinc 2, 1
+                plain(11, 0xb1),    // return
+            ],
+            Vec::new(),
+            12,
+        );
+        let raw = graph(&facts, &mut budget());
+        let contexts = established(&facts, &raw, 52);
+        assert!(
+            contexts.contexts.is_empty() && contexts.returns.is_empty(),
+            "a modern method with wide loads, stores and `iinc` has no legacy opcode to report"
+        );
+        assert_eq!(budget().usage().analysis_steps, 0);
+
+        // The same classification makes a `wide ret` the legacy opcode this dialect forbids:
+        // the dialect violation is reported before any walk, and the identical facts under
+        // the 45 dialect are the `ret`-without-owner limitation instead — the version, not
+        // the `wide` prefix, is what separates the two answers.
+        let facts = body(
+            vec![store(0, 0x4b, 0), wide_ret(1, 0), plain(5, 0xb1)],
             Vec::new(),
             6,
         );
         let raw = graph(&facts, &mut budget());
-        let (code, message) = refusal(&facts, &raw, 52);
-        assert_eq!(code, IR_CALL_CONTEXT_UNRESOLVED);
-        assert!(message.contains("BCI 1"), "{message}");
-        assert!(
-            !message.contains("forbids"),
-            "the pass does not claim a dialect violation it cannot decide: {message}"
+        let (legacy_code, legacy_message) = refusal(&facts, &raw, 45);
+        assert_eq!(
+            legacy_code, IR_CALL_CONTEXT_UNRESOLVED,
+            "under the dialect that keeps `ret`, the wide return is a `ret` with no owner"
         );
+        assert!(
+            legacy_message.contains("`ret` at BCI 1"),
+            "{legacy_message}"
+        );
+
+        let (code, message) = refusal(&facts, &raw, 52);
+        assert_eq!(code, IR_LEGACY_OPCODE_FORBIDDEN, "a `wide ret` is a `ret`");
+        assert!(
+            message.contains("forbids `ret`") && message.contains("BCI 1"),
+            "{message}"
+        );
+    }
+
+    #[test]
+    fn a_modern_method_of_real_bytes_with_only_wide_local_accesses_has_no_context() {
+        // The same two cases as above, on real bytes and through the real reader (0.2's gap):
+        // a modern method whose `wide` forms are a load, a store and an `iinc` holds no legacy
+        // opcode at all, so the empty context set is its complete answer and the pass charges
+        // nothing for it.
+        let code = [
+            0xc4, 0x15, 0x00, 0x00, // wide iload 0
+            0xc4, 0x36, 0x00, 0x00, // wide istore 0
+            0xc4, 0x84, 0x00, 0x00, 0x00, 0x01, // wide iinc 0, 1
+            0xb1, // return
+        ];
+        let bytes = crate::classfile::test_class::single_method(52, 8, 8, &code);
+        let (facts, major) = historical(&bytes, b"method");
+        assert_eq!(major, 52);
+        assert_eq!(
+            facts
+                .instructions
+                .iter()
+                .map(|instruction| instruction.opcode)
+                .collect::<Vec<_>>(),
+            vec![0xc4, 0xc4, 0xc4, 0xb1],
+            "the reader keeps the raw prefix of every wide form"
+        );
+        let raw = graph(&facts, &mut budget());
+        let contexts = established(&facts, &raw, major);
+        assert!(
+            contexts.contexts.is_empty() && contexts.returns.is_empty(),
+            "a modern body of wide loads, stores and `iinc` has no legacy opcode to refuse"
+        );
+        assert_eq!(
+            budget().usage().analysis_steps,
+            0,
+            "the structural scan decides this without charging a step"
+        );
+    }
+
+    #[test]
+    fn a_wide_ret_of_real_bytes_is_the_dialect_violation_of_its_version() {
+        // `wide ret` is a `ret`: a class file of major 51 or above forbids it, exactly like the
+        // short form, and the same bytes at 45 are the `ret`-without-owner limitation instead.
+        // The body also holds a `wide iload`, so the violation cannot come from a body that is
+        // otherwise unrecognized: classification, not the prefix, decides.
+        let code = [
+            0xc4, 0x15, 0x00, 0x00, // wide iload 0
+            0xc4, 0xa9, 0x00, 0x00, // wide ret 0
+            0xb1, // return
+        ];
+        for major in [51u16, 52] {
+            let bytes = crate::classfile::test_class::single_method(major, 8, 8, &code);
+            let (facts, header_major) = historical(&bytes, b"method");
+            assert_eq!(header_major, major);
+            let raw = graph(&facts, &mut budget());
+            let (failure, message) = refusal(&facts, &raw, major);
+            assert_eq!(failure, IR_LEGACY_OPCODE_FORBIDDEN, "major {major}");
+            assert!(
+                message.contains("forbids `ret`") && message.contains("BCI 4"),
+                "major {major}: {message}"
+            );
+        }
+
+        // The dialect that keeps `ret` reads the same instruction as a `ret` no call site owns.
+        let bytes = crate::classfile::test_class::single_method(45, 8, 8, &code);
+        let (facts, header_major) = historical(&bytes, b"method");
+        assert_eq!(header_major, 45);
+        let raw = graph(&facts, &mut budget());
+        let (failure, message) = refusal(&facts, &raw, 45);
+        assert_eq!(failure, IR_CALL_CONTEXT_UNRESOLVED);
+        assert!(message.contains("`ret` at BCI 4"), "{message}");
     }
 
     #[test]
     fn a_modern_class_file_with_a_legacy_opcode_is_forbidden() {
         // The dialect is the class-file version alone: the same bytes of the 45 fixture under
         // major version 51 are a violation, and one that also carries a `wide` form still
-        // reports the violation rather than the `wide` limitation.
+        // reports the violation, because the dialect is decided before any walk.
         let mut patched = V45.to_vec();
         patched[6..8].copy_from_slice(&51u16.to_be_bytes());
         let (facts, major) = historical(&patched, b"finallyPath");
@@ -1407,7 +1550,7 @@ mod tests {
                 jsr(0, 4),
                 plain(3, 0x00),
                 store(4, 0x4c, 1),
-                wide(5, 300),
+                wide_load(5, 300),
                 ret(9, 1),
             ],
             Vec::new(),
@@ -1417,7 +1560,7 @@ mod tests {
         let (code, _) = refusal(&facts, &raw, 51);
         assert_eq!(
             code, IR_LEGACY_OPCODE_FORBIDDEN,
-            "the forbidden opcode is reported before the `wide` boundary"
+            "the forbidden opcode is reported before anything reads a wide form"
         );
 
         // A `ret` alone is a violation too: it is the return half of the forbidden call pair.

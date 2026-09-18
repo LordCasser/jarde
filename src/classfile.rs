@@ -6,7 +6,7 @@ use crate::model::{
     ByteSpan, Coverage, CoverageDimension, CoverageRange, CoverageState, Diagnostic,
     DiagnosticSeverity, ExecutionReport, JvmBytes, JvmString, TerminationReason,
 };
-use noak::reader::attributes::{Code, RawInstruction};
+use noak::reader::attributes::{ArrayType, Code, RawInstruction};
 use noak::reader::{Attribute, Class};
 use serde::{Deserialize, Serialize};
 
@@ -2552,12 +2552,16 @@ pub(crate) struct MethodCodeFacts {
 /// name their constant, and `wide` marks the widened form — so 3.x never has to
 /// re-derive them from the raw opcode or from rendered text.
 ///
-/// [`InstructionOperands::default`] is that all-`None` value.
+/// [`InstructionOperands::default`] is that all-`None` shape, and its
+/// [`Self::effective_opcode`] is `0x00`: a fixture that builds operands from `Default`
+/// must set the effective opcode it stands for, while the reader always fills it from the
+/// event it decoded.
 ///
-/// Operands that 1.2 deliberately does not retain: the `newarray` atype, the
-/// `multianewarray` dimensions and the `invokeinterface` count. Their widths and
-/// constant-pool indices are still recorded in [`InstructionFact`], and a consumer that
-/// needs one changes the 1.2 contract section first.
+/// [`Self::atype`], [`Self::dimensions`] and [`Self::interface_count`] are payload facts of
+/// three specific opcodes, deliberately not folded into [`Self::immediate`]: an element
+/// type code is not a value an instruction pushes, a dimension count is not a constant pool
+/// entry, and an `invokeinterface` count is a claim the verifier has to reconcile with the
+/// descriptor instead of trusting.
 ///
 /// This is crate-private reader data: it does not appear in [`BytecodeInspection`] and
 /// it is covered by the `CodeBytes` charge of the instruction it belongs to, with no
@@ -2578,6 +2582,28 @@ pub(crate) struct InstructionOperands {
     pub(crate) branch_offset: Option<i32>,
     /// Payload of `tableswitch`/`lookupswitch`; `None` for every other opcode.
     pub(crate) switch: Option<SwitchOperands>,
+    /// The opcode this instruction *is*: the opcode a `wide` form wraps (`wide iload` is
+    /// `0x15`, `wide iinc` is `0x84`), and the raw opcode for every other instruction.
+    ///
+    /// This is the opcode classifications read — block ends, transfers, `may_throw`, local
+    /// read/write direction, stack deltas and the legacy dialect — because `0xc4` is a prefix
+    /// (JVMS 6.5), not an instruction: it decides none of them on its own. The raw opcode stays
+    /// what it always was in [`InstructionFact::opcode`], together with the width and the span.
+    pub(crate) effective_opcode: u8,
+    /// `newarray`'s element type code (JVMS `atype`, 4..=11); `None` for every other opcode.
+    /// The reader records it as encoded: an out-of-range code never reaches here, because the
+    /// instruction does not decode at all.
+    pub(crate) atype: Option<u8>,
+    /// `multianewarray`'s dimension count exactly as encoded; `None` for every other opcode.
+    /// Whether the count is a legal dimension is the verifier's question (4.x), not a reason
+    /// for the reader to drop the fact or to fail the instruction.
+    pub(crate) dimensions: Option<u8>,
+    /// `invokeinterface`'s encoded `count`; `None` for every other opcode.
+    ///
+    /// A validation *fact*, not a trust source: the count is kept as encoded — including a
+    /// count that disagrees with the descriptor's argument slots — so 5.1 can reconcile it
+    /// against this project's own descriptor derivation.
+    pub(crate) interface_count: Option<u8>,
 }
 
 /// The literal one instruction pushes directly.
@@ -2959,6 +2985,56 @@ fn switch_padding(bci: u32) -> u32 {
     (4 - ((bci + 1) & 3)) & 3
 }
 
+/// The `wide` prefix (JVMS 6.5): a modifier of the instruction that follows it, not an
+/// instruction of its own.
+const OPCODE_WIDE: u8 = 0xc4;
+
+/// The `atype` byte of a `newarray`, from noak's own element type.
+///
+/// The enum's declaration order is not the encoded one, so the code is mapped explicitly
+/// instead of cast: `boolean` is `4`, `long` is `11` (JVMS 6.5 `newarray`).
+fn array_type_code(atype: ArrayType) -> u8 {
+    match atype {
+        ArrayType::Boolean => 4,
+        ArrayType::Char => 5,
+        ArrayType::Float => 6,
+        ArrayType::Double => 7,
+        ArrayType::Byte => 8,
+        ArrayType::Short => 9,
+        ArrayType::Int => 10,
+        ArrayType::Long => 11,
+    }
+}
+
+/// The opcode a decoded instruction really is: the opcode a `wide` form wraps, and the raw
+/// opcode of the instruction itself for every other event.
+///
+/// JVMS 6.5 lets `wide` wrap exactly twelve opcodes, all of which noak decodes into their own
+/// event variants, so the mapping is total over the events that carry the prefix; the debug
+/// assertion pins that totality if a future noak adds a wrapping this build does not know.
+fn effective_opcode(opcode: u8, instruction: &RawInstruction<'_>) -> u8 {
+    let effective = match instruction {
+        RawInstruction::ILoadW { .. } => 0x15,
+        RawInstruction::LLoadW { .. } => 0x16,
+        RawInstruction::FLoadW { .. } => 0x17,
+        RawInstruction::DLoadW { .. } => 0x18,
+        RawInstruction::ALoadW { .. } => 0x19,
+        RawInstruction::IStoreW { .. } => 0x36,
+        RawInstruction::LStoreW { .. } => 0x37,
+        RawInstruction::FStoreW { .. } => 0x38,
+        RawInstruction::DStoreW { .. } => 0x39,
+        RawInstruction::AStoreW { .. } => 0x3a,
+        RawInstruction::IIncW { .. } => 0x84,
+        RawInstruction::RetW { .. } => 0xa9,
+        _ => opcode,
+    };
+    debug_assert!(
+        opcode != OPCODE_WIDE || effective != opcode,
+        "every `wide` event must name the opcode it wraps"
+    );
+    effective
+}
+
 /// Typed operands of one instruction, from the same noak event that produced the
 /// matching [`InstructionFact`] (`instruction`) and from the same instruction byte
 /// range (`bytes`, exactly the fact's `width`).
@@ -2984,6 +3060,10 @@ fn instruction_operands(
         constant_pool_index: constant_pool_index(opcode, bytes),
         branch_offset: None,
         switch: None,
+        effective_opcode: effective_opcode(opcode, instruction),
+        atype: None,
+        dimensions: None,
+        interface_count: None,
     };
     match instruction {
         // Constants encoded in the opcode itself.
@@ -3050,6 +3130,18 @@ fn instruction_operands(
         // `ret` names the local holding the return address.
         RawInstruction::Ret { index } => operands.local = Some(short_local(*index)),
         RawInstruction::RetW { index } => operands.local = Some(wide_local(*index)),
+        // Array creation: the element type code and the dimension count are payloads of their
+        // own kind, taken from the event. Neither is an immediate, and neither is validated
+        // here: an element type code outside `4..=11` never reaches this adapter (the
+        // instruction does not decode), and a dimension count of zero is a fact 4.x judges.
+        RawInstruction::NewArray { atype } => operands.atype = Some(array_type_code(*atype)),
+        RawInstruction::MultiANewArray { dimensions, .. } => {
+            operands.dimensions = Some(*dimensions);
+        }
+        // The encoded `count` of an interface call: the third payload byte the event carries.
+        RawInstruction::InvokeInterface { count, .. } => {
+            operands.interface_count = Some(*count);
+        }
         // Relative branch offsets, in the width the opcode encodes.
         RawInstruction::Goto { offset }
         | RawInstruction::JSr { offset }
@@ -5753,6 +5845,98 @@ mod reader_facts_tests {
     }
 }
 
+/// Test-only class-file builder shared by the reader, raw-CFG and call-context unit tests.
+///
+/// It builds the smallest class the real reader path accepts: `Test.method()V` at a chosen
+/// class-file version whose `Code` attribute holds the caller's bytes verbatim. The constant
+/// pool also carries the entries an array-creation or interface-call fixture names — the class
+/// `[[I` at slot 9 and the interface method `run(J)V` at slot 15 — so a fixture can point at
+/// a real entry instead of a placeholder. Nothing here fabricates facts: the tests that use it
+/// read these bytes through `class_facts`/`method_code_facts`.
+#[cfg(test)]
+pub(crate) mod test_class {
+    /// Class file (minor 0, major `major`) with one `method()V` whose body is `code`.
+    pub(crate) fn single_method(
+        major: u16,
+        max_stack: u16,
+        max_locals: u16,
+        code: &[u8],
+    ) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(&0xcafebabe_u32.to_be_bytes());
+        u16_be(&mut bytes, 0);
+        u16_be(&mut bytes, major);
+        u16_be(&mut bytes, 16);
+        utf8(&mut bytes, b"Test"); // 1
+        class(&mut bytes, 1); // 2
+        utf8(&mut bytes, b"java/lang/Object"); // 3
+        class(&mut bytes, 3); // 4
+        utf8(&mut bytes, b"method"); // 5
+        utf8(&mut bytes, b"()V"); // 6
+        utf8(&mut bytes, b"Code"); // 7
+        utf8(&mut bytes, b"[[I"); // 8
+        class(&mut bytes, 8); // 9
+        utf8(&mut bytes, b"java/lang/Runnable"); // 10
+        class(&mut bytes, 10); // 11
+        utf8(&mut bytes, b"run"); // 12
+        utf8(&mut bytes, b"(J)V"); // 13
+        bytes.push(12); // 14: NameAndType run:(J)V
+        u16_be(&mut bytes, 12);
+        u16_be(&mut bytes, 13);
+        bytes.push(11); // 15: InterfaceMethodRef java/lang/Runnable.run:(J)V
+        u16_be(&mut bytes, 11);
+        u16_be(&mut bytes, 14);
+        u16_be(&mut bytes, 0x0021);
+        u16_be(&mut bytes, 2);
+        u16_be(&mut bytes, 4);
+        u16_be(&mut bytes, 0); // interfaces
+        u16_be(&mut bytes, 0); // fields
+        u16_be(&mut bytes, 1); // methods
+        u16_be(&mut bytes, 0x0009);
+        u16_be(&mut bytes, 5);
+        u16_be(&mut bytes, 6);
+        u16_be(&mut bytes, 1); // attributes
+        let mut content = Vec::new();
+        u16_be(&mut content, max_stack);
+        u16_be(&mut content, max_locals);
+        content.extend_from_slice(
+            &u32::try_from(code.len())
+                .expect("fixture code fits u32")
+                .to_be_bytes(),
+        );
+        content.extend_from_slice(code);
+        u16_be(&mut content, 0); // exception table
+        u16_be(&mut content, 0); // Code attributes
+        u16_be(&mut bytes, 7);
+        bytes.extend_from_slice(
+            &u32::try_from(content.len())
+                .expect("fixture attribute fits u32")
+                .to_be_bytes(),
+        );
+        bytes.extend_from_slice(&content);
+        u16_be(&mut bytes, 0); // class attributes
+        bytes
+    }
+
+    fn u16_be(bytes: &mut Vec<u8>, value: u16) {
+        bytes.extend_from_slice(&value.to_be_bytes());
+    }
+
+    fn utf8(bytes: &mut Vec<u8>, value: &[u8]) {
+        bytes.push(1);
+        u16_be(
+            bytes,
+            u16::try_from(value.len()).expect("fixture name fits u16"),
+        );
+        bytes.extend_from_slice(value);
+    }
+
+    fn class(bytes: &mut Vec<u8>, name: u16) {
+        bytes.push(7);
+        u16_be(bytes, name);
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -7795,12 +7979,14 @@ mod tests {
 
         let expected = [
             // `ldc` family: literal kinds become immediates, the `String` entry and an
-            // index outside the pool stay reference facts only.
+            // index outside the pool stay reference facts only. The effective opcode equals
+            // the raw one for every entry except the two `wide` forms below.
             (
                 0,
                 InstructionOperands {
                     immediate: Some(ImmediateValue::Int(7)),
                     constant_pool_index: Some(8),
+                    effective_opcode: 0x12,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7809,6 +7995,7 @@ mod tests {
                 InstructionOperands {
                     immediate: Some(ImmediateValue::Float(1.5f32.to_bits())),
                     constant_pool_index: Some(9),
+                    effective_opcode: 0x13,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7817,6 +8004,7 @@ mod tests {
                 InstructionOperands {
                     immediate: Some(ImmediateValue::Long(0x1122_3344_5566_7788)),
                     constant_pool_index: Some(10),
+                    effective_opcode: 0x14,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7825,6 +8013,7 @@ mod tests {
                 InstructionOperands {
                     immediate: Some(ImmediateValue::Double(2.5f64.to_bits())),
                     constant_pool_index: Some(12),
+                    effective_opcode: 0x14,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7832,6 +8021,7 @@ mod tests {
                 11,
                 InstructionOperands {
                     immediate: Some(ImmediateValue::Int(5)),
+                    effective_opcode: 0x10,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7839,11 +8029,18 @@ mod tests {
                 13,
                 InstructionOperands {
                     immediate: Some(ImmediateValue::Int(256)),
+                    effective_opcode: 0x11,
                     ..InstructionOperands::default()
                 },
             ),
-            // `pop` has no operand at all, so its fact is all-`None`.
-            (16, InstructionOperands::default()),
+            // `pop` has no operand at all, so its fact is all-`None` but for its opcode.
+            (
+                16,
+                InstructionOperands {
+                    effective_opcode: 0x57,
+                    ..InstructionOperands::default()
+                },
+            ),
             (
                 17,
                 InstructionOperands {
@@ -7851,6 +8048,7 @@ mod tests {
                         index: 2,
                         wide: false,
                     }),
+                    effective_opcode: 0x15,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7861,6 +8059,7 @@ mod tests {
                         index: 2,
                         wide: false,
                     }),
+                    effective_opcode: 0x3d,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7871,6 +8070,9 @@ mod tests {
                         index: 2,
                         wide: true,
                     }),
+                    // The raw opcode of this instruction is the `wide` prefix; the opcode it
+                    // wraps is what every classification reads.
+                    effective_opcode: 0x15,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7882,6 +8084,7 @@ mod tests {
                         wide: false,
                     }),
                     increment: Some(3),
+                    effective_opcode: 0x84,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7893,6 +8096,7 @@ mod tests {
                         wide: true,
                     }),
                     increment: Some(1),
+                    effective_opcode: 0x84,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7900,6 +8104,7 @@ mod tests {
                 33,
                 InstructionOperands {
                     constant_pool_index: Some(15),
+                    effective_opcode: 0x12,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7907,6 +8112,7 @@ mod tests {
                 35,
                 InstructionOperands {
                     constant_pool_index: Some(99),
+                    effective_opcode: 0x12,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7914,6 +8120,7 @@ mod tests {
                 37,
                 InstructionOperands {
                     branch_offset: Some(3),
+                    effective_opcode: 0xa7,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7926,6 +8133,7 @@ mod tests {
                         high: 1,
                         offsets: vec![28, 31, 32],
                     }),
+                    effective_opcode: 0xaa,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7933,6 +8141,7 @@ mod tests {
                 68,
                 InstructionOperands {
                     branch_offset: Some(3),
+                    effective_opcode: 0x9a,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7943,6 +8152,7 @@ mod tests {
                         index: 0,
                         wide: false,
                     }),
+                    effective_opcode: 0x1a,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7953,6 +8163,7 @@ mod tests {
                         index: 0,
                         wide: false,
                     }),
+                    effective_opcode: 0x3b,
                     ..InstructionOperands::default()
                 },
             ),
@@ -7963,14 +8174,43 @@ mod tests {
                         default_offset: 27,
                         pairs: vec![(-7, -73), (9, -5)],
                     }),
+                    effective_opcode: 0xab,
                     ..InstructionOperands::default()
                 },
             ),
-            (100, InstructionOperands::default()),
+            (
+                100,
+                InstructionOperands {
+                    effective_opcode: 0xb1,
+                    ..InstructionOperands::default()
+                },
+            ),
         ];
         for (bci, operands) in expected {
             assert_eq!(operand_facts_at(&facts, bci), operands, "BCI {bci}");
         }
+        // The effective opcode of every other instruction of the fixture is its raw opcode:
+        // the fixture's whole point is that only a `wide` form has two opcodes.
+        for (fact, operands) in facts.instructions.iter().zip(facts.operands.iter()) {
+            if !matches!(fact.bci, 20 | 27) {
+                assert_eq!(
+                    operands.effective_opcode, fact.opcode,
+                    "BCI {} of a fixture whose only `wide` forms are at 20 and 27",
+                    fact.bci
+                );
+            }
+        }
+        // The raw opcode of the two `wide` forms is untouched, exactly like their width and
+        // their span: the public fact keeps the prefix.
+        assert_eq!(
+            facts
+                .instructions
+                .iter()
+                .filter(|fact| fact.opcode == 0xc4)
+                .map(|fact| fact.bci)
+                .collect::<Vec<_>>(),
+            vec![20, 27]
+        );
     }
 
     #[test]
@@ -8517,6 +8757,7 @@ mod tests {
             InstructionOperands {
                 local: local(3, false),
                 increment: Some(-2),
+                effective_opcode: 0x84,
                 ..InstructionOperands::default()
             }
         );
@@ -8525,11 +8766,184 @@ mod tests {
             InstructionOperands {
                 local: local(4, true),
                 increment: Some(-5),
+                // The `wide iinc` of a local above 255: the prefix is the raw opcode, `iinc`
+                // is the effective one.
+                effective_opcode: 0x84,
                 ..InstructionOperands::default()
             }
         );
         // The negative operands decode; nothing in this body is a control-flow target.
         assert_eq!(facts.control_flow_targets().unwrap(), Vec::new());
+    }
+
+    #[test]
+    fn operand_facts_retain_the_opcode_each_wide_form_wraps() {
+        // All twelve wrappings JVMS 6.5 allows, one instruction each, on real bytes: the raw
+        // opcode of every one of them is the `wide` prefix, the width is the wide one, and the
+        // effective opcode is the opcode the prefix wraps (`wide iinc` is the six-byte form).
+        let cases: &[(u8, u32, u16)] = &[
+            (0x15, 4, 2),   // wide iload
+            (0x16, 4, 300), // wide lload
+            (0x17, 4, 4),   // wide fload
+            (0x18, 4, 5),   // wide dload
+            (0x19, 4, 6),   // wide aload
+            (0x36, 4, 7),   // wide istore
+            (0x37, 4, 8),   // wide lstore
+            (0x38, 4, 9),   // wide fstore
+            (0x39, 4, 10),  // wide dstore
+            (0x3a, 4, 11),  // wide astore
+            (0xa9, 4, 12),  // wide ret
+            (0x84, 6, 13),  // wide iinc
+        ];
+        let mut code = Vec::new();
+        let mut expected: Vec<(u32, u8, u32, u16)> = Vec::new();
+        for &(wrapped, width, index) in cases {
+            expected.push((u32::try_from(code.len()).unwrap(), wrapped, width, index));
+            code.push(0xc4);
+            code.push(wrapped);
+            code.extend_from_slice(&index.to_be_bytes());
+            if wrapped == 0x84 {
+                code.extend_from_slice(&0i16.to_be_bytes()); // the increment of `wide iinc 13, 0`
+            }
+        }
+        let bytes = test_class::single_method(52, 8, 512, &code);
+        let facts = operand_facts(&bytes);
+        assert!(matches!(facts.execution, ExecutionReport::Complete { .. }));
+        assert_eq!(facts.instructions.len(), cases.len());
+        for (bci, wrapped, width, index) in expected {
+            let fact = facts
+                .instructions
+                .iter()
+                .find(|fact| fact.bci == bci)
+                .unwrap_or_else(|| panic!("no instruction at BCI {bci}"));
+            let operands = operand_facts_at(&facts, bci);
+            assert_eq!(fact.opcode, 0xc4, "BCI {bci} keeps the raw prefix");
+            assert_eq!(fact.width, width, "BCI {bci}");
+            assert_eq!(
+                operands.effective_opcode, wrapped,
+                "BCI {bci} must classify as the opcode it wraps"
+            );
+            assert_eq!(
+                operands.local,
+                Some(LocalOperand { index, wide: true }),
+                "BCI {bci} names the local the wrapped form names"
+            );
+        }
+        // The two opcodes are separate facts: none of these twelve is malformed, so the body
+        // decodes completely and every wrapped opcode is one of the twelve.
+        assert_eq!(facts.stopped_at, None);
+        assert!(
+            cases.iter().all(|(wrapped, _, _)| *wrapped != 0xc4),
+            "no wrapping is itself a prefix"
+        );
+    }
+
+    #[test]
+    fn operand_facts_retain_array_types_dimensions_and_interface_counts() {
+        // Array creation and interface calls, on real bytes. `atype`, `dimensions` and `count`
+        // are payloads of their own kind: they are never `immediate`, and the reader records
+        // them exactly as encoded — `dimensions = 0` and a `count` that disagrees with the
+        // descriptor are facts for the verifier (4.x/5.1) to judge, not reader errors.
+        let array_types = [4u8, 5, 6, 7, 8, 9, 10, 11];
+        let dimensions = [0u8, 2, 255];
+        let counts = [3u8, 2, 0];
+        let mut code = Vec::new();
+        let mut new_arrays = Vec::new();
+        for atype in array_types {
+            new_arrays.push((u32::try_from(code.len()).unwrap(), atype));
+            code.extend_from_slice(&[0xbc, atype]);
+        }
+        let mut multi_arrays = Vec::new();
+        for dimension in dimensions {
+            multi_arrays.push((u32::try_from(code.len()).unwrap(), dimension));
+            code.push(0xc5);
+            code.extend_from_slice(&9u16.to_be_bytes()); // the `[[I` class entry
+            code.push(dimension);
+        }
+        let mut interface_calls = Vec::new();
+        for count in counts {
+            interface_calls.push((u32::try_from(code.len()).unwrap(), count));
+            code.push(0xb9);
+            code.extend_from_slice(&15u16.to_be_bytes()); // `run:(J)V` of the fixture pool
+            code.push(count);
+            code.push(0);
+        }
+        code.push(0xb1); // return
+
+        let bytes = test_class::single_method(52, 8, 8, &code);
+        let facts = operand_facts(&bytes);
+        assert!(matches!(facts.execution, ExecutionReport::Complete { .. }));
+        assert_eq!(facts.stopped_at, None);
+        assert_eq!(
+            facts.instructions.len(),
+            array_types.len() + dimensions.len() + counts.len() + 1
+        );
+
+        for (bci, atype) in new_arrays {
+            let operands = operand_facts_at(&facts, bci);
+            assert_eq!(operands.effective_opcode, 0xbc, "BCI {bci}");
+            assert_eq!(operands.atype, Some(atype), "BCI {bci}");
+            assert_eq!(operands.immediate, None, "an element type is not a value");
+            assert_eq!(operands.constant_pool_index, None, "BCI {bci}");
+        }
+        for (bci, dimension) in multi_arrays {
+            let operands = operand_facts_at(&facts, bci);
+            assert_eq!(operands.effective_opcode, 0xc5, "BCI {bci}");
+            assert_eq!(operands.dimensions, Some(dimension), "BCI {bci}");
+            assert_eq!(operands.immediate, None, "BCI {bci}");
+            assert_eq!(operands.constant_pool_index, Some(9), "BCI {bci}");
+        }
+        for (bci, count) in interface_calls {
+            let operands = operand_facts_at(&facts, bci);
+            assert_eq!(operands.effective_opcode, 0xb9, "BCI {bci}");
+            assert_eq!(operands.interface_count, Some(count), "BCI {bci}");
+            assert_eq!(operands.immediate, None, "BCI {bci}");
+            assert_eq!(operands.constant_pool_index, Some(15), "BCI {bci}");
+        }
+
+        // The three facts belong to three opcodes: none of them leaks onto any other
+        // instruction of the same body.
+        for (position, fact) in facts.instructions.iter().enumerate() {
+            let operands = &facts.operands[position];
+            match fact.opcode {
+                0xbc => {
+                    assert!(operands.dimensions.is_none() && operands.interface_count.is_none())
+                }
+                0xc5 => assert!(operands.atype.is_none() && operands.interface_count.is_none()),
+                0xb9 => assert!(operands.atype.is_none() && operands.dimensions.is_none()),
+                _ => assert!(
+                    operands.atype.is_none()
+                        && operands.dimensions.is_none()
+                        && operands.interface_count.is_none(),
+                    "BCI {} carries no array or invocation payload",
+                    fact.bci
+                ),
+            }
+        }
+    }
+
+    #[test]
+    fn an_element_type_outside_the_encoded_range_stops_the_decode() {
+        // `atype` is part of the instruction's encoding, so a code outside JVMS' `4..=11` is
+        // not an operand fact at all: the instruction does not decode, the reader stops at its
+        // BCI, and the reliable prefix keeps only what came before it. The adapter does not
+        // guess a fact for an instruction noak refused, and it does not re-decode the bytes.
+        for atype in [0u8, 3, 12, 255] {
+            let code = [0x00, 0xbc, atype, 0xb1]; // nop; newarray <atype>; return
+            let bytes = test_class::single_method(52, 8, 8, &code);
+            let facts = operand_facts(&bytes);
+            assert_eq!(facts.instructions.len(), 1, "atype {atype}");
+            assert_eq!(facts.operands.len(), 1, "atype {atype}");
+            assert_eq!(facts.operands[0].effective_opcode, 0x00, "atype {atype}");
+            assert_eq!(facts.operands[0].atype, None, "atype {atype}");
+            match &facts.stopped_at {
+                Some(BytecodeStop::Instructions { bci, code, .. }) => {
+                    assert_eq!(*bci, 1, "the stop is the undecodable instruction");
+                    assert_eq!(code, "classfile_instruction_decode", "atype {atype}");
+                }
+                other => panic!("expected a decode stop at BCI 1, got {other:?}"),
+            }
+        }
     }
 
     #[test]
