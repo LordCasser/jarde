@@ -11,19 +11,20 @@
 //! literals; and a call site that forgot to be updated cannot compile, because the segment it
 //! would need is not there to omit.
 //!
-//! This module is the **repository-root** copy, and the root needs its own because of how the
-//! macro evaluates: `env!("CARGO_MANIFEST_DIR")` inside a macro body resolves while the *calling*
-//! crate is compiled, so a macro defined in `crates/jarde-reader` and called from here would
-//! look under `crates/jarde-reader`. Measured, not assumed: a probe crate whose macro was
-//! defined in `x` and called from `y` printed `y`'s manifest directory, while a `const` with
-//! `include_bytes!` in `x` embedded `x`'s file. The same depth rule is why the sibling copy in
-//! `crates/jarde-reader/src/test_fixtures.rs` carries a different segment for the same
-//! directory. When the last module that needs fixtures moves under `crates/`, this copy goes
-//! away; until then it is the only way the root's own unit tests address them.
+//! `env!("CARGO_MANIFEST_DIR")` (and a relative `include_bytes!`) inside an exported macro is
+//! resolved against the **calling** crate, not against the crate that defines the macro: both
+//! expand while the caller is compiled, so the depth below is a property of the caller, not of
+//! this module. It is this crate's depth (`crates/<name>`), which every sibling crate under
+//! `crates/` shares — a crate at the repository root needs its own copy of this module with its
+//! own depth and cannot borrow this one. Nothing outside this crate can use the macro until a
+//! sibling crate actually needs it: an exported test-only macro is public API, and the
+//! visibility of this slice stays at the seams it was reviewed for.
 //!
-//! The gate is `test` plus the same `test-support` feature as the shared class builder: after
-//! the layering, a dependent crate's tests read fixtures through this crate, and their
-//! `cfg(test)` cannot see anything here.
+//! The gate is `test` plus the same `test-support` feature as the shared class builder, so the
+//! module exists only in test builds. A sibling crate cannot borrow the macro for its fixture
+//! paths (see above), so if one needs the same bytes it should be given named constants
+//! embedded here at the definition site, where `include_bytes!` does resolve against this
+//! crate — not an exported macro.
 
 /// Embeds one fixture at compile time, named relative to the fixtures root.
 ///
@@ -33,12 +34,15 @@
 /// The allow is for the build where `test-support` is on but `test` is not — `--all-features`
 /// compiles this crate that way — and every caller lives in a `cfg(test)` block.
 #[cfg(any(test, feature = "test-support"))]
-#[allow(unused_macros, reason = "callers are all in this crate's test builds")]
+#[allow(
+    unused_macros,
+    reason = "callers are in test builds of this crate or of a sibling crate"
+)]
 macro_rules! fixture {
     ($relative:literal) => {
         include_bytes!(concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/",
+            "/../../tests/fixtures/",
             $relative
         ))
     };
@@ -55,5 +59,5 @@ pub(crate) use fixture;
     reason = "used by this crate's tests, or by a dependent crate's test build"
 )]
 pub(crate) fn fixtures_root() -> std::path::PathBuf {
-    std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures")
+    std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tests/fixtures")
 }

@@ -461,7 +461,7 @@ fn legacy_opcodes(facts: &MethodCodeFacts) -> LegacyOpcodes {
     let mut opcodes = Vec::new();
     let mut jsr_sites = Vec::new();
     let mut returns = Vec::new();
-    for (instruction, operands) in facts.instructions.iter().zip(facts.operands.iter()) {
+    for (instruction, operands) in facts.instructions.iter().zip(facts.operands().iter()) {
         match operands.effective_opcode {
             OPCODE_JSR | OPCODE_JSR_W | OPCODE_RET => {
                 opcodes.push((instruction.bci, operands.effective_opcode));
@@ -972,7 +972,7 @@ impl<'a> Walk<'a> {
         budget: &mut Budget,
     ) -> Result<()> {
         let bci = self.facts.instructions[index].bci;
-        let opcode = self.facts.operands[index].effective_opcode;
+        let opcode = self.facts.operands()[index].effective_opcode;
         // A reference store is where a `jsr` return address can go; every other write puts some
         // other value in a local. Both are recorded, because a `ret` is only proven when the
         // slot it reads has exactly one writer and that writer is a reference store it can name:
@@ -985,7 +985,7 @@ impl<'a> Walk<'a> {
         // A `wide ret` is the same return the short form is: the reader classifies a `wide`
         // form by the opcode it wraps (0.2).
         if opcode == OPCODE_RET
-            && let Some(local) = self.facts.operands[index].local
+            && let Some(local) = self.facts.operands()[index].local
         {
             budget.charge(CountedBudgetDimension::IrItems, 1)?;
             self.rets.push((active, bci, local.index, block));
@@ -1475,39 +1475,36 @@ mod tests {
         handlers: Vec<ExceptionHandlerFact>,
         code_length: u32,
     ) -> MethodCodeFacts {
-        let (instructions, operands) = code.into_iter().unzip();
-        MethodCodeFacts {
-            max_stack: 8,
-            max_locals: 8,
-            code_span: ByteSpan::new(CODE_OFFSET, u64::from(code_length)),
-            instructions,
-            operands,
-            exception_handler_count: u32::try_from(handlers.len()).expect("fixture handlers"),
-            exception_handlers: handlers,
-            execution: ExecutionReport::Complete {
+        let exception_handler_count = u32::try_from(handlers.len()).expect("fixture handlers");
+        MethodCodeFacts::from_parts(
+            8,
+            8,
+            ByteSpan::new(CODE_OFFSET, u64::from(code_length)),
+            code,
+            handlers,
+            exception_handler_count,
+            ExecutionReport::Complete {
                 usage: UsageSnapshot::default(),
             },
-            stopped_at: None,
-        }
+            None,
+        )
     }
 
     /// The same body as one whose decode stopped after the decoded prefix.
-    fn truncated(body: MethodCodeFacts, stop_bci: u32, code_length: u32) -> MethodCodeFacts {
-        MethodCodeFacts {
-            code_span: ByteSpan::new(CODE_OFFSET, u64::from(code_length)),
-            stopped_at: Some(BytecodeStop::Instructions {
-                bci: stop_bci,
-                class_offset: CODE_OFFSET + u64::from(stop_bci),
-                code: "classfile_bytecode_budget_exceeded".to_string(),
-            }),
-            execution: ExecutionReport::Partial {
-                reason: TerminationReason::BudgetExceeded {
-                    dimension: BudgetDimension::CodeBytes,
-                },
-                usage: UsageSnapshot::default(),
+    fn truncated(mut body: MethodCodeFacts, stop_bci: u32, code_length: u32) -> MethodCodeFacts {
+        body.code_span = ByteSpan::new(CODE_OFFSET, u64::from(code_length));
+        body.stopped_at = Some(BytecodeStop::Instructions {
+            bci: stop_bci,
+            class_offset: CODE_OFFSET + u64::from(stop_bci),
+            code: "classfile_bytecode_budget_exceeded".to_string(),
+        });
+        body.execution = ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::CodeBytes,
             },
-            ..body
-        }
+            usage: UsageSnapshot::default(),
+        };
+        body
     }
 
     fn graph(facts: &MethodCodeFacts, budget: &mut Budget) -> RawCfgOutcome {
@@ -1655,7 +1652,7 @@ mod tests {
         let (facts, major) = historical(V52, b"finallyPath");
         assert!(
             facts
-                .operands
+                .operands()
                 .iter()
                 .all(|operands| operands.effective_opcode != OPCODE_JSR
                     && operands.effective_opcode != OPCODE_JSR_W

@@ -770,7 +770,22 @@ impl ArtifactSnapshot {
         })
     }
 
-    pub(crate) fn read_entry_internal(
+    /// Materializes one entry for analysis, keeping the contract of [`Self::read_entry`].
+    ///
+    /// The three rules `read_entry` is held to are exactly the ones this entry keeps:
+    ///
+    /// - the snapshot and the entry are validated before anything is read (a locator that
+    ///   another snapshot or another entry owns is an input error, not a read);
+    /// - the read is accounted in the category it belongs to — compressed `ReadBytes` for a
+    ///   stored entry, logical `EntryBytes` for a deflated one — so a caller cannot read
+    ///   outside the budget it was given;
+    /// - the returned buffer is charged as `OutputBytes`, because it is owned data handed to
+    ///   the caller and not a borrowed view of the archive.
+    ///
+    /// It differs from `read_entry` in one thing only, and that difference is accounting: the
+    /// result is charged as an `Intermediate` read, because the bytes are consumed inside the
+    /// request that asked for them rather than returned as the request's own answer.
+    pub fn read_entry_for_analysis(
         &self,
         entry: &PhysicalEntry,
         budget: &mut Budget,
@@ -1573,7 +1588,7 @@ struct EnumerationProgress {
     known_end: Option<u64>,
 }
 
-pub(crate) const fn budget_dimension_code(dimension: BudgetDimension) -> &'static str {
+pub const fn budget_dimension_code(dimension: BudgetDimension) -> &'static str {
     match dimension {
         BudgetDimension::InputBytes => "input_bytes",
         BudgetDimension::ArchiveEntries => "archive_entries",

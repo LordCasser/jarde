@@ -280,7 +280,7 @@ pub(crate) fn scan(
         && !pass.stopped_early
         && unsupported.is_empty()
         && skipped_ranges.is_empty();
-    let execution = with_usage(
+    let execution = crate::model::with_usage(
         pass.issue.unwrap_or(ExecutionReport::Complete {
             usage: budget.usage(),
         }),
@@ -383,7 +383,7 @@ pub(crate) fn scan_candidates(
         && unsupported.is_empty()
         && skipped_ranges.is_empty();
     let has_more = pass.stopped_early || pass.issue.is_some();
-    let execution = with_usage(
+    let execution = crate::model::with_usage(
         pass.issue.unwrap_or(ExecutionReport::Complete {
             usage: budget.usage(),
         }),
@@ -880,7 +880,7 @@ impl<'a> ScanContext<'a> {
     pub(super) fn read_unit(&mut self, unit: &ScanUnit) -> Result<UnitContent> {
         let content = match &unit.kind {
             UnitKind::Entry(entry) => {
-                let materialized = self.snapshot.read_entry_internal(entry, self.budget)?;
+                let materialized = self.snapshot.read_entry_for_analysis(entry, self.budget)?;
                 UnitContent {
                     bytes: materialized.bytes,
                     digest: materialized.content_digest,
@@ -1238,20 +1238,6 @@ fn terminal_execution(error: &Error, usage: UsageSnapshot) -> ExecutionReport {
             reason: TerminationReason::Error { code: code.clone() },
             usage,
         },
-    }
-}
-
-/// Restates one execution report under the usage of the request it ends.
-///
-/// The stop is decided at one point of a request and published at its end, so the counts a
-/// caller reads are the ones the whole request consumed. The declaration-reference query
-/// merges its own stops into a scan's execution the same way, so the mapping lives here once.
-pub(crate) fn with_usage(execution: ExecutionReport, usage: UsageSnapshot) -> ExecutionReport {
-    match execution {
-        ExecutionReport::Complete { .. } => ExecutionReport::Complete { usage },
-        ExecutionReport::Partial { reason, .. } => ExecutionReport::Partial { reason, usage },
-        ExecutionReport::Cancelled { .. } => ExecutionReport::Cancelled { usage },
-        ExecutionReport::Failed { reason, .. } => ExecutionReport::Failed { reason, usage },
     }
 }
 

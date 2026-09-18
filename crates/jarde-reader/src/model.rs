@@ -231,7 +231,7 @@ pub enum PhysicalVariant {
 /// physical scan and the P2 header lookup so one entry has one identity in both reports.
 /// The label is syntactic: it is not the multi-release selection contract and claims
 /// nothing about activation or validity.
-pub(crate) fn physical_variant_for_path(raw_name: &[u8]) -> PhysicalVariant {
+pub fn physical_variant_for_path(raw_name: &[u8]) -> PhysicalVariant {
     const PREFIX: &[u8] = b"META-INF/versions/";
     let Some(rest) = raw_name.strip_prefix(PREFIX) else {
         return PhysicalVariant::Base;
@@ -535,6 +535,24 @@ pub enum ExecutionReport {
         reason: TerminationReason,
         usage: crate::budget::UsageSnapshot,
     },
+}
+
+/// Restates one execution report under the usage of the request it ends.
+///
+/// A stop is decided at one point of a request and published at its end, so the counts a
+/// caller reads are the ones the whole request consumed. Every layer that merges its own stop
+/// into an inner report maps it through this one function: the artifact, multi-release, query
+/// and JVM paths of a request must not disagree about what a usage figure means.
+pub fn with_usage(
+    execution: ExecutionReport,
+    usage: crate::budget::UsageSnapshot,
+) -> ExecutionReport {
+    match execution {
+        ExecutionReport::Complete { .. } => ExecutionReport::Complete { usage },
+        ExecutionReport::Partial { reason, .. } => ExecutionReport::Partial { reason, usage },
+        ExecutionReport::Cancelled { .. } => ExecutionReport::Cancelled { usage },
+        ExecutionReport::Failed { reason, .. } => ExecutionReport::Failed { reason, usage },
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]

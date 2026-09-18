@@ -191,7 +191,7 @@ impl BytecodeStop {
 /// Handlers are decoded before instructions, so a handler-phase stop leaves
 /// `handlers_returned < handlers_total` while the instruction prefix is empty, and an
 /// instruction-phase stop leaves the handler list complete.
-pub(crate) fn method_code_coverage(
+pub fn method_code_coverage(
     code_length: u64,
     instructions: &[InstructionFact],
     handlers_returned: usize,
@@ -1610,7 +1610,7 @@ fn cp_guard_overflow() -> Error {
 /// A recorded constant-pool index whose entry is resolved by the consumer.
 #[allow(dead_code)]
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub(crate) struct CpIndexOf(pub u16);
+pub struct CpIndexOf(pub u16);
 
 /// Payload of one constant-pool entry.
 ///
@@ -1621,7 +1621,7 @@ pub(crate) struct CpIndexOf(pub u16);
 /// owner.
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum CpEntryKind {
+pub enum CpEntryKind {
     Utf8 {
         bytes: JvmBytes,
     },
@@ -1705,7 +1705,7 @@ pub(crate) enum CpEntryKind {
 /// One constant-pool entry with its class-file byte range.
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct CpEntryFacts {
+pub struct CpEntryFacts {
     /// 1-based constant-pool index, as used by instructions and attributes.
     pub index: u16,
     /// Byte range of the whole entry, tag byte plus payload, in class-file
@@ -1722,7 +1722,7 @@ pub(crate) struct CpEntryFacts {
 /// forensic and strict callers both keep the structural view.
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ClassFacts {
+pub struct ClassFacts {
     pub major_version: u16,
     pub minor_version: u16,
     pub access_flags: u16,
@@ -1738,7 +1738,7 @@ pub(crate) struct ClassFacts {
 /// One `InnerClasses` entry.
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct InnerClassFacts {
+pub struct InnerClassFacts {
     /// Index of the inner class; resolve it with `cp_class_name`.
     pub class_index: u16,
     /// Index of the enclosing class, or 0 when the class is not a member.
@@ -1752,7 +1752,7 @@ pub(crate) struct InnerClassFacts {
 /// One `EnclosingMethod` attribute.
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct EnclosingMethodFacts {
+pub struct EnclosingMethodFacts {
     /// Index of the immediately enclosing class; resolve it with `cp_class_name`.
     pub class_index: u16,
     /// Index of the enclosing `NameAndType`, or 0 when the class is not
@@ -1763,7 +1763,7 @@ pub(crate) struct EnclosingMethodFacts {
 /// One `Module` `provides` entry.
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProvidesFacts {
+pub struct ProvidesFacts {
     /// Service interface internal name, expanded from `CONSTANT_Class`.
     pub service: JvmBytes,
     /// Provider internal names, in declaration order.
@@ -1774,7 +1774,7 @@ pub(crate) struct ProvidesFacts {
 /// ranges because no P1 consumer reads them.
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ModuleFacts {
+pub struct ModuleFacts {
     /// Service interfaces declared with `uses`, in declaration order.
     pub uses: Vec<JvmBytes>,
     pub provides: Vec<ProvidesFacts>,
@@ -1791,7 +1791,7 @@ pub(crate) struct ModuleFacts {
 /// metadata consumer that owns those rules.
 #[allow(dead_code)]
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
-pub(crate) struct AttributeFacts {
+pub struct AttributeFacts {
     /// `Signature` (class, field, method): raw signature bytes.
     pub signature: Option<JvmBytes>,
     /// `Exceptions` (method): internal names, expanded from `CONSTANT_Class`.
@@ -1815,7 +1815,7 @@ pub(crate) struct AttributeFacts {
 /// One `BootstrapMethods` entry.
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct BootstrapMethodFacts {
+pub struct BootstrapMethodFacts {
     /// Index of the bootstrap method handle; resolve it with `cp_entry`.
     pub method_ref: u16,
     /// Argument indexes in declaration order; each one is a loadable constant.
@@ -1829,7 +1829,7 @@ pub(crate) struct BootstrapMethodFacts {
 /// class accepted here is accepted there. Attribute content and instructions are
 /// not decoded: callers ask for those per attribute or per method.
 #[allow(dead_code)]
-pub(crate) fn class_facts(bytes: &[u8], budget: &mut Budget) -> Result<ClassFacts> {
+pub fn class_facts(bytes: &[u8], budget: &mut Budget) -> Result<ClassFacts> {
     budget.poll()?;
     budget.charge(CountedBudgetDimension::ClassBytes, to_u64(bytes.len())?)?;
     validate_constant_pool_slots(bytes, budget)?;
@@ -1938,7 +1938,7 @@ pub(crate) fn class_facts(bytes: &[u8], budget: &mut Budget) -> Result<ClassFact
 /// containing it is sliced with [`attribute_slice`] instead: it is the same
 /// consistency check without a second charge.
 #[allow(dead_code)]
-pub(crate) fn attribute_content<'a>(
+pub fn attribute_content<'a>(
     bytes: &'a [u8],
     shell: &AttributeShell,
     budget: &mut Budget,
@@ -1961,7 +1961,7 @@ pub(crate) fn attribute_content<'a>(
 /// nested attribute inside a `Code` attribute, whose bytes are charged once as part of
 /// the entry that contains it (see [`code_nested_attributes`]).
 #[allow(dead_code)]
-pub(crate) fn attribute_slice<'a>(
+pub fn attribute_slice<'a>(
     bytes: &'a [u8],
     span: &ByteSpan,
     content_span: &ByteSpan,
@@ -1996,7 +1996,7 @@ fn attribute_shell_length(content_span: &ByteSpan) -> Result<u64> {
 /// `StackMapTable`, is left untouched. `MemberHeader::attributes` from
 /// `class_facts` is the intended input for the member-level call.
 #[allow(dead_code)]
-pub(crate) fn attribute_facts(
+pub fn attribute_facts(
     bytes: &[u8],
     shells: &[AttributeShell],
     pool: &[CpEntryFacts],
@@ -2103,7 +2103,7 @@ pub(crate) fn attribute_facts(
 /// shapes, because a dynamic site that cannot reach a loadable constant is not a
 /// fact a consumer may act on.
 #[allow(dead_code)]
-pub(crate) fn bootstrap_methods(
+pub fn bootstrap_methods(
     bytes: &[u8],
     shell: &AttributeShell,
     pool: &[CpEntryFacts],
@@ -2160,7 +2160,7 @@ const DESCRIPTOR_CODE: &str = "query_descriptor_malformed";
 /// Which descriptor production to accept (JVMS 4.3).
 #[allow(dead_code)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum DescriptorKind {
+pub enum DescriptorKind {
     /// `FieldDescriptor`.
     Field,
     /// `MethodDescriptor`: parameters and result, `V` allowed.
@@ -2172,7 +2172,7 @@ pub(crate) enum DescriptorKind {
 /// A descriptor one constant-pool entry carries, with the production it belongs to.
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct EntryDescriptor {
+pub struct EntryDescriptor {
     /// Raw descriptor bytes exactly as the class file holds them.
     pub descriptor: JvmBytes,
     pub kind: DescriptorKind,
@@ -2187,7 +2187,7 @@ pub(crate) struct EntryDescriptor {
 /// hop. Every other kind carries no descriptor, including a `Class` entry, whose type is
 /// the entry itself rather than a descriptor's contents.
 #[allow(dead_code)]
-pub(crate) fn entry_descriptor(kind: &CpEntryKind) -> Option<EntryDescriptor> {
+pub fn entry_descriptor(kind: &CpEntryKind) -> Option<EntryDescriptor> {
     let (descriptor, kind) = match kind {
         CpEntryKind::FieldRef { descriptor, .. } => (descriptor, DescriptorKind::Field),
         CpEntryKind::MethodRef { descriptor, .. }
@@ -2214,7 +2214,7 @@ pub(crate) fn entry_descriptor(kind: &CpEntryKind) -> Option<EntryDescriptor> {
 /// exactly is a structured error instead of a partial type set, so a caller can never
 /// publish the types of a descriptor it did not read completely.
 #[allow(dead_code)]
-pub(crate) fn descriptor_types(descriptor: &[u8], kind: DescriptorKind) -> Result<Vec<JvmBytes>> {
+pub fn descriptor_types(descriptor: &[u8], kind: DescriptorKind) -> Result<Vec<JvmBytes>> {
     let mut reader = DescriptorReader::new(descriptor);
     let mut types = Vec::new();
     match kind {
@@ -2238,7 +2238,7 @@ pub(crate) fn descriptor_types(descriptor: &[u8], kind: DescriptorKind) -> Resul
 /// Descriptor productions and generic signatures both name a type once, in the order the
 /// bytes write it, so they share this rule.
 #[allow(dead_code)]
-pub(crate) fn push_unique(types: &mut Vec<JvmBytes>, name: Vec<u8>) {
+pub fn push_unique(types: &mut Vec<JvmBytes>, name: Vec<u8>) {
     if !types.iter().any(|existing| existing.0 == name) {
         types.push(JvmBytes(name));
     }
@@ -2364,7 +2364,7 @@ impl<'a> DescriptorReader<'a> {
 /// One nested `attribute_info` inside a `Code` attribute.
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct NestedAttributeFact {
+pub struct NestedAttributeFact {
     /// `attribute_name_index` exactly as the declaration records it.
     pub name_index: u16,
     /// Raw name bytes of that index; a name is never text-decoded here.
@@ -2414,7 +2414,7 @@ pub(crate) struct NestedAttributeFact {
 /// bytes and class-file spans, so a caller can slice both the content and the entry out
 /// of the class bytes and check its own reading of them.
 #[allow(dead_code)]
-pub(crate) fn code_nested_attributes(
+pub fn code_nested_attributes(
     bytes: &[u8],
     shells: &[AttributeShell],
     pool: &[CpEntryFacts],
@@ -2517,7 +2517,7 @@ fn entry_offset(content_span: &ByteSpan, position: usize) -> Result<u64> {
 /// `execution` and `stopped_at` instead of a [`BytecodeInspection`].
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct MethodCodeFacts {
+pub struct MethodCodeFacts {
     pub max_stack: u16,
     pub max_locals: u16,
     /// Class-file range of the instruction array: `code_length` bytes starting at the
@@ -2526,7 +2526,7 @@ pub(crate) struct MethodCodeFacts {
     pub instructions: Vec<InstructionFact>,
     /// Typed operands of [`Self::instructions`], in lockstep: `operands[i]` describes
     /// `instructions[i]`, and any stop returns the same reliable prefix of both.
-    pub(crate) operands: Vec<InstructionOperands>,
+    operands: Vec<InstructionOperands>,
     /// The whole exception table. Handlers are decoded before instructions, exactly
     /// like `inspect_method_bytecode`, so these are complete even when the instruction
     /// stream is the phase that stopped.
@@ -2540,6 +2540,60 @@ pub(crate) struct MethodCodeFacts {
     pub exception_handler_count: u32,
     pub execution: ExecutionReport,
     pub stopped_at: Option<BytecodeStop>,
+}
+
+impl MethodCodeFacts {
+    /// Typed operands of [`Self::instructions`], in lockstep with them.
+    ///
+    /// `operands()[i]` describes `instructions[i]`; the two lists are decoded together and a
+    /// stop returns the same reliable prefix of both. The field itself stays private so that no
+    /// caller can build the two lists apart: the length agreement is the invariant the decode
+    /// path asserts after every body it reads, and a public field would let a consumer assemble
+    /// facts the reader never produced.
+    pub fn operands(&self) -> &[InstructionOperands] {
+        &self.operands
+    }
+
+    /// Assembles a body from parts a test names, without a decode; test support only.
+    ///
+    /// This is the one way to build facts the decode path did not produce, and it exists for the
+    /// same reason [`Self::operands`] is an accessor instead of a field: the fixtures of a
+    /// dependent crate's analysis tests (CFG, call contexts) need a body, and their `cfg(test)`
+    /// cannot see this crate. The instruction/operand pair list is the parameter, not two
+    /// separate lists, so the lockstep survives even on this path.
+    ///
+    /// It is compiled only under `test-support`, which no normal dependency enables: a
+    /// production build cannot fabricate a `MethodCodeFacts`, and `--all-features` builds (CI)
+    /// are the only ones that see it at all.
+    #[cfg(any(test, feature = "test-support"))]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "a test-only assembler mirrors the fields of the facts it builds; bundling \
+                  them into a second public struct would grow the test-support API for no gain"
+    )]
+    pub fn from_parts(
+        max_stack: u16,
+        max_locals: u16,
+        code_span: ByteSpan,
+        code: Vec<(InstructionFact, InstructionOperands)>,
+        exception_handlers: Vec<ExceptionHandlerFact>,
+        exception_handler_count: u32,
+        execution: ExecutionReport,
+        stopped_at: Option<BytecodeStop>,
+    ) -> Self {
+        let (instructions, operands) = code.into_iter().unzip();
+        Self {
+            max_stack,
+            max_locals,
+            code_span,
+            instructions,
+            operands,
+            exception_handlers,
+            exception_handler_count,
+            execution,
+            stopped_at,
+        }
+    }
 }
 
 /// Typed operands of one instruction, taken from the same noak event and the same
@@ -2568,20 +2622,20 @@ pub(crate) struct MethodCodeFacts {
 /// extra dimension and no second charge.
 #[allow(dead_code)]
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
-pub(crate) struct InstructionOperands {
+pub struct InstructionOperands {
     /// `bipush`/`sipush`, the `ldc` family, and the constant forms encoded in the opcode.
-    pub(crate) immediate: Option<ImmediateValue>,
+    pub immediate: Option<ImmediateValue>,
     /// The local of a load, store, `iinc` or `ret`, including the implicit forms.
-    pub(crate) local: Option<LocalOperand>,
+    pub local: Option<LocalOperand>,
     /// Signed increment of `iinc` and `wide iinc`; `None` for every other opcode.
-    pub(crate) increment: Option<i32>,
+    pub increment: Option<i32>,
     /// Same value as [`InstructionFact::constant_pool_index`] of the same instruction.
-    pub(crate) constant_pool_index: Option<u16>,
+    pub constant_pool_index: Option<u16>,
     /// Relative offset exactly as encoded by a branch, `goto_w`, `jsr` or `jsr_w`:
     /// relative to the BCI of the instruction itself.
-    pub(crate) branch_offset: Option<i32>,
+    pub branch_offset: Option<i32>,
     /// Payload of `tableswitch`/`lookupswitch`; `None` for every other opcode.
-    pub(crate) switch: Option<SwitchOperands>,
+    pub switch: Option<SwitchOperands>,
     /// The opcode this instruction *is*: the opcode a `wide` form wraps (`wide iload` is
     /// `0x15`, `wide iinc` is `0x84`), and the raw opcode for every other instruction.
     ///
@@ -2589,21 +2643,21 @@ pub(crate) struct InstructionOperands {
     /// read/write direction, stack deltas and the legacy dialect — because `0xc4` is a prefix
     /// (JVMS 6.5), not an instruction: it decides none of them on its own. The raw opcode stays
     /// what it always was in [`InstructionFact::opcode`], together with the width and the span.
-    pub(crate) effective_opcode: u8,
+    pub effective_opcode: u8,
     /// `newarray`'s element type code (JVMS `atype`, 4..=11); `None` for every other opcode.
     /// The reader records it as encoded: an out-of-range code never reaches here, because the
     /// instruction does not decode at all.
-    pub(crate) atype: Option<u8>,
+    pub atype: Option<u8>,
     /// `multianewarray`'s dimension count exactly as encoded; `None` for every other opcode.
     /// Whether the count is a legal dimension is the verifier's question (4.x), not a reason
     /// for the reader to drop the fact or to fail the instruction.
-    pub(crate) dimensions: Option<u8>,
+    pub dimensions: Option<u8>,
     /// `invokeinterface`'s encoded `count`; `None` for every other opcode.
     ///
     /// A validation *fact*, not a trust source: the count is kept as encoded — including a
     /// count that disagrees with the descriptor's argument slots — so 5.1 can reconcile it
     /// against this project's own descriptor derivation.
-    pub(crate) interface_count: Option<u8>,
+    pub interface_count: Option<u8>,
 }
 
 /// The literal one instruction pushes directly.
@@ -2614,7 +2668,7 @@ pub(crate) struct InstructionOperands {
 /// [`InstructionOperands::constant_pool_index`] for the resolver instead.
 #[allow(dead_code)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum ImmediateValue {
+pub enum ImmediateValue {
     Int(i32),
     Long(i64),
     Float(u32),
@@ -2624,12 +2678,12 @@ pub(crate) enum ImmediateValue {
 /// One local variable slot named by an instruction.
 #[allow(dead_code)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) struct LocalOperand {
+pub struct LocalOperand {
     /// Local slot index in the method's frame.
-    pub(crate) index: u16,
+    pub index: u16,
     /// `true` for the `wide` prefixed form, `false` for the short form and for the
     /// `_0`..`_3` forms, whose index is encoded in the opcode.
-    pub(crate) wide: bool,
+    pub wide: bool,
 }
 
 /// Payload of one `tableswitch`/`lookupswitch`.
@@ -2639,7 +2693,7 @@ pub(crate) struct LocalOperand {
 /// `high`, which is the upper-bound risk the reader adapter deliberately keeps out.
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum SwitchOperands {
+pub enum SwitchOperands {
     Table {
         default_offset: i32,
         low: i32,
@@ -2657,20 +2711,20 @@ pub(crate) enum SwitchOperands {
 /// One control-flow target of one method, validated but not yet a graph edge.
 #[allow(dead_code)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) struct ControlFlowTarget {
+pub struct ControlFlowTarget {
     /// The instruction this row belongs to: the branch or switch instruction that
     /// encodes the offset, and the handler entry for [`ControlFlowTargetKind::Handler`]
     /// — an exception table record is not an instruction, and its `ordinal` in the
     /// kind identifies the record.
-    pub(crate) instruction_bci: u32,
-    pub(crate) kind: ControlFlowTargetKind,
+    pub instruction_bci: u32,
+    pub kind: ControlFlowTargetKind,
     /// Absolute BCI the target must land on: an instruction start inside the code array.
-    pub(crate) target_bci: u32,
+    pub target_bci: u32,
 }
 
 #[allow(dead_code)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(crate) enum ControlFlowTargetKind {
+pub enum ControlFlowTargetKind {
     /// A relative branch offset, kept exactly as encoded.
     Branch {
         offset: i32,
@@ -2713,7 +2767,7 @@ impl MethodCodeFacts {
     /// `execution`/`stopped_at` before reporting this `Err` as a corrupt method; 3.x
     /// tightens the type-level guarantee only if it needs one.
     #[allow(dead_code)]
-    pub(crate) fn control_flow_targets(&self) -> Result<Vec<ControlFlowTarget>> {
+    pub fn control_flow_targets(&self) -> Result<Vec<ControlFlowTarget>> {
         debug_assert_eq!(
             self.instructions.len(),
             self.operands.len(),
@@ -3410,7 +3464,7 @@ fn switch_operand_bounds(bytes: &[u8], bci: u32, offset: usize) -> Error {
 /// { classfile_method_has_no_code }`. That absence is a normal declaration shape, not a
 /// decode failure, so the caller decides whether to skip the member; the structural
 /// check costs no read (`MemberHeader::attributes` already carries the shells).
-pub(crate) fn method_code_facts(
+pub fn method_code_facts(
     bytes: &[u8],
     method: &MemberHeader,
     budget: &mut Budget,
@@ -3842,7 +3896,7 @@ fn stopped_code_facts(
 
 /// Resolves one 1-based constant-pool index inside a fact table.
 #[allow(dead_code)]
-pub(crate) fn cp_entry(pool: &[CpEntryFacts], index: u16) -> Result<&CpEntryFacts> {
+pub fn cp_entry(pool: &[CpEntryFacts], index: u16) -> Result<&CpEntryFacts> {
     if index == 0 {
         return Err(cp_index_error(index));
     }
@@ -3853,7 +3907,7 @@ pub(crate) fn cp_entry(pool: &[CpEntryFacts], index: u16) -> Result<&CpEntryFact
 
 /// Resolves a `CONSTANT_Utf8` index to its raw Modified UTF-8 bytes.
 #[allow(dead_code)]
-pub(crate) fn cp_utf8(pool: &[CpEntryFacts], index: u16) -> Result<JvmBytes> {
+pub fn cp_utf8(pool: &[CpEntryFacts], index: u16) -> Result<JvmBytes> {
     match &cp_entry(pool, index)?.kind {
         CpEntryKind::Utf8 { bytes } => Ok(bytes.clone()),
         _ => Err(cp_fact_tag_mismatch("CONSTANT_Utf8", index)),
@@ -3862,7 +3916,7 @@ pub(crate) fn cp_utf8(pool: &[CpEntryFacts], index: u16) -> Result<JvmBytes> {
 
 /// Resolves a `CONSTANT_Class` index to its internal-name bytes.
 #[allow(dead_code)]
-pub(crate) fn cp_class_name(pool: &[CpEntryFacts], index: u16) -> Result<JvmBytes> {
+pub fn cp_class_name(pool: &[CpEntryFacts], index: u16) -> Result<JvmBytes> {
     match &cp_entry(pool, index)?.kind {
         CpEntryKind::Class { name, .. } => Ok(name.clone()),
         _ => Err(cp_fact_tag_mismatch("CONSTANT_Class", index)),
@@ -5866,14 +5920,9 @@ mod reader_facts_tests {
     dead_code,
     reason = "used by this crate's tests, or by a dependent crate's test build"
 )]
-pub(crate) mod test_class {
+pub mod test_class {
     /// Class file (minor 0, major `major`) with one `method()V` whose body is `code`.
-    pub(crate) fn single_method(
-        major: u16,
-        max_stack: u16,
-        max_locals: u16,
-        code: &[u8],
-    ) -> Vec<u8> {
+    pub fn single_method(major: u16, max_stack: u16, max_locals: u16, code: &[u8]) -> Vec<u8> {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(&0xcafebabe_u32.to_be_bytes());
         u16_be(&mut bytes, 0);

@@ -1,22 +1,15 @@
 //! Stateless synchronous composition of artifact and classfile contracts.
 
-use crate::artifact::{
-    ArtifactInput, ArtifactKind, ArtifactSnapshot, ArtifactTreeReport, EnumerationReport,
-    PhysicalEntry,
-};
-use crate::budget::{Budget, CountedBudgetDimension, UsageSnapshot};
+use crate::artifact::{ArtifactInput, ArtifactSnapshot, ArtifactTreeReport, EnumerationReport};
+use crate::budget::{Budget, CountedBudgetDimension};
 use crate::classfile::{
-    BytecodeInspection, BytecodeStop, HeaderInspection, InspectionMode, MemberHeader,
-    MethodCodeFacts, MethodSelector,
+    BytecodeStop, InspectionMode, MemberHeader, MethodCodeFacts, MethodSelector,
 };
 use crate::error::{Error, Result};
+use crate::inspect::{ClassTarget, EngineBytecodeReport, EngineHeaderReport};
 use crate::ir::{MethodBodyState, NoBodyKind, StageResult, StageState};
-use crate::model::{
-    ClassBytesId, Coverage, CoverageDimension, CoverageRange, CoverageState, Diagnostic,
-    DiagnosticSeverity, Digest, ExecutionReport, PhysicalClassLocation, TerminationReason,
-};
+use crate::model::{Coverage, Diagnostic, DiagnosticSeverity, ExecutionReport, TerminationReason};
 use crate::passes::{FactLedger, IR_PASS_NOT_IMPLEMENTED, IrPhase, PassDescriptor, implemented};
-use serde::{Deserialize, Serialize};
 
 /// Access flags that declare a member without a body: `ACC_ABSTRACT` and `ACC_NATIVE`.
 const ACC_ABSTRACT: u16 = 0x0400;
@@ -27,43 +20,6 @@ const IR_RAW_CFG_INCOMPLETE_BODY: &str = "ir_raw_cfg_incomplete_body";
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Engine;
-
-#[derive(Clone, Copy, Debug)]
-pub enum ClassTarget<'a> {
-    Root,
-    Entry(&'a PhysicalEntry),
-}
-
-#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
-pub struct ClassSource {
-    pub location: PhysicalClassLocation,
-    pub class_bytes: ClassBytesId,
-}
-
-impl ClassSource {
-    pub fn snapshot(&self) -> &crate::model::SnapshotId {
-        self.location.snapshot()
-    }
-
-    pub fn entry(&self) -> Option<&crate::model::PhysicalEntryId> {
-        self.location.entry()
-    }
-}
-
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct EngineHeaderReport {
-    pub source: ClassSource,
-    pub inspection: HeaderInspection,
-    pub coverage: Coverage,
-    pub execution: ExecutionReport,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct EngineBytecodeReport {
-    pub source: ClassSource,
-    pub inspection: BytecodeInspection,
-    pub coverage: Coverage,
-}
 
 impl Engine {
     pub const fn new() -> Self {
@@ -108,6 +64,11 @@ impl Engine {
         crate::query::execute(snapshot, request, budget)
     }
 
+    /// Materializes the target class and inspects its header (reader entry point).
+    ///
+    /// The bounded read and the header inspection are the reader's own steps; this is the
+    /// facade's one-line delegation to them, so a caller through `Engine` and a caller through
+    /// `jarde_reader::inspect` read the same bytes under the same accounting.
     pub fn inspect_header(
         &self,
         snapshot: &ArtifactSnapshot,
@@ -115,19 +76,12 @@ impl Engine {
         budget: &mut Budget,
         mode: InspectionMode,
     ) -> Result<EngineHeaderReport> {
-        let (bytes, source) = materialize(snapshot, target, budget)?;
-        let inspection = crate::classfile::inspect_header(&bytes, budget, mode)?;
-        let coverage = header_coverage(source.class_bytes.length);
-        Ok(EngineHeaderReport {
-            source,
-            inspection,
-            coverage,
-            execution: ExecutionReport::Complete {
-                usage: budget.usage(),
-            },
-        })
+        crate::inspect::inspect_header(snapshot, target, budget, mode)
     }
 
+    /// Materializes the target class and inspects the selected method's body (reader entry point).
+    ///
+    /// Delegated to the reader exactly as [`Engine::inspect_header`] is.
     pub fn inspect_method_bytecode(
         &self,
         snapshot: &ArtifactSnapshot,
@@ -135,14 +89,7 @@ impl Engine {
         selector: MethodSelector,
         budget: &mut Budget,
     ) -> Result<EngineBytecodeReport> {
-        let (bytes, source) = materialize(snapshot, target, budget)?;
-        let inspection = crate::classfile::inspect_method_bytecode(&bytes, selector, budget)?;
-        let coverage = bytecode_coverage(&inspection)?;
-        Ok(EngineBytecodeReport {
-            source,
-            inspection,
-            coverage,
-        })
+        crate::inspect::inspect_method_bytecode(snapshot, target, selector, budget)
     }
 
     /// Demand-bound symbol resolution under an explicit environment (P2 entry point).
@@ -513,7 +460,7 @@ fn run_method_analysis(
     }
     run.execution = match stop {
         // The usage of the whole request, under whichever termination stopped it first.
-        Some(execution) => with_usage(execution, budget.usage()),
+        Some(execution) => crate::model::with_usage(execution, budget.usage()),
         None => ExecutionReport::Complete {
             usage: budget.usage(),
         },
@@ -780,103 +727,6 @@ fn termination_code(reason: &TerminationReason) -> String {
                 "budget_exceeded_{}",
                 crate::artifact::budget_dimension_code(*dimension)
             )
-        }
-    }
-}
-
-/// The same termination under the usage the whole request reached: a stop is recorded when it
-/// happens and the report publishes the final counters.
-fn with_usage(execution: ExecutionReport, usage: UsageSnapshot) -> ExecutionReport {
-    match execution {
-        ExecutionReport::Complete { .. } => ExecutionReport::Complete { usage },
-        ExecutionReport::Partial { reason, .. } => ExecutionReport::Partial { reason, usage },
-        ExecutionReport::Cancelled { .. } => ExecutionReport::Cancelled { usage },
-        ExecutionReport::Failed { reason, .. } => ExecutionReport::Failed { reason, usage },
-    }
-}
-
-fn header_coverage(class_length: u64) -> Coverage {
-    Coverage {
-        artifact_structural: CoverageDimension {
-            state: CoverageState::CompleteWithinSchema,
-            scanned: vec![CoverageRange {
-                label: "class_header_schema".into(),
-                start: 0,
-                end: class_length,
-            }],
-            skipped: Vec::new(),
-            uninterpreted_extensions: Vec::new(),
-        },
-        runtime_resolution: CoverageDimension::not_requested(),
-        dynamic_analysis: CoverageDimension::not_requested(),
-    }
-}
-
-/// Coverage of the bytecode inspection of one method body.
-///
-/// The mapping is the reader's own ([`crate::classfile::method_code_coverage`]), shared with
-/// the crate-private method facts so one body has one coverage plane whichever path read it.
-fn bytecode_coverage(inspection: &BytecodeInspection) -> Result<Coverage> {
-    crate::classfile::method_code_coverage(
-        inspection.code_span.length,
-        &inspection.instructions,
-        inspection.exception_handlers.len(),
-        inspection.exception_handler_count,
-        &inspection.execution,
-        inspection.stopped_at.as_ref(),
-    )
-}
-
-fn materialize(
-    snapshot: &ArtifactSnapshot,
-    target: ClassTarget<'_>,
-    budget: &mut Budget,
-) -> Result<(Vec<u8>, ClassSource)> {
-    match target {
-        ClassTarget::Root => {
-            if snapshot.kind() != ArtifactKind::StandaloneClass {
-                return Err(Error::invalid_input(
-                    "class_target_root_on_zip",
-                    "root class target requires a standalone CLASS snapshot",
-                ));
-            }
-            let bytes = snapshot.root_bytes(budget)?;
-            let class_bytes = ClassBytesId {
-                digest: Digest(blake3::hash(&bytes).to_hex().to_string()),
-                length: u64::try_from(bytes.len()).map_err(|_| {
-                    Error::invalid_input("class_size_overflow", "class length does not fit u64")
-                })?,
-            };
-            Ok((
-                bytes,
-                ClassSource {
-                    location: PhysicalClassLocation::StandaloneRoot {
-                        snapshot: snapshot.id().clone(),
-                    },
-                    class_bytes,
-                },
-            ))
-        }
-        ClassTarget::Entry(entry) => {
-            if snapshot.kind() != ArtifactKind::Zip {
-                return Err(Error::invalid_input(
-                    "class_target_entry_on_class",
-                    "entry class target requires a ZIP snapshot",
-                ));
-            }
-            let materialized = snapshot.read_entry(entry, budget)?;
-            let source = ClassSource {
-                location: PhysicalClassLocation::ArchiveEntry {
-                    entry: materialized.entry,
-                },
-                class_bytes: ClassBytesId {
-                    digest: materialized.content_digest,
-                    length: u64::try_from(materialized.bytes.len()).map_err(|_| {
-                        Error::invalid_input("class_size_overflow", "class length does not fit u64")
-                    })?,
-                },
-            };
-            Ok((materialized.bytes, source))
         }
     }
 }

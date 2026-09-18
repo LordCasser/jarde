@@ -1623,7 +1623,7 @@ fn read_candidate(
     let origin = format!("{} {}", position_label(position), entry_label(&entry.id));
     charge_header_attempt(budget)?;
     let materialized = snapshot
-        .read_entry_internal(entry, budget)
+        .read_entry_for_analysis(entry, budget)
         .map_err(|error| at_origin(error, &origin))?;
     let length = u64::try_from(materialized.bytes.len()).map_err(|_| {
         Error::invalid_input("class_size_overflow", "class length does not fit u64")
@@ -1746,7 +1746,7 @@ pub(crate) fn read_definition_content(
         PhysicalClassLocation::ArchiveEntry { entry } => {
             let listed = listed_entry(snapshot, entry, &label, budget)?;
             let materialized = snapshot
-                .read_entry_internal(&listed, budget)
+                .read_entry_for_analysis(&listed, budget)
                 .map_err(|error| at_origin(error, &label))?;
             (materialized.bytes, materialized.content_digest)
         }

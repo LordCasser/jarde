@@ -2179,7 +2179,9 @@ fn all_lists_are_complete_and_align_with_the_serde_names() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
     let environment_source = read_repository_file(root, "src/environment.rs");
     let ir_source = read_repository_file(root, "src/ir.rs");
-    let budget_source = read_repository_file(root, "src/budget.rs");
+    // `BudgetDimension` and its `ALL` list moved to the reader crate with the rest of the
+    // shared execution base (layer-jarde-crates 1.2); the declaration is read where it lives.
+    let budget_source = read_repository_file(root, "crates/jarde-reader/src/budget.rs");
 
     // `EnvironmentProblemCode::ALL` is the closed set itself: every code appears exactly
     // once, at the index its exhaustive match names, and its `as_str` is the serde name the

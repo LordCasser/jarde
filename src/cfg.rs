@@ -304,7 +304,7 @@ pub(crate) struct RawCfgOutcome {
 pub(crate) fn raw_cfg(facts: &MethodCodeFacts, budget: &mut Budget) -> Result<RawCfgOutcome> {
     debug_assert_eq!(
         facts.instructions.len(),
-        facts.operands.len(),
+        facts.operands().len(),
         "operand facts are produced in lockstep with instructions"
     );
     let targets = facts.control_flow_targets()?;
@@ -385,7 +385,7 @@ fn leader_flags(facts: &MethodCodeFacts, targets: &[ControlFlowTarget]) -> Resul
     for (index, (instruction, operands)) in facts
         .instructions
         .iter()
-        .zip(facts.operands.iter())
+        .zip(facts.operands().iter())
         .enumerate()
     {
         // A transfer cannot fall through from inside a block, so the instruction after a
@@ -535,7 +535,7 @@ fn transfer_edges(
         let last = end - 1;
         // The instruction the block really ends with: a `wide` form is classified by the
         // opcode it wraps, so `wide ret` leaves the block exactly like `ret` does.
-        let opcode = facts.operands[last].effective_opcode;
+        let opcode = facts.operands()[last].effective_opcode;
         // The instruction a block falls through to, when the block is not the last one: a
         // block only ends where a leader starts, so that instruction starts the next block.
         let fall_through = facts
@@ -646,7 +646,7 @@ fn throw_sites_and_handlers(
         let mut seen: Vec<u32> = Vec::new();
         for (instruction, operands) in facts.instructions[start..end]
             .iter()
-            .zip(facts.operands[start..end].iter())
+            .zip(facts.operands()[start..end].iter())
         {
             if !may_throw(operands.effective_opcode) {
                 continue;
@@ -702,7 +702,7 @@ fn effect_facts(
     // Throw sites are one per instruction and sorted by BCI, so one cursor classifies the
     // whole list.
     let mut cursor = 0usize;
-    for (instruction, operands) in facts.instructions.iter().zip(facts.operands.iter()) {
+    for (instruction, operands) in facts.instructions.iter().zip(facts.operands().iter()) {
         // The instruction's own opcode: for a `wide` form that is the opcode it wraps, which
         // is what decides the local's direction (a `wide iload 300` reads local 300) and the
         // stack delta, exactly like the short form of the same opcode.
@@ -748,7 +748,7 @@ fn jsr_call_sites(facts: &MethodCodeFacts) -> Result<Vec<u32>> {
     let mut sites: Vec<u32> = facts
         .instructions
         .iter()
-        .zip(facts.operands.iter())
+        .zip(facts.operands().iter())
         .filter(|(_, operands)| is_jsr(operands.effective_opcode))
         .map(|(instruction, _)| instruction.bci)
         .collect();
@@ -768,7 +768,7 @@ fn jsr_continuations(facts: &MethodCodeFacts, blocks: &[RawBlock]) -> Vec<Option
     for (index, (instruction, operands)) in facts
         .instructions
         .iter()
-        .zip(facts.operands.iter())
+        .zip(facts.operands().iter())
         .enumerate()
     {
         if !is_jsr(operands.effective_opcode) {
@@ -1180,20 +1180,19 @@ mod tests {
         handlers: Vec<ExceptionHandlerFact>,
         code_length: u32,
     ) -> MethodCodeFacts {
-        let (instructions, operands) = code.into_iter().unzip();
-        MethodCodeFacts {
-            max_stack: 8,
-            max_locals: 8,
-            code_span: ByteSpan::new(CODE_OFFSET, u64::from(code_length)),
-            instructions,
-            operands,
-            exception_handler_count: u32::try_from(handlers.len()).expect("fixture handlers"),
-            exception_handlers: handlers,
-            execution: ExecutionReport::Complete {
+        let exception_handler_count = u32::try_from(handlers.len()).expect("fixture handlers");
+        MethodCodeFacts::from_parts(
+            8,
+            8,
+            ByteSpan::new(CODE_OFFSET, u64::from(code_length)),
+            code,
+            handlers,
+            exception_handler_count,
+            ExecutionReport::Complete {
                 usage: UsageSnapshot::default(),
             },
-            stopped_at: None,
-        }
+            None,
+        )
     }
 
     /// The same body as one whose decode stopped after the decoded prefix, with `code_length`

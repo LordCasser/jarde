@@ -301,7 +301,7 @@ struct Classified<'a> {
     directory: bool,
 }
 
-pub(crate) fn select(
+pub fn select(
     snapshot: &ArtifactSnapshot,
     view: &RuntimeView,
     budget: &mut Budget,
@@ -1122,7 +1122,7 @@ fn read_manifest(
         return ManifestOutcome::preserved(unknown(ManifestState::Ambiguous));
     }
     let manifest = &classified[manifest_indexes[0]];
-    let materialized = match snapshot.read_entry_internal(manifest.physical, budget) {
+    let materialized = match snapshot.read_entry_for_analysis(manifest.physical, budget) {
         Ok(value) => value,
         Err(error) => {
             push_terminal(diagnostics, &error, Some(manifest.physical));
@@ -1383,7 +1383,7 @@ fn probe_compliance(
         let MultiReleaseEntryVariant::Versioned { release } = c[i].variant else {
             continue;
         };
-        let materialized = match snapshot.read_entry_internal(c[i].physical, budget) {
+        let materialized = match snapshot.read_entry_for_analysis(c[i].physical, budget) {
             Ok(value) => value,
             Err(error) => {
                 probe_states[i] = ProbeState::Interrupted;
@@ -1520,7 +1520,7 @@ fn probe_compliance(
             // The probe only runs over a complete evidence prefix, so a probed base is
             // always present in `returned`; the index guard keeps that invariant explicit.
             let result = snapshot
-                .read_entry_internal(c[root].physical, budget)
+                .read_entry_for_analysis(c[root].physical, budget)
                 .and_then(|bytes| probe_minimal_header(&bytes.bytes, budget));
             match &result {
                 Ok(base) => {
@@ -1811,24 +1811,6 @@ fn physical_coverage(p: &MultiReleasePhysicalEvidence) -> &Coverage {
         MultiReleasePhysicalEvidence::ArtifactTree { report } => &report.coverage,
     }
 }
-fn with_usage(e: ExecutionReport, budget: &Budget) -> ExecutionReport {
-    match e {
-        ExecutionReport::Complete { .. } => ExecutionReport::Complete {
-            usage: budget.usage(),
-        },
-        ExecutionReport::Partial { reason, .. } => ExecutionReport::Partial {
-            reason,
-            usage: budget.usage(),
-        },
-        ExecutionReport::Cancelled { .. } => ExecutionReport::Cancelled {
-            usage: budget.usage(),
-        },
-        ExecutionReport::Failed { reason, .. } => ExecutionReport::Failed {
-            reason,
-            usage: budget.usage(),
-        },
-    }
-}
 fn execution_for(error: &Error, budget: &Budget, failed: bool) -> ExecutionReport {
     match error {
         Error::Cancelled { .. } => ExecutionReport::Cancelled {
@@ -1964,7 +1946,7 @@ impl Issues {
         let report = self.best.unwrap_or(ExecutionReport::Complete {
             usage: budget.usage(),
         });
-        with_usage(report, budget)
+        crate::model::with_usage(report, budget.usage())
     }
 }
 

@@ -3,28 +3,34 @@
 //! This crate owns bounded artifact I/O together with the stable identities and
 //! result semantics consumed by later readers and thin adapters. It deliberately
 //! does not depend on CLI, MCP, host protocols, JVM execution, or runtime integration.
+//!
+//! The input half of that contract — artifact snapshots, the class-file facts decoded from
+//! them, the identities derived from those bytes, the budget that bounds a request, and the
+//! inspection entry points — moved to `jarde-reader` in the layering work of P2 1.2, and is
+//! re-exported here deliberately: the module paths (`jarde::artifact`, `jarde::classfile`,
+//! …) and the inspection reports their consumers name are part of this facade's surface, so a
+//! caller does not have to know which crate produces them. What stays here is what composes
+//! those facts — the query, resolution, CFG and pass layers — plus the [`Engine`] entry that
+//! delegates to each of them.
 
-pub mod artifact;
-pub mod budget;
 mod call_context;
 mod cfg;
-pub mod classfile;
 mod dispatch;
 pub mod engine;
 pub mod environment;
-pub mod error;
 pub mod ir;
 mod members;
-pub mod model;
-pub mod multi_release;
 mod passes;
 mod providers;
 pub mod query;
 pub mod resolver;
 #[cfg(any(test, feature = "test-support"))]
 mod test_fixtures;
-pub mod view;
 pub mod xref;
+
+/// The reader's inspection entry points: materializing one class and reporting on it.
+pub use jarde_reader::inspect;
+pub use jarde_reader::{artifact, budget, classfile, error, model, multi_release, view};
 
 pub use artifact::*;
 pub use budget::{
@@ -34,6 +40,7 @@ pub use classfile::*;
 pub use engine::*;
 pub use environment::*;
 pub use error::{Error, Result};
+pub use inspect::{ClassSource, ClassTarget, EngineBytecodeReport, EngineHeaderReport};
 pub use ir::*;
 pub use model::*;
 pub use multi_release::*;

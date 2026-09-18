@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = [".", "crates/jarde-cli"]
+members = [".", "crates/jarde-cli", "crates/jarde-reader"]
 
 [package]
 name = "jarde"
@@ -11,26 +11,32 @@ license = "MIT OR Apache-2.0"
 description = "Bounded, provenance-preserving JVM artifact analysis contracts"
 
 [dependencies]
+# `blake3` is still used directly by the query/xref/provider layers that live here until they
+# move to their own crates (2.1/2.2); the reader owns the reader-side hashing. Design §3.5
+# converges all of it into the reader as those consumers leave.
 blake3 = { version = "=1.8.7", default-features = false, features = ["pure"] }
-flate2 = { version = "=1.1.10", default-features = false, features = ["rust_backend"] }
-noak = "=0.7.0"
+jarde-reader = { path = "crates/jarde-reader", version = "=0.1.0" }
 # Admitted for the P2 raw CFG work (evidence: openspec/changes/p2-jvm-ir/verification.md,
 # section 3.1); the first consumer is 3.3's raw CFG, not this slice. `std` only, on purpose:
 # the default features add graphmap/stable_graph/matrix_graph, and rayon/serde-1/all pull a
 # thread pool, the serde family or the dot parser.
 petgraph = { version = "=0.8.3", default-features = false, features = ["std"] }
-rawzip = "=0.5.1"
 serde = { version = "=1.0.229", features = ["derive"] }
-thiserror = "=2.0.20"
 
 [features]
-# A test-only class-file builder (`classfile::test_class`) shared across the module boundaries
-# that become crate boundaries: `jarde-jvm`'s tests build fixtures through `jarde-reader`, whose
-# `cfg(test)` they cannot see. No normal dependency enables this, so it stays out of production
-# builds; `--all-features` (as CI runs) does enable it, and the module is written to compile
+# The test-only class-file builder and fixture addressing that a dependent crate's tests need:
+# `classfile::test_class` and `test_fixtures` live in `jarde-reader` now, whose `cfg(test)` the
+# tests here cannot see. No normal dependency enables this, so it stays out of production
+# builds; `--all-features` (as CI runs) does enable it, and both modules are written to compile
 # warning-free either way.
-test-support = []
+test-support = ["jarde-reader/test-support"]
 
 [dev-dependencies]
+# `flate2` and `rawzip` build the test fixtures of this package's integration tests and of
+# `providers`' tests; `test-support` brings the reader-side test helpers (`classfile::test_class`)
+# that `cfg`/`call_context`'s tests build their class files with.
+flate2 = { version = "=1.1.10", default-features = false, features = ["rust_backend"] }
+jarde-reader = { path = "crates/jarde-reader", version = "=0.1.0", features = ["test-support"] }
 proptest = "=1.11.0"
+rawzip = "=0.5.1"
 serde_json = "=1.0.151"
