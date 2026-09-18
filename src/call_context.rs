@@ -72,11 +72,36 @@
 //!
 //! # Billing and determinism
 //!
-//! The pass bills exactly the dimension its descriptor declares (`Steps` = `AnalysisSteps`),
-//! and only for work it really does: one step per instruction it looks at while walking a
-//! context and one per worklist pop (a repeated visit of a block is charged again). The
-//! structural scan that decides whether the method holds a legacy opcode at all reads the
-//! reader's facts without charging, like the scans of 3.3's graph.
+//! The pass bills exactly the dimensions its descriptor declares
+//! (`[Blocks, Steps]`, and `Blocks` is `IrItems` + `IrEdges`), and only for work it really
+//! does.
+//!
+//! The derived storage of this pass — derivation and assembly alike — is billed one item per
+//! storage item, **before** it is added:
+//!
+//! * one `IrItems` per `jsr`/`jsr_w` site (its `CallSitePlan` and, once assembled, its
+//!   [`SubroutineContext`] and [`ExceptionCoverage`]), per call-site entry of the raw graph,
+//!   per element of the per-context sets the walk grows (the affected locals, the owners of a
+//!   `ret`, the covering exception records and the nesting relation) and per node of the cycle
+//!   search's state;
+//! * one `IrEdges` per derived edge of the successor lists;
+//! * one `IrItems` per block **per context** for the walk's own `visited` matrix. That is the
+//!   product this pass has to bound: `Vec<bool>` is one byte per entry, so a body of 3 000
+//!   contexts over 3 000 blocks would hold ~9 MB of visited flags, and a budget that charges
+//!   the matrix only once per context — or not at all — cannot refuse it;
+//! * one `AnalysisSteps` per instruction looked at while walking a context, per worklist pop,
+//!   per worklist enqueue and per frame the cycle search pushes (a repeated visit of a block is
+//!   charged again);
+//! * the empty context set of a body with no `jsr`/`jsr_w`/`ret` is charged nothing.
+//!
+//! Every phase — the plans and the entry map, the successor lists, the instruction ranges, the
+//! walk's own construction, the cycle search and the assembly — also polls for cancellation
+//! (billing polls by itself, and the phases without a billing point poll explicitly, through
+//! [`checkpoint`]), so a cancelled or exhausted request stops there instead of finishing the
+//! assembly first. A stop keeps the raw facts as they are, publishes **no** [`CallContexts`] and
+//! does not truncate the payload of a run that is allowed to finish. The structural scan that
+//! decides whether the method holds a legacy opcode at all reads the reader's facts without
+//! charging, like the scans of 3.3's graph.
 //!
 //! Every published `Vec<_>` is sorted on its own coordinates — contexts and coverage by call
 //! site BCI, returns by `ret` BCI with targets by call site, locals and handler ordinals
@@ -89,7 +114,7 @@ use crate::cfg::{
 };
 use crate::classfile::{ExceptionHandlerFact, MethodCodeFacts};
 use crate::error::{Error, Result};
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, btree_map};
 
 /// First class-file major version in which `jsr`/`jsr_w`/`ret` are forbidden: the modern
 /// dialect starts at 51.
@@ -197,9 +222,13 @@ pub(crate) enum CallContextOutcome {
 /// while the later passes run), and `major_version` is the class file's own version, which is
 /// the only thing that decides the dialect.
 ///
-/// Charges one `AnalysisSteps` per instruction examined in a walked block and one per worklist
-/// pop, both before the work they describe, and nothing else: the declared dimension set of the
-/// pass is `[Steps]`.
+/// Charges the declared dimension set of the pass, `[Blocks, Steps]`: one `IrItems` per derived
+/// storage item it builds (the plans, the call-site entries, every element of the per-context
+/// sets, one row of the walk's `visited` matrix per block per context), one `IrEdges` per
+/// derived successor edge, and one `AnalysisSteps` per instruction examined in a walked block,
+/// per worklist pop, per worklist enqueue and per frame of the cycle search — all before the
+/// storage item or the step they describe. Every phase of the run polls for cancellation, so an
+/// exhausted or cancelled request stops without publishing a context set.
 pub(crate) fn call_contexts(
     facts: &MethodCodeFacts,
     raw: &RawCfgOutcome,
@@ -243,8 +272,11 @@ pub(crate) fn call_contexts(
             "the raw graph holds no block for a method body whose prefix holds a `jsr`/`ret`",
         ));
     }
-    let entries = call_edges(cfg);
+    let entries = call_edges(cfg, budget)?;
     let mut plans = Vec::with_capacity(legacy.jsr_sites.len());
+    // One context per call site is derived storage of this pass: the plan itself and, in the
+    // entry map, the call-site node `call_edges` already billed.
+    checkpoint(Phase::Plans, budget)?;
     for call_site_bci in &legacy.jsr_sites {
         let index = instruction_index(facts, *call_site_bci)?;
         let return_bci = call_site_bci
@@ -269,6 +301,7 @@ pub(crate) fn call_contexts(
                 "the raw graph holds no call edge for the `jsr` at BCI {call_site_bci}"
             ))
         })?;
+        budget.charge(CountedBudgetDimension::IrItems, 1)?;
         plans.push(CallSitePlan {
             call_site_bci: *call_site_bci,
             return_bci,
@@ -276,8 +309,8 @@ pub(crate) fn call_contexts(
         });
     }
 
-    let successors = successors(cfg, &blocks)?;
-    let ranges = instruction_ranges(facts, &blocks)?;
+    let successors = successors(cfg, &blocks, budget)?;
+    let ranges = instruction_ranges(facts, &blocks, budget)?;
     let mut walk = Walk::new(
         facts,
         cfg,
@@ -286,7 +319,8 @@ pub(crate) fn call_contexts(
         &ranges,
         &successors,
         &plans,
-    );
+        budget,
+    )?;
     for root in 0..plans.len() {
         walk.run(root, budget)?;
     }
@@ -298,7 +332,7 @@ pub(crate) fn call_contexts(
         ..
     } = walk;
 
-    if let Some(cycle) = nesting_cycle(&contains) {
+    if let Some(cycle) = nesting_cycle(&contains, budget)? {
         let sites = cycle
             .iter()
             .map(|index| plans[*index].call_site_bci.to_string())
@@ -343,15 +377,19 @@ pub(crate) fn call_contexts(
         });
     }
 
+    let walked = Walked {
+        affected,
+        returns,
+        coverage,
+    };
     Ok(CallContextOutcome::Established(assemble(
         cfg,
         &blocks,
         &plans,
         &legacy.returns,
-        affected,
-        returns,
-        coverage,
-    )))
+        walked,
+        budget,
+    )?))
 }
 
 /// A context set that says exactly nothing: a body without `jsr`/`jsr_w`/`ret`.
@@ -416,14 +454,20 @@ fn inconsistent(message: impl Into<String>) -> Error {
 }
 
 /// The entry of every call site, from the raw graph's `SubroutineReturn` edges.
-fn call_edges(cfg: &RawCfg) -> BTreeMap<u32, u32> {
+///
+/// The map is derived storage of this pass, so each entry it really adds is billed as `IrItems`
+/// before it is inserted.
+fn call_edges(cfg: &RawCfg, budget: &mut Budget) -> Result<BTreeMap<u32, u32>> {
     let mut entries = BTreeMap::new();
     for edge in &cfg.edges {
         if let EdgeKind::SubroutineReturn { call_site } = edge.kind {
+            if !entries.contains_key(&call_site) {
+                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+            }
             entries.insert(call_site, edge.to_bci);
         }
     }
-    entries
+    Ok(entries)
 }
 
 fn block_bcis(cfg: &RawCfg) -> Vec<u32> {
@@ -450,8 +494,91 @@ fn reachable(cfg: &RawCfg, blocks: &[u32], bci: u32) -> bool {
     }
 }
 
+/// One phase of a run of this pass, named where [`checkpoint`] is called, so the phases are read
+/// from the code instead of being re-listed by a test.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum Phase {
+    /// The `jsr` site plans and the entry map's derived nodes.
+    Plans,
+    /// The `IrEdges` successor lists of the raw graph.
+    Successors,
+    /// The instruction ranges of the blocks.
+    InstructionRanges,
+    /// The construction of the walk's own state.
+    Walk,
+    /// One context's `visited` row: the product state this pass has to bound.
+    Visited,
+    /// The cycle search's own nodes and frames.
+    CycleSearch,
+    /// The assembly of the published fact.
+    Assembly,
+}
+
+/// The published fact's own charge: the last thing a successful run pays for.
+///
+/// The fact a caller receives is derived storage too, and publishing it is the only point where
+/// a stopped run could still hand out a payload it did not pay for, so the charge is made once,
+/// in `IrItems`, after the fact exists.
+fn published_item(budget: &mut Budget) -> Result<()> {
+    budget.charge(CountedBudgetDimension::IrItems, 1)?;
+    Ok(())
+}
+
+#[cfg(test)]
+thread_local! {
+    /// The phase a test cancels at, and whether the checkpoint has already fired.
+    static CHECKPOINT: std::cell::Cell<Option<Phase>> = const { std::cell::Cell::new(None) };
+}
+
+/// Cancels the run at the next checkpoint of one phase, and holds the seam until the test ends.
+///
+/// A cancellation cannot be injected from outside into one synchronous call, so this is how a
+/// test stops the run between two phases of the pass; the seam is inert for every run that
+/// does not use it.
+#[cfg(test)]
+fn checkpoint_seam(phase: Phase) -> CheckpointSeam {
+    CHECKPOINT.with(|slot| slot.set(Some(phase)));
+    CheckpointSeam
+}
+
+/// Clears one test's seam when the test ends, so the next test starts inert.
+#[cfg(test)]
+struct CheckpointSeam;
+
+#[cfg(test)]
+impl Drop for CheckpointSeam {
+    fn drop(&mut self) {
+        CHECKPOINT.with(|slot| slot.set(None));
+    }
+}
+
+/// Polls the run's own stop condition at one phase of the pass.
+///
+/// This is the place of the pass that has no billing point of its own: every phase either charges
+/// (`Budget::charge` polls by itself) or reaches this, so a cancelled or exhausted run stops at a
+/// phase boundary instead of finishing the assembly. The stop is the ordinary
+/// `Error::Cancelled`/`Error::BudgetExceeded` the rest of the crate reports, and a stopped run
+/// publishes no [`CallContexts`].
+fn checkpoint(phase: Phase, budget: &Budget) -> Result<()> {
+    #[cfg(test)]
+    if CHECKPOINT.with(|slot| slot.get()) == Some(phase) {
+        CHECKPOINT.with(|slot| slot.set(None));
+        budget.cancellation_token().cancel();
+    }
+    let _ = phase;
+    budget.poll()
+}
+
 /// The successor edges of every block, by block position, in the published edge order.
-fn successors(cfg: &RawCfg, blocks: &[u32]) -> Result<Vec<Vec<(EdgeKind, usize)>>> {
+///
+/// The lists are derived storage of this pass — one derived edge per raw edge — so each is
+/// billed as `IrEdges` before it is pushed, and the phase polls before it builds the lists.
+fn successors(
+    cfg: &RawCfg,
+    blocks: &[u32],
+    budget: &mut Budget,
+) -> Result<Vec<Vec<(EdgeKind, usize)>>> {
+    checkpoint(Phase::Successors, budget)?;
     let mut successors = vec![Vec::new(); blocks.len()];
     for edge in &cfg.edges {
         let from = blocks
@@ -460,13 +587,21 @@ fn successors(cfg: &RawCfg, blocks: &[u32]) -> Result<Vec<Vec<(EdgeKind, usize)>
         let to = blocks
             .binary_search(&edge.to_bci)
             .map_err(|_| inconsistent(format!("BCI {} is not a raw block", edge.to_bci)))?;
+        budget.charge(CountedBudgetDimension::IrEdges, 1)?;
         successors[from].push((edge.kind, to));
     }
     Ok(successors)
 }
 
 /// The instruction index range of every block, in the block order.
-fn instruction_ranges(facts: &MethodCodeFacts, blocks: &[u32]) -> Result<Vec<(usize, usize)>> {
+///
+/// The ranges are derived storage, and the phase polls for cancellation before it starts.
+fn instruction_ranges(
+    facts: &MethodCodeFacts,
+    blocks: &[u32],
+    budget: &mut Budget,
+) -> Result<Vec<(usize, usize)>> {
+    checkpoint(Phase::InstructionRanges, budget)?;
     let mut starts = Vec::with_capacity(blocks.len());
     for bci in blocks {
         starts.push(instruction_index(facts, *bci)?);
@@ -514,6 +649,11 @@ struct Walk<'a> {
 }
 
 impl<'a> Walk<'a> {
+    /// Builds the walk's own state.
+    ///
+    /// The per-context sets this construction allocates start empty and are billed element by
+    /// element as the walk grows them ([`Walk::visit`] and [`Walk::step`]), so the
+    /// construction itself only checks the run's stop condition.
     #[allow(clippy::too_many_arguments)]
     fn new(
         facts: &'a MethodCodeFacts,
@@ -523,7 +663,9 @@ impl<'a> Walk<'a> {
         ranges: &'a [(usize, usize)],
         successors: &'a [Vec<(EdgeKind, usize)>],
         plans: &'a [CallSitePlan],
-    ) -> Self {
+        budget: &Budget,
+    ) -> Result<Self> {
+        checkpoint(Phase::Walk, budget)?;
         let context_of = plans
             .iter()
             .enumerate()
@@ -532,7 +674,7 @@ impl<'a> Walk<'a> {
         let affected: Vec<BTreeSet<u16>> = vec![BTreeSet::new(); plans.len()];
         let coverage: Vec<BTreeSet<u32>> = vec![BTreeSet::new(); plans.len()];
         let contains: Vec<BTreeSet<usize>> = vec![BTreeSet::new(); plans.len()];
-        Self {
+        Ok(Self {
             facts,
             cfg,
             effects,
@@ -545,20 +687,43 @@ impl<'a> Walk<'a> {
             returns: BTreeMap::new(),
             coverage,
             contains,
-        }
+        })
     }
 
     /// Walks one context: its entry, everything reachable from it through normal transfers and
     /// nested calls, and the continuations of those nested calls.
+    ///
+    /// The `visited` matrix is the product this pass must bound, and it is billed as such: one
+    /// `IrItems` per block **per context** whose row the walk allocates, plus one for the map
+    /// entry that holds the row, before the row is allocated. A body that is walked under 3 000
+    /// contexts therefore charges 3 000 rows instead of one matrix, which is what makes the
+    /// ~9 MB of `Vec<bool>` refusable. Worklist pops and enqueues are `AnalysisSteps`.
     fn run(&mut self, root: usize, budget: &mut Budget) -> Result<()> {
         let mut visited: BTreeMap<usize, Vec<bool>> = BTreeMap::new();
-        let mut worklist = vec![(root, block_of(self.blocks, self.plans[root].entry_bci)?)];
+        let mut worklist: Vec<(usize, usize)> = Vec::new();
+        self.enqueue(
+            &mut worklist,
+            (root, block_of(self.blocks, self.plans[root].entry_bci)?),
+            budget,
+        )?;
         let mut written: BTreeSet<u16> = BTreeSet::new();
         while let Some((active, block)) = worklist.pop() {
             budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-            let seen = visited
-                .entry(active)
-                .or_insert_with(|| vec![false; self.blocks.len()]);
+            let seen = match visited.entry(active) {
+                btree_map::Entry::Occupied(entry) => entry.into_mut(),
+                btree_map::Entry::Vacant(entry) => {
+                    // The row is the product state this pass bounds: `blocks.len()` items for
+                    // the row and one for the map entry that holds it, charged before the
+                    // allocation itself.
+                    checkpoint(Phase::Visited, budget)?;
+                    budget.charge(
+                        CountedBudgetDimension::IrItems,
+                        1 + u64::try_from(self.blocks.len())
+                            .expect("a body cannot hold more blocks than the BCI space"),
+                    )?;
+                    entry.insert(vec![false; self.blocks.len()])
+                }
+            };
             if seen[block] {
                 continue;
             }
@@ -566,37 +731,64 @@ impl<'a> Walk<'a> {
             let (start, end) = self.ranges[block];
             for index in start..end {
                 budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-                self.visit(active, index, &mut written);
+                self.visit(active, index, &mut written, budget)?;
             }
             for (kind, to) in &self.successors[block] {
-                self.step(active, *kind, *to, &mut worklist)?;
+                self.step(active, *kind, *to, &mut worklist, budget)?;
             }
         }
         self.affected[root] = written;
         Ok(())
     }
 
+    /// Enqueues one worklist entry, billed as one `AnalysisSteps` before it is pushed.
+    fn enqueue(
+        &self,
+        worklist: &mut Vec<(usize, usize)>,
+        entry: (usize, usize),
+        budget: &mut Budget,
+    ) -> Result<()> {
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        worklist.push(entry);
+        Ok(())
+    }
+
     /// Records one instruction of the walk: a `ret` it holds, its writes and the exception
     /// records covering it.
-    fn visit(&mut self, active: usize, index: usize, written: &mut BTreeSet<u16>) {
-        let instruction = &self.facts.instructions[index];
+    ///
+    /// Everything the walk stores is derived storage, so each element it **really grows** a set
+    /// by is billed as `IrItems` before the insertion: one owner per `(ret, context)` pair, one
+    /// local the context writes, one exception record covering the context's body.
+    fn visit(
+        &mut self,
+        active: usize,
+        index: usize,
+        written: &mut BTreeSet<u16>,
+        budget: &mut Budget,
+    ) -> Result<()> {
+        let bci = self.facts.instructions[index].bci;
         // A `wide ret` is the same return the short form is: the reader classifies a `wide`
         // form by the opcode it wraps (0.2).
         if self.facts.operands[index].effective_opcode == OPCODE_RET {
-            self.returns
-                .entry(instruction.bci)
-                .or_default()
-                .insert(active);
+            let owners = self.returns.entry(bci).or_default();
+            if !owners.contains(&active) {
+                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                owners.insert(active);
+            }
         }
-        written.extend(
-            self.effects.instructions[index]
-                .locals_written
-                .iter()
-                .copied(),
-        );
-        for ordinal in covering_handlers(&self.cfg.handlers, instruction.bci) {
-            self.coverage[active].insert(ordinal);
+        for local in &self.effects.instructions[index].locals_written {
+            if !written.contains(local) {
+                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                written.insert(*local);
+            }
         }
+        for ordinal in covering_handlers(&self.cfg.handlers, bci) {
+            if !self.coverage[active].contains(&ordinal) {
+                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                self.coverage[active].insert(ordinal);
+            }
+        }
+        Ok(())
     }
 
     /// Follows one edge of the walk.
@@ -606,9 +798,10 @@ impl<'a> Walk<'a> {
         kind: EdgeKind,
         to: usize,
         worklist: &mut Vec<(usize, usize)>,
+        budget: &mut Budget,
     ) -> Result<()> {
         match kind {
-            EdgeKind::Normal => worklist.push((active, to)),
+            EdgeKind::Normal => self.enqueue(worklist, (active, to), budget)?,
             EdgeKind::SubroutineReturn { call_site } => {
                 // A nested call: the nested subroutine runs under its own context, and this
                 // context resumes at the nested call's continuation once it returns.
@@ -618,12 +811,23 @@ impl<'a> Walk<'a> {
                          site of this body"
                     ))
                 })?;
-                self.contains[active].insert(nested);
-                worklist.push((nested, block_of(self.blocks, self.plans[nested].entry_bci)?));
-                worklist.push((
-                    active,
-                    block_of(self.blocks, self.plans[nested].return_bci)?,
-                ));
+                if !self.contains[active].contains(&nested) {
+                    budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                    self.contains[active].insert(nested);
+                }
+                self.enqueue(
+                    worklist,
+                    (nested, block_of(self.blocks, self.plans[nested].entry_bci)?),
+                    budget,
+                )?;
+                self.enqueue(
+                    worklist,
+                    (
+                        active,
+                        block_of(self.blocks, self.plans[nested].return_bci)?,
+                    ),
+                    budget,
+                )?;
             }
             // A handler entry is not an ordinary successor: the record is kept in the coverage
             // fact, and the walk does not fold the handler's own instructions into the body.
@@ -647,31 +851,62 @@ fn covering_handlers(handlers: &[ExceptionHandlerFact], bci: u32) -> Vec<u32> {
 /// `returns` is the owner relation the walk collected and `rets` every `ret` of the decoded
 /// prefix: the published list keeps one entry per `ret`, so a `ret` no context owns is a fact
 /// with an empty target list instead of a missing one.
+///
+/// The assembly of the published fact is charged as `IrItems` too: one item per assembled entry
+/// (a context, a return, a coverage record, an unreachable call site), which is the storage the
+/// assembled fact holds.
+///
+/// The assembly is also the last phase that can still be stopped: it polls for cancellation
+/// before it starts, after every entry it assembles and before it hands the fact out, so a
+/// cancelled or exhausted request ends without a context set instead of publishing the payload of
+/// a run that was refused.
+/// What the walk produced for every plan, in plan order.
+///
+/// The three collections are keyed by plan index, so they travel together: grouping them keeps
+/// [`assemble`] to the arguments it actually decides with, and it makes the one invariant they
+/// share — every vector is as long as the plan list — a property of one value instead of three
+/// parameters that could be passed out of step.
+struct Walked {
+    /// The locals each context's subroutine wrote, by plan index.
+    affected: Vec<BTreeSet<u16>>,
+    /// The contexts that reach every `ret`, by `ret` BCI.
+    returns: BTreeMap<u32, BTreeSet<usize>>,
+    /// The exception records each context covers, by plan index.
+    coverage: Vec<BTreeSet<u32>>,
+}
+
 fn assemble(
     cfg: &RawCfg,
     blocks: &[u32],
     plans: &[CallSitePlan],
     rets: &[u32],
-    affected: Vec<BTreeSet<u16>>,
-    returns: BTreeMap<u32, BTreeSet<usize>>,
-    coverage: Vec<BTreeSet<u32>>,
-) -> CallContexts {
-    let contexts: Vec<SubroutineContext> = plans
-        .iter()
-        .zip(affected)
-        .map(|(plan, locals)| SubroutineContext {
+    walked: Walked,
+    budget: &mut Budget,
+) -> Result<CallContexts> {
+    checkpoint(Phase::Assembly, budget)?;
+    let mut contexts: Vec<SubroutineContext> = Vec::with_capacity(plans.len());
+    for (plan, locals) in plans.iter().zip(walked.affected) {
+        checkpoint(Phase::Assembly, budget)?;
+        budget.charge(CountedBudgetDimension::IrItems, 1)?;
+        contexts.push(SubroutineContext {
             call_site_bci: plan.call_site_bci,
             return_bci: plan.return_bci,
             entry_bci: plan.entry_bci,
             affected_locals: locals.into_iter().collect(),
-        })
-        .collect();
-    let returns: Vec<SubroutineReturn> = rets
-        .iter()
-        .map(|ret_bci| SubroutineReturn {
+        });
+    }
+    let mut published_returns: Vec<SubroutineReturn> = Vec::with_capacity(rets.len());
+    for ret_bci in rets {
+        checkpoint(Phase::Assembly, budget)?;
+        let owners = walked.returns.get(ret_bci);
+        budget.charge(
+            CountedBudgetDimension::IrItems,
+            1 + u64::try_from(owners.map_or(0, BTreeSet::len))
+                .expect("a body cannot hold more ret owners than contexts"),
+        )?;
+        published_returns.push(SubroutineReturn {
             ret_bci: *ret_bci,
-            targets: returns
-                .get(ret_bci)
+            targets: owners
                 .into_iter()
                 .flatten()
                 .map(|index| CallTarget {
@@ -679,39 +914,61 @@ fn assemble(
                     return_bci: plans[*index].return_bci,
                 })
                 .collect(),
-        })
-        .collect();
-    let exception_coverage: Vec<ExceptionCoverage> = plans
-        .iter()
-        .zip(coverage)
-        .map(|(plan, handlers)| ExceptionCoverage {
+        });
+    }
+    let mut exception_coverage: Vec<ExceptionCoverage> = Vec::with_capacity(plans.len());
+    for (plan, handlers) in plans.iter().zip(walked.coverage) {
+        checkpoint(Phase::Assembly, budget)?;
+        let covering = covering_handlers(&cfg.handlers, plan.call_site_bci);
+        budget.charge(
+            CountedBudgetDimension::IrItems,
+            1 + u64::try_from(covering.len() + handlers.len())
+                .expect("a body cannot hold more exception records than the BCI space"),
+        )?;
+        exception_coverage.push(ExceptionCoverage {
             call_site_bci: plan.call_site_bci,
-            call_site_handlers: covering_handlers(&cfg.handlers, plan.call_site_bci),
+            call_site_handlers: covering,
             subroutine_handlers: handlers.into_iter().collect(),
-        })
-        .collect();
-    let unreachable_call_sites = plans
-        .iter()
-        .map(|plan| plan.call_site_bci)
-        .filter(|bci| !reachable(cfg, blocks, *bci))
-        .collect();
-    CallContexts {
+        });
+    }
+    let mut unreachable_call_sites = Vec::new();
+    for plan in plans {
+        checkpoint(Phase::Assembly, budget)?;
+        if !reachable(cfg, blocks, plan.call_site_bci) {
+            budget.charge(CountedBudgetDimension::IrItems, 1)?;
+            unreachable_call_sites.push(plan.call_site_bci);
+        }
+    }
+    published_item(budget)?;
+    Ok(CallContexts {
         contexts,
-        returns,
+        returns: published_returns,
         exception_coverage,
         unreachable_call_sites,
-    }
+    })
 }
 
 /// One cycle of the nesting relation, as context indexes, or `None` when it is acyclic.
 ///
 /// A call site that contains itself is a cycle: a subroutine that calls itself has an unbounded
 /// stack of return addresses and cannot be described by a finite context set.
-fn nesting_cycle(contains: &[BTreeSet<usize>]) -> Option<Vec<usize>> {
+///
+/// The search's own state is derived storage and it is billed for what it really grows: one
+/// `IrItems` per context whose colour/child state is allocated, one per edge the child lists
+/// copy, and one `AnalysisSteps` per frame pushed onto the path/`cursor` stacks.
+fn nesting_cycle(contains: &[BTreeSet<usize>], budget: &mut Budget) -> Result<Option<Vec<usize>>> {
     const WHITE: u8 = 0;
     const GREY: u8 = 1;
     const BLACK: u8 = 2;
 
+    checkpoint(Phase::CycleSearch, budget)?;
+    // The children lists copy every context's edges, and `colour` holds one node, all before
+    // the storage exists.
+    let edges = u64::try_from(contains.iter().map(BTreeSet::len).sum::<usize>())
+        .expect("a body cannot hold more nesting edges than the BCI space");
+    let nodes =
+        u64::try_from(contains.len()).expect("a body cannot hold more contexts than the BCI");
+    budget.charge(CountedBudgetDimension::IrItems, nodes + edges + nodes)?;
     let children: Vec<Vec<usize>> = contains
         .iter()
         .map(|set| set.iter().copied().collect())
@@ -726,6 +983,7 @@ fn nesting_cycle(contains: &[BTreeSet<usize>]) -> Option<Vec<usize>> {
             continue;
         }
         colour[start] = GREY;
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
         path.push(start);
         cursor.push(0);
         while let Some(frame) = path.len().checked_sub(1) {
@@ -739,11 +997,12 @@ fn nesting_cycle(contains: &[BTreeSet<usize>]) -> Option<Vec<usize>> {
                             .iter()
                             .position(|visited| *visited == next)
                             .expect("a grey node is on the current path");
-                        return Some(path[at..].to_vec());
+                        return Ok(Some(path[at..].to_vec()));
                     }
                     BLACK => {}
                     _ => {
                         colour[next] = GREY;
+                        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
                         path.push(next);
                         cursor.push(0);
                     }
@@ -755,7 +1014,7 @@ fn nesting_cycle(contains: &[BTreeSet<usize>]) -> Option<Vec<usize>> {
             }
         }
     }
-    None
+    Ok(None)
 }
 
 /// Stable name of one legacy opcode, for the diagnostic of a forbidden dialect.
@@ -864,6 +1123,21 @@ mod tests {
             InstructionOperands {
                 branch_offset: Some(offset),
                 ..operands(OPCODE_JSR)
+            },
+        )
+    }
+
+    /// A `goto` whose relative offset points `offset` bytes ahead of its own BCI.
+    fn goto(bci: u32, offset: i32) -> (InstructionFact, InstructionOperands) {
+        /// `goto`.
+        const OPCODE_GOTO: u8 = 0xa7;
+        instruction(
+            bci,
+            OPCODE_GOTO,
+            3,
+            InstructionOperands {
+                branch_offset: Some(offset),
+                ..operands(OPCODE_GOTO)
             },
         )
     }
@@ -1733,10 +2007,12 @@ mod tests {
     }
 
     #[test]
-    fn the_walk_bills_analysis_steps_and_nothing_else() {
-        // The declared dimension set of the pass is `[Steps]`: the walk charges steps, and the
-        // dimensions `raw_cfg` owns (`IrItems`/`IrEdges`) stay untouched here even though their
-        // limits are zero.
+    fn the_declared_dimensions_of_the_pass_are_ir_items_ir_edges_and_steps() {
+        // The declared dimension set of the pass is `[Blocks, Steps]`: the walk charges steps for
+        // the instructions it looks at and for every worklist pop/enqueue, and `Blocks` for the
+        // storage it derives — the successor lists as edges, the contexts, the per-context sets
+        // and the rows of the visited matrix as items. The empty context set of a body with no
+        // legacy opcode still charges nothing, which the test below covers.
         let facts = body(
             vec![
                 jsr(0, 9),
@@ -1755,8 +2031,8 @@ mod tests {
         let mut budget = Budget::new(Limits {
             class_bytes: 0,
             code_bytes: 0,
-            ir_items: 0,
-            ir_edges: 0,
+            ir_items: u64::MAX,
+            ir_edges: u64::MAX,
             analysis_steps: 1_000,
             elapsed_millis: u64::MAX,
             ..Limits::default()
@@ -1767,8 +2043,362 @@ mod tests {
         ));
         let usage = budget.usage();
         assert!(usage.analysis_steps > 0);
-        assert_eq!(usage.ir_items, 0, "the walk creates no IR item of raw_cfg");
-        assert_eq!(usage.ir_edges, 0, "the walk adds no edge");
+        assert!(
+            usage.ir_items > 0,
+            "the derived storage of the pass is billed as items: {usage:?}"
+        );
+        assert!(
+            usage.ir_edges > 0,
+            "the successor lists are derived edges, billed as edges: {usage:?}"
+        );
+    }
+
+    /// The `Limits` of the billing tests: ample headroom everywhere, and one dimension bounded.
+    fn limits_bounded(dimension: CountedBudgetDimension, limit: u64) -> Limits {
+        let mut limits = Limits {
+            class_bytes: 0,
+            code_bytes: 0,
+            ir_items: 1_000_000,
+            ir_edges: 1_000_000,
+            analysis_steps: 1_000_000,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        };
+        match dimension {
+            CountedBudgetDimension::IrItems => limits.ir_items = limit,
+            CountedBudgetDimension::IrEdges => limits.ir_edges = limit,
+            CountedBudgetDimension::AnalysisSteps => limits.analysis_steps = limit,
+            other => panic!("the billing tests bound the pass's own dimensions, not {other:?}"),
+        }
+        limits
+    }
+
+    /// One fixture whose walk touches every billing site the pass has.
+    fn billing_fixture() -> MethodCodeFacts {
+        body(
+            vec![
+                jsr(0, 9),
+                jsr(3, 6),
+                plain(6, 0xb1),
+                plain(7, 0x00),
+                plain(8, 0x00),
+                store(9, 0x4c, 1),
+                iinc(10, 2, 1),
+                ret(13, 1),
+            ],
+            Vec::new(),
+            15,
+        )
+    }
+
+    /// The usage one successful run of `facts` charges for the dimensions given enough headroom:
+    /// the baseline the "just under" and "exactly" bounds are read from.
+    fn baseline_usage(facts: &MethodCodeFacts) -> UsageSnapshot {
+        let raw = graph(facts, &mut budget());
+        let mut budget = budget();
+        assert!(matches!(
+            call_contexts(facts, &raw, 45, &mut budget),
+            Ok(CallContextOutcome::Established(_))
+        ));
+        budget.usage()
+    }
+
+    fn counted(usage: &UsageSnapshot) -> Vec<(CountedBudgetDimension, u64)> {
+        CountedBudgetDimension::ALL
+            .into_iter()
+            .map(|dimension| (dimension, usage.counted_usage(dimension)))
+            .collect()
+    }
+
+    #[test]
+    fn a_zero_item_budget_stops_the_pass_without_publishing_a_context_set() {
+        // The R4 counter-example: the raw graph is built with headroom, then the pass is asked to
+        // run with `ir_items = 0` and all the steps it wants. Before the derived storage was
+        // billed, this run succeeded — the walk allocated its visited matrix, its per-context sets
+        // and its published fact without ever asking the item dimension for permission. It must
+        // now stop in `IrItems`, keep the raw facts and publish no `CallContexts`.
+        let facts = billing_fixture();
+        let raw = graph(&facts, &mut budget());
+        assert!(
+            !raw.cfg.blocks.is_empty(),
+            "the fixture has a graph, so the stop is not an empty answer"
+        );
+        let mut starved = Budget::new(Limits {
+            class_bytes: 0,
+            code_bytes: 0,
+            ir_items: 0,
+            ir_edges: 1_000_000,
+            analysis_steps: 1_000_000,
+            elapsed_millis: u64::MAX,
+            ..Limits::default()
+        });
+        let error = call_contexts(&facts, &raw, 45, &mut starved)
+            .expect_err("a zero item budget cannot pay for one context");
+        assert!(
+            matches!(
+                error,
+                Error::BudgetExceeded {
+                    dimension: BudgetDimension::IrItems,
+                    limit: 0,
+                    ..
+                }
+            ),
+            "the stop names `IrItems`: {error:?}"
+        );
+        assert_eq!(
+            starved
+                .usage()
+                .counted_usage(CountedBudgetDimension::IrItems),
+            0,
+            "a refused item is not consumed"
+        );
+
+        // The same stop, funded for everything except the visited rows: `2 contexts * (1 + blocks)`
+        // items are withheld from a budget that is otherwise exactly what the run needs, so the
+        // run must stop in `IrItems` at the row allocation. This is the case that isolates the
+        // matrix: a pass that stopped billing the rows would complete on this budget, because the
+        // withheld items are exactly the ones it no longer asks for.
+        let complete = baseline_usage(&facts).counted_usage(CountedBudgetDimension::IrItems);
+        let blocks = u64::try_from(raw_block_count(&facts)).expect("a small fixture");
+        let rows = 2 * (1 + blocks);
+        assert!(
+            complete > rows,
+            "the matrix must be a real part of the bill: {complete} items, {rows} rows"
+        );
+        let raw = graph(&facts, &mut budget());
+        let mut withheld = Budget::new(limits_bounded(
+            CountedBudgetDimension::IrItems,
+            complete - rows,
+        ));
+        let error = call_contexts(&facts, &raw, 45, &mut withheld)
+            .expect_err("a budget without the visited rows cannot pay for them");
+        assert!(
+            matches!(
+                error,
+                Error::BudgetExceeded {
+                    dimension: BudgetDimension::IrItems,
+                    ..
+                }
+            ),
+            "the stop is the item dimension the matrix is billed in: {error:?}"
+        );
+    }
+
+    #[test]
+    fn one_item_short_of_the_items_stops_the_pass_and_exactly_enough_completes_it() {
+        // The bound is exact: with one item less than a complete run charges, some charge of the
+        // run is refused; with exactly that many, every charge is accepted and the context set is
+        // published entire — the payload is never truncated to fit a budget.
+        let facts = billing_fixture();
+        let usage = baseline_usage(&facts);
+        let charges = usage.counted_usage(CountedBudgetDimension::IrItems);
+        assert!(
+            charges > 1,
+            "the fixture must really charge several items: {charges}"
+        );
+
+        // The steps and edges of a run are wired to the items of the same fixture: one item less
+        // is refused, wherever in the run the missing item is noticed.
+        for (dimension, exact) in counted(&usage).into_iter().filter(|(dimension, _)| {
+            matches!(
+                dimension,
+                CountedBudgetDimension::IrItems
+                    | CountedBudgetDimension::IrEdges
+                    | CountedBudgetDimension::AnalysisSteps
+            )
+        }) {
+            assert!(exact > 0, "{dimension:?} of a complete run is not zero");
+            let raw = graph(&facts, &mut budget());
+            let mut short = Budget::new(limits_bounded(dimension, exact - 1));
+            let error = call_contexts(&facts, &raw, 45, &mut short)
+                .expect_err("one unit less than a complete run is refused");
+            assert!(
+                matches!(
+                    error,
+                    Error::BudgetExceeded { dimension: refused, .. } if refused == dimension.into()
+                ),
+                "{dimension:?}: {error:?}"
+            );
+
+            let raw = graph(&facts, &mut budget());
+            let mut enough = Budget::new(limits_bounded(dimension, exact));
+            assert!(
+                matches!(
+                    call_contexts(&facts, &raw, 45, &mut enough),
+                    Ok(CallContextOutcome::Established(_))
+                ),
+                "{dimension:?} at exactly the complete run's usage must establish"
+            );
+            assert_eq!(
+                enough.usage().counted_usage(dimension),
+                exact,
+                "{dimension:?}: the same fixture spends the same budget twice"
+            );
+        }
+    }
+
+    #[test]
+    fn the_item_bill_grows_with_the_visited_product_and_not_with_the_outer_vector() {
+        // The counter of the ordering rule: `visited` is one row of `blocks.len()` flags **per
+        // context**, so the bill is the product of the two and not one charge per outer vector.
+        // Two bodies with the same number of contexts but a growing block count must therefore
+        // charge strictly more items: a pass that charged the matrix once per context — or once
+        // per walk — would charge both of them the same, and could never refuse the ~9 MB matrix
+        // of 3 000 contexts over 3 000 blocks.
+        let contexts = |extra_blocks: u32| {
+            // A chain of `goto`s, one per extra block: each one is a branch target and follows a
+            // branch, so each really opens a block of its own between the call sites and the
+            // subroutine. Both `jsr` sites enter that same subroutine, so both runs below have the
+            // same context count and differ only in the blocks a visited row has to cover.
+            let entry = 6 + 3 * extra_blocks;
+            let mut code = vec![
+                jsr(0, i32::try_from(entry).expect("a small fixture")),
+                jsr(3, i32::try_from(entry - 3).expect("a small fixture")),
+            ];
+            for index in 0..extra_blocks {
+                code.push(goto(6 + 3 * index, 3));
+            }
+            code.push(store(entry, 0x4c, 1));
+            code.push(iinc(entry + 1, 2, 1));
+            code.push(ret(entry + 4, 1));
+            let code_length = entry + 6;
+            let facts = body(code, Vec::new(), code_length);
+            let blocks = raw_block_count(&facts);
+            let usage = baseline_usage(&facts);
+            (
+                blocks,
+                usage.counted_usage(CountedBudgetDimension::IrItems),
+                baseline_contexts(&facts),
+            )
+        };
+        let (small_blocks, small_items, small_contexts) = contexts(0);
+        let (large_blocks, large_items, large_contexts) = contexts(20);
+        assert!(
+            large_blocks > small_blocks,
+            "the fixture must really grow its block count: {small_blocks} vs {large_blocks}"
+        );
+        assert_eq!(
+            (small_contexts, large_contexts),
+            (2, 2),
+            "the outer dimension is held fixed: the comparison is two contexts against two"
+        );
+        assert!(
+            large_items > small_items,
+            "the item bill must grow with the visited product: {small_items} items over \
+             {small_blocks} blocks vs {large_items} items over {large_blocks} blocks"
+        );
+        // The claim itself, from outside the run that produced it: two contexts over
+        // `large_blocks` blocks allocate two rows of that width, so the item bill can never be
+        // below the product `contexts * blocks`. A run that charged one item per outer vector
+        // instead of one per row would land far below this and could not refuse the ~9 MB matrix
+        // of 3 000 contexts.
+        let rows = u64::try_from(2 * large_blocks).expect("a small fixture");
+        assert!(
+            large_items >= rows,
+            "the visited product of 2 contexts over {large_blocks} blocks is {rows} items, but \
+             the run charged {large_items}"
+        );
+    }
+
+    /// The number of contexts one fixture establishes, so a comparison can hold that dimension
+    /// fixed while another one grows.
+    fn baseline_contexts(facts: &MethodCodeFacts) -> usize {
+        let raw = graph(facts, &mut budget());
+        established(facts, &raw, 45).contexts.len()
+    }
+
+    #[test]
+    fn the_item_bill_charges_the_elements_of_a_context_set_and_not_the_outer_vector() {
+        // The other half of the ordering rule: a per-context set is billed **per element**, not
+        // once for the vector that holds it. Two bodies with the same one call site, the same
+        // instruction layout and the same block count — they differ only in how many locals the
+        // subroutine writes, because a one-byte `nop` and a one-byte `astore`/`istore` occupy the
+        // same slot — must therefore charge a different number of items, exactly one per written
+        // local. A pass that charged the affected-locals set once per outer vector would charge
+        // both runs the same and could never refuse a context whose set is huge.
+        let variant = |writes: u32| {
+            assert!(writes <= 4, "the fixture has four one-byte slots");
+            let mut code = vec![jsr(0, 6), plain(3, 0xb1), plain(4, 0x00), plain(5, 0x00)];
+            /// `astore_1`..`astore_3` and `istore`, one byte each, naming their local.
+            const STORES: [(u8, u16); 4] = [(0x4c, 1), (0x4d, 2), (0x4e, 3), (0x36, 4)];
+            for index in 0..4 {
+                if index < writes {
+                    let (opcode, local) = STORES[index as usize];
+                    code.push(store(6 + index, opcode, local));
+                } else {
+                    code.push(plain(6 + index, 0x00));
+                }
+            }
+            code.push(ret(10, 1));
+            let facts = body(code, Vec::new(), 12);
+            let blocks = raw_block_count(&facts);
+            let usage = baseline_usage(&facts);
+            (
+                blocks,
+                usage.counted_usage(CountedBudgetDimension::IrItems),
+                baseline_contexts(&facts),
+            )
+        };
+        let (one_block, one_item, one_contexts) = variant(1);
+        let (four_blocks, four_items, four_contexts) = variant(4);
+        assert_eq!(
+            (one_block, one_contexts, four_contexts),
+            (four_blocks, 1, 1),
+            "the comparison holds the blocks and the contexts fixed"
+        );
+        assert_eq!(
+            four_items - one_item,
+            3,
+            "three more written locals are three more items: {one_item} vs {four_items}"
+        );
+    }
+
+    /// The block count of the raw graph of one fixture, as the pass sees it.
+    fn raw_block_count(facts: &MethodCodeFacts) -> usize {
+        graph(facts, &mut budget()).cfg.blocks.len()
+    }
+
+    #[test]
+    fn a_cancellation_during_the_assembly_stops_the_pass_without_publishing() {
+        // The assembly is the last phase that can still be stopped, and it is the one with no
+        // billing point of its own: without its polls a cancelled request would still hand out a
+        // complete `CallContexts`. The seam cancels at the next checkpoint of the assembly, and
+        // the run must stop there with `Error::Cancelled` and no payload.
+        let facts = billing_fixture();
+        let raw = graph(&facts, &mut budget());
+        let _seam = checkpoint_seam(Phase::Assembly);
+        let mut budget = budget();
+        let error = call_contexts(&facts, &raw, 45, &mut budget)
+            .expect_err("a cancellation inside the assembly publishes nothing");
+        assert!(
+            matches!(error, Error::Cancelled { .. }),
+            "the stop is the crate's own cancellation: {error:?}"
+        );
+    }
+
+    #[test]
+    fn the_assembly_publishes_the_whole_payload_when_it_is_allowed_to_finish() {
+        // The other half of the cancellation case: the payload of a run that is allowed to finish
+        // is complete — every context, every `ret`, every coverage record — because a budget is
+        // never paid for by publishing a truncated fact.
+        let facts = billing_fixture();
+        let raw = graph(&facts, &mut budget());
+        let contexts = established(&facts, &raw, 45);
+        assert_eq!(contexts.contexts.len(), 2, "one context per call site");
+        assert_eq!(contexts.returns.len(), 1, "one entry per `ret`");
+        assert_eq!(
+            contexts.exception_coverage.len(),
+            2,
+            "one coverage record per context"
+        );
+        assert!(
+            contexts
+                .contexts
+                .iter()
+                .all(|context| context.affected_locals.contains(&1)),
+            "the subroutine's writes are kept: {:?}",
+            contexts.contexts
+        );
     }
 
     #[test]

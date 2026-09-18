@@ -296,7 +296,9 @@ fn the_historical_jsr_finally_completes_the_call_context_pass() {
         );
 
         // The same fixture with the pass unscheduled: the walk is what the difference in
-        // analysis steps is, and it adds no IR item and no edge.
+        // analysis steps is, and it derives storage of its own — the plans, the per-context sets
+        // and the rows of its visited matrix as `IrItems`, the successor lists as `IrEdges` — so
+        // the call-context run is strictly above the raw-graph-only run on both dimensions.
         let without = request(
             &fixture,
             fixture.method.clone(),
@@ -307,8 +309,18 @@ fn the_historical_jsr_finally_completes_the_call_context_pass() {
             budget.usage().analysis_steps > raw_budget.usage().analysis_steps,
             "classfile major {version}: the call-context walk charged steps of its own"
         );
-        assert_eq!(budget.usage().ir_items, raw_budget.usage().ir_items);
-        assert_eq!(budget.usage().ir_edges, raw_budget.usage().ir_edges);
+        assert!(
+            budget.usage().ir_items > raw_budget.usage().ir_items,
+            "classfile major {version}: the contexts and their sets are derived items: {} vs {}",
+            budget.usage().ir_items,
+            raw_budget.usage().ir_items
+        );
+        assert!(
+            budget.usage().ir_edges > raw_budget.usage().ir_edges,
+            "classfile major {version}: the successor lists are derived edges: {} vs {}",
+            budget.usage().ir_edges,
+            raw_budget.usage().ir_edges
+        );
         assert!(
             raw_budget.usage().ir_edges >= 2,
             "the two `jsr` calls of this fixture are raw edges"
@@ -540,10 +552,12 @@ fn the_call_context_walk_stops_on_its_own_step_budget() {
         "the stop names the dimension the pass declared"
     );
     assert!(budget.usage().analysis_steps <= steps_before + 1);
-    assert_eq!(
+    assert!(
+        budget.usage().ir_edges > raw_budget.usage().ir_edges,
+        "the walk's successor lists are derived edges, billed before the step budget stopped the \
+         run: {} vs {}",
         budget.usage().ir_edges,
-        raw_budget.usage().ir_edges,
-        "the walk adds no edge of its own"
+        raw_budget.usage().ir_edges
     );
 }
 
