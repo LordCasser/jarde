@@ -201,7 +201,7 @@
 | D21 | `engine.rs` 的 pass 校验接入在公共路径不可观测；前缀规则在 `ir::scheduled_stages` 与 `passes::validate_schedule` 各有一份 | 3.2 复核 | **5.1 处理**：以校验器返回的表前缀作为唯一执行/阶段来源，并断言「报告 `stages` == 校验器前缀」 |
 | D22 | `Effects` 目前无消费者（其失效在运行时不被强制） | 3.2 复核 | 契约已写「事实的消费者必须写进 `requires`」；4.x 接通消费者时须同步 |
 | D23 | `progress()` 的「尚无 phase 完成」分支与空集合分支仓内无覆盖 | 3.2 复核 | 探针证明可达且正确；5.1 装配真实 `stages` 时会走到 |
-| D24 | `analysis-contracts` 的 Purpose 仍是 P1 口径；`query-api` 仍称 P2 会处理 `references_definition` | P1/P2 记录 | **5.4 归档前必修**：同步 Purpose，并把 `query-api` 的那句改成与实现一致 |
+| D24 | `analysis-contracts` 的 Purpose 仍是 P1 口径；`query-api` 仍称 P2 会处理 `references_definition`；`jvm-ir` spec 写「budget class」单数而契约为维度集合 | P1/P2 记录 | **5.4 归档前必修**：同步 Purpose、把 `query-api` 的那句改成与实现一致、把 `jvm-ir` 的 budget 措辞改成集合 |
 | D25 | `analyze_method` 的 driver 读取按**物理身份**，不受环境 domain/root 约束（构造「环境指向快照 B、请求 owner 在快照 A」可读到 A 的定义并把 loader 记成 app） | 3.3 复核 | **5.1 决策**：要么要求 `method.owner` 的 snapshot 与 `runtime.physical.snapshot` 一致，要么在契约里写清身份读取与 loader 归属口径 |
 | D26 | 内部块上限（16 384）与请求级 `ir_items` 在报告层只能靠诊断文案里的 `limit=16384` 区分（`Error::BudgetExceeded` 的 limit/consumed/requested 在 `ir::terminal` 被丢弃） | 3.3 复核 | 接受为现状；5.1 若要发布计数需先决定是否给独立 code |
 | D27 | `wide` 包裹的 opcode 在 1.2 未保留（`wide iload/istore/ret` 既不分类局部读写也不结束块；`wide iinc` 经 increment 仍分类） | 3.3 实现 | 接受为 1.2 边界（与 `newarray` atype 同类）；若 3.4/4.x 需要 `wide ret`，先扩 1.2 事实 |
