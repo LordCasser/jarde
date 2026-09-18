@@ -825,6 +825,11 @@ pub(crate) struct PassDescriptor {
   - **R2（`ret` 的 local 从未持有返回地址）**：v49，`0: jsr 4; 3: return; 4: astore_0; 5: ret 1`，无异常表，`code_length = 7`。`ret 1` 读的是**从未保存过返回地址的槽**——当前实现按「ret 可达于该上下文」盲目归属并报 `Established`、返回点 BCI 3；正确结果是**不发布 `CallContexts`**（`ir_call_context_unresolved` + `Partial`），因为 local 1 里没有任何已证明的 token。
   - **R3（handler 回接 `ret` 前的写入被整类丢弃）**：v49，`0: jsr 4; 3: return; 4: astore_0; 5: iconst_1; 6: iconst_0; 7: idiv; 8: pop; 9: ret 0; 11: astore_1; 12: iconst_0; 13: istore_2; 14: goto -5`（回到 9），异常表 `ordinal 0, start=5, end=8, handler=11, catch_all`，`code_length = 17`。当前实现报 `Established` 且 `affected_locals == [0]`；**正确结果是 `[0, 1, 2]`**——handler 在 `goto` 回接到 `ret` 之前写了 local 1 与 local 2，丢弃异常边就漏掉了这些写入与 token 变化。
   - 两条都要在仓内断言**结局 + 载荷**（不是只断言诊断码）：R2 断言不发布 `CallContexts`；R3 断言 `affected_locals` 精确等于 `[0, 1, 2]`。
+- **仍未满足的合流要求（2026-09-18 父级实测，3.4 勾选前必须解决）**：当前实现是**沿 worklist 的前向近似**——`token_slots` 只按上下文记录「地址进了哪个槽」，不做按路径的合流。反例（实测 `Established`，契约要求**不发布**）：
+  - 形状：`0: jsr 4; 3: return; 4: ifeq +7 →11; 7: nop; 8: goto +4 →12; 11: astore_0; 12: ret 0`。地址只在**分支臂**（块 11）存入槽 0，另一条路径 `4→7→8→12` 到达 `ret 0` 时**从未存过**地址；由于 LIFO worklist 先访问块 11，`Held{0}` 被整个上下文沿用，`ret 0` 因而匹配成功。
+  - 对照：同样两个臂但**地址存储支配 `ret`** 的版本（`11: astore_0; 12: ret 0`，两臂都先汇到 11）仍应 `Established`——实测确实如此，所以问题只在「存储不支配 `ret`」的合流。
+  - **修法方向（已定，实现者照此做）**：把按上下文的**顺序可变状态**改成按上下文的**必须分析**（must-analysis）不动点：状态为 `{Waiting | Held{slot, store} | Lost}`，按**块**（而不是按指令序列）建模，块内 transfer 用该块指令的效果，块的 in-state 取所有前驱 out-state 的**交**（`Held(s,sb) ∩ Held(s,sb) = Held(s,sb)`；`Held ∩ Waiting = Waiting`；任一 `Lost` 传播 `Lost`），在不动点上读 `ret` 所在块的 in-state。这样：R3（地址存储在支配位置）仍 `Established`、R2/MERGE3（不支配）均 `Unresolved`、覆盖（`Lost`）传播到所有后继。`affected_locals` 仍是**写集**（对该上下文的子程序体可达指令的写入），与本分析分开。
+  - 该不动点同样要计费（`IrItems`/`AnalysisSteps`，按实际增长）并纳入取消检查点。
 - **验收**：正确 ret 与错槽/覆盖的双侧对照、共享/嵌套和 handler 回接 ret、不同 throw-site locals、wide/版本边界、零/恰好/超限存储与步骤、取消和不可达边界。至少一份真实历史 finally 语料；合成 fixture 断言实际 opcode/operand 及运行状态，不能只断言载荷形状。将本轮反例转成仓内回归，并证明恢复旧实现会失败，独立复核后才能勾选。
 
 ### 3.5 有界 jsr/ret 规范化与 CanonicalCFG

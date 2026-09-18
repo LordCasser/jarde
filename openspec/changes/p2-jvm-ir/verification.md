@@ -337,6 +337,26 @@
 - 提交：R2 = `aa7f918`、R3 = `ac12967`，均已推送 `main`。
 - **本机环境异常（如实记录）**：期间本机链接器失效——`xcrun --sdk macosx --show-sdk-path` 因 **Xcode 许可未接受**而失败，`cargo test` 在链接阶段报 `library 'System' not found`，与代码无关。绕行方式（不改动机器状态）：`SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk` 且把 `/Library/Developer/CommandLineTools/usr/bin` 置于 `PATH` 首位。**本片全部验证均在该绕行下完成**；这也意味着本机无法再复现「默认工具链可用」的前提，CI 侧不受影响（Linux runner）。
 
+#### 父级自查发现的**未闭合合流缺口**（2026-09-18，3.4 不能勾选的首要原因）
+
+在复核者到达之前，父级按契约「不可靠合流均不发布」自查，构造出**一个仍然误报 `Established` 的反例**并实测确认：
+
+```text
+0: jsr 4         // -> BCI 4, 返回地址 3
+3: return
+4: ifeq +7 -> 11 // 分支
+7: nop           // 这一条路径**从不**存入返回地址
+8: goto +4 -> 12
+11: astore_0     // 地址只在这一条臂上存入槽 0
+12: ret 0
+```
+
+- **实测**：`Established`，`affected_locals=[0]`——但路径 `4→7→8→12` 到达 `ret 0` 时槽 0 从未得到地址，按契约必须**不发布**。
+- **根因**：`token_slots: Vec<TokenSlot>` 是**按上下文的顺序可变状态**，随 worklist 访问顺序写入；块 11 先被访问就把 `Held{0}` 沿用给整个上下文，包括另一条臂上的 `ret`。即：实现是**前向近似**，没有做契约要求的「按 token 身份的合流」。
+- **对照（说明不是过度保守导致的误判）**：把存储改成**支配 `ret`** 的版本（两个臂都先汇到块 11，`11: astore_0; 12: ret 0`）实测仍 `Established`，正确；另一条路径完全不存（`4` 臂无存储）的版本实测 `Unresolved`，也正确。所以缺口精确地落在「存储不支配 `ret` 的合流」上。
+- **修法已写进契约**：把顺序可变状态改成**按上下文的必须分析不动点**（按块建模、前驱 in-state 取交、`Lost` 传播、在不动点上读 `ret` 所在块的 in-state），并同样计费与检查取消。
+- 该反例**尚未落成仓内回归**（它还失败，不能作为通过用例）；实现修好后再补正反两侧断言。
+
 #### 仍未完成（3.4 不能勾选的原因）
 
 - **逐触发的不可达边界未逐条落成用例**：契约要求「返回点不在已解码前缀 / 子程序体无 `ret` / 嵌套成环 / 宽形态缺口」四类**各配一条 fixture 并同时断言反方向**（死代码里的对应形态仍 `Established`）。仓内现有多条相关用例（`a_ret_no_call_context_owns_is_unresolved`、`a_body_whose_decode_stopped_keeps_its_call_graph_unresolved`、`call_sites_that_nest_through_each_other_are_unresolved`、`a_call_site_whose_body_owns_no_ret_is_unresolved`），但**反方向并非每条都有**，需逐类补齐后再勾选。
