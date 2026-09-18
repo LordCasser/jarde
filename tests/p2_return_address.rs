@@ -802,3 +802,106 @@ fn a_live_call_site_behind_a_mid_block_jsr_is_still_refused() {
         budget.usage().ir_edges
     );
 }
+
+/// The `LegacyNormalization` stage's outcome for one `illegal()V` body, through the public entry.
+///
+/// Returns the stage state with the diagnostic codes, so a caller can assert both that the stage
+/// did not complete and that it said why.
+fn legacy_stage(code: &[u8]) -> (StageState, Vec<String>) {
+    let fixture = fixture(&illegal_call_graph_class(code, 3));
+    let method = PhysicalMethodId {
+        owner: fixture.method.owner.clone(),
+        name: bytes(b"illegal"),
+        descriptor: bytes(b"()V"),
+    };
+    let request = request(&fixture, method, vec![AnalysisStage::LegacyNormalization]);
+    let (report, _budget) = analyze(&fixture, &request, limits());
+    let states = stage_states(&report);
+    let state = states
+        .get(2)
+        .expect("the request asks for the legacy phase, so its state is present")
+        .clone();
+    let codes = diagnostic_codes(&report)
+        .into_iter()
+        .map(str::to_string)
+        .collect();
+    (state, codes)
+}
+
+#[test]
+fn a_return_address_the_bytes_do_not_prove_stops_the_stage_before_it_completes() {
+    // R7 (3.4b), on the public path. The call-context stage used to accept a slot because of
+    // where the writes were, not because of what they stored, so a `ret` whose slot held an
+    // ordinary value still let the stage complete - and canonicalization would then have
+    // consumed a return point the bytes never established.
+    //
+    // Four bodies whose slot holds something that is not the return address, and two that are
+    // legal, each given as the method's whole `Code`:
+    let cases: [(&str, &[u8], bool); 6] = [
+        // 0: jsr+4; 3: return; 4: astore_0 (the address); 5: ret 0
+        (
+            "a stored address",
+            &[0xa8, 0x00, 0x04, 0xb1, 0x4b, 0xa9, 0x00],
+            true,
+        ),
+        // 4: aconst_null; 5: astore_1; 6: astore_0; 7: ret 1 - local 1 holds null
+        (
+            "a null in the slot",
+            &[0xa8, 0x00, 0x04, 0xb1, 0x01, 0x4c, 0x4b, 0xa9, 0x01],
+            false,
+        ),
+        // 4: pop (the address is gone); 5: aconst_null; 6: astore_0; 7: ret 0
+        (
+            "a discarded address",
+            &[0xa8, 0x00, 0x04, 0xb1, 0x57, 0x01, 0x4b, 0xa9, 0x00],
+            false,
+        ),
+        // 4: astore_0; 5: aload_0 (which may not load a return address); 6: astore_1; 7: ret 1
+        (
+            "an address carried through aload",
+            &[0xa8, 0x00, 0x04, 0xb1, 0x4b, 0x2a, 0x4c, 0xa9, 0x01],
+            false,
+        ),
+        // Two nested calls: the outer stores slot 0, the inner stores slot 1, `ret 0` returns
+        // to the outer continuation and `ret 1` to the inner one.
+        (
+            "a legal nested pair",
+            &[
+                0xa8, 0x00, 0x04, 0xb1, 0x4b, 0xa8, 0x00, 0x05, 0xa9, 0x00, 0x4c, 0x00, 0x00, 0xa9,
+                0x01,
+            ],
+            true,
+        ),
+        // The same shape, but after the inner call stores its own slot it writes null into the
+        // slot the outer `ret 0` reads - the two calls share one frame.
+        (
+            "an inner call writing the outer slot",
+            &[
+                0xa8, 0x00, 0x04, 0xb1, 0x4b, 0xa8, 0x00, 0x05, 0xa9, 0x00, 0x4c, 0x01, 0x4b, 0xa9,
+                0x01,
+            ],
+            false,
+        ),
+    ];
+    for (name, code, legal) in cases {
+        let (state, codes) = legacy_stage(code);
+        if legal {
+            assert_eq!(
+                state,
+                StageState::Completed,
+                "{name} is a legal body and must still complete: {codes:?}"
+            );
+        } else {
+            assert_eq!(
+                state,
+                StageState::Partial,
+                "{name} must stop the stage rather than complete it: {codes:?}"
+            );
+            assert_eq!(
+                codes,
+                vec!["ir_call_context_unresolved".to_string()],
+                "{name} stops under its own code"
+            );
+        }
+    }
+}

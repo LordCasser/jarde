@@ -37,6 +37,18 @@
 //! (because that is where control resumes once the nested call returns). Neither direction is a
 //! guess: both are the two halves of the same `SubroutineReturn` edge.
 //!
+//! # The value proof
+//!
+//! A context's `ret` is attributed to it only when the bytes say the slot it reads holds *that
+//! context's* return address. The context's own `jsr` put an address on the operand stack, the
+//! write that reaches the slot stores that value ([`Walk::token_stores`]), that write is the
+//! slot's only one and dominates the `ret`, and no call nested in the context writes the same
+//! slot ([`Walk::descendants`]) — a `jsr` shares the caller's frame, so an inner subroutine's
+//! write to that slot overwrites what the outer one stored. A `null`, an ordinary reference, a
+//! copy carried through the operand stack, a value loaded back out of a local, a slot an inner
+//! call overwrites: each of those is a refusal under [`IR_CALL_CONTEXT_UNRESOLVED`] with the
+//! shape it read, never a context set 3.5 could consume.
+//!
 //! # Reachability
 //!
 //! Every `jsr`/`jsr_w` site **whose return point is an instruction of the decoded prefix** gets
@@ -93,9 +105,13 @@
 //!   product this pass has to bound: `Vec<bool>` is one byte per entry, so a body of 3 000
 //!   contexts over 3 000 blocks would hold ~9 MB of visited flags, and a budget that charges
 //!   the matrix only once per context — or not at all — cannot refuse it;
+//! * one `IrItems` per block per context for the token provenance's own state row, which is the
+//!   same product shape and is billed the same way, one per store that row proves, and one per
+//!   context of a nested-write closure;
 //! * one `AnalysisSteps` per instruction looked at while walking a context, per worklist pop,
 //!   per worklist enqueue and per frame the cycle search pushes (a repeated visit of a block is
-//!   charged again);
+//!   charged again), plus the same charges for the provenance fixpoint, its recording pass and
+//!   the closure search;
 //! * the empty context set of a body with no `jsr`/`jsr_w`/`ret` is charged nothing.
 //!
 //! Every phase — the plans and the entry map, the successor lists, the instruction ranges, the
@@ -153,8 +169,36 @@ struct UnprovenReturn {
     call_site: u32,
     /// The local the `ret` reads, if the operands name one.
     reads: Option<u16>,
-    /// The slot this context stored its return address in, if it stored one at all.
-    holds: Option<u16>,
+    /// Why that local does not hold this context's return address, as the walk read the bytes.
+    reason: UnprovenReason,
+}
+
+/// Why the local a `ret` reads is not a proven return address of its context.
+///
+/// The walk states the shape it read instead of announcing that the address "is somewhere": a
+/// slot no write reaches, a slot written more than once, a slot whose only write stored a value
+/// that was never the address this context pushed, a slot a nested call shares, and a store
+/// that does not dominate the `ret` are five different facts about the bytes, and whoever reads
+/// the diagnostic gets to see which one stopped the stage.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum UnprovenReason {
+    /// No write to that slot reaches the walk.
+    NoWrite,
+    /// This context's body writes the slot more than once, so the value the `ret` reads is not
+    /// the one write the bytes prove. `holds_token` says whether one of those writes stored the
+    /// token this context's `jsr` pushed.
+    SeveralWrites { holds_token: bool },
+    /// The only write stores a value that is not the token this context's `jsr` pushed: an
+    /// ordinary reference, a `null`, a copy carried through the operand stack, or a value loaded
+    /// back out of another slot.
+    NotTheToken,
+    /// The store of the token does not dominate the `ret`: some path reaches the `ret` without
+    /// running it, so attributing the address to this `ret` would be a guess about which path ran.
+    NotDominating,
+    /// The token's own store is the only write of *this* context, but a call this context
+    /// contains writes the same slot: a `jsr` shares the caller's frame, so the slot the outer
+    /// subroutine stored its address in is the slot the nested body writes its own values in.
+    NestedWrite { call_site: u32 },
 }
 
 /// One `jsr`/`jsr_w` call context: the raw return address and what its subroutine writes.
@@ -498,16 +542,52 @@ fn is_astore(opcode: u8) -> bool {
     matches!(opcode, 0x4b..=0x4e | 0x3a)
 }
 
+/// Whether one instruction leaves the operand stack exactly as it found it, so a value that was
+/// on top before it is still the value on top after it.
+///
+/// `nop` (0x00), `iinc` (0x84, the `wide` form included, since the reader classifies by the
+/// opcode it wraps) and the two `goto`s (0xa7, 0xc8) neither read nor write the stack. Every
+/// other instruction is treated as disturbing the top — including the ones whose net stack
+/// effect happens to be zero, like `checkcast` (0xc0): its operand is a reference, so a body that
+/// reaches it with a `returnAddress` on top is a body this pass has no proof about.
+fn keeps_stack_top(opcode: u8) -> bool {
+    matches!(opcode, 0x00 | 0x84 | 0xa7 | 0xc8)
+}
+
 impl UnprovenReturn {
-    /// The diagnostic text: which `ret`, which context, and what the two slots were.
+    /// The diagnostic text: which `ret`, which context, and what the walk read in the slot.
     fn message(&self) -> String {
         let reads = self
             .reads
             .map_or_else(|| "no local".to_string(), |local| format!("local {local}"));
-        let holds = self.holds.map_or_else(
-            || "stores its return address nowhere this walk can see".to_string(),
-            |local| format!("stores its return address in local {local}"),
-        );
+        let slot = self.reads.unwrap_or_default();
+        let holds = match self.reason {
+            UnprovenReason::NoWrite => {
+                "stores its return address nowhere this walk can see".to_string()
+            }
+            UnprovenReason::SeveralWrites { holds_token: true } => format!(
+                "stores its return address in local {slot} and writes that slot again before the \
+                 `ret`"
+            ),
+            UnprovenReason::SeveralWrites { holds_token: false } => format!(
+                "writes local {slot} more than once and never stores the address its `jsr` pushed \
+                 in it"
+            ),
+            UnprovenReason::NotTheToken => format!(
+                "stores its return address in local {slot}, but not as the address its own `jsr` \
+                 pushed: the value written there is an ordinary one, so the slot holds no return \
+                 address when the `ret` reads it"
+            ),
+            UnprovenReason::NotDominating => format!(
+                "stores its return address in local {slot}, but not on every path that reaches \
+                 that `ret`"
+            ),
+            UnprovenReason::NestedWrite { call_site } => format!(
+                "shares local {slot} with a call it contains: the call site at BCI {call_site} \
+                 runs in the same frame and writes that slot, so what the `ret` reads there is \
+                 not this context's return address"
+            ),
+        };
         format!(
             "the `ret` at BCI {} reads {reads}, but the context of the call site at BCI {}              {holds}: the return point is not proven by the bytes, so the call graph is not              established",
             self.bci, self.call_site,
@@ -574,6 +654,10 @@ enum Phase {
     Walk,
     /// One context's `visited` row: the product state this pass has to bound.
     Visited,
+    /// The provenance of one context's return-address token: the value tracking that decides
+    /// which of its `astore`s store that token, and the nested-write closure its `ret`s are
+    /// adjudicated against.
+    Provenance,
     /// The cycle search's own nodes and frames.
     CycleSearch,
     /// The assembly of the published fact.
@@ -587,12 +671,13 @@ enum Phase {
 /// enforced: a variant left out of it would keep its checkpoint unproven and the sweep would
 /// still pass, because the sweep can only visit the phases it is given. Adding a phase therefore
 /// means adding it here as well.
-const PHASES: [Phase; 7] = [
+const PHASES: [Phase; 8] = [
     Phase::Plans,
     Phase::Successors,
     Phase::InstructionRanges,
     Phase::Walk,
     Phase::Visited,
+    Phase::Provenance,
     Phase::CycleSearch,
     Phase::Assembly,
 ];
@@ -730,13 +815,16 @@ struct Walk<'a> {
     /// was never written by the subroutine would otherwise be attributed to whichever context
     /// happened to be active.
     returns: BTreeMap<u32, BTreeSet<usize>>,
-    /// Every local write the context's body reaches, as `(slot, store BCI, block, is_reference)`.
+    /// Every local write the context's body reaches, as
+    /// `(context, slot, store BCI, block)`.
     ///
     /// The walk collects these instead of deciding as it goes, because a decision taken during
     /// the traversal depends on the order the worklist happens to use: a store seen on one arm
     /// was inherited by a `ret` on another. Collecting first and deciding at the end of the
-    /// context's run makes the answer a property of the bytes.
-    writes: Vec<(usize, u16, u32, usize, bool)>,
+    /// context's run makes the answer a property of the bytes. Whether one of these writes
+    /// stores the context's own token is not collected here either: that is the value tracking of
+    /// [`Walk::token_stores`], which needs the context's whole body to have been walked.
+    writes: Vec<(usize, u16, u32, usize)>,
     /// Every `ret` the context's body reaches, as `(ret BCI, slot it reads, block)`.
     rets: Vec<(usize, u32, u16, usize)>,
     /// Exception records covering the instructions walked under one context, by context index.
@@ -841,54 +929,255 @@ impl<'a> Walk<'a> {
             }
         }
         self.affected[root] = written;
-        self.adjudicate(root, budget)
+        // The address the context's own `jsr` pushed is a value, and only a store that really
+        // holds it makes a slot the context's return address: the provenance of the token along
+        // this context's body is decided before any of its `ret`s is adjudicated with it.
+        let token_stores = {
+            let region = visited.get(&root).map_or(&[][..], Vec::as_slice);
+            self.token_stores(root, region, budget)?
+        };
+        self.adjudicate(root, &token_stores, budget)
+    }
+
+    /// The BCIs of the stores of one context's body that really store that context's own token,
+    /// so they are the only writes that can make a slot its return address.
+    ///
+    /// A `jsr` pushes the BCI of the instruction after it, so the token is exactly the value on
+    /// top of the operand stack when the context's entry block begins. The walk follows that
+    /// value with one abstract stack-top state:
+    ///
+    /// * the state holds in the entry block, and only there (a `jsr` reaches no other block with
+    ///   its own address on top);
+    /// * an `astore` seen while the state holds stores the token into its slot — that is the one
+    ///   way the token enters a local — and the state stops holding, because the store consumed
+    ///   the top;
+    /// * the instructions that leave the operand stack exactly as they found it (`nop`, `iinc`,
+    ///   the two `goto`s) keep the state, so a token stored after a jump, an increment or a `nop`
+    ///   is still the token;
+    /// * every other instruction either consumes the top (`pop`, a store, a comparison, an
+    ///   arithmetic or conversion prefix), pushes above it (`aload`, `aconst_null`, a constant,
+    ///   an invocation) or replaces it, so the walk clears the state. That is deliberately the
+    ///   conservative reading: an `aload` cannot load a `returnAddress` at all (JVMS 4.10.1.9),
+    ///   and a value that arrived through the stack in a shape this pass does not model is not
+    ///   proven to be the address.
+    ///
+    /// The state of a block is a **must**: it holds only when *every* path that reaches the block
+    /// kept the top alone. The answer is therefore a fixpoint and not a traversal — the blocks
+    /// start optimistic and every arriving path that does not carry the token lowers them — so
+    /// it does not depend on the order the walk happens to use. An exception edge enters its
+    /// handler with the raised object on top instead of the token, and the continuation of a
+    /// nested `jsr` is entered with the caller's stack, whose shape the nested routine's own
+    /// stack discipline decides (`ret` pops nothing): both lower the state, so neither is a guess.
+    ///
+    /// The state row is a product this analysis has to bound — one byte per block, per context —
+    /// so it is billed before it exists, like the walk's own `visited` row, and its block
+    /// transfers, edges and queue entries are `AnalysisSteps`.
+    fn token_stores(
+        &self,
+        root: usize,
+        region: &[bool],
+        budget: &mut Budget,
+    ) -> Result<BTreeSet<u32>> {
+        checkpoint(Phase::Provenance, budget)?;
+        let entry = block_of(self.blocks, self.plans[root].entry_bci)?;
+        if region.get(entry) != Some(&true) {
+            // No call edge brought this context into the region, so nothing is known about its
+            // stack top. The walk enters the entry block first, so a consistent run never takes
+            // this branch; it refuses to prove anything rather than guessing.
+            return Ok(BTreeSet::new());
+        }
+        budget.charge(
+            CountedBudgetDimension::IrItems,
+            1 + u64::try_from(self.blocks.len())
+                .expect("a body cannot hold more blocks than the BCI space"),
+        )?;
+        let mut holds: Vec<bool> = vec![false; self.blocks.len()];
+        let mut queue: Vec<usize> = Vec::new();
+        for (block, in_region) in region.iter().enumerate() {
+            if *in_region {
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                holds[block] = true;
+                queue.push(block);
+            }
+        }
+        // Lowers one edge's contribution into a block of the region, queueing it when the state
+        // really changed: a block's state never goes back up, so the cascade terminates.
+        let lower = |holds: &mut Vec<bool>,
+                     queue: &mut Vec<usize>,
+                     to: usize,
+                     contributes: bool,
+                     budget: &mut Budget|
+         -> Result<()> {
+            if !region.get(to).copied().unwrap_or(false) {
+                return Ok(());
+            }
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            if !contributes && holds[to] {
+                holds[to] = false;
+                queue.push(to);
+            }
+            Ok(())
+        };
+        while let Some(block) = queue.pop() {
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            // The state of a block that lost the token is final: this is the block's transfer
+            // under its current state, and a `false` state transfers `false`.
+            let out = holds[block] && self.block_keeps_stack_top(block, budget)?;
+            for (kind, to) in &self.successors[block] {
+                match kind {
+                    // A normal transfer carries the state it had, and carries it onward.
+                    EdgeKind::Normal => lower(&mut holds, &mut queue, *to, out, budget)?,
+                    // The handler runs with the raised object on top, never the token.
+                    EdgeKind::Exception { .. } => {
+                        lower(&mut holds, &mut queue, *to, false, budget)?;
+                    }
+                    // The nested entry has the nested token above this context's stack, so it
+                    // does not hold *this* context's token either.
+                    EdgeKind::SubroutineReturn { call_site } => {
+                        lower(&mut holds, &mut queue, *to, false, budget)?;
+                        // And this context resumes at the nested call's continuation, which no
+                        // raw edge names: the shape of the stack there is the nested body's own
+                        // stack discipline to decide, so it is not proven.
+                        let nested = *self.context_of.get(call_site).ok_or_else(|| {
+                            inconsistent(format!(
+                                "the raw graph calls the `jsr` at BCI {call_site}, which is not \
+                                 a call site of this body"
+                            ))
+                        })?;
+                        let continuation = block_of(self.blocks, self.plans[nested].return_bci)?;
+                        lower(&mut holds, &mut queue, continuation, false, budget)?;
+                    }
+                }
+            }
+        }
+        // The states are settled, so a second pass in block order reads them and records the
+        // stores. Recording them during the fixpoint would mean taking a store back whenever its
+        // block turned out to lose the token on the path that arrived later.
+        let mut stores: BTreeSet<u32> = BTreeSet::new();
+        for (block, in_region) in region.iter().enumerate() {
+            if !in_region || !holds[block] {
+                continue;
+            }
+            let (start, end) = self.ranges[block];
+            for index in start..end {
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                let opcode = self.facts.operands()[index].effective_opcode;
+                if is_astore(opcode) {
+                    // The store consumed the token, so no later instruction of this block can
+                    // store it; a block has at most one such store.
+                    budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                    stores.insert(self.facts.instructions[index].bci);
+                    break;
+                }
+                if !keeps_stack_top(opcode) {
+                    break;
+                }
+            }
+        }
+        Ok(stores)
+    }
+
+    /// Whether the token is still on top at the last instruction of one block, given that it is
+    /// on top at the first: only the instructions that leave the operand stack alone.
+    fn block_keeps_stack_top(&self, block: usize, budget: &mut Budget) -> Result<bool> {
+        let (start, end) = self.ranges[block];
+        for index in start..end {
+            budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+            if !keeps_stack_top(self.facts.operands()[index].effective_opcode) {
+                return Ok(false);
+            }
+        }
+        Ok(true)
     }
 
     /// Decides, once the context's body has been walked, which of its `ret`s are proven.
     ///
-    /// A `ret` reading slot `R` is proven when **exactly one** write in this context's body
-    /// touches `R`, that write is a reference store (the only kind that can carry the address a
-    /// `jsr` pushed), and the store is unavoidable: in the same block before the `ret`, or in a
-    /// block every path to the `ret` passes through.
+    /// A `ret` reading slot `R` of context `C` is proven when **all three** of these hold, and
+    /// the stage refuses the body when any of them does not:
+    ///
+    /// * **the value is `C`'s own token**: the only write `C`'s body makes to `R` is a store of
+    ///   the return address `C`'s own `jsr` pushed, as [`Walk::token_stores`] read it. A write of
+    ///   anything else — an ordinary reference, a `null`, a copy shuffled through the operand
+    ///   stack, a value loaded back out of a local — leaves the slot holding a value the bytes do
+    ///   not call a return address, so it is a refusal and not a proof;
+    /// * **that write is unavoidable**: it is the *only* write `C`'s body makes to `R`, and it
+    ///   dominates the `ret` — earlier in the same block, or in a block every path to the `ret`
+    ///   passes through;
+    /// * **no nested call shares the slot**: a `jsr` runs in the caller's frame, so a context
+    ///   nested anywhere inside `C` that writes `R` overwrites what `C` stored there, and `C`'s
+    ///   proof is void even though that write belongs to another context.
     ///
     /// Deciding here rather than during the traversal is what makes the answer a property of the
     /// bytes: a walk-order decision let a store seen on one arm be inherited by a `ret` on
     /// another, so the same body could establish or not depending on the worklist's order.
-    fn adjudicate(&mut self, root: usize, budget: &mut Budget) -> Result<Option<UnprovenReturn>> {
+    fn adjudicate(
+        &mut self,
+        root: usize,
+        token_stores: &BTreeSet<u32>,
+        budget: &mut Budget,
+    ) -> Result<Option<UnprovenReturn>> {
         // The decision reads the whole body, so the collected facts are sorted by the position
         // they describe, never by the order the walk reached them.
         self.writes.sort_unstable();
         self.rets.sort_unstable();
         let rets = std::mem::take(&mut self.rets);
         let writes = std::mem::take(&mut self.writes);
+        // The contexts nested in this one, assigned on the first `ret` that needs them: a
+        // context whose walk found no `ret` of its own pays nothing for the closure.
+        let mut nested: Option<BTreeSet<usize>> = None;
         for (context, ret_bci, read_slot, ret_block) in rets {
             // A root's walk also walks the contexts its calls reach, so the collection holds
             // other contexts' facts too; only this context's own are adjudicated here.
             if context != root {
                 continue;
             }
+            if nested.is_none() {
+                nested = Some(self.descendants(root, budget)?);
+            }
+            let nested = nested.as_ref().expect("the closure is built just above");
             let mut writers = writes
                 .iter()
                 .filter(|(owner, slot, ..)| *owner == root && *slot == read_slot);
             let first = writers.next();
             let only_one = writers.next().is_none();
-            let proven = match first {
-                // Exactly one writer, and it is a reference store the walk can point at.
-                Some(&(_, _, store_bci, store_block, true)) if only_one => {
-                    if store_block == ret_block {
+            // The writes of this context's own body that store the token, and the write of a
+            // nested context that shares the slot in this frame.
+            let token_writes = writes.iter().any(|(owner, slot, bci, _)| {
+                *owner == root && *slot == read_slot && token_stores.contains(bci)
+            });
+            let shared = writes
+                .iter()
+                .find(|(owner, slot, ..)| *slot == read_slot && nested.contains(owner))
+                .map(|(owner, ..)| self.plans[*owner].call_site_bci);
+            let reason = match (first, only_one, token_writes, shared) {
+                // Nothing this context runs writes the slot at all.
+                (None, _, _, None) => Some(UnprovenReason::NoWrite),
+                // A call inside this context shares the frame and writes the slot: whatever the
+                // outer subroutine stored there, the nested body overwrites it.
+                (_, _, _, Some(call_site)) => Some(UnprovenReason::NestedWrite { call_site }),
+                // More than one write reaches the slot, so the value the `ret` reads is not the
+                // one write the bytes prove.
+                (Some(_), false, holds_token, None) => {
+                    Some(UnprovenReason::SeveralWrites { holds_token })
+                }
+                // Exactly one write, and it does not store this context's token.
+                (Some(_), true, false, None) => Some(UnprovenReason::NotTheToken),
+                // Exactly one write, and it stores the token: it has to be unavoidable too.
+                (Some(&(_, _, store_bci, store_block)), true, true, None) => {
+                    let dominates = if store_block == ret_block {
                         store_bci < ret_bci
                     } else {
                         self.dominates(root, store_block, ret_block, budget)?
-                    }
+                    };
+                    (!dominates).then_some(UnprovenReason::NotDominating)
                 }
-                _ => false,
             };
-            if !proven {
+            if let Some(reason) = reason {
                 return Ok(Some(UnprovenReturn {
                     bci: ret_bci,
                     call_site: self.plans[root].call_site_bci,
                     reads: Some(read_slot),
-                    holds: first.map(|(_, slot, ..)| *slot),
+                    reason,
                 }));
             }
             let owners = self.returns.entry(ret_bci).or_default();
@@ -945,6 +1234,38 @@ impl<'a> Walk<'a> {
         Ok(true)
     }
 
+    /// Every context nested in `root`, transitively, through the `contains` relation.
+    ///
+    /// A `jsr` runs in the caller's frame, so the writes of a nested context are writes of the
+    /// same locals: this closure is what the third rule of [`Walk::adjudicate`] is stated over.
+    /// The relation is a graph and not a tree (one subroutine can be reached from several call
+    /// sites), so the search carries its own set of contexts it already found; a cycle would be
+    /// refused by [`nesting_cycle`] before anything is published, and the marker keeps the
+    /// closure finite even while one is still in the relation. The set and the search's frontier
+    /// are derived storage of this decision and are billed like the rest of the pass.
+    fn descendants(&self, root: usize, budget: &mut Budget) -> Result<BTreeSet<usize>> {
+        checkpoint(Phase::Provenance, budget)?;
+        let mut found: BTreeSet<usize> = BTreeSet::new();
+        let mut frontier: Vec<usize> = Vec::new();
+        budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+        frontier.push(root);
+        while let Some(context) = frontier.pop() {
+            for child in &self.contains[context] {
+                if found.contains(child) {
+                    continue;
+                }
+                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                found.insert(*child);
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                frontier.push(*child);
+            }
+        }
+        // `contains` is filled by the walk, and every context is walked as the root of its own
+        // run as well as from every call site that reaches it, so a context's direct children are
+        // all known by the time its own `ret`s are adjudicated here.
+        Ok(found)
+    }
+
     /// Enqueues one worklist entry, billed as one `AnalysisSteps` before it is pushed.
     fn enqueue(
         &self,
@@ -973,14 +1294,13 @@ impl<'a> Walk<'a> {
     ) -> Result<()> {
         let bci = self.facts.instructions[index].bci;
         let opcode = self.facts.operands()[index].effective_opcode;
-        // A reference store is where a `jsr` return address can go; every other write puts some
-        // other value in a local. Both are recorded, because a `ret` is only proven when the
-        // slot it reads has exactly one writer and that writer is a reference store it can name:
-        // an integer store into the same slot is a value the address no longer is.
-        let reference = is_astore(opcode);
+        // Every write of a local is recorded, because a `ret` is only proven when the slot it
+        // reads has exactly one writer and that writer stores the context's own token: which
+        // writes those are is [`Walk::token_stores`]' question, and it is answered once the whole
+        // body has been walked.
         for local in &self.effects.instructions[index].locals_written {
             budget.charge(CountedBudgetDimension::IrItems, 1)?;
-            self.writes.push((active, *local, bci, block, reference));
+            self.writes.push((active, *local, bci, block));
         }
         // A `wide ret` is the same return the short form is: the reader classifies a `wide`
         // form by the opcode it wraps (0.2).
@@ -2125,6 +2445,14 @@ mod tests {
     fn call_sites_that_nest_through_each_other_are_unresolved() {
         // A subroutine that calls itself: every level pushes another return address, so the
         // nesting has no bound and no finite context set describes it.
+        //
+        // 3.4b refuses this body one step earlier than the cycle search does, and for a reason
+        // that reads the same bytes: a context in a live cycle contains *itself* (transitively),
+        // so the `astore_1` that stores its token is at once its own write and the write of a
+        // context nested in it - the nested call runs in the same frame and writes the same slot.
+        // The stage refuses the body all the same, under the same code, and the message names the
+        // nested call site; the cycle search keeps its own subject (a cycle among call sites the
+        // raw graph cannot enter) in `a_nesting_cycle_in_dead_code_does_not_refuse_the_body`.
         let facts = body(
             vec![
                 jsr(0, 3),         // -> BCI 3
@@ -2139,8 +2467,8 @@ mod tests {
         let (code, message) = refusal(&facts, &raw, 45);
         assert_eq!(code, IR_CALL_CONTEXT_UNRESOLVED);
         assert!(
-            message.contains("cycle") && message.contains("BCI 3"),
-            "{message}"
+            message.contains("`ret` at BCI 7") && message.contains("call site at BCI 3"),
+            "the stop names the `ret` and the nested call site: {message}"
         );
     }
 
@@ -2415,7 +2743,7 @@ mod tests {
         // a charge that changes its amount moves this number.
         //
         // The fixture is two call-site contexts over five blocks with one `ret`, no handlers and
-        // no nesting, and a complete run of it bills 40 items. The number is deliberately not
+        // no nesting, and a complete run of it bills 54 items. The number is deliberately not
         // decomposed into per-charge arithmetic: neutralising one charge also changes the charges
         // that follow it, so per-site deltas are not additive and a table of them would be a
         // plausible-looking fiction. The shape assertions below say what the total is read from.
@@ -2425,10 +2753,18 @@ mod tests {
         // stores, because a `ret` is only proven when its slot has a single writer of a known
         // kind), and every `ret` it records is one. The assertion below is what keeps any
         // further change visible.
+        //
+        // It moved from 40 to **54** in 3.4b, when the walk's position-only reading of a slot was
+        // replaced by the provenance of the context's own return-address token: +12 items for the
+        // two provenance rows (one per context, `1 + blocks` items each, the same shape as the
+        // `visited` rows) and +2 items for the two token stores the fixture's subroutine has (one
+        // per context, charged before each element is added). Both deltas were measured on this
+        // fixture, not computed from the prose: the row count is `2 contexts * (1 + 5 blocks)`
+        // and each context records exactly one token store at BCI 9.
         let facts = billing_fixture();
         let complete = baseline_usage(&facts).counted_usage(CountedBudgetDimension::IrItems);
         assert_eq!(
-            complete, 40,
+            complete, 54,
             "the item bill of this fixture is the measured total above"
         );
         assert_eq!(
@@ -2639,9 +2975,71 @@ mod tests {
             "a store on one path only does not prove the return point: {outcome:?}"
         );
 
-        // The control, so the check is not simply refusing every branch: the same shape with the
-        // store dominating the `ret` - both arms reach it through BCI 11 - establishes.
+        // The control, so the check is not simply refusing every branch: the address is stored in
+        // the entry block and both arms of the branch under it reach the `ret`, so the store is
+        // unavoidable and the attribution holds.
+        //
+        //   0: jsr 5          the return address (BCI 3) is pushed
+        //   3: return
+        //   4: nop
+        //   5: nop
+        //   6: goto +4 -> 10
+        //   9: nop
+        //  10: astore_0       the address, in the entry block, before the branch
+        //  11: iconst_1
+        //  12: ifeq +7 -> 19  both arms reach the `ret`
+        //  15: nop
+        //  16: goto +3 -> 19
+        //  19: ret 0
         let dominating = body(
+            vec![
+                jsr(0, 5),
+                plain(3, 0xb1),
+                plain(4, 0x00),
+                plain(5, 0x00),
+                goto(6, 4),
+                plain(9, 0x00),
+                store(10, 0x4b, 0),
+                plain(11, 0x04),
+                instruction(
+                    12,
+                    0x99,
+                    3,
+                    InstructionOperands {
+                        branch_offset: Some(7),
+                        ..operands(0x99)
+                    },
+                ),
+                plain(15, 0x00),
+                goto(16, 3),
+                ret(19, 0),
+            ],
+            Vec::new(),
+            21,
+        );
+        let raw = graph(&dominating, &mut budget());
+        let contexts = established(&dominating, &raw, 49);
+        assert_eq!(
+            contexts.returns,
+            vec![SubroutineReturn {
+                ret_bci: 19,
+                targets: vec![CallTarget {
+                    call_site_bci: 0,
+                    return_bci: 3,
+                }],
+            }],
+            "a store in a block every path to the `ret` passes through is unavoidable"
+        );
+
+        // The same shape with the store at the entry of the subroutine, where the branch itself
+        // sits between the store and the `ret`: the branch is under the store, so the store still
+        // dominates and the answer is unchanged. This is also the shape that showed the *value*
+        // gap: the branch at BCI 4 consumes the top of the stack, and a `jsr` body whose branch
+        // eats the address is not a body whose slot holds that address. The old position-only
+        // rule called this body established because the slot had exactly one `astore` that
+        // dominated the `ret`; the value rule of 3.4b refuses it, because the instruction the
+        // branch consumed was the return address itself.
+        let discarded = body(
             vec![
                 jsr(0, 4),
                 plain(3, 0xb1),
@@ -2662,13 +3060,18 @@ mod tests {
             Vec::new(),
             14,
         );
-        let raw = graph(&dominating, &mut budget());
+        let raw = graph(&discarded, &mut budget());
+        let outcome = call_contexts(&discarded, &raw, 49, &mut budget());
+        let Ok(CallContextOutcome::Unresolved { message }) = outcome else {
+            panic!("a branch that consumed the address stores no address: {outcome:?}");
+        };
         assert!(
-            matches!(
-                call_contexts(&dominating, &raw, 49, &mut budget()),
-                Ok(CallContextOutcome::Established(_))
-            ),
-            "an unavoidable store proves the return point"
+            message.contains("`ret` at BCI 12") && message.contains("local 0"),
+            "the stop names the `ret` and the slot: {message}"
+        );
+        assert!(
+            !message.contains("cycle"),
+            "the stop is the value, not the shape of the graph: {message}"
         );
 
         // The same body with the store on the *other* arm, so the traversal reaches the store and
@@ -2759,6 +3162,182 @@ mod tests {
             "the handler rewrites the slot the `ret` reads: {outcome:?}"
         );
     }
+    /// One `method()V` body of the dialect that keeps `jsr`/`ret`, built from raw `Code` bytes and
+    /// decoded by the reader: the facts, the raw graph 3.3 built and the class-file version.
+    ///
+    /// The six acceptance shapes of 3.4b go through this, so none of them is a hand-written
+    /// fact or a hand-built graph: the bytes are the input and everything below them is the
+    /// code under test.
+    fn real_body(code: &[u8]) -> (MethodCodeFacts, RawCfgOutcome, u16) {
+        let bytes = jarde_reader::classfile::test_class::single_method(49, 8, 8, code);
+        let (facts, major) = historical(&bytes, b"method");
+        assert_eq!(major, 49, "the dialect that keeps `jsr`/`ret`");
+        let raw = graph(&facts, &mut budget());
+        (facts, raw, major)
+    }
+
+    #[test]
+    fn a_stored_return_address_proves_the_return_point() {
+        // The legal straight-line shape, as real bytes:
+        //
+        //   0: jsr 4        pushes the return address (BCI 3) and enters the subroutine
+        //   3: return       reached when the subroutine returns
+        //   4: astore_0     the token is on top, so this store is the address
+        //   5: ret 0        the slot holds it, once, and the store dominates the `ret`
+        let (facts, raw, major) = real_body(&[0xa8, 0x00, 0x04, 0xb1, 0x4b, 0xa9, 0x00]);
+        let contexts = established(&facts, &raw, major);
+        assert_eq!(
+            contexts.returns,
+            vec![SubroutineReturn {
+                ret_bci: 5,
+                targets: vec![CallTarget {
+                    call_site_bci: 0,
+                    return_bci: 3,
+                }],
+            }],
+            "the store of the token proves the return point"
+        );
+    }
+
+    #[test]
+    fn a_null_in_the_slot_the_ret_reads_is_unresolved() {
+        //   0: jsr 4        return address (BCI 3)
+        //   3: return
+        //   4: aconst_null
+        //   5: astore_1     local 1 holds `null`, not a return address
+        //   6: astore_0     the token goes into local 0, and nothing reads it there
+        //   7: ret 1        reads an ordinary reference
+        //
+        // The position-only reading of 3.4 accepted this body: local 1 had exactly one write, it
+        // was an `astore` and it dominated the `ret`. The value it stored was never the address.
+        let (facts, raw, major) =
+            real_body(&[0xa8, 0x00, 0x04, 0xb1, 0x01, 0x4c, 0x4b, 0xa9, 0x01]);
+        let (code, message) = refusal(&facts, &raw, major);
+        assert_eq!(code, IR_CALL_CONTEXT_UNRESOLVED);
+        assert!(
+            message.contains("`ret` at BCI 7")
+                && message.contains("not as the address its own `jsr` pushed"),
+            "the stop names the `ret` and the value: {message}"
+        );
+    }
+
+    #[test]
+    fn a_discarded_return_address_is_not_restored_by_a_later_store() {
+        //   0: jsr 4        return address (BCI 3)
+        //   3: return
+        //   4: pop          the token leaves the stack here
+        //   5: aconst_null
+        //   6: astore_0     the slot the `ret` reads is filled after the token was discarded
+        //   7: ret 0
+        let (facts, raw, major) =
+            real_body(&[0xa8, 0x00, 0x04, 0xb1, 0x57, 0x01, 0x4b, 0xa9, 0x00]);
+        let (code, message) = refusal(&facts, &raw, major);
+        assert_eq!(code, IR_CALL_CONTEXT_UNRESOLVED);
+        assert!(
+            message.contains("`ret` at BCI 7")
+                && message.contains("not as the address its own `jsr` pushed"),
+            "a slot filled after the `pop` holds no return address: {message}"
+        );
+    }
+
+    #[test]
+    fn a_return_address_carried_through_aload_is_unresolved() {
+        //   0: jsr 4        return address (BCI 3)
+        //   3: return
+        //   4: astore_0     the token goes into local 0
+        //   5: aload_0      a load: JVMS 4.10.1.9 does not let one read a `returnAddress`
+        //   6: astore_1     so local 1 is not the address, whatever the slot 0 holds
+        //   7: ret 1
+        let (facts, raw, major) =
+            real_body(&[0xa8, 0x00, 0x04, 0xb1, 0x4b, 0x2a, 0x4c, 0xa9, 0x01]);
+        let (code, message) = refusal(&facts, &raw, major);
+        assert_eq!(code, IR_CALL_CONTEXT_UNRESOLVED);
+        assert!(
+            message.contains("`ret` at BCI 7")
+                && message.contains("not as the address its own `jsr` pushed"),
+            "a value carried through `aload` is not a return address: {message}"
+        );
+    }
+
+    #[test]
+    fn a_nested_call_that_stores_its_own_slot_keeps_both_proofs() {
+        // The legal nesting, as real bytes:
+        //
+        //   0: jsr 4        outer call, return address 3
+        //   3: return
+        //   4: astore_0     the outer token goes into local 0
+        //   5: jsr 10       nested call, return address 8
+        //   8: ret 0        the outer `ret`: local 0 still holds the outer token
+        //  10: astore_1     the nested token goes into local 1
+        //  11: nop; 12: nop
+        //  13: ret 1        the nested `ret`
+        //
+        // Neither context writes the other's slot, so the nested frame invalidates nothing: both
+        // return points survive the three rules.
+        let (facts, raw, major) = real_body(&[
+            0xa8, 0x00, 0x04, 0xb1, 0x4b, 0xa8, 0x00, 0x05, 0xa9, 0x00, 0x4c, 0x00, 0x00, 0xa9,
+            0x01,
+        ]);
+        let contexts = established(&facts, &raw, major);
+        assert_eq!(
+            contexts.contexts.len(),
+            2,
+            "one context per call site: {:#?}",
+            contexts.contexts
+        );
+        assert_eq!(
+            contexts.returns,
+            vec![
+                SubroutineReturn {
+                    ret_bci: 8,
+                    targets: vec![CallTarget {
+                        call_site_bci: 0,
+                        return_bci: 3,
+                    }],
+                },
+                SubroutineReturn {
+                    ret_bci: 13,
+                    targets: vec![CallTarget {
+                        call_site_bci: 5,
+                        return_bci: 8,
+                    }],
+                },
+            ],
+            "each `ret` returns to the continuation of its own call site"
+        );
+    }
+
+    #[test]
+    fn an_inner_call_that_writes_the_outer_slot_is_unresolved() {
+        // The same nesting with one instruction changed, as real bytes:
+        //
+        //   0: jsr 4        outer call, return address 3
+        //   3: return
+        //   4: astore_0     the outer token goes into local 0
+        //   5: jsr 10       nested call, return address 8
+        //   8: ret 0        the outer `ret`, and local 0 is no longer the outer token
+        //  10: astore_1     the nested token goes into local 1
+        //  11: aconst_null
+        //  12: astore_0     the inner call writes the *outer* subroutine's slot
+        //  13: ret 1
+        //
+        // A `jsr` shares the caller's frame, so the write at BCI 12 overwrites what the outer
+        // context stored at BCI 4: `ret 0` would return to a continuation the bytes no longer
+        // support, and 3.5 must not clone the outer call site on the strength of it.
+        let (facts, raw, major) = real_body(&[
+            0xa8, 0x00, 0x04, 0xb1, 0x4b, 0xa8, 0x00, 0x05, 0xa9, 0x00, 0x4c, 0x01, 0x4b, 0xa9,
+            0x01,
+        ]);
+        let (code, message) = refusal(&facts, &raw, major);
+        assert_eq!(code, IR_CALL_CONTEXT_UNRESOLVED);
+        assert!(
+            message.contains("`ret` at BCI 8")
+                && message.contains("shares local 0 with a call it contains")
+                && message.contains("call site at BCI 5"),
+            "the stop names the outer `ret`, the shared slot and the inner call site: {message}"
+        );
+    }
+
     #[test]
     fn a_shared_subroutine_with_a_handler_keeps_one_context_per_call_site() {
         // The combination the contract names but no test covered: two call sites share one
