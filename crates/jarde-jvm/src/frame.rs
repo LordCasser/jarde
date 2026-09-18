@@ -525,7 +525,11 @@ const POP_RR: &[Ty] = &[Ty::Ref, Ty::Ref];
 const POP_FF: &[Ty] = &[Ty::Float, Ty::Float];
 const POP_LL: &[Ty] = &[Ty::Long, Ty::Long];
 const POP_DD: &[Ty] = &[Ty::Double, Ty::Double];
-const POP_LI: &[Ty] = &[Ty::Long, Ty::Int];
+/// A long shift: the `int` shift distance on top, the `long` value below it. JVMS 6.5 writes the
+/// two values of `lshl` in the other order — that is the *prose* order of the sentence, not the
+/// stack: the distance is the top operand, so this sequence is `[Int, Long]` and not `[Long,
+/// Int]`.
+const POP_IL: &[Ty] = &[Ty::Int, Ty::Long];
 /// An array load: the index on top, the array reference below it.
 const POP_IR: &[Ty] = &[Ty::Int, Ty::Ref];
 /// An int array store: value, index, array reference.
@@ -632,11 +636,11 @@ const fn row(opcode: u8) -> Entry {
         0x76 => Entry::plain(POP_F, PUSH_F),                    // fneg
         0x77 => Entry::plain(POP_D, PUSH_D),                    // dneg
         0x78 => Entry::plain(POP_II, PUSH_I),                   // ishl
-        0x79 => Entry::plain(POP_LI, PUSH_L),                   // lshl
+        0x79 => Entry::plain(POP_IL, PUSH_L),                   // lshl
         0x7a => Entry::plain(POP_II, PUSH_I),                   // ishr
-        0x7b => Entry::plain(POP_LI, PUSH_L),                   // lshr
+        0x7b => Entry::plain(POP_IL, PUSH_L),                   // lshr
         0x7c => Entry::plain(POP_II, PUSH_I),                   // iushr
-        0x7d => Entry::plain(POP_LI, PUSH_L),                   // lushr
+        0x7d => Entry::plain(POP_IL, PUSH_L),                   // lushr
         0x7e => Entry::plain(POP_II, PUSH_I),                   // iand
         0x7f => Entry::plain(POP_LL, PUSH_L),                   // land
         0x80 => Entry::plain(POP_II, PUSH_I),                   // ior
@@ -1270,6 +1274,16 @@ fn pool_field_descriptor(
 }
 
 /// The method descriptor one invocation operand names.
+///
+/// The opcode decides which constant-pool kinds may carry the method it invokes, and this layer
+/// checks that pairing for the same reason it checks it on the field side
+/// ([`pool_field_descriptor`] takes a `Fieldref` and nothing else): a descriptor read out of an
+/// entry the instruction may not name is a shape derived from the wrong fact. Doing half of the
+/// pairing would leave "`getfield` over a `Methodref` contradicts the bytes" standing next to
+/// "`invokevirtual` over an `InvokeDynamic` is believed", and a reader could not tell which half
+/// was intended. The conservative direction is both halves — an illegal input is named as what it
+/// is instead of being given a shape. This is not the verifier: the check is on the kind of the
+/// entry, and says nothing else about it.
 fn pool_method_descriptor(
     method: &FrameMethod<'_>,
     operands: &InstructionOperands,
@@ -1277,14 +1291,37 @@ fn pool_method_descriptor(
     opcode: u8,
 ) -> Norm<Vec<u8>> {
     let entry = pool_entry(method.pool, operands, bci, opcode)?;
-    match &entry.kind {
-        CpEntryKind::MethodRef { descriptor, .. }
-        | CpEntryKind::InterfaceMethodRef { descriptor, .. }
-        | CpEntryKind::InvokeDynamic { descriptor, .. } => Ok(descriptor.0.clone()),
-        other => inconsistent(format!(
-            "`{opcode:#04x}` at BCI {bci} names a {} entry where a method reference is required",
-            cp_kind_name(other)
+    match (&entry.kind, opcode) {
+        // The pairing JVMS 6.5 and SE 8 define, opcode by opcode: a class method through
+        // `0xb6`/`0xb7`/`0xb8`, an interface method through `0xb7`/`0xb8`/`0xb9` (the two opcodes
+        // in both ranges are the ones an interface's own methods reach since SE 8), and the one
+        // dynamic call site of `0xba`. `invocation_entries` names the same five opcodes in words
+        // for the refusal.
+        (CpEntryKind::MethodRef { descriptor, .. }, 0xb6..=0xb8)
+        | (CpEntryKind::InterfaceMethodRef { descriptor, .. }, 0xb7..=0xb9)
+        | (CpEntryKind::InvokeDynamic { descriptor, .. }, 0xba) => Ok(descriptor.0.clone()),
+        (kind, _) => inconsistent(format!(
+            "`{opcode:#04x}` at BCI {bci} names a {} entry where {} is required",
+            cp_kind_name(kind),
+            invocation_entries(opcode)
         )),
+    }
+}
+
+/// The constant-pool kinds one invocation opcode may name, as the refusal says them.
+///
+/// `invokevirtual` is the call of a class method. Since SE 8 the two other opcodes that take one
+/// may name an interface method as well — `invokespecial` reaches an interface's default and
+/// private methods, `invokestatic` its static ones, and both of those are a
+/// `CONSTANT_InterfaceMethodref` — while `invokeinterface` and `invokedynamic` each name their own
+/// kind. `invokedynamic` is the one opcode that consumes a `CONSTANT_InvokeDynamic`.
+fn invocation_entries(opcode: u8) -> &'static str {
+    match opcode {
+        0xb6 => "a Methodref",
+        0xb7 | 0xb8 => "a Methodref or an InterfaceMethodref",
+        0xb9 => "an InterfaceMethodref",
+        0xba => "an InvokeDynamic",
+        _ => "a method reference",
     }
 }
 
@@ -2355,6 +2392,341 @@ mod tests {
         }
     }
 
+    // -- The families whose wrong row has the same depth --------------------------------
+
+    // Each test below names the operand classes JVMS 6.5 gives one opcode, one opcode at a time,
+    // and **spells the sequences out** instead of comparing a row with the shorthand it is written
+    // with: a row compared with its own shorthand says nothing about that shorthand, and one of
+    // the rows below was wrong inside the shorthand. (The empty sequence stays `PUSH_NONE`; there
+    // is nothing in it to spell.) The comparison family above is the same kind of test, and
+    // `0xa5`/`0xa6` are its member of that shape.
+
+    /// Every row of the shift family names the operand classes JVMS 6.5 gives that opcode, one
+    /// opcode at a time. The family is one and the same depth change either way — `ishl` takes two
+    /// `int`s and `lshl` an `int` over a `long`, two slots either way — so the cross-check above,
+    /// which counts slots, cannot see the classes. A row written in the **prose** order of the
+    /// JVMS sentence (the `long` value named first) put the `long` where the shift distance is:
+    /// `long >> n`, the everyday output of javac, then looked like a body that contradicts itself,
+    /// and the mirror body — a `long` above an `int` — was accepted in its place.
+    #[test]
+    fn the_shift_family_names_its_operand_classes_per_opcode() {
+        /// The pops and pushes JVMS 6.5 gives one opcode of the family.
+        fn shape(opcode: u8) -> (&'static [Ty], &'static [Produced]) {
+            match opcode {
+                0x78 | 0x7a | 0x7c => (&[Ty::Int, Ty::Int], &[Produced::Int]), // ishl, ishr, iushr
+                0x79 | 0x7b | 0x7d => (&[Ty::Int, Ty::Long], &[Produced::Long]), // lshl, lshr, lushr
+                other => panic!("{other:#04x} is not a shift of the family"),
+            }
+        }
+
+        for opcode in 0x78u8..=0x7d {
+            let (pops, pushes) = shape(opcode);
+            assert_eq!(
+                TABLE[usize::from(opcode)].stack,
+                Stack::Fixed { pops, pushes },
+                "{opcode:#04x}: the row pops {pops:?} and pushes {pushes:?}"
+            );
+        }
+    }
+
+    /// Every row of the array-load family names the operand classes JVMS 6.5 gives that opcode:
+    /// the index on top of the array reference, and one element class per opcode. `iaload` and
+    /// `aaload` are the same depth change and differ all the way down — the reference pops the
+    /// reference and pushes a reference, the integer form pushes an `int`.
+    #[test]
+    fn the_array_load_family_names_its_operand_classes_per_opcode() {
+        /// The pops and pushes JVMS 6.5 gives one opcode of the family.
+        fn shape(opcode: u8) -> (&'static [Ty], &'static [Produced]) {
+            match opcode {
+                0x2e => (&[Ty::Int, Ty::Ref], &[Produced::Int]), // iaload
+                0x2f => (&[Ty::Int, Ty::Ref], &[Produced::Long]), // laload
+                0x30 => (&[Ty::Int, Ty::Ref], &[Produced::Float]), // faload
+                0x31 => (&[Ty::Int, Ty::Ref], &[Produced::Double]), // daload
+                0x32 => (&[Ty::Int, Ty::Ref], &[Produced::Ref]), // aaload
+                0x33..=0x35 => (&[Ty::Int, Ty::Ref], &[Produced::Int]), // baload, caload, saload
+                other => panic!("{other:#04x} is not an array load of the family"),
+            }
+        }
+
+        for opcode in 0x2eu8..=0x35 {
+            let (pops, pushes) = shape(opcode);
+            assert_eq!(
+                TABLE[usize::from(opcode)].stack,
+                Stack::Fixed { pops, pushes },
+                "{opcode:#04x}: the row pops {pops:?} and pushes {pushes:?}"
+            );
+        }
+    }
+
+    /// Every row of the array-store family names the operand classes JVMS 6.5 gives that opcode,
+    /// one opcode at a time: the value on top, the index below it, the array reference below
+    /// both. `iastore` and `aastore` are one depth change — three slots either way — and only the
+    /// top class tells them apart.
+    #[test]
+    fn the_array_store_family_names_its_operand_classes_per_opcode() {
+        /// The pops JVMS 6.5 gives one opcode of the family, none of which pushes.
+        fn shape(opcode: u8) -> &'static [Ty] {
+            match opcode {
+                0x4f | 0x54..=0x56 => &[Ty::Int, Ty::Int, Ty::Ref], // iastore, bastore, castore
+                0x50 => &[Ty::Long, Ty::Int, Ty::Ref],              // lastore
+                0x51 => &[Ty::Float, Ty::Int, Ty::Ref],             // fastore
+                0x52 => &[Ty::Double, Ty::Int, Ty::Ref],            // dastore
+                0x53 => &[Ty::Ref, Ty::Int, Ty::Ref],               // aastore
+                other => panic!("{other:#04x} is not an array store of the family"),
+            }
+        }
+
+        for opcode in 0x4fu8..=0x56 {
+            let pops = shape(opcode);
+            assert_eq!(
+                TABLE[usize::from(opcode)].stack,
+                Stack::Fixed {
+                    pops,
+                    pushes: PUSH_NONE
+                },
+                "{opcode:#04x}: the row pops {pops:?} and pushes nothing"
+            );
+        }
+    }
+
+    /// Every row of the conversion family names the classes JVMS 6.5 gives that opcode, one
+    /// opcode at a time. The family is where a wrong row is hardest to notice: every conversion of
+    /// one and the same width `w` changes the depth by the same amount, so `i2l` and `i2d` — an
+    /// `int` to a `long` and an `int` to a `double` — are one delta, and only the pushed class
+    /// separates them.
+    #[test]
+    fn the_conversion_family_names_its_operand_classes_per_opcode() {
+        /// The pops and pushes JVMS 6.5 gives one opcode of the family.
+        fn shape(opcode: u8) -> (&'static [Ty], &'static [Produced]) {
+            match opcode {
+                0x85 => (&[Ty::Int], &[Produced::Long]),       // i2l
+                0x86 => (&[Ty::Int], &[Produced::Float]),      // i2f
+                0x87 => (&[Ty::Int], &[Produced::Double]),     // i2d
+                0x88 => (&[Ty::Long], &[Produced::Int]),       // l2i
+                0x89 => (&[Ty::Long], &[Produced::Float]),     // l2f
+                0x8a => (&[Ty::Long], &[Produced::Double]),    // l2d
+                0x8b => (&[Ty::Float], &[Produced::Int]),      // f2i
+                0x8c => (&[Ty::Float], &[Produced::Long]),     // f2l
+                0x8d => (&[Ty::Float], &[Produced::Double]),   // f2d
+                0x8e => (&[Ty::Double], &[Produced::Int]),     // d2i
+                0x8f => (&[Ty::Double], &[Produced::Long]),    // d2l
+                0x90 => (&[Ty::Double], &[Produced::Float]),   // d2f
+                0x91..=0x93 => (&[Ty::Int], &[Produced::Int]), // i2b, i2c, i2s
+                other => panic!("{other:#04x} is not a conversion of the family"),
+            }
+        }
+
+        for opcode in 0x85u8..=0x93 {
+            let (pops, pushes) = shape(opcode);
+            assert_eq!(
+                TABLE[usize::from(opcode)].stack,
+                Stack::Fixed { pops, pushes },
+                "{opcode:#04x}: the row pops {pops:?} and pushes {pushes:?}"
+            );
+        }
+    }
+
+    /// Every row of the return family names the one class it hands back, per opcode, and none of
+    /// them pushes. All six leave one slot for the caller to read — `ireturn` one `int`,
+    /// `lreturn` one `long` — and `return` none at all; the classes are what a caller's frame
+    /// would be entered with, so a wrong row here moves the mistake into the callee's state.
+    #[test]
+    fn the_return_family_names_the_class_it_returns_per_opcode() {
+        /// The pops JVMS 6.5 gives one opcode of the family, none of which pushes.
+        fn shape(opcode: u8) -> &'static [Ty] {
+            match opcode {
+                0xac => &[Ty::Int],    // ireturn
+                0xad => &[Ty::Long],   // lreturn
+                0xae => &[Ty::Float],  // freturn
+                0xaf => &[Ty::Double], // dreturn
+                0xb0 => &[Ty::Ref],    // areturn
+                0xb1 => &[],           // return
+                other => panic!("{other:#04x} is not a return of the family"),
+            }
+        }
+
+        for opcode in 0xacu8..=0xb1 {
+            let pops = shape(opcode);
+            assert_eq!(
+                TABLE[usize::from(opcode)].stack,
+                Stack::Fixed {
+                    pops,
+                    pushes: PUSH_NONE
+                },
+                "{opcode:#04x}: the row pops {pops:?} and pushes nothing"
+            );
+        }
+    }
+
+    /// The two singletons the opcode alone decides take a reference and nothing else:
+    /// `arraylength` pops the array and pushes its length, `instanceof` pops the reference and
+    /// pushes the `int` answer — an `int` and not a reference, which is why the answer is a
+    /// boolean in the source language and a one-slot computation type here.
+    ///
+    /// `checkcast` is the third singleton of the group and the one row whose shape is a
+    /// **class-file fact** ([`PoolEffect::CheckCast`]): it pops a reference and pushes the class
+    /// file's own class, which the row cannot spell. Its operand classes are therefore pinned by
+    /// the real bodies below and not by the table alone.
+    #[test]
+    fn the_reference_singletons_name_their_operand_classes_per_opcode() {
+        /// The pops and pushes JVMS 6.5 gives one opcode of the family the opcode decides.
+        fn shape(opcode: u8) -> (&'static [Ty], &'static [Produced]) {
+            match opcode {
+                0xbe => (&[Ty::Ref], &[Produced::Int]), // arraylength: array in, length out
+                0xc1 => (&[Ty::Ref], &[Produced::Int]), // instanceof: reference in, answer out
+                other => panic!("{other:#04x} is not a fixed-shape singleton of the family"),
+            }
+        }
+
+        for opcode in [0xbeu8, 0xc1] {
+            let (pops, pushes) = shape(opcode);
+            assert_eq!(
+                TABLE[usize::from(opcode)].stack,
+                Stack::Fixed { pops, pushes },
+                "{opcode:#04x}: the row pops {pops:?} and pushes {pushes:?}"
+            );
+        }
+        assert_eq!(
+            TABLE[0xc0].stack,
+            Stack::Constant(PoolEffect::CheckCast),
+            "0xc0: the row takes the class it pushes from the class file"
+        );
+
+        // `checkcast` leaves a reference: `arraylength` refuses anything else, so a body that
+        // reaches `return` through it proves the cast's push. `aconst_null; checkcast [[I;
+        // arraylength; pop; return` — constant-pool slot 9 is the class `[[I`.
+        let fixture = fixture_body(&[0x01, 0xc0, 0x00, 0x09, 0xbe, 0x57, 0xb1], 0);
+        frames_or_panic(frames_of(&fixture));
+
+        // `instanceof` leaves an `int`: `iadd` wants two `int`s and refuses anything else, so
+        // `aconst_null; instanceof [[I; iconst_0; iadd; pop; return` proves the answer's class.
+        let fixture = fixture_body(&[0x01, 0xc1, 0x00, 0x09, 0x03, 0x60, 0x57, 0xb1], 0);
+        frames_or_panic(frames_of(&fixture));
+
+        // And the other direction: what these instructions pop is a reference, and an `int` on the
+        // stack is the refusal that names the opcode.
+        let fixture = fixture_body(&[0x03, 0xc0, 0x00, 0x09, 0x57, 0xb1], 0);
+        let message = inconsistent(frames_of(&fixture));
+        assert!(
+            message.contains("0xc0") && message.contains("Ref"),
+            "the cast's refusal names the opcode and the class it wants: {message}"
+        );
+        let fixture = fixture_body(&[0x03, 0xc1, 0x00, 0x09, 0x57, 0xb1], 0);
+        let message = inconsistent(frames_of(&fixture));
+        assert!(
+            message.contains("0xc1") && message.contains("Ref"),
+            "the test's refusal names the opcode and the class it wants: {message}"
+        );
+    }
+
+    /// Every row of the `dup`/`pop`/`swap` family names the form JVMS 6.5 gives that opcode. The
+    /// form decides which category pattern the instruction may see, and the wrong form is not
+    /// visible in the depth change: `0x5d dup2_x1` and `0x5e dup2_x2` are both +2 slots, so a row
+    /// that named the other one would pass the cross-check above and then refuse — or accept — the
+    /// wrong operands for every body that carries it.
+    #[test]
+    fn the_form_family_names_its_form_per_opcode() {
+        /// The form JVMS 6.5 defines one opcode of the family by.
+        fn form(opcode: u8) -> Form {
+            match opcode {
+                0x57 => Form::Pop,
+                0x58 => Form::Pop2,
+                0x59 => Form::Dup,
+                0x5a => Form::DupX1,
+                0x5b => Form::DupX2,
+                0x5c => Form::Dup2,
+                0x5d => Form::Dup2X1,
+                0x5e => Form::Dup2X2,
+                0x5f => Form::Swap,
+                other => panic!("{other:#04x} is not a form of the family"),
+            }
+        }
+
+        for opcode in 0x57u8..=0x5f {
+            let expected = form(opcode);
+            assert_eq!(
+                TABLE[usize::from(opcode)].stack,
+                Stack::Form(expected),
+                "{opcode:#04x}: the row is the form {expected:?}"
+            );
+        }
+    }
+
+    /// Every row of the local-access family names the class of the value it moves, per opcode:
+    /// the five `load` groups, the five `store` groups, and the shorthand forms that imply their
+    /// index. `iload` and `aload` are one depth change and differ all the way down — what enters
+    /// the stack is the local's own value, which is why the row carries an effect on the local and
+    /// no stack sequence at all.
+    #[test]
+    fn the_local_access_family_names_the_class_of_its_local_per_opcode() {
+        /// The local effect JVMS 6.5 gives one opcode of the family.
+        fn local(opcode: u8) -> Local {
+            match opcode {
+                0x15 | 0x1a..=0x1d => Local::Load(Ty::Int), // iload, iload_0..3
+                0x16 | 0x1e..=0x21 => Local::Load(Ty::Long), // lload, lload_0..3
+                0x17 | 0x22..=0x25 => Local::Load(Ty::Float), // fload, fload_0..3
+                0x18 | 0x26..=0x29 => Local::Load(Ty::Double), // dload, dload_0..3
+                0x19 | 0x2a..=0x2d => Local::Load(Ty::Ref), // aload, aload_0..3
+                0x36 | 0x3b..=0x3e => Local::Store(Ty::Int), // istore, istore_0..3
+                0x37 | 0x3f..=0x42 => Local::Store(Ty::Long), // lstore, lstore_0..3
+                0x38 | 0x43..=0x46 => Local::Store(Ty::Float), // fstore, fstore_0..3
+                0x39 | 0x47..=0x4a => Local::Store(Ty::Double), // dstore, dstore_0..3
+                0x3a | 0x4b..=0x4e => Local::Store(Ty::Ref), // astore, astore_0..3
+                other => panic!("{other:#04x} is not a local access of the family"),
+            }
+        }
+
+        let rows = (0x15u8..=0x19)
+            .chain(0x1a..=0x2d)
+            .chain(0x36..=0x3a)
+            .chain(0x3b..=0x4e);
+        let mut checked = 0usize;
+        for opcode in rows {
+            let expected = local(opcode);
+            let row = TABLE[usize::from(opcode)];
+            assert_eq!(
+                row.local, expected,
+                "{opcode:#04x}: the row moves the local's own {expected:?}"
+            );
+            assert_eq!(
+                row.stack,
+                Stack::Fixed {
+                    pops: &[],
+                    pushes: &[]
+                },
+                "{opcode:#04x}: the move is the local's, not a stack sequence of the row"
+            );
+            checked += 1;
+        }
+        assert_eq!(
+            checked, 50,
+            "the family covers every local access of the opcode space"
+        );
+    }
+
+    // -- A long shift, over a real body --------------------------------------------------
+
+    /// `lshr` takes a `long` value with an **`int`** shift distance on top of it (JVMS 6.5), and
+    /// the table's pop sequences are written top-first. A row that named the distance second read
+    /// `long >> n` — the body javac emits for every shift of a `long` — as a contradiction of the
+    /// bytes, and accepted the mirror body, a `long` above an `int`, in its place.
+    #[test]
+    fn a_long_shift_takes_its_distance_on_top_of_the_value() {
+        // lconst_0; iconst_2; lshr; pop2; return: the body javac emits for `long >> 2`, which the
+        // pass must derive frames for and not read as a contradiction of its own bytes.
+        let fixture = fixture_body(&[0x09, 0x05, 0x7b, 0x58, 0xb1], 0);
+        frames_or_panic(frames_of(&fixture));
+
+        // iconst_2; lconst_0; lshr; pop2; return: the `long` above the `int`, which is what the
+        // wrong row accepted, and the refusal names the opcode and the class it wants there.
+        let fixture = fixture_body(&[0x05, 0x09, 0x7b, 0x58, 0xb1], 0);
+        let message = inconsistent(frames_of(&fixture));
+        assert!(
+            message.contains("0x7b") && message.contains("Int") && message.contains("Long"),
+            "the refusal names the opcode and the class it wants: {message}"
+        );
+    }
+
     // -- The two comparison kinds, over real bodies --------------------------------------
 
     /// A reference comparison consumes both references it compares, and an integer comparison
@@ -2572,6 +2944,37 @@ mod tests {
         }
     }
 
+    /// One constant-pool entry naming one interface method, as the synthetic fixtures write
+    /// theirs.
+    fn interface_method_ref(index: u16, descriptor: &[u8]) -> CpEntryFacts {
+        CpEntryFacts {
+            index,
+            span: ByteSpan::new(CODE_OFFSET, 0),
+            kind: CpEntryKind::InterfaceMethodRef {
+                class_index: 0,
+                name_and_type_index: 0,
+                owner: JvmBytes(b"Test".to_vec()),
+                name: JvmBytes(b"m".to_vec()),
+                descriptor: JvmBytes(descriptor.to_vec()),
+            },
+        }
+    }
+
+    /// One constant-pool entry naming one dynamic call site, as the synthetic fixtures write
+    /// theirs.
+    fn dynamic_ref(index: u16, descriptor: &[u8]) -> CpEntryFacts {
+        CpEntryFacts {
+            index,
+            span: ByteSpan::new(CODE_OFFSET, 0),
+            kind: CpEntryKind::InvokeDynamic {
+                bootstrap_method_attr_index: 0,
+                name_and_type_index: 0,
+                name: JvmBytes(b"m".to_vec()),
+                descriptor: JvmBytes(descriptor.to_vec()),
+            },
+        }
+    }
+
     /// A synthetic body: hand-written facts, the constant pool the caller names and the canonical
     /// graph the real normalization builds over them.
     struct Synthetic {
@@ -2741,6 +3144,105 @@ mod tests {
             vec![Value::Double, Value::Second],
             "the descriptor's return type decides what the invocation pushes"
         );
+    }
+
+    /// An invocation's opcode and the kind of constant-pool entry it names must be the pair JVMS
+    /// 6.5 and SE 8 define. The pass already refuses a `getfield` over a `Methodref`; the method
+    /// side had no such pairing, so `invokevirtual` over an `InvokeDynamic` had a shape — receiver
+    /// included — read out of an entry the instruction may not name instead of being refused as
+    /// the illegal input it is.
+    #[test]
+    fn an_invocation_names_the_constant_pool_kind_its_opcode_takes() {
+        /// One call of `opcode` naming the entry at index 1, at the width its encoding has:
+        /// `invokeinterface` also carries its argument count and a zero byte.
+        fn call_to(bci: u32, opcode: u8, index: u16) -> (InstructionFact, InstructionOperands) {
+            let width = if opcode == 0xb9 { 5 } else { 3 };
+            instruction(
+                bci,
+                opcode,
+                width,
+                InstructionOperands {
+                    constant_pool_index: Some(index),
+                    ..operands(opcode)
+                },
+            )
+        }
+
+        /// The body `[aconst_null;] <call #1>; return`, whose `()V` call leaves nothing behind.
+        fn body_for(opcode: u8, receiver: bool, entry: CpEntryFacts) -> Synthetic {
+            let width = if opcode == 0xb9 { 5 } else { 3 };
+            let mut code = Vec::new();
+            let mut bci = 0;
+            if receiver {
+                code.push(plain(0, 0x01)); // aconst_null: the receiver
+                bci = 1;
+            }
+            code.push(call_to(bci, opcode, 1));
+            code.push(plain(bci + width, 0xb1)); // return
+            synthetic_body(code, vec![entry], 0, bci + width + 1)
+        }
+
+        // The three pairings the opcode does not take, each refused as the illegal input it is and
+        // with the kind the opcode may not name. `0xba` over a `Methodref`:
+        let message = inconsistent(synthetic_frames(
+            &body_for(0xba, false, method_ref(1, b"()V")),
+            b"()V",
+        ));
+        assert!(
+            message.contains("0xba") && message.contains("Methodref"),
+            "the refusal names the opcode and the kind it cannot take: {message}"
+        );
+
+        // `0xb9` over a `Methodref`:
+        let message = inconsistent(synthetic_frames(
+            &body_for(0xb9, true, method_ref(1, b"()V")),
+            b"()V",
+        ));
+        assert!(
+            message.contains("0xb9") && message.contains("Methodref"),
+            "the refusal names the opcode and the kind it cannot take: {message}"
+        );
+
+        // `0xb6` over an `InvokeDynamic`, the pairing whose descriptor used to become the shape of
+        // a virtual call:
+        let message = inconsistent(synthetic_frames(
+            &body_for(0xb6, true, dynamic_ref(1, b"()V")),
+            b"()V",
+        ));
+        assert!(
+            message.contains("0xb6") && message.contains("InvokeDynamic"),
+            "the refusal names the opcode and the kind it cannot take: {message}"
+        );
+
+        // The same pairing over a **real** class file and not a synthetic one: constant-pool slot
+        // 15 of the fixture builder is the `InterfaceMethodref` `Runnable.run:(J)V`, and
+        // `invokevirtual` may not name it — not a pairing a source-language call can produce, only
+        // an illegal class file.
+        let fixture = fixture_body(&[0x01, 0xb6, 0x00, 0x0f, 0xb1], 0);
+        let message = inconsistent(frames_of(&fixture));
+        assert!(
+            message.contains("0xb6") && message.contains("InterfaceMethodref"),
+            "the refusal names the opcode and the kind it cannot take: {message}"
+        );
+
+        // The pairings the opcodes do take, so the pairing cannot have been drawn too narrowly.
+        // Since SE 8 `invokespecial` reaches an interface's default and private methods and
+        // `invokestatic` its static ones, so both may name an **InterfaceMethodref** — the pairing
+        // a blanket "a Methodref only" rule would have refused — and `invokeinterface` names an
+        // interface method, `invokedynamic` a call site.
+        for (opcode, receiver, entry) in [
+            (0xb6u8, true, method_ref(1, b"()V")),
+            (0xb7, true, interface_method_ref(1, b"()V")),
+            (0xb8, false, interface_method_ref(1, b"()V")),
+            (0xb9, true, interface_method_ref(1, b"()V")),
+            (0xba, false, dynamic_ref(1, b"()V")),
+        ] {
+            let outcome = synthetic_frames(&body_for(opcode, receiver, entry), b"()V");
+            assert!(
+                matches!(outcome, FrameOutcome::Frames(_)),
+                "{opcode:#04x} over the entry kind it takes must be analyzed, got {outcome:?}"
+            );
+        }
     }
 
     /// The entry frame is the descriptor's own: `this` where the declaration puts it, and one
