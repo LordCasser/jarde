@@ -657,3 +657,25 @@ CI：`ee1a723`（实现）→ run 35363205357、`56dbbfa`（复核修正）→ r
 ### 未做
 
 Frame/SSA（4.x）、canonical 图的公共发布（5.1）、fuzz 语料新增 3.5 shape（本片仅确认 fuzz workspace 编译）。**独立复核进行中**。
+
+### 3.5 独立复核（Reject）与据其修正（提交 `492bad5`）
+
+复核者（第三方只读）给出 **Reject**，四项必须改。除第 1 项外全部证实：
+
+| # | 复核发现 | 证伪/证据 | 处置 |
+| --- | --- | --- | --- |
+| 1 | **提交不完整**：`tests/p2_canonical.rs`（7 条集成验收用例）是未跟踪文件，`3847bc7` 里没有它 | `git status` → `??`，`git ls-files` 为空 | **父级的分段失误**（`git add` 时漏了该路径）。已在 `492bad5` 补入 |
+| 2 | **fusion 吞掉入口/循环头** → 普通循环体整体假 fallback，且报的是「超界」这个与真实原因不符的码 | 复核者用 8 字节合成体复现：`block {bci:4, path:[]} does not name its original blocks ascending from its own start: [0,4]`。**父级独立复现并确认**：回退守卫后新增的循环回归用例打印同一条消息 | **已修**：fusion 只向前延伸（`to.bci <= head.bci` 即停）。父级新增 `a_loop_header_is_not_absorbed_by_the_body_that_jumps_back_to_it`，回退守卫即红 |
+| 3 | 死上下文播种硬编码 `path: []`：若死调用点位于子程序内，会被挂到方法自身帧（可能与活节点身份碰撞、给活块注入伪前驱边） | 复核者构造孤儿探针；**父级把守卫插桩后跑全量：触发 0 次** | **已修**：仅当该块在 raw 图中不可达时才播种，否则拒绝。**如实记录为防御性守卫**（无 fixture 触达，注释已写明）；理由是「误配帧」比「拒绝」更坏 |
+| 4 | `unreachable` 文档**过度声明**「everything else the entry never runs」，且未说明缺席是第三种状态、不得与 3.3 的 `Vec<u32>` 混用 | 读代码 | **已修**：文档改为「列的是**被创建过**且入口不可达的节点」，显式写明缺席是第三态、身份类型与 raw 的 BCI 列表不可比较或并集 |
+| 5 | 「P1 XRef 次数不变」用例**基本恒真**：目标符号在构造器里，不在被克隆的方法内 | 复核者论证其结构不可能失败 | **已修（并如实标注能力边界）**：改为比较**完整 item 列表**（derivation/certainty/bci/opcode/cp）而非单条坐标，并断言该次运行 `clones == 2`；注释写明它证明的是**两平面独立**，且该 fixture 在被分析方法内没有任何引用可查——真正禁止 query 读 canonical 图的是分层守卫 |
+
+### 父级过程失误与两个环境教训（如实记录）
+
+- **分段失误**：`3847bc7` 的 `git add` 漏了 `tests/p2_canonical.rs`，使该片的验收证据不在提交里；CI 也不会跑到它。已在 `492bad5` 补入。
+- **本地 clippy 与 CI 不同版本**：`3847bc7` 的 CI 在 `stable` 上因 `this loop could be written as a while let loop`（`canonical.rs:998`）失败，而**父级本地 clippy 干净**——因为本机 `stable` 是 **1.88.0**，CI 的 `stable` 更新。已 `rustup update stable` 到 **1.98.1** 并重跑：干净。**这是本地验证覆盖不到 CI 的一类缺口**，后续片必须以 CI 为准，或先对齐工具链版本。
+- 该 lint 的修法：把 `loop { let Some(x) = … else { break }; … }` 改为 `while let Some(x) = …`（因循环体改写同一张表，需 `.cloned()` 取值）。
+
+### 证据（`492bad5`，强制重建）
+
+全量 **656 passed / 0 failed / 1 ignored**（655 + 1 条循环回归）；`-p jarde-jvm` = 115；`p2_canonical` = 7；`p1_xref_golden` = 5；`p2_contracts` = 29；两个 CI example 均 exit 0；fmt 干净；**clippy 1.98.1 干净**。
