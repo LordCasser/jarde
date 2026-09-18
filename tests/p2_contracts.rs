@@ -2567,16 +2567,101 @@ fn body_state_and_subject_shapes_are_pinned() {
 // A17: the physical entry points stay free of the P2 modules
 // ---------------------------------------------------------------------------
 
-/// The six P1 physical-entry files the guard exists for.
+/// One module the A17 guard talks about: a layout-independent identity plus every physical
+/// path that identity may have.
+///
+/// The guard has to hold both before and after the crate split (2.1/2.2), so no path is
+/// written down on its own. A guarded module carries the pre-split path under `src/` and the
+/// post-split one below `crates/`, and `resolve_layout` asserts that exactly one of them is on
+/// disk. Enumerating nothing must fail, and a tree where both layouts coexist must fail loudly
+/// rather than let the guard pick the half that is still in place.
+struct GuardedModule {
+    /// Layout-independent name. Guard messages and sandbox cases use this, not a path.
+    identity: &'static str,
+    /// Every path this identity may occupy, pre-split first. Exactly one has to exist.
+    candidates: &'static [&'static str],
+}
+
+const A17_QUERY_MODULE: GuardedModule = GuardedModule {
+    identity: "query.rs",
+    candidates: &["src/query.rs", "crates/jarde-query/src/query.rs"],
+};
+const A17_XREF_MODULE: GuardedModule = GuardedModule {
+    identity: "xref/mod.rs",
+    candidates: &["src/xref/mod.rs", "crates/jarde-query/src/xref/mod.rs"],
+};
+const A17_XREF_CODE_MODULE: GuardedModule = GuardedModule {
+    identity: "xref/code.rs",
+    candidates: &["src/xref/code.rs", "crates/jarde-query/src/xref/code.rs"],
+};
+const A17_XREF_METADATA_MODULE: GuardedModule = GuardedModule {
+    identity: "xref/metadata.rs",
+    candidates: &[
+        "src/xref/metadata.rs",
+        "crates/jarde-query/src/xref/metadata.rs",
+    ],
+};
+const A17_XREF_BOOTSTRAP_MODULE: GuardedModule = GuardedModule {
+    identity: "xref/bootstrap.rs",
+    candidates: &[
+        "src/xref/bootstrap.rs",
+        "crates/jarde-query/src/xref/bootstrap.rs",
+    ],
+};
+const A17_XREF_RESOURCE_MODULE: GuardedModule = GuardedModule {
+    identity: "xref/resource.rs",
+    candidates: &[
+        "src/xref/resource.rs",
+        "crates/jarde-query/src/xref/resource.rs",
+    ],
+};
+
+/// The six P1 physical-entry modules the guard exists for.
 ///
 /// Only these carry a size expectation: a file added later may legitimately be tiny.
-const A17_EXPECTED_FILES: [&str; 6] = [
-    "src/query.rs",
-    "src/xref/mod.rs",
-    "src/xref/code.rs",
-    "src/xref/metadata.rs",
-    "src/xref/bootstrap.rs",
-    "src/xref/resource.rs",
+const A17_EXPECTED_MODULES: [GuardedModule; 6] = [
+    A17_QUERY_MODULE,
+    A17_XREF_MODULE,
+    A17_XREF_CODE_MODULE,
+    A17_XREF_METADATA_MODULE,
+    A17_XREF_BOOTSTRAP_MODULE,
+    A17_XREF_RESOURCE_MODULE,
+];
+
+/// The directory the wildcard half of the guard walks: `src/xref` before the split, the same
+/// directory below `crates/jarde-query` after it.
+///
+/// The six identities above are the floor, not the whole guarded set: every `*.rs` below this
+/// directory is guarded as soon as it exists.
+const A17_XREF_DIRECTORY: GuardedModule = GuardedModule {
+    identity: "xref/",
+    candidates: &["src/xref", "crates/jarde-query/src/xref"],
+};
+
+/// The module that is allowed, and required, to call the P2 entries: the P2 driver.
+///
+/// It is the guard's positive control, so its path is resolved like every other one and moves
+/// with the driver: 2.2 puts it next to the P2 modules in `jarde-jvm`. If that file ends up
+/// somewhere else, the resolution fails and says so instead of quietly losing the control.
+const A17_CONTROL_MODULE: GuardedModule = GuardedModule {
+    identity: "engine.rs",
+    candidates: &["src/engine.rs", "crates/jarde-jvm/src/engine.rs"],
+};
+
+/// The P2 modules the type table is derived from: their `pub` declarations are its source.
+const A17_P2_SOURCE_MODULES: [GuardedModule; 3] = [
+    GuardedModule {
+        identity: "environment.rs",
+        candidates: &["src/environment.rs", "crates/jarde-jvm/src/environment.rs"],
+    },
+    GuardedModule {
+        identity: "resolver.rs",
+        candidates: &["src/resolver.rs", "crates/jarde-jvm/src/resolver.rs"],
+    },
+    GuardedModule {
+        identity: "ir.rs",
+        candidates: &["src/ir.rs", "crates/jarde-jvm/src/ir.rs"],
+    },
 ];
 
 /// Number of guarded files the repository has today.
@@ -2587,6 +2672,16 @@ const A17_GUARDED_FILES: usize = 6;
 
 /// Smallest plausible size of one of the six P1 files, in bytes.
 const A17_MIN_SOURCE_LEN: usize = 1_000;
+
+/// Whether a guarded identity is one of the modules that carry that floor.
+///
+/// The floor is a property of the module, not of the path it happens to have, so the size
+/// rule follows the identity through the split exactly as the enumeration does.
+fn carries_size_floor(identity: &str) -> bool {
+    A17_EXPECTED_MODULES
+        .iter()
+        .any(|module| module.identity == identity)
+}
 
 /// Module-path tokens that make a physical-entry module reach a P2 module.
 ///
@@ -2601,7 +2696,16 @@ const A17_MIN_SOURCE_LEN: usize = 1_000;
 /// contains, so the module path is the only signal. The `super::`-relative spelling of the same
 /// reach (`super::cfg::…` from a `src/xref/` module is the crate root) is covered by the bare
 /// forms.
-const A17_MODULE_TOKENS: [&str; 12] = [
+///
+/// The crate split (2.1/2.2) moves the P2 modules into `crates/jarde-jvm` and the guarded
+/// files into `crates/jarde-query`, where the same reach is spelled by package path instead.
+/// Both spellings stay in the table: `crate::…` keeps naming the P2 modules inside `jarde-jvm`
+/// (the P2 driver is the positive control there), and a guarded file may not reach them
+/// through their package path either. `jarde_query::` is the guarded crate's own package path
+/// — a guarded file that names it is not talking about itself as `crate::` — and `jarde::` is
+/// the facade above both: design §1 makes `jarde` depend on the three packages, so a
+/// guarded file reaching for the facade is the same edge pointing back up the layering.
+const A17_MODULE_TOKENS: [&str; 15] = [
     "crate::environment",
     "crate::resolver",
     "crate::ir",
@@ -2614,6 +2718,9 @@ const A17_MODULE_TOKENS: [&str; 12] = [
     "cfg::",
     "passes::",
     "call_context::",
+    "jarde_jvm::",
+    "jarde_query::",
+    "jarde::",
 ];
 
 /// Import forms that reach a whole P2 module under a name of the caller's choosing.
@@ -2629,7 +2736,13 @@ const A17_MODULE_TOKENS: [&str; 12] = [
 /// dependency's only consumer, and it is not a physical entry point: letting `query`/`xref`
 /// reach a graph algorithm would be a new construction path in X0/X1 that no budget accounts
 /// for.
-const A17_IMPORT_TOKENS: [&str; 7] = [
+///
+/// The cross-crate reaches follow the same shape: an aliased package path
+/// (`use jarde_jvm as jv;`) hides the `jarde_jvm::` token, so the `… as` form and the
+/// `extern crate` spelling are matched on their own. `extern crate jarde` is deliberately not
+/// a token: it is a prefix of the legitimate `extern crate jarde_reader`, while the facade's
+/// own path is already covered by `jarde::` and its alias by `jarde as`.
+const A17_IMPORT_TOKENS: [&str; 12] = [
     "crate::*",
     "environment as",
     "resolver as",
@@ -2637,6 +2750,11 @@ const A17_IMPORT_TOKENS: [&str; 7] = [
     "petgraph::",
     "petgraph as",
     "extern crate petgraph",
+    "jarde_jvm as",
+    "jarde_query as",
+    "jarde as",
+    "extern crate jarde_jvm",
+    "extern crate jarde_query",
 ];
 
 /// P2 type names that the P2 modules do not declare themselves.
@@ -2682,9 +2800,14 @@ fn declared_public_type_names(source: &str) -> Vec<String> {
 /// type that can be imported from a physical entry without the guard noticing. The names come
 /// from the declarations, and the test asserts that every derived name is also present in the
 /// token table, so a broken derivation cannot pass silently.
+///
+/// The three modules are addressed by identity, so the derivation reads them where the split
+/// put them (`crates/jarde-jvm/src/…` after 2.2) instead of losing the table the moment `src/`
+/// stops holding them.
 fn derived_p2_type_tokens(root: &Path) -> Vec<String> {
     let mut names = Vec::new();
-    for relative in ["src/environment.rs", "src/resolver.rs", "src/ir.rs"] {
+    for module in &A17_P2_SOURCE_MODULES {
+        let relative = resolve_guarded_file(root, module);
         let source = read_repository_file(root, relative);
         let declared = declared_public_type_names(&source);
         assert!(
@@ -2699,8 +2822,10 @@ fn derived_p2_type_tokens(root: &Path) -> Vec<String> {
     names
 }
 
-/// One guarded source file, labelled by its path relative to the crate root.
+/// One guarded source file: its identity, its path relative to the scanned root — which is what
+/// a violation names — and its text.
 struct GuardedSource {
+    identity: String,
     label: String,
     source: String,
 }
@@ -2771,18 +2896,73 @@ fn p2_tokens_in(source: &str, type_tokens: &[String]) -> Vec<String> {
         .collect()
 }
 
-/// Reads every guarded source under `root`: `src/query.rs` plus every `*.rs` below
-/// `src/xref/`, including nested directories.
+/// The one path `module` names that exists under `root`, relative to `root`.
 ///
-/// The list is enumerated from the directory rather than written out by hand, so a file
-/// added to `src/xref/` — and a `mod` line registering it — is guarded as soon as it exists.
+/// Exactly one candidate has to be there:
+///
+/// - none means the layout changed and nobody brought this table along. The guard refuses to
+///   enumerate nothing, which is how "the files moved, the strings did not" would stay green,
+/// - two or more means the pre-split and the post-split tree are both on disk. The guard says
+///   so instead of picking whichever one it looked at first: either the move is half done or a
+///   stale copy of the module is still there, and either way the guard is not looking at the
+///   tree its author meant.
+fn resolve_layout(
+    root: &Path,
+    module: &GuardedModule,
+    present: impl Fn(&Path) -> bool,
+) -> &'static str {
+    let found = module
+        .candidates
+        .iter()
+        .copied()
+        .filter(|candidate| present(&root.join(candidate)))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        found.len(),
+        1,
+        "{}: exactly one layout must provide this module, found {found:?} (candidates {:?})",
+        module.identity,
+        module.candidates
+    );
+    found[0]
+}
+
+/// The file `module` is, in whichever layout the tree under `root` has.
+fn resolve_guarded_file(root: &Path, module: &GuardedModule) -> &'static str {
+    resolve_layout(root, module, Path::is_file)
+}
+
+/// The directory `module` is, in whichever layout the tree under `root` has.
+fn resolve_guarded_directory(root: &Path, module: &GuardedModule) -> &'static str {
+    resolve_layout(root, module, Path::is_dir)
+}
+
+/// Reads every guarded source under `root`: the `query.rs` identity plus every `*.rs` below
+/// the resolved xref directory, including nested directories.
+///
+/// Both halves are resolved by layout, so the same walk covers the pre-split and the
+/// post-split tree. The list is enumerated from the directory rather than written out by
+/// hand, so a file added to the xref directory — and a `mod` line registering it — is guarded
+/// as soon as it exists.
 fn guarded_sources(root: &Path) -> Vec<GuardedSource> {
-    let mut paths = vec![root.join("src").join("query.rs")];
-    collect_rs_files(&root.join("src").join("xref"), &mut paths);
-    paths.sort();
-    paths
+    let query = resolve_guarded_file(root, &A17_QUERY_MODULE);
+    let xref = resolve_guarded_directory(root, &A17_XREF_DIRECTORY);
+    let mut listed = vec![(A17_QUERY_MODULE.identity.to_string(), root.join(query))];
+    let mut xref_paths = Vec::new();
+    collect_rs_files(&root.join(xref), &mut xref_paths);
+    listed.extend(xref_paths.into_iter().map(|path| {
+        let relative = path
+            .strip_prefix(root.join(xref))
+            .unwrap_or(&path)
+            .to_string_lossy()
+            .replace('\\', "/");
+        (format!("xref/{relative}"), path)
+    }));
+    // Sorted by identity, so the report order is the same in either layout.
+    listed.sort();
+    listed
         .into_iter()
-        .map(|path| {
+        .map(|(identity, path)| {
             let label = path
                 .strip_prefix(root)
                 .unwrap_or(&path)
@@ -2790,7 +2970,11 @@ fn guarded_sources(root: &Path) -> Vec<GuardedSource> {
                 .replace('\\', "/");
             let source = std::fs::read_to_string(&path)
                 .unwrap_or_else(|error| panic!("guarded source {label} is unreadable: {error}"));
-            GuardedSource { label, source }
+            GuardedSource {
+                identity,
+                label,
+                source,
+            }
         })
         .collect()
 }
@@ -2826,9 +3010,7 @@ fn guard_violations(root: &Path, type_tokens: &[String]) -> Vec<String> {
             violations.push(format!("{}: {}", source.label, tokens.join(", ")));
             continue;
         }
-        if A17_EXPECTED_FILES.contains(&source.label.as_str())
-            && source.source.len() <= A17_MIN_SOURCE_LEN
-        {
+        if carries_size_floor(&source.identity) && source.source.len() <= A17_MIN_SOURCE_LEN {
             violations.push(format!(
                 "{}: expected P1 file is unexpectedly small ({} bytes)",
                 source.label,
@@ -2887,13 +3069,16 @@ fn physical_entry_modules_do_not_reference_the_p2_modules() {
     );
 
     // Non-vacuity of the enumeration: the guarded tree really is there, and it is neither
-    // losing nor silently gaining a file. A new `src/xref/*.rs` has to be reviewed here (its
-    // own contents are already scanned above), which is what stops the guard from decaying
-    // into "the files that existed when it was written".
-    for expected in A17_EXPECTED_FILES {
+    // losing nor silently gaining a file. Every identity is resolved by layout first — a path
+    // shape this table does not know fails there — and has to show up in what the directory
+    // walk enumerated. A new `*.rs` below the xref directory has to be reviewed here (its own
+    // contents are already scanned above), which is what stops the guard from decaying into
+    // "the files that existed when it was written".
+    for module in &A17_EXPECTED_MODULES {
+        let relative = resolve_guarded_file(root, module);
         assert!(
-            sources.iter().any(|source| source.label == expected),
-            "{expected} is not enumerated: {:?}",
+            sources.iter().any(|source| source.label == relative),
+            "{relative} is not enumerated: {:?}",
             sources
                 .iter()
                 .map(|source| source.label.as_str())
@@ -2910,20 +3095,56 @@ fn physical_entry_modules_do_not_reference_the_p2_modules() {
             .collect::<Vec<_>>()
     );
 
-    // Positive control on real repository code: `src/engine.rs` is the module that is
-    // allowed, and required, to call the P2 entries, so the same detector flags it — and it
-    // is not part of the guarded set, which is what makes the guard a policy rather than a
-    // detector that happens to match nothing.
-    let engine = read_repository_file(root, "src/engine.rs");
+    // Positive control on real repository code: the P2 driver is the module that is allowed,
+    // and required, to call the P2 entries, so the same detector flags it — and it is not part
+    // of the guarded set, which is what makes the guard a policy rather than a detector that
+    // happens to match nothing. The control's own path comes from the same identity table, so
+    // 2.2 moving the driver into `jarde-jvm` keeps this control attached to the file it is
+    // about instead of pinning `src/engine.rs`.
+    let control = resolve_guarded_file(root, &A17_CONTROL_MODULE);
+    let engine = read_repository_file(root, control);
     assert!(
         p2_tokens_in(&engine, &type_tokens).contains(&"crate::resolver".to_string()),
-        "the detector must flag the module that does call the P2 entries"
+        "the detector must flag the module that does call the P2 entries ({control})"
     );
     assert!(
-        !sources.iter().any(|source| source.label == "src/engine.rs"),
-        "engine.rs calls the P2 entries by contract and is not guarded"
+        !sources.iter().any(|source| source.label == control),
+        "{control} calls the P2 entries by contract and is not guarded"
     );
 }
+
+/// One sandbox layout: what a module identity is prefixed with in a tree built for a case.
+///
+/// The case tables are written in identities (`query.rs`, `xref/clean.rs`) and run once per
+/// layout here, so a guard that only recognizes one of them — the pre-split tree today, the
+/// post-split tree after 2.1/2.2 — fails on the other pass instead of passing until the move
+/// lands.
+struct SandboxLayout {
+    /// Name of this layout in the case titles and in the temporary directories.
+    name: &'static str,
+    /// The prefix every identity carries under this layout.
+    prefix: &'static str,
+}
+
+impl SandboxLayout {
+    /// Where `identity` lives in this layout.
+    fn path(&self, identity: &str) -> String {
+        format!("{}{identity}", self.prefix)
+    }
+}
+
+/// The two layouts the guard has to work in: the tree as it is today, and the tree the crate
+/// split (2.1/2.2) leaves for the query side.
+const SANDBOX_LAYOUTS: [SandboxLayout; 2] = [
+    SandboxLayout {
+        name: "pre_split",
+        prefix: "src/",
+    },
+    SandboxLayout {
+        name: "post_split",
+        prefix: "crates/jarde-query/src/",
+    },
+];
 
 #[test]
 fn the_a17_guard_detects_rewritten_references_and_added_files() {
@@ -2932,16 +3153,20 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
     // that drops the module name, (c) whitespace and newlines around `::`, (d) a
     // `use crate::{…}` group, (e) a bare module import, (f) a glob import plus a type that a
     // hand-written list happened to omit, (g) a grouped `as` alias, (h) a grouped alias for
-    // another P2 module. The tree is built on disk, so enumeration — not a hand-written file
-    // list — is what has to find the offender, and the type table is the derived one.
+    // another P2 module, (i) the cross-crate spellings the split makes reachable. Each case
+    // runs in both layouts of `SANDBOX_LAYOUTS` with the same expectations. The tree is built
+    // on disk, so enumeration — not a hand-written file list — is what has to find the
+    // offender, and the type table is the derived one.
     struct Case {
         name: &'static str,
+        /// Files of this case, in module identities: the layout decides where they land.
         files: &'static [(&'static str, &'static str)],
+        /// Offending identities, in the order the guard reports them.
         offenders: &'static [&'static str],
         /// Text each offender's violation message has to contain.
         evidence: &'static [&'static str],
-        /// Expected-file names this case deliberately leaves below the size floor, to test
-        /// that rule itself. Every other expected-file stub is padded, so a sandbox case
+        /// Expected-file identities this case deliberately leaves below the size floor, to
+        /// test that rule itself. Every other expected-file stub is padded, so a sandbox case
         /// shows the violation it was built for.
         tiny_files: &'static [&'static str],
     }
@@ -2951,23 +3176,23 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
         Case {
             name: "new_file",
             files: &[
-                ("src/query.rs", CLEAN_QUERY),
-                ("src/xref/mod.rs", "mod extra_probe;\nmod clean;\n"),
-                ("src/xref/extra_probe.rs", "use crate::ir::AnalysisStage;\n"),
-                ("src/xref/clean.rs", CLEAN_XREF),
+                ("query.rs", CLEAN_QUERY),
+                ("xref/mod.rs", "mod extra_probe;\nmod clean;\n"),
+                ("xref/extra_probe.rs", "use crate::ir::AnalysisStage;\n"),
+                ("xref/clean.rs", CLEAN_XREF),
             ],
-            offenders: &["src/xref/extra_probe.rs"],
+            offenders: &["xref/extra_probe.rs"],
             evidence: &["crate::ir"],
             tiny_files: &[],
         },
         Case {
             name: "root_reexport",
             files: &[
-                ("src/query.rs", "use crate::ResolutionReport as _;\n"),
-                ("src/xref/mod.rs", "mod clean;\n"),
-                ("src/xref/clean.rs", CLEAN_XREF),
+                ("query.rs", "use crate::ResolutionReport as _;\n"),
+                ("xref/mod.rs", "mod clean;\n"),
+                ("xref/clean.rs", CLEAN_XREF),
             ],
-            offenders: &["src/query.rs"],
+            offenders: &["query.rs"],
             evidence: &["ResolutionReport"],
             tiny_files: &[],
         },
@@ -2975,30 +3200,27 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
             name: "whitespace",
             files: &[
                 (
-                    "src/query.rs",
+                    "query.rs",
                     "use crate::\n    resolver\n    ::\n    ResolutionRequest;\n",
                 ),
-                ("src/xref/mod.rs", "mod clean;\n"),
+                ("xref/mod.rs", "mod clean;\n"),
                 (
-                    "src/xref/clean.rs",
+                    "xref/clean.rs",
                     "use crate::\n    ir\n    ::\n    AnalysisStage;\n",
                 ),
             ],
-            offenders: &["src/query.rs", "src/xref/clean.rs"],
+            offenders: &["query.rs", "xref/clean.rs"],
             evidence: &["ResolutionRequest", "AnalysisStage"],
             tiny_files: &[],
         },
         Case {
             name: "use_group",
             files: &[
-                (
-                    "src/query.rs",
-                    "use crate::{resolver::ResolutionRequest};\n",
-                ),
-                ("src/xref/mod.rs", "mod clean;\n"),
-                ("src/xref/clean.rs", CLEAN_XREF),
+                ("query.rs", "use crate::{resolver::ResolutionRequest};\n"),
+                ("xref/mod.rs", "mod clean;\n"),
+                ("xref/clean.rs", CLEAN_XREF),
             ],
-            offenders: &["src/query.rs"],
+            offenders: &["query.rs"],
             evidence: &["ResolutionRequest"],
             tiny_files: &[],
         },
@@ -3008,11 +3230,11 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
             // boundary `use` leaves behind rather than against glued text.
             name: "bare_module_import",
             files: &[
-                ("src/query.rs", "use crate::ir as p2_ir;\n"),
-                ("src/xref/mod.rs", "mod clean;\n"),
-                ("src/xref/clean.rs", CLEAN_XREF),
+                ("query.rs", "use crate::ir as p2_ir;\n"),
+                ("xref/mod.rs", "mod clean;\n"),
+                ("xref/clean.rs", CLEAN_XREF),
             ],
-            offenders: &["src/query.rs"],
+            offenders: &["query.rs"],
             evidence: &["crate::ir", "ir as"],
             tiny_files: &[],
         },
@@ -3023,13 +3245,13 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
             name: "glob_import",
             files: &[
                 (
-                    "src/query.rs",
+                    "query.rs",
                     "use crate::*;\nfn probe(r: DispatchReport) {}\n",
                 ),
-                ("src/xref/mod.rs", "mod clean;\n"),
-                ("src/xref/clean.rs", CLEAN_XREF),
+                ("xref/mod.rs", "mod clean;\n"),
+                ("xref/clean.rs", CLEAN_XREF),
             ],
-            offenders: &["src/query.rs"],
+            offenders: &["query.rs"],
             evidence: &["crate::*", "DispatchReport"],
             tiny_files: &[],
         },
@@ -3039,27 +3261,27 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
             name: "group_alias",
             files: &[
                 (
-                    "src/query.rs",
+                    "query.rs",
                     "use crate::{resolver as r};\nfn probe(s: r::ResolutionState) {}\n",
                 ),
-                ("src/xref/mod.rs", "mod clean;\n"),
-                ("src/xref/clean.rs", CLEAN_XREF),
+                ("xref/mod.rs", "mod clean;\n"),
+                ("xref/clean.rs", CLEAN_XREF),
             ],
-            offenders: &["src/query.rs"],
+            offenders: &["query.rs"],
             evidence: &["resolver as", "ResolutionState"],
             tiny_files: &[],
         },
         Case {
             name: "group_alias_other_module",
             files: &[
-                ("src/query.rs", CLEAN_QUERY),
-                ("src/xref/mod.rs", "mod clean;\n"),
+                ("query.rs", CLEAN_QUERY),
+                ("xref/mod.rs", "mod clean;\n"),
                 (
-                    "src/xref/clean.rs",
+                    "xref/clean.rs",
                     "use crate::{ir as p2};\nfn probe(s: p2::StageState) {}\n",
                 ),
             ],
-            offenders: &["src/xref/clean.rs"],
+            offenders: &["xref/clean.rs"],
             evidence: &["ir as", "StageState"],
             tiny_files: &[],
         },
@@ -3070,17 +3292,14 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
             name: "petgraph_import",
             files: &[
                 (
-                    "src/query.rs",
+                    "query.rs",
                     "use petgraph::algo::kosaraju_scc;\nfn probe() {}\n",
                 ),
-                ("src/xref/mod.rs", "mod clean;\n"),
-                (
-                    "src/xref/clean.rs",
-                    "use petgraph as graphs;\nfn probe() {}\n",
-                ),
-                ("src/xref/tiny.rs", "extern crate petgraph;\n"),
+                ("xref/mod.rs", "mod clean;\n"),
+                ("xref/clean.rs", "use petgraph as graphs;\nfn probe() {}\n"),
+                ("xref/tiny.rs", "extern crate petgraph;\n"),
             ],
-            offenders: &["src/query.rs", "src/xref/clean.rs", "src/xref/tiny.rs"],
+            offenders: &["query.rs", "xref/clean.rs", "xref/tiny.rs"],
             evidence: &["petgraph::", "petgraph as", "extern crate petgraph"],
             tiny_files: &[],
         },
@@ -3092,18 +3311,18 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
             // choosing.
             name: "cfg_and_passes_module_paths",
             files: &[
-                ("src/query.rs", "use crate::cfg::raw_cfg;\nfn probe() {}\n"),
-                ("src/xref/mod.rs", "mod clean;\nmod tiny;\n"),
+                ("query.rs", "use crate::cfg::raw_cfg;\nfn probe() {}\n"),
+                ("xref/mod.rs", "mod clean;\nmod tiny;\n"),
                 (
-                    "src/xref/clean.rs",
+                    "xref/clean.rs",
                     "use crate::passes::PASSES;\nfn probe() {}\n",
                 ),
                 (
-                    "src/xref/tiny.rs",
+                    "xref/tiny.rs",
                     "use crate::call_context::call_contexts;\nfn probe() {}\n",
                 ),
             ],
-            offenders: &["src/query.rs", "src/xref/clean.rs", "src/xref/tiny.rs"],
+            offenders: &["query.rs", "xref/clean.rs", "xref/tiny.rs"],
             evidence: &[
                 "crate::cfg",
                 "crate::passes",
@@ -3116,15 +3335,47 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
             // The module under an alias of the caller's choosing keeps the path token.
             name: "call_context_module_alias",
             files: &[
-                ("src/query.rs", CLEAN_QUERY),
-                ("src/xref/mod.rs", "mod tiny;\n"),
+                ("query.rs", CLEAN_QUERY),
+                ("xref/mod.rs", "mod tiny;\n"),
                 (
-                    "src/xref/tiny.rs",
+                    "xref/tiny.rs",
                     "use crate::call_context as contexts;\nfn probe() {}\n",
                 ),
             ],
-            offenders: &["src/xref/tiny.rs"],
+            offenders: &["xref/tiny.rs"],
             evidence: &["crate::call_context"],
+            tiny_files: &[],
+        },
+        Case {
+            // The split gives the same reach a second spelling: inside `jarde-jvm` the P2
+            // modules stay `crate::…`, but a guarded file in `jarde-query` has to name them by
+            // package path, which no pre-split token covered.
+            name: "cross_crate_package_path",
+            files: &[
+                ("query.rs", "use jarde_jvm::resolver::ResolutionReport;\n"),
+                ("xref/mod.rs", "mod clean;\n"),
+                ("xref/clean.rs", CLEAN_XREF),
+            ],
+            offenders: &["query.rs"],
+            evidence: &["jarde_jvm::"],
+            tiny_files: &[],
+        },
+        Case {
+            // ... and the same reach under a name of the caller's choosing, which hides the
+            // package path token. `jarde::` is the facade above the guarded crate: design §1
+            // has `jarde` depending on the packages, so reaching for it is the edge pointing
+            // back up the layering.
+            name: "cross_crate_alias_and_facade",
+            files: &[
+                ("query.rs", CLEAN_QUERY),
+                ("xref/mod.rs", "mod clean;\n"),
+                (
+                    "xref/clean.rs",
+                    "use jarde_jvm as jv;\nuse jarde::Engine;\nfn probe() {}\n",
+                ),
+            ],
+            offenders: &["xref/clean.rs"],
+            evidence: &["jarde_jvm as", "jarde::"],
             tiny_files: &[],
         },
         Case {
@@ -3132,9 +3383,9 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
             // small module is legitimate and must not be reported as "unexpectedly small".
             name: "tiny_new_module",
             files: &[
-                ("src/query.rs", CLEAN_QUERY),
-                ("src/xref/mod.rs", "mod tiny;\n"),
-                ("src/xref/tiny.rs", "pub fn tiny() {}\n"),
+                ("query.rs", CLEAN_QUERY),
+                ("xref/mod.rs", "mod tiny;\n"),
+                ("xref/tiny.rs", "pub fn tiny() {}\n"),
             ],
             offenders: &[],
             evidence: &[],
@@ -3144,96 +3395,114 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
             // ... and the same floor still applies to the files it exists for.
             name: "tiny_expected_file",
             files: &[
-                ("src/query.rs", CLEAN_QUERY),
-                ("src/xref/mod.rs", "mod clean;\n"),
-                ("src/xref/clean.rs", CLEAN_XREF),
+                ("query.rs", CLEAN_QUERY),
+                ("xref/mod.rs", "mod clean;\n"),
+                ("xref/clean.rs", CLEAN_XREF),
             ],
-            offenders: &["src/query.rs"],
+            offenders: &["query.rs"],
             evidence: &["unexpectedly small"],
-            tiny_files: &["src/query.rs"],
+            tiny_files: &["query.rs"],
         },
     ];
 
     let type_tokens = derived_p2_type_tokens(Path::new(env!("CARGO_MANIFEST_DIR")));
 
-    for case in cases {
-        let root = std::env::temp_dir().join(format!(
-            "jarde-a17-guard-{}-{}",
-            std::process::id(),
-            case.name
-        ));
-        let _ = std::fs::remove_dir_all(&root);
-        for (relative, contents) in case.files {
-            write_sandbox_file(&root, relative, contents, case.tiny_files);
-        }
-
-        let violations = guard_violations(&root, &type_tokens);
-        let offending = violations
-            .iter()
-            .map(|violation| {
-                violation
-                    .split_once(':')
-                    .expect("a violation names its file")
-                    .0
-                    .to_string()
-            })
-            .collect::<Vec<_>>();
-        assert_eq!(
-            offending,
-            case.offenders.to_vec(),
-            "case {}: the guard must flag exactly {:?}, got {violations:?}",
-            case.name,
-            case.offenders
-        );
-        for evidence in case.evidence {
-            assert!(
-                violations
-                    .iter()
-                    .any(|violation| violation.contains(evidence)),
-                "case {}: the violation must name {evidence}, got {violations:?}",
+    for layout in &SANDBOX_LAYOUTS {
+        for case in &cases {
+            let root = std::env::temp_dir().join(format!(
+                "jarde-a17-guard-{}-{}-{}",
+                std::process::id(),
+                layout.name,
                 case.name
-            );
-        }
-
-        // A rewrite of the *same* clean tree stays quiet, so the sandbox itself — including a
-        // tiny new module and the padded stubs — does not make every file look like an
-        // offender.
-        let clean_root = root.join("clean-copy");
-        for (relative, contents) in case.files {
-            if case.offenders.contains(relative) {
-                continue;
+            ));
+            let _ = std::fs::remove_dir_all(&root);
+            for (identity, contents) in case.files.iter().copied() {
+                write_sandbox_file(&root, layout, identity, contents, case.tiny_files);
             }
-            write_sandbox_file(&clean_root, relative, contents, case.tiny_files);
-        }
-        // `src/query.rs` is always part of the guarded set, so a clean file stands in for the
-        // removed offender. The stand-in is padded: in a size case the offender *is* the tiny
-        // stub, and the control has to show the tree without the injected fault.
-        let placeholder = clean_root.join("src/query.rs");
-        if !placeholder.exists() {
-            write_sandbox_file(&clean_root, "src/query.rs", CLEAN_QUERY, &[]);
-        }
-        assert_eq!(
-            guard_violations(&clean_root, &type_tokens),
-            Vec::<String>::new(),
-            "case {}: without the injected reference nothing is flagged",
-            case.name
-        );
 
-        let _ = std::fs::remove_dir_all(&root);
+            let violations = guard_violations(&root, &type_tokens);
+            let offending = violations
+                .iter()
+                .map(|violation| {
+                    violation
+                        .split_once(':')
+                        .expect("a violation names its file")
+                        .0
+                        .to_string()
+                })
+                .collect::<Vec<_>>();
+            let expected = case
+                .offenders
+                .iter()
+                .map(|identity| layout.path(identity))
+                .collect::<Vec<_>>();
+            assert_eq!(
+                offending, expected,
+                "case {} in the {} layout: the guard must flag exactly {:?}, got {violations:?}",
+                case.name, layout.name, case.offenders
+            );
+            for evidence in case.evidence {
+                assert!(
+                    violations
+                        .iter()
+                        .any(|violation| violation.contains(evidence)),
+                    "case {} in the {} layout: the violation must name {evidence}, got \
+                     {violations:?}",
+                    case.name,
+                    layout.name
+                );
+            }
+
+            // A rewrite of the *same* clean tree stays quiet, so the sandbox itself — including
+            // a tiny new module and the padded stubs — does not make every file look like an
+            // offender.
+            let clean_root = root.join("clean-copy");
+            for (identity, contents) in case.files.iter().copied() {
+                if case.offenders.contains(&identity) {
+                    continue;
+                }
+                write_sandbox_file(&clean_root, layout, identity, contents, case.tiny_files);
+            }
+            // `query.rs` is always part of the guarded set, so a clean file stands in for the
+            // removed offender. The stand-in is padded: in a size case the offender *is* the
+            // tiny stub, and the control has to show the tree without the injected fault.
+            let placeholder = clean_root.join(layout.path("query.rs"));
+            if !placeholder.exists() {
+                write_sandbox_file(&clean_root, layout, "query.rs", CLEAN_QUERY, &[]);
+            }
+            assert_eq!(
+                guard_violations(&clean_root, &type_tokens),
+                Vec::<String>::new(),
+                "case {} in the {} layout: without the injected reference nothing is flagged",
+                case.name,
+                layout.name
+            );
+
+            let _ = std::fs::remove_dir_all(&root);
+        }
     }
 }
 
-/// Writes one sandbox file, padding the six P1 file names above the size floor.
+/// Writes one sandbox file at the layout path of `identity`, padding the guarded file names
+/// above the size floor.
 ///
-/// A sandbox stub is a placeholder, not the P1 module it is named after, so unless the case
-/// is testing the floor itself the stub is padded: otherwise every sandbox case would report
-/// the stub as "unexpectedly small" and hide the reference violation it was built for.
-fn write_sandbox_file(root: &Path, relative: &str, contents: &str, tiny_files: &[&str]) {
-    let path = root.join(relative);
+/// A sandbox stub is a placeholder, not the P1 module it is named after, so unless the case is
+/// testing the floor itself the stub is padded: otherwise every sandbox case would report the
+/// stub as "unexpectedly small" and hide the reference violation it was built for. The floor is
+/// decided by identity — the same question the guard asks — so the padding rule cannot drift
+/// from the rule it exists for, in either layout.
+fn write_sandbox_file(
+    root: &Path,
+    layout: &SandboxLayout,
+    identity: &str,
+    contents: &str,
+    tiny_files: &[&str],
+) {
+    let path = root.join(layout.path(identity));
     std::fs::create_dir_all(path.parent().expect("file has a parent")).expect("sandbox directory");
     let padded;
-    let contents = if tiny_files.contains(&relative)
-        || !A17_EXPECTED_FILES.contains(&relative)
+    let contents = if tiny_files.contains(&identity)
+        || !carries_size_floor(identity)
         || contents.len() > A17_MIN_SOURCE_LEN
     {
         contents
