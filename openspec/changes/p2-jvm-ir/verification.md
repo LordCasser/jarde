@@ -284,7 +284,12 @@
   - **需登记的债务（复核者提出，未修）**：容器 header/capacity 仍是「先分配后计费」（`successors` 的 `vec![Vec::new(); blocks.len()]`、`Walk::new` 的三个集合、`assemble` 的三处 `with_capacity`），占实测 9 MB 的 2–5%；**6 处按元素计费中仅 `affected` 有可区分断言**（金标总数补上了 `plans` 一类，但 `coverage`/`contains` 等仍无逐项对照）。
 - 远端 CI：本轮修正与记录提交 `15e98ab`/`5a03d44`/`c84a434`/`4d7f7ad` 推送 `main` 后，CI run [`35330820020`](https://github.com/LordCasser/jarde/actions/runs/35330820020) 四个 job 全部 success。
 - **父级的过程失误（如实记录）**：在验证 B3 时我用了 `git checkout -- src/call_context.rs` 还原探针，**违反本仓库「禁用 git 还原类命令」的纪律**，把我当时**未提交**的 B1/B2 修正一并丢弃。发现后按提交基线重新施加两处修正（B1 文档、B2 阶段扫描），并加做了金标测试，全部改动重新验证后才提交。教训已确认：即使是被自己的探针污染的文件，也必须用文件副本还原。
-- 登记债务：本片**仍缺第三方 Approve**（复核给出 Reject，三项修正由父级完成并自证，尚未复审）；`Effects` 双生产者建模张力仍留 3.5。
+- **复审结论：Approve，0.3b 已勾选**。复核者独立确认：B1 文档各自归位且措辞准确；B2 的 `PHASES` 与 `Phase` 枚举 7 项逐一对应，逐个删 7 处 checkpoint 全部转红且整仓唯一失败；B3 的 34 **可独立复算**——它插桩全部计费点测得 visited_row 12 / plans 2 / entries 2 / ret_owner 2 / written_local 4 / asm_context 2 / asm_returns 3 / asm_coverage 2 / published 1 / cycle_search 4 = 34，与测得总数吻合（并指出我最初注释里 `cycle_search = 0` 是错的，已在 `c84a434` 改为只记测得值）。无新增 `allow`、未触判定语义。
+- 父级据复审又改掉一处**我方措辞过度声称**：`PHASES` 的注释原称「漏加新阶段会被发现」，实测为一个带可达 checkpoint 的 `Ghost` 变体加入枚举而不加进 `PHASES` 时全量仍绿——已改为如实说明「它只是让新增阶段成为一处显眼的编辑点，并不构成强制」。
+- 登记债务：
+  - **零贡献计费点无断言**：`coverage_ordinal`、`nesting_edge`、`unreachable_call_site` 三处 `IrItems` 对 `billing_fixture` 贡献为 0，整段删除后全量仍绿；`asm_coverage` 的常量也可改动而不被发现（金标只钉总数）。**转 3.4**：用带 handler/嵌套/不可达调用点的 fixture 补可区分断言。
+  - **`PHASES` 与 `Phase` 无编译期一致性**：向枚举新增变体而不加入 `PHASES` 时全量仍绿（复核者实测）。接受为文档级约定（注释已改正），若日后阶段数增长再考虑用宏或 `ALL` 常量强制。
+  - **`elapsed_millis` 并行竞态 flake（既有，非本片引入）**：`Budget::usage()` 每次按墙钟重算该字段，使 `usage_snapshot_is_json_serializable`（`budget.rs`）与 `assert_bytecode_report_invariants`（`classfile.rs`）的整快照比较在高负载/并行下偶发失败（单跑稳定绿）；由 `824971f` 引入。**0.5 只归一了 P2 侧的同类比较，P0 侧这两处仍在**——转独立债务。`Effects` 双生产者建模张力仍留 3.5。
 
 ### 0.x 前置修正片的状态（2026-09-18 汇总）
 
