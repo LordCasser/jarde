@@ -156,12 +156,9 @@ name = "jarde"
 version = "0.1.0"
 dependencies = [
  "blake3",
- "flate2",
- "noak",
+ "jarde-reader",
  "petgraph",
- "rawzip",
  "serde",
- "thiserror",
 ]
 
 [[package]]
@@ -170,6 +167,18 @@ version = "0.0.0"
 dependencies = [
  "jarde",
  "libfuzzer-sys",
+]
+
+[[package]]
+name = "jarde-reader"
+version = "0.1.0"
+dependencies = [
+ "blake3",
+ "flate2",
+ "noak",
+ "rawzip",
+ "serde",
+ "thiserror",
 ]
 
 [[package]]
