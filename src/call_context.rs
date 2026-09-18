@@ -134,7 +134,31 @@ pub(crate) const IR_CALL_CONTEXT_UNRESOLVED: &str = "ir_call_context_unresolved"
 /// silently dropped a call site.
 const IR_CALL_CONTEXT_INCONSISTENT: &str = "ir_call_context_inconsistent";
 
-/// Why one `ret` could not be attributed to the context that reaches it.
+/// Where one context's return address is, as far as the walk can see.
+///
+/// The three states are distinct on purpose: a context whose subroutine has not stored the
+/// address yet is still waiting for it, one that stored it has a slot it can name, and one whose
+/// slot was written again **lost** it — that last state must not go back to `Held`, because the
+/// address a `jsr` pushed is consumed by a single store and anything written afterwards is
+/// another value.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum TokenSlot {
+    /// No reference store has been seen yet.
+    Waiting,
+    /// The address went into this local, at this store, and has not been overwritten since.
+    ///
+    /// The store's own BCI is part of the state so that seeing the same instruction again is not
+    /// mistaken for an overwrite: the walk revisits a subroutine's blocks once per context that
+    /// reaches it, and only a **different** store into this slot replaces the address.
+    Held {
+        /// The local the address went into.
+        slot: u16,
+        /// The BCI of the store that put it there.
+        store: u32,
+    },
+    /// The local that held the address was written again, by another store.
+    Lost,
+}
 ///
 /// The walk returns this instead of an error because it is a fact about the bytes, not a failure
 /// of the pass: the request keeps its raw facts and reports `ir_call_context_unresolved`, exactly
@@ -712,12 +736,11 @@ struct Walk<'a> {
     /// was never written by the subroutine would otherwise be attributed to whichever context
     /// happened to be active.
     returns: BTreeMap<u32, BTreeSet<usize>>,
-    /// Per context, which local slot holds its return address, once a subroutine stored it.
+    /// Per context, where its return address is, once a subroutine has stored it.
     ///
-    /// `None` means nothing has stored it yet: the `jsr` left the address on the operand stack,
-    /// and the raw facts do not say what a local holds, so the walk waits for the store it can
-    /// see instead of assuming the address is where it should be.
-    token_slots: Vec<Option<u16>>,
+    /// The raw facts do not say what a local holds, so the walk learns the slot from the store
+    /// it can see, and forgets it when that slot is written again ([`TokenSlot`]).
+    token_slots: Vec<TokenSlot>,
     /// Exception records covering the instructions walked under one context, by context index.
     coverage: Vec<BTreeSet<u32>>,
     /// Call sites a context's body directly holds, by context index (the nesting relation).
@@ -761,7 +784,7 @@ impl<'a> Walk<'a> {
             context_of,
             affected,
             returns: BTreeMap::new(),
-            token_slots: vec![None; plans.len()],
+            token_slots: vec![TokenSlot::Waiting; plans.len()],
             coverage,
             contains,
         })
@@ -853,11 +876,22 @@ impl<'a> Walk<'a> {
         // The first reference store the subroutine performs is where its return address goes:
         // a `jsr` pushes the address, and the subroutine's first act on it is to store it. Later
         // stores write other references, so they must not move the slot.
-        if self.token_slots[active].is_none()
-            && is_astore(opcode)
+        if is_astore(opcode)
             && let Some(local) = self.facts.operands[index].local
         {
-            self.token_slots[active] = Some(local.index);
+            self.token_slots[active] = match self.token_slots[active] {
+                TokenSlot::Waiting => TokenSlot::Held {
+                    slot: local.index,
+                    store: bci,
+                },
+                // The slot the address went into, written by a *different* store: what it holds
+                // now is some other value, and a slot overwritten once cannot be assumed to hold
+                // the address again.
+                TokenSlot::Held { slot, store } if slot == local.index && store != bci => {
+                    TokenSlot::Lost
+                }
+                other => other,
+            };
         }
         // A `wide ret` is the same return the short form is: the reader classifies a `wide`
         // form by the opcode it wraps (0.2).
@@ -868,7 +902,10 @@ impl<'a> Walk<'a> {
             // return this walk cannot account for, so the whole context set stays unpublished
             // rather than claiming a return point the bytes do not support.
             let reads = self.facts.operands[index].local.map(|local| local.index);
-            let holds = self.token_slots[active];
+            let holds = match self.token_slots[active] {
+                TokenSlot::Held { slot, .. } => Some(slot),
+                TokenSlot::Waiting | TokenSlot::Lost => None,
+            };
             if reads.is_none() || reads != holds {
                 return Ok(Some(UnprovenReturn {
                     bci,
@@ -2462,6 +2499,59 @@ mod tests {
                 .collect::<Vec<_>>()
         );
         eprintln!("R3B unreachable={:?}", raw.cfg.unreachable);
+    }
+
+    #[test]
+    fn an_address_overwritten_by_an_ordinary_value_is_unresolved() {
+        // The slot holds the return address, and then an ordinary reference overwrites it before
+        // the `ret` reads it. A rule that only remembers which slot the address went into would
+        // still hand this `ret` its old return point, which the bytes no longer support.
+        //
+        //   0: jsr 4        the return address (BCI 3) is pushed
+        //   3: return
+        //   4: astore_0     the address goes into local 0
+        //   5: aconst_null
+        //   6: astore_0     local 0 now holds an ordinary value
+        //   7: ret 0        reads a slot whose contents are no longer the address
+        let overwritten = body(
+            vec![
+                jsr(0, 4),
+                plain(3, 0xb1),
+                store(4, 0x4b, 0),
+                plain(5, 0x01),
+                store(6, 0x4b, 0),
+                ret(7, 0),
+            ],
+            Vec::new(),
+            9,
+        );
+        let raw = graph(&overwritten, &mut budget());
+        let outcome = call_contexts(&overwritten, &raw, 49, &mut budget());
+        let Ok(CallContextOutcome::Unresolved { message }) = outcome else {
+            panic!("an overwritten address slot publishes no context set: {outcome:?}");
+        };
+        assert!(
+            message.contains("BCI 7"),
+            "the stop names the `ret` that reads the overwritten slot: {message}"
+        );
+
+        // The store that placed the address is seen again whenever a context's blocks are
+        // revisited, and that is not an overwrite: a nested call's subroutine is walked once for
+        // the context that called it and again as its own root. The same shape without the
+        // overwrite therefore still establishes.
+        let kept = body(
+            vec![jsr(0, 4), plain(3, 0xb1), store(4, 0x4b, 0), ret(5, 0)],
+            Vec::new(),
+            7,
+        );
+        let raw = graph(&kept, &mut budget());
+        assert!(
+            matches!(
+                call_contexts(&kept, &raw, 49, &mut budget()),
+                Ok(CallContextOutcome::Established(_))
+            ),
+            "revisiting the store that placed the address is not an overwrite"
+        );
     }
 
     #[test]
