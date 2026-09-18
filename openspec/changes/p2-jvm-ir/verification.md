@@ -277,6 +277,13 @@
 - 远端 CI：实现与文档提交 `d8a8578`、`8032457` 推送 `main` 后，CI run [`35324321569`](https://github.com/LordCasser/jarde/actions/runs/35324321569) 四个 job 全部 success（含 `stable` 的 JDK 25 oracle）。
 - 登记债务：本片缺独立只读复核（父级已代为验证与证伪，但按本仓库惯例应有第三方 Approve）；`Effects` 双生产者建模张力仍留 3.5。
 
+### 0.x 前置修正片的状态（2026-09-18 汇总）
+
+- **已完成并各自独立复核 Approve**：0.1（loader 身份）、0.2（reader 操作数）、0.3（pass 表 Effects 与预算集合）、0.4（非块首 `jsr`）、0.5（`elapsed_millis` 归一）。各自 CI run 已记录：0.1/0.5 = `35311183845`、0.2 = `35312949739`（含 JDK 25 oracle）、0.4 = `35314168328`。
+- **0.3b（派生存储计费）**：实现完成、CI 绿（`35324321569`），但**两次派发的 coder 都未自然收尾**，最终由父级修复残局并独立证伪，因此**缺第三方只读复核**。这是本片唯一的未闭合项。
+- **仍未落成永久回归的两条反例**：R2（`ret` 的 local 从未持有返回地址）与 R3（handler 回接 `ret` 前的写入被整类丢弃）目前**只在契约里以字节串形式记录**，`src/call_context.rs` 与 `tests/` 中都没有对应用例——它们正是 3.4 重写的验收目标。仓内现有的 `a_ret_no_call_context_owns_is_unresolved` 覆盖的是「`ret` 无任何调用点」这一不同形态，**不能**当作 R2 的回归。
+- **诊断当前实现仍会出错的两条**：`Walk::visit` 在遇到 `ret` 时把该 `ret` 记进当前 active 上下文，**不检查该槽是否持有已证明的返回地址**（R2）；`Walk::step` 只沿 `Normal` 与 `SubroutineReturn` 推进、**整类丢弃 `Exception` 边**（R3）。两者都在 3.4 的契约里点名（含行号与要保留的骨架）。
+
 ## P2 验收映射现状（滚动更新）
 
 按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
