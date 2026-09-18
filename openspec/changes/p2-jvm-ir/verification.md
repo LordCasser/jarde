@@ -888,3 +888,63 @@ message=throw site ... block: CanonicalBlockId { bci: 3, path: [] } ... names a 
 **证据**：`cargo test -p jarde-jvm --locked` = **164**；全量 **710 passed / 0 failed / 1 ignored**；`p2_frame` = 4；`p2_canonical` = 8；`p2_contracts` = 29；`p1_xref_golden` = 5；fmt 与 clippy 1.98.1 干净；两个 CI example exit 0。
 
 **遗留债务（已记，不阻塞）**：① `UninitializedThis` 的适用性只认**直接** `super_class`（不读超类链；javac/ECJ 只产出 `this()`/`super()`，故实际不误拒合法体，且退化为 `deferred` 而非 `inconsistent`）；② 继承字段若被某编译器写成 owner == 本类，初始化前 `putfield` 会过宽（本层不解析，靠注释兜底）；③ `invokeinterface` + 名为 `<init>` 已被同一检查覆盖但无单独用例；④ 将来 resolver 带进超类链事实时，①是首个升级点。
+
+## 2026-09-19 4.3 前半：stack/local SSA 构造（提交 `f390677`）
+
+**P2 的调度流水线至此全部实现**：`raw_facts → raw_cfg → legacy_normalization → canonical_cfg → frame → ssa`，六个相位都会执行。独立 oracle 对照属后半。
+
+### 交付
+
+- **新模块** `crates/jarde-jvm/src/ssa.rs`（私有）：入口 `ssa(facts, canonical, frames, method, budget) -> Result<SsaOutcome>`，`SsaOutcome::{Ssa(Box<SsaTable>), Inconsistent{message}}`。
+- **职责分离用数据接口而非回调**：语义半 `flow_facts() -> Vec<BlockFlow>`（每块 `entry_values`、`inputs: Vec<FlowInput::{Seed, Transfer, Exception{handler_ordinal}}>`、`instructions[].accesses`）；名字半 `Assigner`（`Slot::{Local(u16), Stack(u32)}`、`ValueId`、`SsaValue{ty, def, origin, uses, replaced_by}`、`SsaPhi{block, slot, value, inputs: Vec<PhiInput::{Value, Itself}>}`）。**没有**公共 trait、通用指令框架、第二套 opcode 表（`grep` 可证）或后端注册表，无新依赖。
+- **槽访问来自重放 4.1 的稠密表**（`frame::block_touches`）而不第二次分类 opcode——理由已写入代码：`pop2`/`dup2_x2` 族的形状取决于栈上的值，与值无关的分类对它们**恰好是错的**。
+- **逻辑前驱** = `frame::BlockFrame.inputs`（4.2 已备好）+ 入口块额外一个 `Seed`（否则「回到 BCI 0 的图」无法解析）。参与者规则：`Seed`/`Transfer` 恒参与；`Exception` 对**每个 local** 参与、只对 `Stack(0)` 参与。1 个参与者直通（无 phi），≥2 建 phi，`inputs.len() == 参与者数`。
+- **phi 的类直接取 4.1 为该槽算出的类**，**不自己再折一遍**——引用合流**不可结合**（`null` + 两个不同命名引用的折叠依赖顺序），二次折叠会与已发布的 frames 分歧。这是本片一个关键判断。
+- **trivial phi**：去掉自身后**恰好一个**不同值才替换；`replace()` 同步全部 instruction reads、phi 操作数、`defs`/`exit`、use 记录（每条重新计 def-use 边）；全自引用**保留定义**，不伪造。
+- **effect 事实** `CanonicalEffectFacts`（定义在 `ssa.rs`，**未改** `ir.rs`/`cfg.rs` 的 raw 事实）：每条含 `block/bci/opcode/locals_read/locals_written/stack_delta/may_throw/handlers/origin`，`handlers`/`may_throw`/`origin` 取该 BCI 自己的 canonical throw site → **异常 effect 属于该指令而非块尾**；`stack_delta` 是重放**实测**值（故 `athrow` 清栈等如实计入）。
+- **driver**：新增 `IrPhase::Ssa` 臂；`implemented()` 与 `IMPLEMENTED_PHASES` 5→6；`ir_ssa_inconsistent` 新码（Error）；停止 → `Partial` + 不发布 `Ssa`/`Effects` + 保留前面 facts。
+
+### 证据
+
+**CI**：`f390677` → run 35394910757，四 job success。
+
+- `cargo test -p jarde-jvm --locked` = **176**（+12 单元）；全量 **726 passed / 0 failed / 1 ignored**（+16）；新增 `--test p2_ssa` = 4；`p2_frame` = 4、`p2_canonical` = 8、`p2_contracts` = 29、`p1_xref_golden` = 5；fmt 与 clippy 1.98.1 干净；两个 CI example exit 0。
+- **核心反例有判别力**（用例结构性证明）：同一受保护区**两个** throw site 进同一 handler ⇒ canonical 图里 source→handler 的 `Exception` 边 **== 1**、handler 的 `inputs.len() == 2`（site 4 与 9）、`Local(1)` 的 phi **操作数 == 2** 且分别是 **BCI 1 与 BCI 6** 的定义。**父级独立变异**：把异常输入按源块折叠成一个（模拟聚合 raw 边）→ 该用例转红（`sha256sum -c` 还原）。
+- **实现者证伪四组**：① phi 输入改用聚合 raw 边 → 核心用例红；② 去掉 trivial phi 消除 → 相应用例红；③ 让 `Top` 槽产生定义 → 相应用例红；④ 未处理前驱立即答「无值」→ 顺序无关性用例红。
+- 覆盖：直线 / diamond / loop（回边自引用且非 trivial）/ **不可约**（两入口环，header 3 逻辑输入）/ `Top` 无 phi 无 entry 记录 / category-2 一值两槽 / 异常合流 / 高扇出与多槽位的 `IrItems`/`IrEdges` 上界 / 矛盾两态 / **存储重排对照**（`flow_facts` 反转后逐项投影相同）/ **def-use 双向审计**（4 个真实 body 逐值核对）。
+
+### 被修正的既有断言（逐条）
+
+**六个测试文件 + example + facade 共 10 处**，全部因为「`ssa` 从「未实现」变「已实现」」：`p2_frame`(3 处 + 计费 1 处)、`p2_canonical`(3 处 + 注释)、`p2_contracts`(4 处 + 注释)、`p2_passes`(1)、`p2_return_address`(2)、`examples/resolve_and_analyze.rs`(2)、`src/facade.rs`(1，文档)。
+
+其中两处**不是**简单跟随，需要复核确认未放宽：
+- `p2_frame` 的计费断言由「本阶段不建边（`ir_edges == without.ir_edges`）」改为「`ir_edges > without.ir_edges`」，理由：同一请求现在含 4.3，而 **4.3 每条 use 建一条 def-use 边**；4.1 仍不建边，故改动是把两个阶段的贡献分开说明，而非放宽。
+- `p2_contracts::result_planes_…` 的论点是「平面互不推出」。全部阶段实现后，唯一还能造出「有产物但未完成」的合法形状是**预算停止**——该用例改用步数预算精确停在 canonical 之后，仍断言 product planes + coverage 完整 + 非 unsupported。
+
+### 债务与未决
+
+- **`Frame.touches` 字段参与 `#[derive(PartialEq)]`**：实现者称「被比较/合流/发布的状态里恒为 `None`，重放用的 frame 是函数局部且从不比较」。父级已核实：SSA **逐字段**读 `state.locals`/`state.stack`，**从不比较整个 `Frame`**；重放在每条指令后 `mem::take` 掉 trace，故它从不累积、也不逃出 `replay`。**当前无实害**，但「相等性包含一个与语义无关的字段」是潜在陷阱（将来若有人比较「重放的出口」与「已发布的出口」，会得到虚假不等）。已交独立复核判断应否改成参数。
+- **`ir_ssa_inconsistent` 无端到端见证**：其触发集合（entry state 有类而某输入无值、读无定义、重放与已发布 frames 不一致、定义自环无入口）在合法字节上到不了；覆盖方式为单元注入矛盾 flow + 用**预算停止**的集成用例覆盖同一 driver 分支结构（不同 code）。是否加测试缝交复核判断。
+- 独立 oracle 对照属 **4.3 后半**，未做（本片的 def-use 双向审计是实现者自审，**不冒充**独立 review）。
+- 实现过程中修掉的两处协议缺陷（已修，供复核关注）：工作列表最初只唤醒已登记的等待者，导致「无源可唤醒」的块永不进入（jsr/clone 图上整片卡住）；`queued` 单标志让 `Enter` 唤醒被 `Run` 吞掉，已拆成 `enter_queued`/`run_queued`。
+
+### 4.3a 独立复核（Approve）与据其修正
+
+复核者（只读 + **自写 def-use 检查器** + 自造样本，全部在 `/tmp` 副本）给出 **Approve**，未发现错名字类缺陷，并独立确认了四件事：
+
+- **phi 元数与类型**：逐情形核过 `participants` 的规则；关键封闭论证——排除 `Stack(depth≥1)` 的异常参与**不会漏参与者**，因为每个异常输入的栈恒为 `vec![thrown]`，而 `merge_stack` 在进入栈深度不同时就是 `ir_frame_inconsistent`，故有异常输入的块进入栈深度只能是 1，不存在与之并存的 `Stack(depth≥1)` entry 值。不是抽样，是封闭论证。
+- **顺序无关性**：仓库已有「整体 reverse」对照之外，复核者另加**循环体全部旋转顺序**的检查，通过。
+- **`Top`**：入口 Seed 侧由 `starts_value` 过滤（含 `Second`）、异常输入侧只收非 `Top` locals，`Some(None) → NoValue → Inconsistent`，**两个来源都不造值**。
+- **丢唤醒**：`enter_queued`/`run_queued` 双标志确实堵住了单标志的吞唤醒（唤醒恒为 `Enter`，只有在已有 Enter 待处理时才丢弃，而任何待处理 Enter 都会重走全量复核）；环内无值的真死锁不是悬挂，而是报 `Inconsistent` 并点名块/槽。
+
+**它用自写检查器抓到一处不变量失效**（父级读码确认）：契约要求「def-use **双向**一致」与「**phi 输入数 = 逻辑前驱数**」，但在**被 trivial phi 替换过的值**上两条都无法从已发布表复核——`simplify` 把被替换 phi 的 `inputs` **折叠成单元素**，而 `complete` 当初为**每个操作数**记了一条 use，`replace` 只搬移不裁剪。于是 `values[target].uses.len() == 2` 而 `inputs.len() == 1`。
+
+**父级裁定**：**去掉那次折叠**（而不是裁剪 uses）。理由：折叠**同时**破坏两条不变量——uses 记的是操作数出现次数，折叠后对不上；且「这个合流点曾按 N 个逻辑前驱取值」中的 N **本来就是**逻辑前驱数，折叠把它改写成 1。被替换的 phi 保留它实际合并过的操作数，消费者先看 `replaced_by`；`replace` 继续把**消费者**的 use 搬到 target（这部分本来就对）。反向修法（裁剪 uses 到 1）会让 arity 与 uses 在另一个方向失真。
+
+**据其建议收进仓库的三条独立检查用例**：`def_use_records_are_the_reads_and_phi_operands_over_four_bodies`（逐 value 核对 `uses` ⇔ 已发布 reads ∪ phi 操作数，多重集比较，四种体）、`def_use_over_a_mixed_transfer_and_exception_input`（同一块既有普通前驱又有异常前驱）、`def_use_holds_under_every_rotation_of_a_loop_body`（循环体全部旋转）。另补一条钉住被替换 phi 的 arity。
+
+**复核者判断为可接受、父级记为债务的两条**：
+
+- **`Frame.touches` 在 `#[derive(PartialEq)]` 里**：复核者**核实实现者的声明为真**——`touches: Some(...)` 只在 `block_touches` 内的函数局部重放帧构造一次，所有会被存储/合流/比较/发布的状态都是 `None`；全 crate 唯一的 `Frame` 相等比较是 fixpoint 的 `merged != *current`（两侧都是存储帧），`FrameTable` 只 derive `Debug`。**本片可接受**（这个 trace sink 正是「不二次分类 opcode」的手段，是设计要的），但属潜在陷阱——将来任何对重放帧的 `assert_eq!`/合流都会把轨迹算进相等。记债务，等 4.3 后半再动 `block_touches` 时一并偿还。
+- **`ir_ssa_inconsistent` 无端到端见证**：触发集合由「4.1 的表与 4.3 的重放必须一致」把守，合法字节到不了；对照之下 `ir_frame_inconsistent` **有**端到端见证。判断为「可接受但不理想」（映射只 3 行机械代码、消息文本已被单测覆盖），记为**已接受的缺口 + 原因**。
+- **被替换 phi 的 `OriginSet` 不并入 target**：复核者判断**不并才是诚实的**（target 仍只由一条 BCI 定义，被替换值连同其 origin 仍在 `values` 里），据此写入模块文档，行为不变。

@@ -43,10 +43,26 @@
 //! published while both are faithful — one merge rule, applied once, in the frame pass.
 //!
 //! **Trivial phis** (one usable operand, distinct from the phi itself) are replaced by that
-//! operand in this same stage: every use, every phi operand and the definition records move to it,
-//! so the slot's name becomes the operand's. A phi that only refers to itself is left alone: it is
-//! a value no path defines, and replacing it would invent one. The replacement touches neither the
-//! control nor the effect facts, and it introduces no optimization framework.
+//! operand in this same stage: every use of the phi and every definition record that named it move
+//! to the operand, so the slot's name becomes the operand's. The phi's operand list is **not**
+//! rewritten with it: it keeps one operand per logical predecessor, `Itself` operands included,
+//! because that list is the record of what the merge took part in and the use records were written
+//! per operand. Folding it to the one usable operand would break both halves of the contract the
+//! published table owes — the phi would state a merge point with fewer predecessors than the slot
+//! was actually merged over, and the target's use records would count operand occurrences that the
+//! published operands no longer hold — while trimming the use records to match the folded operand
+//! would falsify the same fact from the other side and lose "this slot merged N paths". An
+//! `Itself` operand of a replaced phi still means what it means everywhere else, the value the
+//! merge point already names, which `replaced_by` now names. A phi that only refers to itself is
+//! left alone: it is a value no path defines, and replacing it would invent one. The replacement
+//! touches neither the control nor the effect facts, and it introduces no optimization framework.
+//!
+//! **The replaced phi's origins are not merged into the target.** The target is still defined
+//! exactly once — by an instruction, by the entry state, by a caught reference or by a phi of its
+//! own — and its `OriginSet` states where that one definition came from; the replaced value stays
+//! in `values` with the origin of the merge point it stood for, and `replaced_by` is the one place
+//! the two are tied together. Folding the merge point's origins into the definition would claim
+//! the one BCI that defines the target also defines every BCI the merge stood for.
 //!
 //! **Origins and effects.** A value an instruction defines carries one `MethodPoint` at that
 //! instruction's BCI; a phi carries its block's own origin set, which is where a normalized clone
@@ -175,7 +191,9 @@ pub(crate) struct SsaValue {
     pub(crate) origin: OriginSet,
     pub(crate) uses: Vec<SsaUse>,
     /// The value that replaced this one, for a phi this stage removed as trivial. A replaced phi
-    /// is no longer a definition: the target is, and every use of the phi was moved to it.
+    /// is no longer a definition: the target is, and every use of the phi was moved to it. Its own
+    /// operands and origin stay as they were — they record the merge point it stood for, and
+    /// merging them into the target would state that the target's one definition is theirs.
     pub(crate) replaced_by: Option<ValueId>,
 }
 
@@ -186,8 +204,9 @@ pub(crate) struct SsaPhi {
     pub(crate) slot: Slot,
     /// The value this phi defines.
     pub(crate) value: ValueId,
-    /// One operand per participating logical predecessor, in the block's own input order — or the
-    /// value that replaced this phi, for one that was removed as trivial.
+    /// One operand per participating logical predecessor, in the block's own input order — for a
+    /// phi that was removed as trivial as well: its operands are the merge it stood for, and the
+    /// value that replaced it is named by its own [`SsaValue::replaced_by`].
     pub(crate) inputs: Vec<PhiInput>,
 }
 
@@ -197,7 +216,8 @@ pub(crate) enum PhiInput {
     /// The value the slot arrives with along this input.
     Value(ValueId),
     /// The phi itself: this input's copy of the slot is the value the merge point already names,
-    /// which is what a back edge into the same block hands over.
+    /// which is what a back edge into the same block hands over. For a phi that was replaced as
+    /// trivial, that value is the one [`SsaValue::replaced_by`] names.
     Itself,
 }
 
@@ -1496,14 +1516,23 @@ impl Assigner {
 
     /// Removes every phi whose only usable operand is one other value.
     ///
-    /// The replacement is local to this stage: every use of the phi, every phi operand and every
-    /// definition record moves to the operand, so the operand becomes the slot's name. A phi that
+    /// The replacement is local to this stage: every use of the phi and every definition record
+    /// that named it moves to the operand, so the operand becomes the slot's name. A phi that
     /// only refers to itself is left alone — it is a value no path defines, and replacing it would
     /// invent one.
+    ///
+    /// The phi's **operand list is left as it was**: one operand per logical predecessor, exactly
+    /// as [`Assigner::complete`] collected it. That list is not a second name for the replaced
+    /// value, it is the record of the merge the phi *was*, and folding it to the one usable
+    /// operand would falsify two invariants of the published table at once — the phi would claim
+    /// a merge point entered once, while the use records (one per operand, written when each
+    /// operand was resolved) still count every operand that took part, and neither number could be
+    /// recovered from the other. The consumer follows [`SsaValue::replaced_by`] for the value's
+    /// name; the operands and the uses stay readable as what they always were.
     fn simplify(&mut self, budget: &mut Budget) -> Norm<()> {
         loop {
             let mut replaced = None;
-            for (index, phi) in self.phis.iter().enumerate() {
+            for phi in self.phis.iter() {
                 if phi.inputs.is_empty() || self.values[phi.value.index()].replaced_by.is_some() {
                     continue;
                 }
@@ -1527,21 +1556,24 @@ impl Assigner {
                     continue;
                 }
                 if let Some(target) = usable {
-                    replaced = Some((index, phi.value, target));
+                    replaced = Some((phi.value, target));
                     break;
                 }
             }
-            let Some((index, phi, target)) = replaced else {
+            let Some((phi, target)) = replaced else {
                 return Ok(());
             };
             budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
             self.replace(phi, target, budget)?;
-            self.phis[index].inputs = vec![PhiInput::Value(target)];
         }
     }
 
-    /// Moves every use, every operand and every definition record of one value to another, in this
-    /// same stage.
+    /// Moves every record that named one value — its uses and every definition of it — to another,
+    /// in this same stage.
+    ///
+    /// What the replaced value keeps is what it *is*: its own operands, which are the merge point
+    /// it stood for, and its origin, which is that merge point's. Only the name of the slot and
+    /// the def-use edges move.
     fn replace(&mut self, from: ValueId, to: ValueId, budget: &mut Budget) -> Norm<()> {
         let uses = std::mem::take(&mut self.values[from.index()].uses);
         self.values[from.index()].replaced_by = Some(to);
@@ -2653,6 +2685,68 @@ mod tests {
     }
 
     #[test]
+    fn a_replaced_phi_keeps_one_operand_per_logical_predecessor() {
+        // A merge point entered by two paths that hand it the same value and by its own back edge:
+        // one usable operand, so the phi *is* that operand's name — but it merged three logical
+        // predecessors, and both records of that stay readable in the published table.
+        let seed: BTreeMap<Slot, Value> = [(Slot::Local(0), Value::Int)].into_iter().collect();
+        let flows = vec![
+            flow(
+                0,
+                vec![(Slot::Local(0), Value::Int)],
+                vec![from_seed()],
+                vec![instruction(1, vec![wrote(0, Value::Int)])],
+            ),
+            flow(
+                8,
+                vec![(Slot::Local(0), Value::Int)],
+                vec![from_transfer(0), from_transfer(0), from_transfer(8)],
+                vec![],
+            ),
+        ];
+        let table = fabricated(flows, seed).expect("the fabricated flows resolve");
+        let merged = phi(&table, &block(8), Slot::Local(0));
+        let target = table
+            .block(&block(0))
+            .expect("the entry block is named")
+            .exit[0]
+            .1;
+        assert_eq!(
+            table.value(merged.value).replaced_by,
+            Some(target),
+            "one usable operand, so the phi stops being a definition"
+        );
+        assert_eq!(
+            merged.inputs,
+            vec![
+                PhiInput::Value(target),
+                PhiInput::Value(target),
+                PhiInput::Itself
+            ],
+            "the merge keeps one operand per logical predecessor — three, not the one that stayed \
+             usable — and its own value keeps its place among them"
+        );
+        let occurrences = merged
+            .inputs
+            .iter()
+            .filter(|input| matches!(input, PhiInput::Value(value) if *value == target))
+            .count();
+        assert_eq!(occurrences, 2, "two of the three operands name the target");
+        assert_eq!(
+            table.value(target).uses.len(),
+            occurrences,
+            "the use records are the operand occurrences, and an `Itself` operand is no use of \
+             the target"
+        );
+        assert!(
+            table.value(merged.value).uses.is_empty(),
+            "every use of the replaced phi moved to the target"
+        );
+        assert_eq!(entry_of(&table, &block(8), Slot::Local(0)), target);
+        audit("a replaced phi", &table);
+    }
+
+    #[test]
     fn a_phi_that_only_names_itself_keeps_its_definition() {
         // A cycle whose local is never written by anything: both inputs are the block's own exit,
         // so every operand is the phi itself and there is no value to replace it with.
@@ -2817,7 +2911,11 @@ mod tests {
     /// is recorded as a use of exactly that value, and every recorded use is backed by one of
     /// them. This is the bidirectional def-use relation the slice's contract states, checked
     /// against the published table rather than against the code that built it.
-    fn audit(table: &SsaTable) {
+    ///
+    /// The comparison is a multiset one, so a value that is read twice needs two records, and the
+    /// names come from the published table itself: a reference that survives into it must name a
+    /// definition, so nothing here follows a replacement.
+    fn audit(what: &str, table: &SsaTable) {
         let mut expected: BTreeMap<ValueId, Vec<SsaUse>> = BTreeMap::new();
         for block in table.blocks() {
             for instruction in &block.instructions {
@@ -2848,7 +2946,7 @@ mod tests {
             wanted.sort();
             assert_eq!(
                 recorded, wanted,
-                "value {id:?} ({:?}) records exactly the uses the table holds",
+                "{what}: value {id:?} ({:?}) records exactly the uses the table holds",
                 value.def
             );
         }
@@ -2885,7 +2983,7 @@ mod tests {
             ("two throw sites", &handled),
         ] {
             let table = ssa_of(body).unwrap_or_else(|message| panic!("{what} analyzes: {message}"));
-            audit(&table);
+            audit(what, &table);
             assert!(
                 !table.values().is_empty(),
                 "{what}: the body defines at least one value"
@@ -2900,6 +2998,259 @@ mod tests {
                     );
                 }
             }
+        }
+    }
+
+    #[test]
+    fn def_use_records_are_the_reads_and_phi_operands_over_four_bodies() {
+        // The same invariant over the shapes a consumer meets: a straight line needs no merge at
+        // all, and a diamond, a loop and a category-2 merge must each publish reads and phi
+        // operands whose occurrences are exactly the recorded uses.
+        // 0 iconst_1, 1 istore_0, 2 iload_0, 3 istore_1, 4 return.
+        let (body, _) = body_of_code(&[0x04, 0x3b, 0x1a, 0x3c, 0xb1], 4);
+        audit(
+            "a straight line",
+            &ssa_of(&body).expect("straight analyzes"),
+        );
+
+        // 0 iconst_0, 1 istore_0, 2 iload_0, 3 ifne +6 (to 9), 6 iconst_1, 7 istore_0,
+        // 8 nop, 9 iconst_2, 10 istore_1, 11 iload_0, 12 istore_2, 13 return.
+        let (body, _) = body_of_code(
+            &[
+                0x03, 0x3b, 0x1a, 0x9a, 0x00, 0x06, 0x04, 0x3b, 0x00, 0x05, 0x3c, 0x1a, 0x3c, 0xb1,
+            ],
+            4,
+        );
+        let table = ssa_of(&body).expect("the diamond analyzes");
+        let diamond = phi(&table, &block(9), Slot::Local(0));
+        assert_eq!(
+            diamond.inputs.len(),
+            2,
+            "the diamond's merge takes one operand per path: {:#?}",
+            diamond
+        );
+        assert_eq!(
+            table.block(&block(9)).expect("named").instructions[2].reads,
+            vec![(Slot::Local(0), diamond.value)],
+            "the load after the merge reads the phi"
+        );
+        audit("a diamond", &table);
+
+        // 0 iconst_0, 1 istore_0, 2 iload_0, 3 iconst_3, 4 if_icmpge +9,
+        // 7 iinc 0,1, 10 goto -8, 13 return.
+        let (body, _) = body_of_code(
+            &[
+                0x03, 0x3b, 0x1a, 0x06, 0xa2, 0x00, 0x09, 0x84, 0x00, 0x01, 0xa7, 0xff, 0xf8, 0xb1,
+            ],
+            4,
+        );
+        audit("a loop", &ssa_of(&body).expect("the loop analyzes"));
+
+        // 0 lconst_0, 1 lstore_0, 2 iconst_0, 3 ifne +6 (to 9), 6 lconst_1, 7 lstore_0,
+        // 8 nop, 9 lconst_1, 10 lstore_2, 11 lload_0, 12 pop2, 13 return.
+        let (body, _) = body_of_code(
+            &[
+                0x09, 0x3f, 0x03, 0x9a, 0x00, 0x06, 0x0a, 0x3f, 0x00, 0x0a, 0x41, 0x1e, 0x58, 0xb1,
+            ],
+            8,
+        );
+        let table = ssa_of(&body).expect("the long merge analyzes");
+        let merged = phi(&table, &block(9), Slot::Local(0));
+        assert_eq!(
+            merged.inputs.len(),
+            2,
+            "two paths, one category-2 value: {:#?}",
+            merged
+        );
+        assert_eq!(table.value(merged.value).ty, Value::Long);
+        assert!(
+            table.phis().iter().all(|phi| phi.slot != Slot::Local(1)),
+            "the upper half of a category-2 pair is never a phi of its own: {:#?}",
+            table.phis()
+        );
+        assert_eq!(
+            table.block(&block(9)).expect("named").instructions[2].reads,
+            vec![(Slot::Local(0), merged.value)],
+            "the load reads the merged value at the pair's first slot"
+        );
+        audit("category-2 values", &table);
+    }
+
+    #[test]
+    fn def_use_over_a_mixed_transfer_and_exception_input() {
+        // One handler entered both by a plain transfer and by one throw site of the same source.
+        // The site snapshot is taken **before** the throwing instruction, and the transfer hands
+        // the source's exit: the two operands differ, so the phi is not trivial and its arity
+        // says both inputs took part.
+        let site = SiteFlow {
+            handler_ordinals: vec![0],
+            slots: vec![Slot::Local(0)],
+            origin: OriginSet::default(),
+        };
+        let flows = vec![
+            flow(
+                0,
+                vec![(Slot::Local(0), Value::Int)],
+                vec![from_seed()],
+                vec![
+                    InstructionFlow {
+                        bci: 1,
+                        opcode: 0x00,
+                        stack_after: 0,
+                        accesses: Vec::new(),
+                        site: Some(site),
+                    },
+                    instruction(2, vec![wrote(0, Value::Int)]),
+                ],
+            ),
+            flow(
+                8,
+                vec![(Slot::Local(0), Value::Int)],
+                vec![
+                    from_transfer(0),
+                    FlowInput {
+                        kind: InputKind::Exception { handler_ordinal: 0 },
+                        from: Some(block(0)),
+                        throw_site: Some(1),
+                    },
+                ],
+                vec![],
+            ),
+        ];
+        let seed: BTreeMap<Slot, Value> = [(Slot::Local(0), Value::Int)].into_iter().collect();
+        let table = fabricated(flows, seed.clone()).expect("the mixed merge resolves");
+        let mixed = phi(&table, &block(8), Slot::Local(0));
+        assert_eq!(
+            mixed.inputs.len(),
+            2,
+            "the transfer and the throw site are two participants: {:#?}",
+            mixed
+        );
+        let entry = table.block(&block(0)).expect("the entry is named").entry[0].1;
+        let written = table.block(&block(0)).expect("named").instructions[1].writes[0].1;
+        let mut operands: Vec<ValueId> = mixed
+            .inputs
+            .iter()
+            .map(|input| match input {
+                PhiInput::Value(value) => *value,
+                PhiInput::Itself => panic!("neither input is the phi itself"),
+            })
+            .collect();
+        operands.sort();
+        let mut wanted = vec![entry, written];
+        wanted.sort();
+        assert_eq!(
+            operands, wanted,
+            "the exception operand is the pre-instruction state and the transfer is the exit"
+        );
+        audit("mixed transfer and exception inputs", &table);
+
+        // The same shape with the source's exit equal to the site's snapshot: both operands are
+        // the one value, so the phi is trivial and the check runs over a *replaced* value too.
+        let site = SiteFlow {
+            handler_ordinals: vec![0],
+            slots: vec![Slot::Local(0)],
+            origin: OriginSet::default(),
+        };
+        let flows = vec![
+            flow(
+                0,
+                vec![(Slot::Local(0), Value::Int)],
+                vec![from_seed()],
+                vec![InstructionFlow {
+                    bci: 1,
+                    opcode: 0x00,
+                    stack_after: 0,
+                    accesses: Vec::new(),
+                    site: Some(site),
+                }],
+            ),
+            flow(
+                8,
+                vec![(Slot::Local(0), Value::Int)],
+                vec![
+                    from_transfer(0),
+                    FlowInput {
+                        kind: InputKind::Exception { handler_ordinal: 0 },
+                        from: Some(block(0)),
+                        throw_site: Some(1),
+                    },
+                ],
+                vec![],
+            ),
+        ];
+        let table = fabricated(flows, seed.clone()).expect("the equal-operand merge resolves");
+        let trivial = phi(&table, &block(8), Slot::Local(0));
+        let only = table.block(&block(0)).expect("named").entry[0].1;
+        assert_eq!(
+            table.value(trivial.value).replaced_by,
+            Some(only),
+            "one distinct operand: the phi is that operand's name"
+        );
+        assert!(
+            table.value(trivial.value).uses.is_empty(),
+            "a replaced value keeps no use"
+        );
+        assert_eq!(
+            table.value(only).uses.len(),
+            2,
+            "one def-use edge per operand"
+        );
+        audit("mixed transfer and exception inputs, trivial phi", &table);
+    }
+
+    #[test]
+    fn def_use_holds_under_every_rotation_of_a_loop_body() {
+        // The same loop body as the existing order test, stored in every rotation of its block
+        // order: a naive walk would name the back edge's use before its definition in most of
+        // them.
+        let code = [
+            0x04, // 0: iconst_1
+            0x3b, // 1: istore_0
+            0x03, // 2: iconst_0
+            0x99, 0x00, 0x06, // 3: ifeq 9
+            0xa7, 0x00, 0x03, // 6: goto 9
+            0x1a, // 9: iload_0
+            0x04, // 10: iconst_1
+            0x64, // 11: isub
+            0x3b, // 12: istore_0
+            0x1a, // 13: iload_0
+            0x9d, 0xff, 0xfb, // 14: ifgt 9
+            0xb1, // 17: return
+        ];
+        let (body, _) = body_of_code(&code, 1);
+        let loader = LoaderId("app".to_string());
+        let method = method_view(&body.pool, &loader);
+        let seed: BTreeMap<Slot, Value> = match entry_slots(&method, &body.facts) {
+            Ok(Some(slots)) => slots
+                .into_iter()
+                .map(|slot| (Slot::of(slot.region, slot.slot), slot.value))
+                .collect(),
+            other => panic!("the entry state of the fixture is stated: {other:?}"),
+        };
+        let flows = match flow_facts(
+            &body.facts,
+            &body.canonical,
+            &body.frames,
+            &seed,
+            &method,
+            &mut budget(),
+        ) {
+            Ok(flows) => flows,
+            Err(error) => panic!("the fixture has a flow: {error:?}"),
+        };
+        let natural = fabricated(flows.clone(), seed.clone()).expect("the natural order resolves");
+        assert!(flows.len() > 2, "the fixture has several blocks");
+        for shift in 1..flows.len() {
+            let mut rotated = flows.clone();
+            rotated.rotate_left(shift);
+            let table = fabricated(rotated, seed.clone()).expect("a rotation resolves");
+            assert_eq!(
+                projection(&natural),
+                projection(&table),
+                "the names of rotation {shift} are the natural ones"
+            );
+            audit("a rotated loop", &table);
         }
     }
 }
