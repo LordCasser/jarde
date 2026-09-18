@@ -176,6 +176,33 @@
 - `ci.yml` 的 `jvm` 边界正则实测 → 3.2；MSRV 1.88 与两套 supply-chain → 3.3。
 - **`test-support` 打开时 `jarde::test_class` 可经门面 `pub use classfile::*` 触达**（此前是 `pub(crate)`）→ 2.2 收窄再导出白名单时一并处理。
 
+## 1.5 A17 守卫已改造为布局无关（2026-09-18，复核 Approve）
+
+1.4 的方案已实施并独立复核。**本片只改测试**，`src/**`、`crates/**` 未动。
+
+**改造要点**：
+
+- `A17_EXPECTED_FILES`（6 条 `src/` 字面量）→ `A17_EXPECTED_MODULES`（模块身份 + 候选路径，旧布局在前）；新增 `resolve_layout`，对候选做存在性过滤并断言**恰好命中一个**（0 个 = 布局变了没人更新；≥2 个 = 两套并存，不任选）。目录身份（`xref/`）、正对照（`engine.rs`）、类型派生源（`environment.rs`/`resolver.rs`/`ir.rs`）各有一份身份表。
+- **token 表只增不删**：module token 12 → 15（+`jarde_jvm::`、`jarde_query::`、`jarde::`），import token 7 → 12（+`jarde_jvm as`、`jarde_query as`、`jarde as`、`extern crate jarde_jvm/query`）。两套形态**都要**保留：搬迁后 jvm 侧的 `crate::query` 不再指 query 包。
+- **sandbox 用例表改为身份 + 双布局**：同一份 `cases` 数据（offenders/evidence/tiny_files 一字未动）在 `SANDBOX_LAYOUTS` 的两种布局下各跑一遍；新增两条跨 crate 用例（`jarde_jvm::…`、别名与门面形态）。
+- `A17_GUARDED_FILES = 6`、`A17_MIN_SOURCE_LEN`、全部完整性与非空断言**未改**。
+
+**父级独立验证（在真实树上，不只在副本里）**：
+
+| 验证 | 结果 |
+| --- | --- |
+| 在 `src/query.rs` 注入 `use crate::resolver::ResolutionReport as _;` | **红**：`src/query.rs: crate::resolver, resolver::, ResolutionReport` |
+| 把 `src/query.rs` 移走（改用 `#[path]` 垫片保住编译） | **红**：`found []`（不是静默通过） |
+| 构造**半搬迁**树（`query.rs` 留 `src/`、`xref/` 移到 `crates/jarde-query/src/`） | **红**：`the guarded sources are split across layouts (src/query.rs and crates/jarde-query/src/xref)` |
+
+**复核者（第三方）结论：Approve，无必须改项**。它逐项核对了「未放宽」：被守文件数与尺寸下限未动；A17 区内 `assert!` 8→8、`assert_eq!` 4→5、`panic!` 2→2、`.expect` 5→5（**只增不减**）；匹配器本体（`normalize_module_paths`/`contains_token`/`p2_tokens_in`/`declared_public_type_names`/`collect_rs_files`）**逐字节相同**；sandbox 用例表在路径→身份归一后**完全一致**。它另实测：把 `query.rs` 建成目录、把 `xref` 建成文件都不会误判为命中；两套并存与一个都没有都会响亮报错。
+
+**复核者指出并由父级修正的一处**：唯一性是按**身份**判定的，所以半搬迁的混搭树**能**解析通过（每个身份各自命中），而 `GuardedModule` 的注释声称「两套并存必须响亮失败」——文档强于实现。已加 `assert_single_layout`（比较两个被守身份解析到的布局根），并把注释改为准确表述；半搬迁树现在**失败**（上表第三行）。
+
+**范围外发现（转 2.2 处理）**：`tests/p2_contracts.rs` 的 `all_lists_are_complete_and_align_with_the_serde_names` 仍写死读 `src/environment.rs`/`src/ir.rs`，2.2 搬走后会直接 panic；它不在 A17 守卫范围内，但可直接复用本片的 `resolve_guarded_file`。
+
+证据：`p2_contracts` = **29 passed**；全仓 **628 passed / 0 failed / 1 ignored**；`p1_xref_golden` = 5；`fmt`/`clippy -D warnings` 干净。提交 `5ada874`、`90fed85`。
+
 ## 1.4 A17 守卫的改造方案（供 2.1/2.2 与 3.2 执行）
 
 `tests/p2_contracts.rs` 的 A17 守卫今天**写死了布局**，搬迁后必然失败，而且必须**在搬迁前**先改造好——它是拆包「没有改变依赖方向」的可执行验证，不能等拆完再补。
