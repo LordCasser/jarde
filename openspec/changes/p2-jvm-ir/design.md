@@ -764,7 +764,9 @@ pub(crate) struct PassDescriptor {
 **状态**：工作区候选尚未通过本轮 review。R2/R3/R4 是继续到 3.5 的阻塞项；现有 topology walk 可以保留为骨架，不能把其 `Established` 当作已证明的 returnAddress 数据流。
 
 - **值来源**：对每个 `jsr/jsr_w` 创建原始 call-site/return-BCI token，沿 operand stack 与 locals 的存储、覆盖、合流追踪。`ret n` 的后继取自 local n 中已证明的 token；不能仅凭 ret 可达于某个子程序就归属该上下文。未定义、被普通值覆盖、错误槽位、不支持的传递或不可靠合流均不发布 `CallContexts`，保留 raw facts 与明确的 unresolved/fallback。
-- **实现边界**：在同一指令事实/effect 适配上做有界的 returnAddress 专用数据流，只区分返回地址来源及必需的栈形状/其他值；不提前交付 4.x 的完整 Frame，也不另写 decoder。无法证明安全的指令形态先明确 fallback。共享及嵌套调用的 token 与调用链分开；嵌套 continuation 必须有实际返回证明，不能无条件排入正常路径。
+- **实现边界**：在同一指令事实/effect 适配上做有界的 returnAddress 专用数据流，只区分返回地址来源及必需的栈形状/其他值；不提前交付 4.x 的完整 Frame，也不另写 decoder。无法证明安全的指令形态先明确 fallback。
+- **数据流按调用上下文分别进行**（这条决定验收能否通过，务必照此实现）：共享子程序在**每个上下文里各自分析一次**，所以不同调用点的 token 永不互相合流——ECJ 45–48 的 `finallyPath` 正是这个形状（两个 `jsr` 指向同一入口、子程序把返回地址存进同一个槽），它不是合流冲突。合流冲突只可能出现在**同一上下文内**的不同路径（例如 handler 路径改写了返回地址槽后与正常路径在同一 `ret` 汇合）；只有这种同上下文冲突才算「不可靠合流」并停止。若把跨上下文误当合流冲突，共享子程序的验收案例会被整体拒绝。
+- **合流判定用 token 身份**：同一槽在两条路径上持有**同一个** call site 的 token 是可接受的合流；持有**不同** call site 的 token、或一条路径是 token 而另一条是普通值，才算冲突。共享及嵌套调用的 token 与调用链分开；嵌套 continuation 必须有实际返回证明，不能无条件排入正常路径。
 - **异常路径**：逐 throw-site、handler ordinal 和 active call context 传播。handler 入口清空原 operand stack 后压入异常值，并保留该点 locals；handler 不是普通 fall-through，但也不能整类跳过。若 handler 在当前子程序中继续或回接 ret，其 local 读写与返回地址变更必须参与分析；跨出上下文或无法判定归属时 fallback。嵌套上下文影响传回外层时保持来源，不能把异常路径压成保护区间 ordinal 集合即认为完成。
 - **locals**：分别保留分析需要的 accessed/written 信息（category-2 包含两槽）。当前 `affected_locals` 若继续表示写集，名称和消费者需写明；不可把写集当成 ret 状态合流所需的全部访问集。3.5 不得恢复/丢弃实际上已访问或改变的槽。
 - **dialect 与可读性**：classfile 51+ 的 jsr/jsr_w/ret（含 wide ret）为违规；保留取证字节和 BCI，verification 仍为 NotPerformed。不可达指令的 dialect 检查与可达上下文证明分开，不能仅因现代方法使用合法 wide load/store 就 unresolved。
