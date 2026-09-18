@@ -23,4 +23,49 @@
 
 **本机环境限制（如实记录）**：验证期间本机链接器失效（Xcode 许可未接受，`xcrun --sdk macosx --show-sdk-path` 失败、链接报 `library 'System' not found`）。全部 cargo 命令均在 `SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk` 且 `PATH` 以 `/Library/Developer/CommandLineTools/usr/bin` 开头的环境下执行。CI 侧（Linux runner）不受影响。
 
-**未做**：跨包私有访问与测试辅助消费者的盘点（1.1 的第二半，进行中）；未开始任何文件搬迁。
+## 1.2 盘点（2026-09-18，1.1 的第二半）
+
+全仓 `pub(crate)` 命名项 185 个，其中 140 个被至少一个其它文件引用。完整清单按「接缝 / jvm 内部 / 无需公开」三类归档，下面是**必须在搬迁前处理**的部分。
+
+### 接缝归属（升公开面的最小集）
+
+| 接缝 | 位置 | 目标 crate | 公开面 |
+| --- | --- | --- | --- |
+| `ArtifactSnapshot::read_entry_internal` | `artifact.rs:773` | reader | 升 `pub` 并改名 `read_entry_for_analysis`；保留快照/entry 校验与 `Intermediate` 记账 |
+| `class_facts`/`ClassFacts` | `classfile.rs:1832`/`:1725` | reader | `pub`，**不提供构造器**（不开放伪造已验证状态） |
+| `MethodCodeFacts` | `classfile.rs:2520` | reader | `pub struct`，但 **`operands` 字段保持私有**，改只读访问器/lockstep 迭代器（`classfile.rs:2717` 的 `debug_assert_eq!` 就是该不变量） |
+| `InstructionOperands` 及同族 | `classfile.rs:2571+` | reader | 必须 `pub`（否则 `MethodCodeFacts` 公开不了）；无 reader 外构造路径即为最小面 |
+| CP/descriptor/attribute 查询族 | `classfile.rs:3845+` / `:2190+` / `:1941+` | reader | `pub`（只读查询，不暴露 pool layout） |
+| `xref::scan_candidates` + `CandidateScan` | `xref/mod.rs:338`/`:194` | query | `pub`（jvm 唯一接缝） |
+| `CandidateFilter` | `xref/mod.rs:104` | query | **不整体导出**：只暴露成员形状与 signature-polymorphic 两种（见 design §3.5） |
+| `query::execute` | `query.rs:380` | query | `pub`（门面唯一入口） |
+| `xref::with_usage` | `xref/mod.rs:1249` | reader | 升 reader 的 `pub`，**与 `multi_release.rs:1814` 的私有副本合并为一份**，query/jvm/门面共用 |
+| `budget_dimension_code` | `artifact.rs:1576` | reader | `pub`（纯映射，无状态） |
+
+### jvm 内部（拆包后仍同 crate，**全部不公开**）
+
+`providers`（Header 闭包/仲裁）、`members`（成员规则）、`dispatch`、`resolver`、`environment`、`ir`/`passes`、`cfg`/`call_context` 的全部 `pub(crate)` 项。**「不为维持门面原实现而公开可变内部」是硬约束**——`FactLedger`、`HeaderClosure`、`AnalysisRun`、`IrPhase`、`PassDescriptor` 在 jvm 之外必须不可见。
+
+### 无需公开（只是恰好同 crate）
+
+`JvmString::from_parts`（消费者都在 reader 内）、`probe_minimal_header`（consumer 是 reader 的 `multi_release`）、`query::validate_request`、`xref::scan`/`ScanResult`、`query.rs` 的三个 coverage 辅助——保持 crate 内。
+
+### 会因拆包而编译失败、必须先处理的 7 项
+
+| # | 位置 | 原因 | 处理 |
+| --- | --- | --- | --- |
+| 1 | `cfg.rs:1751`、`call_context.rs:1972/2009/2022` | 跨包访问 reader 的 `#[cfg(test)] classfile::test_class` | reader 加 `#[cfg(any(test, feature = "test-support"))]` 门禁 + jvm 用 dev-dependency 启用；**不得无条件 `pub`** |
+| 2 | `tests/p2_contracts.rs:2571-2584`、`:2891-2909` | A17 守卫硬编码 6 条 `src/` 路径与文件数 | 改为按包/模式枚举，搬迁前先对当前布局跑绿 |
+| 3 | `tests/p2_contracts.rs:2685` | `derived_p2_type_tokens` 读 `src/environment.rs`/`resolver.rs`/`ir.rs` | 同上 |
+| 4 | `classfile.rs:4455`、`call_context.rs:1271-1279`、`cfg.rs:1618-1628` | `include_bytes!("../tests/fixtures/…")` 相对 `src/` | 改为 `CARGO_MANIFEST_DIR` 或 workspace 级 fixtures 常量 |
+| 5 | `p1_xref_golden.rs:472`、`p2_contracts.rs:2179/2842/3155`、`jvm_bytecode_oracle.rs:137`、`classfile.rs:9127` | `CARGO_MANIFEST_DIR` 随 crate 变化 | 同上 |
+| 6 | `providers.rs:2140` | jvm 侧 `rawzip` 仅测试使用 | jvm 的 `[dev-dependencies]` |
+| 7 | 根 `tests/*.rs` 全部 | `rawzip`/`blake3`/`petgraph` 不再是根包 normal dep | 根包补 `[dev-dependencies]` |
+
+### 门面耦合（**必须迁入 jvm**）
+
+`ACC_ABSTRACT`/`ACC_NATIVE`、`IR_RAW_CFG_INCOMPLETE_BODY`、`report_unimplemented`、`run_method_analysis`、`FactLedger::new` 与 `HeaderClosure::new` 的直接构造、`DriverRead`/`read_driver_method`/`has_code_attribute`/`no_body_kind`/`reader_stop`/`stopped_at_code`/`stop_severity`、`raw_cfg_failure`/`stage_state`/`termination_code`/`with_usage`（后者的实现改为引用 reader 的共享版本）。门面保留 `Engine` 与各入口的一行委托 + 收窄的再导出白名单（`lib.rs:27-40`，移除 passes/cfg/call_context/providers/members/dispatch 面）。
+
+**已核实的耦合面**：`crates/jarde-cli/src/main.rs:3`、`crates/jarde-cli/tests/{json_cli,query_cli}.rs`、`examples/*.rs`、`fuzz/src/lib.rs:20-25` 都只 `use jarde::{…}`，**不触及任何 `pub(crate)`**——因此只要门面再导出白名单不变，它们无需改动；CLI 与 fuzz 的耦合风险集中在白名单收窄那一步。
+
+**未做**：文件搬迁（1.2 起）。cross-check 待办：`ci.yml:81` 的 `jvm` 边界正则需在真实 `cargo tree` 输出上实测不误命中 `jarde-jvm`。

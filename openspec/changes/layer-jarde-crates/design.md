@@ -75,6 +75,14 @@ P2 继续产出 JVM 分析结果，不让 Frame/SSA 依赖 Java 表达能力。P
 
 不预建“跨 DEX/JVM 的通用 IR 包”。droidsaw 的 SSA 名字分配与指令语义分离、普通控制流与异常事实分离、Region 与 emitter 分离可在各自所属包内实现。具体复用判断见 [P2 design §6.1](../p2-jvm-ir/design.md) 和 [P3 design](../p3-java8-recovery/design.md)；保持自研边界不等于证明自研质量更高。
 
+### 3.5 接缝归属的三个定案（2026-09-18，盘点后）
+
+盘点发现三处 design 未定、实现者会各自猜测的地方，现定案：
+
+- **`blake3` 的使用收敛进 reader**（不按「直接使用」散到四个包）：摘要就是身份的一种，身份的所有者是 reader。reader 提供 `Digest::of(&[u8])` 一类的构造，query/jvm/门面改为调用它，`blake3` 只作为 reader 的直接依赖。理由：否则 `query` 的游标摘要、`providers` 的字节身份、门面的报告摘要会各自实现一遍，正是「平行身份」要避免的。若将来某处确有非身份的散列需求，凭证据再议。
+- **`CandidateFilter` 不整体公开**：query 对外只暴露 resolver 真正需要的两种候选形状（成员形状、signature-polymorphic），`Exact` 是 query 的内部语义。用一个只含那两种变体的公开枚举包住内部枚举，而不是给内部枚举加 `#[non_exhaustive]` 后整体导出——后者等于把 scanner 的语义面放开。
+- **`read_entry_internal` 随搬迁改名为 `read_entry_for_analysis`**：公开面里不该出现 `_internal` 这样的名字，且它确实是「为分析而读」的入口。改名与升公开面同步进行，并在其文档里写明它保留的三件事（快照/entry 校验、读取类别与计费）。
+
 ### 4. 依赖和测试随所有者迁移
 
 - 新包路径使用 `crates/jarde-reader`、`crates/jarde-query`、`crates/jarde-jvm`；根包继续 `jarde`，CLI 维持原位置。锁文件中的第三方版本和 features 不顺手升级。
