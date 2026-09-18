@@ -372,7 +372,7 @@
 - **共享 + handler 组合**：`a_shared_subroutine_with_a_handler_keeps_one_context_per_call_site`（两个调用点共享同一子程序入口，受保护的 `idiv` 可抛，handler 写第三个槽后 `goto` 回共享 `ret`）断言 2 个上下文、各自返回点 `(0,3)` 与 `(3,6)`、两者写集均为 `[1,2]`、共享 `ret` 有 2 个目标。
 - **写集语义已写明**（见契约 3.4）：`affected_locals` 是 **may-write 写集**，含 handler 回接路径上的写入，category-2 占两槽；3.5 只能当写集消费，不得据此推断某槽在 `ret` 时刻的值。
 
-- 证据：`fmt`/`clippy -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **625 passed / 0 failed / 1 ignored**；`call_context` 单测 **33**；`p1_xref_golden` = 5。提交 `ba37bb1`。
+- 证据：`fmt`/`clippy -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **625 passed / 0 failed / 1 ignored**；`call_context` 单测 **33**；`p1_xref_golden` = 5。提交 `ba37bb1`、`4c86609` 已推送；CI run [`35340677314`](https://github.com/LordCasser/jarde/actions/runs/35340677314) 四个 job 全部 success。
 - **父级又一次过程失误（如实记录）**：对新加的用例做变异证伪后，我用**变异前**的备份还原，把刚加的两条用例一并回退（全仓计数 622→623 与预期不符才发现）。已重新施加并复核计数（625 = 622 + 3）。教训与之前 `git checkout` 那次同源：备份必须在修改**之前**、还原必须回到修改**之后**的目标状态。
 
 #### 已关闭：父级自查发现的合流缺口（保留指针，正文见上一节）
