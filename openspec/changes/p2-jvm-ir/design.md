@@ -346,7 +346,7 @@ impl Engine {
 
 | 维度 | 计数单位 | 计费时机 |
 | --- | --- | --- |
-| `ClassHeaders` | 一次 Header 读取**尝试**（同一 (definition, loader) 绑定在同一请求内去重后不再计；失败尝试计一次） | 读取前 |
+| `ClassHeaders` | 一次 Header 读取**尝试**。去重按**搜索键** `(initiating loader, internal name)` 生效（同一键只搜一次）；**读取记录**按**绑定** `(defining loader, definition)` 去重。同一绑定经两个不同键到达时会被尝试两次而只留一条记录——这是 0.1 起的口径（`reads.len() <= class_headers` 仍恒成立）。失败尝试计一次 | 读取前 |
 | `MethodBodies` | 一次 Body（`Code`）读取尝试（同上；无 Body 的成员不尝试、不计） | 读取前 |
 | `IrItems` | 一个派生存储项：frame/local 槽、SSA 值、phi 输入、origin 成员各计 1 | 分配/入队前 |
 | `IrEdges` | 一条派生边：CFG 边（含异常边）、SSA def-use 边各计 1 | 加边前 |
@@ -513,8 +513,10 @@ pub struct HeaderRead {
 
 - **起点与后继**：首个符号需求使用调用方的 initiating loader；选中 Header 后，父类/接口符号由该 Header 的 **defining loader** 发起查找。不能把整次请求固定为 `runtime.load_domain.loader`。查找 memo 用 `(initiating_loader, internal_name)`，层级节点与已展开/祖先集合用解析后的 `(defining_loader, definition)`；记录与声明比较沿用既有物理身份，不因同名或同 bytes 合并。ParentFirst/ChildFirst 逐 loader 生效。
 - **0.1 修正边界**：沿用 `HeaderClosure`/`HierarchyWalk` 与现有身份，给需求及待展开层携带搜索起点；同步 members、声明引用和 dispatch 的层级比较。dispatch 的祖先必须匹配目标声明的 loader/definition，只有 owner 字符串相等不构成继承证据。不新增 resolver 框架或缓存。
+- **绑定核对不因复用而跳过**（0.1 复核 F1）：`read_definition` 的 memo 捷径只能复用**已经核对过**的绑定——命中的 resolution 必须是「该定义在自己声明的名字下被选中」的那次（其 `name` 等于其 header 的 `this_class`），否则回落 fresh 路径重新核对。理由：同一请求内同一物理定义的绑定判定不得依赖它先前**是以哪个名字**被解析出来的；`p/Fake.class` 声明 `this_class = p/Real` 这类畸形 artifact 会让 memo 路径接受而 driver 的 fresh 路径拒绝，那是历史依赖而非语义。
 - **driver/caller 绑定**：读取物理 Header 后，在声明的 loader 环境下核对其名称解析结果是否为该 `(loader, definition)`；不能给任意 content 中的定义直接贴调用方 loader。不同 snapshot 可以是合法依赖 root，不能以 snapshot 必须相等替代绑定校验；不在绑定内或同名被遮蔽的定义须明确诊断、停止运行时语义阶段，原物理 facts 可保留。该规则一并关闭 D15/D25 的身份口径，进入 Frame 前完成。
 - **去重键是 (物理定义, loader)**：同一请求内同一绑定只读一次，同一 `definition` 在不同 loader 下是两条独立记录（同 bytes 不同 origin/loader **不得**合并）。
+- **coverage 的求和来源（0.1 起扩大）**：绑定核对本身会跑一次搜索，该搜索的已检查位置**同样计入** `searched_extent()`，因此 2.3 访问路径与 driver 读取的 `runtime_resolution` 数值比 0.1 前更大（状态仍由规则判定）。这是 2.2「请求级覆盖 = 各次查找求和」的自然结果，不是新的计费。
 - **深度**：每向上一层（parent 链或接口闭包）调用 `Budget::observe_dependency_depth`（1.3 已交付），超限即停并保留可信前缀；`DependencyDepth` 与 `nested_depth` 独立。
 - **计费**：Header 读取尝试记 `ClassHeaders`；方法 Body 读取尝试记 `MethodBodies`（2.2 只允许 `DriverMethodBody` 一个理由，其他理由出现在 3.x/4.x 的分析阶段）；工作列表迭代记 `AnalysisSteps`。**不读无关 Body**：闭包只读 Header，Body 读取必须带显式 reason 且只有目标方法。
 - **停止语义**：预算耗尽/取消/缺失依赖都在**下一次扩展前**停止，`execution` 为 `Partial`/`Cancelled`（`TerminationReason::BudgetExceeded { dimension }` 或 `Cancelled`），`coverage` 保留已扫描范围并把未完成部分记 skipped；不得把停止报告成 `Missing` 或空闭包。
