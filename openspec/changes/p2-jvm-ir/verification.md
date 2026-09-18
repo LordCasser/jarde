@@ -354,25 +354,30 @@
 - 计费随改动上调并如实记录：金标总数 34 → **40**（每次 local 写入与每个 `ret` 都是一个 `IrItems`），元素差值断言 2 → 4；两处注释已写明新口径。
 - 证据：`fmt`/`clippy -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **622 passed / 0 failed / 1 ignored**；`p1_xref_golden` = 5；`call_context` 单测 30 条。提交 `3f5e224`、`11af512` 已推送；CI run [`35339477535`](https://github.com/LordCasser/jarde/actions/runs/35339477535) 四个 job 全部 success。
 
-#### 父级自查发现的**未闭合合流缺口**（2026-09-18，3.4 不能勾选的首要原因）
+### 3.4 第三轮：连续性复审的结论与收口（2026-09-18）
 
-在复核者到达之前，父级按契约「不可靠合流均不发布」自查，构造出**一个仍然误报 `Established` 的反例**并实测确认：
+复核者（第四个独立者）对 `3f5e224` 逐项核对上一轮的四项必修，全部判定**闭合**，并做了**策略级变异**证明顺序无关：把 worklist 从 LIFO 改为 FIFO、把后继遍历改为逆序，**全仓 625 全绿**——即裁决确实只依赖排序后的收集结果与支配关系。它另确认：R3 的异常边不串味（root 0 只取到 `ret 13/slot 1/writer(0,1,BCI 9)`，root 1 只取到 `ret 20/slot 2/writer(1,2,BCI 16)`）；两项证伪各由**唯一**用例守护（删 `only_one` → 2 红；删支配检查 → 1 红）。
 
-```text
-0: jsr 4         // -> BCI 4, 返回地址 3
-3: return
-4: ifeq +7 -> 11 // 分支
-7: nop           // 这一条路径**从不**存入返回地址
-8: goto +4 -> 12
-11: astore_0     // 地址只在这一条臂上存入槽 0
-12: ret 0
-```
+**复核者新发现并由父级修正：**
 
-- **实测**：`Established`，`affected_locals=[0]`——但路径 `4→7→8→12` 到达 `ret 0` 时槽 0 从未得到地址，按契约必须**不发布**。
-- **根因**：`token_slots: Vec<TokenSlot>` 是**按上下文的顺序可变状态**，随 worklist 访问顺序写入；块 11 先被访问就把 `Held{0}` 沿用给整个上下文，包括另一条臂上的 `ret`。即：实现是**前向近似**，没有做契约要求的「按 token 身份的合流」。
-- **对照（说明不是过度保守导致的误判）**：把存储改成**支配 `ret`** 的版本（两个臂都先汇到块 11，`11: astore_0; 12: ret 0`）实测仍 `Established`，正确；另一条路径完全不存（`4` 臂无存储）的版本实测 `Unresolved`，也正确。所以缺口精确地落在「存储不支配 `ret` 的合流」上。
-- **修法已写进契约**：把顺序可变状态改成**按上下文的必须分析不动点**（按块建模、前驱 in-state 取交、`Lost` 传播、在不动点上读 `ret` 所在块的 in-state），并同样计费与检查取消。
-- 该反例**尚未落成仓内回归**（它还失败，不能作为通过用例）；实现修好后再补正反两侧断言。
+| 问题 | 类型 | 修正 |
+| --- | --- | --- |
+| `adjudicate` 把**存储 BCI** 填进文档写着 `slot` 的字段（诊断会打印 `local 11`，且截断为 `u16`） | 代码缺陷（本次引入） | 改为取槽号；新增断言 `reads local 0` 且 `!contains("local 6")`（BCI 不得出现在 local 位置） |
+| 契约仍写「修法方向：must-analysis 不动点」，与实现的「唯一写入者 + 支配」是**两套机制** | 契约与实现分歧 | 契约改为以实现规则为准，并**显式登记两处更保守的形态**：同槽中转（`astore_1; aload_1; astore_1; ret 1`）与「存储在到不了 `ret` 的臂上」——实现更严，理由是当前无行内值追踪；另写明**不得**把「中转形态判 `Established`」当作值身份的证据 |
+| verification 里旧「未闭合合流缺口」整段描述的是已删除的 `token_slots` 实现，与状态自相矛盾 | 文档卫生 | 该段改为指针，正文以新表格为准 |
+
+**父级据复核意见补齐的验收项（此前自列为阻塞）：**
+
+- **逐触发的反方向用例**：`a_dead_return_point_does_not_block_a_live_call_site`（死 `ret` 作为载荷事实发布、目标为空，且不阻塞活调用点）与 `a_dead_call_site_does_not_block_the_live_ones`（死调用点仍发布为 context，但子程序不返回不构成拒绝）。两条都做过证伪：**同时**去掉「只判可达」的两处过滤后两条均转红。
+- **共享 + handler 组合**：`a_shared_subroutine_with_a_handler_keeps_one_context_per_call_site`（两个调用点共享同一子程序入口，受保护的 `idiv` 可抛，handler 写第三个槽后 `goto` 回共享 `ret`）断言 2 个上下文、各自返回点 `(0,3)` 与 `(3,6)`、两者写集均为 `[1,2]`、共享 `ret` 有 2 个目标。
+- **写集语义已写明**（见契约 3.4）：`affected_locals` 是 **may-write 写集**，含 handler 回接路径上的写入，category-2 占两槽；3.5 只能当写集消费，不得据此推断某槽在 `ret` 时刻的值。
+
+- 证据：`fmt`/`clippy -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **625 passed / 0 failed / 1 ignored**；`call_context` 单测 **33**；`p1_xref_golden` = 5。提交 `ba37bb1`。
+- **父级又一次过程失误（如实记录）**：对新加的用例做变异证伪后，我用**变异前**的备份还原，把刚加的两条用例一并回退（全仓计数 622→623 与预期不符才发现）。已重新施加并复核计数（625 = 622 + 3）。教训与之前 `git checkout` 那次同源：备份必须在修改**之前**、还原必须回到修改**之后**的目标状态。
+
+#### 已关闭：父级自查发现的合流缺口（保留指针，正文见上一节）
+
+这一节原先描述的是**旧实现**（`token_slots` 按上下文的顺序可变状态）与其反例「地址只存在一条臂上」。该实现已被替换为「先收集、后裁决」，反例已由 `an_address_stored_on_only_one_path_is_unresolved` 钉成 `Unresolved`，`src/` 中 `token_slots` 已零命中。**正文与证据以上一节的表格为准**；本节保留指针，避免下一轮复核误以为首要阻塞项仍在。
 
 #### 仍未完成（3.4 不能勾选的原因）
 
