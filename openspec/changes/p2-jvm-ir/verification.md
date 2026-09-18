@@ -218,6 +218,18 @@
 | D36 | `DeclarationShape.owner` 字段被删除，改为按节点比较（`declaring: NodeIdentity`）；任何后续切片若引用该字段需改用 `declaring` | 0.1 实现 | 由「owner 字符串不构成继承证据」直接导致；改动在 crate-private，公共面不变
 | D37 | `elapsed_millis` 比较造成假红：6 次未变异全量运行中 2 次仅因该字段 0 vs 1 失败（涉及 `p2_cfg` 2 条、`p2_return_address` 2 条，前者 HEAD 上即存在） | 0.1 复核 | **转任务 0.5**：按 P1 golden 同款做法剔除该字段后比较，并审计全部 P2 用例；不修会让「绿跑」证据不可信，也会把变异实验误判为捕获 |
 | D38 | memo 捷径的历史依赖（F1）：同一物理定义的绑定判定因「先前以哪个名字被解析」而不同（成员路径接受、driver fresh 路径拒绝） | 0.1 复核 | **本轮修**（契约已写明「memo 捷径只能复用已在自己声明名下核对过的绑定」）+ 新用例；触发需 entry 路径 ≠ `this_class` 的畸形 artifact |
+### 0.1 loader 身份修正（initiating / defining loader）
+
+- **缺陷与根因**：用户复核的反例 R1 证明 child 域（ChildFirst）里请求 parent 定义的 `p/Owner extends p/Base` 时，解析返回 **child 的同名 Base** 并报 `Resolved`/`Complete`。根因有三处耦合：`HeaderClosure::demand` 把每次需求的起点硬编码为 `runtime.load_domain.loader`；`ordered_domains` 只从该 loader 起走父链；`HierarchyWalk` 的待展开层只携带名字。JVMS 5.4.3.1 要求父类/接口符号由**该类的 defining loader** 解析。2.2 曾把「闭包键的 loader 分量不可证伪」记为可接受边界，该边界被 R1 证伪并撤回。
+- **交付**：`lookup_class_header`/`ordered_domains` 接受起始 loader；memo 键 `(initiating loader, internal name)`；新增 `NodeIdentity{defining_loader, definition}` 用于遍历节点/`visited`/祖先路径与环检测（`AncestorPath.repeats` 按节点比较）；`Successor.initiating_loader` = **声明该超类型的那一层**的 defining loader；四条走查（field 栈、class 链、interface 图、access 的 subtype walk）共用一台 `Layers`/`Expanded` 机器，**键与节点成对去重**；dispatch 的祖先判定改为按节点（`declaring: NodeIdentity`），owner 字符串不再构成继承证据。
+- **绑定校验**：`HeaderClosure::read_definition` 读完 header 后在**声明 loader 自己的顺序**里解析其 `this_class`，要求选中结果恰为该 `(loader, definition)`，否则 `resolution_definition_unbound`（Error）停止语义阶段、物理 facts 保留；**不以 snapshot 相等为判据**（跨 snapshot 的合法依赖 root 有正向对照）。未提供该定义、被更早位置遮蔽、以及**字节相同但 origin 不同**三类都真拒绝。
+- **driver 侧（D25）**：`engine.rs::read_driver_method` 改经 `read_own_definition`（同一份校验）；失败时 `raw_facts = Failed{resolution_definition_unbound}` + Error 诊断 + `execution = Failed{Error}` + `body = NotInspected` + 读取记录保留；成功路径逐字段不变（`class_headers == 1`、`MethodBodies` 计一次）。
+- **复核发现的 F1（已修）**：`read_definition` 的 memo 捷径曾跳过名字核对，使同一物理定义的绑定判定依赖「先前以哪个名字被解析」（成员路径接受、driver fresh 路径拒绝）。修法是 `bound_header` 只复用**已在自己声明名下核对过**的绑定（契约已写明），否则回落 fresh 核对；新用例逐字比较两条路径的整条拒绝（`(code, message)`）。父级用文件副本变异独立证伪：删掉该核对 → 新用例转红，还原后 `sha256sum -c` OK。
+- **0.5（假红治理）**：复核实测 6 次未变异全量运行中有 2 次仅因 `usage.elapsed_millis` 0 vs 1 失败。按 P1 golden 同款做法在比较前剔除该字段（两侧对称归一），审计出 **13 处 P2 + 1 处 P1** 同类站点（`p2_cfg` 7、`p2_return_address` 3、`p2_contracts`/`p2_passes`/`p2_resolution` 各 1、`p1_artifact_tree` 1），其余比较强度不变（含一条变异证明归一未削弱其他字段）。
+- **反例与证伪**：实现者 5 组 + 复核者 10 组变异；关键捕获包括「后继需求回到 runtime loader」（R1 用例转红）、「memo 键去掉 loader」、「walk 身份退化为按名」、「dispatch 祖先只比 owner 名」、「删掉 F1 核对」、「`started_at` 登记根键」（仅新 fixture 1 捕获，证实仓内原本无等价用例）。
+- **证据**：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked --no-fail-fast` = **596 passed / 0 failed / 1 ignored**（连跑 4 次一致），`p1_xref_golden` = 5；示例 exit 0；由主 Agent 独立复跑确认。
+- **独立复核结论**：**Approve**（含复核者自建 13 条 fixture；其最担心的「字节相同定义不同被复用误接受」经专门 fixture 证伪为**正确拒绝**）。登记债务：D35（已处置）、D36、D37（已转 0.5 并完成）、D38（已修）。
+
 ## P2 验收映射现状（滚动更新）
 
 按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
