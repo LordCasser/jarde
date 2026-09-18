@@ -216,6 +216,8 @@
 | D34 | `ir_pass_not_implemented` 的产物面组合：3.4 正常完成后 `stages` 为 C,C,C + 后续 `Failed{ir_pass_not_implemented}`，此时 `quality = Fallback` 是 `analysis_report` 的字面量（`ir.rs` 无分支），不构成「走了 fallback」的分类证据 | 3.4 复核 | 3.5 前不得用 `quality` 作断言依据（示例与文档已注明）；5.1 给出真实分类后补断言 |
 | D35 | 绑定校验使按定义读取多一次 `ClassHeaders` 尝试（同一 header 先按身份物化、再在声明 loader 的顺序里被搜索命中一次） | 0.1 复核（父级核对） | **已处置（0.1 收尾轮）**：实现改为「搜索到达该定义所在位置时复用请求内已物化的字节」，即同一 `(loader, definition)` 在本请求内不重复尝试——driver 路径实测仍为 1 次，members 访问路径由 3 次回到 2 次（两条既有断言相应改为 `== 2`，并保留 `read_reasons` 逐条断言）。该复用不是 P5 的物化/索引：它是**单一定义、请求内**的事实复用，且**不削弱校验**——被遮蔽时搜索仍必须读遮蔽位置才能判定（`a_caller_definition_the_declared_loader_does_not_bind_is_a_stop` 逐条断言三条读取记录，含遮蔽定义的读） |
 | D36 | `DeclarationShape.owner` 字段被删除，改为按节点比较（`declaring: NodeIdentity`）；任何后续切片若引用该字段需改用 `declaring` | 0.1 实现 | 由「owner 字符串不构成继承证据」直接导致；改动在 crate-private，公共面不变
+| D37 | `elapsed_millis` 比较造成假红：6 次未变异全量运行中 2 次仅因该字段 0 vs 1 失败（涉及 `p2_cfg` 2 条、`p2_return_address` 2 条，前者 HEAD 上即存在） | 0.1 复核 | **转任务 0.5**：按 P1 golden 同款做法剔除该字段后比较，并审计全部 P2 用例；不修会让「绿跑」证据不可信，也会把变异实验误判为捕获 |
+| D38 | memo 捷径的历史依赖（F1）：同一物理定义的绑定判定因「先前以哪个名字被解析」而不同（成员路径接受、driver fresh 路径拒绝） | 0.1 复核 | **本轮修**（契约已写明「memo 捷径只能复用已在自己声明名下核对过的绑定」）+ 新用例；触发需 entry 路径 ≠ `this_class` 的畸形 artifact |
 ## P2 验收映射现状（滚动更新）
 
 按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。

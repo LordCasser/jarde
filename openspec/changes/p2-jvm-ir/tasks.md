@@ -5,9 +5,10 @@
 - [ ] 0.3 修正 3.4 派生存储的分配前 IrItems 计费、实际边/工作列表计费与取消检查，补 Effects requires；同步静态表与未来 3.5/4.x 预算声明，不实现这些后续阶段。以零/恰好/超限、乘积状态、装配期取消、Effects stale/未产出反例证明停止且不发布 CallContexts；阶段成功应保留真实 payload 供后继消费（R4、D22，A14）。
 
 - [ ] 0.4 修正 raw CFG 的 BCI→块查法不一致：`jsr_continuations` 不得要求 `jsr` 恰在块首，续块归属按「包含该 BCI 的块」（与 `call_context::block_of` 同一 `partition_point` 读法）解析；`cfg` 与 `call_context` 只保留一种查法。以**非块首 `jsr`** 的 3.3 回归（含子程序体无 `ret` 的非法字节码必须被 3.4 拒绝、不得 Established）与 ECJ 45–48 的 `unreachable` 由 `[8,11,15]` 修正为 `[11,15]` 的实际断言证明，并重跑 3.3/3.4 相关证据与 P1 golden（D-1/D29，A09）。
+- [ ] 0.5 归一 P2 测试里对 `elapsed_millis` 的比较（P1 golden 同款做法：比较前剔除该字段），消除 0–1 ms 抖动造成的假红；审计全部新增/未提交用例（至少 `tests/p2_cfg.rs`、`tests/p2_return_address.rs`）并记录受影响清单。本轮全量运行 6 次中有 2 次仅因该字段失败，属证据可信度问题而非实现缺陷（0.1 复核）。
 ## 1. 基础契约与第一片交接
 
-P1 与验证维护均已归档；当前基线为 `4beb6b9` 加未提交的 3.4 工作区。原任务 1.1–1.3、2.1–2.5、3.1–3.3 共 11 项有交付记录，3.4 已写但未验收。新增 0.1–0.4 后为 **11/24**；已勾选不表示本轮发现的缺陷已消失。当前顺序：**0.1 → 0.2 → 0.4 → 0.3 → 3.4 → 3.5 → 4.x → 5.x**。本轮仅 review 和修订规划，不新增实现或勾选任务。
+P1 与验证维护均已归档；当前基线为 `4beb6b9` 加未提交的 3.4 工作区。原任务 1.1–1.3、2.1–2.5、3.1–3.3 共 11 项有交付记录，3.4 已写但未验收。新增 0.1–0.5 后为 **11/25**；已勾选不表示本轮发现的缺陷已消失。当前顺序：**0.1 → 0.2 → 0.4 → 0.5 → 0.3 → 3.4 → 3.5 → 4.x → 5.x**。本轮仅 review 和修订规划，不新增实现或勾选任务。
 
 - [x] 1.1 固定解析/声明查询与方法分析的请求、provider 绑定、阶段结果、origin 和预算计费契约；交付可编译的最小类型/API 及示例，验证缺少运行环境不能隐式启动解析，Bytecode/NotJava/NotPerformed 与 coverage/execution 可分别表达（A13、A17）（2026-09-17 完成：契约先经只读复核定稿，`src/environment.rs`/`resolver.rs`/`ir.rs` + 三个 `Engine` 入口 + 示例 + 28 条契约测试；实现复核首轮 Approve 的 F1–F4 与复审的 N1–N3/D1/D2 已关闭，证据见 verification 的 1.1 节）
 - [x] 1.2 在现有 noak reader 适配中提供内部类型化操作数与目标校验；用 wide/iinc、正负 branch、switch default/key/target、handler 边界、溢出/跳入操作数反例及 P0 oracle 回归验证，不另建 decoder（A09、A10）（2026-09-18 完成并独立复核 Approve：`InstructionOperands`/`control_flow_targets` 全 crate-private、公共输出与计费逐字段未变；保护区间按 JVMS 4.7.3 收紧；7 条补测关闭首轮 5 组盲点，9 个变异全部被捕获；证据见 verification 的 1.2 节）
