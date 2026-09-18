@@ -375,8 +375,8 @@ struct Entry {
     /// original blocks, and the instructions of a node are therefore not its BCI span — a chain
     /// that jumps over the arm of a diamond would take that arm's instructions with it. The chain
     /// is walked one original block at a time, each stopping at the instruction that ends it, and
-    /// this flag is what says where that is. The unit tests check it against the raw pass's own
-    /// block-ender classification, so the two cannot drift apart.
+    /// this flag is what says where that is. The unit tests check this flag — and nothing else of
+    /// the row — against the raw pass's own block-ender classification.
     ends_block: bool,
 }
 
@@ -462,8 +462,12 @@ impl Entry {
     /// The depth change this row has, in slots, when the opcode alone decides it.
     ///
     /// `None` is the same set of rows [`crate::cfg::fixed_stack_delta`] is `None` for: the ones
-    /// that need the constant pool. The two are checked against each other by the unit tests of
-    /// this module, so the dense table and the raw pass's effect facts cannot drift apart.
+    /// that need the constant pool. The unit tests of this module compare the two, and the
+    /// comparison stops at the **depth**: it counts slots, so a row that pops two `int`s and a row
+    /// that pops two references have one and the same delta, and the raw pass's effect facts
+    /// cannot tell those rows apart. Which slot **classes** a row pops is therefore held by this
+    /// table's own per-opcode cases and not by that cross-check, which also says nothing about the
+    /// rows whose delta the pool decides — `multianewarray` among them, its dimension count.
     #[cfg(test)]
     fn fixed_delta(self) -> Option<i32> {
         let (pops, pushes) = match self.stack {
@@ -517,6 +521,7 @@ const POP_L: &[Ty] = &[Ty::Long];
 const POP_D: &[Ty] = &[Ty::Double];
 const POP_R: &[Ty] = &[Ty::Ref];
 const POP_II: &[Ty] = &[Ty::Int, Ty::Int];
+const POP_RR: &[Ty] = &[Ty::Ref, Ty::Ref];
 const POP_FF: &[Ty] = &[Ty::Float, Ty::Float];
 const POP_LL: &[Ty] = &[Ty::Long, Ty::Long];
 const POP_DD: &[Ty] = &[Ty::Double, Ty::Double];
@@ -656,17 +661,21 @@ const fn row(opcode: u8) -> Entry {
         0x95 | 0x96 => Entry::plain(POP_FF, PUSH_I),            // fcmpl, fcmpg
         0x97 | 0x98 => Entry::plain(POP_DD, PUSH_I),            // dcmpl, dcmpg
         0x99..=0x9e => Entry::plain(POP_I, PUSH_NONE).ends(),   // ifeq..ifle
-        0x9f..=0xa6 => Entry::plain(POP_II, PUSH_NONE).ends(),  // if_icmpeq..if_icmpge
-        0xa7 => Entry::plain(POP_NONE, PUSH_NONE).ends(),       // goto
-        0xa8 => Entry::plain(POP_NONE, PUSH_RET).ends(),        // jsr
-        0xa9 => Entry::local(Local::Return).ends(),             // ret
-        0xaa | 0xab => Entry::plain(POP_I, PUSH_NONE).ends(),   // tableswitch, lookupswitch
-        0xac => Entry::plain(POP_I, PUSH_NONE).ends(),          // ireturn
-        0xad => Entry::plain(POP_L, PUSH_NONE).ends(),          // lreturn
-        0xae => Entry::plain(POP_F, PUSH_NONE).ends(),          // freturn
-        0xaf => Entry::plain(POP_D, PUSH_NONE).ends(),          // dreturn
-        0xb0 => Entry::plain(POP_R, PUSH_NONE).ends(),          // areturn
-        0xb1 => Entry::plain(POP_NONE, PUSH_NONE).ends(),       // return
+        0x9f..=0xa4 => Entry::plain(POP_II, PUSH_NONE).ends(),  // if_icmpeq..if_icmple
+        // `if_acmpeq`/`if_acmpne` are the two comparisons of *references*: the opcode
+        // range they continue is not a range of the same shape, which is why they have
+        // their own row rather than following the integer forms.
+        0xa5 | 0xa6 => Entry::plain(POP_RR, PUSH_NONE).ends(), // if_acmpeq, if_acmpne
+        0xa7 => Entry::plain(POP_NONE, PUSH_NONE).ends(),      // goto
+        0xa8 => Entry::plain(POP_NONE, PUSH_RET).ends(),       // jsr
+        0xa9 => Entry::local(Local::Return).ends(),            // ret
+        0xaa | 0xab => Entry::plain(POP_I, PUSH_NONE).ends(),  // tableswitch, lookupswitch
+        0xac => Entry::plain(POP_I, PUSH_NONE).ends(),         // ireturn
+        0xad => Entry::plain(POP_L, PUSH_NONE).ends(),         // lreturn
+        0xae => Entry::plain(POP_F, PUSH_NONE).ends(),         // freturn
+        0xaf => Entry::plain(POP_D, PUSH_NONE).ends(),         // dreturn
+        0xb0 => Entry::plain(POP_R, PUSH_NONE).ends(),         // areturn
+        0xb1 => Entry::plain(POP_NONE, PUSH_NONE).ends(),      // return
         0xb2 => Entry::constant(PoolEffect::Field {
             write: false,
             target: false,
@@ -2312,6 +2321,77 @@ mod tests {
         assert!(
             checked >= 150,
             "the cross-check covers the rows whose shape the opcode decides: {checked}"
+        );
+    }
+
+    /// Every row of the comparison and branch family names the operand classes JVMS 6.5 gives that
+    /// opcode, one opcode at a time. The family is not one range of one shape: `0xa5`/`0xa6`
+    /// continue the `if` forms in the opcode space but compare **references**, and a range that
+    /// swallowed them as `if_icmp` shapes made a legal reference comparison look like a body that
+    /// contradicts itself. The cross-check above cannot see that difference — two `int`s and two
+    /// references are one and the same slot delta — so this is what holds the classes.
+    #[test]
+    fn the_comparison_and_branch_family_names_its_operand_classes_per_opcode() {
+        /// The pops and pushes JVMS 6.5 gives one opcode of the family.
+        fn shape(opcode: u8) -> (&'static [Ty], &'static [Produced]) {
+            match opcode {
+                0x94 => (POP_LL, PUSH_I),           // lcmp
+                0x95 | 0x96 => (POP_FF, PUSH_I),    // fcmpl, fcmpg
+                0x97 | 0x98 => (POP_DD, PUSH_I),    // dcmpl, dcmpg
+                0x99..=0x9e => (POP_I, PUSH_NONE),  // ifeq..ifle: one `int`, and no push
+                0x9f..=0xa4 => (POP_II, PUSH_NONE), // if_icmpeq..if_icmple
+                0xa5 | 0xa6 => (POP_RR, PUSH_NONE), // if_acmpeq, if_acmpne
+                other => panic!("{other:#04x} is not a comparison or a branch of the family"),
+            }
+        }
+
+        for opcode in 0x94u8..=0xa6 {
+            let (pops, pushes) = shape(opcode);
+            assert_eq!(
+                TABLE[usize::from(opcode)].stack,
+                Stack::Fixed { pops, pushes },
+                "{opcode:#04x}: the row pops {pops:?} and pushes {pushes:?}"
+            );
+        }
+    }
+
+    // -- The two comparison kinds, over real bodies --------------------------------------
+
+    /// A reference comparison consumes both references it compares, and an integer comparison
+    /// still consumes two `int`s. Both halves are asserted over real bodies and their outcomes,
+    /// not over the table: reading `if_acmpeq` as an `if_icmp` shape is what made this pass report
+    /// `ir_frame_inconsistent` — a contradiction of the *bytes* — for a method every verifier
+    /// accepts.
+    #[test]
+    fn a_reference_comparison_pops_references_and_an_integer_one_does_not() {
+        // 0: aconst_null; 1: aconst_null; 2: if_acmpeq +3 -> 5; 5: return; 6: return. Both edges
+        // of the comparison reach BCI 5, which the normalization therefore fuses into the block
+        // that compares, so the whole body is entered empty or not at all.
+        let fixture = fixture_body(&[0x01, 0x01, 0xa5, 0x00, 0x03, 0xb1, 0xb1], 0);
+        let table = frames_or_panic(frames_of(&fixture));
+        assert!(
+            table.blocks().iter().all(|block| block.stack.is_empty()),
+            "no block of this body is entered with anything on its operand stack"
+        );
+
+        // The same comparison with the branch really skipping an arm: `+6` from BCI 2 reaches BCI
+        // 8, the fall-through arm enters at 5 and joins it there, and neither successor is fused
+        // away — so each entry state below is the comparison's own exit state.
+        let fixture = fixture_body(&[0x01, 0x01, 0xa5, 0x00, 0x06, 0xa7, 0x00, 0x03, 0xb1], 0);
+        let table = frames_or_panic(frames_of(&fixture));
+        assert!(
+            entry_of(&table, 5).stack.is_empty() && entry_of(&table, 8).stack.is_empty(),
+            "each successor of the comparison is entered with what the comparison left behind"
+        );
+
+        // The other direction, so the repair cannot have gone too far: `if_icmpeq` wants two
+        // `int`s, two `null`s are references, and the refusal is the body's own — it names the
+        // opcode and the class it wants.
+        let fixture = fixture_body(&[0x01, 0x01, 0x9f, 0x00, 0x03, 0xb1, 0xb1], 0);
+        let message = inconsistent(frames_of(&fixture));
+        assert!(
+            message.contains("0x9f") && message.contains("Int"),
+            "the refusal names the opcode and the class it wants: {message}"
         );
     }
 

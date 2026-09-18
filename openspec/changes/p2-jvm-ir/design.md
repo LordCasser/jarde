@@ -850,6 +850,11 @@ pub(crate) struct PassDescriptor {
 - **handler 入口**：输入取自每条 throwing instruction 的 locals/effect，栈只有异常引用。raw CFG 可能把同一 block 内多个 throw sites 聚为一条异常边；Frame/SSA 的逻辑输入仍以 `(raw edge, throw-site, normalization context)` 区分。不得因为 petgraph 边数相同就抹平不同 BCI 的状态。handler 声明顺序保留，类型匹配缺信息时保守保留候选。
 - **4.1/4.2 必需反例**：分支分别给死亡 local 写 Int/Reference 后合流应可分析；随后读取该槽应拒绝；new/dup/astore/构造调用后的多个别名应一致初始化，构造调用异常后继不得套用正常状态；同 block 两个 throw-sites 写入不同 local 值后进入同一 handler 的输入应区分。
 - **保守保留**：缺依赖/未知引用以保守的未知引用状态保留；栈形状或返回地址来源无法证明时明确停止，预算耗尽始终返回相应终止原因，不把预算停止改写为 Unknown 后继续。
+- **4.2 入口条件（4.1 实现与独立复核暴露的接缝，动手前必须先处理）**：
+  1. **new-site 身份必须是 canonical 的，不能是裸 BCI**。4.1 的 `Value::Uninitialized { new_site }` 取的是**原始**指令 BCI，而共享子程序的两个克隆映射回**同一批**原始 BCI——于是同一子程序被两个调用点各克隆一次时，两处 `new` 会得到**同一个** new_site，被别名转换当成一个 token。别名键必须是 `(canonical 身份/上下文, bci)`。这条不是风格问题：错了会把一个上下文的未初始化引用当成另一个的已初始化别名。
+  2. **异常边的接口要加宽**。4.1 只匹配 `handler_ordinal`，而本节的契约要求逻辑输入按 `(raw edge, throw-site, normalization context)` 区分；同一条异常边聚合了多个 throw site 时，4.1 只能拒绝（`ir_frame_deferred`）而不能细分。4.2 需要 canonical 侧把每条异常边的**逐 throw-site 输入**暴露出来（这是 4.2 唯一必须回改 4.1 接口的地方，不要靠块级聚合代替）。
+  3. **local 合流不得把未初始化 token 悄悄降成 `Top`**。4.1 的 `merge_local` 没有未初始化分支：`Uninitialized` 与 `Null`/`UninitializedThis`/不同 new-site 合流时直接落 `Top`，而**栈**侧同情形返回 `ir_frame_deferred`。后果是本该「还缺 4.2 别名分析」的 body 可能在读该槽时报 `ir_frame_inconsistent`（Error），把实现边界说成字节码矛盾。4.2 要么在 local 合流里保留未初始化区分（不同 token 即 defer），要么在文档里写清 `Top` 是终态的理由。
+  4. **引用身份里的 loader 目前是请求声明的 load-domain loader，不是 defining loader**（4.1 已在文档中自认「锚点而非解析结果」）。单条 body 内所有具名引用同锚点，等价于按名字比较，本片无害；但它对**同名不同 defining loader** 会判**相等**——不是保守未知，而是静默假设同一性（方向错）。在 4.2/4.3 让外部类的解析事实进入合流之前，必须改为携带 defining loader，或降级为 `Unknown`。
 
 ### 4.3 stack/local SSA、phi 与 effect 顺序
 
