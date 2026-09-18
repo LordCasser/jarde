@@ -99,6 +99,8 @@
 
 ### 证据
 
-`cargo fmt --all -- --check` 干净；`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **628 passed / 0 failed / 1 ignored**（与基线一致，本片为纯结构改动）；无 feature 的 `cargo test --workspace --all-targets --locked` 同样 628/0/1；提交 `d845a2d`。
+`cargo fmt --all -- --check` 干净；`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **628 passed / 0 failed / 1 ignored**（与基线一致，本片为纯结构改动）；无 feature 的 `cargo test --workspace --all-targets --locked` 同样 628/0/1；提交 `d845a2d`、`21ea5b5` 已推送；CI run [`35343834985`](https://github.com/LordCasser/jarde/actions/runs/35343834985) 四个 job 全部 success（含 `--all-features` 下新 feature 的门禁与 MSRV）。
+
+**1.2 的可行性已核实**：reader 侧 7 个文件（`artifact`/`classfile`/`model`/`budget`/`error`/`view`/`multi_release`）的 `crate::` 引用**全部落在彼此之间**（`artifact`↔`budget`、`error`↔`budget` 互相引用类型，design 已允许同包），**没有任何一条指向 query/jvm/engine**——即设计所称的「源码依赖支持拆分」已由实测确认。`engine.rs` 882 行中，检查入口部分（`ClassTarget`/`ClassSource`/`materialize`/`inspect_header`/`inspect_method_bytecode`/`header_coverage`/`bytecode_coverage`）随 reader 走，driver 部分（`run_method_analysis` 起）随 jvm 走。
 
 **未做**：文件搬迁（1.2 起）。cross-check 待办：`ci.yml:81` 的 `jvm` 边界正则需在真实 `cargo tree` 输出上实测不误命中 `jarde-jvm`。
