@@ -1,7 +1,7 @@
 ## 1. Baseline and reader
 
 - [x] 1.1 确认 P2 `0.3/0.3b/3.4` 及其依赖已验收，保存精确基线、测试结果和生产依赖树；按 design 盘点跨包私有访问及测试辅助消费者，清单中逐项注明所有者与最小公开面，未绿不搬迁（2026-09-18 **分析部分完成**：基线 `0f3134b`、628 passed / 0 failed / 1 ignored、生产依赖树与 19 个待拆模块已记入 verification 的 1.1；盘点 185 个 `pub(crate)` 项（140 个跨文件引用），按「接缝 / jvm 内部 / 无需公开」分类，产出 10 条接缝归属表、7 项**搬迁前必须处理**的编译失败项、门面必须迁入 jvm 的清单，见 1.2；三处 design 未定项已定案（blake3 收敛进 reader、`CandidateFilter` 不整体公开、`read_entry_internal` 改名，见 design §3.5）。**未做**：7 项前置动作的实施与文件搬迁）
-- [ ] 1.2 抽出 `jarde-reader` 及检查入口，将共用 budget/error/model/view 与唯一解码留在该包，提供有界物化和只读 facts 接缝；验证 reader 独立 check/test、快照/身份/字符串/操作数/精确预算边界与现有 P0 oracle、P1 golden 不变，确认无向 query/jvm/facade 的依赖
+- [x] 1.2 抽出 `jarde-reader` 及检查入口，将共用 budget/error/model/view 与唯一解码留在该包，提供有界物化和只读 facts 接缝；验证 reader 独立 check/test、快照/身份/字符串/操作数/精确预算边界与现有 P0 oracle、P1 golden 不变，确认无向 query/jvm/facade 的依赖（2026-09-18 完成并**独立复核 Approve**：新包 `crates/jarde-reader/`（7 模块 + `inspect.rs` + `test_fixtures.rs`），根包只留 query/jvm/门面；`cargo test -p jarde-reader` = 126 独立通过，其 normal 依赖树无 petgraph/query/jvm/门面（编译器强制，复核者自测反例 `E0432`）；全仓 628 passed / 0 failed / 1 ignored 与基线一致；`p1_xref_golden` 5；可见性按盘点收敛、`operands` 仍私有；据复核修掉 `with_usage` 的第 4 份副本与门面 `jarde::with_usage` 的公开可达；fuzz lock 同步（只新增包、第三方零变动）。CI：搬迁本体 run 35346239122 红（fuzz lock）→ 修复后 35346754502、35347094952 全绿）
 
 ## 2. Query and JVM ownership
 

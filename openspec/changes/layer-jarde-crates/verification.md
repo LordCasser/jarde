@@ -103,6 +103,79 @@
 
 **1.2 的可行性已核实**：reader 侧 7 个文件（`artifact`/`classfile`/`model`/`budget`/`error`/`view`/`multi_release`）的 `crate::` 引用**全部落在彼此之间**（`artifact`↔`budget`、`error`↔`budget` 互相引用类型，design 已允许同包），**没有任何一条指向 query/jvm/engine**——即设计所称的「源码依赖支持拆分」已由实测确认。`engine.rs` 882 行中，检查入口部分（`ClassTarget`/`ClassSource`/`materialize`/`inspect_header`/`inspect_method_bytecode`/`header_coverage`/`bytecode_coverage`）随 reader 走，driver 部分（`run_method_analysis` 起）随 jvm 走。
 
+## 1.2 抽出 `jarde-reader`（2026-09-18，实现完成，待独立复核）
+
+**新包** `crates/jarde-reader/`：`artifact`、`budget`、`classfile`、`error`、`model`、`multi_release`、`view` + 新增 `inspect.rs`（从 `engine.rs` 迁出的检查入口）+ `test_fixtures.rs`。
+
+- `inspect.rs` 承载 `ClassTarget`/`ClassSource`/`EngineHeaderReport`/`EngineBytecodeReport` 与 `inspect_header`/`inspect_method_bytecode`；`materialize`/`header_coverage`/`bytecode_coverage` 一并迁入但**保持私有**（无外部消费者，不进公开面）。
+- `engine.rs` 882 → **732** 行：只剩 `Engine` 与 driver，两个 inspect 入口改为一行委托。
+- 根包 `src/lib.rs` 用 `pub use jarde_reader::{…}` 再导出，因此 `crates/jarde-cli/**`、`examples/**`、`fuzz/src/lib.rs`、根 `tests/**` 的 `use` 行**一行未改**。
+
+### 可见性收敛
+
+升 `pub` 的接缝按盘点清单执行：`read_entry_internal` → **`read_entry_for_analysis`**（文档写明保留快照/entry 校验、读取类别与计费）、`budget_dimension_code`、`class_facts`/`ClassFacts`、`MethodCodeFacts`（**`operands` 字段保持私有**，改由 `operands()` 只读访问器暴露）、`InstructionOperands` 及 `ImmediateValue`/`LocalOperand`/`SwitchOperands`、CP 与 descriptor 查询族、attribute/bootstrap 族、`method_code_facts`/`method_code_coverage`、`ControlFlowTarget`/`ControlFlowTargetKind`/`control_flow_targets`、`multi_release::select`。
+
+**未升**（保持 crate 内）：`MinimalHeaderFacts`、`probe_minimal_header`、`JvmString::from_parts`、`test_fixtures::{fixture, fixtures_root}`。
+
+**`with_usage` 已合并为一份**：由 `xref::with_usage` 迁入 `reader::model::with_usage`，并吸收 `multi_release.rs` 与 `engine.rs` 各自那份私有副本——4 处调用现在共用同一实现（盘点前置动作之一，已随本片完成）。
+
+### 实现者如实报告的三处「超出纯可见性」改动（父级裁决）
+
+| 改动 | 原因 | 裁决 |
+| --- | --- | --- |
+| 新增 `MethodCodeFacts::from_parts`（`test-support` 门禁） | `operands` 私有后，根包 `cfg.rs:1184`、`call_context.rs:1479/1496` 的**测试夹具无法再构造** `MethodCodeFacts`（`E0451`） | **接受**：它只在 `test-support` 下存在，入参是配对列表（锁步无法破坏），生产构建没有该构造路径 |
+| `tests/p2_contracts.rs` 里一处路径重指向（读 `budget.rs` 取 `BudgetDimension` 变体） | `budget.rs` 已搬走，该测试立刻变红（盘点把 A17 守卫改造记为「随 2.1/2.2」，但本片已触发） | **接受**：是路径同步而非改期望值 |
+| 额外升 `pub`：`physical_variant_for_path`、`CpIndexOf`、`InnerClassFacts`/`EnclosingMethodFacts`/`ProvidesFacts`/`ModuleFacts` | 前两者是跨包使用的纯映射；后四者是公开字段的类型，不公开则 `private_interfaces` 在 `-D warnings` 下报错 | **接受**：都是「不公开就编译不过」的必然公开面 |
+
+### 依赖归属（实测）
+
+| 包 | `[dependencies]` |
+| --- | --- |
+| `jarde-reader` | `blake3`、`flate2`、`noak`、`rawzip`、`serde`、`thiserror`；**无 `petgraph`** |
+| 根 `jarde` | `blake3`（query/xref/providers 仍直接哈希，收敛属 2.1/2.2）、`jarde-reader`、`petgraph`、`serde`；**移除** `noak`/`thiserror`/`flate2`/`rawzip` |
+| 根 `[dev-dependencies]` | `flate2`（`tests/p1_*` 直接构造 ZIP/deflate 夹具）、`jarde-reader`(`test-support`)、`proptest`、`rawzip`（`providers` 的测试写 ZIP）、`serde_json` |
+
+两个 path 依赖都写了 `version = "=0.1.0"`（`deny.toml` 的 `wildcards = "deny"`）；`cargo deny check bans` 通过。
+
+### 证据（父级独立复跑确认）
+
+| 项 | 结果 |
+| --- | --- |
+| `cargo check -p jarde-reader --locked` / `cargo test -p jarde-reader --locked` | 干净 / **126 passed / 0 failed**（独立可执行，design 退出门槛之一） |
+| `cargo tree -p jarde-reader --edges normal --locked` 中 `petgraph\|jarde-query\|jarde-jvm\|根 jarde` | **0 命中**（退出门槛之二） |
+| `cargo test --workspace --all-targets --all-features --locked` | **628 passed / 0 failed / 1 ignored**（与基线逐项一致；单元测试 224 = 根 98 + reader 126） |
+| `cargo test --test p1_xref_golden --locked` | 5 |
+| `cargo fmt --all -- --check` / `clippy -D warnings` | 干净 |
+| `cargo run --example resolve_and_analyze` | 与 `git archive` 出的真基线逐行 diff，只有 `elapsed_millis` 差异，归一化后 **18 行完全一致** |
+
+**反例**：在 reader 里临时 `use jarde::Engine as _;` 与 `use petgraph::…` → `cargo check -p jarde-reader` **编译失败**（reader 确实不依赖上层与图算法），还原后逐字节校验。
+
+### 一处被证伪的设计假设（重要，影响 2.2）
+
+1.3.2 的文档原先写「依赖方通过 reader 的宏读夹具」。**实测不成立**：`env!("CARGO_MANIFEST_DIR")` 在 `macro_rules!` 体内是**按调用方 crate** 求值的——我另建一个最小 workspace 复现（宏定义在 `x`、从 `y` 调用 → 打印 `y` 的 manifest 目录），而 `const` 里的 `include_bytes!` 则在**定义方**求值（嵌入 `x` 的文件）。
+
+因此：**共享夹具的正确形态是「定义方嵌入的具名常量」，不是导出宏**；根包在模块迁走前仍需自己那份 `test_fixtures.rs`（深度不同）。两处文档已按此更正，2.2 搬迁 `cfg`/`call_context` 时按此设计。
+
+### 独立复核（Approve，无阻断项）与据其修正
+
+复核者（第三方只读）逐项核对后 **Approve**，并确认：reader 独立性是编译器强制的（它自己在副本里加 `use petgraph` / `use jarde` → `E0432` 失败）；除已申报的三处外**无语义改动**（`budget.rs`/`error.rs`/`view.rs` 与旧文件逐字节等价；`artifact.rs` 仅改名；`classfile.rs` 解码路径零改动）；`engine.rs` 分割归属正确、无错位；`from_parts` 的锁步由类型保证（`unzip` 无法传两份不等长列表）。
+
+它另指出两处并已修正：
+
+| 复核发现 | 修正 |
+| --- | --- |
+| `artifact.rs::execution_with_usage` 是 `with_usage` 的**第 4 份**副本，「已合并为一份」实际是 3/4（与本记录措辞不符，功能无影响） | 删除该副本，调用点改用唯一实现 |
+| 门面对 `model` 做 glob 再导出，使**`jarde::with_usage` 成为公开 API**——等于给每个消费者一条「把 reader 从未测过的账目写进任意报告」的构造路径，与 reader 自身「不导出它未曾建立的状态的构造路径」相矛盾 | 把该操作从数据模块 `model` 移入**门面不再导出的** `jarde_reader::accounting`（跨包调用方按包路径直呼）。**探针验证**：`tests/` 里引用 `jarde::with_usage` → `E0425: cannot find value with_usage in crate jarde`，Facade 不再可达 |
+
+**fuzz lock（复核者与实现者都曾把它记为 3.1 的范围，实测不能延后）**：新包使 `fuzz/Cargo.lock` 过期，CI 的 `supply chain` 与 `fuzz smoke` 两个 job 直接红（`--locked` 拒绝更新 lock）。已就地修复：`cargo update -p jarde` 只**新增** `jarde-reader` 条目，**第三方版本零变动**（diff 无 `version` 行变化），`cargo metadata --locked` 通过、`cargo deny check bans` 通过、`cargo build --locked --bins`（nightly-2026-07-20）通过。**不延后**的理由：本仓库的纪律是每一步留一个绿色边界，红着的 CI 不是可以带着走的状态。
+
+### 未完成 / 待办
+
+- ~~独立复核未做~~ → 已完成并 Approve（见上）。
+- ~~`fuzz/` 的 path/lock 同步~~ → 已随本片完成（见上）。
+- `ci.yml` 的 `jvm` 边界正则实测 → 3.2；MSRV 1.88 与两套 supply-chain → 3.3。
+- **`test-support` 打开时 `jarde::test_class` 可经门面 `pub use classfile::*` 触达**（此前是 `pub(crate)`）→ 2.2 收窄再导出白名单时一并处理。
+
 ## 1.4 A17 守卫的改造方案（供 2.1/2.2 与 3.2 执行）
 
 `tests/p2_contracts.rs` 的 A17 守卫今天**写死了布局**，搬迁后必然失败，而且必须**在搬迁前**先改造好——它是拆包「没有改变依赖方向」的可执行验证，不能等拆完再补。
@@ -125,4 +198,6 @@
 4. **反例必须仍然有效**：`the_a17_guard_detects_rewritten_references_and_added_files` 的 sandbox 用例要在**两种布局**下各跑一遍（旧布局一套 + 新布局一套），证明守卫不是只认其中一种。
 5. **3.2 的依赖闭包门禁**（Cargo 层面的证据）与本守卫**并存**：本守卫看源码 token，门禁看 `cargo tree` 输出；design 明确「`src/` 变空不能让旧字符串守卫假绿」，所以两者都要，且 3.2 要用「临时加一条 query→jvm 依赖」的反例证明门禁会失败。
 
-**未做**：文件搬迁（1.2 进行中）。cross-check 待办：`ci.yml:81` 的 `jvm` 边界正则需在真实 `cargo tree` 输出上实测不误命中 `jarde-jvm`。
+**1.2 已完成并勾选**。CI：`45328a0`（搬迁本体）→ run 35346239122 **红**（fuzz lock 过期，supply chain 与 fuzz smoke 两 job 失败）；`0aea34b`（lock 修复）→ run [`35346754502`](https://github.com/LordCasser/jarde/actions/runs/35346754502) 四 job 全绿；`d08f014`（accounting 边界修复）→ run [`35347094952`](https://github.com/LordCasser/jarde/actions/runs/35347094952) 四 job 全绿。
+
+**未做**：文件搬迁（2.1 起——抽 `jarde-query`）。cross-check 待办：`ci.yml:81` 的 `jvm` 边界正则需在真实 `cargo tree` 输出上实测不误命中 `jarde-jvm`。
