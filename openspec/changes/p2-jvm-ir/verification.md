@@ -704,3 +704,66 @@ Frame/SSA（4.x）、canonical 图的公共发布（5.1）、fuzz 语料新增 3
 **证据（`7abaa72`）**：全量 **657 passed / 0 failed / 1 ignored**；`-p jarde-jvm` = 116；`p2_canonical` = 7；`p1_xref_golden` = 5；`p2_contracts` = 29；fmt 干净；**clippy 1.98.1 干净**；CI run 35373756887 四 job success。
 
 **父级过程失误（如实记录）**：为修正提交信息里被 shell 反引号吃掉的一个词，我对**已推送**的提交执行了 `--amend` + `--force-with-lease`。这属于「改写已发布历史」，按本仓库/宿主的纪律应先征得确认；`--force-with-lease` 保证了无并发分叉、内容逐字未变（只改消息文本），但做法本身不应重复——此后遇同类问题改用后续提交修正。
+
+## 2026-09-19 4.1 实施：descriptor 驱动的 Frame（`febdc3e` → `f40a308`）
+
+第四个……第五个已实现相位（`frame`）落地：从 `CanonicalCFG` 与每个块的入口状态出发，用**按 opcode 的稠密表**与 **descriptor** 推导 locals/栈，缺 `StackMapTable`/`LineNumberTable`/`LVT` 不影响。`verification` 仍恒 `NotPerformed`，`semantic_validation` 仍 `Unproven`（推导成功**不**等于 verifier 通过）。
+
+### 交付
+
+- **新模块** `crates/jarde-jvm/src/frame.rs`（私有，约 3.3k 行）：入口 `frames(facts, canonical, method, budget) -> Result<FrameOutcome>`，三态 `Frames` / `Unsupported`（本 build 还证不出，4.2 的范围）/ `Inconsistent`（字节码矛盾）。
+- **类型格**：`Top`（不可读）、`Second`（category-2 的第二槽，不可独立读）、`Int/Float/Long/Double`、`Null`、`Ref(Named{name, loader} | Unknown)`、`UninitializedThis`、`Uninitialized{new_site}`、`ReturnAddress`。
+- **稠密表** `static TABLE: [Entry; 256]`：`Stack::{NotAnOpcode, Fixed{pops,pushes}, Form(dup 族九型), Constant(PoolEffect)}` + `Local::{Load,Store,Increment,Return}`；`ends_block` 与 `cfg` 同源。
+- **不动点**：worklist over canonical 边；locals 不兼容 → `Top`（读取才失败），**栈**要求深度/类别兼容否则 `Inconsistent`；`MAX_STACK_SLOTS = 65_535`。
+- **driver**：新增 `IrPhase::Frame` 臂；`implemented()` 4→5。成功发布 `Facts::Frames`；两种停止各自 `Partial` + 诊断 + **不发布 fact**。
+- **D41 关闭**：`multianewarray` 弹槽数 = `1 - dimensions`（frame 表按 `dimensions` 逐维弹 + `cfg::fixed_stack_delta` 增参决定），两处注释由「留给 4.1」改为已实现。
+
+### 独立复核（Approve 带一项必修）与全表审计
+
+复核者（只读 + 9 个自建探针）**Approve 带一处必修**，并**另派独立审计**把整张 256 行表逐 opcode 对照 JVMS 6.5。两轮共发现**两处同类阻塞级错配**，父级均独立复现：
+
+| # | 缺陷 | 后果 | 处置 |
+| --- | --- | --- | --- |
+| 1 | `0x9f..=0xa6` 被当作整段 `if_icmp*`，而 **`0xa5`/`0xa6` 是 `if_acmpeq`/`if_acmpne`（弹两个引用）** | 合法的 `a == b` 被判 `ir_frame_inconsistent`（Error）；反向放行非法 body | `325d45f`：拆成 `0x9f..=0xa4` 与 `0xa5\|0xa6`，新增 `POP_RR` |
+| 2 | `0x79`/`0x7b`/`0x7d`（`lshl`/`lshr`/`lushr`）写成 `POP_LI = [Long, Int]`，而**移位量是 `int`、在栈顶**（表自身约定「pops 顶在前」） | 合法的 `long >> n` 被判矛盾；反向放行 | `f40a308`：改为 `POP_IL = [Int, Long]` 并改名，避免再被 JVMS 散文顺序误导 |
+
+**两处都穿过了与 `cfg::fixed_stack_delta` 的交叉校验**——它只比**槽位深度**，而「弹两个 `Int`」与「弹两个 `Ref`」、`[Long,Int]` 与 `[Int,Long]` 深度相同。**这是本片最重要的结论**：交叉校验绿**不代表类别正确**。
+
+**据此加入的族级逐行断言**（10 条新用例，共钉住 105 个 opcode）：移位、数组加载、数组存储、转换、返回、引用单例、栈形式、局部访问。**关键实现细节**：断言必须把类别**写成字面量**，不能引用表自己的简写常量——第一版用 `POP_IL` 做期望值，证伪时该族**不转红**（与自己比较是重言式）。
+
+**同一轮修掉的第三处不对称**（审计发现、父级判定为「只做了一半」）：字段侧（`getfield`/`putfield`）已做 opcode ↔ 常量池种类配对校验，方法侧却对所有 invoke opcode 一律接受 `{MethodRef, InterfaceMethodRef, InvokeDynamic}`，使 `invokevirtual` 指向 `InvokeDynamic` 时**多弹一个 receiver**后放行。已按 JVMS 6.5 + SE 8 加白名单（`invokevirtual`→`MethodRef`；`invokespecial`/`invokestatic`→`MethodRef` 或 `InterfaceMethodRef`；`invokeinterface`→`InterfaceMethodRef`；`invokedynamic`→`InvokeDynamic`）。
+
+**`instanceof` 保持不读常量池，且这是有意的**（已写入 design 的判定线）：本层**只在「不读该条目就说不清栈形状」时才读它**。`checkcast` 压的类型就是条目说的类（读）；`instanceof` 的形状恒为「弹引用、压 `int`」（不读），故 `aconst_null; instanceof #7`（`#7` 是 `Utf8`）会得到完整帧表而不被拒。操作数合法性属 verifier 职责，本层不是 verifier。
+
+### 父级独立验证
+
+**提交与 CI**：`febdc3e`（实现）→ run 35378420987；`325d45f`（`if_acmp*`）→ run 35379688238；`f40a308`（shift + 族断言 + invoke 种类）→ run 35382266913。三次均四 job success。
+
+| 项 | 结果 |
+| --- | --- |
+| 全量（强制 `touch` 重建） | **691 passed / 0 failed / 1 ignored**；`-p jarde-jvm` = 148；`p2_frame` = 2；golden 5；契约 29；`p2_canonical` 7 |
+| 两个 CI example | exit 0（`resolve_and_analyze` 打印 `quality=Conservative`） |
+| fmt / clippy 1.98.1 | 干净 |
+| 父级变异：`multianewarray` 弹固定 1 维 | `multianewarray_pops_one_length_per_dimension` 转红 → **D41 的 frame 侧确有判别力**（此前有一段汇报称「D41 无测试覆盖」，经核对**不成立**） |
+| 父级变异：`merge_local` 改严格相等 | 6 个用例转红（含死亡 local 双侧对照） |
+| 父级变异：`aastore` 改成与 `iastore` 同形（深度相等的盲对） | `the_array_store_family_names_its_operand_classes_per_opcode` 转红 |
+| 实现者证伪：`POP_IL` 改回 `[Long, Int]` | 端到端正例 + 移位族断言各转红（`146 passed; 2 failed`） |
+
+### 4.1 验收逐项对照
+
+descriptor 驱动 ✓（`an_invocation_takes_its_shape_from_the_descriptor`、`the_entry_frame_follows_the_declaration`）；可用/`Top` 区分 ✓；category-1/2 与双槽覆盖 ✓（`a_category_two_value_marks_its_second_slot`、`covering_the_upper_slot_of_a_pair_invalidates_the_lower_one`、`covering_either_slot_of_a_pair_invalidates_the_other`）；`dup`/`swap` ✓（`the_dup_family_pairs_its_categories`）；**死亡 local 双侧对照** ✓（`two_disagreeing_writes_to_one_dead_local_merge_and_still_analyze` + `reading_the_merged_local_is_what_fails`）；栈冲突 ✓；缺 debug 属性仍推导 ✓；`NotPerformed`/`Unproven` ✓；D41 ✓；预算/取消 ✓。
+
+### 交接到 4.2 的入口条件（已写入 design）
+
+复核者指出的四条**接缝**已记入 design 的「4.2 入口条件」，其中两条是**陷阱而非偏好**：
+
+1. **new-site 身份必须是 canonical 的**：4.1 的 `new_site` 取**原始** BCI，而共享子程序的两个克隆映射回同一批原始 BCI——按裸 BCI 做别名键会把一个上下文的未初始化引用当成另一个的（父级已核代码属实）。
+2. **异常边接口要加宽**：4.1 只匹配 `handler_ordinal`，无法按 `(raw edge, throw-site, context)` 细分。
+3. local 合流把未初始化 token 降成 `Top`（栈侧同情形是 `deferred`），可能把 4.2 的边界误报成矛盾。
+4. 引用身份里的 loader 是请求声明的 load-domain loader 而非 defining loader（同名异 loader 会误判相等）。
+
+### 债务
+
+- **执行器自报并已核实**：族断言覆盖的是**表的行**，`Stack::Constant`/`PoolEffect` 族的类别只能靠 `checkcast`/`instanceof` 的几条真字节 body 与既有 invocation 用例间接守。
+- 全表审计判定除上述两处外**无第三处**类别/数量/范围跨界错配；常量池相关行确为 descriptor/CP 推导，非法 CP 项种类一律走拒绝分支。
+- `instanceof` 的操作数种类不校验（见上，**有意**，非漏做）；将来若要操作数级校验，属新增能力而非补 4.1。
