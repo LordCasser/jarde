@@ -103,33 +103,41 @@ jobs:
           # path segment; exact whole-line matching (`-x` with `-F`) is what keeps `jarde` from
           # matching `jarde-reader` and vice versa.
           closure_violation() {
-            local package="$1"
-            shift
-            local raw="$RUNNER_TEMP/closure-$package.raw"
-            local names="$RUNNER_TEMP/closure-$package.txt"
-            if ! cargo tree -p "$package" --edges normal --locked --prefix none \
+            local edges="$1"
+            local package="$2"
+            shift 2
+            local raw="$RUNNER_TEMP/closure-$package-$edges.raw"
+            local names="$RUNNER_TEMP/closure-$package-$edges.txt"
+            if ! cargo tree -p "$package" --edges "$edges" --locked --prefix none \
               --format '{p}' > "$raw"; then
-              echo "cargo tree could not read the normal closure of $package" >&2
+              echo "cargo tree could not read the $edges closure of $package" >&2
               cat "$raw" >&2
               return 1
             fi
             sed -E 's/ .*$//' "$raw" | sort -u > "$names"
             if ! grep -qxF "$package" "$names"; then
-              echo "$package is missing from its own normal closure; no tree was read" >&2
+              echo "$package is missing from its own $edges closure; no tree was read" >&2
               return 1
             fi
             for forbidden in "$@"; do
               if grep -qxF "$forbidden" "$names"; then
-                echo "$package reaches $forbidden across the layering:" >&2
+                echo "$package reaches $forbidden across the layering ($edges edges):" >&2
                 cat "$names" >&2
                 return 1
               fi
             done
-            echo "$package normal closure: $(wc -l < "$names" | tr -d ' ') packages, none of [$*]"
+            echo "$package $edges closure: $(wc -l < "$names" | tr -d ' ') packages, none of [$*]"
           }
-          closure_violation jarde-reader jarde jarde-query jarde-jvm petgraph
-          closure_violation jarde-query jarde jarde-jvm petgraph
-          closure_violation jarde-jvm jarde
+          # Production edges first, then `all` — which adds the dev and build edges. A layer
+          # whose tests pull the layer above it is not independently verifiable either, so the
+          # same forbidden names are checked on both. The feature configuration is whatever the
+          # manifest declares (no `--all-features` here): this step is about which packages a
+          # layer can reach at all, not about which optional parts of them are enabled.
+          for edges in normal all; do
+            closure_violation "$edges" jarde-reader jarde jarde-query jarde-jvm petgraph
+            closure_violation "$edges" jarde-query jarde jarde-jvm petgraph
+            closure_violation "$edges" jarde-jvm jarde
+          done
 
       - name: Install OpenSpec 1.11.0
         run: npm install --global @fission-ai/openspec@1.11.0
