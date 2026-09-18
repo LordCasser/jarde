@@ -1,6 +1,6 @@
 # P2 实施验证记录
 
-以下各片记录保留实施时点。当前状态和本轮发现以文末「2026-09-18 当前工作区复核」为准；本轮仅审查、修订文档，未修复实现。
+以下各片记录保留实施时点。当前状态以文末 [拆包后复核](#review-2026-09-18-layers) 为准。此前的「当前工作区复核」、未勾选/待复审说明均是原时点快照；保留其证据，不作为今天的状态。
 
 1.1 历史记录日期：2026-09-17。规划与契约基线 `35fdf6d`。本轮只实现 **1.1**；1.2/1.3 与 2.x–5.x 均未开始，解析、闭包、CFG、SSA 与预算维度扩展都没有实现。所有命令按单作业执行（`CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 RUST_TEST_THREADS=1`）。
 
@@ -428,7 +428,7 @@
 - 2.5 已完成实现并经两轮独立只读复核（首轮有条件 Approve，三项必须改已关闭；复审要求补三条用例，收口记录见 2.5 节）。3.1–3.3 已有交付，3.4 为未提交候选且本轮 review 未通过；当前执行顺序改为 tasks 的 0.x 后再继续 3.4/3.5。
 - 债务按上表区分已关闭、必须前置与继续延期；D03/D10/D15/D22/D25/D27 已提升为 0.x 的进入门槛。P5 物化/索引、P1 坐标口径和文案维护继续拆分，不混入这些正确性修正。
 
-## 2026-09-18 当前工作区复核
+## 2026-09-18 当前工作区复核（历史：4beb6b9 加当时工作区）
 
 ### 基线与结论
 
@@ -494,3 +494,94 @@ assert state=Resolved && resolved.loader=parent
 ### 文档修订后的核验
 
 独立只读核验：`openspec validate --all --strict --no-interactive` 为 **10 passed / 0 failed**，`git diff --check` exit 0；tasks 为 **11 checked / 12 unchecked（11/23）**，0.1–0.3 均未勾选。12 个变更 Markdown 文件的 41 个本地文件链接均存在，当前状态文字与历史记录已区分。对照本轮开始时的 10 个相关源码/测试 hash，无一变化；另对隔离快照比对其余源码、manifest/lock 和 CI 文件，未发现实现变更。本轮新增内容仅为文档，四个探针及其运行产物留在隔离副本。
+
+<a id="review-2026-09-18-layers"></a>
+## 2026-09-18 拆包后复核：状态校正与返回地址证明
+
+**代码基线**：`35a779dc31c606f9c138a780a0b9f1f99d0a0e33`。复核期间同一工作区仍有其他 agent 的 CI、测试及临时变异操作；算法反例通过 `git archive HEAD` 导出的独立副本运行，避免把临时注入或工作区结果冒充提交证据。本文只修改文档，没有修复生产代码、提交、推送或归档。
+
+复核期间另一 agent 新提交 `724bf1bfb2f0112973269a20512e6977523105cd`：增加 normal 依赖闭包 CI、移除门面的 classfile 模块再导出，并修正测试注释。已对该增量复核；`call_context.rs`、reader、driver 与固定反例基线相同，R7 结论仍成立。该 CI 只查默认 feature 的 normal 边，未覆盖 design 要求的 dev/build/全 feature，3.2 仍有收口项。
+
+### 已有进展与尚未完成
+
+- 0.x 六项、1.x 三项、2.x 五项和 3.1–3.4 四项，共 18 项已有交付。loader、wide、BCI 查块、Effects requires、原 R4 存储计费以及原 R2/R3 的错槽/异常写集修正保留历史证据，旧「11/23、3.4 未提交」不再代表现状。
+- `jarde-reader`、`jarde-query`、`jarde-jvm` 已实际抽出；根 `src/` 只含 `lib.rs`/`facade.rs`，driver 在 `crates/jarde-jvm/src/engine.rs`。layer 1.1/1.2/2.1/2.2 有交付，3.1–3.3 尚需集成及门禁收尾。初始 `35a779d` 没有 layer-specific 闭包检查；后续 `724bf1b` 已增加 normal 检查，完整闭包与最终验收仍待收口。
+- CanonicalCFG、Frame/SSA、方法 CLI 和 P2 完整 golden/fuzz/构造计数尚未交付。公共 `Representation` 只有 Bytecode；Canonical 是内部阶段。P3–P5 未实施，不同步为已生效主规格。
+
+### R7：位置证明错误地充当返回地址值证明（阻塞 3.5）
+
+证据：`crates/jarde-jvm/src/call_context.rs::Walk::adjudicate` 按 owner/slot 过滤写入，接受唯一一次 astore 且支配 ret；`visit` 只记录写入位置和是否 astore，不记录所存值。`adjudicate` 还会排除内层 active context 的写入。于是普通 null 或内层覆盖仍可通过。旧记录明确承认了第一种，但将其推迟到 4.x；这会让 3.5 在验证之前先消去 jsr/ret，不能作为安全前置关系。
+
+隔离探针用 `jarde-reader` 的 `classfile::test_class::single_method(49, 2, 2, code)` 构造 `Test.method()V`，用公开 Engine 从这些真实 CLASS 字节取得快照/物理方法身份，绑定显式 Java 8 环境，充足预算，请求 `AnalysisStage::LegacyNormalization`。它不直接构造私有 CFG 或伪造 operands。
+
+| 输入 | 完整 Code 十六进制字节 | 本轮实际结果 | 验收要求 |
+| --- | --- | --- | --- |
+| 合法地址保存 | `a8 00 04 b1 4b a9 00` | 三阶段 Completed；execution Complete；无诊断 | 保留通过 |
+| null 冒充地址 | `a8 00 04 b1 01 4c 4b a9 01` | 同上 | ret 1 读的是 null，不能发布 CallContexts |
+| 丢弃地址后替换 | `a8 00 04 b1 57 01 4b a9 00` | 同上 | token 已 pop，不能仅因 astore_0 接受 |
+| aload 搬运地址 | `a8 00 04 b1 4b 2a 4c a9 01` | 同上 | aload_0 不能加载 returnAddress，不可作为规范化证据 |
+| 合法嵌套 | `a8 00 04 b1 4b a8 00 05 a9 00 4c 00 00 a9 01` | 同上 | 保留通过 |
+| 内层覆盖外层槽 | `a8 00 04 b1 4b a8 00 05 a9 00 4c 01 4b a9 01` | 同上 | 内层将外层 ret 0 的槽写成 null，必须阻止规范化 |
+
+前两条合法对照用于避免“拒绝所有 legacy”的假修复；四条非法形态均没有 `ir_call_context_unresolved`。标准依据：[JVMS 8 returnAddress](https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.3.3)、[aload](https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.aload)、[ret](https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.ret)。这些探针证明的是本地分析阶段误接受，不表示执行了目标代码或完整 JVM verifier。
+
+**处置**：保留 3.4 历史勾选，新增未完成的 3.4b，使 tasks 为 18/27；最小有界 token 证明或明确受限子集，无法证明则 unresolved。共享/嵌套/handler、预算/取消和历史 finally 分别验收，不在此重写完整 Frame 或增加框架。3.5 还需把 driver 当前 `Established(_contexts)` 丢弃的载荷实际保留并传入后继，不能只标记 FactLedger；这是尚未实现消费者的交接任务，不声称当前 CanonicalCFG 已出错。
+
+### 规格与路线校正
+
+- design §3.4 曾同时要求 token 值流，又称唯一写入规则“只会多拒不会错收”；后者撤回。`aload` 中转不作为合法正例；普通引用误接受不再作为 4.x 可延期债务。
+- design §5.1 的 `representation=Canonical` 与 Bytecode-only spec/enum 冲突，改为内部 CanonicalCFG 阶段；fixture 差分测试不升级生产 `verification=NotPerformed`。
+- 层级阶段和产品能力分开：拆包完成不等于 A09/A10 完成，现有 inspect_method_bytecode CLI 不等于方法 IR CLI。layer 3.1 只比较现有 operation，方法 CLI 留 P2 5.1。
+- layer 的 blake3 强制集中决定改为按真实直接使用声明，共享 Digest 类型仍在 reader。query 的 cursor encoding 与 provider 的内容核验由各自所有者负责，不为依赖数量新增泛用接口；具体理由在 layer design §3.5。重复编码若有实证再独立处理。
+- 现在执行：layer 3.1–3.3 → P2 3.4b → 3.5 → 4.1/4.2/4.3 → 5.x → P3 首个 Java 输出闭环。P4/P5、重复物化和既有 query 债务不插入本次修正。
+
+### 验证范围
+
+本轮固定提交的隔离副本执行 fmt、clippy `--workspace --all-targets --all-features --locked -- -D warnings`、workspace 全量测试与上述六条公开入口探针。全量结果为 **628 passed / 0 failed / 1 ignored**；ignored JDK oracle 不计为通过。工作区最初同命令也为 628/0/1，但并发变异期间的编译失败不用于评估固定基线。新的规划执行 OpenSpec strict 与 diff/链接核对；既有 CI run、MSRV、oracle、supply-chain 与 fuzz 记录仅引用原交付证据，本轮未重跑，未声称候选已获远端 CI 通过。
+
+收尾增量验证：`724bf1b` 的 workspace fmt/clippy 与全量测试亦通过，仍为 **628/0/1**；返回地址算法与隔离反例基线无 diff。新闭包 CI 的 dev-dependency 漏检已用隔离反例实证（R8），见 [layer 复核](../layer-jarde-crates/verification.md)。规划最终 OpenSpec strict **11/11**，`git diff --check` 与修改文档的本地链接检查通过。
+
+复核截止增量为 `3646a97`（仅 CI）：dev/build 漏检已修正并由隔离探针确认拒绝；可选非默认 feature 的 petgraph 依赖仍可绕过专用门禁，剩余证据及任务归 layer 3.2。P2 源码未变，R7 的四个反例仍未修复。
+
+## 2026-09-18 3.4b 实施：返回地址的**值**证明（提交 `ee1a723`）
+
+R7 的四个反例已修复。旧实现按**位置**判定（某槽恰好一次写入、是引用存储、支配 `ret`），从不看存进去的是什么，还排除内层上下文的写入；新实现让**来源**决定判决。
+
+### 判决规则（实现见 `crates/jarde-jvm/src/call_context.rs`）
+
+`ret` 在上下文 C 读槽 N 记为已证明，需同时满足：
+
+1. **值来源**：`token_stores`（约 975）按 context 求「该 context 的 `jsr` 所压 token 仍在栈顶」的块状态——只降不升的不动点，**入口块是唯一真来源**；`Normal` 边传送，`Exception` / `SubroutineReturn`（嵌套入口）/ 嵌套调用的续块一律贡献 `false`。收敛后按块序录制：块内**第一个** `astore` 即 token 存（该 store 消费了 token，故每块至多一个）。
+   - `keeps_stack_top`（约 553）刻意取最小集合：只有真正不动栈顶的 `nop`/`iinc`/`goto`/`goto_w`；`checkcast` 之类净零但操作数是引用的指令**不算**。
+2. **唯一 + 支配**：沿用 3.4 的逻辑，**未放宽**。
+3. **嵌套失效**：`jsr` 共享调用者帧，故夹在中间的嵌套上下文对同一槽的写入作废外层证明（`descendants` 沿 `contains` 求传递闭包，环安全）。
+
+判决顺序：无写入 → `NoWrite`；嵌套写同槽 → `NestedWrite`；多写 → `SeveralWrites`；唯一写但非 token 存 → `NotTheToken`；唯一且是 token 存 → 支配检查 `NotDominating`。诊断六态，**不再**把「非 token 写」说成「存了地址」。
+
+### 六条验收字节的正反回归
+
+用户给的两条合法 + 四条非法全部落成永久回归，且**分两层**：`call_context` 单测（payload 是 crate-private，不变量 11）+ `tests/p2_return_address.rs` 的**公开入口 stage 级**用例 `a_return_address_the_bytes_do_not_prove_stops_the_stage_before_it_completes`（断言四条非法为 `Partial` + `ir_call_context_unresolved`、两条合法为 `Completed`）。
+
+### 独立证伪（父级亲自跑的变异，副本还原 + `sha256sum -c`）
+
+| 变异 | 转红 |
+| --- | --- |
+| 完整退回位置证明（忽略 `holds` 行、去掉 `keeps_stack_top` 与「块内首个 store」、去掉嵌套失效） | `a_null_in_the_slot…`、`a_discarded_return_address…`、`a_return_address_carried_through_aload…`、`an_address_stored_on_only_one_path…`、`the_item_bill_charges_the_elements…`（5 红）；**公开入口 stage 用例同时转红**（`a null in the slot must stop the stage rather than complete it: []`——即缺陷下确为 Completed，与 R7 表一致） |
+| 只去掉嵌套失效 | `an_inner_call_that_writes_the_outer_slot_is_unresolved`、`call_sites_that_nest_through_each_other_are_unresolved` |
+| 只去掉块状态行（保留栈纪律） | 仅 `an_address_stored_on_only_one_path…` —— 说明六条用例另由 `keeps_stack_top` + 「首个 store」保护，两条规则各承其重 |
+
+**强制重建**：该片实施期间出现过 `/tmp` 副本与主仓共用 `target/` 导致产物互覆的插曲（实现者自报），故父级验证前对全部 `*.rs` 执行 `touch` 强制重编，`Compiling jarde-jvm` 行确认取自主仓源码。
+
+### 计费与取消
+
+新增 `Phase::Provenance` 并加入 `PHASES: [Phase; 8]`，既有逐阶段取消扫描已覆盖它。块状态行、录制遍历、闭包与每个 token 存都在**增长前**计费，且落在已声明维度内。金标随之 **40 → 54 IrItems**（实测；与新增状态量一致）。
+
+### 证据
+
+`cargo test --workspace --all-targets --all-features --locked` = **635 passed / 0 failed / 1 ignored**（628 + 6 条 `call_context` 单测 + 1 条公开入口用例）；`-p jarde-jvm` = 101；`p1_xref_golden` = 5；`p2_contracts` = 29；fmt/clippy（`-D warnings`）干净。
+
+### 待裁定与债务
+
+- **F1**：规则 2 的支配半边现**不可证伪**——能制造通往 `ret` 分叉的指令都会先清掉栈顶 flag，故没有样本能只靠去掉支配而转红。逻辑**保留未放宽**，并有正例（`dominates` 恒 false 的变异会让 5 条用例转红）证明其参与判决。
+- **F2**：规则 3 使**活环**先于 `nesting_cycle` 被拒绝，故环专用诊断对活环不可达（死环用例仍通过，结局同为 `Unresolved`）。若要保留该诊断，需把环检查提到逐 context 裁决之前。
+- 值身份仍止于「token / 非 token」两态：不追踪引用是否为合法地址；完整值身份属 4.x。

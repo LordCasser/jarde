@@ -3200,6 +3200,49 @@ mod tests {
     }
 
     #[test]
+    fn the_store_that_consumes_the_token_is_the_only_one_that_carries_it() {
+        //  0: aconst_null  the operand stack holds an ordinary reference
+        //  1: jsr +4 -> 5  ... and now the token is on top of it
+        //  4: return
+        //  5: astore_1     the first store of this block consumes the token
+        //  6: astore_0     this one consumes the null that was pushed at BCI 0
+        //  7: ret 0        reads the slot the *second* store wrote
+        //
+        // Both stores are reference stores in the same block, and the slot the `ret` reads has
+        // exactly one writer that dominates it - so a rule that counted stores by position would
+        // accept this body. Only the store the token was on top of carries an address.
+        let (facts, raw, major) =
+            real_body(&[0x01, 0xa8, 0x00, 0x04, 0xb1, 0x4c, 0x4b, 0xa9, 0x00]);
+        let (code, message) = refusal(&facts, &raw, major);
+        assert_eq!(code, IR_CALL_CONTEXT_UNRESOLVED);
+        assert!(
+            message.contains("`ret` at BCI 7")
+                && message.contains("not as the address its own `jsr` pushed"),
+            "the stop names the `ret` and the value: {message}"
+        );
+    }
+
+    #[test]
+    fn a_cycle_the_raw_graph_can_enter_is_refused_by_the_cycle_search() {
+        // A call site that reaches itself with no `ret` anywhere: the nesting has no bound, so no
+        // finite context set describes it. 3.4b's value rules say nothing here - there is no `ret`
+        // to decide about - so this body is refused by the cycle search, which is the only place
+        // that diagnosis comes from.
+        //
+        //   0: jsr +3 -> 3  the first call site reaches the second
+        //   3: jsr +0 -> 3  the second reaches itself
+        //   6: return       unreachable: neither call ever returns
+        let facts = body(vec![jsr(0, 3), jsr(3, 0), plain(6, 0xb1)], Vec::new(), 7);
+        let raw = graph(&facts, &mut budget());
+        let (code, message) = refusal(&facts, &raw, 45);
+        assert_eq!(code, IR_CALL_CONTEXT_UNRESOLVED);
+        assert!(
+            message.contains("cycle") && message.contains("call each other"),
+            "the cycle search is what refuses this body: {message}"
+        );
+    }
+
+    #[test]
     fn a_null_in_the_slot_the_ret_reads_is_unresolved() {
         //   0: jsr 4        return address (BCI 3)
         //   3: return
