@@ -1,6 +1,12 @@
 [workspace]
 resolver = "3"
-members = [".", "crates/jarde-cli", "crates/jarde-query", "crates/jarde-reader"]
+members = [
+    ".",
+    "crates/jarde-cli",
+    "crates/jarde-jvm",
+    "crates/jarde-query",
+    "crates/jarde-reader",
+]
 
 [package]
 name = "jarde"
@@ -11,34 +17,22 @@ license = "MIT OR Apache-2.0"
 description = "Bounded, provenance-preserving JVM artifact analysis contracts"
 
 [dependencies]
-# `blake3` is still used directly by the provider layer that lives here until it moves to
-# `jarde-jvm` (2.2); query/xref took their own hashing into `jarde-query` in 2.1, and the
-# reader owns the reader-side hashing. Design §3.5 converges all of it into the reader as those
-# consumers leave.
-blake3 = { version = "=1.8.7", default-features = false, features = ["pure"] }
+# The three layers this facade composes and re-exports. The analysis above the reader's facts —
+# resolution, the JVM environment, CFG, the pass layers and the method-analysis driver — left
+# for `jarde-jvm` in the layering work of P2 2.2, and with it the `blake3`, `petgraph` and
+# `serde` dependencies only that layer names.
+jarde-jvm = { path = "crates/jarde-jvm", version = "=0.1.0" }
 jarde-query = { path = "crates/jarde-query", version = "=0.1.0" }
 jarde-reader = { path = "crates/jarde-reader", version = "=0.1.0" }
-# Admitted for the P2 raw CFG work (evidence: openspec/changes/p2-jvm-ir/verification.md,
-# section 3.1); the first consumer is 3.3's raw CFG, not this slice. `std` only, on purpose:
-# the default features add graphmap/stable_graph/matrix_graph, and rayon/serde-1/all pull a
-# thread pool, the serde family or the dot parser.
-petgraph = { version = "=0.8.3", default-features = false, features = ["std"] }
-serde = { version = "=1.0.229", features = ["derive"] }
-
-[features]
-# The test-only class-file builder and fixture addressing that a dependent crate's tests need:
-# `classfile::test_class` and `test_fixtures` live in `jarde-reader` now, whose `cfg(test)` the
-# tests here cannot see. No normal dependency enables this, so it stays out of production
-# builds; `--all-features` (as CI runs) does enable it, and both modules are written to compile
-# warning-free either way.
-test-support = ["jarde-reader/test-support"]
 
 [dev-dependencies]
-# `flate2` and `rawzip` build the test fixtures of this package's integration tests and of
-# `providers`' tests; `test-support` brings the reader-side test helpers (`classfile::test_class`)
-# that `cfg`/`call_context`'s tests build their class files with.
+# The integration tests read fixture archives directly: `flate2`/`rawzip` build the ZIP and
+# deflate fixtures, `serde_json` reads the serde spellings the reports use, `proptest` drives
+# the property suites, and `blake3`/`petgraph` are the hashing and graph crates those tests name
+# by path now that the library itself no longer declares them.
+blake3 = { version = "=1.8.7", default-features = false, features = ["pure"] }
 flate2 = { version = "=1.1.10", default-features = false, features = ["rust_backend"] }
-jarde-reader = { path = "crates/jarde-reader", version = "=0.1.0", features = ["test-support"] }
+petgraph = { version = "=0.8.3", default-features = false, features = ["std"] }
 proptest = "=1.11.0"
 rawzip = "=0.5.1"
 serde_json = "=1.0.151"

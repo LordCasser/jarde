@@ -2177,8 +2177,12 @@ fn all_lists_are_complete_and_align_with_the_serde_names() {
     // the source that declares them: a variant added to a type without being added to its
     // `ALL` list fails here even when the exhaustive matches have been updated.
     let root = Path::new(env!("CARGO_MANIFEST_DIR"));
-    let environment_source = read_repository_file(root, "src/environment.rs");
-    let ir_source = read_repository_file(root, "src/ir.rs");
+    // The P2 modules were moved into `jarde-jvm` by the layering work (2.2), so they are read
+    // where the guard resolves them — by identity, through the same table — instead of under
+    // `src/`, which would go stale the moment the layout moves (it did).
+    let environment_source =
+        read_repository_file(root, resolve_guarded_file(root, &A17_ENVIRONMENT_MODULE));
+    let ir_source = read_repository_file(root, resolve_guarded_file(root, &A17_IR_MODULE));
     // `BudgetDimension` and its `ALL` list moved to the reader crate with the rest of the
     // shared execution base (layer-jarde-crates 1.2); the declaration is read where it lives.
     let budget_source = read_repository_file(root, "crates/jarde-reader/src/budget.rs");
@@ -2648,21 +2652,28 @@ const A17_CONTROL_MODULE: GuardedModule = GuardedModule {
     candidates: &["src/engine.rs", "crates/jarde-jvm/src/engine.rs"],
 };
 
+/// The environment module: the type table's first source, and the module the contract test that
+/// compares the `ALL` lists with the enum declarations reads.
+const A17_ENVIRONMENT_MODULE: GuardedModule = GuardedModule {
+    identity: "environment.rs",
+    candidates: &["src/environment.rs", "crates/jarde-jvm/src/environment.rs"],
+};
+
+/// The resolver module, addressed by identity like every other one.
+const A17_RESOLVER_MODULE: GuardedModule = GuardedModule {
+    identity: "resolver.rs",
+    candidates: &["src/resolver.rs", "crates/jarde-jvm/src/resolver.rs"],
+};
+
+/// The IR module, addressed by identity like every other one.
+const A17_IR_MODULE: GuardedModule = GuardedModule {
+    identity: "ir.rs",
+    candidates: &["src/ir.rs", "crates/jarde-jvm/src/ir.rs"],
+};
+
 /// The P2 modules the type table is derived from: their `pub` declarations are its source.
-const A17_P2_SOURCE_MODULES: [GuardedModule; 3] = [
-    GuardedModule {
-        identity: "environment.rs",
-        candidates: &["src/environment.rs", "crates/jarde-jvm/src/environment.rs"],
-    },
-    GuardedModule {
-        identity: "resolver.rs",
-        candidates: &["src/resolver.rs", "crates/jarde-jvm/src/resolver.rs"],
-    },
-    GuardedModule {
-        identity: "ir.rs",
-        candidates: &["src/ir.rs", "crates/jarde-jvm/src/ir.rs"],
-    },
-];
+const A17_P2_SOURCE_MODULES: [GuardedModule; 3] =
+    [A17_ENVIRONMENT_MODULE, A17_RESOLVER_MODULE, A17_IR_MODULE];
 
 /// Number of guarded files the repository has today.
 ///

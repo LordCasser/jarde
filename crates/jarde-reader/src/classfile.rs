@@ -6321,6 +6321,24 @@ mod tests {
         }
     }
 
+    /// Asserts a report's usage equals a fresh read of the budget, wall clock aside.
+    ///
+    /// `UsageSnapshot::elapsed_millis` is recomputed from the clock on every read, so two reads
+    /// of an unchanged budget differ whenever a millisecond falls between them — which is what
+    /// made a property run fail intermittently. Zeroing that one field is this repository's
+    /// convention for comparing a snapshot read twice; every counted dimension still has to
+    /// agree, so the assertion keeps its teeth.
+    fn assert_usage_matches_budget(usage: &crate::budget::UsageSnapshot, budget: &Budget) {
+        let mut reported = usage.clone();
+        let mut live = budget.usage();
+        reported.elapsed_millis = 0;
+        live.elapsed_millis = 0;
+        assert_eq!(
+            reported, live,
+            "the report's usage is a faithful read of the budget"
+        );
+    }
+
     fn assert_bytecode_report_invariants(
         report: &BytecodeInspection,
         bytes: &[u8],
@@ -6358,7 +6376,7 @@ mod tests {
                 assert_eq!(prefix_end, code_length);
                 assert!(report.stopped_at.is_none());
                 assert!(report.diagnostics.is_empty());
-                assert_eq!(*usage, budget.usage());
+                assert_usage_matches_budget(usage, budget);
             }
             ExecutionReport::Partial { reason, usage } => {
                 let TerminationReason::Error { code: reason_code } = reason else {
@@ -6378,7 +6396,7 @@ mod tests {
                 assert_eq!(reason_code, stop_code);
                 assert_eq!(reason_code, &report.diagnostics[0].code);
                 assert_eq!(report.diagnostics[0].severity, DiagnosticSeverity::Error);
-                assert_eq!(*usage, budget.usage());
+                assert_usage_matches_budget(usage, budget);
             }
             ExecutionReport::Cancelled { .. } | ExecutionReport::Failed { .. } => {
                 panic!("unlimited bytecode property must complete or stop on an instruction error")

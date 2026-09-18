@@ -56,7 +56,7 @@
 //! Every opcode decision of this module — what ends a block, which transfer an instruction
 //! is, whether it may throw, what its stack delta is, and which local it reads or writes —
 //! reads [`InstructionOperands::effective_opcode`], never the raw
-//! [`InstructionFact::opcode`](crate::classfile::InstructionFact::opcode). A `wide` form is
+//! [`InstructionFact::opcode`](jarde_reader::classfile::InstructionFact::opcode). A `wide` form is
 //! the opcode it wraps (0.2): `wide iload` is a load and `wide ret` ends its block exactly
 //! like the short forms, while the raw `0xc4` prefix decides nothing on its own.
 //!
@@ -75,11 +75,11 @@
 //! which is why the payload fields carry `allow(dead_code)` rather than a second, decorative
 //! consumer in the engine.
 
-use crate::budget::{Budget, BudgetDimension, CountedBudgetDimension};
-use crate::classfile::{
+use jarde_reader::budget::{Budget, BudgetDimension, CountedBudgetDimension};
+use jarde_reader::classfile::{
     BytecodeStop, ControlFlowTarget, ControlFlowTargetKind, ExceptionHandlerFact, MethodCodeFacts,
 };
-use crate::error::{Error, Result};
+use jarde_reader::error::{Error, Result};
 use petgraph::graph::{DiGraph, NodeIndex};
 
 /// Blocks one raw CFG may hold before the pass stops (3.1's scale bound).
@@ -253,7 +253,7 @@ pub(crate) struct EffectFacts {
 pub(crate) struct InstructionEffect {
     pub(crate) bci: u32,
     /// The instruction's effective opcode
-    /// ([`crate::classfile::InstructionOperands::effective_opcode`]): the opcode a `wide` form
+    /// ([`jarde_reader::classfile::InstructionOperands::effective_opcode`]): the opcode a `wide` form
     /// wraps, and the raw opcode otherwise. The raw `0xc4` prefix stays in the reader's own fact.
     pub(crate) opcode: u8,
     /// Locals this instruction reads, ascending, deduplicated: the operand 1.2 records for a
@@ -829,7 +829,7 @@ fn unreachable_blocks(
 }
 
 // The opcode predicates below all take the **effective** opcode
-// ([`crate::classfile::InstructionOperands::effective_opcode`]): the `wide` prefix is not an
+// ([`jarde_reader::classfile::InstructionOperands::effective_opcode`]): the `wide` prefix is not an
 // instruction, so `wide iload`/`wide istore`/`wide ret` reach these predicates as `iload`,
 // `istore` and `ret`.
 
@@ -1039,9 +1039,11 @@ fn missing_handler(ordinal: u32) -> Error {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::budget::{Limits, UsageSnapshot};
-    use crate::classfile::{InstructionFact, InstructionOperands, LocalOperand, SwitchOperands};
-    use crate::model::{ByteSpan, ExecutionReport, TerminationReason};
+    use jarde_reader::budget::{Limits, UsageSnapshot};
+    use jarde_reader::classfile::{
+        InstructionFact, InstructionOperands, LocalOperand, SwitchOperands,
+    };
+    use jarde_reader::model::{ByteSpan, ExecutionReport, TerminationReason};
 
     /// Class-file offset the fixture bodies start at: the facts and the graph carry BCIs, but
     /// the spans must still be coherent.
@@ -1743,7 +1745,8 @@ mod tests {
         max_stack: u16,
         max_locals: u16,
     ) -> MethodCodeFacts {
-        let bytes = crate::classfile::test_class::single_method(major, max_stack, max_locals, code);
+        let bytes =
+            jarde_reader::classfile::test_class::single_method(major, max_stack, max_locals, code);
         let mut budget = Budget::new(Limits {
             // The real reader charges the byte dimensions of this module's own fixture.
             class_bytes: 1 << 20,
@@ -1751,13 +1754,13 @@ mod tests {
             code_bytes: 1 << 20,
             ..limits()
         });
-        let header = crate::classfile::class_facts(&bytes, &mut budget)
+        let header = jarde_reader::classfile::class_facts(&bytes, &mut budget)
             .expect("the fixture is a class file");
         let member = header
             .methods
             .first()
             .expect("the fixture declares one method");
-        crate::classfile::method_code_facts(&bytes, member, &mut budget)
+        jarde_reader::classfile::method_code_facts(&bytes, member, &mut budget)
             .expect("the fixture's body decodes")
     }
 
@@ -1770,14 +1773,14 @@ mod tests {
             code_bytes: 1 << 20,
             ..limits()
         });
-        let facts =
-            crate::classfile::class_facts(bytes, &mut budget).expect("the fixture is a class file");
+        let facts = jarde_reader::classfile::class_facts(bytes, &mut budget)
+            .expect("the fixture is a class file");
         let member = facts
             .methods
             .iter()
             .find(|member| member.name.raw().0.as_slice() == name)
             .expect("the fixture declares the method");
-        crate::classfile::method_code_facts(bytes, member, &mut budget)
+        jarde_reader::classfile::method_code_facts(bytes, member, &mut budget)
             .expect("the fixture's body decodes")
     }
 

@@ -58,16 +58,18 @@
 //! All of them are the approximations the design fixes as this slice's semantic boundary: they
 //! are recorded facts, not claims that JVMS 5.4.3 is fully implemented here.
 
-use crate::budget::{Budget, CountedBudgetDimension};
-use crate::classfile::{ClassFacts, MemberHeader};
 use crate::environment::CallerContext;
-use crate::error::{Error, Result};
-use crate::model::{Diagnostic, DiagnosticSeverity, JvmBytes, PhysicalDefinitionId, SymbolRef};
 use crate::providers::{
     AncestorPath, ClassHandle, HIERARCHY_CYCLE, HeaderClosure, HeaderDemand, HeaderLookupState,
     NodeIdentity, escaped,
 };
-use crate::view::LoaderId;
+use jarde_reader::budget::{Budget, CountedBudgetDimension};
+use jarde_reader::classfile::{ClassFacts, MemberHeader};
+use jarde_reader::error::{Error, Result};
+use jarde_reader::model::{
+    Diagnostic, DiagnosticSeverity, JvmBytes, PhysicalDefinitionId, SymbolRef,
+};
+use jarde_reader::view::LoaderId;
 use std::collections::VecDeque;
 
 /// Diagnostic code of a Java 8 default-method conflict.

@@ -693,9 +693,25 @@ mod tests {
         budget
             .charge(CountedBudgetDimension::ResultItems, 2)
             .unwrap();
-        let json = serde_json::to_string(&budget.usage()).unwrap();
+        let mut snapshot = budget.usage();
+        let json = serde_json::to_string(&snapshot).unwrap();
         let round_trip: UsageSnapshot = serde_json::from_str(&json).unwrap();
-        assert_eq!(round_trip, budget.usage());
+        assert_eq!(
+            round_trip, snapshot,
+            "the snapshot survives a JSON round trip"
+        );
+
+        // A second read has to agree on everything the budget counted. `elapsed_millis` is
+        // recomputed from the wall clock on every read, so it is the one field two reads may
+        // differ by — zeroing it is this repository's convention for comparing a snapshot read
+        // twice, rather than asserting that no millisecond can pass between two calls.
+        let mut later = budget.usage();
+        later.elapsed_millis = 0;
+        snapshot.elapsed_millis = 0;
+        assert_eq!(
+            later, snapshot,
+            "a second read agrees on every counted dimension"
+        );
     }
 
     #[test]

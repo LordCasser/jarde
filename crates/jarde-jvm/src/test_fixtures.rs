@@ -3,27 +3,23 @@
 //! The fixtures live at `<repository>/tests/fixtures`, which is where the integration tests
 //! expect them too, and only one copy exists. What a source file must not do is spell the path
 //! out relative to itself: `include_bytes!("../tests/fixtures/…")` is correct only while the
-//! file sits in `src/`, and the layering work moves these files into `crates/<name>/src/`, where
-//! the same literal would resolve inside the new crate and fail to compile.
+//! file sits in `src/`, and the layering work moved these files into `crates/<name>/src/`,
+//! where the same literal would resolve inside the new crate and fail to compile.
 //!
 //! The depth therefore appears **once per crate**, in the two items below, and every call site
 //! names only the fixture. Moving a file into a crate means editing this module, not hunting
 //! literals; and a call site that forgot to be updated cannot compile, because the segment it
 //! would need is not there to omit.
 //!
-//! This module is the **repository-root** copy, and the root needs its own because of how the
-//! macro evaluates: `env!("CARGO_MANIFEST_DIR")` inside a macro body resolves while the *calling*
-//! crate is compiled, so a macro defined in `crates/jarde-reader` and called from here would
-//! look under `crates/jarde-reader`. Measured, not assumed: a probe crate whose macro was
-//! defined in `x` and called from `y` printed `y`'s manifest directory, while a `const` with
-//! `include_bytes!` in `x` embedded `x`'s file. The same depth rule is why the sibling copy in
-//! `crates/jarde-reader/src/test_fixtures.rs` carries a different segment for the same
-//! directory. When the last module that needs fixtures moves under `crates/`, this copy goes
-//! away; until then it is the only way the root's own unit tests address them.
+//! This is `jarde-jvm`'s copy. A sibling crate's copy cannot be borrowed: `env!`/
+//! `include_bytes!` in a macro body are expanded while the **calling** crate is compiled, so
+//! the reader's copy would look for the fixtures under `crates/jarde-reader`. The depth below
+//! is this crate's own (`crates/<name>`, which every sibling under `crates/` shares), and the
+//! module stays private to the crate: the macro is called from this crate's test modules as
+//! `crate::test_fixtures::fixture!`, so nothing about it becomes public API.
 //!
 //! The gate is `test` plus the same `test-support` feature as the shared class builder: after
-//! the layering, a dependent crate's tests read fixtures through this crate, and their
-//! `cfg(test)` cannot see anything here.
+//! the layering, a test build that needs the fixtures also needs that feature to be on.
 
 /// Embeds one fixture at compile time, named relative to the fixtures root.
 ///
@@ -33,12 +29,12 @@
 /// The allow is for the build where `test-support` is on but `test` is not — `--all-features`
 /// compiles this crate that way — and every caller lives in a `cfg(test)` block.
 #[cfg(any(test, feature = "test-support"))]
-#[allow(unused_macros, reason = "callers are all in this crate's test builds")]
+#[allow(unused_macros, reason = "callers are in test builds of this crate")]
 macro_rules! fixture {
     ($relative:literal) => {
         include_bytes!(concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/tests/fixtures/",
+            "/../../tests/fixtures/",
             $relative
         ))
     };
@@ -52,8 +48,8 @@ pub(crate) use fixture;
 #[cfg(any(test, feature = "test-support"))]
 #[allow(
     dead_code,
-    reason = "used by this crate's tests, or by a dependent crate's test build"
+    reason = "used by this crate's tests, or by a dependent crate's tests"
 )]
 pub(crate) fn fixtures_root() -> std::path::PathBuf {
-    std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures")
+    std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../tests/fixtures")
 }

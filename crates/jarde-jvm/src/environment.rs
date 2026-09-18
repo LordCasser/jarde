@@ -14,10 +14,14 @@
 //! broken-down "best effort" search order, it stays a reportable environment problem that keeps
 //! the original symbols and the unperformed range.
 
-use crate::artifact::ArtifactSnapshot;
-use crate::error::{Error, Result};
-use crate::model::{Diagnostic, DiagnosticSeverity, PhysicalMethodId, SnapshotId, SymbolRef};
-use crate::view::{DelegationPolicy, LoadDomain, LoadRoot, LoaderId, ModuleMode, RuntimeView};
+use jarde_reader::artifact::ArtifactSnapshot;
+use jarde_reader::error::{Error, Result};
+use jarde_reader::model::{
+    Diagnostic, DiagnosticSeverity, PhysicalMethodId, SnapshotId, SymbolRef,
+};
+use jarde_reader::view::{
+    DelegationPolicy, LoadDomain, LoadRoot, LoaderId, ModuleMode, RuntimeView,
+};
 use serde::{Deserialize, Serialize};
 
 /// Name of one declared provider of readable headers.

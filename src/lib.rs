@@ -1,52 +1,68 @@
 //! Shared, synchronous contracts for bounded JVM artifact analysis.
 //!
-//! This crate owns bounded artifact I/O together with the stable identities and
-//! result semantics consumed by later readers and thin adapters. It deliberately
-//! does not depend on CLI, MCP, host protocols, JVM execution, or runtime integration.
+//! This crate owns bounded artifact I/O together with the stable identities and result
+//! semantics consumed by later readers and thin adapters. It deliberately does not depend on
+//! CLI, MCP, host protocols, JVM execution, or runtime integration.
 //!
-//! The input half of that contract — artifact snapshots, the class-file facts decoded from
-//! them, the identities derived from those bytes, the budget that bounds a request, and the
-//! inspection entry points — moved to `jarde-reader` in the layering work of P2 1.2, and is
-//! re-exported here deliberately: the module paths (`jarde::artifact`, `jarde::classfile`,
-//! …) and the inspection reports their consumers name are part of this facade's surface, so a
-//! caller does not have to know which crate produces them. The query half — the request and
-//! report schema, the cursor binding and the X0/X1 scans — moved to `jarde-query` in the same
-//! work (P2 2.1) and is re-exported here for the same reason: `jarde::query` and `jarde::xref`
-//! stay the paths their consumers name. What stays here is the analysis above those facts —
-//! resolution, the JVM environment, CFG and the pass layers — plus the [`Engine`] entry that
-//! delegates to each of them.
+//! The three layers below it are re-exported here deliberately, so that a caller does not have
+//! to know which crate produces what it names:
+//!
+//! * `jarde-reader` (P2 1.2) is the input half: artifact snapshots, the class-file facts decoded
+//!   from them, the identities derived from those bytes, the budget that bounds a request, and
+//!   the inspection entry points. Its module paths (`jarde::artifact`, `jarde::classfile`, …)
+//!   and the reports their consumers name stay part of this facade's surface.
+//! * `jarde-query` (P2 2.1) is the query half: the request and report schema, the cursor
+//!   binding and the X0/X1 scans. It crosses as its product types rather than as a module path:
+//!   a nameable `jarde::query`/`jarde::xref` would reach the layer's own cross-crate seams
+//!   (`execute` and the candidate scan) that only `jarde-jvm` uses.
+//! * `jarde-jvm` (P2 2.2) is the analysis half: the runtime environment, the header providers
+//!   and the resolver, the raw CFG, the legacy call contexts and the pass table, and the
+//!   method-analysis driver that composes them.
+//!
+//! What this facade adds on top is [`Engine`], and its entries are one-line delegations to the
+//! layer that owns the work. Nothing else crosses it: the layers' own cross-crate seams — the
+//! candidate scan (`scan_candidates`, `CandidateScan`, `CandidateFilter`) and the query entry
+//! (`execute`) that `jarde-jvm` reaches — are not product types a consumer of this crate names,
+//! so the query layer is re-exported as its product types rather than as a module path a caller
+//! could reach `execute` and the scanner through. Neither are the mutable analysis internals
+//! (`HeaderClosure`, `FactLedger`, `AnalysisRun`, `IrPhase`, `CallContexts`, …) the driver keeps
+//! to itself.
 
-mod call_context;
-mod cfg;
-mod dispatch;
-pub mod engine;
-pub mod environment;
-pub mod ir;
-mod members;
-mod passes;
-mod providers;
-pub mod resolver;
-#[cfg(any(test, feature = "test-support"))]
-mod test_fixtures;
-
-/// The query layer's module paths, kept nameable through this facade.
-pub use jarde_query::{query, xref};
-/// The reader's inspection entry points: materializing one class and reporting on it.
+pub use jarde_jvm::{environment, ir, resolver};
 pub use jarde_reader::inspect;
 pub use jarde_reader::{artifact, budget, classfile, error, model, multi_release, view};
+
+pub mod facade;
 
 pub use artifact::*;
 pub use budget::{
     Budget, BudgetDimension, CancellationToken, CountedBudgetDimension, Limits, UsageSnapshot,
 };
-pub use classfile::*;
-pub use engine::*;
+pub use classfile::{
+    AttributeFacts, AttributeShell, BootstrapMethodFacts, BytecodeInspection, BytecodeStop,
+    BytecodeStopPhase, ClassFacts, ClassHeader, ClassfileVersion, ControlFlowTarget,
+    ControlFlowTargetKind, CpEntryFacts, CpEntryKind, CpIndexOf, DescriptorKind,
+    DialectValidationScope, EnclosingMethodFacts, EntryDescriptor, ExceptionHandlerFact,
+    HeaderInspection, HeaderStructuralRead, ImmediateValue, InnerClassFacts, InspectionMode,
+    InstructionFact, InstructionOperands, Java8RuntimeCompatibility, LocalOperand, MemberHeader,
+    MethodCodeFacts, MethodSelector, ModuleFacts, NestedAttributeFact, ProvidesFacts,
+    SwitchOperands, VerificationStatus, VersionCapability, VersionDialectSupport,
+    VersionRuleStatus, attribute_content, attribute_facts, attribute_slice, bootstrap_methods,
+    class_facts, code_nested_attributes, cp_class_name, cp_entry, cp_utf8, descriptor_types,
+    entry_descriptor, inspect_header, inspect_method_bytecode, method_code_coverage,
+    method_code_facts, push_unique,
+};
 pub use environment::*;
 pub use error::{Error, Result};
+pub use facade::*;
 pub use inspect::{ClassSource, ClassTarget, EngineBytecodeReport, EngineHeaderReport};
 pub use ir::*;
-pub use jarde_query::query::*;
-pub use jarde_query::xref::*;
+pub use jarde_query::query::{
+    BootstrapVia, ConsumerKind, ConsumerSchema, LiteralValue, QUERY_ENGINE_SCHEMA, QueryAnalysis,
+    QueryBoundary, QueryCoverage, QueryCursor, QueryPage, QueryRelation, QueryReport, QueryRequest,
+    QueryResolution, QueryTarget, XrefCertainty, XrefDerivation, XrefEvidence, XrefItem,
+    XrefOperation, XrefTarget,
+};
 pub use model::*;
 pub use multi_release::*;
 pub use resolver::*;

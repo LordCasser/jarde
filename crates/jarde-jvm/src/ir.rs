@@ -18,20 +18,20 @@
 //! violation or an unestablished call graph instead of publishing contexts it cannot justify.
 //! The report states which stages completed, which stopped and what was read on the way.
 
-use crate::artifact::ArtifactSnapshot;
-use crate::budget::{Budget, UsageSnapshot};
-use crate::classfile::VerificationStatus;
 use crate::environment::{
     EnvironmentIdentity, EnvironmentProblem, ResolutionEnvironment, environment_diagnostics,
     require_content_snapshot, unavailable_diagnostic,
 };
-use crate::error::{Error, Result};
-use crate::model::{
+use crate::resolver::HeaderRead;
+use jarde_reader::artifact::ArtifactSnapshot;
+use jarde_reader::budget::{Budget, UsageSnapshot};
+use jarde_reader::classfile::VerificationStatus;
+use jarde_reader::error::{Error, Result};
+use jarde_reader::model::{
     Coverage, Diagnostic, DiagnosticSeverity, ExecutionReport, OriginSet, PhysicalMethodId,
     TerminationReason,
 };
-use crate::resolver::HeaderRead;
-use crate::view::LoaderId;
+use jarde_reader::view::LoaderId;
 use serde::{Deserialize, Serialize};
 
 /// Capability code of a method-analysis request that may not run at all.
@@ -307,7 +307,7 @@ pub(crate) fn terminal(error: &Error, usage: UsageSnapshot) -> (ExecutionReport,
             diagnostic(
                 format!(
                     "budget_exceeded_{}",
-                    crate::artifact::budget_dimension_code(*dimension)
+                    jarde_reader::artifact::budget_dimension_code(*dimension)
                 ),
                 DiagnosticSeverity::Warning,
             ),

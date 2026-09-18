@@ -1,14 +1,27 @@
-//! Stateless synchronous composition of artifact and classfile contracts.
+//! The analysis driver: the one module that calls the resolver, the environment and the IR.
+//!
+//! Everything a P2 request does beyond the facade's argument handling lives here: the
+//! resolver's request checks and report assembly, the environment validation that decides
+//! whether a request starts at all, and the method-analysis driver that schedules the pass
+//! table, reads one driver method through the reader, and turns every pass outcome into the
+//! report's stage, coverage, read and execution planes.
+//!
+//! The three entry points below are what the facade delegates to, one line each; the
+//! composition story — which entry runs what, and what a caller observes — is documented on
+//! `jarde::Engine`, which is the surface a consumer names.
 
-use crate::artifact::{ArtifactInput, ArtifactSnapshot, ArtifactTreeReport, EnumerationReport};
-use crate::budget::{Budget, CountedBudgetDimension};
-use crate::classfile::{
-    BytecodeStop, InspectionMode, MemberHeader, MethodCodeFacts, MethodSelector,
+use jarde_reader::artifact::ArtifactSnapshot;
+use jarde_reader::budget::{Budget, CountedBudgetDimension};
+use jarde_reader::classfile::{BytecodeStop, MemberHeader, MethodCodeFacts};
+use jarde_reader::error::{Error, Result};
+use jarde_reader::model::{
+    Coverage, Diagnostic, DiagnosticSeverity, ExecutionReport, TerminationReason,
 };
-use crate::error::{Error, Result};
-use crate::inspect::{ClassTarget, EngineBytecodeReport, EngineHeaderReport};
-use crate::ir::{MethodBodyState, NoBodyKind, StageResult, StageState};
-use crate::model::{Coverage, Diagnostic, DiagnosticSeverity, ExecutionReport, TerminationReason};
+
+use crate::ir::{
+    MethodAnalysisReport, MethodAnalysisRequest, MethodBodyState, NoBodyKind, StageResult,
+    StageState,
+};
 use crate::passes::{FactLedger, IR_PASS_NOT_IMPLEMENTED, IrPhase, PassDescriptor, implemented};
 
 /// Access flags that declare a member without a body: `ACC_ABSTRACT` and `ACC_NATIVE`.
@@ -18,173 +31,71 @@ const ACC_NATIVE: u16 = 0x0100;
 /// Code of a raw CFG that was not built because the body decode stopped before its end.
 const IR_RAW_CFG_INCOMPLETE_BODY: &str = "ir_raw_cfg_incomplete_body";
 
-#[derive(Clone, Copy, Debug, Default)]
-pub struct Engine;
+/// Demand-bound symbol resolution under an explicit environment (P2 entry point).
+///
+/// The request shape is checked first, then the resolution itself runs under the caller's
+/// budget; [`crate::resolver::ResolutionReport`] carries the outcome. The facade
+/// (`jarde::Engine::resolve_symbol`) documents the full contract a consumer observes.
+pub fn resolve_symbol(
+    content: &[ArtifactSnapshot],
+    request: &crate::resolver::ResolutionRequest,
+    budget: &mut Budget,
+) -> Result<crate::resolver::ResolutionReport> {
+    crate::resolver::validate_request(content, request)?;
+    Ok(crate::resolver::resolution_report(content, request, budget))
+}
 
-impl Engine {
-    pub const fn new() -> Self {
-        Self
-    }
+/// Declaration-reference scan under an explicit environment (P2 entry point).
+///
+/// Same request-level check as [`resolve_symbol`]; the scan itself is the resolver's, and
+/// candidates no search could decide are reported as unresolved rather than excluded.
+pub fn declaration_references(
+    content: &[ArtifactSnapshot],
+    query: &crate::resolver::DeclarationRefQuery,
+    budget: &mut Budget,
+) -> Result<crate::resolver::DeclarationRefReport> {
+    crate::resolver::validate_declaration_reference_query(content, query)?;
+    crate::resolver::declaration_reference_report(content, query, budget)
+}
 
-    pub fn open(&self, input: ArtifactInput, budget: &mut Budget) -> Result<ArtifactSnapshot> {
-        ArtifactSnapshot::open(input, budget)
-    }
-
-    pub fn enumerate(
-        &self,
-        snapshot: &ArtifactSnapshot,
-        budget: &mut Budget,
-    ) -> Result<EnumerationReport> {
-        snapshot.enumerate(budget)
-    }
-
-    pub fn enumerate_artifact_tree(
-        &self,
-        snapshot: &ArtifactSnapshot,
-        budget: &mut Budget,
-    ) -> Result<ArtifactTreeReport> {
-        snapshot.enumerate_artifact_tree(budget)
-    }
-
-    pub fn select_multi_release(
-        &self,
-        snapshot: &ArtifactSnapshot,
-        view: &crate::view::RuntimeView,
-        budget: &mut Budget,
-    ) -> Result<crate::multi_release::MultiReleaseViewReport> {
-        crate::multi_release::select(snapshot, view, budget)
-    }
-
-    pub fn query(
-        &self,
-        snapshot: &ArtifactSnapshot,
-        request: &jarde_query::query::QueryRequest,
-        budget: &mut Budget,
-    ) -> Result<jarde_query::query::QueryReport> {
-        jarde_query::query::execute(snapshot, request, budget)
-    }
-
-    /// Materializes the target class and inspects its header (reader entry point).
-    ///
-    /// The bounded read and the header inspection are the reader's own steps; this is the
-    /// facade's one-line delegation to them, so a caller through `Engine` and a caller through
-    /// `jarde_reader::inspect` read the same bytes under the same accounting.
-    pub fn inspect_header(
-        &self,
-        snapshot: &ArtifactSnapshot,
-        target: ClassTarget<'_>,
-        budget: &mut Budget,
-        mode: InspectionMode,
-    ) -> Result<EngineHeaderReport> {
-        crate::inspect::inspect_header(snapshot, target, budget, mode)
-    }
-
-    /// Materializes the target class and inspects the selected method's body (reader entry point).
-    ///
-    /// Delegated to the reader exactly as [`Engine::inspect_header`] is.
-    pub fn inspect_method_bytecode(
-        &self,
-        snapshot: &ArtifactSnapshot,
-        target: ClassTarget<'_>,
-        selector: MethodSelector,
-        budget: &mut Budget,
-    ) -> Result<EngineBytecodeReport> {
-        crate::inspect::inspect_method_bytecode(snapshot, target, selector, budget)
-    }
-
-    /// Demand-bound symbol resolution under an explicit environment (P2 entry point).
-    ///
-    /// The request shape is checked first: a snapshot the content does not provide, a target
-    /// whose kind contradicts the reference use, or a dispatch range whose tree root cannot
-    /// describe this snapshot is an input error (`resolution_snapshot_mismatch`,
-    /// `resolution_target_use_mismatch`, `query_artifact_tree_root_mismatch`). Environment
-    /// problems are not an error; they are part of the report.
-    ///
-    /// A class symbol is looked up by name in the declared search order and the selected
-    /// definition is reported as `Resolved` / `Missing` / `Ambiguous` (2.1); a member symbol is
-    /// resolved by the JVMS 5.4.3 member rules under the invocation-kind and access rules (2.3);
-    /// a request that also names a dispatch range (`request.dispatch`) enumerates the known
-    /// candidates of that range with their open-world evidence once its member declaration
-    /// resolved (2.5) — never a unique runtime target. A request whose environment the validator
-    /// rejected keeps the honest unavailable state, because a rejected environment never yields
-    /// a definition.
-    pub fn resolve_symbol(
-        &self,
-        content: &[ArtifactSnapshot],
-        request: &crate::resolver::ResolutionRequest,
-        budget: &mut Budget,
-    ) -> Result<crate::resolver::ResolutionReport> {
-        crate::resolver::validate_request(content, request)?;
-        Ok(crate::resolver::resolution_report(content, request, budget))
-    }
-
-    /// Declaration-reference scan under an explicit environment (P2 entry point).
-    ///
-    /// Same request-level check as [`Engine::resolve_symbol`]. The query scans the explicit
-    /// scope for candidate use sites with the structure consumers, resolves every candidate's
-    /// owner, and publishes only the candidates that resolve to the requested declaration;
-    /// candidates no search could decide are reported as unresolved instead of excluded, and a
-    /// rejected environment keeps the honest unavailable state.
-    pub fn declaration_references(
-        &self,
-        content: &[ArtifactSnapshot],
-        query: &crate::resolver::DeclarationRefQuery,
-        budget: &mut Budget,
-    ) -> Result<crate::resolver::DeclarationRefReport> {
-        crate::resolver::validate_declaration_reference_query(content, query)?;
-        crate::resolver::declaration_reference_report(content, query, budget)
-    }
-
-    /// Method IR analysis under an explicit environment (P2 entry point).
-    ///
-    /// An empty stage set is an input error (`analysis_no_stages`); every other mismatch
-    /// is checked like [`Engine::resolve_symbol`]. The requested stages are then validated
-    /// against the fixed pass table *before* anything runs: a schedule the table cannot
-    /// serve is an input error (`ir_pass_prerequisite_missing`, `ir_pass_order_invalid`,
-    /// `ir_pass_graph_cycle`, `ir_stale_fact`) rather than a half-initialized pipeline.
-    ///
-    /// The scheduled passes of 3.x then really run, in table order and through the ledger:
-    /// `raw_facts` reads the driver method's class header and decodes its body (one
-    /// `ClassHeaders` and one `MethodBodies` attempt, recorded under `DriverMethodBody`),
-    /// `raw_cfg` builds the raw graph, its throw sites and its effect facts over those decoded
-    /// facts, and `legacy_normalization` builds the `jsr`/`ret` call contexts over that graph —
-    /// keeping the raw facts and reporting a dialect violation or an unestablished call graph
-    /// instead of publishing contexts it cannot justify. A rejected environment starts nothing;
-    /// a phase this build does not implement is `Failed { ir_pass_not_implemented }` wherever
-    /// the pipeline reaches it, and a stopped pass keeps every stage result it had already
-    /// produced.
-    pub fn analyze_method(
-        &self,
-        content: &[ArtifactSnapshot],
-        request: &crate::ir::MethodAnalysisRequest,
-        budget: &mut Budget,
-    ) -> Result<crate::ir::MethodAnalysisReport> {
-        crate::ir::validate_request(content, request)?;
-        let scheduled = crate::passes::validate_requested_stages(&request.stages)?;
-        let (problems, environment_identity) =
-            crate::environment::validate_environment(content, &request.environment);
-        let run = if problems.is_empty() {
-            run_method_analysis(content, request, scheduled, budget)
-        } else {
-            // A rejected environment never yields a definition and never starts a read, so the
-            // pipeline is not run at all; the report names the problems and the capability
-            // that did not run.
-            crate::ir::AnalysisRun::not_performed(
-                &scheduled
-                    .iter()
-                    .map(|pass| pass.phase.stage())
-                    .collect::<Vec<_>>(),
-                crate::ir::METHOD_ANALYSIS_NOT_IMPLEMENTED,
-                budget,
-            )
-        };
-        Ok(crate::ir::analysis_report(
-            request,
-            problems,
-            environment_identity,
-            run,
-        ))
-    }
+/// Method IR analysis under an explicit environment (P2 entry point).
+///
+/// The request and the requested stages are validated against the fixed pass table before
+/// anything runs, and the declared environment is checked before a read is attempted: a
+/// rejected environment never starts the pipeline, and a schedule the table cannot serve is an
+/// input error rather than a half-initialized run. What the scheduled passes then do, and what
+/// each stop keeps, is [`run_method_analysis`]'s contract; the report is assembled from the
+/// validated request and the run.
+pub fn analyze_method(
+    content: &[ArtifactSnapshot],
+    request: &MethodAnalysisRequest,
+    budget: &mut Budget,
+) -> Result<MethodAnalysisReport> {
+    crate::ir::validate_request(content, request)?;
+    let scheduled = crate::passes::validate_requested_stages(&request.stages)?;
+    let (problems, environment_identity) =
+        crate::environment::validate_environment(content, &request.environment);
+    let run = if problems.is_empty() {
+        run_method_analysis(content, request, scheduled, budget)
+    } else {
+        // A rejected environment never yields a definition and never starts a read, so the
+        // pipeline is not run at all; the report names the problems and the capability that
+        // did not run.
+        crate::ir::AnalysisRun::not_performed(
+            &scheduled
+                .iter()
+                .map(|pass| pass.phase.stage())
+                .collect::<Vec<_>>(),
+            crate::ir::METHOD_ANALYSIS_NOT_IMPLEMENTED,
+            budget,
+        )
+    };
+    Ok(crate::ir::analysis_report(
+        request,
+        problems,
+        environment_identity,
+        run,
+    ))
 }
 
 /// Reports a scheduled pass this build does not implement: its stage fails under
@@ -565,8 +476,8 @@ fn read_driver_method(
     // fails is a failure of this pass, not a missing body.
     budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
     run.body = MethodBodyState::Present;
-    let decoded = crate::classfile::method_code_facts(&read.bytes, member, budget)?;
-    run.coverage = crate::classfile::method_code_coverage(
+    let decoded = jarde_reader::classfile::method_code_facts(&read.bytes, member, budget)?;
+    run.coverage = jarde_reader::classfile::method_code_coverage(
         decoded.code_span.length,
         &decoded.instructions,
         decoded.exception_handlers.len(),
@@ -725,7 +636,7 @@ fn termination_code(reason: &TerminationReason) -> String {
         TerminationReason::BudgetExceeded { dimension } => {
             format!(
                 "budget_exceeded_{}",
-                crate::artifact::budget_dimension_code(*dimension)
+                jarde_reader::artifact::budget_dimension_code(*dimension)
             )
         }
     }

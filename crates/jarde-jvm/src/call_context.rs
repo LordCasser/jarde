@@ -112,12 +112,12 @@
 //! ascending — and the walk's own order is the published edge order of the raw graph, so the
 //! same request spends the same budget twice.
 
-use crate::budget::{Budget, CountedBudgetDimension};
 use crate::cfg::{
     EdgeKind, EffectFacts, OPCODE_JSR, OPCODE_JSR_W, OPCODE_RET, RawCfg, RawCfgOutcome,
 };
-use crate::classfile::{ExceptionHandlerFact, MethodCodeFacts};
-use crate::error::{Error, Result};
+use jarde_reader::budget::{Budget, CountedBudgetDimension};
+use jarde_reader::classfile::{ExceptionHandlerFact, MethodCodeFacts};
+use jarde_reader::error::{Error, Result};
 use std::collections::{BTreeMap, BTreeSet, btree_map};
 
 /// First class-file major version in which `jsr`/`jsr_w`/`ret` are forbidden: the modern
@@ -1254,13 +1254,13 @@ fn opcode_name(opcode: u8) -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::budget::{BudgetDimension, Limits, UsageSnapshot};
     use crate::cfg::{CfgCompleteness, RawBlock, RawCfgOutcome, RawEdge, raw_cfg};
-    use crate::classfile::{
+    use jarde_reader::budget::{BudgetDimension, Limits, UsageSnapshot};
+    use jarde_reader::classfile::{
         BytecodeStop, InstructionFact, InstructionOperands, LocalOperand, class_facts,
         method_code_facts,
     };
-    use crate::model::{ByteSpan, ExecutionReport, TerminationReason};
+    use jarde_reader::model::{ByteSpan, ExecutionReport, TerminationReason};
 
     /// Class-file offset the fixture bodies start at: the facts and the graph carry BCIs, but
     /// the spans must still be coherent.
@@ -1966,7 +1966,7 @@ mod tests {
             0xc4, 0x84, 0x00, 0x00, 0x00, 0x01, // wide iinc 0, 1
             0xb1, // return
         ];
-        let bytes = crate::classfile::test_class::single_method(52, 8, 8, &code);
+        let bytes = jarde_reader::classfile::test_class::single_method(52, 8, 8, &code);
         let (facts, major) = historical(&bytes, b"method");
         assert_eq!(major, 52);
         assert_eq!(
@@ -2003,7 +2003,7 @@ mod tests {
             0xb1, // return
         ];
         for major in [51u16, 52] {
-            let bytes = crate::classfile::test_class::single_method(major, 8, 8, &code);
+            let bytes = jarde_reader::classfile::test_class::single_method(major, 8, 8, &code);
             let (facts, header_major) = historical(&bytes, b"method");
             assert_eq!(header_major, major);
             let raw = graph(&facts, &mut budget());
@@ -2016,7 +2016,7 @@ mod tests {
         }
 
         // The dialect that keeps `ret` reads the same instruction as a `ret` no call site owns.
-        let bytes = crate::classfile::test_class::single_method(45, 8, 8, &code);
+        let bytes = jarde_reader::classfile::test_class::single_method(45, 8, 8, &code);
         let (facts, header_major) = historical(&bytes, b"method");
         assert_eq!(header_major, 45);
         let raw = graph(&facts, &mut budget());

@@ -38,18 +38,18 @@
 //! a public report — the report layer owns the public vocabulary and maps these crate-private
 //! mirrors exhaustively.
 
-use crate::artifact::{ArtifactKind, ArtifactSnapshot, NestedArchiveState, PhysicalEntry};
-use crate::budget::{Budget, BudgetDimension, CountedBudgetDimension};
-use crate::classfile::ClassFacts;
 use crate::environment::ResolutionEnvironment;
-use crate::error::{Error, Result};
 use crate::members::MemberKind;
-use crate::model::{
+use crate::providers::{HeaderClosure, HeaderDemand, HeaderLookupState, NodeIdentity};
+use jarde_reader::artifact::{ArtifactKind, ArtifactSnapshot, NestedArchiveState, PhysicalEntry};
+use jarde_reader::budget::{Budget, BudgetDimension, CountedBudgetDimension};
+use jarde_reader::classfile::ClassFacts;
+use jarde_reader::error::{Error, Result};
+use jarde_reader::model::{
     Diagnostic, ExecutionReport, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, SnapshotId,
     SymbolRef,
 };
-use crate::providers::{HeaderClosure, HeaderDemand, HeaderLookupState, NodeIdentity};
-use crate::view::{LoadRoot, LoaderId, PhysicalScope, RuntimeUncertainty};
+use jarde_reader::view::{LoadRoot, LoaderId, PhysicalScope, RuntimeUncertainty};
 
 /// One class of the range that overrides or implements the resolved declaration.
 ///
@@ -375,7 +375,7 @@ fn enumerate_range(
             // learn the name it declares for itself; `class_step` then demands that name, which
             // is what reads the root through the closure and records the definition and reason.
             let bytes = snapshot.root_bytes(budget)?;
-            let facts = crate::classfile::class_facts(&bytes, budget)?;
+            let facts = jarde_reader::classfile::class_facts(&bytes, budget)?;
             Ok(RangeListing {
                 names: vec![JvmBytes(facts.this_class.raw().0.clone())],
                 truncation: None,
@@ -635,10 +635,10 @@ fn member_of(this_class: &[u8], declaration: &DeclarationShape<'_>) -> SymbolRef
 mod tests {
     use super::*;
     use crate::environment::{HeaderProvider, ProviderId};
-    use crate::model::{
+    use jarde_reader::model::{
         ClassBytesId, ContainerId, ContainerOrigin, ContainerOriginStep, Digest, PhysicalEntryId,
     };
-    use crate::view::{
+    use jarde_reader::view::{
         DelegationPolicy, LayoutMode, LoadDomain, ModuleMode, MultiReleasePolicy, PhysicalView,
         RuntimeProfile, RuntimeView,
     };
@@ -698,7 +698,7 @@ mod tests {
                 steps,
             },
             ordinal: 0,
-            raw_name: crate::model::ArchiveNameBytes(b"p/A.class".to_vec()),
+            raw_name: jarde_reader::model::ArchiveNameBytes(b"p/A.class".to_vec()),
         }
     }
 
@@ -709,7 +709,7 @@ mod tests {
                 digest: Digest("0".repeat(64)),
                 length: 1,
             },
-            variant: crate::model::PhysicalVariant::Base,
+            variant: jarde_reader::model::PhysicalVariant::Base,
         }
     }
 
@@ -918,7 +918,7 @@ mod tests {
         let other = SnapshotId("other".to_string());
         let nested = vec![ContainerOriginStep {
             via_ordinal: 0,
-            via_raw_name: crate::model::ArchiveNameBytes(b"lib/inner.jar".to_vec()),
+            via_raw_name: jarde_reader::model::ArchiveNameBytes(b"lib/inner.jar".to_vec()),
             child_container: ContainerId("inner".to_string()),
         }];
         let cases = [

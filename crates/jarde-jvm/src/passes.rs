@@ -29,8 +29,8 @@
 //! The table is a handful of passes over nine facts, so the checks in this module are direct
 //! walks over the slices; `petgraph` is admitted for the raw CFG (3.1) and is not used here.
 
-use crate::error::{Error, Result};
 use crate::ir::AnalysisStage;
+use jarde_reader::error::{Error, Result};
 
 /// Code of a scheduled pass whose `requires` no earlier scheduled pass produces.
 const IR_PASS_PREREQUISITE_MISSING: &str = "ir_pass_prerequisite_missing";

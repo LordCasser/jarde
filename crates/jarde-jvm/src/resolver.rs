@@ -23,24 +23,24 @@
 //! [`XrefOperation`]) and never the other way round: `query` and `xref` must not know that
 //! this module exists (A17).
 
-use crate::artifact::{ArtifactSnapshot, budget_dimension_code};
-use crate::budget::{Budget, CountedBudgetDimension, UsageSnapshot};
 use crate::dispatch::{self, DeclarationShape, DispatchEvidence, DispatchOutcome, DispatchStop};
 use crate::environment::{
     CallerContext, EnvironmentIdentity, EnvironmentProblem, ResolutionEnvironment,
     environment_diagnostics, require_content_snapshot, unavailable_diagnostic,
     validate_environment, validate_environment_with_caller,
 };
-use crate::error::{Error, Result};
-use crate::model::{
+use crate::providers::{HeaderClosure, HeaderDemand, HeaderLookupState, escaped};
+use jarde_query::query::{ConsumerKind, ConsumerSchema, XrefItem, XrefOperation, XrefTarget};
+use jarde_reader::accounting::with_usage;
+use jarde_reader::artifact::{ArtifactSnapshot, budget_dimension_code};
+use jarde_reader::budget::{Budget, CountedBudgetDimension, UsageSnapshot};
+use jarde_reader::error::{Error, Result};
+use jarde_reader::model::{
     Coverage, CoverageDimension, CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity,
     ExecutionReport, JvmBytes, Location, OriginMember, OriginSet, PhysicalDefinitionId, SymbolRef,
     TerminationReason,
 };
-use crate::providers::{HeaderClosure, HeaderDemand, HeaderLookupState, escaped};
-use crate::view::{LoaderId, PhysicalScope};
-use jarde_query::query::{ConsumerKind, ConsumerSchema, XrefItem, XrefOperation, XrefTarget};
-use jarde_reader::accounting::with_usage;
+use jarde_reader::view::{LoaderId, PhysicalScope};
 use serde::{Deserialize, Serialize};
 
 /// Capability name of the resolution entry points while they are not implemented.

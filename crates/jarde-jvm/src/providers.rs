@@ -67,17 +67,19 @@
 //!   definitions of different loaders are two nodes, and a name alone is never evidence of
 //!   inheritance.
 
-use crate::artifact::{ArtifactKind, ArtifactSnapshot, PhysicalEntry};
-use crate::budget::{Budget, BudgetDimension, CountedBudgetDimension, Limits, UsageSnapshot};
-use crate::classfile::{ClassFacts, class_facts};
 use crate::environment::{EnvironmentProblemCode, ResolutionEnvironment};
-use crate::error::{Error, Result};
-use crate::model::{
+use jarde_reader::artifact::{ArtifactKind, ArtifactSnapshot, PhysicalEntry};
+use jarde_reader::budget::{
+    Budget, BudgetDimension, CountedBudgetDimension, Limits, UsageSnapshot,
+};
+use jarde_reader::classfile::{ClassFacts, class_facts};
+use jarde_reader::error::{Error, Result};
+use jarde_reader::model::{
     ClassBytesId, ContainerOrigin, Diagnostic, DiagnosticSeverity, Digest, ExecutionReport,
     JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalEntryId, PhysicalVariant,
     SnapshotId, TerminationReason, physical_variant_for_path,
 };
-use crate::view::{DelegationPolicy, LoadDomain, LoadRoot, LoaderId, ModuleMode};
+use jarde_reader::view::{DelegationPolicy, LoadDomain, LoadRoot, LoaderId, ModuleMode};
 use std::collections::VecDeque;
 
 /// Suffix every archive entry of a class carries; the comparison is byte-exact.
@@ -2131,9 +2133,9 @@ pub(crate) fn escaped(raw: &[u8]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::artifact::ArtifactInput;
-    use crate::budget::{CancellationToken, Limits};
-    use crate::view::{
+    use jarde_reader::artifact::ArtifactInput;
+    use jarde_reader::budget::{CancellationToken, Limits};
+    use jarde_reader::view::{
         LayoutMode, ModuleMode, MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile,
         RuntimeUncertainty, RuntimeView,
     };

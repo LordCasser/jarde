@@ -155,11 +155,9 @@ dependencies = [
 name = "jarde"
 version = "0.1.0"
 dependencies = [
- "blake3",
+ "jarde-jvm",
  "jarde-query",
  "jarde-reader",
- "petgraph",
- "serde",
 ]
 
 [[package]]
@@ -168,6 +166,17 @@ version = "0.0.0"
 dependencies = [
  "jarde",
  "libfuzzer-sys",
+]
+
+[[package]]
+name = "jarde-jvm"
+version = "0.1.0"
+dependencies = [
+ "blake3",
+ "jarde-query",
+ "jarde-reader",
+ "petgraph",
+ "serde",
 ]
 
 [[package]]

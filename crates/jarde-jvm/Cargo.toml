@@ -1,0 +1,37 @@
+[package]
+name = "jarde-jvm"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT OR Apache-2.0"
+description = "JVM resolution, runtime environment, raw CFG, call contexts and method IR analysis"
+
+[dependencies]
+# `providers` hashes the definition bytes it reads to bind a header to the identity it claims;
+# that hashing is the provider layer's own and stays here.
+blake3 = { version = "=1.8.7", default-features = false, features = ["pure"] }
+# The resolver's candidate scan: the declaration-reference path asks the query layer for the
+# candidate use sites of an explicit scope instead of opening the scanner up, which is why this
+# dependency is real and stays.
+jarde-query = { path = "../jarde-query", version = "=0.1.0" }
+jarde-reader = { path = "../jarde-reader", version = "=0.1.0" }
+# The raw CFG's blocks and edges; `std` only, on purpose: the default features add
+# graphmap/stable_graph/matrix_graph.
+petgraph = { version = "=0.8.3", default-features = false, features = ["std"] }
+serde = { version = "=1.0.229", features = ["derive"] }
+
+[features]
+# The reader's test-only class-file builder (`classfile::test_class`) that `cfg`'s and
+# `call_context`'s tests build their class files with: a dependent crate's `cfg(test)` cannot
+# see the reader's own test module, so the reader publishes it behind this feature. No normal
+# dependency enables it, so it stays out of production builds; `--all-features` (as CI runs)
+# does enable it.
+test-support = ["jarde-reader/test-support"]
+
+[dev-dependencies]
+# `rawzip` writes the ZIP artifacts `providers`' tests read; `serde_json` reads the serde
+# spellings `passes`' tests compare; `test-support` brings the reader-side class-file builder
+# that the tests of `cfg` and `call_context` compile their fixtures with.
+jarde-reader = { path = "../jarde-reader", version = "=0.1.0", features = ["test-support"] }
+rawzip = "=0.5.1"
+serde_json = "=1.0.151"
