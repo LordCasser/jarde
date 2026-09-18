@@ -214,7 +214,7 @@
 | D32 | `ir_call_context_inconsistent` 不是「公共路径不可达」，而是「raw 图与 reader facts 自洽时不可达」；它经 `ir::terminal` 映射为 `Failed{Error}` + Error 诊断写进公共 diagnostics | 3.4 复核 | 措辞已按此修正；`provenance: None` 与 A09/A13 的 origin 期望差距仍归 5.1 |
 | D33 | 装配期（`assemble`/`instruction_ranges`/`successors`/`plans`）没有 poll/charge，是唯一不按 pass 边界检查取消的窗口 | 3.4 复核 | **转 0.3**：建表与最终装配均需 poll，派生存储在增长前计 `IrItems` |
 | D34 | `ir_pass_not_implemented` 的产物面组合：3.4 正常完成后 `stages` 为 C,C,C + 后续 `Failed{ir_pass_not_implemented}`，此时 `quality = Fallback` 是 `analysis_report` 的字面量（`ir.rs` 无分支），不构成「走了 fallback」的分类证据 | 3.4 复核 | 3.5 前不得用 `quality` 作断言依据（示例与文档已注明）；5.1 给出真实分类后补断言 |
-| D35 | 绑定校验使每次按定义读取多一次 `ClassHeaders` **尝试**（同一 header 先按身份物化、再在声明 loader 的顺序里被搜索命中一次）；实测 `class_headers` 由 2 变 3，`read_reasons` 记录集不变（去重仍生效） | 0.1 复核（父级核对） | 接受：这是「证明该 loader 真的绑定该定义」的必要成本，正确性优先。若要回收，正路是让搜索复用已物化的 header 字节（P5 物化/索引同域），不在 0.1 做 |
+| D35 | 绑定校验使按定义读取多一次 `ClassHeaders` 尝试（同一 header 先按身份物化、再在声明 loader 的顺序里被搜索命中一次） | 0.1 复核（父级核对） | **已处置（0.1 收尾轮）**：实现改为「搜索到达该定义所在位置时复用请求内已物化的字节」，即同一 `(loader, definition)` 在本请求内不重复尝试——driver 路径实测仍为 1 次，members 访问路径由 3 次回到 2 次（两条既有断言相应改为 `== 2`，并保留 `read_reasons` 逐条断言）。该复用不是 P5 的物化/索引：它是**单一定义、请求内**的事实复用，且**不削弱校验**——被遮蔽时搜索仍必须读遮蔽位置才能判定（`a_caller_definition_the_declared_loader_does_not_bind_is_a_stop` 逐条断言三条读取记录，含遮蔽定义的读） |
 | D36 | `DeclarationShape.owner` 字段被删除，改为按节点比较（`declaring: NodeIdentity`）；任何后续切片若引用该字段需改用 `declaring` | 0.1 实现 | 由「owner 字符串不构成继承证据」直接导致；改动在 crate-private，公共面不变
 ## P2 验收映射现状（滚动更新）
 
