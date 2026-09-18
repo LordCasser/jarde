@@ -1,6 +1,6 @@
 ## Context
 
-动机和前置条件见 [proposal](proposal.md)。截至 2026-09-18，生产包仍为 `jarde` 与 `jarde-cli`；下述是待实施边界，不是现状描述。
+动机和前置条件见 [proposal](proposal.md)。截至复核基线 `35a779d`，reader/query/jvm 已实际抽出，根包只剩 `lib.rs`/`facade.rs`，共五个 workspace 包。1.1/1.2/2.1/2.2 有交付记录；3.1–3.3 集成与门禁仍需收尾；后续 `724bf1b` 已补 normal 闭包 CI 和 classfile 门面收窄，`3646a97` 已补 dev/build，仍须覆盖全 feature。下述依赖图已基本实现，不能再当成尚未开始的搬迁计划。
 
 源码依赖支持拆分，但不支持按每个术语各造一个 crate：
 
@@ -9,7 +9,7 @@
 - `passes` 使用 `ir` 的阶段类型，CFG、call-context 和调度由 `engine::run_method_analysis` 串联。只移动目录而把 driver 留在门面，会迫使整个中端内部结构公开。
 - `view` 是声明式 profile/domain/identity 数据；`multi_release` 依赖 artifact/classfile/view，没有 Header resolver 依赖。视图选择不等于符号解析，更不等于 verifier 或源码恢复。
 
-证据入口：`src/lib.rs`、`src/engine.rs`、`src/classfile.rs`、`src/query.rs`、`src/xref/mod.rs`、`src/resolver.rs`、`src/passes.rs`。实施前按最新基线重核文件及私有访问，不能把这份清单当作完整搬迁脚本。
+当前证据入口：`src/lib.rs`、`src/facade.rs`、`crates/jarde-reader/src/{classfile,inspect}.rs`、`crates/jarde-query/src/{query.rs,xref/}`、`crates/jarde-jvm/src/{engine,resolver,passes}.rs`。verification 中原路径与迁移数量保留当时证据。
 
 ## Goals / Non-Goals
 
@@ -79,14 +79,14 @@ P2 继续产出 JVM 分析结果，不让 Frame/SSA 依赖 Java 表达能力。P
 
 盘点发现三处 design 未定、实现者会各自猜测的地方，现定案：
 
-- **`blake3` 的使用收敛进 reader**（不按「直接使用」散到四个包）：摘要就是身份的一种，身份的所有者是 reader。reader 提供 `Digest::of(&[u8])` 一类的构造，query/jvm/门面改为调用它，`blake3` 只作为 reader 的直接依赖。理由：否则 `query` 的游标摘要、`providers` 的字节身份、门面的报告摘要会各自实现一遍，正是「平行身份」要避免的。若将来某处确有非身份的散列需求，凭证据再议。
+- **blake3 按实际语义所有者声明（拆包后复核修订）**：撤回强制汇聚到 reader 的决定。reader 的内容摘要、query 的游标 canonical encoding、providers 的字节身份核验都使用同一库版本/feature 和共享 Digest 类型，但各自编码的对象不同。把 direct dependency 都移入 reader 不会自动消除身份分歧，反而要增加泛用散列 API 或把 query 语义下沉。当前保留三包直接依赖；只有发现相同身份编码的真实重复/分歧时，另以反例确定生产者并收敛，不将它作为拆包或 P2 3.5 的前置。
 - **`CandidateFilter` 不整体公开**：query 对外只暴露 resolver 真正需要的两种候选形状（成员形状、signature-polymorphic），`Exact` 是 query 的内部语义。用一个只含那两种变体的公开枚举包住内部枚举，而不是给内部枚举加 `#[non_exhaustive]` 后整体导出——后者等于把 scanner 的语义面放开。
 - **`read_entry_internal` 随搬迁改名为 `read_entry_for_analysis`**：公开面里不该出现 `_internal` 这样的名字，且它确实是「为分析而读」的入口。改名与升公开面同步进行，并在其文档里写明它保留的三件事（快照/entry 校验、读取类别与计费）。
 
 ### 4. 依赖和测试随所有者迁移
 
 - 新包路径使用 `crates/jarde-reader`、`crates/jarde-query`、`crates/jarde-jvm`；根包继续 `jarde`，CLI 维持原位置。锁文件中的第三方版本和 features 不顺手升级。
-- noak/rawzip/flate2/blake3 随实际读取用途归入 reader，petgraph 归入 jvm；serde/thiserror 等按直接使用声明，必要的共同版本用 workspace 配置。不以拆包为由降低纯 Rust、MSRV 1.88 和 supply-chain 门槛。
+- noak/rawzip/flate2 归入 reader，petgraph 归入 jvm；blake3 按 §3.5 的真实使用留在 reader/query/jvm；serde/thiserror 等按直接使用声明，必要的共同版本用 workspace 配置。不以拆包为由降低纯 Rust、MSRV 1.88 和 supply-chain 门槛。
 - 单元测试跟随实现，真实门面/CLI 集成测试留在外层。reader/query 测试不能通过 dev-dependency 引入 facade/jvm，使独立验证名存实亡。
 - 现有 `classfile::test_class` 之类跨模块测试辅助按消费者盘点；优先复用仓库内测试资源/显式测试支持模块，不把测试 builder 暴露进生产 API，也不默认新增 test-utils crate。
 - 同步 fuzz 的 path dependency、独立 lock、fixtures 路径、CI 扫描目录与包选择。A17 既保留运行时“不启动/不读 body”证据，也加入 Cargo 依赖闭包证据；不能因 `src/` 变空而让旧字符串守卫假绿。
@@ -102,13 +102,17 @@ P2 继续产出 JVM 分析结果，不让 Frame/SSA 依赖 Java 表达能力。P
 
 ## Migration Plan
 
+步骤 1–4 的主体已经执行。现在只完成步骤 5 及 3.1–3.3 任务的剩余证据；不要重复搬包。原绿色基线的 3.4 后来发现语义缺口，由 P2 3.4b 单独修复。结构重组的行为保持验收不为该语义正确性背书。
+
 1. 验收 P2 `0.3/0.3b/3.4` 及其依赖，记录精确基线 commit、实际测试和依赖树；未绿不开始文件搬迁。
 2. 搬 reader 及所需检查入口，收敛 facts API；原 query/jvm 暂在根包、改用新 reader。运行 reader 与外层基线回归。
 3. 搬 query+xref，暴露最小候选扫描接缝；证明 query 可独立使用，再接回声明引用路径。
 4. 搬 jvm 和方法 driver，把根 engine 收窄为委托；同步 examples/CLI/fuzz/CI，不重写算法。
-5. 完成下述门槛及只读复核，更新源码路径和验证文档，才继续 P2 `3.5/4.x`。迁移失败时回退本次独立重构提交，不能撤销已验收的语义修复，也不维护两套并行实现。
+5. 完成下述门槛及只读复核，更新源码路径和验证文档，先交接 P2 `3.4b`，证明返回地址后才继续 `3.5/4.x`。迁移失败时回退本次独立重构提交，不能撤销已验收的语义修复，也不维护两套并行实现。
 
-退出门槛：
+退出门槛（现有能力范围）：
+
+- 库/CLI 对照限现有 enumerate/inspect/query operation；新增方法 CLI 属于 P2 5.1。`test-support` 保持显式测试用途，默认生产图不启用；打开 feature 时可经公开 reader 模块访问 builder 是明确边界。增量 `724bf1b` 已删除门面的 classfile 模块再导出，顶层白名单才开始真正约束该模块；不能把此前仅有白名单的状态写成不可达。
 
 - `cargo check/test -p jarde-reader`、`cargo check/test -p jarde-query` 能独立执行；一个只声明 `jarde-query` 的最小 consumer 完成真实查询。
 - `cargo tree -p jarde-query --edges normal` 不包含 `jarde-jvm`、`jarde-java`、petgraph 或任何宿主包；reader 无 query/jvm/facade 反向依赖。reader/query 的测试依赖也不能拉入这些项目上层包。

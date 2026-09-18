@@ -1,6 +1,6 @@
 ## Why
 
-P1 及其验证维护已归档。P2 已交付基础契约、Header resolver/声明引用/已知候选，以及 raw CFG；3.4 有未提交的调用上下文候选，规范化与 Frame/SSA 尚未完成。2026-09-18 review 在 `4beb6b9` 加工作区上确认 loader 传播、returnAddress 值流、异常 locals 与派生存储预算缺口。先修正这些基础行为，再继续 canonical IR；不以既有测试通过代替反例验收。当前状态及证据见 design.md、verification.md。
+P1 及其验证维护已归档。P2 的 0.x、1.x、2.x 和 3.1–3.4 有交付记录，reader/query/jvm 已分层，根包成为门面。2026-09-18 在 `35a779d` 的复核确认：调用上下文的唯一 astore 写入者/支配规则仍会把普通引用或被内层覆盖的槽判成 returnAddress。新增 3.4b 在规范化前关闭该缺口；不能推迟到已经消去 legacy 指令后的 Frame。规范化、Frame/SSA 和方法 CLI 尚未完成，当前状态见 tasks 与 verification 的最新复核。
 
 ## What Changes
 
@@ -28,6 +28,6 @@ P1 及其验证维护已归档。P2 已交付基础契约、Header resolver/声�
 
 ## Impact
 
-影响 `jarde` 的 reader 适配、budget、resolver、IR 和结果模型，以及调用相同库入口的薄 JSON CLI。复用 noak；petgraph 0.8.3 已通过 3.1 准入并用于 raw CFG，沿用 std-only、确定性排序、规模/取消约束，不重新选型或增加推测性依赖。保持 Rust 2024、MSRV 1.88、同步可取消和纯 Rust 生产链，不新增推测性 crate、异步框架或数据库。验收重点为 A09、A10、A11、A13、A14、A16、A17。
+影响 `jarde-reader` 的共享 facts/budget、`jarde-jvm` 的 resolver/IR/结果模型，以及 `jarde` 门面与薄 JSON CLI；`jarde-query` 保持独立 X0/X1。复用 noak；petgraph 0.8.3 已通过 3.1 准入并用于 raw CFG，沿用 std-only、确定性排序、规模/取消约束，不重新选型或增加推测性依赖。保持 Rust 2024、MSRV 1.88、同步可取消和纯 Rust 生产链，不新增推测性 crate、异步框架或数据库。验收重点为 A09、A10、A11、A13、A14、A16、A17。
 
 可靠处理基线为 Java 8 Runtime Profile 下的 45–52 历史输入；现代语义、Region/Java AST 恢复与缓存分别留给 P3/P4/P5。复核发现的 fuzz 请求路由与独立 workspace 审计缺口作为单独验证维护改动处理，不混入 resolver/IR 实现。

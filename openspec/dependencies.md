@@ -4,9 +4,11 @@
 
 ## 技术栈边界
 
-生产核心使用 Rust 2024，MSRV 1.88 已由本地单作业检查及 Linux x86_64 CI 实际验证。当前仍为库 `jarde` 和薄适配器 `jarde-cli` 两个 crate。2026-09-18 依据已存在的生产依赖，规划独立的 [layer-jarde-crates](changes/layer-jarde-crates/design.md)：新增 reader、query、jvm 三包，根包作为门面，Java 包随 P3 第一个实际恢复闭环创建；不是每个模块各建一个包，也不预建 common/core。前提是当前 P2 修正和 3.4 验收通过，拆包完成后继续 3.5/4.x。
+生产核心使用 Rust 2024，MSRV 1.88。当前 workspace 已有 `jarde-reader`、`jarde-query`、`jarde-jvm`、`jarde`、`jarde-cli` 五包，分层主体在 `35a779d` 已落地；[layer-jarde-crates](changes/layer-jarde-crates/tasks.md) 的集成门禁尚待收口。`jarde-java` 留到 P3 首个真实恢复闭环，暂不创建空壳或 common/core。
 
-目标生产依赖为 query→reader、jvm→reader+query、facade→三包、CLI→facade；query 不依赖 jvm 或 petgraph。现有第三方版本/features 按所有者迁移，不因拆包升级；reader/query 的独立消费、单一身份/预算、A17 和 fuzz/CI 路径是实际验收项，不提前宣称编译提速。
+生产依赖为 query→reader、jvm→reader+query、facade→三包、CLI→facade；query 不依赖 jvm 或 petgraph，reader 无上层依赖。noak/rawzip/flate2 归 reader，petgraph 归 jvm；blake3 仍由 reader/query/jvm 各按直接使用声明同一已准入版本与 pure feature。共享 Digest 类型归 reader，query 拥有游标请求的语义编码，providers 拥有定义字节核验；多个直接库依赖不等于多套身份模型，本轮不为汇聚依赖新增通用散列接口。详见 layer design §3.5 的修订决定。
+
+reader/query 独立消费、测试依赖闭包、单一身份/预算和 A17/fuzz/CI 是实际验收项；不因拆包升级第三方版本/features，不提前宣称编译提速。已准入 noak/petgraph 继续复用，SSA 的复用取舍沿用 P2 design §6.1，未重新进行上游版本选型。
 
 公共 API 同步、可取消，不强制 Tokio、线程池或数据库。CLASS/JAR/WAR 为必需输入；目标代码、bootstrap、JNI 和 launcher 均不执行。JDK、javap、其他反编译器只用于受控测试 oracle，用户依赖不自动联网下载。纯 Rust 要求覆盖生产依赖链，不能只检查顶层 crate 名称。
 

@@ -578,7 +578,22 @@ R7 的四个反例已修复。旧实现按**位置**判定（某槽恰好一次�
 
 ### 证据
 
-`cargo test --workspace --all-targets --all-features --locked` = **635 passed / 0 failed / 1 ignored**（628 + 6 条 `call_context` 单测 + 1 条公开入口用例）；`-p jarde-jvm` = 101；`p1_xref_golden` = 5；`p2_contracts` = 29；fmt/clippy（`-D warnings`）干净。
+CI：`ee1a723`（实现）→ run 35363205357、`56dbbfa`（复核修正）→ run 35364764009，均四 job success。
+
+`cargo test --workspace --all-targets --all-features --locked` = **637 passed / 0 failed / 1 ignored**（628 + 8 条 `call_context` 单测 + 1 条公开入口用例）；`-p jarde-jvm` = 103；`p1_xref_golden` = 5；`p2_contracts` = 29；fmt/clippy（`-D warnings`）干净。
+
+### 独立复核（Approve）与据其修正
+
+复核者（第三方只读）**Approve**，并独立核到：抽象状态只降不升、收敛到 must 解且与顺序无关；`keeps_stack_top` 的 opcode 集合逐条判为**保守正确**（方向只会多拒）；「块内首个 `astore`」在「同块两次 store」与「store 前有清栈指令」两个方向都实测正确；计费全部在增长前、在已声明维度内，`Phase::Provenance` 可达且被逐阶段取消扫描覆盖；金标 **40 → 54** 与其独立核算一致（2×(1+5) 行 + 2 个 token 存）；ECJ 语料、共享子程序与嵌套/handler 用例无回归，且**规则 ③ 不会误伤兄弟调用点**（计费 fixture 与 ECJ fixture 本身就是「两个 `jsr` 共用入口」的形状，均成立）。它**未发现任何错收**。
+
+**它提出的两项必改（均为测试/文档）与处置**：
+
+| 复核发现 | 处置 | 证伪 |
+| --- | --- | --- |
+| 「块内首个 `store` 才携带 token」这条规则**只有计费用例守着**：一个「块内所有 `astore` 都算 token 存」的变异在语义用例上完全隐形 | 新增 `the_store_that_consumes_the_token_is_the_only_one_that_carries_it`（`01 a8 00 04 b1 4c 4b a9 00`：栈底先垫 null，`astore_1` 吃 token、`astore_0` 吃 null，`ret 0` 读后者） | 施加该变异 → 该用例转红（此前唯一反应是计费用例） |
+| **cycle 诊断失去唯一测试**：3.4b 的规则 ③ 让活环先被拒，原用例改断言 `NestedWrite`，于是全仓没有任何用例断言 `call each other in a cycle` 报文 | 新增 `a_cycle_the_raw_graph_can_enter_is_refused_by_the_cycle_search`（无 `ret` 的自环调用点，无值可判，故确由环搜索拒绝） | 断言报文含 `cycle` 与 `call each other`，通过 |
+
+**复核者另用等价变异澄清了两处**：录制循环里 `is_astore` 命中后的 `break`、以及不动点中 `Exception` 边贡献 `false` 的那一支，**都是不可证伪的冗余防御**（改掉后全套测试仍绿）。已写入 design 的「实现注记」，避免后人误以为它们被测试保护。同处还记下 `dup` 族的**已知误拒**（方向安全）与一条**输入假设**（「region 内不存在源在 region 之外的入边」）。
 
 ### 待裁定与债务
 

@@ -80,6 +80,21 @@ IR SHALL 消费共享 reader 提供的类型化 immediate、local、CP、branch 
 - **WHEN** jsr 返回地址存入 local 0，但 ret 读取 local 1，或原槽已被普通值覆盖
 - **THEN** 不得仅因 CFG 可达而建立返回边；报告无法证明的 returnAddress 值流并 fallback，不发布可被规范化消费的完整 CallContexts
 
+#### Scenario: Reference store is not return address proof
+
+- **WHEN** ret 所读槽只有一次支配它的 astore，但该指令存入 null/普通引用，或 jsr token 已被 pop 丢弃
+- **THEN** MUST NOT 仅按写入位置建立返回点；不发布可供规范化消费的完整 CallContexts，阶段不得报告 Completed，保留原 Bytecode 与无法证明的原因
+
+#### Scenario: Nested subroutine overwrites an outer return address
+
+- **WHEN** 内层子程序改写外层 ret 所读取的地址槽，并返回外层 continuation
+- **THEN** 外层证明 SHALL 消费内层写入后的状态；不能因为写入属于不同 active context 而忽略它，不可靠返回点必须阻止规范化
+
+#### Scenario: Aload cannot transfer a return address
+
+- **WHEN** astore 保存了 jsr token 后，aload 或 aload_n 尝试把它作为引用加载
+- **THEN** MUST NOT 将该形态作为合法返回地址中转或规范化证据；保留诊断与原始 facts，verification 仍为 NotPerformed
+
 #### Scenario: Handler returns within a subroutine
 
 - **WHEN** 子程序抛出后由 handler 改写 locals 并回接 ret

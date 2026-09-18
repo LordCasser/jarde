@@ -1,6 +1,6 @@
 # JVM Rust Engine 阶段路线
 
-本路线描述 OpenSpec changes 的依赖、交付边界和验收门槛。P0、P1 与 P1 验证维护均已完成并归档。P2 已交付 1.x、2.x、3.1–3.3，3.4 有未提交候选；2026-09-18 review 确认基础行为缺口，当前先执行 p2-jvm-ir 的 0.1–0.3 修正，再完成 3.4，不能直接进入 3.5。任务为 11/23（原 11 项完成记录保留，新修正未完成），证据见 [本轮复核](changes/p2-jvm-ir/verification.md#2026-09-18-当前工作区复核)。P3/P4/P5 未实施。规划工件齐全、局部测试或前一提交 CI 通过均不代表阶段整体完成。
+P0/P1 及 P1 验证维护已归档。P2 的 0.x、1.x、2.x、3.1–3.4 有交付记录；本轮新增未完成的 3.4b 后为 **18/27**。reader/query/jvm 与根门面已落地，`layer-jarde-crates` 仍需集成与门禁收尾。P3–P5 未实施。以 `35a779d` 为算法反例固定基线，并复核随后 `724bf1b`/`3646a97` 的门面/门禁增量，既有交付与新发现分开记录：[当前复核](changes/p2-jvm-ir/verification.md#review-2026-09-18-layers)。规划工件齐全、历史 CI 或局部测试通过不代表整个阶段完成。
 
 相关入口：[OpenSpec 规划入口](README.md)、[技术栈与依赖选型](dependencies.md)、[架构验收与阶段映射](acceptance.md)。
 
@@ -11,6 +11,8 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
                                   │                │                 │                    │
                                   └────────────────┴─────────────────┴────────────────────┴──→ P5 p5-measured-optimization
 ```
+
+`layer-jarde-crates` 插在 P2 3.4 与后续 IR 之间；主体迁移已经完成，当前只收尾，不重复执行拆包。新发现的 3.4b 属于 P2 语义修正，拆包验收后独立执行，随后才能进入 3.5。
 
 `p1-query-xref` 还直接消费 P0 的 snapshot/classfile/contract；`p4-modern-semantics` 需要 P1 的 views/query、P2 的 resolver/IR 和 P3 的 recovery。P5 选择一个或多个已有稳定结果契约作为优化目标，在被选阶段的真实基线稳定后即可进入，不要求先完成 P4；若优化跨阶段，再纳入所有受影响阶段的回归。
 
@@ -33,15 +35,16 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 - 每个 change 的实施阶段归档前先执行对应 strict validation，再按架构验收 IDs 和真实语料验证；有行为 delta 时 archive 默认同步主 specs，不使用 `--skip-specs`。
 - 优先复用 P0 已评估的 noak、rawzip、flate2 rust_backend、blake3、serde、thiserror、clap；后续库、持久 index 或并发方案先依 [选型准入](dependencies.md) 评估。JVM/JADX 不进入生产核心运行依赖，只可作为受控测试 oracle。
 
-## P2 当前执行顺序（2026-09-18 修订）
+## 当前执行顺序（2026-09-18 拆包后复核）
 
 | 顺序 | 范围 | 交接门槛 |
 | --- | --- | --- |
-| 0.1 | resolver 的 initiating/defining loader、caller/driver 绑定、声明与 dispatch 身份 | parent Owner/双 Base 反例与 2.x 回归通过 |
-| 0.2 | reader 的 wide effective opcode、数组/调用操作数，CFG/effects 同步 | 普通/宽化、51+ ret、数组维数、P0/P1 对照通过 |
-| 0.3 | 调用上下文存储预算、Effects requires、未来 pass 预算声明 | 零/恰好/超限、取消、stale 反例通过，不新增后续算法 |
-| 3.4 | 返回地址值流及 handler 中的上下文/locals | 错 ret local 不再 Established、异常写入不漏，真实 finally 与独立复核通过 |
-| 3.5 → 4.x | 有界规范化 → Frame → 初始化/异常状态 → SSA | Top、全别名初始化、逐 throw-site 输入和最后有效阶段均有证据 |
-| 5.x | 库/CLI、读取/构造计数、golden/fuzz、文档/全门禁 | 精确提交 CI 与各片复核均完成，才归档并解锁 P3 |
+| 已完成记录 | P2 0.x、1.x、2.x、3.1–3.4；layer 1.1/1.2/2.1/2.2 | 保留原 commit/测试记录；历史 Approve 不代表 3.4b 新反例通过 |
+| layer 3.1–3.3 | 五包主体已存在；补独立 query consumer、完整 A17/依赖闭包与 CLI/examples/fuzz/CI 收口证据 | 同一候选的门禁和反例有证据；核对既有 operation，不增加方法 CLI 或修语义 |
+| P2 3.4b | returnAddress 来源、普通引用/丢弃/非法 aload、内层覆盖与异常状态 | 四个非法字节串不能完成上下文；合法直线/共享/嵌套/历史 finally、预算/取消回归成立 |
+| P2 3.5 | driver 传递真实 CallContexts；有界克隆与 CanonicalCFG | origin/异常顺序/克隆界及 fallback 可复核；不把截断前缀标成完整 IR |
+| P2 4.1 → 4.2 → 4.3 | Frame/Top/category-2 → 初始化别名/逐 throw-site → SSA/phi | 独立小图对照、后置定义/回边、预算与最后有效阶段有证据；不宣称 verifier 已执行 |
+| P2 5.x | 库接通剩余阶段、方法 CLI、构造计数、golden/fuzz、文档及完整门禁 | `representation=Bytecode`；精确提交与 CI，整体出口通过后归档 |
+| P3 1.1 → 1.2 → 1.3 | 只读 JVM 输入契约、普通控制流到 Java、最小命名/source map | 随真实实现创建 jarde-java；先得到可用方法闭环，再扩展语法糖 |
 
-不重做已准入的依赖选型，不把 P5 索引、并行或缓存混入正确性修正。本轮只修改 OpenSpec 与路线；保留已写代码，后续按修订任务实施。
+P4/P5 保留现有边界；P5 仍按所选稳定契约和测量进入，不作为正确性修正的前置。重复物化、query 游标/坐标等债务继续独立处理，不为本轮新增 common/core 或跨项目中端包。
