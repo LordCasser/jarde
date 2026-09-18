@@ -193,10 +193,17 @@ pub(crate) struct CanonicalCfg {
     /// The exception table mapped to canonical blocks.
     pub(crate) handler_rows: Vec<CanonicalHandlerRow>,
     /// The canonical blocks the entry of the method cannot reach through the canonical
-    /// transfers, ascending by identity: the dead region a call site the raw graph cannot enter
-    /// opens, and everything else the entry never runs. A truth table, not a deletion — and it
-    /// names identities rather than BCIs, because one original block can stand for several
-    /// clones and only some of them are dead.
+    /// transfers, ascending by identity, naming identities rather than BCIs because one original
+    /// block can stand for several clones and only some of them are dead. A truth table, not a
+    /// deletion.
+    ///
+    /// This lists the nodes the normalization **created** and the entry cannot reach. It is not
+    /// a partition of the graph: an original block that nothing walked was never created as a
+    /// node at all, so it is in neither [`Self::blocks`] nor here - absent, which is a third
+    /// state a consumer must not read as reachable. Its identity type is also not the raw
+    /// graph's `unreachable`, which is a list of BCIs: the same BCI is `(bci, [])` when the top
+    /// level runs it and `(bci, [call_site])` when a clone does, so the two lists answer
+    /// different questions about the same BCI and must never be compared or unioned.
     pub(crate) unreachable: Vec<CanonicalBlockId>,
     /// Clone nodes the normalization created and billed, before the fusion. A fused node is one
     /// artifact node but the work of cloning it was already done.
@@ -720,8 +727,28 @@ fn build(
         if state.enters(call_site) {
             continue;
         }
+        let block = block_start_of(cfg, call_site)?;
+        // Seeding hangs the call site on the method's own path, which is the right frame only
+        // for a block the raw graph cannot reach at all: nothing enters it, so no other call
+        // opened a region around it. A call site the raw graph *can* reach but the walk never
+        // entered sits inside a subroutine, and hanging that on the method's path would file a
+        // nested block under the top level - it could collide with a real top-level node and
+        // hand it an edge from a frame it is not in. Refuse instead of guessing the frame.
+        //
+        // This is a guard, not a covered path: no fixture in this crate reaches it (instrumenting
+        // it and running the whole suite prints nothing), because the walk reaches every block
+        // the raw graph can and crosses the `jsr` it finds there. It is kept because the
+        // alternative to refusing is a wrong frame, and a wrong frame is not a bound failure the
+        // caller can see through - it is a graph that merges two contexts the bytes keep apart.
+        if !cfg.unreachable.contains(&block) {
+            return unproven(format!(
+                "the `jsr` at BCI {call_site} is not entered by any call path, but its block at \
+                 BCI {block} is reachable in the raw graph: it belongs to a subroutine this \
+                 normalization cannot place, so no canonical graph is built"
+            ));
+        }
         let site = CanonicalBlockId {
-            bci: block_start_of(cfg, call_site)?,
+            bci: block,
             path: Vec::new(),
         };
         if state.create(site.clone(), budget)? {
@@ -995,10 +1022,9 @@ fn fuse(
     for id in &ids {
         budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
         let head = owner.get(id).cloned().unwrap_or_else(|| id.clone());
-        loop {
-            let Some(candidates) = outgoing.get(&head) else {
-                break;
-            };
+        // The successors are taken by value because fusing rewrites the edge table below: the
+        // loop condition cannot borrow it while the body inserts and removes the same map.
+        while let Some(candidates) = outgoing.get(&head).cloned() {
             // Exactly one edge may leave the head, and it must be the plain transfer of a fused
             // chain: a `return` half or an exception edge is a context boundary, not a fuse.
             if candidates.len() != 1 {
@@ -1012,7 +1038,12 @@ fn fuse(
             if incoming.get(to).map_or(0, Vec::len) != 1 {
                 break;
             }
-            if owner.get(to).cloned() != Some(to.clone()) || to == &head {
+            // The successor is reached by this edge alone and lies ahead: a superblock runs
+            // forward, so absorbing a block that starts *before* this one both inverts the
+            // node's own start and can swallow a loop header or the method's entry. A backward
+            // edge out of a block with a single successor - the loop body returning to its
+            // header - reaches this arm, and the resulting node would not name its own start.
+            if owner.get(to).cloned() != Some(to.clone()) || to == &head || to.bci <= head.bci {
                 break;
             }
             // The successor is reached by this edge alone: the two run as one node.
@@ -1982,6 +2013,72 @@ mod tests {
                 other => panic!("the run must stop at {phase:?} when cancelled, got {other:?}"),
             }
         }
+    }
+
+    #[test]
+    fn a_loop_header_is_not_absorbed_by_the_body_that_jumps_back_to_it() {
+        // A method whose body opens with a loop, which is what a `while` compiles to:
+        //
+        //   0: iload_0       the loop header, reachable only from the entry and the back edge
+        //   1: ifle +6 -> 7  two successors, so the header cannot absorb anything
+        //   4: goto -4 -> 0  the back edge: the body's only successor is the header
+        //   7: return
+        //
+        // Fusion runs forward and merges a block with its unique successor. Read the other way
+        // round, the body block at BCI 4 has a single successor too - the header - so a fusion
+        // that did not care about direction merged the header *into* the body. The node was then
+        // identified as BCI 4 while standing for BCI 0 first, which the postcondition refuses,
+        // so an ordinary loop fell back and was told it had exceeded a bound it never reached.
+        let facts = body(
+            vec![
+                plain(0, 0x1a), // iload_0
+                instruction(
+                    1,
+                    0x9e,
+                    3,
+                    InstructionOperands {
+                        branch_offset: Some(6),
+                        ..operands(0x9e)
+                    },
+                ), // ifle 7
+                instruction(
+                    4,
+                    0xa7,
+                    3,
+                    InstructionOperands {
+                        branch_offset: Some(-4),
+                        ..operands(0xa7)
+                    },
+                ), // goto 0
+                plain(7, 0xb1), // return
+            ],
+            Vec::new(),
+            8,
+        );
+        let graph = normalize(&facts);
+        assert_eq!(graph.clones, 0, "a body without calls has no clones");
+        assert_eq!(
+            graph.blocks.len(),
+            3,
+            "the three blocks stay three: {:#?}",
+            graph.blocks
+        );
+        assert!(
+            graph.blocks.iter().any(|block| block.id.bci == 0),
+            "the entry block is a node of its own: {:#?}",
+            graph.blocks
+        );
+        assert!(
+            graph
+                .blocks
+                .iter()
+                .all(|block| block.origin.members.iter().any(|member| matches!(
+                    member,
+                    OriginMember::MethodPoint { bci, .. } if *bci == block.id.bci
+                ))),
+            "every node still maps back to the block it starts at: {:#?}",
+            graph.blocks
+        );
     }
 
     #[test]

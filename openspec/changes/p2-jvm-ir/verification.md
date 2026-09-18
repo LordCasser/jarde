@@ -600,3 +600,60 @@ CI：`ee1a723`（实现）→ run 35363205357、`56dbbfa`（复核修正）→ r
 - **F1**：规则 2 的支配半边现**不可证伪**——能制造通往 `ret` 分叉的指令都会先清掉栈顶 flag，故没有样本能只靠去掉支配而转红。逻辑**保留未放宽**，并有正例（`dominates` 恒 false 的变异会让 5 条用例转红）证明其参与判决。
 - **F2**：规则 3 使**活环**先于 `nesting_cycle` 被拒绝，故环专用诊断对活环不可达（死环用例仍通过，结局同为 `Unresolved`）。若要保留该诊断，需把环检查提到逐 context 裁决之前。
 - 值身份仍止于「token / 非 token」两态：不追踪引用是否为合法地址；完整值身份属 4.x。
+
+## 2026-09-18 3.5 实施：有界 `jsr`/`ret` 克隆规范化与 CanonicalCFG（提交 `3847bc7`）
+
+3.5 已实现：`canonical_cfg` 从「未实现」变为第四个已实现相位，并**消费 3.4b 证明的同一份 `CallContexts`**。
+
+### 交付
+
+- **新模块** `crates/jarde-jvm/src/canonical.rs`（私有）：入口 `canonical_cfg(facts, raw, contexts, method, budget) -> Result<CanonicalOutcome>`，结果二态 `Canonical(Box<CanonicalCfg>)` / `Fallback { message }`。
+- **节点身份** `CanonicalBlockId { bci, path }`：`path` 是进入该块的 `jsr` 站点栈，空即方法自身代码；**克隆 = 非空 path**。
+- **算法相位**：`Payloads → Successors → Clone → Handlers → Fusion → Assembly`；`ret` 的后继只查 payload 中**本上下文**的 targets；异常表按记录 ordinal 映射到各 path 的克隆块；同一 path 内唯一前驱/后继链 fuse 成超级块（origin 因此真正一对多）。
+- **dead 上下文播种**：live 遍历未进入的上下文（ECJ 的 handler 路径）在方法自身 path 下单独播种并走同一 BFS，故共享子程序的两个调用点各得一套克隆、互不合并。
+- **driver**：`LegacyNormalization` 的 `Established` 现存入 run（原注释「3.5 reads it」处），新增 `CanonicalCfg` 臂消费它；成功发布 fact + `Completed`；`Fallback` → `Partial` + `ir_legacy_normalization_unbounded` + **不发布 fact**。
+- **质量面**：`AnalysisRun` 增 `quality` 字段，`analysis_report` 不再硬编码 `Fallback`；产出 artifact → `Conservative`，否则 `Fallback`。
+
+### 父级独立验证
+
+| 项 | 结果 |
+| --- | --- |
+| 结构核查 | `canonical.rs` 对 `token_stores`/`Walk`/`adjudicate` 的引用数 = **0**，即**结构上不可能重推返回点**（满足契约「消费同一份载荷」） |
+| 父级变异（跨 `jsr` 时不推 path → 克隆坍缩） | **12 个用例转红**（单元 8 + 集成 4），证明「每上下文一套克隆」承重且覆盖充分 |
+| 全量（强制 `touch` 重建） | **655 passed / 0 failed / 1 ignored**（637 + 18） |
+| `-p jarde-jvm` / golden / 契约 / `p2_canonical` | 114 / 5 / 29 / 7 |
+| 两个 CI example（原样命令） | 均 exit 0，且 `resolve_and_analyze` 打印 `quality=Conservative` |
+| fmt / clippy / fuzz workspace | 干净 / 干净 / 通过 |
+
+### 父级发现并修复的既有断言缺口
+
+`examples/resolve_and_analyze.rs` 断言「3 个阶段 Completed」且注释按 `quality = Fallback` 措辞——canonical 完成后**该 example 直接 panic**（实现者只跑了 workspace 测试，未跑 example；而 CI 有 `Run public API example` 步骤，会红）。已改为断言 4 个 Completed + `quality == Conservative`，并把注释改为「产出的 artifact 正是 quality 所分类的对象」。
+
+### 实现者自报的被修正既有断言（逐条）
+
+| 位置 | 原 → 新 | 原因 |
+| --- | --- | --- |
+| `p2_return_address.rs::limits()`、`p2_passes.rs::analysis_limits()`、`p2_contracts.rs::analysis_limits()` | 未设 `normalization_clones`（默认 0）→ `1 << 20` | 新维度必须真实预算，否则 canonical 第一步即按上限停止 |
+| `the_historical_jsr_finally_completes_the_call_context_pass` | 阶段第 4 位 `Failed{ini}` → `Completed`；`Fallback` → `Conservative`；与 raw-only 比 → 改与 `[LegacyNormalization]`-only 比；`clones 0` → `2` | canonical 已是第四个已实现相位；产物已产出；比较对象原本含 canonical 步数（语义漂移） |
+| `the_modern_dialect_pays_nothing_for_its_empty_context_set` | 同上，并新增 `clones == 0` | 空上下文集仍不付代价，强度不变 |
+| `p2_passes` / `p2_contracts` 的阶段集合断言 | 第 4 位 `Failed{ini}` → `Completed` | 同上 |
+| `result_planes_are_reported_side_by_side` | `quality == Fallback` + 末尾 `assert_ne!(quality, Conservative)` → `Conservative` + 末尾改断言 `semantic_validation`；Completed 计数 3 → 4 | quality 规则由 3.5 钉死；末条原本**借 quality 表达「无证据」**，改为直接断言本就该断言的语义证据平面（同测试上文仍断言 `semantic_validation == Unproven`、`verification == NotPerformed`） |
+
+### 实现者的四组证伪（副本 + 独立 `CARGO_TARGET_DIR` + `sha256sum` 还原）
+
+| 变异 | 实际输出 |
+| --- | --- |
+| 共享子程序只克隆一次 | `clones left=1 right=2`、`nodes_at(13) left=[[0,8]] right=[[0,8],[3,8]]`（3 个用例） |
+| origin 只留一个 BCI | `block {bci:7, path:[3]} maps back to [7] instead of every original BCI [7,12]`（5 个用例） |
+| 去掉 clone 计费 | `left=0 right=2`（4 个用例） |
+| 去掉 `targets=[]` 停止守卫 | `no graph may be built from an unproven ret: [Exception{0}, Call{3}]` |
+| `ret` 连到 payload 全部 target（不看上下文） | `left=[(5,(8,[])),(5,(15,[]))] right=[(5,(8,[]))]` |
+
+### 待下游知悉的两点口径
+
+- `CanonicalCfg::unreachable` 用 **canonical 身份**（BCI + path）而非 raw 的 BCI 列表——一个原始块可对应多个克隆，只有部分是死的。
+- `clones` 计的是**创建过**的克隆节点数；fusion 之后 artifact 节点可能更少（**计费按工作，不按幸存节点**）。
+
+### 未做
+
+Frame/SSA（4.x）、canonical 图的公共发布（5.1）、fuzz 语料新增 3.5 shape（本片仅确认 fuzz workspace 编译）。**独立复核进行中**。
