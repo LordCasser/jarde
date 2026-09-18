@@ -394,7 +394,7 @@
 
 **当前状态**：3.4 的契约条款、逐触发正反用例、共享/嵌套 + handler 组合、写集语义、诊断、计费金标均已就位。
 
-- 证据：`fmt`/`clippy -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **627 passed / 0 failed / 1 ignored**；`call_context` 单测 **35**；`p1_xref_golden` = 5。提交 `e50ed15`。
+- 证据：`fmt`/`clippy -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **627 passed / 0 failed / 1 ignored**；`call_context` 单测 **35**；`p1_xref_golden` = 5。提交 `e50ed15`、`98d6788` 已推送；CI run [`35341736858`](https://github.com/LordCasser/jarde/actions/runs/35341736858) 四个 job 全部 success。
 - 四项修正各自的证伪（均在文件副本上做、`sha256sum -c` 还原）：M1 去掉可达性跳过 → 该用例转红；M2 去掉 `live` 过滤 → 死环用例转红（活环用例**仍拒绝**）；M3 把 `holds` 换回「存 BCI」写法 → 该用例转红；M4 为文档。
 - 仍未做的只有**终审对上表 M1–M4 的复核**（本轮尚未复审）。登记债务不变：值身份缺口（无可避免的无关引用被当作地址）归 4.x；同槽中转与「存储在到不了 `ret` 的臂上」两处保守拒绝随契约登记；`elapsed_millis` 并行竞态 flake（既有）与 0.3b 缺第三方连续复核未变。
 ## P2 验收映射现状（滚动更新）
