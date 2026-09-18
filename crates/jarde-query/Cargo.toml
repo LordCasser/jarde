@@ -1,0 +1,19 @@
+[package]
+name = "jarde-query"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT OR Apache-2.0"
+description = "Bounded query and cross-reference scanning over reader-produced JVM artifact facts"
+
+[dependencies]
+# The canonical cursor binding digest (`query.rs`) hashes the request directly. That hashing is
+# the query layer's own and stays here until design §3.5's convergence — digest construction
+# moving into the reader — lands in its own slice; it is not reader-side hashing.
+blake3 = { version = "=1.8.7", default-features = false, features = ["pure"] }
+jarde-reader = { path = "../jarde-reader", version = "=0.1.0" }
+serde = { version = "=1.0.229", features = ["derive"] }
+
+[dev-dependencies]
+# The query contract's unit tests read the serde spelling of the report and page types.
+serde_json = "=1.0.151"

@@ -58,10 +58,10 @@ impl Engine {
     pub fn query(
         &self,
         snapshot: &ArtifactSnapshot,
-        request: &crate::query::QueryRequest,
+        request: &jarde_query::query::QueryRequest,
         budget: &mut Budget,
-    ) -> Result<crate::query::QueryReport> {
-        crate::query::execute(snapshot, request, budget)
+    ) -> Result<jarde_query::query::QueryReport> {
+        jarde_query::query::execute(snapshot, request, budget)
     }
 
     /// Materializes the target class and inspects its header (reader entry point).

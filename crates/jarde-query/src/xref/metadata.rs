@@ -84,19 +84,19 @@
 //! names exactly one BCI.
 
 use super::{ScanContext, ScanUnit, class_content, to_u64};
-use crate::classfile::{
+use crate::query::{
+    ConsumerKind, LiteralValue, QueryRelation, QueryResolution, XrefCertainty, XrefDerivation,
+    XrefEvidence, XrefItem, XrefOperation, XrefTarget,
+};
+use jarde_reader::classfile::{
     AttributeFacts, AttributeShell, ClassFacts, CpEntryFacts, CpEntryKind, DescriptorKind,
     attribute_content, attribute_facts, attribute_slice, class_facts, code_nested_attributes,
     cp_class_name, cp_entry, cp_utf8, descriptor_types, push_unique,
 };
-use crate::error::{Error, Result};
-use crate::model::{
+use jarde_reader::error::{Error, Result};
+use jarde_reader::model::{
     ArchiveNameBytes, ByteSpan, ClassBytesId, JvmBytes, Location, PhysicalDefinitionId, Provenance,
     SymbolRef,
-};
-use crate::query::{
-    ConsumerKind, LiteralValue, QueryRelation, QueryResolution, XrefCertainty, XrefDerivation,
-    XrefEvidence, XrefItem, XrefOperation, XrefTarget,
 };
 
 const MODULE_INFO_CLASS: &[u8] = b"module-info";

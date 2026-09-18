@@ -19,14 +19,14 @@
 //! name; nothing else is normalized, no text is decoded and matching stays exact.
 
 use super::{ScanContext, ScanUnit, UnitContent, to_u64};
-use crate::budget::Budget;
-use crate::error::{Error, Result};
-use crate::model::{
-    ArchiveNameBytes, ByteSpan, Diagnostic, DiagnosticSeverity, JvmBytes, SymbolRef,
-};
 use crate::query::{
     ConsumerKind, LiteralValue, QueryRelation, QueryResolution, QueryTarget, XrefCertainty,
     XrefDerivation, XrefEvidence, XrefItem, XrefOperation, XrefTarget,
+};
+use jarde_reader::budget::Budget;
+use jarde_reader::error::{Error, Result};
+use jarde_reader::model::{
+    ArchiveNameBytes, ByteSpan, Diagnostic, DiagnosticSeverity, JvmBytes, SymbolRef,
 };
 
 const MANIFEST_PATH: &[u8] = b"META-INF/MANIFEST.MF";

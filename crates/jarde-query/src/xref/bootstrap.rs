@@ -171,21 +171,21 @@
 //! cancellation is `Cancelled`), and `coverage` is `Partial` in all of them.
 
 use super::{ScanContext, ScanUnit, class_content, to_u64};
-use crate::budget::{BudgetDimension, Limits, UsageSnapshot};
-use crate::classfile::{
+use crate::query::{
+    BootstrapVia, ConsumerKind, LiteralValue, QueryRelation, QueryResolution, XrefCertainty,
+    XrefDerivation, XrefEvidence, XrefItem, XrefOperation, XrefTarget,
+};
+use jarde_reader::budget::{BudgetDimension, Limits, UsageSnapshot};
+use jarde_reader::classfile::{
     AttributeShell, BytecodeStop, ClassFacts, CpEntryFacts, CpEntryKind, EntryDescriptor,
     MemberHeader, MethodCodeFacts, bootstrap_methods, class_facts, cp_entry, descriptor_types,
     entry_descriptor, method_code_facts,
 };
-use crate::error::{Error, Result};
-use crate::model::{
+use jarde_reader::error::{Error, Result};
+use jarde_reader::model::{
     ArchiveNameBytes, ByteSpan, ClassBytesId, Diagnostic, DiagnosticSeverity, ExecutionReport,
     JvmBytes, Location, PhysicalDefinitionId, PhysicalMethodId, Provenance, SymbolRef,
     TerminationReason,
-};
-use crate::query::{
-    BootstrapVia, ConsumerKind, LiteralValue, QueryRelation, QueryResolution, XrefCertainty,
-    XrefDerivation, XrefEvidence, XrefItem, XrefOperation, XrefTarget,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -592,7 +592,7 @@ fn read_bootstraps(
     shell: &AttributeShell,
     facts: &ClassFacts,
     site: &UseSite,
-) -> Result<Vec<crate::classfile::BootstrapMethodFacts>> {
+) -> Result<Vec<jarde_reader::classfile::BootstrapMethodFacts>> {
     let read = {
         let budget = ctx.budget();
         bootstrap_methods(bytes, shell, &facts.constant_pool, budget)
@@ -622,7 +622,7 @@ fn read_bootstraps(
 /// The unit's deferred graph: nodes expanded once, then replayed per use-site.
 struct Graph<'a> {
     pool: &'a [CpEntryFacts],
-    bootstraps: &'a [crate::classfile::BootstrapMethodFacts],
+    bootstraps: &'a [jarde_reader::classfile::BootstrapMethodFacts],
     /// Expanded dynamic nodes by constant-pool index. This is the visited set that keeps a
     /// shared subgraph from being expanded again, and it is what makes the traversal
     /// terminate without a recursion guard of its own.
@@ -652,7 +652,7 @@ struct NodeArgument {
 impl<'a> Graph<'a> {
     fn new(
         pool: &'a [CpEntryFacts],
-        bootstraps: &'a [crate::classfile::BootstrapMethodFacts],
+        bootstraps: &'a [jarde_reader::classfile::BootstrapMethodFacts],
     ) -> Self {
         Self {
             pool,

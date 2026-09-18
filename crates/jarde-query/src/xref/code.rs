@@ -90,21 +90,21 @@
 //! order.
 
 use super::{ScanContext, ScanUnit, UnitContent, class_content, to_u64};
-use crate::budget::CountedBudgetDimension;
-use crate::classfile::{
+use crate::query::{
+    ConsumerKind, LiteralValue, QueryRelation, QueryResolution, QueryTarget, XrefCertainty,
+    XrefDerivation, XrefEvidence, XrefItem, XrefOperation, XrefTarget,
+};
+use jarde_reader::budget::CountedBudgetDimension;
+use jarde_reader::classfile::{
     BytecodeStop, ClassFacts, CpEntryFacts, CpEntryKind, EntryDescriptor, ExceptionHandlerFact,
     InstructionFact, MethodCodeFacts, class_facts, cp_class_name, cp_entry, descriptor_types,
     entry_descriptor, method_code_facts,
 };
-use crate::error::{Error, Result};
-use crate::model::{
+use jarde_reader::error::{Error, Result};
+use jarde_reader::model::{
     ArchiveNameBytes, ByteSpan, ClassBytesId, Diagnostic, DiagnosticSeverity, ExecutionReport,
     JvmBytes, Location, PhysicalDefinitionId, PhysicalMethodId, Provenance, SymbolRef,
     TerminationReason,
-};
-use crate::query::{
-    ConsumerKind, LiteralValue, QueryRelation, QueryResolution, QueryTarget, XrefCertainty,
-    XrefDerivation, XrefEvidence, XrefItem, XrefOperation, XrefTarget,
 };
 
 /// Attribute name of the only attribute this stream reads.
@@ -348,7 +348,7 @@ fn scan_methods(
 /// Checked from the attribute shells, so the decision costs no read: an abstract or
 /// native member has no instruction stream, and asking the reader to decode one would
 /// turn a normal declaration into a decode failure.
-fn has_code(method: &crate::classfile::MemberHeader) -> bool {
+fn has_code(method: &jarde_reader::classfile::MemberHeader) -> bool {
     method
         .attributes
         .iter()

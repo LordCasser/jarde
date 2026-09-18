@@ -318,6 +318,7 @@ version = "0.1.0"
 dependencies = [
  "blake3",
  "flate2",
+ "jarde-query",
  "jarde-reader",
  "petgraph",
  "proptest",
@@ -332,6 +333,16 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "jarde",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "jarde-query"
+version = "0.1.0"
+dependencies = [
+ "blake3",
+ "jarde-reader",
  "serde",
  "serde_json",
 ]

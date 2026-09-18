@@ -36,21 +36,23 @@ mod code;
 mod metadata;
 mod resource;
 
-use crate::artifact::{ArtifactKind, ArtifactSnapshot, PhysicalEntry, budget_dimension_code};
-use crate::budget::{Budget, CountedBudgetDimension, UsageSnapshot};
-use crate::error::{Error, Result};
-use crate::model::{
-    ByteSpan, ClassBytesId, ContainerId, ContainerOrigin, Coverage, CoverageDimension,
-    CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity, Digest, ExecutionReport,
-    JvmBytes, Location, PhysicalClassLocation, PhysicalDefinitionId, PhysicalVariant, Provenance,
-    SnapshotId, SymbolRef, TerminationReason, physical_variant_for_path,
-};
 use crate::query::{
     ConsumerKind, ConsumerSchema, LiteralValue, QUERY_ENGINE_SCHEMA, QueryBoundary, QueryCoverage,
     QueryCursor, QueryPage, QueryRelation, QueryRequest, QueryTarget, XrefCertainty, XrefItem,
     XrefTarget, cursor_digest, not_requested_coverage, unsupported_categories,
 };
-use crate::view::{PhysicalScope, PhysicalView};
+use jarde_reader::artifact::{
+    ArtifactKind, ArtifactSnapshot, PhysicalEntry, budget_dimension_code,
+};
+use jarde_reader::budget::{Budget, CountedBudgetDimension, UsageSnapshot};
+use jarde_reader::error::{Error, Result};
+use jarde_reader::model::{
+    ByteSpan, ClassBytesId, ContainerId, ContainerOrigin, Coverage, CoverageDimension,
+    CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity, Digest, ExecutionReport,
+    JvmBytes, Location, PhysicalClassLocation, PhysicalDefinitionId, PhysicalVariant, Provenance,
+    SnapshotId, SymbolRef, TerminationReason, physical_variant_for_path,
+};
+use jarde_reader::view::{PhysicalScope, PhysicalView};
 
 /// Relations whose definition/dispatch resolution P1 does not perform but whose raw
 /// constant-pool candidates are still answerable facts.
@@ -92,16 +94,68 @@ pub(crate) struct ScanResult {
     pub(crate) diagnostics: Vec<Diagnostic>,
 }
 
+/// The candidate shapes a caller outside this crate may ask [`scan_candidates`] for.
+///
+/// A declaration-reference scan is the only consumer above this crate, and it needs exactly
+/// two rules: the shape of a member reference and the shape of a signature-polymorphic method.
+/// Those two are what crosses the boundary — the scanner's third rule, [`CandidateRule::Exact`],
+/// is query-internal semantics: it names one complete target to compare against rather than a
+/// declaration to look for, and no caller above this crate states one.
+#[derive(Clone, Debug)]
+pub enum CandidateFilter {
+    /// The raw shape of one member reference: a `SymbolRef::Method`/`SymbolRef::Field` whose
+    /// name and descriptor bytes are equal.
+    ///
+    /// The owner deliberately does not take part. `Sub.foo` may resolve to the declaration
+    /// `Base.foo`, so filtering by the declaration's own owner would drop exactly the use
+    /// sites a declaration-reference query exists to find; the owner of each candidate is
+    /// read from the item instead, and comparing the two is the caller's resolution step.
+    MemberShape {
+        name: JvmBytes,
+        descriptor: JvmBytes,
+    },
+    /// The shape of one signature-polymorphic method: a `SymbolRef::Method` whose owner and
+    /// name bytes are equal, whatever descriptor the site spells.
+    ///
+    /// JVMS 2.9 makes the call site's descriptor the site's own choice — `MethodHandle.invoke`
+    /// and `invokeExact` are matched by name at resolution — so comparing descriptors would
+    /// turn a real, resolvable use site into "not even a candidate": a silent false negative
+    /// under a report that claims complete coverage. The owner *is* part of the identity here,
+    /// which is not in tension with `MemberShape` ignoring it: signature polymorphism is
+    /// defined for exactly one owner, so a site on any other owner does not answer this shape
+    /// at all.
+    SignaturePolymorphic { owner: JvmBytes, name: JvmBytes },
+}
+
+impl From<CandidateFilter> for CandidateRule {
+    /// The scanner's own spelling of a caller's rule.
+    ///
+    /// The two variants carry the same dimensions on both sides, so this is a move rather than
+    /// a translation: there is no second matching rule that could drift from the first, and a
+    /// rule the caller cannot state ([`CandidateRule::Exact`]) has no public spelling at all.
+    fn from(filter: CandidateFilter) -> Self {
+        match filter {
+            CandidateFilter::MemberShape { name, descriptor } => {
+                Self::MemberShape { name, descriptor }
+            }
+            CandidateFilter::SignaturePolymorphic { owner, name } => {
+                Self::SignaturePolymorphic { owner, name }
+            }
+        }
+    }
+}
+
 /// How a sub-scan decides whether one candidate it found answers the scan.
 ///
 /// This is the one place that decision lives, so every consumer sub-scan applies the same
-/// rule and none of them compares targets on its own: [`CandidateFilter::Exact`] is the
+/// rule and none of them compares targets on its own: [`CandidateRule::Exact`] is the
 /// behaviour `Engine::query` has always had (exact equality on the raw bytes the request
-/// names), and the two shape filters are the wider candidate rule a declaration-reference
+/// names), and the two shape rules are the wider candidate rule a declaration-reference
 /// scan needs — a member reference is a candidate whenever the dimensions its declaration can
-/// be found under match, whatever owner the site spells.
+/// be found under match, whatever owner the site spells. [`CandidateFilter`] is the caller's
+/// half of the same rule; `Exact` has no public spelling.
 #[derive(Clone, Debug)]
-pub(crate) enum CandidateFilter {
+pub(crate) enum CandidateRule {
     /// The request's own target: the candidate must carry the same raw bytes.
     Exact(QueryTarget),
     /// The raw shape of one member reference: a `SymbolRef::Method`/`SymbolRef::Field` whose
@@ -128,7 +182,7 @@ pub(crate) enum CandidateFilter {
     SignaturePolymorphic { owner: JvmBytes, name: JvmBytes },
 }
 
-impl CandidateFilter {
+impl CandidateRule {
     /// The target the scan's own request carries.
     ///
     /// `Exact` is the caller's target. A shape filter names no target: the dimensions it
@@ -191,15 +245,15 @@ fn method_owner_and_name(symbol: &SymbolRef) -> Option<(&JvmBytes, &JvmBytes)> {
 /// This is a query scan without the page view: the caller states its own item limit and
 /// continuation, so the scan publishes every candidate it found and reports whether it
 /// stopped before the end of the range instead of issuing a cursor.
-pub(crate) struct CandidateScan {
-    pub(crate) items: Vec<XrefItem>,
+pub struct CandidateScan {
+    pub items: Vec<XrefItem>,
     /// Whether the scan stopped before the end of the range (an item limit, a budget or
     /// cancellation stop, or a provider that did not finish), so `items` must not be
     /// presented as the whole result.
-    pub(crate) has_more: bool,
-    pub(crate) coverage: QueryCoverage,
-    pub(crate) execution: ExecutionReport,
-    pub(crate) diagnostics: Vec<Diagnostic>,
+    pub has_more: bool,
+    pub coverage: QueryCoverage,
+    pub execution: ExecutionReport,
+    pub diagnostics: Vec<Diagnostic>,
 }
 
 /// Runs the XRef scan for one validated request.
@@ -240,7 +294,7 @@ pub(crate) fn scan(
     let mut ctx = ScanContext::new(
         snapshot,
         &probe,
-        CandidateFilter::Exact(request.target.clone()),
+        CandidateRule::Exact(request.target.clone()),
         budget,
     );
     let pass = scan_units(
@@ -335,7 +389,7 @@ pub(crate) fn scan(
 /// the scan stops before publishing more items, its artifact coverage turns `Partial`, and the
 /// execution does not change because of it. The caller publishes the truncation as its own
 /// `has_more`; no cursor is issued for it.
-pub(crate) fn scan_candidates(
+pub fn scan_candidates(
     snapshot: &ArtifactSnapshot,
     scope: &PhysicalScope,
     consumers: &ConsumerSchema,
@@ -343,6 +397,7 @@ pub(crate) fn scan_candidates(
     max_items: u64,
     budget: &mut Budget,
 ) -> Result<CandidateScan> {
+    let filter = CandidateRule::from(filter);
     let request = QueryRequest {
         relation: QueryRelation::MentionsSymbol,
         target: filter.request_target(),
@@ -772,7 +827,7 @@ pub(super) struct ScanContext<'a> {
     request: &'a QueryRequest,
     /// How a candidate answers this scan; every sub-scan asks this context instead of
     /// comparing targets itself.
-    filter: CandidateFilter,
+    filter: CandidateRule,
     budget: &'a mut Budget,
     diagnostics: Vec<Diagnostic>,
     materialized: Vec<MaterializedUnit>,
@@ -782,7 +837,7 @@ impl<'a> ScanContext<'a> {
     fn new(
         snapshot: &'a ArtifactSnapshot,
         request: &'a QueryRequest,
-        filter: CandidateFilter,
+        filter: CandidateRule,
         budget: &'a mut Budget,
     ) -> Self {
         Self {
@@ -831,16 +886,17 @@ impl<'a> ScanContext<'a> {
         literal: Option<&LiteralValue>,
     ) -> Option<XrefTarget> {
         match &self.filter {
-            CandidateFilter::Exact(QueryTarget::Symbol { value }) => {
+            CandidateRule::Exact(QueryTarget::Symbol { value }) => {
                 (symbol == Some(value)).then(|| XrefTarget::Symbol {
                     value: value.clone(),
                 })
             }
-            CandidateFilter::Exact(QueryTarget::Literal { value }) => (literal == Some(value))
-                .then(|| XrefTarget::Literal {
+            CandidateRule::Exact(QueryTarget::Literal { value }) => {
+                (literal == Some(value)).then(|| XrefTarget::Literal {
                     value: value.clone(),
-                }),
-            CandidateFilter::MemberShape { name, descriptor } => {
+                })
+            }
+            CandidateRule::MemberShape { name, descriptor } => {
                 let symbol = symbol?;
                 let (found_name, found_descriptor) = member_shape(symbol)?;
                 (found_name.0 == name.0 && found_descriptor.0 == descriptor.0).then(|| {
@@ -849,7 +905,7 @@ impl<'a> ScanContext<'a> {
                     }
                 })
             }
-            CandidateFilter::SignaturePolymorphic { owner, name } => {
+            CandidateRule::SignaturePolymorphic { owner, name } => {
                 let symbol = symbol?;
                 let (found_owner, found_name) = method_owner_and_name(symbol)?;
                 (found_owner.0 == owner.0 && found_name.0 == name.0).then(|| XrefTarget::Symbol {

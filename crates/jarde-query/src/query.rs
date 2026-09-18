@@ -5,14 +5,14 @@
 //! items, page, coverage, execution and diagnostics without ever mixing the
 //! analysis state with the execution state.
 
-use crate::artifact::ArtifactSnapshot;
-use crate::budget::Budget;
-use crate::error::{Error, Result};
-use crate::model::{
+use jarde_reader::artifact::ArtifactSnapshot;
+use jarde_reader::budget::Budget;
+use jarde_reader::error::{Error, Result};
+use jarde_reader::model::{
     ArchiveNameBytes, ByteSpan, ContainerOrigin, Coverage, CoverageDimension, Diagnostic,
     DiagnosticSeverity, Digest, ExecutionReport, JvmBytes, Provenance, SnapshotId, SymbolRef,
 };
-use crate::view::{PhysicalScope, PhysicalView};
+use jarde_reader::view::{PhysicalScope, PhysicalView};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 
@@ -377,7 +377,7 @@ pub(crate) fn not_requested_coverage() -> Coverage {
 /// `references_definition` and `may_dispatch_to` have no resolver in P1, so they report
 /// the `UnsupportedAnalysis` state and keep the raw constant-pool candidates the scan
 /// still answers instead of returning an empty, unexplained result.
-pub(crate) fn execute(
+pub fn execute(
     snapshot: &ArtifactSnapshot,
     request: &QueryRequest,
     budget: &mut Budget,
@@ -746,8 +746,8 @@ mod tests {
         }
     }
 
-    fn container() -> crate::model::ContainerId {
-        crate::model::ContainerId("root".into())
+    fn container() -> jarde_reader::model::ContainerId {
+        jarde_reader::model::ContainerId("root".into())
     }
 
     fn symbol_class(owner: &[u8]) -> QueryTarget {

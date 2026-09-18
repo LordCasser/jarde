@@ -38,8 +38,8 @@ use crate::model::{
     TerminationReason,
 };
 use crate::providers::{HeaderClosure, HeaderDemand, HeaderLookupState, escaped};
-use crate::query::{ConsumerKind, ConsumerSchema, XrefItem, XrefOperation, XrefTarget};
 use crate::view::{LoaderId, PhysicalScope};
+use jarde_query::query::{ConsumerKind, ConsumerSchema, XrefItem, XrefOperation, XrefTarget};
 use jarde_reader::accounting::with_usage;
 use serde::{Deserialize, Serialize};
 
@@ -1183,13 +1183,15 @@ pub(crate) fn declaration_reference_report(
     // would answer "no candidate at all" for a call site that really resolves to this
     // declaration.
     let filter = match signature_polymorphic_shape(&query.declaration.member) {
-        Some((owner, name)) => crate::xref::CandidateFilter::SignaturePolymorphic { owner, name },
-        None => crate::xref::CandidateFilter::MemberShape {
+        Some((owner, name)) => {
+            jarde_query::xref::CandidateFilter::SignaturePolymorphic { owner, name }
+        }
+        None => jarde_query::xref::CandidateFilter::MemberShape {
             name: declaration_shape.0,
             descriptor: declaration_shape.1,
         },
     };
-    let scan = crate::xref::scan_candidates(
+    let scan = jarde_query::xref::scan_candidates(
         snapshot,
         &query.scope,
         &query.consumers,
@@ -1573,7 +1575,7 @@ const INVOKE_EXACT: &[u8] = b"invokeExact";
 /// JVMS 2.9 defines exactly two methods this way, and only on `java/lang/invoke/MethodHandle`:
 /// a call site of theirs names the method by name and picks the descriptor, so the declaration
 /// is found without comparing descriptors at all. Answering `Some` here is what makes the scan
-/// use [`crate::xref::CandidateFilter::SignaturePolymorphic`] instead of a member shape. The
+/// use [`jarde_query::xref::CandidateFilter::SignaturePolymorphic`] instead of a member shape. The
 /// rule mirrors 2.3's own name-only branch, which the same owner and names select.
 fn signature_polymorphic_shape(member: &SymbolRef) -> Option<(JvmBytes, JvmBytes)> {
     let SymbolRef::Method { owner, name, .. } = member else {
