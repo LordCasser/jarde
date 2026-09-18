@@ -839,6 +839,7 @@ pub(crate) struct PassDescriptor {
 - **合流**：operand stack 要求深度/类别兼容，冲突返回 `ir_frame_inconsistent`；locals 允许不兼容或未定义的槽合成不可用 `Top`，之后读取 Top 才失败，不能拒绝只在已死亡 local 上不同的合法路径。category-2 的任一槽被覆盖会使原双槽绑定失效；Null/引用和缺失依赖的合流保持保守，引用身份含 defining loader。
 - **不变量（本地）**：每个块的入口状态 = 前驱出口状态的合流；栈深在 JVM 上限内；`dup`/`swap`/`pop` 族按类别配对（category-2 的 `dup2` 语义必须显式覆盖）；`invoke*` 的参数量与返回类型由 descriptor 决定；`<init>` 返回描述符为 void，初始化转换由成功的 `invokespecial <init>` 对 receiver 的作用触发，不来自返回值。
 - **`verification` 恒为 `NotPerformed`**：本片只做本地不变量，`semantic_validation` 先 `Unproven`，在 4.3 有不变量证据后可升为 `LocalInvariants`。缺 `StackMapTable`/`LineNumberTable`/`LVT` 不构成失败理由（按契约从 descriptor 与数据流推导）。
+- **4.1 的未初始化边界与专用停止码**：初始化转换（`uninitializedThis`/new-site 的别名翻转、构造调用及其异常后继）属 **4.2**，4.1 只落实状态区别：`new` 压入带 new-site 的未初始化引用，构造器入口的 local 0 是 `UninitializedThis`，未初始化值**只能被纯栈操作搬动**（`astore`/`aload`/`dup*`/`pop*`/`swap`），被其它消费者使用时**该 body 停止**。停止码为 **`ir_frame_uninitialized`**（Warning、`Partial`、不发布 `Frames`、保留 raw 与 canonical）——它表示「本 build 尚缺 4.2 的初始化分析」，与表示字节码矛盾的 `ir_frame_inconsistent` **必须分开**；4.2 落地后该码不再出现。这与 `ir_legacy_normalization_unbounded` 同类：都是分阶段的实现边界码，不得用于掩盖真实不一致。
 
 ### 4.2 未初始化值、handler 入口与引用合流
 
