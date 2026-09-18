@@ -330,7 +330,7 @@ impl Engine {
 ```
 
 - 请求级失配返回 `Err(Error::invalid_input(..))`：`resolution_snapshot_mismatch`（`runtime.physical.snapshot` 不在 `content` 中）、`resolution_target_use_mismatch`（`SymbolRef` 与 `ReferenceUse` 不自洽，例如 `ClassReference` 配方法符号）、`analysis_no_stages`（空 `stages`）。**环境问题不是 `Err`**，它们进 `environment_problems` 与报告。
-- 1.1 对合法请求的诚实状态：`analysis = NotPerformed`、`state = None`（解析）或 `stages` 全 `NotPerformed`（分析）、`execution = Failed { reason: Unsupported { code: "resolution_not_implemented" / "method_analysis_not_implemented" } }` + 同 code 诊断、三维 `coverage = NotRequested`、所有 counted 维度 usage 为 0（`elapsed_millis` 除外）。code 用能力名，2.x/3.x 落地后消失，相关测试随之退役。
+- 1.1 对合法请求的诚实状态：`analysis = NotPerformed`、`state = None`（解析）或 `stages` 全 `NotPerformed`（分析）、`execution = Failed { reason: Unsupported { code: "resolution_not_implemented" } }`（或分析路径上的 `"method_analysis_not_implemented"`）+ 同 code 诊断、三维 `coverage = NotRequested`、所有 counted 维度 usage 为 0（`elapsed_millis` 除外）。**该语义在 3.3 起收窄**：解析侧的 `resolution_not_implemented` 仍用于被拒环境与 class 符号的声明查询；分析侧的 `method_analysis_not_implemented` **只在环境被拒时出现**（合法请求已按 pass 表真跑方法分析），它随 5.1 的完整接通彻底消失。code 用能力名，2.x/3.x 落地后消失，相关测试随之退役。
 - 1.1 的三个入口**不轮询 Budget**（不启动任何工作），因此预先取消的 token 也会返回 `Failed{Unsupported{…}}` 而不是 `Cancelled`；`Cancelled` 语义从 2.x 起才有承载者，5.3 的性质不得对 1.1 写“取消 ⇒ Cancelled”的蕴含式。
 - A17 的可证伪检查：源码级守卫测试断言 `src/query.rs` 与 `src/xref/**`（目录枚举，含新增文件）不含 `crate::environment`/`crate::resolver`/`crate::ir` 记号，也不含经 crate 根 re-export 的 P2 类型名；匹配前归一化 `::` 两侧空白；P2 类型名单必须由 `src/environment.rs`/`resolver.rs`/`ir.rs` 的公开类型**推导并自证完整**（漏一个就失败），而不是手写清单。该守卫是 token 级近似（注释里复述不变量也会命中；别名、raw identifier、`#[path]` 包含等拼写层面不保证覆盖），A17 的构造级证据由 5.2 的构造计数补强。
 - 1.1 的正例只证明各平面**可以分别取值**（同一报告里各取不同值、互不推断），不证明跨取值组合的语义；跨取值由 5.x 的阶段结果补强。
@@ -729,11 +729,20 @@ pub(crate) struct PassDescriptor {
   pub(crate) enum EdgeKind { Normal, Exception { handler_ordinal: u32 }, SubroutineReturn { call_site: u32 } }
   pub(crate) struct EffectFacts { /* locals 读/写集合、stack delta、可能的 throw */ }
   ```
+- **边的身份**：普通转移按 (块, 不同目标) 一条边（条件分支的目标等于自身 fall-through 时**只有一条**）、异常边按 (块, 异常表记录) 一条边（两个 throw site 落在同一记录上只发一条；两条记录共享同一 handler 入口时**平行边保留**）、subroutine 返回边按 call site 一条。规则写死是为了让「一个转移被记成两条边」可以被判为缺陷而不是读法差异。
 - **指令级 throw 语义**：`throw_sites` 必须逐个 throwing instruction 记录（不能只取块尾指令），并按**异常表声明顺序**给出该点可行的 handler 列表；同一 BCI 的多条异常边都要保留（平行边，petgraph `Graph` 多次 `add_edge`）。
 - **不可达与自环**：不可达块进 `unreachable` 而不是被丢掉；自环（`goto` 指向自身、保护区间覆盖自身）必须可表达且不破坏 SCC/支配结果。
 - **确定性**：块/边/throw site/handler 一律按 (class offset, BCI, kind, ordinal) 显式排序；**不得依赖 petgraph 的迭代顺序或 `immediately_dominated_by` 的顺序**（3.1 的证据）。
 - **A17/P1 不变**：raw CFG 只在 `analyze_method` 路径上构建；`Engine::query` 的 BCI、引用数量与证据不变（P1 golden 全绿是证据）；`query`/`xref` 不引用 `ir`。
-- **计费**：块/边先计 `IrItems`/`IrEdges` 再构造；工作列表迭代计 `AnalysisSteps`（即该 pass 的 `budget` 集合为 `[Blocks, Steps]`）；`max_blocks` 默认 16 384、硬上限 65 535；超限即停并发布已完成的阶段结果。
+- **计费**：块/边先计 `IrItems`/`IrEdges` 再构造；工作列表迭代计 `AnalysisSteps`（即该 pass 的 `budget` 集合为 `[Blocks, Steps]`）；超限即停并发布已完成的阶段结果。
+- **块上限的落点**：`max_blocks` 默认 16 384、硬上限 65 535 是 `cfg` 的 **crate-private 常量**，不是新增的请求级 limit（1.3 的维度表已定稿，不为它加字段）；请求级控制是 `ir_items`——超限以 `BudgetExceeded{IrItems}` 形式停止，请求级与内部护栏各司其职。
+- **不完整方法体**：`RawCfg` 带 `completeness`（`Complete` / `Truncated{stopped_at}`）。截断体上只覆盖**可靠前缀**，且**分两种**：截断且目标无法校验（1.2 的 sound-but-incomplete 视图）⇒ `Partial` + `ir_raw_cfg_incomplete_body`（**不报损坏**）；截断但前缀自洽 ⇒ `Partial` + reader 自己的 stop code（不额外加诊断）。完整体上同样的校验错才是 `Failed{code}`。这正是 1.2 登记的 `stopped_at` 债务的处置点。
+- **`jsr` 在原始图里不展开**：`jsr`/`jsr_w` 出 `SubroutineReturn{call_site}` 进子程序，`ret` 无后继并结束其块，call site 记入 `unresolved_returns` 交 3.4；可达性把「可达 `jsr` 的后继块」也算可达，因此 `unresolved_returns` 非空时 `unreachable` 是**欠报**（不是谎称死块）。
+- **catch 类型不在本层过滤**：throw site 的 handler 列表 = 保护区间覆盖该 BCI 的记录（声明顺序），**不做 catch 类型匹配**——那需要类型层次（resolver），`cfg` 不得依赖。空 handler 列表也要记录（「此处无人捕获」是事实）。
+- **本片新增的报告级诊断码**：`ir_pass_not_implemented`（请求的阶段尚无实现）、`ir_raw_cfg_incomplete_body`（截断体的图不完整）、`ir_method_declared_without_body`（abstract/native 是事实，Info 级）。
+- **reader 事实的补充**：`MethodCodeFacts` 增 crate-private 的 `exception_handler_count`（复刻 `BytecodeInspection` 的既有字段），只为 coverage 能命名「未读 handler ordinal 区间」。
+- **`wide` 包裹的 opcode 缺口**（属 1.2 边界，与 `newarray` atype 同类）：1.2 不保留 `wide` 包裹的 opcode 名，因此 `wide iload/istore/ret` 既不分类局部读写也不结束块；`wide iinc` 经 `increment` 仍分类。若 3.4/4.x 需要 `wide ret`，先扩 1.2 事实。
+- **载荷的可见性**（不变量 11）：raw CFG 与 effect 载荷建完即在本片内部使用，公共面只暴露状态/覆盖/诊断；消费者是 3.4/3.5/5.1。
 
 ### 3.4 raw returnAddress 与调用上下文
 

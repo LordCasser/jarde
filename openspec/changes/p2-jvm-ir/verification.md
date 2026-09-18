@@ -162,6 +162,15 @@
 - 远端 CI：实现与文档提交 `2bc0ea6`、`8d74ce4` 推送 `main` 后，CI run [`35287796487`](https://github.com/LordCasser/jarde/actions/runs/35287796487) 四个 job 全部 success。
 - 独立复核结论：**Approve**（无必修项；D1 契约缺口已在 3.3 前修正）。登记债务：**`engine.rs` 的接入不可观测**（删掉调用或换序都无测试变红，且前缀规则在 `ir::scheduled_stages` 与 `passes::validate_schedule` 各有一份实现——5.1 必须以校验器返回的表前缀作为唯一执行/阶段来源，并把「报告 `stages` == 校验器前缀」写成断言）；`Effects` 目前无消费者（其失效在运行时不被强制，故契约已写明「事实的消费者必须写进 `requires`」）；`progress()` 的 `no phase completed yet` 分支与空集合分支仓内无覆盖（探针证明可达且正确）；本片的计费语句只有声明，真实计费点从 3.3 起。
 
+### 3.3 raw CFG、throw sites 与 effect facts
+
+- 交付：新增 crate-private `src/cfg.rs`（`RawCfg{blocks, edges, throw_sites, handlers, unreachable, completeness, unresolved_returns}`、`EdgeKind{Normal, Exception{ordinal}, SubroutineReturn{call_site}}`、`EffectFacts`）；`Engine::analyze_method` 首次真跑方法分析（`passes::implemented` 决定哪些阶段有实现，每个 pass 完成后才 `FactLedger::apply`）；`providers::read_definition_content`、`classfile::method_code_coverage`（与 `inspect_method_bytecode` 共享一份规则）与 `MethodCodeFacts::exception_handler_count`。**petgraph 首次成为真实消费者**（`DiGraph` 承载多重图 + 邻接工作列表；不调用 `algo::`，四条准入约束自然成立）。
+- 语义：指令级 throw site（逐条 throwing 指令、handler 列表按异常表声明顺序、空列表也记录）；**边的身份写死**（普通转移按 (块, 不同目标) 一条、异常边按 (块, 记录) 一条且共享入口的平行边保留、subroutine 返回边按 call site 一条）——写死是为了让「一次转移记成两条边」可被判为缺陷；`jsr` 在原始图不展开（`ret` 无后继、call site 进 `unresolved_returns`、可达性含 jsr 续点故 `unreachable` 是**欠报**而非谎称死块）；截断体分两种（目标不可校验 ⇒ `Partial` + `ir_raw_cfg_incomplete_body`；前缀自洽 ⇒ `Partial` + reader 的 stop）；catch 类型匹配留给 resolver。
+- 计费：`raw_cfg` 的 `budget` 声明 `[Blocks, Steps]` 且与**实际计费维度逐项相等**（`IrItems` 块/handler/throw site/指令 effect、`IrEdges` 每条边、`AnalysisSteps` 每条入块指令与每次可达性迭代）；块上限 16 384 是 crate-private 常量（请求级控制是 `ir_items`，超限以 `BudgetExceeded{IrItems}` 停止并保留前缀）；`method_bodies` 只计目标方法一次；A17 守卫扩到 10 个 module token（含 `crate::cfg`/`crate::passes`）。
+- 反例与证伪：实现者 6 组变异（throw site 只取块尾、handler 顺序反转、忽略 `stopped_at`、去掉显式边排序、A17 注入、`may_throw` 恒真）；复核者 10 组变异 + 14 条自建 fixture（跨进程 SHA-256 确定性、块中段 throw site、switch 去重、混合体、16 385 块的护栏、截断两分支）。首轮结论 **Reject**：发现条件分支目标等于自身 fall-through 时**发出两条相同普通边并计两次费**（合法字节码触发），以及异常边 (块, 记录) 去重**零用例**、A17 token 未覆盖 `crate::cfg`/`crate::passes`（`use crate::cfg::raw_cfg;` 注入守卫仍绿）。四项修正后各自变异被对应新用例捕获。
+- 证据：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **565 passed / 0 failed / 1 ignored**（`p2_cfg` 9、`p2_contracts` 29、`p2_passes` 4、`p1_xref_golden` 5）；示例 exit 0 并输出 `stages=[RawFacts Completed, RawCfg Completed, LegacyNormalization Failed{ir_pass_not_implemented}, …]`、`usage method_bodies=1 ir_items=15 analysis_steps=12`；由主 Agent 独立复跑确认。
+- 独立复核结论：**Reject → 修正 → 待连续性确认**（首轮问题全部修正并有变异证据）。登记债务：D25（driver 读取按物理身份，5.1 决策）、D26（内部上限与请求上限只能靠消息文本区分）、D27（`wide` 包裹 opcode 属 1.2 边界）、D28（catch 类型不过滤，已入契约）。
+
 ## 债务登记（滚动，归档前逐条处置）
 
 各片复核登记的边角与已知边界集中在此，避免归档时丢失。**每条都必须有一条处置**：已修、转为显式契约边界、指派到具体后续任务、或明确接受并写进文档。
@@ -192,6 +201,10 @@
 | D22 | `Effects` 目前无消费者（其失效在运行时不被强制） | 3.2 复核 | 契约已写「事实的消费者必须写进 `requires`」；4.x 接通消费者时须同步 |
 | D23 | `progress()` 的「尚无 phase 完成」分支与空集合分支仓内无覆盖 | 3.2 复核 | 探针证明可达且正确；5.1 装配真实 `stages` 时会走到 |
 | D24 | `analysis-contracts` 的 Purpose 仍是 P1 口径；`query-api` 仍称 P2 会处理 `references_definition` | P1/P2 记录 | **5.4 归档前必修**：同步 Purpose，并把 `query-api` 的那句改成与实现一致 |
+| D25 | `analyze_method` 的 driver 读取按**物理身份**，不受环境 domain/root 约束（构造「环境指向快照 B、请求 owner 在快照 A」可读到 A 的定义并把 loader 记成 app） | 3.3 复核 | **5.1 决策**：要么要求 `method.owner` 的 snapshot 与 `runtime.physical.snapshot` 一致，要么在契约里写清身份读取与 loader 归属口径 |
+| D26 | 内部块上限（16 384）与请求级 `ir_items` 在报告层只能靠诊断文案里的 `limit=16384` 区分（`Error::BudgetExceeded` 的 limit/consumed/requested 在 `ir::terminal` 被丢弃） | 3.3 复核 | 接受为现状；5.1 若要发布计数需先决定是否给独立 code |
+| D27 | `wide` 包裹的 opcode 在 1.2 未保留（`wide iload/istore/ret` 既不分类局部读写也不结束块；`wide iinc` 经 increment 仍分类） | 3.3 实现 | 接受为 1.2 边界（与 `newarray` atype 同类）；若 3.4/4.x 需要 `wide ret`，先扩 1.2 事实 |
+| D28 | catch 类型匹配不在 `cfg` 层做（throw site 的 handler 列表只按保护区间与声明顺序，不过滤类型） | 3.3 契约 | 已写进契约：类型层次属 resolver，`cfg` 不得依赖 |
 ## P2 验收映射现状（滚动更新）
 
 按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
