@@ -816,7 +816,7 @@ pub(crate) struct PassDescriptor {
 - **locals**：分别保留分析需要的 accessed/written 信息（category-2 包含两槽）。当前 `affected_locals` 若继续表示写集，名称和消费者需写明；不可把写集当成 ret 状态合流所需的全部访问集。3.5 不得恢复/丢弃实际上已访问或改变的槽。
 - **dialect 与可读性**：classfile 51+ 的 jsr/jsr_w/ret（含 wide ret）为违规；保留取证字节和 BCI，verification 仍为 NotPerformed。不可达指令的 dialect 检查与可达上下文证明分开，不能仅因现代方法使用合法 wide load/store 就 unresolved。
 - **停止与发布**：有缺口/不支持的值流返回 `ir_call_context_unresolved`，Warning、Partial/Error、Fallback，且不发布 `CallContexts`；预算/取消保持各自终止原因。图与 facts 不一致才用 `ir_call_context_inconsistent`。只有所有可达返回转移与异常状态均有证明时才 Established；原有“五类固定触发”不足，改由上述不变量约束。
-- **不可达边界逐触发声明**（不得再用一句“只作用于可达部分”概括，实测该句零覆盖且各触发作用域不一致）：返回点不在已解码前缀 ⇒ 只对**可达**调用点拒绝，死调用点的缺失返回点作为 payload 事实发布（不得让它阻塞活调用点的分析）；子程序体无 `ret`、可达 `ret` 无归属 ⇒ 按可达判定；嵌套成环 ⇒ 只对活在路径上的环拒绝；`wide` 缺口 ⇒ 按 0.2 之后取消整方法粒度的拒绝。每一类各配一条 fixture，并同时断言**反方向**（死代码里的对应形态必须仍 Established），否则删除可达性判定的变异不会被任何测试捕获。
+- **不可达边界逐触发声明**（不得再用一句“只作用于可达部分”概括，实测该句零覆盖且各触发作用域不一致）：返回点不在已解码前缀 ⇒ **只对可达调用点拒绝**，不可达的调用点**不生成 context**（它的返回点在字节里不存在，无法构成一个 `SubroutineContext`），因此**不得阻塞活调用点的分析**；子程序体无 `ret`、可达 `ret` 无归属 ⇒ 按可达判定；嵌套成环 ⇒ 只对活在路径上的环拒绝；`wide` 缺口 ⇒ 按 0.2 之后取消整方法粒度的拒绝。**载荷不变量的前置条件据此写清**：`contexts.len()` 等于**返回点已解码**的 `jsr`/`jsr_w` 站点数（不按可达过滤）。每一类各配一条 fixture，并同时断言**反方向**（死代码里的对应形态必须仍 Established），否则删除可达性判定的变异不会被任何测试捕获。
 - **Established 的载荷不变量写成等式而非叙述**：`contexts.len()` 等于已解码前缀内 `jsr`/`jsr_w` 的站点数（不按可达过滤）、`returns.len()` 等于前缀内 `ret` 数、每个 `ret` 的 `targets` 是**证明持有其返回地址**的那些调用点；`targets` 为空时 3.5 MUST NOT 据其建边。
 - **计费**：0.3 为 plans、(context, block/BCI) 状态槽、visited/worklist、token/return 关系、local 集合成员、handler 关系和输出 origin 制定单位，在增长前计 `IrItems`；真实派生边计 `IrEdges`，传播/合流计 `AnalysisSteps`，建表与最终装配均有 poll。共享/嵌套导致的乘积项按实际数量计费，不能只给外层 vector 或输入 bytes 计一次。无克隆时 `NormalizationClones=0`；crate-private 不豁免预算。
 - **0.3 的计费增长点清单（父级已枚举，避免漏计）**：以下每处在**增长前**计费；括号内是 crate-private 站点（`src/call_context.rs` 当前行号，0.3 时以实际位置为准）：`plans` 每个 `jsr` 站点一项（约 247/272）→ `IrItems`；`entries`（call-site → 边目标，约 420/423）→ `IrItems`；`successors` 每块每派生边一项（约 455/463）→ **`IrEdges`**；`affected`/`coverage`/`contains` 三个按 plan 的集合（约 532–534）→ `IrItems`（**按元素**计，不是按外层 vector 计一次）；`visited: BTreeMap<usize, Vec<bool>>`（约 554/561）→ `IrItems`（复核者实测这里的 bool 矩阵在 3 000 上下文时约 9 MB，正是 R4 的核心）；`written`（约 556）→ `IrItems`；`worklist` 的每次取用/入队（约 611/622/623）→ `AnalysisSteps`；环检测的 `colour`/`path`/`cursor`（约 719–748）→ `IrItems`/`AnalysisSteps`（按实际增长计）。**`assemble`/`instruction_ranges`/`successors`/`plans` 的装配期必须各有 `poll()`**（复核者指出这是当前唯一不按 pass 边界检查取消的窗口）。成功时 `CallContexts` 载荷**保留**供 3.5 消费（不得为了省计费而丢弃），失败/停止时**不发布** `CallContexts`。
@@ -835,7 +835,7 @@ pub(crate) struct PassDescriptor {
     选择更保守一侧的理由：当前没有操作数栈的行内值追踪，无法为「同一槽多次写入」判定值是否仍是该地址；等 4.x 具备值身份后（见下条限制）再收紧到不动点。**不得**把「中转形态判 `Established`」当成值身份的证据——那种接受来自同一条弱规则，换成无关引用同样通过。
   - 裁决本身要计费（`IrItems` 按收集到的写入与 `ret` 计、`AnalysisSteps` 按支配检查的遍历边计）并纳入取消检查点。
   - **`affected_locals` 是写集（may-write），不是值集**：它表示「该上下文的子程序体可达指令写过的槽」，**包含 handler 回接路径上的写入**（这是 R3 的修正内容），category-2 占两槽；3.5 只能把它当作**写集**消费，不得据此推断某槽在 `ret` 时刻持有什么值。名称保留 `affected_locals`，消费者是 3.5 的规范化与 4.x 的 Frame。
-  - 该不动点同样要计费（`IrItems`/`AnalysisSteps`，按实际增长）并纳入取消检查点。
+
 - **验收**：正确 ret 与错槽/覆盖的双侧对照、共享/嵌套和 handler 回接 ret、不同 throw-site locals、wide/版本边界、零/恰好/超限存储与步骤、取消和不可达边界。至少一份真实历史 finally 语料；合成 fixture 断言实际 opcode/operand 及运行状态，不能只断言载荷形状。将本轮反例转成仓内回归，并证明恢复旧实现会失败，独立复核后才能勾选。
 
 ### 3.5 有界 jsr/ret 规范化与 CanonicalCFG

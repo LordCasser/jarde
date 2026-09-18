@@ -379,13 +379,24 @@
 
 这一节原先描述的是**旧实现**（`token_slots` 按上下文的顺序可变状态）与其反例「地址只存在一条臂上」。该实现已被替换为「先收集、后裁决」，反例已由 `an_address_stored_on_only_one_path_is_unresolved` 钉成 `Unresolved`，`src/` 中 `token_slots` 已零命中。**正文与证据以上一节的表格为准**；本节保留指针，避免下一轮复核误以为首要阻塞项仍在。
 
-#### 仍未完成（3.4 不能勾选的原因）
+#### 三轮复核的收口状态
 
-- **逐触发的不可达边界未逐条落成用例**：契约要求「返回点不在已解码前缀 / 子程序体无 `ret` / 嵌套成环 / 宽形态缺口」四类**各配一条 fixture 并同时断言反方向**（死代码里的对应形态仍 `Established`）。仓内现有多条相关用例（`a_ret_no_call_context_owns_is_unresolved`、`a_body_whose_decode_stopped_keeps_its_call_graph_unresolved`、`call_sites_that_nest_through_each_other_are_unresolved`、`a_call_site_whose_body_owns_no_ret_is_unresolved`），但**反方向并非每条都有**，需逐类补齐后再勾选。
-- **共享/嵌套 + handler 回接 `ret` 的组合用例**：契约点名「共享/嵌套和 handler 回接 ret」为一组验收形态，目前 handler 用例是单上下文、共享用例无 handler，组合面未覆盖。
-- **独立只读复核**：R2/R3 由父级实现并自证（三次派发均未产出后接手），**尚无第三方 Approve**。
-- 契约里 `affected_locals` 仍表示**写集**，其名称与消费者需在勾选前写明（3.5 消费前必须澄清是否够用）。
+上一条目列出的三项阻塞（逐触发反方向用例、共享+handler 组合、写集语义）已在第三轮全部关闭并有各自的证伪；终审又指出四项，父级逐项处理：
 
+| 终审问题 | 处理 |
+| --- | --- |
+| M1 「返回点不在前缀」触发**与契约分歧且两侧都无用例** | 按契约实现：不可达的调用点**不生成 context**、不阻塞活调用点（删去无条件拒绝）；新增 `a_dead_call_site_without_a_decoded_return_point_does_not_block_the_live_one`，证伪：去掉可达性跳过即转红。契约的载荷不变量同时写清前置条件（「返回点已解码的站点数」），消除它原来自相矛盾之处 |
+| M2 嵌套成环**缺死代码方向** | `a_nesting_cycle_in_dead_code_does_not_refuse_the_body`（死代码里两个互相嵌套的调用点仍 `Established`）；**实现曾一并拒绝死环**，已改为只把活在路径上的环当根（`live` 过滤），证伪：去掉过滤即转红，且活环用例仍拒绝 |
+| M3 新诊断断言**近乎恒真** | 断言改为 `contains("stores its return address in local 0")` 且不得出现 `local 4`/`local 6`；证伪：把 `holds` 换回旧写法（存 BCI）后该用例转红 |
+| M4 验收记录过期、契约有遗留句 | 旧「仍未完成」段被本节取代；契约里指向已删除 must-analysis 的遗留句已删 |
+
+**终审另发现并已修的同族缺陷**：`UnprovenReturn.context` 是上下文**下标**，诊断却写成「the context at call site {index}」。已改为携带**调用点 BCI**（`call_site: self.plans[root].call_site_bci`）并把措辞改为「the context of the call site at BCI …」。
+
+**当前状态**：3.4 的契约条款、逐触发正反用例、共享/嵌套 + handler 组合、写集语义、诊断、计费金标均已就位。
+
+- 证据：`fmt`/`clippy -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **627 passed / 0 failed / 1 ignored**；`call_context` 单测 **35**；`p1_xref_golden` = 5。提交 `e50ed15`。
+- 四项修正各自的证伪（均在文件副本上做、`sha256sum -c` 还原）：M1 去掉可达性跳过 → 该用例转红；M2 去掉 `live` 过滤 → 死环用例转红（活环用例**仍拒绝**）；M3 把 `holds` 换回「存 BCI」写法 → 该用例转红；M4 为文档。
+- 仍未做的只有**终审对上表 M1–M4 的复核**（本轮尚未复审）。登记债务不变：值身份缺口（无可避免的无关引用被当作地址）归 4.x；同槽中转与「存储在到不了 `ret` 的臂上」两处保守拒绝随契约登记；`elapsed_millis` 并行竞态 flake（既有）与 0.3b 缺第三方连续复核未变。
 ## P2 验收映射现状（滚动更新）
 
 按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
