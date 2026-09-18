@@ -214,6 +214,8 @@
 | D32 | `ir_call_context_inconsistent` 不是「公共路径不可达」，而是「raw 图与 reader facts 自洽时不可达」；它经 `ir::terminal` 映射为 `Failed{Error}` + Error 诊断写进公共 diagnostics | 3.4 复核 | 措辞已按此修正；`provenance: None` 与 A09/A13 的 origin 期望差距仍归 5.1 |
 | D33 | 装配期（`assemble`/`instruction_ranges`/`successors`/`plans`）没有 poll/charge，是唯一不按 pass 边界检查取消的窗口 | 3.4 复核 | **转 0.3**：建表与最终装配均需 poll，派生存储在增长前计 `IrItems` |
 | D34 | `ir_pass_not_implemented` 的产物面组合：3.4 正常完成后 `stages` 为 C,C,C + 后续 `Failed{ir_pass_not_implemented}`，此时 `quality = Fallback` 是 `analysis_report` 的字面量（`ir.rs` 无分支），不构成「走了 fallback」的分类证据 | 3.4 复核 | 3.5 前不得用 `quality` 作断言依据（示例与文档已注明）；5.1 给出真实分类后补断言 |
+| D35 | 绑定校验使每次按定义读取多一次 `ClassHeaders` **尝试**（同一 header 先按身份物化、再在声明 loader 的顺序里被搜索命中一次）；实测 `class_headers` 由 2 变 3，`read_reasons` 记录集不变（去重仍生效） | 0.1 复核（父级核对） | 接受：这是「证明该 loader 真的绑定该定义」的必要成本，正确性优先。若要回收，正路是让搜索复用已物化的 header 字节（P5 物化/索引同域），不在 0.1 做 |
+| D36 | `DeclarationShape.owner` 字段被删除，改为按节点比较（`declaring: NodeIdentity`）；任何后续切片若引用该字段需改用 `declaring` | 0.1 实现 | 由「owner 字符串不构成继承证据」直接导致；改动在 crate-private，公共面不变
 ## P2 验收映射现状（滚动更新）
 
 按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
