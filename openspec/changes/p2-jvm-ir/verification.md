@@ -265,6 +265,17 @@
 - **证据**：`cargo fmt`/`clippy -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **609 passed / 0 failed / 1 ignored**；`cargo test --lib passes::` = 15；`p1_xref_golden` = 5；示例 end-to-end 仍走通（`RawFacts/RawCfg/LegacyNormalization` 三段 `Completed`，`CanonicalCfg` 停在 `ir_pass_not_implemented`）；由主 Agent 独立复跑确认。
 - **独立复核**：待派（本片为 pass 表声明 + 校验规则收窄，规模小）。登记债务：`Effects` 的双生产者建模张力（同一 `FactKind` 语义随当前图变化）已在用例内以断言钉住位置，留待 3.5。
 
+### 0.3b call_context 的派生存储计费与装配期取消
+
+- **缺陷（复核者 R4）**：先用充足预算建好 raw 图，再以 `ir_items = 0`（steps 充足）调 `call_contexts` → **修正前会成功**并返回完整 context 集。实测 N=3000 站点时 `ir_items = 0`，而仅 `visited` 的 bool 矩阵就约 9 MB。这违反 1.3 的 `IrItems`（「一个派生存储项」）与不变量 5（**计费先于分配**）。
+- **交付**：照 design 3.4 的「计费增长点清单」逐处在增长前计费——`plans`/`entries`/`affected`/`coverage`/`contains`/`visited` 行/`written`/环检测状态计 `IrItems`（**集合类按元素计**，不是按外层 vector 计一次），`successors` 计 `IrEdges`，`worklist` 取用/入队与环检测帧计 `AnalysisSteps`；`assemble` 与其它装配阶段各加取消检查点（新增 `Phase` 枚举共 7 个阶段、11 处 `checkpoint`）；成功路径**保留完整 payload** 供 3.5 消费。
+- **判定语义未动**：本片只加计费与取消检查，R2（`ret` 值流）与 R3（异常路径 locals）**仍待 3.4 重写**——`Walk::visit` 的现有归属行为保持原样。
+- **证据**：`cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **615 passed / 0 failed / 1 ignored**（`call_context` 单测 17 → 23）；`p1_xref_golden` = 5；由主 Agent 独立复跑确认。
+- **新增用例**：零 `IrItems` 停止且不发布（**R4 反例的永久回归**，含「图非空」断言以免该停止变成空答案的假绿）；`IrItems` −1 停止 / 恰好成功；**按元素而非外层 vector** 的两条（context 集与 visited 乘积）；装配期取消停止且不发布；声明维度集合 == `IrItems`/`IrEdges`/`AnalysisSteps`。
+- **独立证伪（父级）**：删掉 `visited` 行的计费 → 乘积增长用例立即失败（`left/right` 精确定位），还原后 `sha256sum -c` OK。
+- **过程记录（如实）**：本片两次派发的 coder 都未自然收尾——第一次停滞 25 分钟零产出后被中止；第二次被 API 速率限制打断（`429`），留下 699 行未完成的改动与一个编译错误（一处 mid-edit 遗留的重复调用）。父级接手：删掉该残留行、把 `assemble` 的 8 个参数按「每 plan 三集合」收敛为一个 `Walked` 结构（保留三者等长的不变量表达，而非用 `allow` 掩盖 clippy），然后跑通 fmt/clippy/全量并独立证伪。因此**本片的最终状态由父级验证，未走独立只读复核**——记为债务。
+- 登记债务：本片缺独立只读复核（父级已代为验证与证伪，但按本仓库惯例应有第三方 Approve）；`Effects` 双生产者建模张力仍留 3.5。
+
 ## P2 验收映射现状（滚动更新）
 
 按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
