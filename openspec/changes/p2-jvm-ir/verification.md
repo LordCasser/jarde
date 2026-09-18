@@ -854,3 +854,37 @@ message=throw site ... block: CanonicalBlockId { bci: 3, path: [] } ... names a 
 - **该判据的边界已由用例钉住**：一个**不声明任何字段**的类，只要 `Fieldref` 的 owner 名是本类，初始化前的 `putfield` **仍被接受**（本层无字段表，无从知道它是否真的声明了该字段）——注释已改为如实表述「该 `Fieldref` **名的是**这个类」，`tests/p2_frame.rs::a_pre_initialization_putfield_of_the_own_name_is_accepted_without_any_declared_field` 固定这一行为。
 - **`convert_token` 不再返回转换计数**（改为 `()`）：调用点无可断言的不变量（只有一个 receiver 别名时转换 0 个 slot 是合法结果）；原「转换了 2 个」的计数断言已换成更强的**状态证据**（两处精确 slot 向量 + 全 frame 否定断言「任一 slot 都不再持有该 token」）。
 - 后半**不新增任何状态存储、不新增计费点**，故 `IrItems`/`AnalysisSteps` 与所有 golden 数字不变。
+
+### 4.2 独立复核（Approve）与据其修正（提交 `83a04d6`）
+
+复核者（只读 + 27 个自建探针，全部经**公共入口** `Engine::analyze_method` 观察）给出 **Approve**，并**独立确认本片没有「过宽接受」**——这是本片最危险的方向，故逐个样本核过：
+
+| 探针 | 期望 | 实现结局 |
+| --- | --- | --- |
+| 同一 token 连调两次 `<init>`（含本类后再超类） | 停止 | `ir_frame_deferred`，消息点名「不是未初始化值」 |
+| `new;areturn`（用未初始化值当返回值） | 停止 | `ir_frame_deferred` |
+| `new;getfield` / 跨块 `aload` 后返回 | 停止 | `ir_frame_deferred` |
+| 死臂不写该槽、另一臂写 token，合流后读 | 停止（locals 合流答 `Top`） | `ir_frame_inconsistent` + 点名 local（**按已裁定：读取处失败是精确的**） |
+| 同上但读之前被 `null` 覆盖（合法体） | 可分析 | `Completed` |
+| `this` 作 `invokestatic` 参数 / `athrow` / `getfield` | 停止 | 三者皆 `ir_frame_deferred` |
+| 两个 new 点只构造第二个，随后用**第一个**的别名 | 停止 | `ir_frame_deferred`，点名 `Uninitialized{… bci:0}` |
+| 只使用**已构造**的那个 | 可分析 | `Completed` |
+| `new` token 作 putfield target | 停止 | `ir_frame_deferred` |
+
+另独立确认：① 别名转换**不会误转**（`Value` 相等即同一 canonical 上下文里**同一条** `new` 指令；循环内 `new` 是标准前向合并，不伪造「别的 new 点已初始化」）；② 两个变体互不误伤；③ 转换在**每个别名**上都有断言（而非只数一次）；④ `new_site_class` 回查得到的类与 token 身份一致。
+
+**复核者提出的三项必改（全部为文档/小改，已落地）**：
+
+1. **契约过期**：`design.md` 的 4.1 段仍写「4.2 落地后该码不再出现」。已改为：`ir_frame_deferred` 表示「**本 build 证不出**」且**是长期的**，列出四类触发点，并写明**不得**因为「4.2 已完成」就把这些停止删掉。
+2. **计数措辞**：`verification.md` 里「只剩一个触发点」紧接着列了三项。已收敛为「同一原因：本层没有定义这条转移」。
+3. **putfield 判据**：注释「the field is declared by the class being constructed」**说大了**——实际判据是 **`Fieldref` 的 owner 名 == `this_class`**，本层无字段表。注释已如实化，并**新增用例**钉住后果：一个**不声明任何字段**的类，只要 owner 名是本类，初始化前的 `putfield` **仍被接受**（集成层 `p2_frame`，真实 class）。
+
+**父级据复核结论追加的统一**（复核者指出不对称、父级裁定取更保守一侧）：**名为 `<init>` 却不是 `invokespecial` 的调用**（`invokevirtual`/`invokestatic`/`invokeinterface`）原先当普通调用放行得到 `Completed`，现**统一停止**在 `ir_frame_deferred`，消息点名 opcode 与「不是 `invokespecial`」这一事实。实现者证伪：删掉该检查 → 新增的两段用例**各自**转红（`the body must stop on the 4.2 boundary, got Frames(...)`），即旧行为确为放行。
+
+**`convert_token` 的返回值**：复核者指出其计数无人使用，实现者**纠正了父级的前提**——计数**确实**被一条用例断言过（`converted == 2`）。最终改为不返回计数，并把该断言换成**更强的状态证据**（两处精确 slot 向量 + 全 frame 否定断言「任一 slot 都不再持有该 token」），理由是不能从计数断言出「每个别名都被转换」这一主张。
+
+**提交与 CI**：`d0714be`（后半）→ run 35389382739；`83a04d6`（复核修正）→ run 35390923633。均四 job success。
+
+**证据**：`cargo test -p jarde-jvm --locked` = **164**；全量 **710 passed / 0 failed / 1 ignored**；`p2_frame` = 4；`p2_canonical` = 8；`p2_contracts` = 29；`p1_xref_golden` = 5；fmt 与 clippy 1.98.1 干净；两个 CI example exit 0。
+
+**遗留债务（已记，不阻塞）**：① `UninitializedThis` 的适用性只认**直接** `super_class`（不读超类链；javac/ECJ 只产出 `this()`/`super()`，故实际不误拒合法体，且退化为 `deferred` 而非 `inconsistent`）；② 继承字段若被某编译器写成 owner == 本类，初始化前 `putfield` 会过宽（本层不解析，靠注释兜底）；③ `invokeinterface` + 名为 `<init>` 已被同一检查覆盖但无单独用例；④ 将来 resolver 带进超类链事实时，①是首个升级点。
