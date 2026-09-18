@@ -2937,6 +2937,29 @@ fn resolve_guarded_directory(root: &Path, module: &GuardedModule) -> &'static st
     resolve_layout(root, module, Path::is_dir)
 }
 
+/// Asserts the guarded sources are all in **one** layout, not half of each.
+///
+/// Every identity resolves on its own, so a tree that has `query.rs` under `src/` and the
+/// xref directory under `crates/jarde-query/src/` — the shape a half-finished move leaves
+/// behind — would satisfy each resolution separately, and the file-count and completeness
+/// assertions cannot see it: they count what was resolved, and both halves resolve. The
+/// guard would then be reading one module from the old home and its siblings from the new
+/// one. Comparing the layout roots turns that tree into a failure that says so.
+fn assert_single_layout(query: &str, xref: &str) {
+    /// The repository-relative root a guarded path sits under: `src/` before the split,
+    /// `crates/` after it. The candidates are written pre-split first, so the order here has
+    /// to match their order.
+    fn layout_of(relative: &str) -> usize {
+        if relative.starts_with("src/") { 0 } else { 1 }
+    }
+    assert_eq!(
+        layout_of(query),
+        layout_of(xref),
+        "the guarded sources are split across layouts ({query} and {xref}): a half-moved tree \
+         has to fail rather than let each module resolve on its own"
+    );
+}
+
 /// Reads every guarded source under `root`: the `query.rs` identity plus every `*.rs` below
 /// the resolved xref directory, including nested directories.
 ///
@@ -2947,6 +2970,7 @@ fn resolve_guarded_directory(root: &Path, module: &GuardedModule) -> &'static st
 fn guarded_sources(root: &Path) -> Vec<GuardedSource> {
     let query = resolve_guarded_file(root, &A17_QUERY_MODULE);
     let xref = resolve_guarded_directory(root, &A17_XREF_DIRECTORY);
+    assert_single_layout(query, xref);
     let mut listed = vec![(A17_QUERY_MODULE.identity.to_string(), root.join(query))];
     let mut xref_paths = Vec::new();
     collect_rs_files(&root.join(xref), &mut xref_paths);
