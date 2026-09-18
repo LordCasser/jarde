@@ -39,8 +39,11 @@
 //!
 //! # Reachability
 //!
-//! Every `jsr`/`jsr_w` site of the decoded prefix gets a context, including the ones 3.3's
-//! truth table lists as unreachable ([`CallContexts::unreachable_call_sites`] names those). A
+//! Every `jsr`/`jsr_w` site **whose return point is an instruction of the decoded prefix** gets
+//! a context, including the ones 3.3's truth table lists as unreachable
+//! ([`CallContexts::unreachable_call_sites`] names those). A call site at the very end of a body
+//! whose decode stopped early has no return point in this body, so it has no context to publish
+//! and stops nothing: only a *reachable* such site refuses the stage. A
 //! context is a *static* fact about a call site — its return address is encoded in the
 //! instruction and the locals its body writes do not depend on how the code is entered — while
 //! reachability is a separate question the raw graph already answers, and the historical ECJ
@@ -60,11 +63,12 @@
 //!   decided by the class-file version alone, and a `wide` form is classified by the opcode it
 //!   wraps (0.2), so `wide ret` is exactly as forbidden as `ret` — and a modern method whose
 //!   only `wide` forms are loads, stores or `iinc` has nothing to refuse.
-//! * a call site whose return address is not an instruction start of the decoded prefix (a
-//!   `jsr` at the end of a body whose decode stopped early), a reachable call site whose body
-//!   owns no `ret` (its return address is never used, so the return half of its transfer has no
-//!   owner), a reachable `ret` no context owns, and call sites that nest through each other in a
-//!   cycle (the nesting has no bound, so no finite context set describes it) are all reported as
+//! * a **reachable** call site whose return address is not an instruction start of the decoded
+//!   prefix (a `jsr` at the end of a body whose decode stopped early), a reachable call site
+//!   whose body owns no `ret` (its return address is never used, so the return half of its
+//!   transfer has no owner), a reachable `ret` no context owns, and **reachable** call sites that
+//!   nest through each other in a cycle (the nesting has no bound, so no finite context set
+//!   describes it) are all reported as
 //!   [`IR_CALL_CONTEXT_UNRESOLVED`]: the raw facts are kept, the context fact is **not**
 //!   published, and no call graph is invented.
 //! * a body with neither `jsr`/`jsr_w` nor `ret` has the empty context set as its complete
@@ -142,8 +146,11 @@ const IR_CALL_CONTEXT_INCONSISTENT: &str = "ir_call_context_inconsistent";
 struct UnprovenReturn {
     /// The `ret` that could not be attributed.
     bci: u32,
-    /// The context the walk was in.
-    context: usize,
+    /// The call site of the context the walk was in.
+    ///
+    /// The call site's own BCI, not the index of the context: the index means nothing to a
+    /// reader of the diagnostic, and the plan behind it is what identifies the context.
+    call_site: u32,
     /// The local the `ret` reads, if the operands name one.
     reads: Option<u16>,
     /// The slot this context stored its return address in, if it stored one at all.
@@ -303,6 +310,13 @@ pub(crate) fn call_contexts(
             .binary_search_by_key(&return_bci, |instruction| instruction.bci)
             .is_err()
         {
+            // A call site nothing reaches cannot be described either, but it also cannot be
+            // entered: it is a fact of a prefix the decoder did not finish, not a reason to
+            // refuse a body whose live parts are provable. Only a reachable one - whose context
+            // the graph genuinely needs - stops the stage.
+            if !reachable(cfg, &blocks, *call_site_bci) {
+                continue;
+            }
             return Ok(CallContextOutcome::Unresolved {
                 message: format!(
                     "the instruction after the `jsr` at BCI {call_site_bci} is not part of the \
@@ -352,7 +366,13 @@ pub(crate) fn call_contexts(
         ..
     } = walk;
 
-    if let Some(cycle) = nesting_cycle(&contains, budget)? {
+    // A cycle in code nothing reaches cannot bound anything: the call sites are still published
+    // as facts, but a loop they form is never entered, so it must not refuse the body.
+    let live: Vec<bool> = plans
+        .iter()
+        .map(|plan| reachable(cfg, &blocks, plan.call_site_bci))
+        .collect();
+    if let Some(cycle) = nesting_cycle(&contains, &live, budget)? {
         let sites = cycle
             .iter()
             .map(|index| plans[*index].call_site_bci.to_string())
@@ -489,9 +509,8 @@ impl UnprovenReturn {
             |local| format!("stores its return address in local {local}"),
         );
         format!(
-            "the `ret` at BCI {} reads {reads}, but the context at call site {} {holds}: the \
-             return point is not proven by the bytes, so the call graph is not established",
-            self.bci, self.context,
+            "the `ret` at BCI {} reads {reads}, but the context of the call site at BCI {}              {holds}: the return point is not proven by the bytes, so the call graph is not              established",
+            self.bci, self.call_site,
         )
     }
 }
@@ -815,9 +834,7 @@ impl<'a> Walk<'a> {
             let (start, end) = self.ranges[block];
             for index in start..end {
                 budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-                if let Some(unproven) = self.visit(active, block, index, &mut written, budget)? {
-                    return Ok(Some(unproven));
-                }
+                self.visit(active, block, index, &mut written, budget)?;
             }
             for (kind, to) in &self.successors[block] {
                 self.step(active, *kind, *to, &mut worklist, budget)?;
@@ -869,7 +886,7 @@ impl<'a> Walk<'a> {
             if !proven {
                 return Ok(Some(UnprovenReturn {
                     bci: ret_bci,
-                    context: root,
+                    call_site: self.plans[root].call_site_bci,
                     reads: Some(read_slot),
                     holds: first.map(|(_, slot, ..)| *slot),
                 }));
@@ -953,7 +970,7 @@ impl<'a> Walk<'a> {
         index: usize,
         written: &mut BTreeSet<u16>,
         budget: &mut Budget,
-    ) -> Result<Option<UnprovenReturn>> {
+    ) -> Result<()> {
         let bci = self.facts.instructions[index].bci;
         let opcode = self.facts.operands[index].effective_opcode;
         // A reference store is where a `jsr` return address can go; every other write puts some
@@ -985,7 +1002,7 @@ impl<'a> Walk<'a> {
                 self.coverage[active].insert(ordinal);
             }
         }
-        Ok(None)
+        Ok(())
     }
 
     /// Follows one edge of the walk.
@@ -1156,7 +1173,11 @@ fn assemble(
 /// The search's own state is derived storage and it is billed for what it really grows: one
 /// `IrItems` per context whose colour/child state is allocated, one per edge the child lists
 /// copy, and one `AnalysisSteps` per frame pushed onto the path/`cursor` stacks.
-fn nesting_cycle(contains: &[BTreeSet<usize>], budget: &mut Budget) -> Result<Option<Vec<usize>>> {
+fn nesting_cycle(
+    contains: &[BTreeSet<usize>],
+    live: &[bool],
+    budget: &mut Budget,
+) -> Result<Option<Vec<usize>>> {
     const WHITE: u8 = 0;
     const GREY: u8 = 1;
     const BLACK: u8 = 2;
@@ -1173,13 +1194,16 @@ fn nesting_cycle(contains: &[BTreeSet<usize>], budget: &mut Budget) -> Result<Op
         .iter()
         .map(|set| set.iter().copied().collect())
         .collect();
+    // A context nothing reaches is not a root of this search: a loop among dead call sites is
+    // never entered, so it cannot bound anything. A live root's children are reachable from it
+    // by construction, so filtering the roots is enough.
     let mut colour = vec![WHITE; children.len()];
     // The search is iterative: `path` is the current path (all grey) and `cursor` the child
     // index each of its frames is at, so a deep nesting cannot overflow the stack.
     let mut path: Vec<usize> = Vec::new();
     let mut cursor: Vec<usize> = Vec::new();
     for start in 0..children.len() {
-        if colour[start] != WHITE {
+        if colour[start] != WHITE || !live[start] {
             continue;
         }
         colour[start] = GREY;
@@ -2545,13 +2569,15 @@ mod tests {
             message.contains("BCI 7"),
             "the stop names the `ret` that reads the overwritten slot: {message}"
         );
+        // The diagnostic names the *slot*, never the BCI of the store that filled it: the two are
+        // both small numbers, so a message that swapped them reads perfectly plausibly.
         assert!(
-            message.contains("reads local 0"),
-            "the stop names the slot the `ret` read: {message}"
+            message.contains("stores its return address in local 0"),
+            "the stop names the slot the context stored the address in: {message}"
         );
         assert!(
-            !message.contains("local 6"),
-            "the stop names a local, never the BCI of a store: {message}"
+            !message.contains("local 4") && !message.contains("local 6"),
+            "the store's BCI is not a local: {message}"
         );
 
         // The store that placed the address is seen again whenever a context's blocks are
@@ -2900,6 +2926,97 @@ mod tests {
             "a subroutine that never returns owns no `ret`: {:?}",
             contexts.returns
         );
+    }
+
+    #[test]
+    fn a_nesting_cycle_in_dead_code_does_not_refuse_the_body() {
+        // The reverse of the cycle trigger: two call sites that nest through each other are only
+        // a problem when something actually walks them. Here they sit after a `return`, so the
+        // cycle is never entered and the live call site's proof stands.
+        //
+        //   0: jsr +4 -> 4   live call site, return address 3
+        //   3: return
+        //   4: astore_0      the address goes into local 0
+        //   5: ret 0         proven
+        //   7: return        everything after this is unreachable
+        //   8: jsr +4 -> 12  dead call site A
+        //  11: return
+        //  12: jsr -4 -> 8   dead call site B: A and B nest through each other
+        //  15: return
+        let facts = body(
+            vec![
+                jsr(0, 4),
+                plain(3, 0xb1),
+                store(4, 0x4b, 0),
+                ret(5, 0),
+                plain(7, 0xb1),
+                jsr(8, 4),
+                plain(11, 0xb1),
+                jsr(12, -4),
+                plain(15, 0xb1),
+            ],
+            Vec::new(),
+            16,
+        );
+        let raw = graph(&facts, &mut budget());
+        let contexts = established(&facts, &raw, 49);
+        assert_eq!(
+            contexts.contexts.len(),
+            3,
+            "every call site of the decoded prefix is published, reachable or not: {:#?}",
+            contexts.contexts
+        );
+        assert_eq!(
+            contexts.returns.len(),
+            1,
+            "only the live subroutine returns"
+        );
+        assert_eq!(
+            contexts.returns[0].targets.len(),
+            1,
+            "the dead cycle owns no return: {:?}",
+            contexts.returns[0]
+        );
+    }
+
+    #[test]
+    fn a_dead_call_site_without_a_decoded_return_point_does_not_block_the_live_one() {
+        // The truncated-prefix trigger, in the direction the contract names. The body's prefix
+        // ends where the decoder stopped, so the `jsr` at BCI 8 has no decoded instruction after
+        // it and its return point does not exist in this body. Nothing reaches it either - it
+        // follows a `return` - so it is a fact of an unfinished prefix and must not refuse the
+        // live call site, which is fully proven.
+        //
+        //   0: jsr +4 -> 4   live call site, return address 3
+        //   3: return
+        //   4: astore_0      the address goes into local 0
+        //   5: ret 0         proven
+        //   7: return        everything after this is unreachable
+        //   8: jsr -4 -> 4   the prefix ends at BCI 11: the instruction after the `jsr`
+        //                    would start at BCI 11, which the decoder never reached
+        let facts = body(
+            vec![
+                jsr(0, 4),
+                plain(3, 0xb1),
+                store(4, 0x4b, 0),
+                ret(5, 0),
+                plain(7, 0xb1),
+                jsr(8, -4),
+            ],
+            Vec::new(),
+            11,
+        );
+        let raw = graph(&facts, &mut budget());
+        let contexts = established(&facts, &raw, 49);
+        assert_eq!(
+            contexts.contexts.len(),
+            1,
+            "only the call site whose return point is decoded gets a context: {:#?}",
+            contexts.contexts
+        );
+        assert_eq!(contexts.contexts[0].call_site_bci, 0, "the live call site");
+        assert_eq!(contexts.returns.len(), 1, "the live `ret` is published");
+        assert_eq!(contexts.returns[0].targets.len(), 1, "and it has its owner");
     }
 
     #[test]
