@@ -4452,7 +4452,7 @@ mod reader_facts_tests {
     use crate::budget::{BudgetDimension, CancellationToken, Limits};
 
     const V52_FIXTURE: &[u8] =
-        include_bytes!("../tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class");
+        crate::test_fixtures::fixture!("historical/ecj-4.6.1/v52/HistoricalControlFlow.class");
 
     fn unlimited_limits() -> Limits {
         Limits {
@@ -5853,7 +5853,19 @@ mod reader_facts_tests {
 /// `[[I` at slot 9 and the interface method `run(J)V` at slot 15 — so a fixture can point at
 /// a real entry instead of a placeholder. Nothing here fabricates facts: the tests that use it
 /// read these bytes through `class_facts`/`method_code_facts`.
-#[cfg(test)]
+///
+/// The gate is a feature as well as `test` because this builder is shared across module
+/// boundaries that become crate boundaries: the raw-CFG and call-context tests move to
+/// `jarde-jvm`, whose `cfg(test)` cannot see anything here. Enabling `test-support` from a
+/// dev-dependency keeps this builder reachable there without putting it in the production API —
+/// the feature is never enabled by a normal dependency, and nothing in the module is `pub` in
+/// the package sense. Note that `--all-features` (as CI runs) does enable it, so the module must
+/// keep compiling with the warning set on.
+#[cfg(any(test, feature = "test-support"))]
+#[allow(
+    dead_code,
+    reason = "used by this crate's tests, or by a dependent crate's test build"
+)]
 pub(crate) mod test_class {
     /// Class file (minor 0, major `major`) with one `method()V` whose body is `code`.
     pub(crate) fn single_method(
@@ -9124,7 +9136,7 @@ mod tests {
                 }
             }
         }
-        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
+        let root = crate::test_fixtures::fixtures_root();
         let mut found = Vec::new();
         walk(&root, &mut found);
         found

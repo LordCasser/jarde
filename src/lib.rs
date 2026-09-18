@@ -21,6 +21,8 @@ mod passes;
 mod providers;
 pub mod query;
 pub mod resolver;
+#[cfg(any(test, feature = "test-support"))]
+mod test_fixtures;
 pub mod view;
 pub mod xref;
 

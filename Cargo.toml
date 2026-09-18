@@ -23,6 +23,14 @@ rawzip = "=0.5.1"
 serde = { version = "=1.0.229", features = ["derive"] }
 thiserror = "=2.0.20"
 
+[features]
+# A test-only class-file builder (`classfile::test_class`) shared across the module boundaries
+# that become crate boundaries: `jarde-jvm`'s tests build fixtures through `jarde-reader`, whose
+# `cfg(test)` they cannot see. No normal dependency enables this, so it stays out of production
+# builds; `--all-features` (as CI runs) does enable it, and the module is written to compile
+# warning-free either way.
+test-support = []
+
 [dev-dependencies]
 proptest = "=1.11.0"
 serde_json = "=1.0.151"

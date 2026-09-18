@@ -1268,15 +1268,15 @@ mod tests {
 
     /// The committed historical fixtures: one source compiled to every dialect of the jsr era.
     const V45: &[u8] =
-        include_bytes!("../tests/fixtures/historical/ecj-4.6.1/v45/HistoricalControlFlow.class");
+        crate::test_fixtures::fixture!("historical/ecj-4.6.1/v45/HistoricalControlFlow.class");
     const V46: &[u8] =
-        include_bytes!("../tests/fixtures/historical/ecj-4.6.1/v46/HistoricalControlFlow.class");
+        crate::test_fixtures::fixture!("historical/ecj-4.6.1/v46/HistoricalControlFlow.class");
     const V47: &[u8] =
-        include_bytes!("../tests/fixtures/historical/ecj-4.6.1/v47/HistoricalControlFlow.class");
+        crate::test_fixtures::fixture!("historical/ecj-4.6.1/v47/HistoricalControlFlow.class");
     const V48: &[u8] =
-        include_bytes!("../tests/fixtures/historical/ecj-4.6.1/v48/HistoricalControlFlow.class");
+        crate::test_fixtures::fixture!("historical/ecj-4.6.1/v48/HistoricalControlFlow.class");
     const V52: &[u8] =
-        include_bytes!("../tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class");
+        crate::test_fixtures::fixture!("historical/ecj-4.6.1/v52/HistoricalControlFlow.class");
 
     fn limits() -> Limits {
         Limits {

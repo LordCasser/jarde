@@ -1615,18 +1615,14 @@ mod tests {
         // truth table has to say so. The two blocks that stay listed are the handler path
         // `[11, 15)` (entered through the exception table, which no raw edge of this body can
         // reach) and `[15, 17)`, the continuation of the `jsr` inside that dead path.
-        const V45: &[u8] = include_bytes!(
-            "../tests/fixtures/historical/ecj-4.6.1/v45/HistoricalControlFlow.class"
-        );
-        const V46: &[u8] = include_bytes!(
-            "../tests/fixtures/historical/ecj-4.6.1/v46/HistoricalControlFlow.class"
-        );
-        const V47: &[u8] = include_bytes!(
-            "../tests/fixtures/historical/ecj-4.6.1/v47/HistoricalControlFlow.class"
-        );
-        const V48: &[u8] = include_bytes!(
-            "../tests/fixtures/historical/ecj-4.6.1/v48/HistoricalControlFlow.class"
-        );
+        const V45: &[u8] =
+            crate::test_fixtures::fixture!("historical/ecj-4.6.1/v45/HistoricalControlFlow.class");
+        const V46: &[u8] =
+            crate::test_fixtures::fixture!("historical/ecj-4.6.1/v46/HistoricalControlFlow.class");
+        const V47: &[u8] =
+            crate::test_fixtures::fixture!("historical/ecj-4.6.1/v47/HistoricalControlFlow.class");
+        const V48: &[u8] =
+            crate::test_fixtures::fixture!("historical/ecj-4.6.1/v48/HistoricalControlFlow.class");
         for (major, bytes) in [(45_u16, V45), (46, V46), (47, V47), (48, V48)] {
             let facts = historical(bytes, b"finallyPath");
             let outcome = raw_cfg(&facts, &mut budget()).expect("the fixture is a valid body");
