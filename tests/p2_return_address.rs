@@ -282,12 +282,12 @@ fn the_historical_jsr_finally_completes_the_call_context_pass() {
                 StageState::Completed,
                 StageState::Completed,
                 StageState::Completed,
+                StageState::Completed,
                 StageState::Failed {
                     code: "ir_pass_not_implemented".to_string()
                 },
-                StageState::NotPerformed,
             ],
-            "classfile major {version}: the four implemented phases really ran"
+            "classfile major {version}: the five implemented phases really ran"
         );
         assert_eq!(
             diagnostic_codes(&report),
@@ -372,10 +372,10 @@ fn the_modern_dialect_pays_nothing_for_its_empty_context_set() {
             StageState::Completed,
             StageState::Completed,
             StageState::Completed,
+            StageState::Completed,
             StageState::Failed {
                 code: "ir_pass_not_implemented".to_string()
             },
-            StageState::NotPerformed,
         ]
     );
     let without = request(

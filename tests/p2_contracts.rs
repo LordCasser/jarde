@@ -1677,8 +1677,9 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
     // driver method's class definition and decodes its body, `raw_cfg` builds the raw graph
     // over those facts, `legacy_normalization` establishes the `jsr`/`ret` call contexts (none
     // for this body: the 52 fixture inlines its `finally`), `canonical_cfg` normalizes the graph
-    // under them, and the first phase this build does not implement fails where the pipeline
-    // reaches it — the phases behind it stay `NotPerformed` rather than looking performed.
+    // under them, `frame` derives the frames of that graph, and the first phase this build does
+    // not implement fails where the pipeline reaches it — the phases behind it stay
+    // `NotPerformed` rather than looking performed.
     assert_eq!(
         report
             .stages
@@ -1690,10 +1691,10 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
             StageState::Completed,
             StageState::Completed,
             StageState::Completed,
+            StageState::Completed,
             StageState::Failed {
                 code: "ir_pass_not_implemented".to_string()
             },
-            StageState::NotPerformed,
         ]
     );
     assert_eq!(report.method, fixture.method);
@@ -1925,7 +1926,7 @@ fn result_planes_are_reported_side_by_side_and_never_inferred() {
         "a Conservative quality does not mean a completed run"
     );
 
-    // Capability, range, termination and verification are separate planes: four phases really
+    // Capability, range, termination and verification are separate planes: five phases really
     // completed and the body was fully covered, while a later phase this build does not
     // implement ends the run as an unsupported capability — and none of that says anything
     // about the product planes above.
@@ -1943,8 +1944,8 @@ fn result_planes_are_reported_side_by_side_and_never_inferred() {
             .iter()
             .filter(|stage| stage.state == StageState::Completed)
             .count(),
-        4,
-        "`raw_facts`, `raw_cfg`, `legacy_normalization` and `canonical_cfg` completed"
+        5,
+        "`raw_facts`, `raw_cfg`, `legacy_normalization`, `canonical_cfg` and `frame` completed"
     );
     assert_eq!(
         report.coverage.artifact_structural.state,

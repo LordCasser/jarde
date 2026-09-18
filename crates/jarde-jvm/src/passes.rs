@@ -112,12 +112,17 @@ impl IrPhase {
 /// earlier one is missing — which is what makes a request stop at exactly one point instead of
 /// skipping a hole in the pipeline. 3.3 implements `raw_facts` (the reader's own work, see the
 /// table) and `raw_cfg`, 3.4 adds `legacy_normalization` (the call contexts, which is not the
-/// cloning pass), and 3.5 adds `canonical_cfg` (the bounded clone normalization that consumes
-/// exactly those contexts); 4.x extend this list, and 5.1 deletes it with the last phase.
+/// cloning pass), 3.5 adds `canonical_cfg` (the bounded clone normalization that consumes
+/// exactly those contexts), and 4.1 adds `frame` (the descriptor-driven slot states over the
+/// canonical graph); 4.2/4.3 extend this list, and 5.1 deletes it with the last phase.
 pub(crate) fn implemented(phase: IrPhase) -> bool {
     matches!(
         phase,
-        IrPhase::RawFacts | IrPhase::RawCfg | IrPhase::LegacyNormalization | IrPhase::CanonicalCfg
+        IrPhase::RawFacts
+            | IrPhase::RawCfg
+            | IrPhase::LegacyNormalization
+            | IrPhase::CanonicalCfg
+            | IrPhase::Frame
     )
 }
 
@@ -895,12 +900,14 @@ mod tests {
     }
 
     /// The phases this build implements: 3.3 runs `raw_facts` and `raw_cfg`, 3.4 adds the call
-    /// contexts of `legacy_normalization`, and 3.5 the canonical CFG of `canonical_cfg`.
-    const IMPLEMENTED_PHASES: [IrPhase; 4] = [
+    /// contexts of `legacy_normalization`, 3.5 the canonical CFG of `canonical_cfg`, and 4.1 the
+    /// frames of `frame`.
+    const IMPLEMENTED_PHASES: [IrPhase; 5] = [
         IrPhase::RawFacts,
         IrPhase::RawCfg,
         IrPhase::LegacyNormalization,
         IrPhase::CanonicalCfg,
+        IrPhase::Frame,
     ];
 
     #[test]

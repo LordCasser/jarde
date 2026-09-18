@@ -317,7 +317,7 @@ fn every_stage_set_is_accepted_and_answered_with_the_state_of_its_passes() {
     }
 
     // The last phase schedules the whole pipeline, so the phase prefix cannot be a truncated
-    // part of the order without this failing. With the run funded, the four phases this build
+    // part of the order without this failing. With the run funded, the five phases this build
     // implements complete, the first one it does not implement fails, and the phases behind
     // that failure stay `NotPerformed` instead of looking performed.
     let request = analysis_request(&fixture, environment, vec![AnalysisStage::Ssa]);
@@ -337,10 +337,10 @@ fn every_stage_set_is_accepted_and_answered_with_the_state_of_its_passes() {
             StageState::Completed,
             StageState::Completed,
             StageState::Completed,
+            StageState::Completed,
             StageState::Failed {
                 code: "ir_pass_not_implemented".to_string()
             },
-            StageState::NotPerformed,
         ]
     );
     assert_eq!(

@@ -28,6 +28,7 @@ mod call_context;
 mod canonical;
 mod cfg;
 mod dispatch;
+mod frame;
 mod members;
 mod passes;
 mod providers;

@@ -268,10 +268,9 @@ pub(crate) struct InstructionEffect {
     ///
     /// The `None` cases are exactly the ones that need more than the opcode: an `invoke*`, a
     /// field access or an `ldc` needs the descriptor or the constant-pool tag the descriptor
-    /// table of 4.1 owns, `athrow` clears the stack (a data-flow property, not a constant), and
-    /// `multianewarray`'s delta is `1 - dimensions`, which the frame layer decides from the
-    /// reader's `dimensions` fact. Those belong to the frame layer, not to this pass; a `wide`
-    /// form *is* decided here, through the opcode it wraps.
+    /// table of 4.1 owns, and `athrow` clears the stack (a data-flow property, not a constant).
+    /// `multianewarray`'s delta is `1 - dimensions` and is decided here from the reader's
+    /// `dimensions` fact (D41); a `wide` form *is* decided here too, through the opcode it wraps.
     pub(crate) stack_delta: Option<i32>,
     /// Whether this instruction may raise an exception.
     pub(crate) may_throw: bool,
@@ -735,7 +734,7 @@ fn effect_facts(
             opcode,
             locals_read,
             locals_written,
-            stack_delta: fixed_stack_delta(opcode),
+            stack_delta: fixed_stack_delta(opcode, operands.dimensions),
             may_throw,
             handlers,
         });
@@ -835,7 +834,11 @@ fn unreachable_blocks(
 
 /// Whether this opcode ends its block: an instruction whose transfer is not a plain
 /// fall-through to the instruction after it.
-fn ends_block(opcode: u8) -> bool {
+///
+/// The frame layer's dense table carries the same fact for its own rows — it needs it to walk a
+/// canonical node's fused chain one original block at a time — and the frame module's tests check
+/// the two against each other, so a classification cannot drift here without failing there.
+pub(crate) fn ends_block(opcode: u8) -> bool {
     is_conditional_branch(opcode)
         || opcode == OPCODE_GOTO
         || opcode == OPCODE_GOTO_W
@@ -900,13 +903,16 @@ fn may_throw(opcode: u8) -> bool {
     }
 }
 
-/// The change of the operand-stack depth an opcode alone determines, or `None` when the
-/// opcode is not enough; see [`InstructionEffect::stack_delta`].
+/// The change of the operand-stack depth one instruction has, or `None` when the opcode alone
+/// is not enough; see [`InstructionEffect::stack_delta`].
+///
+/// `dimensions` is the reader's own `multianewarray` operand fact, which is what makes that
+/// instruction's delta decidable here instead of by a consumer (D41).
 ///
 /// The opcode numbers follow the JVMS 6.5 table the reader itself is built on: the implicit
 /// local forms run `_0`..`_3` for all five types (so `aload_0` is `0x2a`), `iinc` is `0x84`
 /// and the integer arithmetic block starts at `iadd = 0x60`.
-fn fixed_stack_delta(opcode: u8) -> Option<i32> {
+pub(crate) fn fixed_stack_delta(opcode: u8, dimensions: Option<u8>) -> Option<i32> {
     Some(match opcode {
         0x00 => 0,
         // Constants: `aconst_null`, `iconst_*`, `fconst_*` and the immediate pushes take one
@@ -958,6 +964,11 @@ fn fixed_stack_delta(opcode: u8) -> Option<i32> {
         OPCODE_JSR | OPCODE_JSR_W => 1,
         OPCODE_RET => 0,
         OPCODE_TABLESWITCH | OPCODE_LOOKUPSWITCH => -1,
+        // `multianewarray` pops one length per dimension and pushes the array it creates: D41
+        // is `1 - dimensions`, decided from the reader's operand fact instead of left to a
+        // consumer. A count the encoding cannot carry makes the delta undecidable here, which is
+        // a fact about the operand and not a value to invent.
+        OPCODE_MULTIANEWARRAY => 1 - i32::from(dimensions?),
         0xac | 0xae | 0xb0 => -1,
         0xad | 0xaf => -2,
         0xb1 => 0,
@@ -965,9 +976,9 @@ fn fixed_stack_delta(opcode: u8) -> Option<i32> {
         0xbc..=0xbe => 0,
         0xc0 | 0xc1 => 0,
         0xc2 | 0xc3 => -1,
-        // What is left either needs more than the opcode (`ldc`, field access, invocations,
-        // `athrow`, `multianewarray`) or is not an instruction. A `wide` form never reaches
-        // this table as `0xc4`: it arrives as the opcode it wraps.
+        // What is left either needs more than the opcode (`ldc`, field access, invocations and
+        // `athrow`, which the frame layer decides from its own table) or is not an instruction.
+        // A `wide` form never reaches this table as `0xc4`: it arrives as the opcode it wraps.
         _ => return None,
     })
 }
@@ -2032,35 +2043,75 @@ mod tests {
     /// this test pins down.
     #[test]
     fn the_stack_table_follows_the_readers_opcode_numbering() {
-        assert_eq!(fixed_stack_delta(0x2a), Some(1), "aload_0 pushes one slot");
-        assert_eq!(fixed_stack_delta(0x3d), Some(-1), "istore_2 pops one slot");
-        assert_eq!(fixed_stack_delta(0x4b), Some(-1), "astore_0 pops one slot");
         assert_eq!(
-            fixed_stack_delta(0x4f),
+            fixed_stack_delta(0x2a, None),
+            Some(1),
+            "aload_0 pushes one slot"
+        );
+        assert_eq!(
+            fixed_stack_delta(0x3d, None),
+            Some(-1),
+            "istore_2 pops one slot"
+        );
+        assert_eq!(
+            fixed_stack_delta(0x4b, None),
+            Some(-1),
+            "astore_0 pops one slot"
+        );
+        assert_eq!(
+            fixed_stack_delta(0x4f, None),
             Some(-3),
             "iastore pops three slots"
         );
-        assert_eq!(fixed_stack_delta(0x50), Some(-4), "lastore pops four slots");
-        assert_eq!(fixed_stack_delta(0x57), Some(-1), "pop");
-        assert_eq!(fixed_stack_delta(0x59), Some(1), "dup");
-        assert_eq!(fixed_stack_delta(0x5f), Some(0), "swap");
-        assert_eq!(fixed_stack_delta(0x60), Some(-1), "iadd");
-        assert_eq!(fixed_stack_delta(0x61), Some(-2), "ladd");
-        assert_eq!(fixed_stack_delta(0x84), Some(0), "iinc");
-        assert_eq!(fixed_stack_delta(0x85), Some(1), "i2l");
-        assert_eq!(fixed_stack_delta(0x88), Some(-1), "l2i");
-        assert_eq!(fixed_stack_delta(0x94), Some(-3), "lcmp");
-        assert_eq!(fixed_stack_delta(0x99), Some(-1), "ifeq");
-        assert_eq!(fixed_stack_delta(0x9f), Some(-2), "if_icmpeq");
-        assert_eq!(fixed_stack_delta(0xa5), Some(-2), "if_acmpeq");
-        assert_eq!(fixed_stack_delta(0xa7), Some(0), "goto");
         assert_eq!(
-            fixed_stack_delta(0xa8),
+            fixed_stack_delta(0x50, None),
+            Some(-4),
+            "lastore pops four slots"
+        );
+        assert_eq!(fixed_stack_delta(0x57, None), Some(-1), "pop");
+        assert_eq!(fixed_stack_delta(0x59, None), Some(1), "dup");
+        assert_eq!(fixed_stack_delta(0x5f, None), Some(0), "swap");
+        assert_eq!(fixed_stack_delta(0x60, None), Some(-1), "iadd");
+        assert_eq!(fixed_stack_delta(0x61, None), Some(-2), "ladd");
+        assert_eq!(fixed_stack_delta(0x84, None), Some(0), "iinc");
+        assert_eq!(fixed_stack_delta(0x85, None), Some(1), "i2l");
+        assert_eq!(fixed_stack_delta(0x88, None), Some(-1), "l2i");
+        assert_eq!(fixed_stack_delta(0x94, None), Some(-3), "lcmp");
+        assert_eq!(fixed_stack_delta(0x99, None), Some(-1), "ifeq");
+        assert_eq!(fixed_stack_delta(0x9f, None), Some(-2), "if_icmpeq");
+        assert_eq!(fixed_stack_delta(0xa5, None), Some(-2), "if_acmpeq");
+        assert_eq!(fixed_stack_delta(0xa7, None), Some(0), "goto");
+        assert_eq!(
+            fixed_stack_delta(0xa8, None),
             Some(1),
             "jsr pushes the return address"
         );
-        assert_eq!(fixed_stack_delta(0xac), Some(-1), "ireturn");
-        assert_eq!(fixed_stack_delta(0xb1), Some(0), "return");
+        assert_eq!(fixed_stack_delta(0xac, None), Some(-1), "ireturn");
+        assert_eq!(fixed_stack_delta(0xb1, None), Some(0), "return");
+        // D41: `multianewarray` pops one length per dimension and pushes the array, so its delta
+        // is `1 - dimensions`, decided from the reader's own operand fact instead of left to a
+        // consumer — which is also what lets this table and the frame layer's dense table be
+        // checked against each other. Without the fact there is no delta, and none is invented.
+        assert_eq!(
+            fixed_stack_delta(0xc5, Some(1)),
+            Some(0),
+            "one dimension: one length popped, the array pushed"
+        );
+        assert_eq!(
+            fixed_stack_delta(0xc5, Some(2)),
+            Some(-1),
+            "two dimensions: two lengths popped, the array pushed"
+        );
+        assert_eq!(
+            fixed_stack_delta(0xc5, Some(3)),
+            Some(-2),
+            "three dimensions"
+        );
+        assert_eq!(
+            fixed_stack_delta(0xc5, None),
+            None,
+            "a count the operands do not carry decides nothing"
+        );
     }
 
     #[test]

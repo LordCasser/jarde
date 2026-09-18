@@ -12,12 +12,13 @@
 
 use jarde_reader::artifact::ArtifactSnapshot;
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
-use jarde_reader::classfile::{BytecodeStop, MemberHeader, MethodCodeFacts};
+use jarde_reader::classfile::{BytecodeStop, CpEntryFacts, MemberHeader, MethodCodeFacts};
 use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
     Coverage, Diagnostic, DiagnosticSeverity, ExecutionReport, TerminationReason,
 };
 
+use crate::frame::{FrameOutcome, IR_FRAME_DEFERRED, IR_FRAME_INCONSISTENT};
 use crate::ir::{
     MethodAnalysisReport, MethodAnalysisRequest, MethodBodyState, NoBodyKind, StageResult,
     StageState,
@@ -146,7 +147,10 @@ fn report_unimplemented(
 /// instead of an invented one. `canonical_cfg` is 3.5's contract over exactly those contexts:
 /// the bounded clone normalization, which publishes a canonical graph, stops under
 /// `ir_legacy_normalization_unbounded` when its own bound is reached, and is the artifact that
-/// makes the report's quality plane `Conservative`.
+/// makes the report's quality plane `Conservative`. `frame` is 4.1's contract over that graph:
+/// the descriptor-driven slot state of every block the entry reaches, which stops under
+/// `ir_frame_deferred` where the initialization conversions of 4.2 are what a body needs
+/// and under `ir_frame_inconsistent` where the bytes contradict themselves.
 fn run_method_analysis(
     content: &[ArtifactSnapshot],
     request: &crate::ir::MethodAnalysisRequest,
@@ -183,6 +187,13 @@ fn run_method_analysis(
     // Whether this run published a canonical graph: the one artifact that makes the report's
     // quality `Conservative` instead of `Fallback`.
     let mut canonical_cfg: Option<Box<crate::canonical::CanonicalCfg>> = None;
+    // The declaration facts the `frame` pass reads beside the body and the graph — the member's
+    // flags, the class file's own name and its constant pool — which are part of the one header
+    // read `raw_facts` performed.
+    let mut declaration: Option<FrameDeclaration> = None;
+    // The frames 4.1 published. 4.2 is their first consumer, so the payload stays in this run
+    // under the same plan the canonical graph is kept under; nothing in this build reads it back.
+    let mut frame_table: Option<Box<crate::frame::FrameTable>> = None;
     for (index, pass) in scheduled.iter().enumerate() {
         if !implemented(pass.phase) {
             stop = stop.or(Some(report_unimplemented(
@@ -196,8 +207,10 @@ fn run_method_analysis(
                     Ok(DriverRead::Decoded {
                         facts,
                         major_version: version,
+                        declaration: read_declaration,
                     }) => {
                         major_version = Some(version);
+                        declaration = Some(read_declaration);
                         *facts
                     }
                     Ok(DriverRead::DeclaredWithoutBody) => {
@@ -442,6 +455,100 @@ fn run_method_analysis(
                     }
                 }
             }
+            IrPhase::Frame => {
+                let (Some(decoded), Some(graph), Some(declaration)) =
+                    (facts.as_ref(), canonical_cfg.as_ref(), declaration.as_ref())
+                else {
+                    // The pass requires the facts of the passes before it, so a run that reached
+                    // it without them is the ledger's own `ir_pass_prerequisite_missing` (the
+                    // schedule validation makes it unreachable).
+                    if let Err(error) = ledger.apply(pass) {
+                        let (execution, diagnostic) = crate::ir::terminal(&error, budget.usage());
+                        run.stages[index].state = stage_state(&execution);
+                        run.diagnostics.push(diagnostic);
+                        stop = stop.or(Some(execution));
+                    }
+                    break;
+                };
+                let method = crate::frame::FrameMethod {
+                    access_flags: declaration.access_flags,
+                    name: &request.method.name.0,
+                    descriptor: &request.method.descriptor.0,
+                    owner: &declaration.this_class,
+                    pool: &declaration.pool,
+                    loader: &request.environment.runtime.load_domain.loader,
+                };
+                match crate::frame::frames(decoded, graph, &method, budget) {
+                    Ok(FrameOutcome::Frames(table)) => {
+                        if let Err(error) = ledger.apply(pass) {
+                            let (execution, diagnostic) =
+                                crate::ir::terminal(&error, budget.usage());
+                            run.stages[index].state = stage_state(&execution);
+                            run.diagnostics.push(diagnostic);
+                            stop = stop.or(Some(execution));
+                            break;
+                        }
+                        // The frames cover the decoded prefix: a body whose decode stopped early
+                        // gets the frames of that prefix and says so, like every pass before this
+                        // one.
+                        run.stages[index].state = if graph.completeness.is_complete() {
+                            StageState::Completed
+                        } else {
+                            StageState::Partial
+                        };
+                        // The table is a crate-private payload (invariant 11): 4.2 reads it, and
+                        // 5.1 decides what becomes public. What this run keeps of it is the
+                        // payload itself, because the fact is what the next slice consumes.
+                        frame_table = Some(table);
+                    }
+                    Ok(FrameOutcome::Unsupported { message }) => {
+                        // A state this build does not prove yet — the initialization conversions
+                        // and the handler entries are 4.2's. The phases before this one keep their
+                        // facts, no `Frames` fact is published, and the reason is the frame
+                        // slice's own boundary code rather than a claim about the bytes.
+                        let code = IR_FRAME_DEFERRED.to_string();
+                        run.stages[index].state = StageState::Partial;
+                        run.diagnostics.push(Diagnostic {
+                            code: code.clone(),
+                            severity: DiagnosticSeverity::Warning,
+                            message,
+                            provenance: None,
+                        });
+                        stop = stop.or(Some(ExecutionReport::Partial {
+                            reason: TerminationReason::Error { code },
+                            usage: budget.usage(),
+                        }));
+                        break;
+                    }
+                    Ok(FrameOutcome::Inconsistent { message }) => {
+                        // The body contradicts itself: the frames before the fault are not a
+                        // partial answer about a state that never existed, so nothing is
+                        // published and the code says what happened. The severity is the one the
+                        // reader's own stops use for a damaged method — an error, unlike the
+                        // boundary of this build above.
+                        let code = IR_FRAME_INCONSISTENT.to_string();
+                        run.stages[index].state = StageState::Partial;
+                        run.diagnostics.push(Diagnostic {
+                            code: code.clone(),
+                            severity: DiagnosticSeverity::Error,
+                            message,
+                            provenance: None,
+                        });
+                        stop = stop.or(Some(ExecutionReport::Partial {
+                            reason: TerminationReason::Error { code },
+                            usage: budget.usage(),
+                        }));
+                        break;
+                    }
+                    Err(error) => {
+                        let (execution, diagnostic) = crate::ir::terminal(&error, budget.usage());
+                        run.stages[index].state = stage_state(&execution);
+                        run.diagnostics.push(diagnostic);
+                        stop = stop.or(Some(execution));
+                        break;
+                    }
+                }
+            }
             _ => {
                 // A phase this build does not implement: the request is answered with the
                 // failure of that pass, and the phases behind it stay `NotPerformed` instead
@@ -463,6 +570,15 @@ fn run_method_analysis(
     } else {
         crate::ir::Quality::Fallback
     };
+    // A published frame table always holds the entry block of the body it describes: it is the
+    // one state the fixpoint starts from. The check is what keeps the payload of this run tied to
+    // the fact the ledger recorded instead of becoming an unread local.
+    debug_assert!(
+        frame_table
+            .as_ref()
+            .is_none_or(|table| !table.blocks().is_empty()),
+        "a published frame table holds at least the entry state"
+    );
     run.execution = match stop {
         // The usage of the whole request, under whichever termination stopped it first.
         Some(execution) => jarde_reader::accounting::with_usage(execution, budget.usage()),
@@ -485,10 +601,28 @@ enum DriverRead {
     Decoded {
         facts: Box<MethodCodeFacts>,
         major_version: u16,
+        /// The declaration facts the later passes need beside the body.
+        declaration: FrameDeclaration,
     },
     /// The member's own declaration says it has no body: there is nothing to analyze, and that
     /// is a fact about the member rather than a failure of the request.
     DeclaredWithoutBody,
+}
+
+/// The declaration facts a later pass reads beside the decoded body.
+///
+/// They come from the one header read `raw_facts` performs and are kept instead of read again:
+/// whether the member is static and what it is called decide the entry frame, the class file's
+/// own name is the type of an initialized `this`, and its constant pool is where the descriptor
+/// of every `invoke*`, field access, `ldc` and array creation lives. The pool is moved out of the
+/// header facts, so the request holds exactly one copy of it.
+struct FrameDeclaration {
+    /// Raw access flags of the member.
+    access_flags: u16,
+    /// Internal name of the class the member is declared in (`this_class`).
+    this_class: Vec<u8>,
+    /// The class file's constant pool, in index order.
+    pool: Vec<CpEntryFacts>,
 }
 
 /// Reads the driver method's class header and body, and fills the planes that follow from it.
@@ -527,7 +661,7 @@ fn read_driver_method(
     // other header read of this engine (a refused charge records nothing), and a binding the
     // loader refuses keeps the record of the read it was decided on.
     run.reads = crate::resolver::published_reads(&closure);
-    let read = read?;
+    let mut read = read?;
     let Some(member) = read.header.facts.methods.iter().find(|member| {
         member.name.raw().0 == request.method.name.0
             && member.descriptor.raw().0 == request.method.descriptor.0
@@ -584,6 +718,14 @@ fn read_driver_method(
         // The dialect of the later passes is the class file's version and nothing else, so it
         // is read here, once, from the same header the member was located in.
         major_version: read.header.facts.major_version,
+        // The same read carries the declaration facts the `frame` pass needs. The constant pool
+        // is *moved* out of the header facts: this request keeps one copy of it, and the pool of
+        // no other class is read for it.
+        declaration: FrameDeclaration {
+            access_flags: member.access_flags,
+            this_class: read.header.facts.this_class.raw().0.clone(),
+            pool: std::mem::take(&mut read.header.facts.constant_pool),
+        },
     })
 }
 

@@ -174,8 +174,8 @@ fn analyze(
 }
 
 /// The full pipeline up to the last phase this build implements, cloned for the fake phase that
-/// stands behind `canonical_cfg` in the stage list: `frame` is still unimplemented, so a run that
-/// reaches it reports `ir_pass_not_implemented` for that phase alone.
+/// stands behind `frame` in the stage list: `ssa` is still unimplemented, so a run that reaches it
+/// reports `ir_pass_not_implemented` for that phase alone.
 fn pipeline(fixture: &Fixture) -> MethodAnalysisRequest {
     request(fixture, fixture.method.clone(), vec![AnalysisStage::Ssa])
 }
@@ -249,12 +249,12 @@ fn the_historical_finally_normalizes_with_one_clone_per_call_site() {
                 StageState::Completed,
                 StageState::Completed,
                 StageState::Completed,
+                StageState::Completed,
                 StageState::Failed {
                     code: "ir_pass_not_implemented".to_string()
                 },
-                StageState::NotPerformed,
             ],
-            "classfile major {version}: the canonical phase completed and the frame phase is the \
+            "classfile major {version}: the canonical phase completed and the ssa phase is the \
              unimplemented one"
         );
         assert_eq!(
@@ -340,10 +340,10 @@ fn the_modern_dialect_has_no_clone_to_bill() {
             StageState::Completed,
             StageState::Completed,
             StageState::Completed,
+            StageState::Completed,
             StageState::Failed {
                 code: "ir_pass_not_implemented".to_string()
             },
-            StageState::NotPerformed,
         ]
     );
     assert_eq!(report.quality, Quality::Conservative);
@@ -676,6 +676,28 @@ fn a_jsr_on_an_exception_path_and_nested_calls_normalize() {
         let request = request(&fixture, fixture.method.clone(), vec![AnalysisStage::Ssa]);
         let (report, budget) = analyze(&fixture, &request, limits());
 
+        // The fifth phase this build implements is `frame`, and what it reports about these
+        // fixtures is a fact about their bodies: the exception-path body throws a value that is
+        // not on its stack (the fixture is named `illegal` for that reason), which is a
+        // contradiction of its own bytes — `ir_frame_inconsistent`, and never the 4.1 boundary
+        // code. The two handler-free, verifiable bodies reach the phase this build does not
+        // implement, `ssa`.
+        let (frame_state, tail, codes): (StageState, Vec<StageState>, Vec<&str>) =
+            if handlers.is_empty() {
+                (
+                    StageState::Completed,
+                    vec![StageState::Failed {
+                        code: "ir_pass_not_implemented".to_string(),
+                    }],
+                    vec!["ir_pass_not_implemented"],
+                )
+            } else {
+                (
+                    StageState::Partial,
+                    vec![StageState::NotPerformed],
+                    vec!["ir_frame_inconsistent"],
+                )
+            };
         assert_eq!(
             stage_states(&report),
             vec![
@@ -683,17 +705,17 @@ fn a_jsr_on_an_exception_path_and_nested_calls_normalize() {
                 StageState::Completed,
                 StageState::Completed,
                 StageState::Completed,
-                StageState::Failed {
-                    code: "ir_pass_not_implemented".to_string()
-                },
-                StageState::NotPerformed,
-            ],
+                frame_state,
+            ]
+            .into_iter()
+            .chain(tail)
+            .collect::<Vec<_>>(),
             "{name}: the canonical phase really completed"
         );
         assert_eq!(report.quality, Quality::Conservative, "{name}");
         assert_eq!(
             diagnostic_codes(&report),
-            vec!["ir_pass_not_implemented"],
+            codes,
             "{name}: neither the dialect nor the call graph was refused"
         );
         assert!(

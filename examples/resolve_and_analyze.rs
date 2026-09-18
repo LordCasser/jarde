@@ -408,18 +408,35 @@ fn run(path: PathBuf) -> jarde::Result<()> {
     );
     // The body was located and read by this run, and the canonical CFG was built from the call
     // contexts the phase before it proved: a produced artifact is what makes `quality`
-    // `Conservative` rather than `Fallback`. The phases this build implements completed and the
-    // first one it does not implement fails, so the run ends as the unsupported capability it
-    // is — never as a completed pipeline.
+    // `Conservative` rather than `Fallback`. The run stops at the first phase this build does
+    // not implement, so it ends as the unsupported capability it is — never as a completed
+    // pipeline.
+    //
+    // The shape is asserted rather than a count of completed phases: each phase this build
+    // gains moves that count, and a number here would be asserting the build's progress instead
+    // of what the example is about. What has to hold is the prefix — everything up to the
+    // unimplemented phase ran and completed, nothing behind it ran.
     assert_eq!(report.body, MethodBodyState::Present);
-    assert_eq!(
-        report
-            .stages
+    let states = report
+        .stages
+        .iter()
+        .map(|stage| stage.state.clone())
+        .collect::<Vec<_>>();
+    let unimplemented = states
+        .iter()
+        .position(|state| matches!(state, StageState::Failed { .. }))
+        .expect("this build does not implement every phase yet");
+    assert!(
+        states[..unimplemented]
             .iter()
-            .filter(|stage| matches!(stage.state, StageState::Completed))
-            .count(),
-        4,
-        "`raw_facts`, `raw_cfg`, `legacy_normalization` and `canonical_cfg` completed"
+            .all(|state| matches!(state, StageState::Completed)),
+        "every phase before the unimplemented one completed: {states:?}"
+    );
+    assert!(
+        states[unimplemented + 1..]
+            .iter()
+            .all(|state| matches!(state, StageState::NotPerformed)),
+        "no phase behind the unimplemented one ran: {states:?}"
     );
     assert_eq!(
         report.quality,
