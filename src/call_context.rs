@@ -134,31 +134,6 @@ pub(crate) const IR_CALL_CONTEXT_UNRESOLVED: &str = "ir_call_context_unresolved"
 /// silently dropped a call site.
 const IR_CALL_CONTEXT_INCONSISTENT: &str = "ir_call_context_inconsistent";
 
-/// Where one context's return address is, as far as the walk can see.
-///
-/// The three states are distinct on purpose: a context whose subroutine has not stored the
-/// address yet is still waiting for it, one that stored it has a slot it can name, and one whose
-/// slot was written again **lost** it — that last state must not go back to `Held`, because the
-/// address a `jsr` pushed is consumed by a single store and anything written afterwards is
-/// another value.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum TokenSlot {
-    /// No reference store has been seen yet.
-    Waiting,
-    /// The address went into this local, at this store, and has not been overwritten since.
-    ///
-    /// The store's own BCI is part of the state so that seeing the same instruction again is not
-    /// mistaken for an overwrite: the walk revisits a subroutine's blocks once per context that
-    /// reaches it, and only a **different** store into this slot replaces the address.
-    Held {
-        /// The local the address went into.
-        slot: u16,
-        /// The BCI of the store that put it there.
-        store: u32,
-    },
-    /// The local that held the address was written again, by another store.
-    Lost,
-}
 ///
 /// The walk returns this instead of an error because it is a fact about the bytes, not a failure
 /// of the pass: the request keeps its raw facts and reports `ir_call_context_unresolved`, exactly
@@ -736,11 +711,15 @@ struct Walk<'a> {
     /// was never written by the subroutine would otherwise be attributed to whichever context
     /// happened to be active.
     returns: BTreeMap<u32, BTreeSet<usize>>,
-    /// Per context, where its return address is, once a subroutine has stored it.
+    /// Every local write the context's body reaches, as `(slot, store BCI, block, is_reference)`.
     ///
-    /// The raw facts do not say what a local holds, so the walk learns the slot from the store
-    /// it can see, and forgets it when that slot is written again ([`TokenSlot`]).
-    token_slots: Vec<TokenSlot>,
+    /// The walk collects these instead of deciding as it goes, because a decision taken during
+    /// the traversal depends on the order the worklist happens to use: a store seen on one arm
+    /// was inherited by a `ret` on another. Collecting first and deciding at the end of the
+    /// context's run makes the answer a property of the bytes.
+    writes: Vec<(usize, u16, u32, usize, bool)>,
+    /// Every `ret` the context's body reaches, as `(ret BCI, slot it reads, block)`.
+    rets: Vec<(usize, u32, u16, usize)>,
     /// Exception records covering the instructions walked under one context, by context index.
     coverage: Vec<BTreeSet<u32>>,
     /// Call sites a context's body directly holds, by context index (the nesting relation).
@@ -784,7 +763,8 @@ impl<'a> Walk<'a> {
             context_of,
             affected,
             returns: BTreeMap::new(),
-            token_slots: vec![TokenSlot::Waiting; plans.len()],
+            writes: Vec::new(),
+            rets: Vec::new(),
             coverage,
             contains,
         })
@@ -799,6 +779,10 @@ impl<'a> Walk<'a> {
     /// contexts therefore charges 3 000 rows instead of one matrix, which is what makes the
     /// ~9 MB of `Vec<bool>` refusable. Worklist pops and enqueues are `AnalysisSteps`.
     fn run(&mut self, root: usize, budget: &mut Budget) -> Result<Option<UnprovenReturn>> {
+        // The collected facts belong to this context alone: a shared subroutine is analysed once
+        // per context, so no other call site's stores are in scope here.
+        self.writes.clear();
+        self.rets.clear();
         let mut visited: BTreeMap<usize, Vec<bool>> = BTreeMap::new();
         let mut worklist: Vec<(usize, usize)> = Vec::new();
         self.enqueue(
@@ -831,7 +815,7 @@ impl<'a> Walk<'a> {
             let (start, end) = self.ranges[block];
             for index in start..end {
                 budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-                if let Some(unproven) = self.visit(active, index, &mut written, budget)? {
+                if let Some(unproven) = self.visit(active, block, index, &mut written, budget)? {
                     return Ok(Some(unproven));
                 }
             }
@@ -840,7 +824,108 @@ impl<'a> Walk<'a> {
             }
         }
         self.affected[root] = written;
+        self.adjudicate(root, budget)
+    }
+
+    /// Decides, once the context's body has been walked, which of its `ret`s are proven.
+    ///
+    /// A `ret` reading slot `R` is proven when **exactly one** write in this context's body
+    /// touches `R`, that write is a reference store (the only kind that can carry the address a
+    /// `jsr` pushed), and the store is unavoidable: in the same block before the `ret`, or in a
+    /// block every path to the `ret` passes through.
+    ///
+    /// Deciding here rather than during the traversal is what makes the answer a property of the
+    /// bytes: a walk-order decision let a store seen on one arm be inherited by a `ret` on
+    /// another, so the same body could establish or not depending on the worklist's order.
+    fn adjudicate(&mut self, root: usize, budget: &mut Budget) -> Result<Option<UnprovenReturn>> {
+        // The decision reads the whole body, so the collected facts are sorted by the position
+        // they describe, never by the order the walk reached them.
+        self.writes.sort_unstable();
+        self.rets.sort_unstable();
+        let rets = std::mem::take(&mut self.rets);
+        let writes = std::mem::take(&mut self.writes);
+        for (context, ret_bci, read_slot, ret_block) in rets {
+            // A root's walk also walks the contexts its calls reach, so the collection holds
+            // other contexts' facts too; only this context's own are adjudicated here.
+            if context != root {
+                continue;
+            }
+            let mut writers = writes
+                .iter()
+                .filter(|(owner, slot, ..)| *owner == root && *slot == read_slot);
+            let first = writers.next();
+            let only_one = writers.next().is_none();
+            let proven = match first {
+                // Exactly one writer, and it is a reference store the walk can point at.
+                Some(&(_, _, store_bci, store_block, true)) if only_one => {
+                    if store_block == ret_block {
+                        store_bci < ret_bci
+                    } else {
+                        self.dominates(root, store_block, ret_block, budget)?
+                    }
+                }
+                _ => false,
+            };
+            if !proven {
+                return Ok(Some(UnprovenReturn {
+                    bci: ret_bci,
+                    context: root,
+                    reads: Some(read_slot),
+                    holds: first.map(|(_, _, store_bci, ..)| *store_bci as u16),
+                }));
+            }
+            let owners = self.returns.entry(ret_bci).or_default();
+            if !owners.contains(&root) {
+                budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                owners.insert(root);
+            }
+        }
         Ok(None)
+    }
+
+    /// Whether every path from this context's entry to `target` passes through `barrier`.
+    ///
+    /// The return address a `jsr` pushes is a value, and a value that only *some* paths store
+    /// cannot be attributed to the `ret` the others reach. The walk therefore asks the graph
+    /// directly: if `target` is still reachable with `barrier` taken out, the store is not
+    /// unavoidable and the attribution would be a guess about which path ran.
+    ///
+    /// The search is over the raw successor lists, so a call or handler edge counts as a path
+    /// like any other - which can only make the check refuse more, never less.
+    fn dominates(
+        &self,
+        active: usize,
+        barrier: usize,
+        target: usize,
+        budget: &mut Budget,
+    ) -> Result<bool> {
+        let entry = block_of(self.blocks, self.plans[active].entry_bci)?;
+        if barrier == entry {
+            return Ok(true);
+        }
+        checkpoint(Phase::Visited, budget)?;
+        budget.charge(
+            CountedBudgetDimension::IrItems,
+            1 + u64::try_from(self.blocks.len())
+                .expect("a body cannot hold more blocks than the BCI space"),
+        )?;
+        let mut seen = vec![false; self.blocks.len()];
+        let mut stack = vec![entry];
+        seen[entry] = true;
+        while let Some(block) = stack.pop() {
+            for (_, to) in &self.successors[block] {
+                if *to == barrier || seen[*to] {
+                    continue;
+                }
+                budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
+                if *to == target {
+                    return Ok(false);
+                }
+                seen[*to] = true;
+                stack.push(*to);
+            }
+        }
+        Ok(true)
     }
 
     /// Enqueues one worklist entry, billed as one `AnalysisSteps` before it is pushed.
@@ -864,61 +949,29 @@ impl<'a> Walk<'a> {
     fn visit(
         &mut self,
         active: usize,
+        block: usize,
         index: usize,
         written: &mut BTreeSet<u16>,
         budget: &mut Budget,
     ) -> Result<Option<UnprovenReturn>> {
         let bci = self.facts.instructions[index].bci;
         let opcode = self.facts.operands[index].effective_opcode;
-        // The context's own return address, where this subroutine puts it. A `jsr` pushes it and
-        // the subroutine stores it into a local; that store is the only place the walk can learn
-        // which slot holds the address, because a slot's contents are not part of the raw facts.
-        // The first reference store the subroutine performs is where its return address goes:
-        // a `jsr` pushes the address, and the subroutine's first act on it is to store it. Later
-        // stores write other references, so they must not move the slot.
-        if is_astore(opcode)
-            && let Some(local) = self.facts.operands[index].local
-        {
-            self.token_slots[active] = match self.token_slots[active] {
-                TokenSlot::Waiting => TokenSlot::Held {
-                    slot: local.index,
-                    store: bci,
-                },
-                // The slot the address went into, written by a *different* store: what it holds
-                // now is some other value, and a slot overwritten once cannot be assumed to hold
-                // the address again.
-                TokenSlot::Held { slot, store } if slot == local.index && store != bci => {
-                    TokenSlot::Lost
-                }
-                other => other,
-            };
+        // A reference store is where a `jsr` return address can go; every other write puts some
+        // other value in a local. Both are recorded, because a `ret` is only proven when the
+        // slot it reads has exactly one writer and that writer is a reference store it can name:
+        // an integer store into the same slot is a value the address no longer is.
+        let reference = is_astore(opcode);
+        for local in &self.effects.instructions[index].locals_written {
+            budget.charge(CountedBudgetDimension::IrItems, 1)?;
+            self.writes.push((active, *local, bci, block, reference));
         }
         // A `wide ret` is the same return the short form is: the reader classifies a `wide`
         // form by the opcode it wraps (0.2).
-        if opcode == OPCODE_RET {
-            // The `ret` reads a local, and that local has to be the slot this context proved it
-            // stored its own return address in. Anything else - a slot that was never written, a
-            // different slot, an address the subroutine overwrote with an ordinary value - is a
-            // return this walk cannot account for, so the whole context set stays unpublished
-            // rather than claiming a return point the bytes do not support.
-            let reads = self.facts.operands[index].local.map(|local| local.index);
-            let holds = match self.token_slots[active] {
-                TokenSlot::Held { slot, .. } => Some(slot),
-                TokenSlot::Waiting | TokenSlot::Lost => None,
-            };
-            if reads.is_none() || reads != holds {
-                return Ok(Some(UnprovenReturn {
-                    bci,
-                    context: active,
-                    reads,
-                    holds,
-                }));
-            }
-            let owners = self.returns.entry(bci).or_default();
-            if !owners.contains(&active) {
-                budget.charge(CountedBudgetDimension::IrItems, 1)?;
-                owners.insert(active);
-            }
+        if opcode == OPCODE_RET
+            && let Some(local) = self.facts.operands[index].local
+        {
+            budget.charge(CountedBudgetDimension::IrItems, 1)?;
+            self.rets.push((active, bci, local.index, block));
         }
         for local in &self.effects.instructions[index].locals_written {
             if !written.contains(local) {
@@ -2341,15 +2394,21 @@ mod tests {
         // a charge that changes its amount moves this number.
         //
         // The fixture is two call-site contexts over five blocks with one `ret`, no handlers and
-        // no nesting, and a complete run of it bills 34 items. The number is deliberately not
+        // no nesting, and a complete run of it bills 40 items. The number is deliberately not
         // decomposed into per-charge arithmetic: neutralising one charge also changes the charges
         // that follow it, so per-site deltas are not additive and a table of them would be a
         // plausible-looking fiction. The shape assertions below say what the total is read from.
+        //
+        // The total moved from 34 to 40 when the walk stopped deciding during the traversal and
+        // started collecting: every local write it records is an item (not only the reference
+        // stores, because a `ret` is only proven when its slot has a single writer of a known
+        // kind), and every `ret` it records is one. The assertion below is what keeps any
+        // further change visible.
         let facts = billing_fixture();
         let complete = baseline_usage(&facts).counted_usage(CountedBudgetDimension::IrItems);
         assert_eq!(
-            complete, 34,
-            "the item bill of this fixture is the measured composition above"
+            complete, 40,
+            "the item bill of this fixture is the measured total above"
         );
         assert_eq!(
             raw_block_count(&facts),
@@ -2454,54 +2513,6 @@ mod tests {
     }
 
     #[test]
-    fn zz_r3b() {
-        let facts = body(
-            vec![
-                jsr(0, 4),
-                plain(3, 0xb1),
-                store(4, 0x4b, 0),
-                plain(5, 0x04),
-                plain(6, 0x03),
-                plain(7, 0x6c),
-                plain(8, 0x57),
-                ret(9, 0),
-                store(11, 0x4c, 1),
-                plain(12, 0x03),
-                store(13, 0x36, 2),
-                goto(14, -5),
-            ],
-            vec![catch(0, 5, 8, 11, None)],
-            17,
-        );
-        let raw = graph(&facts, &mut budget());
-        eprintln!(
-            "R3B blocks={:?}",
-            raw.cfg
-                .blocks
-                .iter()
-                .map(|b| (b.bci, b.end_bci))
-                .collect::<Vec<_>>()
-        );
-        eprintln!(
-            "R3B edges={:?}",
-            raw.cfg
-                .edges
-                .iter()
-                .map(|e| (e.from_bci, e.to_bci, e.kind))
-                .collect::<Vec<_>>()
-        );
-        eprintln!(
-            "R3B throw_sites={:?}",
-            raw.cfg
-                .throw_sites
-                .iter()
-                .map(|s| (s.bci, s.handlers.clone()))
-                .collect::<Vec<_>>()
-        );
-        eprintln!("R3B unreachable={:?}", raw.cfg.unreachable);
-    }
-
-    #[test]
     fn an_address_overwritten_by_an_ordinary_value_is_unresolved() {
         // The slot holds the return address, and then an ordinary reference overwrites it before
         // the `ret` reads it. A rule that only remembers which slot the address went into would
@@ -2554,6 +2565,169 @@ mod tests {
         );
     }
 
+    #[test]
+    fn an_address_stored_on_only_one_path_is_unresolved() {
+        // The merge the contract calls unreliable: the address is stored on the branch arm only,
+        // so the other arm reaches the `ret` with something else in the slot. Visiting that arm
+        // first made the walk attribute the return point anyway, because the slot state was one
+        // value per context written in traversal order. The store has to be unavoidable for the
+        // attribution to hold, and that is what the check asks the graph.
+        //
+        //   0: jsr 4        return address (BCI 3) -> the subroutine
+        //   3: return
+        //   4: ifeq +7 -> 11   (taken: the arm that stores)
+        //   7: nop             (this arm never stores the address)
+        //   8: goto +4 -> 12
+        //  11: astore_0        the address, on the branch arm only
+        //  12: ret 0
+        let one_arm = body(
+            vec![
+                jsr(0, 4),
+                plain(3, 0xb1),
+                instruction(
+                    4,
+                    0x99,
+                    3,
+                    InstructionOperands {
+                        branch_offset: Some(7),
+                        ..operands(0x99)
+                    },
+                ),
+                plain(7, 0x00),
+                goto(8, 4),
+                store(11, 0x4b, 0),
+                ret(12, 0),
+            ],
+            Vec::new(),
+            14,
+        );
+        let raw = graph(&one_arm, &mut budget());
+        let outcome = call_contexts(&one_arm, &raw, 49, &mut budget());
+        assert!(
+            matches!(outcome, Ok(CallContextOutcome::Unresolved { .. })),
+            "a store on one path only does not prove the return point: {outcome:?}"
+        );
+
+        // The control, so the check is not simply refusing every branch: the same shape with the
+        // store dominating the `ret` - both arms reach it through BCI 11 - establishes.
+        let dominating = body(
+            vec![
+                jsr(0, 4),
+                plain(3, 0xb1),
+                instruction(
+                    4,
+                    0x99,
+                    3,
+                    InstructionOperands {
+                        branch_offset: Some(7),
+                        ..operands(0x99)
+                    },
+                ),
+                plain(7, 0x00),
+                goto(8, 3),
+                store(11, 0x4b, 0),
+                ret(12, 0),
+            ],
+            Vec::new(),
+            14,
+        );
+        let raw = graph(&dominating, &mut budget());
+        assert!(
+            matches!(
+                call_contexts(&dominating, &raw, 49, &mut budget()),
+                Ok(CallContextOutcome::Established(_))
+            ),
+            "an unavoidable store proves the return point"
+        );
+
+        // The same body with the store on the *other* arm, so the traversal reaches the store and
+        // the `ret` in the opposite order. The answer has to be the same one: the decision reads
+        // the collected facts in position order, not the order the walk happened to find them,
+        // because a traversal-order decision made this pair disagree.
+        //
+        //   0: jsr 4; 3: return; 4: ifeq +7 -> 11; 7: astore_0; 8: goto +3 -> 11
+        //  11: nop; 12: ret 0
+        let other_arm = body(
+            vec![
+                jsr(0, 4),
+                plain(3, 0xb1),
+                instruction(
+                    4,
+                    0x99,
+                    3,
+                    InstructionOperands {
+                        branch_offset: Some(7),
+                        ..operands(0x99)
+                    },
+                ),
+                store(7, 0x4b, 0),
+                goto(8, 3),
+                plain(11, 0x00),
+                ret(12, 0),
+            ],
+            Vec::new(),
+            14,
+        );
+        let raw = graph(&other_arm, &mut budget());
+        let outcome = call_contexts(&other_arm, &raw, 49, &mut budget());
+        assert!(
+            matches!(outcome, Ok(CallContextOutcome::Unresolved { .. })),
+            "the mirror image refuses the same way: {outcome:?}"
+        );
+    }
+
+    #[test]
+    fn a_slot_written_by_another_value_kind_is_unresolved() {
+        // Two shapes where the address slot stops holding an address, neither of which the walk
+        // can see if it only looks at reference stores:
+        //
+        //   1) an integer store overwrites the slot the `ret` reads
+        //      0: jsr 4; 3: return; 4: astore_0; 5: iconst_0; 6: istore 0; 8: ret 0
+        //   2) the handler overwrites it, on a path that rejoins the `ret`
+        //      0: jsr 4; 3: return; 4: astore_0; 5..8: a `idiv` covered by [5,8)
+        //      9: ret 0; 11: astore_0 (handler entry); 12: goto 9
+        let by_integer = body(
+            vec![
+                jsr(0, 4),
+                plain(3, 0xb1),
+                store(4, 0x4b, 0),
+                plain(5, 0x03),
+                store(6, 0x36, 0),
+                ret(8, 0),
+            ],
+            Vec::new(),
+            10,
+        );
+        let raw = graph(&by_integer, &mut budget());
+        let outcome = call_contexts(&by_integer, &raw, 49, &mut budget());
+        assert!(
+            matches!(outcome, Ok(CallContextOutcome::Unresolved { .. })),
+            "an integer store replaces the address: {outcome:?}"
+        );
+
+        let by_handler = body(
+            vec![
+                jsr(0, 4),
+                plain(3, 0xb1),
+                store(4, 0x4b, 0),
+                plain(5, 0x04),
+                plain(6, 0x03),
+                plain(7, 0x6c),
+                plain(8, 0x57),
+                ret(9, 0),
+                store(11, 0x4b, 0),
+                goto(12, -3),
+            ],
+            vec![catch(0, 5, 8, 11, None)],
+            15,
+        );
+        let raw = graph(&by_handler, &mut budget());
+        let outcome = call_contexts(&by_handler, &raw, 49, &mut budget());
+        assert!(
+            matches!(outcome, Ok(CallContextOutcome::Unresolved { .. })),
+            "the handler rewrites the slot the `ret` reads: {outcome:?}"
+        );
+    }
     #[test]
     fn one_item_short_of_the_items_stops_the_pass_and_exactly_enough_completes_it() {
         // The bound is exact: with one item less than a complete run charges, some charge of the
@@ -2714,16 +2888,22 @@ mod tests {
             )
         };
         let (one_block, one_item, one_contexts) = variant(1);
-        let (four_blocks, four_items, four_contexts) = variant(3);
+        let (three_blocks, three_item, three_contexts) = variant(3);
         assert_eq!(
-            (one_block, one_contexts, four_contexts),
-            (four_blocks, 1, 1),
+            (one_block, one_contexts, three_contexts),
+            (three_blocks, 1, 1),
             "the comparison holds the blocks and the contexts fixed"
         );
+        // Per element, not per outer vector: two more written locals add four items - one more
+        // per extra local in the context's written set, and one more per extra write the walk
+        // records for the `ret` to adjudicate against. A pass that billed the affected-locals set
+        // once per outer vector would charge both variants the same and show a difference of
+        // zero, which is the case this comparison exists to catch; the collected writes are
+        // billed per fact, so the difference grew when the walk started collecting them.
         assert_eq!(
-            four_items - one_item,
-            2,
-            "two more written locals are two more items: {one_item} vs {four_items}"
+            three_item - one_item,
+            4,
+            "two more written locals are four more items: {one_item} vs {three_item}"
         );
     }
 
