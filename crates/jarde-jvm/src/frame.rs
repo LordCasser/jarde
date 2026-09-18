@@ -90,9 +90,11 @@
 //!
 //! Before that call, a token may be **moved** by a pure stack operation (`astore`/`aload`, the
 //! `dup*` family, `pop*`, `swap`), and `UninitializedThis` may be stored through — as the target
-//! of a `putfield` of a field **the class being constructed declares**, which is the one
-//! pre-initialization access JVMS 4.10.1.9 adds to the moves. Every other consumer of a token
-//! stops the body. The exception successor of a constructor call needs no rule of its own: its
+//! of a `putfield` whose `Fieldref` **names the class being constructed**, which is the one
+//! pre-initialization access JVMS 4.10.1.9 adds to the moves. That name is all this layer reads of
+//! the rule: it holds no field table, so whether the class it names declares the field is a
+//! question it cannot answer and does not ask. Every other consumer of a token stops the body. The
+//! exception successor of a constructor call needs no rule of its own: its
 //! input is the state **at** the call, taken before the call takes effect, so the conversion of
 //! the normal successor cannot reach the handler.
 //!
@@ -993,22 +995,24 @@ impl Frame {
     /// Removes the target reference of a field access, under the one rule that lets an
     /// uninitialized `this` be given to a `putfield` (JVMS 4.10.1.9).
     ///
-    /// `own_field` is the caller's decision that the restricted form holds: the field is declared
-    /// by the class being constructed — the class whose instance initialization method this body
-    /// is, since nothing but that entry makes an uninitialized `this`. Only then may
-    /// `UninitializedThis` stand here, and it is the only token that may: a value a `new` produced
-    /// is constructed by its own `<init>` call, and JVMS 4.10.1.9 gives it no field assignment.
-    /// Everything else stops the body under the boundary code instead of being reported as a
-    /// contradiction of bytes this pass cannot call illegal — being certain of *that* is the
-    /// verifier's work.
+    /// `own_field` is the caller's decision that the restricted form holds: the `Fieldref` **names
+    /// the class being constructed** — the class whose instance initialization method this body
+    /// is, since nothing but that entry makes an uninitialized `this`. That name is the whole of
+    /// what this layer reads: it holds no field table, so a class file that declares no field at
+    /// all passes here whenever its `Fieldref` names the class, and whether the field is really
+    /// declared is left to the verifier. Only then may `UninitializedThis` stand here, and it is
+    /// the only token that may: a value a `new` produced is constructed by its own `<init>` call,
+    /// and JVMS 4.10.1.9 gives it no field assignment. Everything else stops the body under the
+    /// boundary code instead of being reported as a contradiction of bytes this pass cannot call
+    /// illegal — being certain of *that* is the verifier's work.
     fn pop_field_target(&mut self, bci: u32, opcode: u8, own_field: bool) -> Norm<()> {
         let value = self.take(bci, opcode)?;
         match value {
             Value::UninitializedThis if own_field => Ok(()),
             Value::UninitializedThis => Err(Problem::Unproven(format!(
-                "`{opcode:#04x}` at BCI {bci} stores the uninitialized `this` through a field the \
-                 class being constructed does not declare; the pre-initialization `putfield` of \
-                 JVMS 4.10.1.9 reaches only the declaring class's own fields"
+                "`{opcode:#04x}` at BCI {bci} stores the uninitialized `this` through a `Fieldref` \
+                 that does not name the class being constructed; the pre-initialization `putfield` \
+                 of JVMS 4.10.1.9 reaches only a `Fieldref` that names it"
             ))),
             value if value.is_uninitialized() => Err(Problem::Unproven(format!(
                 "`{opcode:#04x}` at BCI {bci} consumes the uninitialized value {value:?} as the \
@@ -1023,22 +1027,23 @@ impl Frame {
     }
 
     /// Converts every alias of one token into the initialized reference a constructor call
-    /// produced — in the locals and on the operand stack alike — and answers how many slots it
-    /// converted.
+    /// produced — in the locals and on the operand stack alike.
     ///
     /// Equality **is** the token's identity ([`Value::Uninitialized`] carries its [`NewSite`]),
     /// which is what keeps two allocations apart: only the aliases of the token this call was
     /// given are converted, while a value another `new` produced, or the `UninitializedThis` of
     /// a constructor, is not this token and is left as it stands.
-    fn convert_token(&mut self, token: &Value, initialized: &Value) -> usize {
-        let mut converted = 0;
+    ///
+    /// How many slots the conversion reached is not answered, because no rule of this pass reads
+    /// that number: the receiver the call was given is already out of the frame, so a token whose
+    /// only alias it was converts none at all, and what the call leaves behind is the frame's own
+    /// new state.
+    fn convert_token(&mut self, token: &Value, initialized: &Value) {
         for slot in self.locals.iter_mut().chain(self.stack.iter_mut()) {
             if slot == token {
                 *slot = initialized.clone();
-                converted += 1;
             }
         }
-        converted
     }
 
     /// Reads the local the operands name, which must hold a value of this slot class, and returns
@@ -1475,22 +1480,20 @@ fn pool_field_owner<'a>(
     }
 }
 
-/// The class an `invokespecial <init>` constructs, when the entry it names is a constructor call
-/// at all.
+/// The class one invocation's entry names as the owner of a method called `<init>`, whatever the
+/// opcode is.
 ///
-/// `None` says "no initialization conversion is defined here": the instruction is not an
-/// `invokespecial`, or the name the constant pool gives the method is not `<init>` — the name is
-/// the entry's own fact, and an `invokevirtual` of a method called `<init>` is not a constructor
-/// call. The kind is the pairing [`pool_method_descriptor`] already required.
-fn constructor_target<'a>(
+/// The name is the entry's own fact. Every invocation opcode that names a method reference may
+/// name one called `<init>` — the bytes decide that, not the opcode — where `invokedynamic` names a
+/// call site of its own kind and is no such entry. The kinds are the pairing
+/// [`pool_method_descriptor`] already required, and a non-method entry answers `None` here so that
+/// the descriptor check keeps naming what is wrong with it.
+fn init_named_target<'a>(
     method: &'a FrameMethod<'_>,
     operands: &InstructionOperands,
     bci: u32,
     opcode: u8,
 ) -> Norm<Option<&'a [u8]>> {
-    if opcode != 0xb7 {
-        return Ok(None);
-    }
     let entry = pool_entry(method.pool, operands, bci, opcode)?;
     match &entry.kind {
         CpEntryKind::MethodRef { owner, name, .. }
@@ -1501,6 +1504,27 @@ fn constructor_target<'a>(
         }
         _ => Ok(None),
     }
+}
+
+/// The class an `invokespecial <init>` constructs, when the entry it names is a constructor call
+/// at all.
+///
+/// `None` says "no initialization conversion is defined here": the instruction is not an
+/// `invokespecial`, or the name the constant pool gives the method is not `<init>` — the name is
+/// the entry's own fact, and an `invokevirtual` of a method called `<init>` is not a constructor
+/// call here, since the one transition this pass has for a call named `<init>` belongs to the
+/// `invokespecial` that constructs a token. The kind is the pairing [`pool_method_descriptor`]
+/// already required.
+fn constructor_target<'a>(
+    method: &'a FrameMethod<'_>,
+    operands: &InstructionOperands,
+    bci: u32,
+    opcode: u8,
+) -> Norm<Option<&'a [u8]>> {
+    if opcode != 0xb7 {
+        return Ok(None);
+    }
+    init_named_target(method, operands, bci, opcode)
 }
 
 /// The class one `new` site allocates, read from the instruction the site names.
@@ -1966,11 +1990,13 @@ fn apply_constant(
                 frame.pop_ty(ty, bci, opcode, false)?;
                 if target {
                     // JVMS 4.10.1.9's one addition to the moves: an instance initialization method
-                    // may assign a field **its own class declares** through the `this` it has not
-                    // initialized yet. Holding an uninitialized `this` at all means this body *is*
-                    // such a method — it is the entry state of an `<init>` and nothing else makes
-                    // one — so the rule's two conditions reduce to the field's declaring class,
-                    // which is the class file's own name.
+                    // may assign a field through the `this` it has not initialized yet. Holding an
+                    // uninitialized `this` at all means this body *is* such a method — it is the
+                    // entry state of an `<init>` and nothing else makes one — so the rule's
+                    // condition reduces, at this layer, to the owner name the `putfield`'s
+                    // `Fieldref` gives: the class file's own name is the class being constructed.
+                    // Whether that class declares the field is not read here; this layer holds no
+                    // field table.
                     let own_field =
                         pool_field_owner(method, operands, bci, opcode)? == method.owner;
                     frame.pop_field_target(bci, opcode, own_field)?;
@@ -1986,6 +2012,25 @@ fn apply_constant(
         PoolEffect::Invoke { receiver } => {
             let descriptor = pool_method_descriptor(method, operands, bci, opcode)?;
             let (params, returns) = parse_method_descriptor(&descriptor)?;
+            // A method called `<init>` is a constructor call whichever invocation opcode names it,
+            // and this pass has exactly one transition for a constructor call: the initialization
+            // conversion the applicable `invokespecial <init>` performs on the token it constructs.
+            // Under any other opcode the call has no transition here, so the body stops at the
+            // boundary rather than reading an ordinary invocation into the entry — `invokevirtual`
+            // and `invokestatic` of a method named `<init>` get the same answer as an
+            // `invokespecial <init>` that constructs nothing, which is the reading this layer
+            // already gives every `<init>` it cannot convert.
+            if opcode != 0xb7
+                && let Some(class) = init_named_target(method, operands, bci, opcode)?
+            {
+                return Err(Problem::Unproven(format!(
+                    "`{opcode:#04x}` at BCI {bci} invokes `{}`.<init>, an entry named `<init>` that \
+                     is not an `invokespecial`; the only transition a constructor call has here is \
+                     the initialization conversion of the token an `invokespecial <init>` \
+                     constructs, and whether such a call is legal at all is the verifier's question",
+                    String::from_utf8_lossy(class)
+                )));
+            }
             // The arguments sit above the receiver and are consumed in reverse order; the
             // descriptor is what decides how many of them there are and how wide.
             for param in params.iter().rev() {
@@ -4110,11 +4155,7 @@ mod tests {
             locals: vec![token.clone(), other.clone(), Value::Top],
             stack: vec![token.clone(), other.clone()],
         };
-        let converted = frame.convert_token(&token, &Value::Int);
-        assert_eq!(
-            converted, 2,
-            "one alias in the locals and one on the stack, and no other slot"
-        );
+        frame.convert_token(&token, &Value::Int);
         assert_eq!(
             frame.locals,
             vec![Value::Int, other.clone(), Value::Top],
@@ -4124,6 +4165,14 @@ mod tests {
             frame.stack,
             vec![Value::Int, other],
             "the stack is read the same way"
+        );
+        assert!(
+            !frame
+                .locals
+                .iter()
+                .chain(frame.stack.iter())
+                .any(|slot| slot == &token),
+            "every alias of the token is converted: no slot of either plane still holds it"
         );
     }
 
@@ -4433,11 +4482,60 @@ mod tests {
         );
     }
 
+    /// An invocation of a method called `<init>` under an opcode other than `invokespecial` stops
+    /// the body under the boundary code, exactly like an `invokespecial <init>` this pass cannot
+    /// convert.
+    ///
+    /// The name is the entry's own fact, so `invokevirtual` and `invokestatic` of a method called
+    /// `<init>` name a constructor call just as `invokespecial` does — and the one transition this
+    /// pass has for a call named `<init>` belongs to the `invokespecial` that constructs a token.
+    /// The other opcodes construct nothing, so the body stops instead of the entry being read as an
+    /// ordinary `void` call, and the stop is the boundary's own code rather than a contradiction:
+    /// whether such bytes are legal is the verifier's question.
+    #[test]
+    fn an_init_named_invocation_that_is_not_an_invokespecial_stops_the_body() {
+        // 0  aconst_null  the receiver such a call would need
+        // 1  invokevirtual Test.<init>()V (#1)
+        // 4  return
+        let synthetic = synthetic_body(
+            vec![plain(0, 0x01), call(1, 0xb6, 1), plain(4, 0xb1)],
+            vec![constructor_ref(1, b"Test", b"()V")],
+            1,
+            5,
+        );
+        let message = unproven(synthetic_frames(&synthetic, b"()V"));
+        assert!(
+            message.contains("0xb6")
+                && message.contains("Test")
+                && message.contains("not an `invokespecial`"),
+            "the stop names the opcode, the class the entry names and what is missing: {message}"
+        );
+
+        // The same entry under `invokestatic`, which names no receiver at all.
+        // 0  invokestatic Test.<init>()V (#1)
+        // 3  return
+        let synthetic = synthetic_body(
+            vec![call(0, 0xb8, 1), plain(3, 0xb1)],
+            vec![constructor_ref(1, b"Test", b"()V")],
+            1,
+            4,
+        );
+        let message = unproven(synthetic_frames(&synthetic, b"()V"));
+        assert!(
+            message.contains("0xb8")
+                && message.contains("Test")
+                && message.contains("not an `invokespecial`"),
+            "the stop names the opcode, the class the entry names and what is missing: {message}"
+        );
+    }
+
     /// JVMS 4.10.1.9's second use of an uninitialized `this`: an instance initialization method
-    /// may assign a field **its own class declares** before any constructor call. The restricted
-    /// form is read from the two names the class file gives — the field's declaring class and the
-    /// class the method is declared in — plus the method's own name, and every other shape of the
-    /// same instruction stops.
+    /// may assign a field through the `this` it has not initialized yet. The restricted form is
+    /// read from the **name** the `putfield`'s `Fieldref` gives for the field's owner and from the
+    /// class the method is declared in — never from a field table, which this layer does not hold —
+    /// and every other shape of the same instruction stops. The accept case below is that boundary
+    /// in its sharpest form: the fixture's pool holds the `Fieldref` and its class declares no
+    /// field at all, and the instruction is accepted because the entry names the own class.
     #[test]
     fn a_constructor_may_store_its_own_field_through_the_uninitialized_this() {
         // 0  aload_0        the uninitialized `this`
@@ -4461,11 +4559,11 @@ mod tests {
                 constructor_frames(&synthetic, b"()V"),
                 FrameOutcome::Frames(_)
             ),
-            "a field the class being constructed declares is the one the rule reaches"
+            "a `Fieldref` naming the class being constructed is the one the rule reaches"
         );
 
-        // The same instruction on another class's field stops: the rule is about the class being
-        // constructed, not about `putfield` in general.
+        // The same instruction on another class's `Fieldref` stops: the rule is decided by that
+        // name, not by `putfield` in general.
         let synthetic = synthetic_body(own_field, vec![field_ref(1, b"Other", b"x", b"I")], 1, 6);
         let message = unproven(constructor_frames(&synthetic, b"()V"));
         assert!(

@@ -810,6 +810,47 @@ message=throw site ... block: CanonicalBlockId { bci: 3, path: [] } ... names a 
 
 ### 交接后半的观察
 
-- `ir_frame_deferred` 现在只剩一个触发点：**未初始化 token 被当作已初始化引用使用**（`getfield`/`athrow`/`areturn`/`ifnull`/`checkcast`/`instanceof`/作为调用参数；以及不适用的 `<init>` 与「receiver 已是已初始化引用」的 `<init>`）。**4.2 后半落地后**：构造函数用例已从 `Partial` 转为 `Completed`，边界见证改由新增的真字节 `new Test; ifnull` 用例承接（全部断言原样保留）。
+- `ir_frame_deferred` 的触发点（**同一原因：本层没有定义这条转移，故不给帧**）：**未初始化 token 被当作已初始化引用使用**（`getfield`/`athrow`/`areturn`/`ifnull`/`checkcast`/`instanceof`/作为调用参数；以及不适用的 `<init>` 与「receiver 已是已初始化引用」的 `<init>`）。**4.2 后半落地后**：构造函数用例已从 `Partial` 转为 `Completed`，边界见证改由新增的真字节 `new Test; ifnull` 用例承接（全部断言原样保留）。
 - **一处需注意的测试事实**：`invokespecial <init>` 的接收者若为**未初始化**引用会 defer，故构造调用样本用的是 `null` 接收者——这是**有意**不对操作数合法性做校验（4.1 判定线），已在用例文档中写明。
 - **新疑点（未改，单列）**：融合实际只成对合并两节点、不走更长的单后继链（吸收一步后剩余边的 `from` 仍是已被吸收的节点，`from != &head` 立即 break）。探针跑遍 `jarde-jvm` 全部用例未触发更长链，故当前与「super block」的文档描述只有二元组成立；改它会改变所有 body 的图形态，不属本片。
+
+## 2026-09-19 4.2 后半：初始化转换的状态机（提交 `d0714be`）
+
+4.2 的后半落地：初始化转换不再是边界，**handler 入口与构造调用都能算**。
+
+### 交付
+
+- **适用性判断**（`constructor_target`，判据来自常量池条目自身）：必须 `opcode == 0xb7`（`invokespecial`）且条目名 `"<init>"`。**收尾后统一**：名为 `<init>` 却**不是** `invokespecial` 的调用（`invokevirtual`/`invokestatic`/`invokeinterface`）同样**停止**在 `ir_frame_deferred`，消息点名 opcode 与该事实——理由是它**不是**本层定义的那条转移。（独立复核指出原先它会当普通调用放行得到 `Completed`，与「`invokespecial <init>` 打在已初始化 receiver 上要停止」不对称；父级裁定取更保守的一侧并统一。）
+  - `UninitializedThis`：适用 iff 目标类 == `this_class` 或 == `super_class`（`super_class` 由 `FrameDeclaration` 新增，取自 `read.header.facts.super_class`，**不引入解析**）。
+  - `Uninitialized{site}`：适用 iff 目标类 == 该 new 点所 `new` 的类。**类名来源：`new_site.bci` 回查 `facts`（`new_site_class`），不存进 `Value`**。理由（实现者给出，父级认可）：类名是**指令**的事实而非 token 的事实（同一子程序的两个克隆共享 BCI、分配同一个类，token 的区分靠 `block` 那一半）；存进 `Value` 会把 `Vec<u8>` 复制进每个别名并成为必须计费、必须保持相等的 per-slot 状态；回查不新增任何状态与计费。
+- **别名翻转**：`Frame::convert_token(token, initialized)` 一次遍历 `locals.chain(stack)`，按 `Value` 相等替换——**相等即身份**，故别的 new 点天然不受影响（「不同 new-site 不合并」是构造性保证）。`UninitializedThis` → `Ref(Named{this_class})`（**构造中的类，不是被调用类**）；`Uninitialized{site}` → `Ref(Named{被分配类})`。
+- **允许的初始化前访问**（按 opcode 与所属类判断，**未**一律拒绝）：保留 `astore`/`aload`/`dup*`/`pop*`/`swap`（并新增用例证明这些**只搬动、不转换**）；**新增** `UninitializedThis` 作 `putfield` target 当且仅当 **`Fieldref` 的 owner 名 == `this_class`**（依据 JVMS 4.10.1.9 putfield 规则原文与 4.9.2 的表述）。仍停止：`getfield`/`athrow`/`areturn`/`ifnull`/`checkcast`/`instanceof`/作调用参数/`new` token 作 putfield target。
+- **两处新增停止**：不适用的 `<init>`；以及**receiver 已是已初始化引用**的 `<init>`（JVMS 4.9.2 禁止在已初始化实例上调用 `<init>`；本层对构造调用只有「转换一个 token」这一个转移，继续按普通 void 调用处理等于替非法字节码读出含义）。两者都用 **`ir_frame_deferred`**（本 build 证不出），**不**用 `ir_frame_inconsistent`——适用性属 verifier 规则，本层不是 verifier。
+
+### 证据
+
+- `cargo test -p jarde-jvm --locked` = **164**；全量 **710 passed / 0 failed / 1 ignored**；`p2_frame` = 4；`p2_canonical` = 8；`p2_contracts` = 29；`p1_xref_golden` = 5；fmt 与 clippy 1.98.1 干净；两个 CI example exit 0。
+- **实现者证伪四组**：① 只翻栈不翻 locals → 5 条转红；② 适用性改成「见 `<init>` 就适用」→ 不适用用例转红；③ 抛点快照挪到 `apply` **之后**（异常后继复用正常状态）→ 3 条转红；④ 去掉「已初始化 receiver 的 `<init>` 停止」→ 同行用例转红。
+- **父级独立证伪**：把 `UninitializedThis` 的转换目标改名为**被调用类**（而非 `this_class`）→ `a_constructor_call_reaches_the_own_class_or_the_superclass` 与 `a_constructor_call_leaves_its_exception_input_unconverted` 转红（`sha256sum -c` 还原）。即「超类调用产生的是本类引用」这条**确有测试承重**。
+- 集成层：真实 `<init>` 的阶段由 `[C,C,C,C,Partial,NotPerformed] + ir_frame_deferred` 变为 `[C,C,C,C,C,Failed{ir_pass_not_implemented}]`（**构造函数不再停在初始化边界**）。
+
+### 被修正的既有断言（逐条，未放宽）
+
+1. `p2_frame.rs::a_constructor_stops_at_the_initialization_boundary` → 更名 `a_constructor_completes_because_its_constructor_call_converts_the_this`：该 body **合法**，缺的只是转换；转换落地后它必须可分析。四平面断言保留。
+2. **新增** `p2_frame.rs::an_uninitialized_value_used_as_a_reference_stays_the_boundary_of_this_build`：**完整承接**原用例的全部接线断言（`Partial`、`ir_frame_deferred`、`Warning`、`TerminationReason::Error{code}`、`Quality::Conservative`、`body == Present`、四平面），body 换为真字节 `new Test; ifnull`。**原边界见证没有失去**。
+3. `frame.rs::consuming_an_uninitialized_value_stops_the_body`：消息断言 `contains("4.2")` → `contains("moved, or converted")`（承诺已过期）；**行为断言一字未改**。
+4. `frame.rs::the_exception_input_of_a_constructor_call_is_the_state_at_the_call`：夹具 receiver 由 `aconst_null` 改为 `aload_0`（旧夹具**故意**用 null 冒充 receiver，而本片的新规则不再放行该形状）；用例主题（异常输入取「指令生效前」）不变，断言**更强**（新增 `handler.locals[0] == UninitializedThis`）。
+5. `frame.rs::two_clones_of_one_subroutine_get_two_new_sites`：**仅文档**（说明这两个 body 不调用 `<init>`，留下的值不涉及转换）。
+
+### 共享 test-only 构建器的改动
+
+`jarde-reader/src/classfile.rs` 的 `test_class` 池**追加** 4 条（16→20）以提供 `Test.<init>()V`（slot 18）与 `java/lang/Object.<init>()V`（slot 19）。父级已核：该模块受 `#[cfg(any(test, feature = "test-support"))]` 门控，**不进入生产构建**；追加后既有下标 2/9/11/15 不变。
+
+### 已知判定与限制（均为有意选择，已写入代码文档）
+
+- `UninitializedThis` 适用性只认**直接** `super_class`（不读超类链；更远祖先按 `Unsupported` 停止）——本请求只读**一个** header，不持有超类链。
+- `new` token 不得作 putfield target；token 不得作任何调用的参数（仍停止）。
+- putfield 限制以 `FieldRef.owner == this_class` 的**名字相等**判定，不做层级/别名推理（与本层身份模型一致）。
+- **该判据的边界已由用例钉住**：一个**不声明任何字段**的类，只要 `Fieldref` 的 owner 名是本类，初始化前的 `putfield` **仍被接受**（本层无字段表，无从知道它是否真的声明了该字段）——注释已改为如实表述「该 `Fieldref` **名的是**这个类」，`tests/p2_frame.rs::a_pre_initialization_putfield_of_the_own_name_is_accepted_without_any_declared_field` 固定这一行为。
+- **`convert_token` 不再返回转换计数**（改为 `()`）：调用点无可断言的不变量（只有一个 receiver 别名时转换 0 个 slot 是合法结果）；原「转换了 2 个」的计数断言已换成更强的**状态证据**（两处精确 slot 向量 + 全 frame 否定断言「任一 slot 都不再持有该 token」）。
+- 后半**不新增任何状态存储、不新增计费点**，故 `IrItems`/`AnalysisSteps` 与所有 golden 数字不变。
