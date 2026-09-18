@@ -35,11 +35,12 @@ use crate::error::{Error, Result};
 use crate::model::{
     Coverage, CoverageDimension, CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity,
     ExecutionReport, JvmBytes, Location, OriginMember, OriginSet, PhysicalDefinitionId, SymbolRef,
-    TerminationReason, with_usage,
+    TerminationReason,
 };
 use crate::providers::{HeaderClosure, HeaderDemand, HeaderLookupState, escaped};
 use crate::query::{ConsumerKind, ConsumerSchema, XrefItem, XrefOperation, XrefTarget};
 use crate::view::{LoaderId, PhysicalScope};
+use jarde_reader::accounting::with_usage;
 use serde::{Deserialize, Serialize};
 
 /// Capability name of the resolution entry points while they are not implemented.

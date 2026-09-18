@@ -11,6 +11,7 @@
 //! The public surface is the producer's side of those seams: read-only access to facts this crate
 //! produced, and no exported constructor for a state it has not established.
 
+pub mod accounting;
 pub mod artifact;
 pub mod budget;
 pub mod classfile;

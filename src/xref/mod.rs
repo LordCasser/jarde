@@ -280,7 +280,7 @@ pub(crate) fn scan(
         && !pass.stopped_early
         && unsupported.is_empty()
         && skipped_ranges.is_empty();
-    let execution = crate::model::with_usage(
+    let execution = jarde_reader::accounting::with_usage(
         pass.issue.unwrap_or(ExecutionReport::Complete {
             usage: budget.usage(),
         }),
@@ -383,7 +383,7 @@ pub(crate) fn scan_candidates(
         && unsupported.is_empty()
         && skipped_ranges.is_empty();
     let has_more = pass.stopped_early || pass.issue.is_some();
-    let execution = crate::model::with_usage(
+    let execution = jarde_reader::accounting::with_usage(
         pass.issue.unwrap_or(ExecutionReport::Complete {
             usage: budget.usage(),
         }),

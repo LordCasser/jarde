@@ -460,7 +460,7 @@ fn run_method_analysis(
     }
     run.execution = match stop {
         // The usage of the whole request, under whichever termination stopped it first.
-        Some(execution) => crate::model::with_usage(execution, budget.usage()),
+        Some(execution) => jarde_reader::accounting::with_usage(execution, budget.usage()),
         None => ExecutionReport::Complete {
             usage: budget.usage(),
         },

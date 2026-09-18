@@ -543,18 +543,6 @@ pub enum ExecutionReport {
 /// caller reads are the ones the whole request consumed. Every layer that merges its own stop
 /// into an inner report maps it through this one function: the artifact, multi-release, query
 /// and JVM paths of a request must not disagree about what a usage figure means.
-pub fn with_usage(
-    execution: ExecutionReport,
-    usage: crate::budget::UsageSnapshot,
-) -> ExecutionReport {
-    match execution {
-        ExecutionReport::Complete { .. } => ExecutionReport::Complete { usage },
-        ExecutionReport::Partial { reason, .. } => ExecutionReport::Partial { reason, usage },
-        ExecutionReport::Cancelled { .. } => ExecutionReport::Cancelled { usage },
-        ExecutionReport::Failed { reason, .. } => ExecutionReport::Failed { reason, usage },
-    }
-}
-
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum DiagnosticSeverity {

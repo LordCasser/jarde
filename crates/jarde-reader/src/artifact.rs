@@ -749,7 +749,7 @@ impl ArtifactSnapshot {
         }
 
         let execution = first_issue
-            .map(|execution| execution_with_usage(execution, budget.usage()))
+            .map(|execution| crate::accounting::with_usage(execution, budget.usage()))
             .unwrap_or_else(|| ExecutionReport::Complete {
                 usage: budget.usage(),
             });
@@ -1478,15 +1478,6 @@ fn tree_must_stop(issue: &Option<ExecutionReport>) -> bool {
             ..
         }) => *dimension != BudgetDimension::NestedDepth,
         _ => false,
-    }
-}
-
-fn execution_with_usage(execution: ExecutionReport, usage: UsageSnapshot) -> ExecutionReport {
-    match execution {
-        ExecutionReport::Complete { .. } => ExecutionReport::Complete { usage },
-        ExecutionReport::Partial { reason, .. } => ExecutionReport::Partial { reason, usage },
-        ExecutionReport::Cancelled { .. } => ExecutionReport::Cancelled { usage },
-        ExecutionReport::Failed { reason, .. } => ExecutionReport::Failed { reason, usage },
     }
 }
 

@@ -1946,7 +1946,7 @@ impl Issues {
         let report = self.best.unwrap_or(ExecutionReport::Complete {
             usage: budget.usage(),
         });
-        crate::model::with_usage(report, budget.usage())
+        crate::accounting::with_usage(report, budget.usage())
     }
 }
 
