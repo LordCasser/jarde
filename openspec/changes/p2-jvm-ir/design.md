@@ -856,7 +856,12 @@ pub(crate) struct PassDescriptor {
   1. **new-site 身份必须是 canonical 的，不能是裸 BCI**。4.1 的 `Value::Uninitialized { new_site }` 取的是**原始**指令 BCI，而共享子程序的两个克隆映射回**同一批**原始 BCI——于是同一子程序被两个调用点各克隆一次时，两处 `new` 会得到**同一个** new_site，被别名转换当成一个 token。别名键必须是 `(canonical 身份/上下文, bci)`。这条不是风格问题：错了会把一个上下文的未初始化引用当成另一个的已初始化别名。
   2. **异常边的接口要加宽**。4.1 只匹配 `handler_ordinal`，而本节的契约要求逻辑输入按 `(raw edge, throw-site, normalization context)` 区分；同一条异常边聚合了多个 throw site 时，4.1 只能拒绝（`ir_frame_deferred`）而不能细分。4.2 需要 canonical 侧把每条异常边的**逐 throw-site 输入**暴露出来（这是 4.2 唯一必须回改 4.1 接口的地方，不要靠块级聚合代替）。
   3. **local 合流不得把未初始化 token 悄悄降成 `Top`**。4.1 的 `merge_local` 没有未初始化分支：`Uninitialized` 与 `Null`/`UninitializedThis`/不同 new-site 合流时直接落 `Top`，而**栈**侧同情形返回 `ir_frame_deferred`。后果是本该「还缺 4.2 别名分析」的 body 可能在读该槽时报 `ir_frame_inconsistent`（Error），把实现边界说成字节码矛盾。4.2 要么在 local 合流里保留未初始化区分（不同 token 即 defer），要么在文档里写清 `Top` 是终态的理由。
-  4. **引用身份里的 loader 目前是请求声明的 load-domain loader，不是 defining loader**（4.1 已在文档中自认「锚点而非解析结果」）。单条 body 内所有具名引用同锚点，等价于按名字比较，本片无害；但它对**同名不同 defining loader** 会判**相等**——不是保守未知，而是静默假设同一性（方向错）。在 4.2/4.3 让外部类的解析事实进入合流之前，必须改为携带 defining loader，或降级为 `Unknown`。
+  4. ~~引用身份里的 loader 是请求声明的 load-domain loader~~ —— **复核后判定不是缺陷，仅需改文档措辞**：`providers::read_own_definition` 的形参就叫 `defining_loader`，而 engine 传进去的正是 `request.environment.runtime.load_domain.loader`（`engine.rs:653`），`members.rs` 也用同一概念读同一个值。也就是说**该数组就是模型认定的、这个类所有名字的解析来源 loader**（JVMS 5.4.3.1），4.1 文档里「锚点而非解析结果」的说法把话说轻了，应改成如实表述。**残留条件**（不是本片的活）：将来 resolver 把**别的 loader 定义的**类的事实带进合流时，那些事实必须自带其 loader；`RefType::Named` 的相等已包含 loader，所以到那时是「比较两个 loader」而不是「静默当成同一个」。
+- **4.2 已定的接口决策（父级，实施照此，不要再各自猜）**：
+  1. **new-site 身份**：`Value::Uninitialized { new_site }` 的 `new_site` 改为**canonical 身份**（`(CanonicalBlockId, bci)`），别名键与比较都用它。理由见上条：原始 BCI 会被共享子程序的两个克隆共用。`UninitializedThis` 不需要 site。
+  2. **异常边的输入**：`transfer_block` 除出口状态外，**还要产出该块每条可能抛异常指令处的 locals**（取该指令**生效前**的状态）。异常边 `Exception{handler_ordinal}` 对源块中 `handlers` 含该 ordinal 的**每个 throw site**各贡献一份输入：`locals(site)` + 栈为**单个异常引用**（该 handler 行有 catch 类型时用其命名引用，catch-all 时用保守未知引用）。据此 handler 入口 = 这些贡献与其它入边的合流。**构造调用异常后继不得套用正常完成后的状态**是这条的自然推论——异常状态取的是该指令生效前，别名还没翻转。
+  3. **每个块的逻辑输入要留下可枚举的记录**（源块身份 + 可选 throw-site BCI），供 4.3 的 phi 按**逻辑**前驱数取值；不得让 4.3 用聚合后的 raw 边数代替。存储按 `IrItems` 计费。
+  4. **local 合流遇到未初始化值仍答 `Top`，并把理由写进文档**（不改行为）：合并点之后对该槽的读取，在「token 缺失/未初始化」的那条路径上本就不合法，**在读取处失败是精确的**；而答 `Top` 能让「只在死亡 local 上不同」的合法 body 继续可分析——这正是 4.1 已定的 locals 规则。故不改为 defer（那会对合法 body 过度保守）。
 
 ### 4.3 stack/local SSA、phi 与 effect 顺序
 
