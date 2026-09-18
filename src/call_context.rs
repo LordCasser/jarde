@@ -517,8 +517,10 @@ enum Phase {
 #[cfg(test)]
 /// Every phase, so a test can put its seam on each one in turn.
 ///
-/// The list is beside the enum on purpose: a phase left out of it would keep its checkpoint
-/// unproven, and the sweep that uses it would pass without ever reaching the new phase.
+/// The list is beside the enum so that adding a phase is an obvious edit here too, but it is not
+/// enforced: a variant left out of it would keep its checkpoint unproven and the sweep would
+/// still pass, because the sweep can only visit the phases it is given. Adding a phase therefore
+/// means adding it here as well.
 const PHASES: [Phase; 7] = [
     Phase::Plans,
     Phase::Successors,
