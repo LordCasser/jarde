@@ -298,6 +298,19 @@
 - **仍未落成永久回归的两条反例**：R2（`ret` 的 local 从未持有返回地址）与 R3（handler 回接 `ret` 前的写入被整类丢弃）目前**只在契约里以字节串形式记录**，`src/call_context.rs` 与 `tests/` 中都没有对应用例——它们正是 3.4 重写的验收目标。仓内现有的 `a_ret_no_call_context_owns_is_unresolved` 覆盖的是「`ret` 无任何调用点」这一不同形态，**不能**当作 R2 的回归。
 - **诊断当前实现仍会出错的两条**：`Walk::visit` 在遇到 `ret` 时把该 `ret` 记进当前 active 上下文，**不检查该槽是否持有已证明的返回地址**（R2）；`Walk::step` 只沿 `Normal` 与 `SubroutineReturn` 推进、**整类丢弃 `Exception` 边**（R3）。两者都在 3.4 的契约里点名（含行号与要保留的骨架）。
 
+### 0.x 前置修正片：全部完成（2026-09-18）
+
+| 任务 | 内容 | 复核 | CI |
+| --- | --- | --- | --- |
+| 0.1 | initiating/defining loader 传播与身份去重（R1：跨 loader 解析到错误定义） | Approve（两轮；含复核者自建 13 条 fixture） | `35311183845` |
+| 0.2 | reader 保留 effective opcode / atype / dimensions / count；17 处分类改读 effective | Approve（16 组变异 + 自建字节码探针） | `35312949739`（含 JDK 25 oracle） |
+| 0.3 | `legacy_normalization` 补 `Effects` requires + 四处预算集合；修正成环判定的假环 | 已交付（规模小，未单派复核） | — |
+| 0.3b | 派生存储分配前计费（按元素）+ 装配期取消检查点 | Reject → 三项修正 → **Approve** | `35324321569`（实现）/ `35330820020`（修正轮） |
+| 0.4 | 非块首 `jsr` 的 BCI→块查法（D-1）；唯一读法合并 | Approve（无必修项） | `35314168328` |
+| 0.5 | P2 侧 `elapsed_millis` 比较归一（治理假红） | 随 0.1 复核 | `35311183845` |
+
+**六个前置修正全部完成并各自复核**；tasks 计 17/26。**3.4 是下一片**（`ret` 值流与异常路径），它也是 `layer-jarde-crates` 拆包的前置——按 design 的 Migration Plan，先验收 3.4 并固定绿色基线，再独立搬迁文件。
+
 ## P2 验收映射现状（滚动更新）
 
 按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
