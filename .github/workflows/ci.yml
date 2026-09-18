@@ -95,6 +95,12 @@ jobs:
         # facade `jarde` sits above all three and is reached by nobody, and the graph crate
         # `petgraph` stays confined to the layer that owns the raw CFG.
         run: |
+          # The teeth of this step are `errexit`: every check reports a violation by returning
+          # non-zero from a function called in a loop, and only `-e` turns that into a failed
+          # step. GitHub's default shell for a `run` block does include it, but relying on that
+          # is relying on an undocumented detail of the runner: with a plain interpreter the
+          # violation is printed and the step still succeeds. State the requirement here instead.
+          set -euo pipefail
           # `--format '{p}'` prints "name version" per line and `--prefix none` drops the tree
           # drawing, so the `sed` reduces every line to a package name. (With the default prefix
           # each line would start with `├──`, which the `sed` would then read as the name — the
