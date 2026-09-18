@@ -757,10 +757,13 @@ fn the_p1_query_coordinates_are_unchanged_by_a_canonical_run() {
     };
 
     // The one `invokespecial Object.<init>()V` of the fixture's constructor, at BCI 1: the P1
-    // coordinates a canonicalization must not move.
+    // coordinates a canonicalization must not move. The baseline is captured before the run and
+    // the comparison below is against *it*, not against a second look at the same state after
+    // the run: comparing two post-run queries would agree even if the run had changed both.
     let mut before = Budget::new(limits());
+    let expected = coordinates(&mut before);
     assert_eq!(
-        coordinates(&mut before),
+        expected,
         vec![(
             XrefDerivation::StructuralConsumer,
             XrefCertainty::Exact,
@@ -785,15 +788,15 @@ fn the_p1_query_coordinates_are_unchanged_by_a_canonical_run() {
     let mut after = Budget::new(limits());
     assert_eq!(
         coordinates(&mut after),
-        coordinates(&mut Budget::new(limits())),
+        expected,
         "a canonical run leaves the P1 query result unchanged, item for item"
     );
     // What this can and cannot see, so the evidence is not read as more than it is: it pins that
-    // the two planes stay independent - a query over the same snapshot returns the same thing
-    // whether or not a canonical run happened in between. It cannot detect a query that read
-    // the canonical graph, because the query plane takes the raw snapshot and never the graph;
-    // what forbids that direction is the layering guard (`tests/p2_contracts.rs`), not this
-    // test. The fixture also has no reference inside the analyzed method - `finallyPath` only
-    // does arithmetic and `jsr` - so a hypothetical double count of a cloned call has nothing
-    // here to double.
+    // a query made after a canonical run returns what the bytes say, so a canonicalization that
+    // left a trace the query plane reads - a cache, a marker - changes the result and fails
+    // here. It does not show that the query plane is forbidden from reading the canonical graph:
+    // the query plane takes the raw snapshot and never the graph, and what enforces that
+    // direction is the layering guard (`tests/p2_contracts.rs`). The fixture also has no
+    // reference inside the analyzed method - `finallyPath` only does arithmetic and `jsr` - so a
+    // hypothetical double count of a cloned call has nothing here to double.
 }

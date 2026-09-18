@@ -2016,6 +2016,36 @@ mod tests {
     }
 
     #[test]
+    fn a_context_the_walk_never_entered_inside_a_reachable_block_is_refused() {
+        // The seeding guard's own case, reached by forging the payload: 3.4b cannot produce it
+        // (a `jsr` it proves is always entered), so the guard would otherwise be a statement no
+        // test reaches. The forged context names a call site at BCI 8 of the historical fixture
+        // - a block the raw graph reaches and that holds no `jsr` - which is exactly the shape
+        // the seeding must not accept: it would hang a block on the method's own path that the
+        // walk reached under no path at all.
+        let (facts, _major) = historical(V45, b"finallyPath");
+        let raw = raw_of(&facts);
+        let mut contexts = contexts_of(&facts, &raw);
+        contexts
+            .contexts
+            .push(crate::call_context::SubroutineContext {
+                call_site_bci: 8,
+                return_bci: 11,
+                entry_bci: 17,
+                affected_locals: Vec::new(),
+            });
+        let outcome = canonical_cfg(&facts, &raw, &contexts, &method(), &mut budget())
+            .expect("the budget is ample");
+        let CanonicalOutcome::Fallback { message } = outcome else {
+            panic!("a call site inside a reachable block is not seeded: {outcome:?}");
+        };
+        assert!(
+            message.contains("BCI 8") && message.contains("reachable in the raw graph"),
+            "the stop names the call site and why it cannot be placed: {message}"
+        );
+    }
+
+    #[test]
     fn a_loop_header_is_not_absorbed_by_the_body_that_jumps_back_to_it() {
         // A method whose body opens with a loop, which is what a `while` compiles to:
         //
