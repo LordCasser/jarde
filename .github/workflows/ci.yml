@@ -86,6 +86,51 @@ jobs:
             exit 1
           fi
 
+      - name: Check layered crate dependency closure
+        # A17's Cargo-side evidence (design 3.1). The source-level guard reads file contents, so
+        # it cannot see a dependency edge, and it resolves the pre-split `src/` layout first: once
+        # every module lives below `crates/`, a manifest that points a layer back up the layering
+        # would leave that guard green. This step reads the manifest graph instead. The three
+        # layers stay a one-way chain — `jarde-reader` <- `jarde-query` <- `jarde-jvm` — the
+        # facade `jarde` sits above all three and is reached by nobody, and the graph crate
+        # `petgraph` stays confined to the layer that owns the raw CFG.
+        run: |
+          # `--format '{p}'` prints "name version" per line and `--prefix none` drops the tree
+          # drawing, so the `sed` reduces every line to a package name. (With the default prefix
+          # each line would start with `├──`, which the `sed` would then read as the name — the
+          # gate would compare four box-drawing tokens and pass on anything.) The default format
+          # also prints the checkout path, where `…/jarde/crates/…` holds the facade's name as a
+          # path segment; exact whole-line matching (`-x` with `-F`) is what keeps `jarde` from
+          # matching `jarde-reader` and vice versa.
+          closure_violation() {
+            local package="$1"
+            shift
+            local raw="$RUNNER_TEMP/closure-$package.raw"
+            local names="$RUNNER_TEMP/closure-$package.txt"
+            if ! cargo tree -p "$package" --edges normal --locked --prefix none \
+              --format '{p}' > "$raw"; then
+              echo "cargo tree could not read the normal closure of $package" >&2
+              cat "$raw" >&2
+              return 1
+            fi
+            sed -E 's/ .*$//' "$raw" | sort -u > "$names"
+            if ! grep -qxF "$package" "$names"; then
+              echo "$package is missing from its own normal closure; no tree was read" >&2
+              return 1
+            fi
+            for forbidden in "$@"; do
+              if grep -qxF "$forbidden" "$names"; then
+                echo "$package reaches $forbidden across the layering:" >&2
+                cat "$names" >&2
+                return 1
+              fi
+            done
+            echo "$package normal closure: $(wc -l < "$names" | tr -d ' ') packages, none of [$*]"
+          }
+          closure_violation jarde-reader jarde jarde-query jarde-jvm petgraph
+          closure_violation jarde-query jarde jarde-jvm petgraph
+          closure_violation jarde-jvm jarde
+
       - name: Install OpenSpec 1.11.0
         run: npm install --global @fission-ai/openspec@1.11.0
 

@@ -9,8 +9,12 @@
 //!
 //! * `jarde-reader` (P2 1.2) is the input half: artifact snapshots, the class-file facts decoded
 //!   from them, the identities derived from those bytes, the budget that bounds a request, and
-//!   the inspection entry points. Its module paths (`jarde::artifact`, `jarde::classfile`, …)
-//!   and the reports their consumers name stay part of this facade's surface.
+//!   the inspection entry points. Its module paths (`jarde::artifact`, `jarde::budget`, …) and
+//!   the reports their consumers name stay part of this facade's surface — with `classfile` as
+//!   the one exception: that layer crosses as the names listed below rather than as a module
+//!   path, because the reader's test-only class builder lives below it behind `test-support`,
+//!   and a module path would put `jarde::classfile::test_class` back in the surface of every
+//!   build that enables that feature (`--all-features`, as CI runs).
 //! * `jarde-query` (P2 2.1) is the query half: the request and report schema, the cursor
 //!   binding and the X0/X1 scans. It crosses as its product types rather than as a module path:
 //!   a nameable `jarde::query`/`jarde::xref` would reach the layer's own cross-crate seams
@@ -30,7 +34,10 @@
 
 pub use jarde_jvm::{environment, ir, resolver};
 pub use jarde_reader::inspect;
-pub use jarde_reader::{artifact, budget, classfile, error, model, multi_release, view};
+// `classfile` is deliberately absent: it is re-exported as the names below, not as a module
+// path, so that the reader's `test-support` builder (`classfile::test_class`) and everything
+// else the module holds beyond that list stay unreachable through this crate.
+pub use jarde_reader::{artifact, budget, error, model, multi_release, view};
 
 pub mod facade;
 
@@ -38,7 +45,18 @@ pub use artifact::*;
 pub use budget::{
     Budget, BudgetDimension, CancellationToken, CountedBudgetDimension, Limits, UsageSnapshot,
 };
-pub use classfile::{
+pub use environment::*;
+pub use error::{Error, Result};
+pub use facade::*;
+pub use inspect::{ClassSource, ClassTarget, EngineBytecodeReport, EngineHeaderReport};
+pub use ir::*;
+pub use jarde_query::query::{
+    BootstrapVia, ConsumerKind, ConsumerSchema, LiteralValue, QUERY_ENGINE_SCHEMA, QueryAnalysis,
+    QueryBoundary, QueryCoverage, QueryCursor, QueryPage, QueryRelation, QueryReport, QueryRequest,
+    QueryResolution, QueryTarget, XrefCertainty, XrefDerivation, XrefEvidence, XrefItem,
+    XrefOperation, XrefTarget,
+};
+pub use jarde_reader::classfile::{
     AttributeFacts, AttributeShell, BootstrapMethodFacts, BytecodeInspection, BytecodeStop,
     BytecodeStopPhase, ClassFacts, ClassHeader, ClassfileVersion, ControlFlowTarget,
     ControlFlowTargetKind, CpEntryFacts, CpEntryKind, CpIndexOf, DescriptorKind,
@@ -51,17 +69,6 @@ pub use classfile::{
     class_facts, code_nested_attributes, cp_class_name, cp_entry, cp_utf8, descriptor_types,
     entry_descriptor, inspect_header, inspect_method_bytecode, method_code_coverage,
     method_code_facts, push_unique,
-};
-pub use environment::*;
-pub use error::{Error, Result};
-pub use facade::*;
-pub use inspect::{ClassSource, ClassTarget, EngineBytecodeReport, EngineHeaderReport};
-pub use ir::*;
-pub use jarde_query::query::{
-    BootstrapVia, ConsumerKind, ConsumerSchema, LiteralValue, QUERY_ENGINE_SCHEMA, QueryAnalysis,
-    QueryBoundary, QueryCoverage, QueryCursor, QueryPage, QueryRelation, QueryReport, QueryRequest,
-    QueryResolution, QueryTarget, XrefCertainty, XrefDerivation, XrefEvidence, XrefItem,
-    XrefOperation, XrefTarget,
 };
 pub use model::*;
 pub use multi_release::*;

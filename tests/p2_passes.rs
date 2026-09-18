@@ -1,8 +1,8 @@
 //! P2 3.2 acceptance: the startup validation of a method-analysis request's stage set.
 //!
 //! The pass table itself is crate-private (its phases, facts, dependencies, invalidation and
-//! its own structural faults are pinned by the unit tests of `src/passes.rs`), so what this file
-//! has to prove through the public API is the wiring around it:
+//! its own structural faults are pinned by the unit tests of `crates/jarde-jvm/src/passes.rs`),
+//! so what this file has to prove through the public API is the wiring around it:
 //!
 //! 1. the validation accepts every request a caller can shape — all 63 non-empty stage sets,
 //!    including the unordered and the repeated ones — and each one is answered with a report
@@ -10,10 +10,10 @@
 //!    the validator refuses would raise an input error instead of producing this report, so the
 //!    report is the evidence that the validator accepted this schedule — the table it validates
 //!    against is crate-private, so how the table and the phases agree is pinned by the unit
-//!    tests of `src/passes.rs`, not here. Since 3.3 the run is real, so the same 63 sets also
-//!    show what the passes did: with a budget that refuses the very first charge the first pass
-//!    is `Partial` and nothing behind it ran, and with a funded budget the two implemented
-//!    phases are `Completed` while the first unimplemented one is `Failed`;
+//!    tests of `crates/jarde-jvm/src/passes.rs`, not here. Since 3.3 the run is real, so the
+//!    same 63 sets also show what the passes did: with a budget that refuses the very first
+//!    charge the first pass is `Partial` and nothing behind it ran, and with a funded budget
+//!    the two implemented phases are `Completed` while the first unimplemented one is `Failed`;
 //! 2. the schedule is read from the request's phases alone: the reported `stages` is the prefix
 //!    of the phase order up to the last requested phase, once each, in phase order — which is
 //!    the prefix the table schedules, because the table has one pass per phase (unit test);

@@ -18,12 +18,12 @@
 //!    from another,
 //! 4. the serde shape of the new types is pinned, including the two places where the
 //!    written contract cannot be spelled directly with serde 1.0.229,
-//! 5. A17 holds at source level: every guarded file (all of `src/query.rs` and
-//!    `src/xref/**/*.rs`, enumerated from the directory so a new file counts too) is free of
-//!    P2 module paths, module aliases, glob imports and P2 type names — the type names are
-//!    derived from the P2 modules themselves rather than listed by hand — while
-//!    `src/engine.rs`, the module allowed to call the P2 entries, is flagged by the same
-//!    detector, so the guard is not vacuously true,
+//! 5. A17 holds at source level: every guarded file (all of `crates/jarde-query/src/query.rs`
+//!    and `crates/jarde-query/src/xref/**/*.rs`, enumerated from the directory so a new file
+//!    counts too) is free of P2 module paths, module aliases, glob imports and P2 type names —
+//!    the type names are derived from the P2 modules themselves rather than listed by hand —
+//!    while `crates/jarde-jvm/src/engine.rs`, the module allowed to call the P2 entries, is
+//!    flagged by the same detector, so the guard is not vacuously true,
 //! 6. every `ALL` list is exactly the variant set its enum declares, read from the enum's own
 //!    source: a variant left out of `ALL` is either a compile error (the exhaustive matches)
 //!    or a failing comparison, and for `AnalysisStage` it would be a silently dropped request,
@@ -2704,9 +2704,9 @@ fn carries_size_floor(identity: &str) -> bool {
 /// call-context builder of 3.4) are P2 modules the physical entries must not reach either, and
 /// the derived type table does not cover them: `use crate::cfg::raw_cfg;` names a builder whose
 /// own types live below the module and whose name no declaration in the three derived modules
-/// contains, so the module path is the only signal. The `super::`-relative spelling of the same
-/// reach (`super::cfg::…` from a `src/xref/` module is the crate root) is covered by the bare
-/// forms.
+/// contains, so the module path is the only signal. The `super::`-relative spelling of the
+/// same reach — `super::cfg::…` from a `src/xref/` module named the crate root those P2 modules
+/// lived in before the split — is covered by the bare forms.
 ///
 /// The crate split (2.1/2.2) moves the P2 modules into `crates/jarde-jvm` and the guarded
 /// files into `crates/jarde-query`, where the same reach is spelled by package path instead.
@@ -2770,8 +2770,9 @@ const A17_IMPORT_TOKENS: [&str; 12] = [
 
 /// P2 type names that the P2 modules do not declare themselves.
 ///
-/// `OriginSet`/`OriginMember` live in the shared identity layer (`src/model.rs`, which P1
-/// also owns), but they are still reachable from the crate root and are still IR-only types.
+/// `OriginSet`/`OriginMember` live in the shared identity layer
+/// (`crates/jarde-reader/src/model.rs`, which P1 also owns), but they are still reachable from
+/// the crate root and are still IR-only types.
 const A17_EXTRA_TYPE_TOKENS: [&str; 2] = ["OriginSet", "OriginMember"];
 
 /// Public type names one source declares with `pub struct` / `pub enum` / `pub trait` /
@@ -3096,7 +3097,7 @@ fn physical_entry_modules_do_not_reference_the_p2_modules() {
     }
 
     // The reference check runs first, so an injected reference is reported by the file that
-    // carries it — including a file that was just added below `src/xref/`.
+    // carries it — including a file that was just added below the guarded xref directory.
     assert_eq!(
         guard_violations(root, &type_tokens),
         Vec::<String>::new(),

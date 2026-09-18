@@ -3,8 +3,8 @@
 //! `classfile::class_facts`, `attribute_content`, `attribute_facts` and
 //! `bootstrap_methods` are `pub(crate)`, so an integration test cannot call them;
 //! their behaviour is covered by the unit tests next to them in
-//! `src/classfile.rs` (module `reader_facts_tests`). What this file pins from the
-//! outside is the contract the fact layer must not disturb: the public header and
+//! `crates/jarde-reader/src/classfile.rs` (module `reader_facts_tests`). What this file pins
+//! from the outside is the contract the fact layer must not disturb: the public header and
 //! bytecode paths keep the same results and the same byte charges on a real
 //! classfile, and the constant-pool index an instruction reports still names the
 //! same symbol.

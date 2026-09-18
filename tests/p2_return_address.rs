@@ -3,9 +3,10 @@
 //!
 //! The contexts themselves — one per `jsr` site, the return point of every `ret`, the affected
 //! locals and the exception records that cross a call — are a crate-private payload
-//! (invariant 11), so the values are pinned by the unit tests of `src/call_context.rs`, which
-//! decode the committed ECJ fixtures and build synthetic bodies directly. What this file proves
-//! through the public API is the wiring and the planes around that payload:
+//! (invariant 11), so the values are pinned by the unit tests of
+//! `crates/jarde-jvm/src/call_context.rs`, which decode the committed ECJ fixtures and build
+//! synthetic bodies directly. What this file proves through the public API is the wiring and
+//! the planes around that payload:
 //!
 //! 1. the historical `jsr`/`ret` `finally` of the ECJ 4.6 corpus really analyzes: the pass is the
 //!    third phase this build implements, it completes, and it charges analysis steps of its own

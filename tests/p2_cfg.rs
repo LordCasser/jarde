@@ -2,8 +2,8 @@
 //!
 //! The graph itself is crate-private (blocks, edges, instruction-level throw sites, handler
 //! order, effect facts and the unreachable truth table are pinned by the unit tests of
-//! `src/cfg.rs`, which build the reader facts directly), so what this file has to prove through
-//! the public API is the wiring around it, on real compiled bodies:
+//! `crates/jarde-jvm/src/cfg.rs`, which build the reader facts directly), so what this file has
+//! to prove through the public API is the wiring around it, on real compiled bodies:
 //!
 //! 1. a request that schedules `RawCfg` really analyzes the driver method: the class definition
 //!    is read (one `ClassHeaders` attempt, recorded under `DriverMethodBody`), the body is
