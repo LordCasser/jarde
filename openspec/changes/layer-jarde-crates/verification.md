@@ -1,5 +1,7 @@
 # layer-jarde-crates 验证记录
 
+当前状态以本文末尾「拆包后复核」及 tasks 为准；下列待搬迁、尚不存在、待复核等叙述保留各自历史时点。
+
 约束：本 change 是**结构重组**，不兼带语义修复。每条记录携带**精确 commit** 与当时的全量数字；未绿不搬迁。
 
 ## 1.1 基线（2026-09-18）
@@ -335,6 +337,58 @@
 - 两条失效路径注释：`tests/p2_contracts.rs:25`（`src/engine.rs`）、`tests/p2_cfg.rs:5`（`src/cfg.rs`）→ 3.2 范围。
 - `JVM_Rust_Engine_Final_Architecture.md` 有用户**既有未提交改动**（把 crate 分层记为「尚未实施」），现与实现状态不符 → 3.1/3.3 文档同步。
 
+## 3.1 / 3.2 / 3.3 集成收尾与退出门槛（2026-09-18，复核 Approve）
+
+### 门禁（3.2）：实现、两次硬化与承重证据
+
+CI 步骤 `Check layered crate dependency closure`：对 reader/query/jvm 三层各检查**四种配置**——`normal`/`all` 边 × 默认/`--all-features`——共 12 项；禁名按 design 的 `reader ← query ← jvm`（门面在上、`petgraph` 只在 jvm）。
+
+**独立复核（Approve）指出两处必须收紧，均已修**：
+
+| 复核发现 | 修法 | 证伪 |
+| --- | --- | --- |
+| **可选 feature 绕过**：`optional` + 非默认 feature 的依赖在当前配置下不可见（复核者在最小工作区复现） | 每层各跑 `--all-features` 一遍（`78077e9`） | 把 `petgraph` 改成 `optional = true` + 非默认 feature：**旧门禁 exit 0**（漏），新门禁 `exit 1` 且指名 `jarde-query-normal-all-features` |
+| **红是隐式依赖 runner**：违规靠函数 `return 1` + 循环传播，只有 `errexit` 才变成失败步骤；换 runner/自定义 shell 会静默失效 | 步骤内显式 `set -euo pipefail`（`eb1adb8`） | 注入违规后：**去掉该行、普通 bash → `exit 0`**（违规被打印但仍绿）；加上该行 → `exit 1` |
+
+**失败路径不可吞掉的三条**（复核者用 fake cargo 注入验证）：`cargo tree` 非零 → 红；闭包为空 → 红（`missing from its own closure; no tree was read`）；禁名命中 → 红并打印闭包。循环依赖注入（query→jvm）会让 workspace 无法解析，门禁据此报红而不是吞掉工具错误。
+
+**整行精确匹配**（防 `jarde` 匹配 `jarde-reader` 之类）：`--prefix none` + `--format '{p}'` + `sed` 截到首个空格 + `grep -qxF`；复核者单测 `jarde`→miss、其余→hit，且确认 `(*)` 后缀被同一 `sed` 吃掉。
+
+### 门面收缩（3.1）
+
+`jarde::classfile` **模块路径已移除**（`724bf1b`），55 个显式名字保留。复核者用 `rustc --extern jarde=<rlib>` 探针独立确认：`jarde::classfile::InstructionFact`（名单内名字经该路径）与 `jarde::classfile::test_class::single_method` **都报 `E0433`**——证明被移除的是模块路径本身，不是只挡住那个测试构造器；55 名 + 10 个模块路径可用；`jarde::Engine` 与 10 个入口可用。
+
+**按 feature 变化的公开面（债务，已登记）**：`--all-features`（`test-support` 开）下 `jarde::MethodCodeFacts::from_parts` 仍可达——它是名单内类型上的 `test-support` 门控构造器，无 normal 依赖启用该 feature，生产构建里不存在。复核者判定风险低，但指出门面注释「classfile 以名单形式穿越」严格说只在 feature 层面成立。
+
+### fixtures 审计（3.1）：**更正本记录一处失真**
+
+本记录此前写「三个新包各自 `test_fixtures.rs`」——**不准确**。实际只有**两处**：`crates/jarde-reader/src/test_fixtures.rs` 与 `crates/jarde-jvm/src/test_fixtures.rs`，且都是 `src/` 内的模块（不是 `tests/` 辅助）。`crates/jarde-query` 与 `crates/jarde-cli` **不读** fixtures（后者的两个集成测试用临时目录自造 class 字节）。fixtures 本体只有一份（`tests/fixtures`，8 个 `HistoricalControlFlow.class` v45–v52），**未复制**；根 `tests/**`、`examples/**` 用 `CARGO_MANIFEST_DIR` 拼接，fuzz 用自身 corpus。
+
+### 3.3 退出门槛（实际命令与结果）
+
+| 门槛 | 命令 | 结果 |
+| --- | --- | --- |
+| fmt | `cargo fmt --all -- --check` | exit 0 |
+| clippy | `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` | exit 0 |
+| 全量测试 | `cargo test --workspace --all-targets --all-features --locked --no-fail-fast` | **628 passed / 0 failed / 1 ignored**（ignored = JDK 25 oracle） |
+| P1 golden | `cargo test --test p1_xref_golden --locked` | 5 passed |
+| P2 契约 | `cargo test --test p2_contracts --locked` | 29 passed |
+| CLI 一致性 | `cargo test -p jarde-cli --locked` | 19 passed（`json_cli` 8 + `query_cli` 11，逐字段比对走 `elapsed_millis` 归一） |
+| MSRV | `cargo +1.88.0 check --workspace --all-targets --locked` | exit 0（复核者本机复现，工具链已装） |
+| fuzz 语料回放 | `cargo +nightly-2026-07-20 test --manifest-path fuzz/Cargo.toml --locked` | 9 passed |
+| fuzz 冒烟 | `cargo fuzz run query` / `artifact_tree`（CI 同参 20 s） | 198,336 / 394,614 exec，0 crash，peak 206 / 344 MB |
+| OpenSpec | `openspec validate --all --strict --no-interactive` | 11 passed / 0 failed |
+
+**只能由 CI 覆盖、本机无法复现的两项（如实记录，不臆测）**：P0 JDK 25 oracle（本机只有 JDK 23 与 8；由 `stable` job 的 Temurin 25 步骤覆盖）；两套 supply-chain（需 advisory DB/网络；由 `supply-chain` job 的两步覆盖，根与 fuzz 两个 workspace）。
+
+**`jarde-java` 已加入禁名**（`62d76bc`）：design 把恢复层放在分析层之上，该包今天还不存在——现在写进禁名成本为零，而等到它出现的那天，这条规则就从「复核备注」变成「构建强制」。
+
+**CI（全部四 job success）**：`724bf1b` → run 35357240160；`3646a97`（dev/build 边）→ run 35357911716；`78077e9`（全 feature 配置）→ run 35358644839；`eb1adb8`（`set -euo pipefail`）→ run 35358993660；`62d76bc`（`jarde-java` 禁名）→ run 35359273784。
+
+**架构/依赖/阶段源码路径**：`openspec/roadmap.md`、`dependencies.md`、`acceptance.md`、`README.md` 已无失效的 `src/<module>.rs` 引用（用户并发修订已覆盖）；本 change 的 design/proposal/tasks 亦同步。剩余的旧路径只出现在**归档**的 P1 change 与历史实施记录里——那些记录描述的是当时的事实，按「保留各自历史时点」的口径**不修改**。
+
+**复核者结论：Approve（3.1/3.2/3.3 已勾选）**，两处硬化已落地并各自证伪（见上表）。登记债务：① 禁名列表未含 `jarde-cli`、门面 `jarde` 自身闭包不被检（`petgraph 只在 jvm` 对二者无机械保证，属 3.2 的范围选择）；② 门面公开面按 feature 变化（`from_parts`）；③ 门禁只检「禁止边不存在」，不检「应有的链存在」（后者由 `lib.rs` 的 `pub use` 在编译期保证）。
+
 ## 1.4 A17 守卫的改造方案（供 2.1/2.2 与 3.2 执行）
 
 `tests/p2_contracts.rs` 的 A17 守卫今天**写死了布局**，搬迁后必然失败，而且必须**在搬迁前**先改造好——它是拆包「没有改变依赖方向」的可执行验证，不能等拆完再补。
@@ -360,3 +414,19 @@
 **1.2 已完成并勾选**。CI：`45328a0`（搬迁本体）→ run 35346239122 **红**（fuzz lock 过期，supply chain 与 fuzz smoke 两 job 失败）；`0aea34b`（lock 修复）→ run [`35346754502`](https://github.com/LordCasser/jarde/actions/runs/35346754502) 四 job 全绿；`d08f014`（accounting 边界修复）→ run [`35347094952`](https://github.com/LordCasser/jarde/actions/runs/35347094952) 四 job 全绿。
 
 **未做**：文件搬迁（2.1 起——抽 `jarde-query`）。cross-check 待办：`ci.yml:81` 的 `jvm` 边界正则需在真实 `cargo tree` 输出上实测不误命中 `jarde-jvm`。
+
+## 2026-09-18 拆包后复核
+
+固定代码基线 `35a779d` 已包含 reader/query/jvm 三次抽取和根 facade，1.1/1.2/2.1/2.2 保留完成；本文此前「jarde-jvm 尚不存在」「文件搬迁未做」「待独立复核」都是中间态，后续 Approve 记录仍有效。当前 `test-support` 属于 reader，jvm 转发用于测试；根门面没有自己的同名 feature。
+
+3.1–3.3 尚未整体验收：初始 `35a779d` 无专用闭包 CI；复核期间新增 `724bf1b` 已加入默认 feature 的 normal 检查并删除 facade 的 classfile 模块再导出。该增量未改 P2 算法，仍需覆盖 dev/build/全 feature 配置及最终提交门禁；query→jvm 的循环依赖导致 Cargo 失败也必须让门禁失败，不能吞掉工具错误后假绿。源路径 token 守卫、实际依赖闭包和行为回归互不替代。
+
+三包仍直接声明 blake3：这与旧 §3.5 的强制集中决定不符。本轮已在 design 修订决定为按真实语义所有者保留直接使用，不再将 Digest::of 包装列为前置或声称它已实现；旧记录中的“待收敛”不再是本 change 任务。shared Digest、版本/features 及现有摘要结果保持不变。
+
+P2 新增 3.4b：已有 3.4 仍会接受普通引用和内层覆盖为 returnAddress。结构拆分的回归通过只证明旧行为未漂移，不证明该语义正确。完整反例、标准来源和本轮验证范围见 [P2 拆包后复核](../p2-jvm-ir/verification.md#review-2026-09-18-layers)。收尾后先交接 3.4b，关闭后才进入 3.5；不在搬迁 change 中顺带修算法。
+
+**最新门面边界（724bf1b）**：`jarde::classfile` 已移除，顶层 facts 白名单现在确实约束该模块可达面；显式依赖 reader 并打开 test-support 的测试消费者仍可使用 builder。此前 2.2 关于模块路径仍可达的记录仅指 35a779d 及之前，不再代表最新门面。
+
+**门禁反例实测（R8，724bf1b 隔离副本）**：仅在 query 的 dev-dependencies 加入已准入版本 `petgraph = 0.8.3`（std-only），离线更新该副本的 local-package lock 边后，原 CI closure 脚本仍 exit 0，reader/query/jvm 三项全绿；同一副本的 `cargo tree -p jarde-query --all-features --edges all --locked` 明确包含 petgraph。故默认 normal 门禁无法证明设计要求的测试闭包隔离。反例没有修改主工作区，修正与复测归 3.2；不能仅把现有图中无违规依赖当成门禁已覆盖它。
+
+**最终增量（3646a97）**：另一 agent 已将专用 closure 检查扩展为 normal/all 两组，仍未传 `--all-features`。同版本隔离复测：query 的 petgraph dev-dependency 已使门禁 exit 1，R8 的 dev/build 部分关闭；改为非默认启用的 optional production dependency 时，门禁仍 exit 0，而 all-features/all 闭包明确包含 petgraph。因此剩余是可选 feature 漏检，3.2 继续按任务要求补全配置并验证。新提交只改 CI，未改变返回地址算法；不重复扩大 P2 修正。
