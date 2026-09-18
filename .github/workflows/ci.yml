@@ -145,11 +145,14 @@ jobs:
           # package behind such a feature and this step would still read a clean tree. The
           # feature flags are the only thing that varies here: a dependency being optional
           # widens the reachable set, so the union is what has to be checked.
+          # `jarde-java` does not exist yet and is named anyway: the recovery layer the design
+          # puts above the analysis layer has to stay above it, and a forbidden name costs
+          # nothing today while catching the mistake on the day that package appears.
           for edges in normal all; do
             for features in "" "--all-features"; do
-              closure_violation "$edges" "$features" jarde-reader jarde jarde-query jarde-jvm petgraph
-              closure_violation "$edges" "$features" jarde-query jarde jarde-jvm petgraph
-              closure_violation "$edges" "$features" jarde-jvm jarde
+              closure_violation "$edges" "$features" jarde-reader jarde jarde-query jarde-jvm jarde-java petgraph
+              closure_violation "$edges" "$features" jarde-query jarde jarde-jvm jarde-java petgraph
+              closure_violation "$edges" "$features" jarde-jvm jarde jarde-java
             done
           done
 
