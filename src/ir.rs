@@ -13,8 +13,10 @@
 //! ([`analysis_report`], from an [`AnalysisRun`]); the code that drives the stages themselves
 //! is the engine's, because it needs the reader, the providers and the raw CFG builder, which
 //! this module does not depend on. 3.3 is the first slice whose runs are real: the engine
-//! locates and decodes the driver method's body and builds its raw CFG, and the report states
-//! which stages completed, which stopped and what was read on the way.
+//! locates and decodes the driver method's body and builds its raw CFG, and 3.4 adds the
+//! `jsr`/`ret` call contexts over that graph — keeping the raw facts and reporting a dialect
+//! violation or an unestablished call graph instead of publishing contexts it cannot justify.
+//! The report states which stages completed, which stopped and what was read on the way.
 
 use crate::artifact::ArtifactSnapshot;
 use crate::budget::{Budget, UsageSnapshot};

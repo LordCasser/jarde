@@ -6,6 +6,7 @@
 
 pub mod artifact;
 pub mod budget;
+mod call_context;
 mod cfg;
 pub mod classfile;
 mod dispatch;

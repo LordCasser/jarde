@@ -2146,6 +2146,13 @@ fn the_access_matrix_follows_jvms_5_4_4() {
         ],
         "the declaring class and the caller's class are both member-owner reads"
     );
+    // Two attempts: the declaring class read as the member's owner, and the caller's class read
+    // by identity for the access rules. The binding check that read performs resolves the name
+    // the caller's header declares (`p/Other`) in `app`'s own order — one further search — but the
+    // position that holds exactly that definition is answered from the facts the identity read
+    // just produced, so one binding is not read (or charged) twice in one request. The read
+    // *record* set is the two bindings as before; a definition the loader does not bind is
+    // refused instead of being stamped with the loader that claims it.
     assert_eq!(class_headers(&denied), 2);
     assert_reads_within_attempts(&denied);
     assert_no_body_read(&denied);
@@ -2179,10 +2186,18 @@ fn the_access_matrix_follows_jvms_5_4_4() {
     );
     assert_eq!(subtype.state, Some(ResolutionState::Resolved));
     assert!(subtype.diagnostics.is_empty(), "{:?}", subtype.diagnostics);
+    // Two attempts, two *records*: the subtype walk finds the declaring class in the memo instead
+    // of reading it a second time, and the caller's class is the second read — the 0.1 binding
+    // check resolves the caller's own name (`p/Sub`) in the caller's order against that read's
+    // facts, so it costs no third attempt. `read_reasons` below is the deduped record set.
+    assert_eq!(class_headers(&subtype), 2);
     assert_eq!(
-        class_headers(&subtype),
-        2,
-        "the subtype walk found the declaring class in the memo instead of reading it twice"
+        read_reasons(&subtype),
+        vec![
+            ("app".to_string(), ReadReason::MemberOwner),
+            ("app".to_string(), ReadReason::MemberOwner),
+        ],
+        "the binding check is answered from the caller read it verifies, so it adds no second record"
     );
     assert_reads_within_attempts(&subtype);
     assert_no_body_read(&subtype);
@@ -2674,4 +2689,777 @@ fn an_array_owner_is_unsupported() {
         CoverageState::Partial,
         "the resolution was requested and no range of it was searched"
     );
+}
+
+// ---------------------------------------------------------------------------
+// 0.1: a successor symbol request is resolved from its own defining loader
+// ---------------------------------------------------------------------------
+
+/// The R1 counterexample of the 2026-09-18 review, kept as a permanent regression.
+///
+/// `child` is ChildFirst with its own root and `parent` as its parent loader; `parent` is
+/// ParentFirst with its own root. The child holds one `p/Base`, the parent holds `p/Owner extends
+/// p/Base` **and a different `p/Base`**, and both bases declare `public int f`. JVMS 5.4.3.1
+/// resolves the names `p/Owner` holds from `p/Owner`'s own defining loader, so the field is
+/// declared by the *parent's* `p/Base`: the child's same-named class must not answer for it, even
+/// though the request itself starts in the child.
+///
+/// Before 0.1 every demand of the request searched from `runtime.load_domain.loader` and the walk
+/// carried only names, so the public entry returned the **child's** base and reported `Resolved`,
+/// `Complete` and no diagnostic. The assertions therefore name the physical definition, not the
+/// owner string: an equal name is exactly what this bug produced.
+#[test]
+fn review_parent_defined_owner_resolves_its_base_from_the_parent_loader() {
+    let child_snapshot = open(zip_of(&[(
+        entry(b"p/Base"),
+        // The child's own base: same name, same declared field, its own bytes.
+        Class::new(b"p/Base")
+            .field(b"f", b"I", PUBLIC)
+            .field(b"child_only_marker", b"I", PUBLIC)
+            .build(),
+    )]));
+    let parent_snapshot = open(zip_of(&[
+        (
+            entry(b"java/lang/Object"),
+            Class::root(b"java/lang/Object").build(),
+        ),
+        (
+            entry(b"p/Owner"),
+            Class::new(b"p/Owner").super_class(b"p/Base").build(),
+        ),
+        (
+            entry(b"p/Base"),
+            Class::new(b"p/Base").field(b"f", b"I", PUBLIC).build(),
+        ),
+    ]));
+
+    let parent_loader = loader("parent");
+    let mut child = domain(
+        &loader("child"),
+        Some(parent_loader.clone()),
+        vec![snapshot_root(&child_snapshot)],
+    );
+    child.delegation = DelegationPolicy::ChildFirst;
+    let parent = domain(&parent_loader, None, vec![snapshot_root(&parent_snapshot)]);
+    let environment = environment(&child_snapshot, child.clone(), vec![child, parent]);
+    let world = World {
+        content: vec![child_snapshot.clone(), parent_snapshot.clone()],
+        environment,
+        app: loader("child"),
+    };
+
+    // The two physical definitions this fixture can answer with, each read from the only loader
+    // that actually holds it: comparing against these is what a name cannot fake.
+    let parent_base = single_loader_world(&parent_snapshot).definition(b"p/Base");
+    let child_base = single_loader_world(&child_snapshot).definition(b"p/Base");
+    assert_ne!(
+        parent_base, child_base,
+        "the fixture really holds two different `p/Base` definitions"
+    );
+
+    let target = field(b"p/Owner", b"f", b"I");
+    let report = world.resolve(target, ReferenceUse::FieldRead, world.abstract_caller());
+
+    let resolved = resolved_of(&report);
+    assert_eq!(report.state, Some(ResolutionState::Resolved), "{report:?}");
+    assert_eq!(
+        resolved.loader,
+        loader("parent"),
+        "the declaration belongs to the loader that defines `p/Owner`"
+    );
+    assert_eq!(
+        resolved.definition, parent_base,
+        "the resolution must select the parent's `p/Base`, the definition its own loader holds"
+    );
+    assert_ne!(
+        resolved.definition, child_base,
+        "the child's same-named class must never answer for a delegated class's superclass"
+    );
+    assert_eq!(
+        resolved.definition.snapshot(),
+        parent_snapshot.id(),
+        "and it comes from the parent's snapshot, physically"
+    );
+    assert_eq!(
+        report.coverage.runtime_resolution.state,
+        CoverageState::CompleteWithinSchema,
+        "the hierarchy was readable, so the answer really is complete"
+    );
+    assert_reads_within_attempts(&report);
+    assert_no_body_read(&report);
+}
+
+/// One loader, one root: the world that names what a given snapshot's `p/Base` physically is.
+fn single_loader_world(snapshot: &ArtifactSnapshot) -> World {
+    let app = domain(&loader("only"), None, vec![snapshot_root(snapshot)]);
+    World {
+        content: vec![snapshot.clone()],
+        environment: environment(snapshot, app.clone(), vec![app]),
+        app: loader("only"),
+    }
+}
+
+// ---------------------------------------------------------------------------
+// 0.1: one name, two loaders — the request memo keeps the two searches apart
+// ---------------------------------------------------------------------------
+
+/// One request asks for `p/Base` in two different loaders, and each answer is its own.
+///
+/// `child` is ChildFirst with its own root and `parent` as its parent loader; `parent` is
+/// ParentFirst with its own root. The child holds `p/Mid extends p/Base` and **its own** `p/Base`;
+/// the parent holds `p/Hook extends p/Base` and its own `p/Base`, and only the parent's base
+/// declares `f`. So the member search has to demand the *same name* twice in one request with two
+/// different initiating loaders: once from `child` for `p/Mid`'s superclass (the child's base),
+/// and once from `parent` after the walk reaches `p/Hook`, which only the parent provides.
+///
+/// The answer is the parent's definition of `p/Base`, and the assertions name it as a
+/// **definition**: the member's owner string is `p/Base` in both loaders, so a name cannot
+/// distinguish the two and only the physical pair can. A memo keyed by name alone would answer the
+/// second demand with the first decision (the child's base), the walk would lose the declaration
+/// and the request would report `Missing` — which is the bug this test exists to catch.
+#[test]
+fn one_request_searches_one_name_in_two_loaders_and_keeps_them_apart() {
+    let child_snapshot = open(zip_of(&[
+        (
+            entry(b"java/lang/Object"),
+            Class::root(b"java/lang/Object").build(),
+        ),
+        (
+            entry(b"p/Mid"),
+            Class::new(b"p/Mid").super_class(b"p/Base").build(),
+        ),
+        // The child's own base: no `f`, and a superclass only the parent provides (which is the
+        // second, different initiating loader of the same name).
+        (
+            entry(b"p/Base"),
+            Class::new(b"p/Base").super_class(b"p/Hook").build(),
+        ),
+    ]));
+    let parent_snapshot = open(zip_of(&[
+        (
+            entry(b"java/lang/Object"),
+            Class::root(b"java/lang/Object").build(),
+        ),
+        (
+            entry(b"p/Hook"),
+            Class::new(b"p/Hook").super_class(b"p/Base").build(),
+        ),
+        (
+            entry(b"p/Base"),
+            Class::new(b"p/Base").field(b"f", b"I", PUBLIC).build(),
+        ),
+    ]));
+
+    let parent_loader = loader("parent");
+    let mut child = domain(
+        &loader("child"),
+        Some(parent_loader.clone()),
+        vec![snapshot_root(&child_snapshot)],
+    );
+    child.delegation = DelegationPolicy::ChildFirst;
+    let parent = domain(&parent_loader, None, vec![snapshot_root(&parent_snapshot)]);
+    let environment = environment(&child_snapshot, child.clone(), vec![child, parent]);
+    let world = World {
+        content: vec![child_snapshot.clone(), parent_snapshot.clone()],
+        environment,
+        app: loader("child"),
+    };
+
+    let child_base = single_loader_world(&child_snapshot).definition(b"p/Base");
+    let parent_base = single_loader_world(&parent_snapshot).definition(b"p/Base");
+    let hook = single_loader_world(&parent_snapshot).definition(b"p/Hook");
+    let mid = single_loader_world(&child_snapshot).definition(b"p/Mid");
+    assert_ne!(
+        child_base, parent_base,
+        "the fixture really holds two different `p/Base` definitions"
+    );
+
+    let report = world.resolve(
+        field(b"p/Mid", b"f", b"I"),
+        ReferenceUse::FieldRead,
+        world.abstract_caller(),
+    );
+
+    assert_eq!(report.state, Some(ResolutionState::Resolved), "{report:?}");
+    let resolved = resolved_of(&report);
+    assert_eq!(
+        resolved.member,
+        field(b"p/Base", b"f", b"I"),
+        "both bases are named `p/Base`, so the declaration's owner string is the same either way"
+    );
+    assert_eq!(
+        resolved.loader, parent_loader,
+        "the declaration belongs to the loader that defines `p/Hook`, the class that declares `f`"
+    );
+    assert_eq!(
+        resolved.definition, parent_base,
+        "the walk's last step demanded `p/Base` from the parent and selected its definition"
+    );
+    assert_ne!(
+        resolved.definition, child_base,
+        "the child's same-named base, decided earlier in the same request, is a different class"
+    );
+    // The two searches of the one name, each in its own loader, in the order the walk made them:
+    // the child's base for `p/Mid`'s superclass and the parent's base for `p/Hook`'s. A memo that
+    // remembered the name instead of the `(initiating loader, name)` key could not publish both.
+    assert_eq!(
+        report.reads,
+        vec![
+            HeaderRead {
+                loader: loader("child"),
+                definition: mid,
+                reason: ReadReason::MemberOwner,
+            },
+            HeaderRead {
+                loader: loader("child"),
+                definition: child_base.clone(),
+                reason: ReadReason::ParentChain,
+            },
+            HeaderRead {
+                loader: loader("parent"),
+                definition: hook,
+                reason: ReadReason::ParentChain,
+            },
+            HeaderRead {
+                loader: loader("parent"),
+                definition: parent_base.clone(),
+                reason: ReadReason::ParentChain,
+            },
+        ]
+    );
+    assert_eq!(
+        report.coverage.runtime_resolution.state,
+        CoverageState::CompleteWithinSchema
+    );
+    assert_reads_within_attempts(&report);
+    assert_no_body_read(&report);
+}
+
+// ---------------------------------------------------------------------------
+// 0.1: the binding check refuses a definition its loader does not select
+// ---------------------------------------------------------------------------
+
+/// The `resolution_definition_unbound` producer: a caller definition the loader shadows.
+///
+/// `app` declares two ordered roots, and the first one holds a class named `p/Other` that is not
+/// the one the fixture world holds. The request names the *world's* `p/Other` as the class
+/// declaring its use site, so the definition is readable, describes the bytes at its own
+/// coordinate, and still is not a class `app` has: the loader's own order selects the earlier
+/// position instead. That is what the 0.1 binding check refuses, and it refuses it as a stop —
+/// no access rule is decided on a class the loader would never load, and the physical read that
+/// established the mismatch stays published.
+#[test]
+fn a_caller_definition_the_declared_loader_does_not_bind_is_a_stop() {
+    let world_snapshot = open(zip_of(&entries()));
+    let shadow_snapshot = open(zip_of(&[(
+        entry(b"p/Other"),
+        Class::new(b"p/Other")
+            .field(b"marker", b"I", PUBLIC)
+            .build(),
+    )]));
+    let app = domain(
+        &loader("app"),
+        None,
+        vec![
+            snapshot_root(&shadow_snapshot),
+            snapshot_root(&world_snapshot),
+        ],
+    );
+    let environment = environment(&world_snapshot, app.clone(), vec![app]);
+    let world = World {
+        content: vec![world_snapshot.clone(), shadow_snapshot.clone()],
+        environment,
+        app: loader("app"),
+    };
+    // The two definitions of that one name, each read from the loader that really holds it.
+    let claimed = single_loader_world(&world_snapshot).definition(b"p/Other");
+    let shadow = single_loader_world(&shadow_snapshot).definition(b"p/Other");
+    let declaring = single_loader_world(&world_snapshot).definition(b"p/Base");
+    assert_ne!(
+        claimed, shadow,
+        "the fixture holds two `p/Other` definitions"
+    );
+
+    let mut caller = world.abstract_caller();
+    caller.enclosing = Some(PhysicalMethodId {
+        owner: claimed.clone(),
+        name: JvmBytes(b"bench".to_vec()),
+        descriptor: JvmBytes(b"()V".to_vec()),
+    });
+    let report = world.resolve(
+        method(b"p/Base", b"priv_m", b"()V"),
+        ReferenceUse::InvokeVirtual,
+        caller,
+    );
+
+    assert_eq!(report.analysis, ResolutionAnalysis::Performed);
+    assert!(
+        report.state.is_none(),
+        "a definition the loader does not bind is a stop, not a semantic decision: {:?}",
+        report.state
+    );
+    assert!(report.resolved.is_none());
+    assert_eq!(
+        diagnostic_codes(&report),
+        vec!["resolution_definition_unbound"]
+    );
+    let diagnostic = diagnostic_of(&report, "resolution_definition_unbound");
+    assert_eq!(diagnostic.severity, DiagnosticSeverity::Error);
+    assert!(
+        diagnostic.message.contains("`app`"),
+        "the diagnostic names the loader that does not bind it: {}",
+        diagnostic.message
+    );
+    assert!(matches!(
+        report.execution,
+        ExecutionReport::Failed {
+            reason: TerminationReason::Error { ref code },
+            ..
+        } if code == "resolution_definition_unbound"
+    ));
+    // The physical facts are not withdrawn with the runtime semantics built on them: the read of
+    // the claimed definition is still recorded next to the read that refuted it, and the claimed
+    // definition really is the definition of the world's own class bytes (see `claimed` above,
+    // which the world's single-loader view still resolves).
+    assert_eq!(
+        report.reads,
+        vec![
+            HeaderRead {
+                loader: loader("app"),
+                definition: declaring,
+                reason: ReadReason::MemberOwner,
+            },
+            HeaderRead {
+                loader: loader("app"),
+                definition: claimed.clone(),
+                reason: ReadReason::MemberOwner,
+            },
+            HeaderRead {
+                loader: loader("app"),
+                definition: shadow,
+                reason: ReadReason::MemberOwner,
+            },
+        ]
+    );
+    assert_reads_within_attempts(&report);
+    assert_no_body_read(&report);
+}
+
+// ---------------------------------------------------------------------------
+// 0.1: another snapshot is a dependency, not a mismatch
+// ---------------------------------------------------------------------------
+
+/// A claimed definition of **another** snapshot passes the binding check when its loader selects
+/// it: the contract compares the loader's decision, not two snapshot identities.
+///
+/// The caller is defined by `dep`, whose own root holds the `dep` snapshot; the request's physical
+/// view names the `main` snapshot, which is the very snapshot the declaring class comes from and
+/// the dependency the `dep` snapshot's caller subclasses. The caller's class is read by identity
+/// (its name was never demanded before), so the check really runs and really has to accept a
+/// definition outside the request's own physical snapshot — a check that had degenerated into
+/// "the snapshots must be equal" would stop here instead.
+#[test]
+fn a_caller_definition_of_another_snapshot_passes_when_its_loader_selects_it() {
+    let main_snapshot = open(zip_of(&[
+        (
+            entry(b"java/lang/Object"),
+            Class::root(b"java/lang/Object").build(),
+        ),
+        (
+            entry(b"p/Target"),
+            Class::new(b"p/Target")
+                .field(b"prot_f", b"I", PROTECTED)
+                .build(),
+        ),
+    ]));
+    let dep_snapshot = open(zip_of(&[(
+        entry(b"p/Caller"),
+        Class::new(b"p/Caller").super_class(b"p/Target").build(),
+    )]));
+    let main_loader = loader("main");
+    let dep = {
+        let mut dep = domain(
+            &loader("dep"),
+            Some(main_loader.clone()),
+            vec![snapshot_root(&dep_snapshot)],
+        );
+        // The caller's own root is searched before the parent's, so the definition this request
+        // claims is the one on its own side of the delegation.
+        dep.delegation = DelegationPolicy::ChildFirst;
+        dep
+    };
+    let main = domain(&main_loader, None, vec![snapshot_root(&main_snapshot)]);
+    let environment = environment(&main_snapshot, dep.clone(), vec![dep.clone(), main]);
+    let world = World {
+        content: vec![main_snapshot.clone(), dep_snapshot.clone()],
+        environment,
+        app: loader("dep"),
+    };
+    let target = single_loader_world(&main_snapshot).definition(b"p/Target");
+    let caller_definition = single_loader_world(&dep_snapshot).definition(b"p/Caller");
+    let physical = world.environment.runtime.physical.snapshot.clone();
+    assert_ne!(
+        caller_definition.snapshot(),
+        &physical,
+        "the caller's definition is outside the request's physical snapshot"
+    );
+
+    let report = world.resolve(
+        field(b"p/Target", b"prot_f", b"I"),
+        ReferenceUse::FieldRead,
+        world.caller_in(b"p/Caller", loader("dep")),
+    );
+
+    assert_eq!(report.state, Some(ResolutionState::Resolved), "{report:?}");
+    assert!(
+        report.diagnostics.is_empty(),
+        "the protected member is inherited by the caller's class, and nothing else is reported: \
+         {:?}",
+        report.diagnostics
+    );
+    assert_eq!(
+        resolved_of(&report).definition,
+        target,
+        "the member is declared by the `main` snapshot's class"
+    );
+    assert_eq!(
+        resolved_of(&report).loader,
+        main_loader,
+        "and the loader that provides that definition is the one that declares it"
+    );
+    let caller_read = report
+        .reads
+        .iter()
+        .find(|read| read.definition == caller_definition)
+        .unwrap_or_else(|| panic!("the caller's class was read: {:?}", report.reads));
+    assert_eq!(caller_read.loader, loader("dep"));
+    assert_eq!(caller_read.reason, ReadReason::MemberOwner);
+    assert_eq!(
+        class_headers(&report),
+        2,
+        "the declaring class and the caller's class are the two bindings this request reads: the \
+         binding check is answered from the caller's own read"
+    );
+    assert_reads_within_attempts(&report);
+    assert_no_body_read(&report);
+}
+
+// ---------------------------------------------------------------------------
+// 0.1 复核 F1: a memoized binding is reused only when it was checked under its own name
+// ---------------------------------------------------------------------------
+
+/// The refusal one report stopped under, as the `(code, message)` pair the two paths compare.
+fn stop_of(diagnostics: &[Diagnostic]) -> Vec<(String, String)> {
+    diagnostics
+        .iter()
+        .map(|diagnostic| (diagnostic.code.clone(), diagnostic.message.clone()))
+        .collect()
+}
+
+/// The state of one stage of a method-analysis report.
+fn stage(report: &MethodAnalysisReport, stage: AnalysisStage) -> StageState {
+    report
+        .stages
+        .iter()
+        .find(|result| result.stage == stage)
+        .unwrap_or_else(|| panic!("{stage:?} is scheduled"))
+        .state
+        .clone()
+}
+
+/// The malformed artifact the memo shortcut used to accept: an entry that declares another name.
+///
+/// `p/Fake.class` holds bytes whose `this_class` is `p/Real`, and the same root holds a
+/// **different** `p/Real.class`. A member request for `p/Fake`'s private field selects those
+/// bytes under the name `p/Fake` — a name the definition does not declare — and then reads the
+/// very same physical definition again, by identity, as the class of its use site. The memo holds
+/// that `(loader, definition)` pair as a resolution of `p/Fake`, so answering the identity read
+/// from the memo accepts a binding that was never checked: the definition's own name `p/Real`
+/// resolves to the other definition. The driver path over the same definition reads it fresh and
+/// runs the check, and refuses it. The binding of one physical definition may not depend on the
+/// name a request happened to search first, so both paths refuse, and they refuse identically.
+#[test]
+fn a_memoized_definition_is_checked_under_its_own_name_before_it_is_reused() {
+    let world = world_of(vec![
+        (
+            entry(b"p/Fake"),
+            Class::new(b"p/Real")
+                .field(b"priv_f", b"I", PRIVATE)
+                .method_with_body(b"bench", b"()V", PUBLIC)
+                .build(),
+        ),
+        (
+            entry(b"p/Real"),
+            Class::new(b"p/Real").field(b"other", b"I", PUBLIC).build(),
+        ),
+    ]);
+    let claimed = world.definition(b"p/Fake");
+    let other = world.definition(b"p/Real");
+    assert_ne!(
+        claimed, other,
+        "the fixture holds two definitions behind the one declared name `p/Real`"
+    );
+    let driver = PhysicalMethodId {
+        owner: claimed.clone(),
+        name: JvmBytes(b"bench".to_vec()),
+        descriptor: JvmBytes(b"()V".to_vec()),
+    };
+
+    // The member path: the request names `p/Fake` as the owner, so the demand for that name
+    // decides a resolution of the claimed definition under a name it does not declare; the
+    // private field makes the access rules read the caller's class, which is those same bytes.
+    let report = world.resolve(
+        field(b"p/Fake", b"priv_f", b"I"),
+        ReferenceUse::FieldRead,
+        world.caller_in(b"p/Fake", loader("app")),
+    );
+    assert!(
+        report.state.is_none() && report.resolved.is_none(),
+        "a definition the loader does not bind is a stop on this path too: {report:?}"
+    );
+    assert_eq!(
+        diagnostic_codes(&report),
+        vec!["resolution_definition_unbound"]
+    );
+    let refusal = diagnostic_of(&report, "resolution_definition_unbound");
+    assert_eq!(refusal.severity, DiagnosticSeverity::Error);
+    assert!(
+        refusal.message.contains("`app`")
+            && refusal.message.contains("p/Real")
+            && refusal.message.contains("p/Fake.class"),
+        "the refusal names the loader, the name it checked and the definition it claimed: {}",
+        refusal.message
+    );
+    assert!(matches!(
+        report.execution,
+        ExecutionReport::Failed {
+            reason: TerminationReason::Error { ref code },
+            ..
+        } if code == "resolution_definition_unbound"
+    ));
+    let claimed_read = report
+        .reads
+        .iter()
+        .find(|read| read.definition == claimed)
+        .unwrap_or_else(|| panic!("the claimed definition was read: {:?}", report.reads));
+    assert_eq!(claimed_read.loader, loader("app"));
+    assert_eq!(claimed_read.reason, ReadReason::MemberOwner);
+    assert_eq!(
+        class_headers(&report),
+        3,
+        "the memo holds no checked binding here, so the claim is re-read and checked: the owner, \
+         the claimed definition and the definition its own name selects are three attempts"
+    );
+    assert_reads_within_attempts(&report);
+    assert_no_body_read(&report);
+
+    // The driver path over the same physical definition, under the same environment and content.
+    let request = MethodAnalysisRequest {
+        environment: world.environment.clone(),
+        method: driver,
+        stages: vec![AnalysisStage::RawCfg],
+    };
+    let mut budget = Budget::new(limits());
+    let analyzed = Engine::new()
+        .analyze_method(&world.content, &request, &mut budget)
+        .expect("a legal request is answered, not raised");
+    assert_eq!(
+        stage(&analyzed, AnalysisStage::RawFacts),
+        StageState::Failed {
+            code: "resolution_definition_unbound".to_string()
+        },
+        "the fresh path refuses the same claim"
+    );
+    assert_eq!(
+        stage(&analyzed, AnalysisStage::RawCfg),
+        StageState::NotPerformed
+    );
+    assert_eq!(analyzed.body, MethodBodyState::NotInspected);
+
+    // The agreement asserted on the whole refusal, not on one state: the same code with the same
+    // message, which is the one `unbound_definition` builds from the claim and the decision.
+    assert_eq!(
+        stop_of(&report.diagnostics),
+        stop_of(&analyzed.diagnostics),
+        "both paths refuse the one claim the one way"
+    );
+}
+
+// ---------------------------------------------------------------------------
+// 0.1: the walk's own root — a delegated self-supertype, and a name that is another node
+// ---------------------------------------------------------------------------
+
+/// A root reached through delegation reports its own self-supertype as the illegal cycle it is.
+///
+/// `app` holds nothing named `p/Self`, so the caller's demand is answered by the parent loader's
+/// position: the class the walk starts from is the parent's definition, and the names *its*
+/// header holds are searched from the parent. That header declares `super_class = p/Self` — the
+/// same name and the same node the class already is — which JVMS 4.7.7 forbids. The repeating
+/// edge is demanded under a key the caller's search never used (`(parent, p/Self)`, not
+/// `(app, p/Self)`), so the walk reaches its own root the hard way and still has to report it:
+/// the branch is refused with `resolution_hierarchy_cycle` and counted unread, exactly as it is
+/// when the root belongs to the request's own loader. Reporting has to win over "this node was
+/// already expanded" — the root is in that set by definition.
+#[test]
+fn a_delegated_root_that_declares_itself_as_its_supertype_is_a_cycle() {
+    let parent_snapshot = open(zip_of(&[(
+        entry(b"p/Self"),
+        Class::new(b"p/Self").super_class(b"p/Self").build(),
+    )]));
+    let app_snapshot = open(zip_of(&[(
+        entry(b"p/Other"),
+        Class::new(b"p/Other").build(),
+    )]));
+    let parent_loader = loader("parent");
+    let parent = domain(&parent_loader, None, vec![snapshot_root(&parent_snapshot)]);
+    let caller = domain(
+        &loader("app"),
+        Some(parent_loader.clone()),
+        vec![snapshot_root(&app_snapshot)],
+    );
+    let environment = environment(&app_snapshot, caller.clone(), vec![caller, parent]);
+    let world = World {
+        content: vec![app_snapshot.clone(), parent_snapshot.clone()],
+        environment,
+        app: loader("app"),
+    };
+    let root = single_loader_world(&parent_snapshot).definition(b"p/Self");
+    assert_ne!(
+        root.snapshot(),
+        &world.environment.runtime.physical.snapshot,
+        "the root really is reached through the delegation and not from the request's snapshot"
+    );
+
+    let report = world.resolve(
+        field(b"p/Self", b"f", b"I"),
+        ReferenceUse::FieldRead,
+        world.abstract_caller(),
+    );
+
+    assert_eq!(report.state, Some(ResolutionState::Missing));
+    assert!(report.resolved.is_none());
+    assert_eq!(
+        diagnostic_codes(&report),
+        vec!["resolution_hierarchy_cycle"]
+    );
+    let diagnostic = diagnostic_of(&report, "resolution_hierarchy_cycle");
+    assert_eq!(diagnostic.severity, DiagnosticSeverity::Warning);
+    assert!(
+        diagnostic.message.contains("`parent`")
+            && diagnostic.message.contains("is its own supertype")
+            && diagnostic.message.contains("p/Self"),
+        "the warning names the order that repeated and the node it repeated: {}",
+        diagnostic.message
+    );
+    assert_eq!(
+        report.coverage.runtime_resolution.state,
+        CoverageState::Partial,
+        "the refused branch is unread, so the closure is not complete"
+    );
+    assert_eq!(
+        read_reasons(&report),
+        vec![("parent".to_string(), ReadReason::MemberOwner)],
+        "one binding, one read record, whichever key the search ran under"
+    );
+    assert_eq!(
+        class_headers(&report),
+        2,
+        "the caller's key and the defining loader's key are two searches of the one binding"
+    );
+    assert_reads_within_attempts(&report);
+    assert_no_body_read(&report);
+}
+
+/// The root's name reached again through another loader is another node, and its declaration is
+/// the one that resolves.
+///
+/// `app` is ChildFirst with its own root, so the caller's `p/Root` is **app's** definition, which
+/// declares `super_class = p/Mid`; only the parent provides `p/Mid`, so the walk crosses into the
+/// parent's order there, and `p/Mid`'s own supertype name — `p/Root` again — is searched from the
+/// parent, where it is a **different** definition that declares `f`. A walk that deduplicated its
+/// layers by name would refuse this branch as a repeat of its own root and report the member
+/// missing; the node the search really reached is the parent's, and the declaration is published
+/// from it. The owner string is the same `p/Root` either way, so the physical definition is the
+/// only evidence that separates the two nodes.
+#[test]
+fn a_root_name_reached_again_under_another_loader_is_another_node() {
+    let parent_snapshot = open(zip_of(&[
+        (
+            entry(b"p/Root"),
+            Class::root(b"p/Root").field(b"f", b"I", PUBLIC).build(),
+        ),
+        (
+            entry(b"p/Mid"),
+            Class::new(b"p/Mid").super_class(b"p/Root").build(),
+        ),
+    ]));
+    let app_snapshot = open(zip_of(&[(
+        entry(b"p/Root"),
+        Class::new(b"p/Root").super_class(b"p/Mid").build(),
+    )]));
+    let parent_loader = loader("parent");
+    let parent = domain(&parent_loader, None, vec![snapshot_root(&parent_snapshot)]);
+    let caller = {
+        let mut caller = domain(
+            &loader("app"),
+            Some(parent_loader.clone()),
+            vec![snapshot_root(&app_snapshot)],
+        );
+        // The caller's own order is searched before the parent's, so the walk starts from app's
+        // `p/Root` — the node the branch below must not be confused with.
+        caller.delegation = DelegationPolicy::ChildFirst;
+        caller
+    };
+    let environment = environment(&app_snapshot, caller.clone(), vec![caller, parent]);
+    let world = World {
+        content: vec![app_snapshot.clone(), parent_snapshot.clone()],
+        environment,
+        app: loader("app"),
+    };
+    let app_root = single_loader_world(&app_snapshot).definition(b"p/Root");
+    let parent_root = single_loader_world(&parent_snapshot).definition(b"p/Root");
+    assert_ne!(
+        app_root, parent_root,
+        "the fixture holds two definitions of the one name `p/Root`"
+    );
+
+    let report = world.resolve(
+        field(b"p/Root", b"f", b"I"),
+        ReferenceUse::FieldRead,
+        world.abstract_caller(),
+    );
+
+    assert_eq!(report.state, Some(ResolutionState::Resolved), "{report:?}");
+    assert!(
+        report.diagnostics.is_empty(),
+        "nothing is unread, so nothing is reported: {:?}",
+        report.diagnostics
+    );
+    let resolved = resolved_of(&report);
+    assert_eq!(
+        resolved.member,
+        field(b"p/Root", b"f", b"I"),
+        "both nodes spell the same owner, so the name alone cannot separate them"
+    );
+    assert_eq!(
+        resolved.definition, parent_root,
+        "the declaration belongs to the node the parent's order selected"
+    );
+    assert_eq!(resolved.loader, parent_loader);
+    assert_ne!(
+        resolved.definition, app_root,
+        "the walk's own root is a different class and declares nothing"
+    );
+    assert_eq!(
+        read_reasons(&report),
+        vec![
+            ("app".to_string(), ReadReason::MemberOwner),
+            // `p/Root extends p/Mid`, and only the parent holds `p/Mid`.
+            ("parent".to_string(), ReadReason::ParentChain),
+            // `p/Mid extends p/Root` in the parent's own order: the same name, another node.
+            ("parent".to_string(), ReadReason::ParentChain),
+        ]
+    );
+    assert_reads_within_attempts(&report);
+    assert_no_body_read(&report);
 }

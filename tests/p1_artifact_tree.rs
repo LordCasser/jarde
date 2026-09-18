@@ -1,7 +1,7 @@
 use jarde::{
     ArchiveNameBytes, ArtifactInput, Budget, BudgetDimension, ContainerOriginStep, CoverageState,
     Engine, ExecutionReport, LayoutNodeKind, LayoutNodeSource, Limits, NestedArchiveState,
-    PhysicalScope, TerminationReason,
+    PhysicalScope, TerminationReason, UsageSnapshot,
 };
 use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
 use std::io::{Cursor, Write};
@@ -510,8 +510,17 @@ fn result_item_exhaustion_before_second_child_report_keeps_pending_coverage_and_
         Some(jarde::Location::Entry { id, .. }) if id.raw_name.0 == b"second.jar"
     )));
     assert_eq!(budget.usage().result_items, 7);
+    // `elapsed_millis` is a measurement, not a charge: `Budget::usage` takes it again on every
+    // read, so the snapshot the report published and this later read may differ by a millisecond
+    // while every counted dimension is identical. The one field is removed and nothing else.
+    let counted = |usage: &UsageSnapshot| UsageSnapshot {
+        elapsed_millis: 0,
+        ..usage.clone()
+    };
     match &tree.execution {
-        ExecutionReport::Partial { usage, .. } => assert_eq!(usage, &budget.usage()),
+        ExecutionReport::Partial { usage, .. } => {
+            assert_eq!(counted(usage), counted(&budget.usage()))
+        }
         other => panic!("expected partial execution, got {other:?}"),
     }
 }

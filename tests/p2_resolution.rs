@@ -297,6 +297,19 @@ fn class_headers(report: &ResolutionReport) -> u64 {
     usage_of(&report.execution).counted_usage(CountedBudgetDimension::ClassHeaders)
 }
 
+/// One usage snapshot with the wall clock removed: the comparison form of two reads of one budget.
+///
+/// `elapsed_millis` is a measurement, not a charge: [`Budget::usage`] takes it again on every
+/// read, so the snapshot a report published and a later read of the same budget may legitimately
+/// differ by a millisecond while every counted dimension is identical. P1 normalizes the same one
+/// field the same way, and nothing else is dropped here.
+fn counted_usage(usage: &UsageSnapshot) -> UsageSnapshot {
+    UsageSnapshot {
+        elapsed_millis: 0,
+        ..usage.clone()
+    }
+}
+
 fn diagnostic_codes(diagnostics: &[Diagnostic]) -> Vec<String> {
     diagnostics
         .iter()
@@ -912,8 +925,8 @@ fn a_failed_read_attempt_is_charged_and_has_no_fallback() {
         "the read layer charged its own dimensions before failing: {usage:?}"
     );
     assert_eq!(
-        usage,
-        &budget.usage(),
+        counted_usage(usage),
+        counted_usage(&budget.usage()),
         "the report's usage is the request budget's usage"
     );
 

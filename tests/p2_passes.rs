@@ -98,6 +98,39 @@ fn counted_usage_is_zero(usage: &UsageSnapshot) -> bool {
         .all(|dimension| usage.counted_usage(*dimension) == 0)
 }
 
+/// One usage snapshot with the wall clock removed: the comparison form of two reads of one budget.
+///
+/// `elapsed_millis` is a measurement, not a charge: [`Budget::usage`] takes it again on every
+/// read, so the snapshot a report published and a later read of the same budget may legitimately
+/// differ by a millisecond while every counted dimension is identical. P1 normalizes the same one
+/// field the same way, and nothing else is dropped here.
+fn counted_usage(usage: &UsageSnapshot) -> UsageSnapshot {
+    UsageSnapshot {
+        elapsed_millis: 0,
+        ..usage.clone()
+    }
+}
+
+/// One execution report compared with that one measurement removed from its usage.
+fn without_wall_clock(execution: &ExecutionReport) -> ExecutionReport {
+    match execution {
+        ExecutionReport::Complete { usage } => ExecutionReport::Complete {
+            usage: counted_usage(usage),
+        },
+        ExecutionReport::Partial { reason, usage } => ExecutionReport::Partial {
+            reason: reason.clone(),
+            usage: counted_usage(usage),
+        },
+        ExecutionReport::Cancelled { usage } => ExecutionReport::Cancelled {
+            usage: counted_usage(usage),
+        },
+        ExecutionReport::Failed { reason, usage } => ExecutionReport::Failed {
+            reason: reason.clone(),
+            usage: counted_usage(usage),
+        },
+    }
+}
+
 fn invalid_input_code(error: &Error) -> Option<&str> {
     match error {
         Error::InvalidInput { code, .. } => Some(code.as_str()),
@@ -267,12 +300,12 @@ fn every_stage_set_is_accepted_and_answered_with_the_state_of_its_passes() {
         assert!(report.reads.is_empty());
         assert_eq!(report.coverage, Coverage::not_requested());
         assert_eq!(
-            report.execution,
+            without_wall_clock(&report.execution),
             ExecutionReport::Partial {
                 reason: TerminationReason::BudgetExceeded {
                     dimension: BudgetDimension::ClassHeaders,
                 },
-                usage: budget.usage(),
+                usage: counted_usage(&budget.usage()),
             },
             "{stages:?}: the pass that stopped names the dimension it was refused"
         );
@@ -283,7 +316,7 @@ fn every_stage_set_is_accepted_and_answered_with_the_state_of_its_passes() {
     }
 
     // The last phase schedules the whole pipeline, so the phase prefix cannot be a truncated
-    // part of the order without this failing. With the run funded, the two phases this build
+    // part of the order without this failing. With the run funded, the three phases this build
     // implements complete, the first one it does not implement fails, and the phases behind
     // that failure stay `NotPerformed` instead of looking performed.
     let request = analysis_request(&fixture, environment, vec![AnalysisStage::Ssa]);
@@ -301,10 +334,10 @@ fn every_stage_set_is_accepted_and_answered_with_the_state_of_its_passes() {
         vec![
             StageState::Completed,
             StageState::Completed,
+            StageState::Completed,
             StageState::Failed {
                 code: "ir_pass_not_implemented".to_string()
             },
-            StageState::NotPerformed,
             StageState::NotPerformed,
             StageState::NotPerformed,
         ]

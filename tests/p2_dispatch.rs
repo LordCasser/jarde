@@ -2791,3 +2791,208 @@ fn every_rule_diagnostic_of_one_request_is_charged_and_published() {
     );
     assert_eq!(short.resolved, complete.resolved);
 }
+
+// ---------------------------------------------------------------------------
+// 0.1: the subtype test is a node test, not an owner-name test
+// ---------------------------------------------------------------------------
+
+/// The physical definition of one class name as a loader that only roots that snapshot selects it.
+///
+/// The comparison a dispatch candidate needs is between *definitions*, so a test that wants to
+/// name one has to read it from a world that holds exactly it: the same name under two loaders is
+/// two classes, and only the physical pair tells them apart.
+fn definition_in(snapshot: &ArtifactSnapshot, name: &[u8]) -> PhysicalDefinitionId {
+    let environment = single_loader(snapshot);
+    let request = ResolutionRequest {
+        environment,
+        target: SymbolRef::Class {
+            owner: JvmBytes(name.to_vec()),
+        },
+        use_kind: ReferenceUse::ClassReference,
+        caller: CallerContext {
+            loader: loader("app"),
+            enclosing: None,
+        },
+        dispatch: None,
+    };
+    resolve(std::slice::from_ref(snapshot), &request)
+        .resolved
+        .unwrap_or_else(|| panic!("the fixture holds `{}`", String::from_utf8_lossy(name)))
+        .definition
+}
+
+/// The subtype test compares ancestor **nodes**, not the owner string of a supertype layer.
+///
+/// `child` is ChildFirst with its own root and `parent` as its parent loader. Both loaders define
+/// `p/Base` (an interface here, so the whole chain is declared the way JVMS declares it) and
+/// `p/Hook`; the parent's `p/Hook extends p/Base`, and the request's target `p/Owner.f` resolves
+/// to the field `p/Base.f` of the **parent**. The range is the child's snapshot, and three of its
+/// classes pin the plane:
+///
+/// * `p/Mid implements p/Base` reaches the *child's* `p/Base` and stops there. Its supertype
+///   layer's owner string is `p/Base`, exactly like the declaration's, and its node is not: a
+///   string comparison would publish `p/Mid` as an override of a declaration it does not inherit
+///   from, while the node test keeps it out;
+/// * `p/Y extends p/Alpha implements p/Iface` really inherits from the declaration: the `p/Alpha`
+///   branch reaches the child's `p/Hook`, and the `p/Iface` branch — an interface only the parent
+///   provides — reaches the parent's `p/Hook` and from there the parent's `p/Base`. It is
+///   published, which is the positive control;
+/// * `p/Y` is also where the walk's own identity has to be node-keyed. The same *name* `p/Hook`
+///   occurs twice on its supertype closure — the child's definition on the `p/Alpha` branch, the
+///   parent's on the `p/Iface` branch — and the declaration sits behind the *second* one. A walk
+///   that remembered names instead of nodes would refuse to expand it as a repeat and lose the
+///   declaration `p/Y` exists to reach.
+///
+/// Both sides are decided evidence, not silence: the reads below name the parent's `p/Hook` and
+/// `p/Base`, so the plane excluded `p/Mid` and published `p/Y` after really looking at both
+/// loaders' definitions.
+#[test]
+fn the_subtype_test_compares_ancestor_nodes_not_owner_names() {
+    let child_snapshot = open(zip_of(&[
+        (
+            entry(b"java/lang/Object"),
+            Class::root(b"java/lang/Object").build(),
+        ),
+        (entry(b"p/Base"), Class::interface(b"p/Base").build()),
+        (
+            entry(b"p/Mid"),
+            Class::new(b"p/Mid")
+                .implements(b"p/Base")
+                .field(b"f", b"I", PUBLIC)
+                .build(),
+        ),
+        (entry(b"p/Hook"), Class::interface(b"p/Hook").build()),
+        (
+            entry(b"p/Alpha"),
+            Class::new(b"p/Alpha").implements(b"p/Hook").build(),
+        ),
+        (
+            entry(b"p/Y"),
+            Class::new(b"p/Y")
+                .extends(b"p/Alpha")
+                .implements(b"p/Iface")
+                .field(b"f", b"I", PUBLIC)
+                .build(),
+        ),
+    ]));
+    let parent_snapshot = open(zip_of(&[
+        (
+            entry(b"java/lang/Object"),
+            Class::root(b"java/lang/Object").build(),
+        ),
+        (
+            entry(b"p/Base"),
+            Class::interface(b"p/Base")
+                .field(b"f", b"I", PUBLIC | STATIC | FINAL)
+                .build(),
+        ),
+        (
+            entry(b"p/Hook"),
+            Class::interface(b"p/Hook").extends(b"p/Base").build(),
+        ),
+        (
+            entry(b"p/Iface"),
+            Class::interface(b"p/Iface").extends(b"p/Hook").build(),
+        ),
+        (
+            entry(b"p/Owner"),
+            Class::new(b"p/Owner").implements(b"p/Base").build(),
+        ),
+    ]));
+
+    let parent_loader = loader("parent");
+    let mut child = domain(
+        &loader("child"),
+        Some(parent_loader.clone()),
+        vec![snapshot_root(&child_snapshot)],
+    );
+    child.delegation = DelegationPolicy::ChildFirst;
+    let parent = domain(&parent_loader, None, vec![snapshot_root(&parent_snapshot)]);
+    let environment = environment(&child_snapshot, child.clone(), vec![child, parent]);
+    let content = vec![child_snapshot.clone(), parent_snapshot.clone()];
+    let report = resolve(
+        &content,
+        &dispatch_request(
+            environment,
+            &loader("child"),
+            field(b"p/Owner", b"f", b"I"),
+            ReferenceUse::FieldRead,
+            PhysicalScope::SnapshotAll,
+        ),
+    );
+
+    let child_base = definition_in(&child_snapshot, b"p/Base");
+    let parent_base = definition_in(&parent_snapshot, b"p/Base");
+    let child_hook = definition_in(&child_snapshot, b"p/Hook");
+    let parent_hook = definition_in(&parent_snapshot, b"p/Hook");
+    let iface = definition_in(&parent_snapshot, b"p/Iface");
+    let child_y = definition_in(&child_snapshot, b"p/Y");
+    assert_ne!(
+        child_base, parent_base,
+        "the fixture really holds two `p/Base` definitions"
+    );
+    assert_ne!(child_hook, parent_hook, "and two `p/Hook` definitions");
+
+    // The declaration is the parent's interface field: `p/Owner` is provided by the parent, so the
+    // names its header holds are resolved from the parent's own order (JVMS 5.4.3.1).
+    assert_eq!(report.state, Some(ResolutionState::Resolved), "{report:?}");
+    let resolved = report.resolved.as_ref().expect("the declaration resolves");
+    assert_eq!(
+        resolved.member,
+        SymbolRef::Field {
+            owner: JvmBytes(b"p/Base".to_vec()),
+            name: JvmBytes(b"f".to_vec()),
+            descriptor: JvmBytes(b"I".to_vec()),
+        },
+        "both `p/Base`s are named `p/Base`, so the owner string is the same either way"
+    );
+    assert_eq!(resolved.definition, parent_base);
+    assert_eq!(resolved.loader, parent_loader);
+
+    assert_eq!(
+        candidate_owners(&report),
+        vec![b"p/Y".to_vec()],
+        "`p/Y` inherits from the declaration's class; `p/Mid` reaches only the child's same-named \
+         interface, and a name is not an inheritance edge"
+    );
+    assert_eq!(candidate_definitions(&report), vec![child_y]);
+    assert_eq!(
+        candidate_evidence(&report),
+        vec![None],
+        "every position of both chains is readable and inside the caller's own chain"
+    );
+    assert!(!dispatch_of(&report).open_world);
+
+    // The walk really looked at both loaders' definitions of the repeated name, and past the
+    // second one to the declaration: a walk that keyed its expanded set on names stops at the
+    // child's `p/Hook` and never publishes `p/Y`.
+    let read_definitions = report
+        .reads
+        .iter()
+        .map(|read| read.definition.clone())
+        .collect::<Vec<_>>();
+    for (definition, what) in [
+        (&child_base, "the child's `p/Base`, `p/Mid`'s ancestor"),
+        (
+            &child_hook,
+            "the child's `p/Hook`, `p/Alpha`'s superinterface",
+        ),
+        (
+            &iface,
+            "the parent's `p/Iface`, which only that loader provides",
+        ),
+        (
+            &parent_hook,
+            "the parent's `p/Hook`, the same name under its second loader",
+        ),
+        (
+            &parent_base,
+            "the parent's `p/Base`, the declaration's class",
+        ),
+    ] {
+        assert!(
+            read_definitions.contains(definition),
+            "{what} was read: {read_definitions:?}"
+        );
+    }
+}

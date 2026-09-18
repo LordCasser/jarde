@@ -16,7 +16,6 @@ use crate::model::{
     DiagnosticSeverity, Digest, ExecutionReport, PhysicalClassLocation, TerminationReason,
 };
 use crate::passes::{FactLedger, IR_PASS_NOT_IMPLEMENTED, IrPhase, PassDescriptor, implemented};
-use crate::resolver::{HeaderRead, ReadReason};
 use serde::{Deserialize, Serialize};
 
 /// Access flags that declare a member without a body: `ACC_ABSTRACT` and `ACC_NATIVE`.
@@ -199,11 +198,14 @@ impl Engine {
     ///
     /// The scheduled passes of 3.x then really run, in table order and through the ledger:
     /// `raw_facts` reads the driver method's class header and decodes its body (one
-    /// `ClassHeaders` and one `MethodBodies` attempt, recorded under `DriverMethodBody`), and
-    /// `raw_cfg` builds the raw graph, its throw sites and its effect facts over those
-    /// decoded facts. A rejected environment starts nothing; a phase this build does not
-    /// implement is `Failed { ir_pass_not_implemented }` wherever the pipeline reaches it,
-    /// and a stopped pass keeps every stage result it had already produced.
+    /// `ClassHeaders` and one `MethodBodies` attempt, recorded under `DriverMethodBody`),
+    /// `raw_cfg` builds the raw graph, its throw sites and its effect facts over those decoded
+    /// facts, and `legacy_normalization` builds the `jsr`/`ret` call contexts over that graph —
+    /// keeping the raw facts and reporting a dialect violation or an unestablished call graph
+    /// instead of publishing contexts it cannot justify. A rejected environment starts nothing;
+    /// a phase this build does not implement is `Failed { ir_pass_not_implemented }` wherever
+    /// the pipeline reaches it, and a stopped pass keeps every stage result it had already
+    /// produced.
     pub fn analyze_method(
         &self,
         content: &[ArtifactSnapshot],
@@ -276,10 +278,14 @@ fn report_unimplemented(
 /// *completed* phase. The first stop governs the run's termination; the stage results name
 /// every pass the run reached, and the passes behind a stop stay `NotPerformed`.
 ///
-/// What "raw" means for the two implemented passes is 3.3's contract: `raw_facts` projects the
+/// What "raw" means for the implemented passes is 3.3's contract: `raw_facts` projects the
 /// reader's own facts (1.2) and `raw_cfg` builds the blocks, edges, instruction-level throw
 /// sites, handler facts and effect facts of the decoded prefix, marking a body whose decode
 /// stopped early as `Partial` instead of pretending the graph covers the whole method.
+/// `legacy_normalization` is 3.4's contract over that graph: one call context per `jsr` site,
+/// the return point of every `ret` from the context that owns it, the exception records that
+/// cross a call, and a reported refusal — dialect violation or unestablished call graph —
+/// instead of an invented one.
 fn run_method_analysis(
     content: &[ArtifactSnapshot],
     request: &crate::ir::MethodAnalysisRequest,
@@ -305,6 +311,10 @@ fn run_method_analysis(
     let mut ledger = FactLedger::new();
     let mut stop: Option<ExecutionReport> = None;
     let mut facts: Option<MethodCodeFacts> = None;
+    // The class file's dialect and the raw graph of this run: `legacy_normalization` reads both,
+    // and both are facts of the passes that already completed.
+    let mut major_version: Option<u16> = None;
+    let mut raw: Option<crate::cfg::RawCfgOutcome> = None;
     for (index, pass) in scheduled.iter().enumerate() {
         if !implemented(pass.phase) {
             stop = stop.or(Some(report_unimplemented(
@@ -315,7 +325,13 @@ fn run_method_analysis(
         match pass.phase {
             IrPhase::RawFacts => {
                 let decoded = match read_driver_method(content, request, &mut run, budget) {
-                    Ok(DriverRead::Decoded(decoded)) => *decoded,
+                    Ok(DriverRead::Decoded {
+                        facts,
+                        major_version: version,
+                    }) => {
+                        major_version = Some(version);
+                        *facts
+                    }
                     Ok(DriverRead::DeclaredWithoutBody) => {
                         // The member declares no body: no pass can run, and the request is
                         // complete as far as its input allows. Every scheduled stage stays
@@ -390,10 +406,93 @@ fn run_method_analysis(
                         };
                         // The graph and the effect facts are crate-private IR payloads
                         // (invariant 11): 3.4/3.5 consume them, 5.1 decides what becomes
-                        // public, and the report keeps publishing their status planes.
+                        // public, and the report keeps publishing their status planes. The
+                        // payload stays in this run because the next pass reads it.
+                        raw = Some(outcome);
                     }
                     Err(error) => {
                         let (execution, diagnostic) = raw_cfg_failure(&error, decoded, budget);
+                        run.stages[index].state = stage_state(&execution);
+                        run.diagnostics.push(diagnostic);
+                        stop = stop.or(Some(execution));
+                        break;
+                    }
+                }
+            }
+            IrPhase::LegacyNormalization => {
+                let (Some(decoded), Some(raw), Some(version)) =
+                    (facts.as_ref(), raw.as_ref(), major_version)
+                else {
+                    // The pass requires the facts of the two passes before it, so a run that
+                    // reached it without them is the ledger's own `ir_pass_prerequisite_missing`
+                    // (the schedule validation makes it unreachable).
+                    if let Err(error) = ledger.apply(pass) {
+                        let (execution, diagnostic) = crate::ir::terminal(&error, budget.usage());
+                        run.stages[index].state = stage_state(&execution);
+                        run.diagnostics.push(diagnostic);
+                        stop = stop.or(Some(execution));
+                    }
+                    break;
+                };
+                match crate::call_context::call_contexts(decoded, raw, version, budget) {
+                    Ok(crate::call_context::CallContextOutcome::Established(_contexts)) => {
+                        if let Err(error) = ledger.apply(pass) {
+                            let (execution, diagnostic) =
+                                crate::ir::terminal(&error, budget.usage());
+                            run.stages[index].state = stage_state(&execution);
+                            run.diagnostics.push(diagnostic);
+                            stop = stop.or(Some(execution));
+                            break;
+                        }
+                        // The fact covers the decoded prefix: on a body whose decode stopped
+                        // early the stage is `Partial` for the same reason `raw_cfg` is, and no
+                        // second diagnostic repeats what the reader already reported.
+                        run.stages[index].state = if raw.cfg.completeness.is_complete() {
+                            StageState::Completed
+                        } else {
+                            StageState::Partial
+                        };
+                        // The contexts are a crate-private payload (invariant 11) with no
+                        // consumer in this build yet: the ledger publishes the fact, 3.5 reads
+                        // it, 5.1 decides what becomes public, and the report keeps publishing
+                        // the status planes.
+                    }
+                    Ok(crate::call_context::CallContextOutcome::Forbidden { message }) => {
+                        // A dialect violation, not a limitation: the raw facts are kept, the
+                        // method gets no call contexts and must not enter the canonical CFG.
+                        let code = crate::call_context::IR_LEGACY_OPCODE_FORBIDDEN.to_string();
+                        run.stages[index].state = StageState::Failed { code: code.clone() };
+                        run.diagnostics.push(Diagnostic {
+                            code: code.clone(),
+                            severity: DiagnosticSeverity::Error,
+                            message,
+                            provenance: None,
+                        });
+                        stop = stop.or(Some(ExecutionReport::Failed {
+                            reason: TerminationReason::Error { code },
+                            usage: budget.usage(),
+                        }));
+                        break;
+                    }
+                    Ok(crate::call_context::CallContextOutcome::Unresolved { message }) => {
+                        // The raw facts are the part of the answer that survives: the run is
+                        // partial under the pass's own code, and no call graph was invented.
+                        let code = crate::call_context::IR_CALL_CONTEXT_UNRESOLVED.to_string();
+                        run.stages[index].state = StageState::Partial;
+                        run.diagnostics.push(Diagnostic {
+                            code: code.clone(),
+                            severity: DiagnosticSeverity::Warning,
+                            message,
+                            provenance: None,
+                        });
+                        stop = stop.or(Some(ExecutionReport::Partial {
+                            reason: TerminationReason::Error { code },
+                            usage: budget.usage(),
+                        }));
+                        break;
+                    }
+                    Err(error) => {
+                        let (execution, diagnostic) = crate::ir::terminal(&error, budget.usage());
                         run.stages[index].state = stage_state(&execution);
                         run.diagnostics.push(diagnostic);
                         stop = stop.or(Some(execution));
@@ -426,10 +525,15 @@ fn run_method_analysis(
 ///
 /// The decoded facts are boxed because they are much larger than the alternative: the enum is
 /// built once per request and passed on to the next pass, and the indirection keeps the common
-/// path from moving a `MethodCodeFacts` by value twice.
+/// path from moving a `MethodCodeFacts` by value twice. The class file's own major version
+/// travels with them because the dialect decisions of the later passes are the class file's
+/// version alone and nothing else ([`crate::ir::AnalysisStage::LegacyNormalization`]).
 enum DriverRead {
     /// The member has a body and the reader decoded (at least a prefix of) it.
-    Decoded(Box<MethodCodeFacts>),
+    Decoded {
+        facts: Box<MethodCodeFacts>,
+        major_version: u16,
+    },
     /// The member's own declaration says it has no body: there is nothing to analyze, and that
     /// is a fact about the member rather than a failure of the request.
     DeclaredWithoutBody,
@@ -443,21 +547,35 @@ enum DriverRead {
 /// member's declaration decides the body fact: a member with no `Code` attribute that declares
 /// itself abstract or native is `DeclaredWithoutBody`, and a member whose declaration
 /// contradicts the class-file format is the structured failure the reader would raise for it.
+///
+/// The class the request names is claimed under the declared load domain's own loader, and that
+/// claim is what the header read **binds**: the loader's own search order has to select exactly
+/// that `(loader, definition)` pair before any runtime semantics are built on it (the 0.1
+/// contract, D25). A definition the declared loader would not select — one no position of its
+/// order holds, one it cannot tell apart, one a nearer position shadows with another definition —
+/// stops the pass under [`crate::providers::UNBOUND_DEFINITION`]; the read that happened stays in
+/// `reads`, so the physical facts survive the refusal. The two snapshots involved do not have to
+/// be equal: a definition provided by a depending root is a legitimate dependency, and the check
+/// is the loader's decision, never snapshot equality.
 fn read_driver_method(
     content: &[ArtifactSnapshot],
     request: &crate::ir::MethodAnalysisRequest,
     run: &mut crate::ir::AnalysisRun,
     budget: &mut Budget,
 ) -> Result<DriverRead> {
-    let read = crate::providers::read_definition_content(content, &request.method.owner, budget)?;
+    let mut closure = crate::providers::HeaderClosure::new(content, &request.environment);
+    let read = closure.read_own_definition(
+        &request.environment.runtime.load_domain.loader,
+        &request.method.owner,
+        crate::providers::HeaderDemand::DriverMethodBody,
+        budget,
+    );
     // The one read a method-analysis request performs, and the demand that caused it: the
-    // driver method's body. It is recorded after the read succeeded, exactly like every other
-    // header read of this engine (a refused charge or a damaged candidate records nothing).
-    run.reads.push(HeaderRead {
-        loader: request.environment.runtime.load_domain.loader.clone(),
-        definition: request.method.owner.clone(),
-        reason: ReadReason::DriverMethodBody,
-    });
+    // driver method's body. It is published after the read was attempted, exactly like every
+    // other header read of this engine (a refused charge records nothing), and a binding the
+    // loader refuses keeps the record of the read it was decided on.
+    run.reads = crate::resolver::published_reads(&closure);
+    let read = read?;
     let Some(member) = read.header.facts.methods.iter().find(|member| {
         member.name.raw().0 == request.method.name.0
             && member.descriptor.raw().0 == request.method.descriptor.0
@@ -509,7 +627,12 @@ fn read_driver_method(
         &decoded.execution,
         decoded.stopped_at.as_ref(),
     )?;
-    Ok(DriverRead::Decoded(Box::new(decoded)))
+    Ok(DriverRead::Decoded {
+        facts: Box::new(decoded),
+        // The dialect of the later passes is the class file's version and nothing else, so it
+        // is read here, once, from the same header the member was located in.
+        major_version: read.header.facts.major_version,
+    })
 }
 
 /// Whether the member declares a `Code` attribute at all, decided from the header's shells so

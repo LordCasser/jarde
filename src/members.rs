@@ -64,7 +64,8 @@ use crate::environment::CallerContext;
 use crate::error::{Error, Result};
 use crate::model::{Diagnostic, DiagnosticSeverity, JvmBytes, PhysicalDefinitionId, SymbolRef};
 use crate::providers::{
-    ClassHandle, HIERARCHY_CYCLE, HeaderClosure, HeaderDemand, HeaderLookupState, escaped,
+    AncestorPath, ClassHandle, HIERARCHY_CYCLE, HeaderClosure, HeaderDemand, HeaderLookupState,
+    NodeIdentity, escaped,
 };
 use crate::view::LoaderId;
 use std::collections::VecDeque;
@@ -157,6 +158,13 @@ pub(crate) struct MemberLocation {
     /// signature-polymorphic method.
     pub(crate) descriptor: JvmBytes,
     pub(crate) access_flags: u16,
+}
+
+impl MemberLocation {
+    /// The run-time identity of the class that declares this member.
+    pub(crate) fn identity(&self) -> NodeIdentity {
+        NodeIdentity::new(&self.loader, &self.definition)
+    }
 }
 
 /// One class definition that cannot be told apart at the reference's owner position.
@@ -273,7 +281,7 @@ pub(crate) fn resolve_member(
         HeaderLookupState::Found => {}
     }
 
-    let root = class_site(closure, owner_handle, Some(&rule));
+    let root = class_site(closure, owner_handle, Some(&rule), &AncestorPath::default());
     let selection = match kind {
         MemberKind::Field => search_field(closure, &root, &rule, budget, &mut search)?,
         MemberKind::Method => search_method(closure, &root, &rule, use_kind, budget, &mut search)?,
@@ -413,10 +421,12 @@ impl Declaration {
     }
 }
 
-/// One class the search read: its identity, its own supertypes and what it declares for the
-/// member.
+/// One class the search read: its identity, the path that reached it, its own supertypes and what
+/// it declares for the member.
 #[derive(Clone, Debug)]
 struct ClassSite {
+    /// The loader that **defines** this class: the one every name this header declares has to be
+    /// resolved from (JVMS 5.4.3.1), and half of the class's run-time identity.
     loader: LoaderId,
     definition: PhysicalDefinitionId,
     /// The name the class declares for itself, never the name it was demanded under.
@@ -424,6 +434,10 @@ struct ClassSite {
     super_class: Option<JvmBytes>,
     interfaces: Vec<JvmBytes>,
     is_interface: bool,
+    /// The supertype path that reached this class: its own ancestors, **excluding** this class, so
+    /// its length is this class's dependency depth and a step above it is one deeper. The class a
+    /// reference names as its owner — the starting point of every search here — has an empty path.
+    path: AncestorPath,
     /// The member list this site was matched against, and what it declares for the request.
     /// A site read for its structure only (the access rules' hierarchy walk) declares nothing
     /// and never produces a location.
@@ -432,6 +446,71 @@ struct ClassSite {
 }
 
 impl ClassSite {
+    /// The run-time identity of this class: its defining loader plus its physical definition.
+    ///
+    /// This pair, never the name, is what every hierarchy comparison in this slice uses: an
+    /// ancestor test, a cycle, a shared supertype, a maximally-specific override and the private
+    /// "same class" rule of the access checks.
+    fn identity(&self) -> NodeIdentity {
+        NodeIdentity::new(&self.loader, &self.definition)
+    }
+
+    /// The supertypes this class declares, superclass first and interfaces in declaration order.
+    ///
+    /// Both facts a successor needs come from **this** class: the search start is this class's own
+    /// defining loader (the header that names a supertype decides which loader resolves it, JVMS
+    /// 5.4.3.1) and the path is this class's own ancestors plus this class, so the successor sits
+    /// one dependency step above it.
+    fn supertypes(&self) -> Vec<Successor> {
+        let mut successors = Vec::new();
+        if let Some(super_class) = &self.super_class {
+            successors.push(self.successor(super_class, HeaderDemand::ParentChain));
+        }
+        for interface in &self.interfaces {
+            successors.push(self.successor(interface, HeaderDemand::HierarchyClosure));
+        }
+        successors
+    }
+
+    /// The **interfaces** this class declares, in declaration order.
+    ///
+    /// The method search's superinterface step considers those and nothing else: a `super_class`
+    /// edge belongs to the class chain (JVMS 5.4.3.3) and is never a maximally-specific
+    /// superinterface candidate, so seeding this step from every supertype would put the superclass
+    /// into the interface graph.
+    fn superinterfaces(&self) -> Vec<Successor> {
+        self.interfaces
+            .iter()
+            .map(|interface| self.successor(interface, HeaderDemand::HierarchyClosure))
+            .collect()
+    }
+
+    /// The supertypes in the order the **field** search pops them.
+    ///
+    /// JVMS 5.4.3.2 searches each direct superinterface completely, in declaration order, before
+    /// the superclass, and this walk is a stack. Pushing the superclass first and the interfaces
+    /// after it in reverse makes the first pop the first declared interface and the last pop the
+    /// superclass — the rule's own order. The list is therefore *not* `supertypes()` reversed.
+    fn field_children(&self) -> Vec<Successor> {
+        let mut children = Vec::new();
+        if let Some(super_class) = &self.super_class {
+            children.push(self.successor(super_class, HeaderDemand::ParentChain));
+        }
+        for interface in self.interfaces.iter().rev() {
+            children.push(self.successor(interface, HeaderDemand::HierarchyClosure));
+        }
+        children
+    }
+
+    fn successor(&self, name: &JvmBytes, demand: HeaderDemand) -> Successor {
+        Successor {
+            name: name.clone(),
+            initiating_loader: self.loader.clone(),
+            demand,
+            path: self.path.extended(&self.name.0, Some(self.identity())),
+        }
+    }
+
     fn location(&self, name: &[u8], declaration: &Declaration) -> MemberLocation {
         let kind = self
             .kind
@@ -446,18 +525,26 @@ impl ClassSite {
             access_flags: declaration.access_flags,
         }
     }
+}
 
-    /// The supertypes this class declares, superclass first and interfaces in declaration
-    /// order, each with the demand its edge stands for.
-    fn supertypes(&self, depth: u64) -> Vec<(JvmBytes, HeaderDemand, u64)> {
-        let mut names = Vec::new();
-        if let Some(super_class) = &self.super_class {
-            names.push((super_class.clone(), HeaderDemand::ParentChain, depth));
-        }
-        for interface in &self.interfaces {
-            names.push((interface.clone(), HeaderDemand::HierarchyClosure, depth));
-        }
-        names
+/// One successor a searched class declares: what to resolve, which loader has to resolve it, the
+/// demand that stands for it, and the path that reached it.
+struct Successor {
+    name: JvmBytes,
+    /// The **defining loader of the class that declares this supertype**, whose own order resolves
+    /// the name (JVMS 5.4.3.1). Never the loader the request happened to start at.
+    initiating_loader: LoaderId,
+    /// A superclass step is a parent-chain read and a superinterface step an interface read, so
+    /// the record names the edge the search really took.
+    demand: HeaderDemand,
+    /// The ancestors that reached this successor, ending with the class that declares it. Its
+    /// length is the successor's dependency depth.
+    path: AncestorPath,
+}
+
+impl Successor {
+    fn depth(&self) -> u64 {
+        self.path.depth()
     }
 }
 
@@ -490,7 +577,165 @@ impl Search {
     }
 }
 
+/// The layers one walk already expanded.
+///
+/// Two sets, because a walk has two different things it must not expand twice:
+///
+/// * a **search key** — `(initiating loader, internal name)`. Re-demanding a key the request has
+///   already decided reads nothing, and when that decision named no class (nothing holds the name,
+///   or it cannot be told apart) the gap the first expansion published is the whole fact,
+/// * a **node** — `(defining loader, physical definition)`. Two keys can select one node (a
+///   diamond, or one binding a second loader's order delegates to), and one node is one class.
+///
+/// Neither is keyed on a bare name, and that is the point. The same name under two loaders is two
+/// classes, so merging them by name would silently drop a real branch of the hierarchy — and would
+/// call a legal cross-loader chain a cycle. One node reached by two branches is one class, so
+/// keeping those apart would report one declaration twice.
+#[derive(Default)]
+struct Expanded {
+    keys: Vec<(LoaderId, JvmBytes)>,
+    nodes: Vec<NodeIdentity>,
+}
+
+impl Expanded {
+    fn covers_key(&self, initiating_loader: &LoaderId, name: &[u8]) -> bool {
+        self.keys
+            .iter()
+            .any(|(loader, known)| loader == initiating_loader && known.0 == name)
+    }
+
+    fn covers_node(&self, identity: &NodeIdentity) -> bool {
+        self.nodes.contains(identity)
+    }
+
+    fn remember(
+        &mut self,
+        initiating_loader: &LoaderId,
+        name: &[u8],
+        identity: Option<&NodeIdentity>,
+    ) {
+        if !self.covers_key(initiating_loader, name) {
+            self.keys
+                .push((initiating_loader.clone(), JvmBytes(name.to_vec())));
+        }
+        if let Some(identity) = identity
+            && !self.nodes.contains(identity)
+        {
+            self.nodes.push(identity.clone());
+        }
+    }
+}
+
+/// The layers one walk expands, in the order its own search rule states.
+///
+/// One machine serves all four hierarchy walks of this slice (the field stack, the class chain,
+/// the interface graph and the access rule's subtype walk), because all four owe the same three
+/// facts to the same rule: a layer is searched from the loader of the class that declares it, a
+/// layer is expanded at most once per node, and a node that repeats its own path is an illegal
+/// hierarchy that ends its branch.
+#[derive(Default)]
+struct Layers {
+    expanded: Expanded,
+}
+
+impl Layers {
+    /// A walk that already expanded the search's starting class.
+    ///
+    /// Only the **node** is registered here, never the starting class's search key: the key that
+    /// found it belongs to the caller's order, and re-searching a same-named class under another
+    /// loader is a legitimate branch that must not be refused because the root happens to spell
+    /// the same name.
+    fn started_at(root: &ClassSite) -> Self {
+        let mut layers = Self::default();
+        layers.expanded.nodes.push(root.identity());
+        layers
+    }
+
+    /// Demands one successor and reports the class it reached, or `None` when the layer ends its
+    /// own branch.
+    ///
+    /// `None` covers three facts a caller must not read as each other: a name no position holds
+    /// and one that cannot be told apart (both already recorded as unread branches by
+    /// [`demand_layer`]), a node this walk expanded through another branch (a diamond) and a node
+    /// that repeats its own supertype path (an illegal cycle, reported as a warning here). A
+    /// refusal — budget, cancellation, damaged bytes — is the `Err`, which ends the whole request.
+    ///
+    /// A successor whose search key the request already decided is refused **before it is
+    /// demanded**, so a repeated node costs no dependency-depth observation and no worklist step.
+    fn expand(
+        &mut self,
+        closure: &mut HeaderClosure<'_>,
+        successor: &Successor,
+        rule: Option<&MatchRule<'_>>,
+        budget: &mut Budget,
+        search: &mut Search,
+    ) -> Result<Option<ClassSite>> {
+        let key = (&successor.initiating_loader, successor.name.0.as_slice());
+        let known = closure
+            .decided(key.0, key.1)
+            .and_then(|resolution| resolution.identity());
+        // The cycle check runs first, because an illegal hierarchy has to be reported even where
+        // the repeating node is a class this walk expanded long ago.
+        if let Some(known) = &known
+            && successor.path.repeats(known)
+        {
+            search.unread += 1;
+            search.diagnostics.push(cycle_warning(
+                &known.defining_loader,
+                &successor.path,
+                &successor.name,
+            ));
+            return Ok(None);
+        }
+        if self.expanded.covers_key(key.0, key.1)
+            || known
+                .as_ref()
+                .is_some_and(|known| self.expanded.covers_node(known))
+        {
+            return Ok(None);
+        }
+        let handle = demand_layer(
+            closure,
+            &successor.initiating_loader,
+            &successor.name,
+            successor.demand,
+            successor.depth(),
+            budget,
+            search,
+        )?;
+        let Some(handle) = handle else {
+            // The layer published its own gap (missing or indistinguishable), which is the whole
+            // fact a second expansion of the same key could add.
+            self.expanded
+                .remember(&successor.initiating_loader, &successor.name.0, None);
+            return Ok(None);
+        };
+        let site = class_site(closure, handle, rule, &successor.path);
+        let identity = site.identity();
+        self.expanded.remember(
+            &successor.initiating_loader,
+            &successor.name.0,
+            Some(&identity),
+        );
+        // The node can also repeat the path without the request having searched *this* key before:
+        // one definition reached through two loaders whose orders both delegate to it.
+        if successor.path.repeats(&identity) {
+            search.unread += 1;
+            search
+                .diagnostics
+                .push(cycle_warning(&site.loader, &successor.path, &site.name));
+            return Ok(None);
+        }
+        Ok(Some(site))
+    }
+}
+
 /// The class a reference names as its owner, demanded as step 0 of the search.
+///
+/// Step 0 is the **caller's** symbol request, so its order starts at the caller's initiating
+/// loader — the only demand of a search that does. Every later step is demanded from the defining
+/// loader of the class whose header declares it (JVMS 5.4.3.1), which is what the `ClassSite`
+/// the caller is built from carries.
 fn demand_owner(
     closure: &mut HeaderClosure<'_>,
     owner: &[u8],
@@ -498,11 +743,17 @@ fn demand_owner(
 ) -> Result<ClassHandle> {
     budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
     closure
-        .demand(owner, HeaderDemand::MemberOwner, budget)
+        .demand_from_caller(owner, HeaderDemand::MemberOwner, budget)
         .decision
 }
 
 /// Demands one supertype layer, one dependency step above the class that declares it.
+///
+/// `initiating_loader` is the loader that has to search for this name, and it is the **defining
+/// loader of the class that declares the edge** — never the loader the request started at. A
+/// caller that delegated its class to a parent therefore resolves that class's supertypes in the
+/// parent's own order, which is what JVMS 5.4.3.1 requires and what a same-named class of the
+/// child must not be allowed to answer with.
 ///
 /// `demand` is the demand of the edge that reached this layer: a `super_class` step is
 /// [`HeaderDemand::ParentChain`] and a superinterface step is
@@ -515,6 +766,7 @@ fn demand_owner(
 /// budget stop, a cancellation and a damaged candidate are refusals, not unread branches.
 fn demand_layer(
     closure: &mut HeaderClosure<'_>,
+    initiating_loader: &LoaderId,
     name: &JvmBytes,
     demand: HeaderDemand,
     depth: u64,
@@ -523,10 +775,18 @@ fn demand_layer(
 ) -> Result<Option<ClassHandle>> {
     budget.observe_dependency_depth(depth)?;
     budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
-    let handle = closure.demand(&name.0, demand, budget).decision?;
+    let handle = closure
+        .demand(initiating_loader, &name.0, demand, budget)
+        .decision?;
     let (state, loader) = {
         let resolution = closure.resolution(handle);
-        (resolution.lookup.state, resolution.loader.clone())
+        (
+            resolution.lookup.state,
+            resolution
+                .defining_loader()
+                .cloned()
+                .unwrap_or_else(|| initiating_loader.clone()),
+        )
     };
     match state {
         HeaderLookupState::Found => Ok(Some(handle)),
@@ -553,11 +813,13 @@ fn demand_layer(
     }
 }
 
-/// The site of one found class, with the declarations that match the rule.
+/// The site of one found class, with the declarations that match the rule and the ancestors that
+/// reached it (excluding the class itself, which `ClassSite::supertypes` adds back).
 fn class_site(
     closure: &HeaderClosure<'_>,
     handle: ClassHandle,
     rule: Option<&MatchRule<'_>>,
+    path: &AncestorPath,
 ) -> ClassSite {
     let resolution = closure.resolution(handle);
     let location = resolution
@@ -585,6 +847,7 @@ fn class_site(
             .map(|name| JvmBytes(name.raw().0.clone()))
             .collect(),
         is_interface: is_interface(facts.access_flags),
+        path: path.clone(),
         kind: rule.map(|rule| rule.kind),
         declared: rule.map_or_else(Vec::new, |rule| matching(facts, rule)),
     }
@@ -617,6 +880,10 @@ fn is_interface(access_flags: u16) -> bool {
 /// completely, in declaration order), and only then the superclass. A field declared in an
 /// interface therefore shadows one of the same name in a superclass, which is why this walk is a
 /// stack and not a breadth-first queue.
+///
+/// Every layer is searched from the defining loader of the class that declares it and dedups by
+/// resolved node, so a hierarchy that crosses loaders on one name is searched as the two classes
+/// it really is rather than being cut off as a "repeat".
 fn search_field(
     closure: &mut HeaderClosure<'_>,
     root: &ClassSite,
@@ -627,110 +894,20 @@ fn search_field(
     if let Some(selection) = hit(root, rule) {
         return Ok(selection);
     }
+    let mut layers = Layers::started_at(root);
     // The superclass is queued first so that it is searched last, and each superinterface is
     // followed completely before the next one starts.
-    let mut pending: Vec<FieldLayer> = Vec::new();
-    push_field_children(&mut pending, root, 1, &[], search);
-    let mut visited: Vec<JvmBytes> = vec![root.name.clone()];
-    while let Some(FieldLayer {
-        name,
-        demand,
-        depth,
-        path,
-    }) = pending.pop()
-    {
-        if visited.contains(&name) {
-            continue;
-        }
-        visited.push(name.clone());
-        let Some(handle) = demand_layer(closure, &name, demand, depth, budget, search)? else {
+    let mut pending: Vec<Successor> = root.field_children();
+    while let Some(successor) = pending.pop() {
+        let Some(site) = layers.expand(closure, &successor, Some(rule), budget, search)? else {
             continue;
         };
-        let site = class_site(closure, handle, Some(rule));
         if let Some(selection) = hit(&site, rule) {
             return Ok(selection);
         }
-        push_field_children(&mut pending, &site, depth + 1, &path, search);
+        pending.extend(site.field_children());
     }
     Ok(Selection::None)
-}
-
-/// One field layer waiting to be searched: its name, the reason of the edge that queued it, its
-/// dependency depth and the path that reached it.
-struct FieldLayer {
-    name: JvmBytes,
-    /// A superclass layer is a parent-chain step and a superinterface layer an interface step,
-    /// so the read record names the edge the search really took.
-    demand: HeaderDemand,
-    depth: u64,
-    path: Vec<JvmBytes>,
-}
-
-/// Queues the supertypes of one field layer, superclass last.
-fn push_field_children(
-    pending: &mut Vec<FieldLayer>,
-    site: &ClassSite,
-    depth: u64,
-    path: &[JvmBytes],
-    search: &mut Search,
-) {
-    if let Some(super_class) = &site.super_class {
-        push_field_layer(
-            pending,
-            site,
-            super_class,
-            HeaderDemand::ParentChain,
-            depth,
-            path,
-            search,
-        );
-    }
-    for interface in site.interfaces.iter().rev() {
-        push_field_layer(
-            pending,
-            site,
-            interface,
-            HeaderDemand::HierarchyClosure,
-            depth,
-            path,
-            search,
-        );
-    }
-}
-
-/// Queues one field layer unless it is a supertype of its own path or already waiting.
-///
-/// The path is what distinguishes the two: a diamond re-reaches a class that another branch
-/// already searched (nothing new to look at), while a class that is its own supertype is an
-/// illegal hierarchy and ends its own branch here — the same rule the method chain and the 2.2
-/// hierarchy walk follow.
-fn push_field_layer(
-    pending: &mut Vec<FieldLayer>,
-    site: &ClassSite,
-    child: &JvmBytes,
-    demand: HeaderDemand,
-    depth: u64,
-    path: &[JvmBytes],
-    search: &mut Search,
-) {
-    let mut ancestors = path.to_vec();
-    ancestors.push(site.name.clone());
-    if ancestors.contains(child) {
-        search.unread += 1;
-        search
-            .diagnostics
-            .push(cycle_warning(&site.loader, &ancestors, child));
-        return;
-    }
-    if pending.iter().any(|layer| &layer.name == child) {
-        return;
-    }
-    pending.push(FieldLayer {
-        name: child.clone(),
-        demand,
-        depth,
-        path: ancestors,
-    });
 }
 
 /// The selection one class's declarations make, if they make one.
@@ -767,31 +944,32 @@ fn search_method(
     if owner_kind_mismatch(root, use_kind) {
         return Ok(Selection::OwnerKindMismatch);
     }
+    let mut layers = Layers::started_at(root);
     if root.is_interface {
         // An interface inherits from its superinterfaces only, and it is searched first.
         if let Some(selection) = hit(root, rule) {
             return Ok(selection);
         }
-        let seeds = root
-            .interfaces
-            .iter()
-            .map(|name| (name.clone(), 1))
-            .collect();
-        return interface_step(closure, seeds, rule, budget, search);
+        return interface_step(
+            closure,
+            &mut layers,
+            root.superinterfaces(),
+            rule,
+            budget,
+            search,
+        );
     }
     // A class is searched together with its superclass chain, and the superinterfaces are
     // reached only when the whole chain holds nothing.
-    let chain = class_chain(closure, root, rule, budget, search)?;
+    let chain = class_chain(closure, &mut layers, root, rule, budget, search)?;
     if let Some(selection) = chain.selection {
         return Ok(selection);
     }
     let mut seeds = Vec::new();
-    for (site, depth) in &chain.sites {
-        for interface in &site.interfaces {
-            seeds.push((interface.clone(), depth + 1));
-        }
+    for site in &chain.sites {
+        seeds.extend(site.superinterfaces());
     }
-    interface_step(closure, seeds, rule, budget, search)
+    interface_step(closure, &mut layers, seeds, rule, budget, search)
 }
 
 /// The owner-kind rule of the two method-resolution modes.
@@ -812,68 +990,50 @@ fn owner_kind_mismatch(root: &ClassSite, use_kind: MemberUse) -> bool {
 /// The superclass chain of JVMS 5.4.3.3, with the selection it made if it made one.
 struct ChainSearch {
     selection: Option<Selection>,
-    /// Every class the chain read, with its own dependency depth: the classes that can still
-    /// contribute superinterfaces when the chain holds no declaration.
-    sites: Vec<(ClassSite, u64)>,
+    /// Every class the chain read: the classes that can still contribute superinterfaces when the
+    /// chain holds no declaration.
+    sites: Vec<ClassSite>,
 }
 
 fn class_chain(
     closure: &mut HeaderClosure<'_>,
+    layers: &mut Layers,
     root: &ClassSite,
     rule: &MatchRule<'_>,
     budget: &mut Budget,
     search: &mut Search,
 ) -> Result<ChainSearch> {
     let mut sites = Vec::new();
-    let mut seen = vec![root.name.clone()];
     let mut current = root.clone();
-    let mut depth = 0;
     loop {
         if let Some(selection) = hit(&current, rule) {
-            sites.push((current, depth));
+            sites.push(current);
             return Ok(ChainSearch {
                 selection: Some(selection),
                 sites,
             });
         }
         let Some(super_class) = current.super_class.clone() else {
-            sites.push((current, depth));
+            sites.push(current);
             return Ok(ChainSearch {
                 selection: None,
                 sites,
             });
         };
-        if seen.contains(&super_class) {
-            // A chain that re-enters itself never reaches a class that declares nothing and
-            // ends: the class file is illegal, and this branch stops here.
-            search.unread += 1;
-            search
-                .diagnostics
-                .push(cycle_warning(&current.loader, &seen, &super_class));
-            sites.push((current, depth));
-            return Ok(ChainSearch {
-                selection: None,
-                sites,
-            });
-        }
-        seen.push(super_class.clone());
-        sites.push((current, depth));
-        depth += 1;
-        let Some(handle) = demand_layer(
-            closure,
-            &super_class,
-            HeaderDemand::ParentChain,
-            depth,
-            budget,
-            search,
-        )?
-        else {
+        let successor = current.successor(&super_class, HeaderDemand::ParentChain);
+        sites.push(current);
+        // A chain that re-enters itself never reaches a class that declares nothing: the class file
+        // is illegal, and [`Layers::expand`] reports that repeat as an unread branch and ends this
+        // step. Any other end of the step — a name nothing holds, one that cannot be told apart, or
+        // a node the search already expanded — ends the chain the same way, with the classes it
+        // really read kept as the sites that can still contribute interfaces.
+        let Some(reached) = layers.expand(closure, &successor, Some(rule), budget, search)? else {
             return Ok(ChainSearch {
                 selection: None,
                 sites,
             });
         };
-        current = class_site(closure, handle, Some(rule));
+        current = reached;
     }
 }
 
@@ -887,12 +1047,13 @@ fn class_chain(
 /// through a class (or through another interface) into `Missing`.
 fn interface_step(
     closure: &mut HeaderClosure<'_>,
-    seeds: Vec<(JvmBytes, u64)>,
+    layers: &mut Layers,
+    seeds: Vec<Successor>,
     rule: &MatchRule<'_>,
     budget: &mut Budget,
     search: &mut Search,
 ) -> Result<Selection> {
-    let graph = InterfaceGraph::build(closure, seeds, rule, budget, search)?;
+    let graph = InterfaceGraph::build(closure, layers, seeds, rule, budget, search)?;
     Ok(graph.decide(rule))
 }
 
@@ -915,77 +1076,77 @@ struct InterfaceNode {
 impl InterfaceGraph {
     fn build(
         closure: &mut HeaderClosure<'_>,
-        seeds: Vec<(JvmBytes, u64)>,
+        layers: &mut Layers,
+        seeds: Vec<Successor>,
         rule: &MatchRule<'_>,
         budget: &mut Budget,
         search: &mut Search,
     ) -> Result<Self> {
         let mut graph = Self { nodes: Vec::new() };
-        let mut queue: VecDeque<(JvmBytes, u64)> = VecDeque::new();
-        let mut seen: Vec<JvmBytes> = Vec::new();
-        let mut resolved: Vec<(JvmBytes, usize)> = Vec::new();
-        for (name, depth) in seeds {
-            if !seen.contains(&name) {
-                seen.push(name.clone());
-                queue.push_back((name, depth));
-            }
-        }
-        while let Some((name, depth)) = queue.pop_front() {
-            // Every layer of this graph was reached along an `interfaces` edge, from the seeds
-            // the caller queued or from an interface of the closure, so every one of them is an
-            // interface-closure read. The seeds came from `interfaces` edges too.
-            let Some(handle) = demand_layer(
-                closure,
-                &name,
-                HeaderDemand::HierarchyClosure,
-                depth,
-                budget,
-                search,
-            )?
+        let mut queue: VecDeque<Successor> = VecDeque::from(seeds);
+        // Which node each *demanded key* decided, so a superinterface name links to the node its
+        // own declaring loader resolved it to. Keying on the loader plus the name — rather than on
+        // the name — is what stops a link from pointing at an unrelated same-named class.
+        let mut resolved: Vec<(LoaderId, JvmBytes, usize)> = Vec::new();
+        let mut queued: Vec<(LoaderId, JvmBytes)> = Vec::new();
+        while let Some(successor) = queue.pop_front() {
+            // Every layer of this graph was reached along an `interfaces` edge, from the seeds the
+            // caller queued or from an interface of the closure, so every one of them is an
+            // interface-closure read.
+            let Some(reached) = layers.expand(closure, &successor, Some(rule), budget, search)?
             else {
                 continue;
             };
-            let site = class_site(closure, handle, Some(rule));
-            // Two demanded names that select the same definition are one interface: the alias
-            // must not make it a second candidate.
-            let index = match graph.identity_index(&site) {
+            let node = reached.identity();
+            // Two demanded names that select the same definition are one interface: the alias must
+            // not make it a second candidate. Two same-named names that select *different*
+            // definitions stay two interfaces, which is what one name two loaders resolve
+            // differently really is.
+            let index = match graph.identity_index(&node) {
                 Some(index) => index,
                 None => {
                     graph.nodes.push(InterfaceNode {
-                        site: site.clone(),
+                        site: reached.clone(),
                         super_nodes: Vec::new(),
                     });
                     graph.nodes.len() - 1
                 }
             };
-            resolved.push((name, index));
-            for interface in &site.interfaces {
-                if !seen.contains(interface) {
-                    seen.push(interface.clone());
-                    queue.push_back((interface.clone(), depth + 1));
+            resolved.push((
+                successor.initiating_loader.clone(),
+                successor.name.clone(),
+                index,
+            ));
+            for child in reached.superinterfaces() {
+                if !queued.iter().any(|(loader, name)| {
+                    *loader == child.initiating_loader && name.0 == child.name.0
+                }) {
+                    queued.push((child.initiating_loader.clone(), child.name.clone()));
+                    queue.push_back(child);
                 }
             }
         }
         for node in &mut graph.nodes {
-            let super_names = node.site.interfaces.clone();
-            node.super_nodes = super_names
+            let names = node.site.interfaces.clone();
+            let loader = node.site.loader.clone();
+            node.super_nodes = names
                 .iter()
                 .filter_map(|name| {
                     resolved
                         .iter()
-                        .find(|(demanded, _)| demanded == name)
-                        .map(|(_, index)| *index)
+                        .find(|(initiated, demanded, _)| *initiated == loader && demanded == name)
+                        .map(|(_, _, index)| *index)
                 })
                 .collect();
         }
         Ok(graph)
     }
 
-    /// The node of one `(loader, definition)` binding, if the closure already read it.
-    fn identity_index(&self, site: &ClassSite) -> Option<usize> {
-        self.nodes.iter().position(|node| {
-            node.site.loader == site.loader && node.site.definition == site.definition
-        })
+    /// The node of one `(defining loader, definition)` binding, if the graph already has it.
+    fn identity_index(&self, identity: &NodeIdentity) -> Option<usize> {
+        self.nodes
+            .iter()
+            .position(|node| &node.site.identity() == identity)
     }
 
     /// The decision the maximally-specific set makes.
@@ -1158,18 +1319,22 @@ enum Access {
 
 /// Applies the access rules to one resolved declaration.
 ///
-/// The caller's class is the class that declares the use site's enclosing method, and the
-/// request names it as a physical definition: reading its header is what names it. A request
-/// without an enclosing method has no caller class, and this slice then says so instead of
-/// claiming a check it did not make.
+/// The caller's class is the class that declares the use site's enclosing method, and the request
+/// names it as a physical definition: reading its header is what names it. That read is also where
+/// the 0.1 **binding** check runs — the declared loader must resolve the class's own name back to
+/// exactly that `(loader, definition)` pair — so a definition that lives in the provided content
+/// but that no declared loader would ever select is refused instead of being stamped with the
+/// caller's loader and used to decide an access rule. A request without an enclosing method has no
+/// caller class, and this slice then says so instead of claiming a check it did not make.
 ///
-/// Two outcomes are deliberately *not* `NotChecked`: a caller definition that does not describe
-/// the provided bytes and a caller definition whose content the request does not provide are
-/// stops (`state = None` with the refusal in `execution`), because neither names a class the
-/// rules could be applied to. `NotChecked` covers the two cases where the caller class is simply
-/// unknown: no enclosing method, and a caller hierarchy the request could not read completely —
-/// the latter because "not a subclass" cannot be decided from an incomplete hierarchy, and
-/// denying access on a guess would be worse than saying the rules were not applied.
+/// Three outcomes are deliberately *not* `NotChecked`: a caller definition that does not describe
+/// the provided bytes, a caller definition whose content the request does not provide, and a caller
+/// definition the declared loader does not bind are stops (`state = None` with the refusal in
+/// `execution`), because none of them names a class the rules could be applied to. `NotChecked`
+/// covers the two cases where the caller class is simply unknown: no enclosing method, and a caller
+/// hierarchy the request could not read completely — the latter because "not a subclass" cannot be
+/// decided from an incomplete hierarchy, and denying access on a guess would be worse than saying
+/// the rules were not applied.
 fn access_decision(
     closure: &mut HeaderClosure<'_>,
     location: &MemberLocation,
@@ -1194,7 +1359,15 @@ fn access_decision(
     )?;
     let caller_class = JvmBytes(header.facts.this_class.raw().0.clone());
     if caller_class.0 == location.declaring_class.0 {
-        return Ok(Access::Allowed);
+        // The same *name* is only the same class when it is the same node: a caller that declares
+        // `p/Base` under its own loader is not inside the class another loader defines under that
+        // name, and private access across that line would be a fabricated nest.
+        if location.identity() == binding_of(&caller.loader, &enclosing.owner) {
+            return Ok(Access::Allowed);
+        }
+        if location.access_flags & ACC_PRIVATE != 0 {
+            return Ok(Access::Denied { caller_class });
+        }
     }
     if location.access_flags & ACC_PRIVATE != 0 {
         return Ok(Access::Denied { caller_class });
@@ -1213,15 +1386,28 @@ fn access_decision(
         return Ok(Access::Denied { caller_class });
     }
     let unread_before = search.unread;
-    let declaring_class = location.declaring_class.clone();
-    let is_subtype = subtype_of(
-        closure,
-        &header.facts,
-        &caller_class.0,
-        &declaring_class.0,
-        budget,
-        search,
-    )?;
+    let declaring = location.identity();
+    let caller_site = ClassSite {
+        loader: caller.loader.clone(),
+        definition: enclosing.owner.clone(),
+        name: caller_class.clone(),
+        super_class: header
+            .facts
+            .super_class
+            .as_ref()
+            .map(|name| JvmBytes(name.raw().0.clone())),
+        interfaces: header
+            .facts
+            .interfaces
+            .iter()
+            .map(|name| JvmBytes(name.raw().0.clone()))
+            .collect(),
+        is_interface: is_interface(header.facts.access_flags),
+        path: AncestorPath::default(),
+        kind: None,
+        declared: Vec::new(),
+    };
+    let is_subtype = subtype_of(closure, &caller_site, &declaring, budget, search)?;
     if is_subtype {
         return Ok(Access::Allowed);
     }
@@ -1234,55 +1420,44 @@ fn access_decision(
     Ok(Access::Denied { caller_class })
 }
 
-/// Whether the caller's class is a subtype of the declaring class.
+/// The node one `(loader, definition)` pair claims.
+fn binding_of(loader: &LoaderId, definition: &PhysicalDefinitionId) -> NodeIdentity {
+    NodeIdentity::new(loader, definition)
+}
+
+/// Whether the caller's class is a subtype of the class that declares the member.
 ///
-/// The caller's class itself is compared by name before this walk starts, so the walk starts at
-/// its own supertypes. Every layer is reached along a hierarchy edge of the caller's own
-/// hierarchy, so the read reason follows that edge exactly like the declaring side's search:
-/// `super_class` steps are parent-chain reads and `interfaces` steps are interface reads.
+/// The caller's own class is compared by **node** before this walk starts (the caller of the rule
+/// above), and so is every layer of it: an ancestor qualifies only when its resolved
+/// `(defining loader, definition)` pair is the declaring class's, because a same-named class of
+/// another loader is not the declaring class and inherits nothing of it. Every layer is reached
+/// along a hierarchy edge of the caller's own hierarchy and searched from the defining loader of
+/// the class that declares it, so the read reason and the search start follow that edge exactly
+/// like the declaring side's search: `super_class` steps are parent-chain reads and `interfaces`
+/// steps are interface reads.
 fn subtype_of(
     closure: &mut HeaderClosure<'_>,
-    caller_facts: &ClassFacts,
-    caller_class: &[u8],
-    declaring_class: &[u8],
+    caller: &ClassSite,
+    declaring: &NodeIdentity,
     budget: &mut Budget,
     search: &mut Search,
 ) -> Result<bool> {
-    let mut pending: Vec<(JvmBytes, HeaderDemand, u64)> = Vec::new();
-    let mut seen = vec![JvmBytes(caller_class.to_vec())];
-    if let Some(super_class) = &caller_facts.super_class {
-        pending.push((
-            JvmBytes(super_class.raw().0.clone()),
-            HeaderDemand::ParentChain,
-            1,
-        ));
+    if caller.identity() == *declaring {
+        return Ok(true);
     }
-    for interface in &caller_facts.interfaces {
-        pending.push((
-            JvmBytes(interface.raw().0.clone()),
-            HeaderDemand::HierarchyClosure,
-            1,
-        ));
-    }
-    while let Some((name, demand, depth)) = pending.pop() {
-        if seen.contains(&name) {
-            continue;
-        }
-        seen.push(name.clone());
-        let Some(handle) = demand_layer(closure, &name, demand, depth, budget, search)? else {
+    let mut layers = Layers::started_at(caller);
+    // The stack pops in reverse of the push order, so the supertypes are queued as declared — the
+    // same traversal order this walk had before, which only matters for the order a report names
+    // its reads in, not for the answer.
+    let mut pending: Vec<Successor> = caller.supertypes();
+    while let Some(successor) = pending.pop() {
+        let Some(reached) = layers.expand(closure, &successor, None, budget, search)? else {
             continue;
         };
-        let site = class_site(closure, handle, None);
-        if site.name.0 == declaring_class {
+        if reached.identity() == *declaring {
             return Ok(true);
         }
-        for (supertype, demand, depth) in site.supertypes(depth + 1) {
-            if !seen.contains(&supertype)
-                && !pending.iter().any(|(queued, ..)| *queued == supertype)
-            {
-                pending.push((supertype, demand, depth));
-            }
-        }
+        pending.extend(reached.supertypes());
     }
     Ok(false)
 }
@@ -1469,8 +1644,11 @@ fn hierarchy_warning(code: &str, loader: &LoaderId, name: &JvmBytes, reason: &st
     }
 }
 
-fn cycle_warning(loader: &LoaderId, path: &[JvmBytes], repeated: &JvmBytes) -> Diagnostic {
-    let mut chain = path.iter().map(|name| escaped(&name.0)).collect::<Vec<_>>();
+fn cycle_warning(loader: &LoaderId, path: &AncestorPath, repeated: &JvmBytes) -> Diagnostic {
+    let mut chain = path
+        .names()
+        .map(|name| escaped(&name.0))
+        .collect::<Vec<_>>();
     chain.push(escaped(&repeated.0));
     Diagnostic {
         code: HIERARCHY_CYCLE.to_string(),

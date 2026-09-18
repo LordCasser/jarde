@@ -100,8 +100,10 @@ const _: () = assert!(MAX_BLOCKS_DEFAULT as u32 <= MAX_BLOCKS_HARD_LIMIT);
 const IR_RAW_CFG_UNKNOWN_TARGET: &str = "ir_raw_cfg_unknown_target";
 
 const OPCODE_GOTO: u8 = 0xa7;
-const OPCODE_JSR: u8 = 0xa8;
-const OPCODE_RET: u8 = 0xa9;
+/// `jsr`: a call into a legacy subroutine (also read by 3.4's call contexts).
+pub(crate) const OPCODE_JSR: u8 = 0xa8;
+/// `ret`: the return from a legacy subroutine (also read by 3.4's call contexts).
+pub(crate) const OPCODE_RET: u8 = 0xa9;
 const OPCODE_TABLESWITCH: u8 = 0xaa;
 const OPCODE_LOOKUPSWITCH: u8 = 0xab;
 const OPCODE_ATHROW: u8 = 0xbf;
@@ -109,7 +111,8 @@ const OPCODE_MULTIANEWARRAY: u8 = 0xc5;
 const OPCODE_IFNULL: u8 = 0xc6;
 const OPCODE_IFNONNULL: u8 = 0xc7;
 const OPCODE_GOTO_W: u8 = 0xc8;
-const OPCODE_JSR_W: u8 = 0xc9;
+/// `jsr_w`: the wide form of the same call (also read by 3.4's call contexts).
+pub(crate) const OPCODE_JSR_W: u8 = 0xc9;
 
 /// Kind of one raw edge.
 ///

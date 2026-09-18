@@ -20,7 +20,12 @@
 //! 4. the same request published twice is the same report, field by field (the wall clock
 //!    removed), which is the public side of "no published order is petgraph's";
 //! 5. A17 holds in behaviour, not only at source level: the P1 query coordinates of the same
-//!    fixture are unchanged after a raw-CFG run.
+//!    fixture are unchanged after a raw-CFG run;
+//! 6. the driver method's own definition is **bound** to the loader the request declares (the 0.1
+//!    contract): a definition that loader's order does not select stops the pass under
+//!    `resolution_definition_unbound` with its physical read still published, while a definition
+//!    the loader really provides performs the whole pipeline — the binding is the loader's own
+//!    decision, never snapshot equality.
 
 use jarde::*;
 use std::slice;
@@ -102,13 +107,22 @@ fn fixture(content: &[u8]) -> Fixture {
 /// One caller domain rooted at the fixture, and nothing else: the simplest environment the
 /// validator accepts without a problem.
 fn environment(fixture: &Fixture) -> ResolutionEnvironment {
+    environment_with(
+        fixture,
+        vec![LoadRoot::Snapshot {
+            snapshot: fixture.snapshot.id().clone(),
+        }],
+    )
+}
+
+/// The same environment with an explicit root list: the ordered positions of the `app` loader,
+/// which decide what this loader binds.
+fn environment_with(fixture: &Fixture, roots: Vec<LoadRoot>) -> ResolutionEnvironment {
     let domain = LoadDomain {
         loader: LoaderId("app".to_string()),
         parent_loader: None,
         delegation: DelegationPolicy::ParentFirst,
-        roots: vec![LoadRoot::Snapshot {
-            snapshot: fixture.snapshot.id().clone(),
-        }],
+        roots,
         module_mode: ModuleMode::ClassPath,
         external_override: RuntimeUncertainty::None,
         runtime_transformation: RuntimeUncertainty::None,
@@ -198,6 +212,39 @@ fn without_elapsed(report: &MethodAnalysisReport) -> serde_json::Value {
     value
 }
 
+/// One usage snapshot with the wall clock removed: the comparison form of two reads of one budget.
+///
+/// `elapsed_millis` is a measurement, not a charge: [`Budget::usage`] takes it again on every
+/// read, so the snapshot a report published and a later read of the same budget may legitimately
+/// differ by a millisecond while every counted dimension is identical. P1 normalizes the same one
+/// field the same way, and nothing else is dropped here.
+fn counted_usage(usage: &UsageSnapshot) -> UsageSnapshot {
+    UsageSnapshot {
+        elapsed_millis: 0,
+        ..usage.clone()
+    }
+}
+
+/// One execution report compared with that one measurement removed from its usage.
+fn without_wall_clock(execution: &ExecutionReport) -> ExecutionReport {
+    match execution {
+        ExecutionReport::Complete { usage } => ExecutionReport::Complete {
+            usage: counted_usage(usage),
+        },
+        ExecutionReport::Partial { reason, usage } => ExecutionReport::Partial {
+            reason: reason.clone(),
+            usage: counted_usage(usage),
+        },
+        ExecutionReport::Cancelled { usage } => ExecutionReport::Cancelled {
+            usage: counted_usage(usage),
+        },
+        ExecutionReport::Failed { reason, usage } => ExecutionReport::Failed {
+            reason: reason.clone(),
+            usage: counted_usage(usage),
+        },
+    }
+}
+
 /// The counted BCI range a coverage plane scanned or skipped, as `(start, end)`.
 fn bci_ranges(ranges: &[CoverageRange]) -> Vec<(u64, u64)> {
     ranges
@@ -233,9 +280,9 @@ fn a_complete_body_completes_the_two_implemented_phases() {
     );
     assert_eq!(stage(&report, AnalysisStage::RawCfg), StageState::Completed);
     assert_eq!(
-        report.execution,
+        without_wall_clock(&report.execution),
         ExecutionReport::Complete {
-            usage: budget.usage(),
+            usage: counted_usage(&budget.usage()),
         }
     );
     assert!(diagnostic_codes(&report).is_empty());
@@ -356,12 +403,12 @@ fn a_truncated_body_analyzes_its_reliable_prefix() {
     );
     assert_eq!(report.body, MethodBodyState::Present);
     assert_eq!(
-        report.execution,
+        without_wall_clock(&report.execution),
         ExecutionReport::Partial {
             reason: TerminationReason::BudgetExceeded {
                 dimension: BudgetDimension::CodeBytes,
             },
-            usage: budget.usage(),
+            usage: counted_usage(&budget.usage()),
         },
         "the reader's own dimension explains the stop"
     );
@@ -415,12 +462,12 @@ fn a_truncated_body_whose_targets_cannot_be_validated_is_not_read_as_corrupt() {
     );
     assert_eq!(report.body, MethodBodyState::Present);
     assert_eq!(
-        report.execution,
+        without_wall_clock(&report.execution),
         ExecutionReport::Partial {
             reason: TerminationReason::BudgetExceeded {
                 dimension: BudgetDimension::CodeBytes,
             },
-            usage: budget.usage(),
+            usage: counted_usage(&budget.usage()),
         }
     );
     assert_eq!(
@@ -467,12 +514,12 @@ fn an_ir_budget_stop_keeps_the_completed_prefix() {
     );
     assert_eq!(stage(&report, AnalysisStage::RawCfg), StageState::Partial);
     assert_eq!(
-        report.execution,
+        without_wall_clock(&report.execution),
         ExecutionReport::Partial {
             reason: TerminationReason::BudgetExceeded {
                 dimension: BudgetDimension::IrItems,
             },
-            usage: budget.usage(),
+            usage: counted_usage(&budget.usage()),
         }
     );
     assert_eq!(
@@ -704,9 +751,9 @@ fn a_member_that_declares_no_body_is_a_fact_and_not_a_failed_pass() {
         "no phase ran: there is nothing to analyze"
     );
     assert_eq!(
-        report.execution,
+        without_wall_clock(&report.execution),
         ExecutionReport::Complete {
-            usage: budget.usage(),
+            usage: counted_usage(&budget.usage()),
         },
         "a declaration without a body is not a failure"
     );
@@ -750,12 +797,12 @@ fn a_foreign_method_identity_fails_the_body_pass_under_its_own_code() {
         StageState::NotPerformed
     );
     assert_eq!(
-        report.execution,
+        without_wall_clock(&report.execution),
         ExecutionReport::Failed {
             reason: TerminationReason::Error {
                 code: "classfile_method_not_found".to_string()
             },
-            usage: budget.usage(),
+            usage: counted_usage(&budget.usage()),
         }
     );
     assert_eq!(
@@ -765,4 +812,154 @@ fn a_foreign_method_identity_fails_the_body_pass_under_its_own_code() {
     assert_eq!(report.body, MethodBodyState::NotInspected);
     assert_eq!(budget.usage().class_headers, 1);
     assert_eq!(budget.usage().method_bodies, 0);
+}
+
+// ---------------------------------------------------------------------------
+// 0.1/D25: the driver's class definition is bound to the loader that claims it
+// ---------------------------------------------------------------------------
+
+/// A driver definition the declared loader's own order does not select stops the body pass.
+///
+/// The request claims the definition its own content holds, and the declared `app` loader has two
+/// ordered roots whose first position holds a *different* class of the same name. The claim is
+/// readable and describes the bytes at its own coordinate; it simply is not a class this loader
+/// would ever load, and the 0.1 contract refuses to stamp it with the caller's loader and build
+/// runtime semantics on it. The refusal is the whole run's: the body fact stays `NotInspected`,
+/// no pass behind `raw_facts` ran, and the two reads that decided it stay published — the physical
+/// facts are not withdrawn with the semantics that would have been built on them.
+///
+/// The control at the end is the same definition under a loader whose order really selects it:
+/// one header read, one binding, the whole pipeline performed.
+#[test]
+fn a_driver_definition_the_declared_loader_does_not_bind_stops_the_body_pass() {
+    let driver = fixture(V52);
+    let shadow = fixture(&class_bytes(
+        b"HistoricalControlFlow",
+        52,
+        &[(0x0001, b"other", b"()V", Some(vec![0xb1]))],
+    ));
+    let environment = environment_with(
+        &driver,
+        vec![
+            LoadRoot::Snapshot {
+                snapshot: shadow.snapshot.id().clone(),
+            },
+            LoadRoot::Snapshot {
+                snapshot: driver.snapshot.id().clone(),
+            },
+        ],
+    );
+    let shadowed_request = MethodAnalysisRequest {
+        environment,
+        method: driver.method.clone(),
+        stages: vec![AnalysisStage::RawCfg],
+    };
+    let mut budget = Budget::new(limits());
+    let report = Engine::new()
+        .analyze_method(
+            &[driver.snapshot.clone(), shadow.snapshot.clone()],
+            &shadowed_request,
+            &mut budget,
+        )
+        .expect("a legal request is answered, not raised");
+
+    assert_eq!(
+        stage(&report, AnalysisStage::RawFacts),
+        StageState::Failed {
+            code: "resolution_definition_unbound".to_string()
+        },
+        "the definition is not bound to the loader that claims it"
+    );
+    assert_eq!(
+        stage(&report, AnalysisStage::RawCfg),
+        StageState::NotPerformed,
+        "the phases behind a stopped pass never ran"
+    );
+    assert_eq!(
+        without_wall_clock(&report.execution),
+        ExecutionReport::Failed {
+            reason: TerminationReason::Error {
+                code: "resolution_definition_unbound".to_string()
+            },
+            usage: counted_usage(&budget.usage()),
+        }
+    );
+    assert_eq!(
+        diagnostic_codes(&report),
+        vec!["resolution_definition_unbound"],
+        "one code, shared with the identity-read refusal it is"
+    );
+    let diagnostic = report
+        .diagnostics
+        .iter()
+        .find(|diagnostic| diagnostic.code == "resolution_definition_unbound")
+        .expect("the stop is published");
+    assert_eq!(diagnostic.severity, DiagnosticSeverity::Error);
+    assert!(
+        diagnostic.message.contains("`app`"),
+        "the diagnostic names the loader whose order decides: {}",
+        diagnostic.message
+    );
+    assert!(
+        diagnostic.message.contains(&shadow.snapshot.id().0),
+        "and the definition that order really selects: {}",
+        diagnostic.message
+    );
+    assert_eq!(
+        report.body,
+        MethodBodyState::NotInspected,
+        "no body was located, so none is claimed"
+    );
+    // The physical facts survive the refusal: the definition's own read is recorded next to the
+    // read of the shadowing position that decided against it.
+    assert_eq!(
+        report.reads,
+        vec![
+            HeaderRead {
+                loader: LoaderId("app".to_string()),
+                definition: driver.definition.clone(),
+                reason: ReadReason::DriverMethodBody,
+            },
+            HeaderRead {
+                loader: LoaderId("app".to_string()),
+                definition: shadow.definition.clone(),
+                reason: ReadReason::DriverMethodBody,
+            },
+        ]
+    );
+    assert!(
+        u64::try_from(report.reads.len()).expect("fixture read count fits u64")
+            <= budget.usage().class_headers,
+        "reads ({}) must not exceed the charged header attempts ({})",
+        report.reads.len(),
+        budget.usage().class_headers
+    );
+    assert_eq!(
+        budget.usage().class_headers,
+        2,
+        "the claimed definition and the position that refuted it were both read"
+    );
+    assert_eq!(
+        budget.usage().method_bodies,
+        0,
+        "the driver method's body was never even attempted"
+    );
+
+    // Control: the same definition, the same request, under a loader whose only position holds
+    // it. Nothing about the refusal was about the bytes — this run performs the whole pipeline
+    // with the one header read the binding check is answered from.
+    let (bound, bound_budget) = analyze(
+        &driver,
+        &request(&driver, driver.method.clone(), vec![AnalysisStage::RawCfg]),
+        limits(),
+    );
+    assert_eq!(
+        stage(&bound, AnalysisStage::RawFacts),
+        StageState::Completed
+    );
+    assert_eq!(stage(&bound, AnalysisStage::RawCfg), StageState::Completed);
+    assert_eq!(bound.body, MethodBodyState::Present);
+    assert_eq!(bound.reads.len(), 1);
+    assert_eq!(bound_budget.usage().class_headers, 1);
+    assert_eq!(bound_budget.usage().method_bodies, 1);
 }

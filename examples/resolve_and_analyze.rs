@@ -17,8 +17,10 @@
 //!    *unresolved* — with its use site and a partial resolution coverage — instead of calling it
 //!    excluded; and `Engine::analyze_method`, which the raw-CFG slice (3.3) performs for real as
 //!    far as this build goes: it reads the driver method's class definition and body, builds the
-//!    raw graph over the decoded instructions, and reports the two phases that completed plus
-//!    the first phase this build does not implement,
+//!    raw graph over the decoded instructions, establishes the `jsr`/`ret` call contexts of the
+//!    call-context slice (3.4) — none for this fixture, whose 52 dialect inlines its `finally` —
+//!    and reports the three phases that completed plus the first phase this build does not
+//!    implement,
 //! 4. the product planes of one report (`representation`, `quality`, `syntax_status`,
 //!    `compile_status`, `semantic_validation`, `verification`, `body`) printed side by
 //!    side; the body is `Present` because the analysis really located and read it, the
@@ -404,7 +406,7 @@ fn run(path: PathBuf) -> jarde::Result<()> {
         report.origin.members.len(),
     );
     // The body was located and read by this run, and `quality = Fallback` only means "not
-    // Conservative": it is not evidence that a fallback recovery ran. The two phases this
+    // Conservative": it is not evidence that a fallback recovery ran. The three phases this
     // build implements completed and the first one it does not implement fails, so the run
     // ends as the unsupported capability it is — never as a completed pipeline.
     assert_eq!(report.body, MethodBodyState::Present);
@@ -414,8 +416,8 @@ fn run(path: PathBuf) -> jarde::Result<()> {
             .iter()
             .filter(|stage| matches!(stage.state, StageState::Completed))
             .count(),
-        2,
-        "`raw_facts` and `raw_cfg` completed"
+        3,
+        "`raw_facts`, `raw_cfg` and `legacy_normalization` completed"
     );
     assert!(matches!(
         report.execution,

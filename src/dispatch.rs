@@ -48,7 +48,7 @@ use crate::model::{
     Diagnostic, ExecutionReport, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, SnapshotId,
     SymbolRef,
 };
-use crate::providers::{HeaderClosure, HeaderDemand, HeaderLookupState};
+use crate::providers::{HeaderClosure, HeaderDemand, HeaderLookupState, NodeIdentity};
 use crate::view::{LoadRoot, LoaderId, PhysicalScope, RuntimeUncertainty};
 
 /// One class of the range that overrides or implements the resolved declaration.
@@ -89,12 +89,16 @@ pub(crate) enum DispatchEvidence {
 
 /// The resolved declaration a dispatch request enumerates overrides of.
 ///
-/// The shape is the member vocabulary, not the report: `owner` is the declaring class's own
-/// internal name (which may differ from the reference owner), and `kind`, `name` and
+/// The shape is the member vocabulary, not the report: `declaring` is the declaring class as a
+/// **node** — its defining loader plus its physical definition — and `kind`, `name` and
 /// `descriptor` are what a candidate has to declare to be an override of this declaration.
+///
+/// The subtype test compares nodes rather than the declaring class's *name*, because an owner
+/// string is not evidence of inheritance: a class another loader defines under the same name is a
+/// different class and overrides nothing here (0.1, JVMS 5.3/5.4.3.1).
 pub(crate) struct DeclarationShape<'a> {
     pub(crate) kind: MemberKind,
-    pub(crate) owner: &'a [u8],
+    pub(crate) declaring: NodeIdentity,
     pub(crate) name: &'a [u8],
     pub(crate) descriptor: &'a [u8],
 }
@@ -472,8 +476,10 @@ fn class_step(
     name: &JvmBytes,
     budget: &mut Budget,
 ) -> Result<ClassStep> {
+    // A class of the requested range is a symbol request the **caller** issues, so its order is
+    // the caller's own; the walk above it switches to each declaring class's defining loader.
     let handle = closure
-        .demand(&name.0, HeaderDemand::DispatchScope, budget)
+        .demand_from_caller(&name.0, HeaderDemand::DispatchScope, budget)
         .decision?;
     let resolution = closure.resolution(handle);
     if resolution.lookup.state != HeaderLookupState::Found {
@@ -498,20 +504,25 @@ fn class_step(
         .expect("a found lookup publishes its header");
     let declares = declares_member(&header.facts, declaration);
     let this_class = header.facts.this_class.raw().0.clone();
-    let loader = resolution.loader.clone();
+    let loader = resolution
+        .defining_loader()
+        .expect("a found lookup selects a definition")
+        .clone();
     let definition = location.definition.clone();
     let root_index = location.root_index;
-    let mut walk = closure.hierarchy_closure(&name.0, HeaderDemand::DispatchScope);
+    let self_node = NodeIdentity::new(&loader, &definition);
+    let caller = closure.caller_loader().clone();
+    let mut walk = closure.hierarchy_closure(&caller, &name.0, HeaderDemand::DispatchScope);
     let mut owner_above = false;
-    let mut layers = 0_usize;
     while let Some(layer) = walk.next(closure, budget)? {
-        if layers > 0 && closure.resolution(layer).name.0 == declaration.owner {
-            // The declaring class is on this class's supertype path *above* the class, so the
-            // class overrides or implements it. The class itself is the walk's root layer, which
-            // is why a class is never its own override and a same-named duplicate is not either.
-            owner_above = true;
-        }
-        layers = layers.saturating_add(1);
+        // The declaring class itself — this exact loader and definition — must be on this class's
+        // supertype path *above* the class for the class to override or implement it. The class's
+        // own node is excluded, which is why a class is never its own override, and a same-named
+        // class that another loader defines never qualifies either: an owner string is not
+        // inheritance evidence (0.1).
+        owner_above |= closure
+            .identity(layer)
+            .is_some_and(|node| node != self_node && node == declaration.declaring);
     }
     let gaps = walk.gaps();
     let gap = !gaps.missing.is_empty() || !gaps.ambiguous.is_empty() || !gaps.cycles.is_empty();

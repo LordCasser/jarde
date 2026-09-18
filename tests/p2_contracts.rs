@@ -490,6 +490,39 @@ fn counted_usage_is_zero(usage: &UsageSnapshot) -> bool {
         .all(|dimension| usage.counted_usage(*dimension) == 0)
 }
 
+/// One usage snapshot with the wall clock removed: the comparison form of two reads of one budget.
+///
+/// `elapsed_millis` is a measurement, not a charge: [`Budget::usage`] takes it again on every
+/// read, so the snapshot a report published and a later read of the same budget may legitimately
+/// differ by a millisecond while every counted dimension is identical. P1 normalizes the same one
+/// field the same way, and nothing else is dropped here.
+fn counted_usage(usage: &UsageSnapshot) -> UsageSnapshot {
+    UsageSnapshot {
+        elapsed_millis: 0,
+        ..usage.clone()
+    }
+}
+
+/// One execution report compared with that one measurement removed from its usage.
+fn without_wall_clock(execution: &ExecutionReport) -> ExecutionReport {
+    match execution {
+        ExecutionReport::Complete { usage } => ExecutionReport::Complete {
+            usage: counted_usage(usage),
+        },
+        ExecutionReport::Partial { reason, usage } => ExecutionReport::Partial {
+            reason: reason.clone(),
+            usage: counted_usage(usage),
+        },
+        ExecutionReport::Cancelled { usage } => ExecutionReport::Cancelled {
+            usage: counted_usage(usage),
+        },
+        ExecutionReport::Failed { reason, usage } => ExecutionReport::Failed {
+            reason: reason.clone(),
+            usage: counted_usage(usage),
+        },
+    }
+}
+
 fn usage_of(execution: &ExecutionReport) -> &UsageSnapshot {
     match execution {
         ExecutionReport::Complete { usage }
@@ -1641,9 +1674,10 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
     );
     // The scheduled phases of this build really run in table order: `raw_facts` reads the
     // driver method's class definition and decodes its body, `raw_cfg` builds the raw graph
-    // over those facts, and the first phase this build does not implement fails where the
-    // pipeline reaches it — the phases behind it stay `NotPerformed` rather than looking
-    // performed.
+    // over those facts, `legacy_normalization` establishes the `jsr`/`ret` call contexts (none
+    // for this body: the 52 fixture inlines its `finally`), and the first phase this build does
+    // not implement fails where the pipeline reaches it — the phases behind it stay
+    // `NotPerformed` rather than looking performed.
     assert_eq!(
         report
             .stages
@@ -1653,10 +1687,10 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
         vec![
             StageState::Completed,
             StageState::Completed,
+            StageState::Completed,
             StageState::Failed {
                 code: "ir_pass_not_implemented".to_string()
             },
-            StageState::NotPerformed,
             StageState::NotPerformed,
             StageState::NotPerformed,
         ]
@@ -1741,12 +1775,12 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
     assert_eq!(report.body, MethodBodyState::NotInspected);
     assert_eq!(report.coverage, Coverage::not_requested());
     assert_eq!(
-        report.execution,
+        without_wall_clock(&report.execution),
         ExecutionReport::Partial {
             reason: TerminationReason::BudgetExceeded {
                 dimension: BudgetDimension::ClassHeaders,
             },
-            usage: budget.usage(),
+            usage: counted_usage(&budget.usage()),
         }
     );
     assert_eq!(
@@ -1886,7 +1920,7 @@ fn result_planes_are_reported_side_by_side_and_never_inferred() {
         "a non-Conservative quality does not mean a completed run"
     );
 
-    // Capability, range, termination and verification are separate planes: two phases really
+    // Capability, range, termination and verification are separate planes: three phases really
     // completed and the body was fully covered, while a later phase this build does not
     // implement ends the run as an unsupported capability — and none of that says anything
     // about the product planes above.
@@ -1904,8 +1938,8 @@ fn result_planes_are_reported_side_by_side_and_never_inferred() {
             .iter()
             .filter(|stage| stage.state == StageState::Completed)
             .count(),
-        2,
-        "`raw_facts` and `raw_cfg` completed"
+        3,
+        "`raw_facts`, `raw_cfg` and `legacy_normalization` completed"
     );
     assert_eq!(
         report.coverage.artifact_structural.state,
@@ -2558,23 +2592,26 @@ const A17_MIN_SOURCE_LEN: usize = 1_000;
 /// route (`use crate::ResolutionReport as _;` keeps the type name instead) and the
 /// `use crate::{…}` group form.
 ///
-/// `cfg` (the raw CFG constructor of 3.3) and `passes` (the pass table) are P2 modules the
-/// physical entries must not reach either, and the derived type table does not cover them:
-/// `use crate::cfg::raw_cfg;` names a builder whose own types live below the module and whose
-/// name no declaration in the three derived modules contains, so the module path is the only
-/// signal. The `super::`-relative spelling of the same reach (`super::cfg::…` from a
-/// `src/xref/` module is the crate root) is covered by the bare forms.
-const A17_MODULE_TOKENS: [&str; 10] = [
+/// `cfg` (the raw CFG constructor of 3.3), `passes` (the pass table) and `call_context` (the
+/// call-context builder of 3.4) are P2 modules the physical entries must not reach either, and
+/// the derived type table does not cover them: `use crate::cfg::raw_cfg;` names a builder whose
+/// own types live below the module and whose name no declaration in the three derived modules
+/// contains, so the module path is the only signal. The `super::`-relative spelling of the same
+/// reach (`super::cfg::…` from a `src/xref/` module is the crate root) is covered by the bare
+/// forms.
+const A17_MODULE_TOKENS: [&str; 12] = [
     "crate::environment",
     "crate::resolver",
     "crate::ir",
     "crate::cfg",
     "crate::passes",
+    "crate::call_context",
     "environment::",
     "resolver::",
     "ir::",
     "cfg::",
     "passes::",
+    "call_context::",
 ];
 
 /// Import forms that reach a whole P2 module under a name of the caller's choosing.
@@ -3046,11 +3083,11 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
             tiny_files: &[],
         },
         Case {
-            // 3.3 added the raw CFG (`cfg`) and the pass table (`passes`). `use
-            // crate::cfg::raw_cfg;` is a construction path that names no derived type, so
-            // only the module-path tokens can catch these three spellings: the builder
-            // through its module path, the table through its module path, and the module
-            // under an alias of the caller's choosing.
+            // 3.3 added the raw CFG (`cfg`) and the pass table (`passes`), 3.4 the call-context
+            // builder (`call_context`). `use crate::cfg::raw_cfg;` is a construction path that
+            // names no derived type, so only the module-path tokens can catch these spellings:
+            // each builder through its module path, and a module under an alias of the caller's
+            // choosing.
             name: "cfg_and_passes_module_paths",
             files: &[
                 ("src/query.rs", "use crate::cfg::raw_cfg;\nfn probe() {}\n"),
@@ -3061,11 +3098,31 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
                 ),
                 (
                     "src/xref/tiny.rs",
-                    "use crate::cfg as graphs_cfg;\nfn probe() {}\n",
+                    "use crate::call_context::call_contexts;\nfn probe() {}\n",
                 ),
             ],
             offenders: &["src/query.rs", "src/xref/clean.rs", "src/xref/tiny.rs"],
-            evidence: &["crate::cfg", "crate::passes", "cfg::", "passes::"],
+            evidence: &[
+                "crate::cfg",
+                "crate::passes",
+                "crate::call_context",
+                "call_context::",
+            ],
+            tiny_files: &[],
+        },
+        Case {
+            // The module under an alias of the caller's choosing keeps the path token.
+            name: "call_context_module_alias",
+            files: &[
+                ("src/query.rs", CLEAN_QUERY),
+                ("src/xref/mod.rs", "mod tiny;\n"),
+                (
+                    "src/xref/tiny.rs",
+                    "use crate::call_context as contexts;\nfn probe() {}\n",
+                ),
+            ],
+            offenders: &["src/xref/tiny.rs"],
+            evidence: &["crate::call_context"],
             tiny_files: &[],
         },
         Case {

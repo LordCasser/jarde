@@ -111,9 +111,13 @@ impl IrPhase {
 /// The implemented phases are a **prefix** of the table — a later phase never runs while an
 /// earlier one is missing — which is what makes a request stop at exactly one point instead of
 /// skipping a hole in the pipeline. 3.3 implements `raw_facts` (the reader's own work, see the
-/// table) and `raw_cfg`; 3.4/3.5/4.x extend this list, and 5.1 deletes it with the last phase.
+/// table) and `raw_cfg`, and 3.4 adds `legacy_normalization` (the call contexts, which is not
+/// the cloning pass); 3.5/4.x extend this list, and 5.1 deletes it with the last phase.
 pub(crate) fn implemented(phase: IrPhase) -> bool {
-    matches!(phase, IrPhase::RawFacts | IrPhase::RawCfg)
+    matches!(
+        phase,
+        IrPhase::RawFacts | IrPhase::RawCfg | IrPhase::LegacyNormalization
+    )
 }
 
 /// One fact of the method IR pipeline, as the pass table names it.
@@ -834,8 +838,13 @@ mod tests {
         }
     }
 
-    /// The phases this build implements: 3.3 runs `raw_facts` and `raw_cfg`.
-    const IMPLEMENTED_PHASES: [IrPhase; 2] = [IrPhase::RawFacts, IrPhase::RawCfg];
+    /// The phases this build implements: 3.3 runs `raw_facts` and `raw_cfg`, 3.4 adds the call
+    /// contexts of `legacy_normalization`.
+    const IMPLEMENTED_PHASES: [IrPhase; 3] = [
+        IrPhase::RawFacts,
+        IrPhase::RawCfg,
+        IrPhase::LegacyNormalization,
+    ];
 
     #[test]
     fn the_implemented_phases_are_a_prefix_of_the_table() {

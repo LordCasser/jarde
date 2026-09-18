@@ -483,7 +483,10 @@ pub(crate) fn resolution_report(
     let mut rule_stop: Option<ExecutionReport> = None;
     let (analysis, state, resolved, candidates, concluded, covered, execution) = match performable {
         Performable::Class(name) => {
-            let answer = closure.demand(&name.0, HeaderDemand::RequestedDefinition, budget);
+            // The request's own target is the one symbol demand the *caller* initiates; every
+            // successor the resolved header declares is searched from that header's own loader.
+            let answer =
+                closure.demand_from_caller(&name.0, HeaderDemand::RequestedDefinition, budget);
             let concluded = answer.decision.is_ok();
             let usage = budget.usage();
             match answer.decision {
@@ -745,27 +748,31 @@ fn publish_dispatch(
 fn declaration_shape(declaration: &ResolvedMemberRef) -> Option<DeclarationShape<'_>> {
     match &declaration.member {
         SymbolRef::Field {
-            owner,
-            name,
-            descriptor,
+            name, descriptor, ..
         } => Some(DeclarationShape {
             kind: crate::members::MemberKind::Field,
-            owner: &owner.0,
+            declaring: declaring_node(declaration),
             name: &name.0,
             descriptor: &descriptor.0,
         }),
         SymbolRef::Method {
-            owner,
-            name,
-            descriptor,
+            name, descriptor, ..
         } => Some(DeclarationShape {
             kind: crate::members::MemberKind::Method,
-            owner: &owner.0,
+            declaring: declaring_node(declaration),
             name: &name.0,
             descriptor: &descriptor.0,
         }),
         SymbolRef::Class { .. } => None,
     }
+}
+
+/// The declaring class of one resolved member as a **node**.
+///
+/// The dispatch subtype test compares this pair, never the owner string: a class another loader
+/// defines under the declaring name is a different class and overrides nothing (0.1).
+fn declaring_node(declaration: &ResolvedMemberRef) -> crate::providers::NodeIdentity {
+    crate::providers::NodeIdentity::new(&declaration.loader, &declaration.definition)
 }
 
 /// One crate-private candidate as the report publishes it.
@@ -799,7 +806,12 @@ fn open_world_evidence(evidence: DispatchEvidence) -> OpenWorldEvidence {
 /// The crate-private demands are mapped onto the public vocabulary here, at the boundary that
 /// owns it: a demand added by a later slice fails to compile until it is mapped, so the report
 /// cannot publish a reason the closure never had.
-fn published_reads(closure: &HeaderClosure<'_>) -> Vec<HeaderRead> {
+///
+/// The method-analysis entry point publishes its own closure's records through this same
+/// mapping, so the one place where a demand becomes a public reason covers every report that
+/// publishes reads — the resolution slice's own `published_reads` match cannot drift from the
+/// body demand's.
+pub(crate) fn published_reads(closure: &HeaderClosure<'_>) -> Vec<HeaderRead> {
     closure
         .reads()
         .iter()
@@ -812,6 +824,7 @@ fn published_reads(closure: &HeaderClosure<'_>) -> Vec<HeaderRead> {
                 HeaderDemand::HierarchyClosure => ReadReason::HierarchyClosure,
                 HeaderDemand::MemberOwner => ReadReason::MemberOwner,
                 HeaderDemand::DispatchScope => ReadReason::DispatchScope,
+                HeaderDemand::DriverMethodBody => ReadReason::DriverMethodBody,
             },
         })
         .collect()
