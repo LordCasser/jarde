@@ -767,3 +767,49 @@ descriptor 驱动 ✓（`an_invocation_takes_its_shape_from_the_descriptor`、`t
 - **执行器自报并已核实**：族断言覆盖的是**表的行**，`Stack::Constant`/`PoolEffect` 族的类别只能靠 `checkcast`/`instanceof` 的几条真字节 body 与既有 invocation 用例间接守。
 - 全表审计判定除上述两处外**无第三处**类别/数量/范围跨界错配；常量池相关行确为 descriptor/CP 推导，非法 CP 项种类一律走拒绝分支。
 - `instanceof` 的操作数种类不校验（见上，**有意**，非漏做）；将来若要操作数级校验，属新增能力而非补 4.1。
+
+## 2026-09-19 4.2 前半：身份与接口（提交 `409ef1a`）
+
+4.2 分两半做：**前半把身份与接口改对**（本节），**后半是初始化转换的状态机**（别名翻转、`UninitializedThis` 的具体规则）。前半交付后，handler 入口已从「拒绝」变为**真正算出来**。
+
+### 交付
+
+- **`NewSite { block: CanonicalBlockId, bci }`**：`Value::Uninitialized` 的 site 由**原始 BCI** 改为**canonical 身份**。别名比较即 `Value` 相等（含整个 `NewSite`）。
+- **异常边按 throw-site 取输入**：`transfer_block` 返回 `Transfer { exit, throw_points }`，`throw_points` 是每条可能抛异常指令处、**该指令生效前**的 locals 快照（抛点来自既有 `CanonicalCfg.throw_sites`，**未新增旁路数据**）。`exception_inputs` 对 `Exception{handler_ordinal}` 边查出 `handler_rows`，为**每个** `handlers` 含该 ordinal 的抛点各贡献一份 `locals(point) + [抛出的引用]`；catch-all → 保守未知引用，有名 catch 类型 → 该类型的命名引用。
+- **`BlockFrame.inputs: Vec<LogicalInput { from, throw_site }>`**：每块的**逻辑输入**记录，供 4.3 的 phi 按逻辑前驱数取值；按记录计 `IrItems`（增长前）。
+- **`CanonicalCfg` 身份重映射**（顺带修掉的 3.5 缺陷，见下）：`fuse` 返回 `Fused { drafts, edges, owner }`，`build` 在新增的 `Phase::Identities` 里把 `throw_sites`/`handler_rows` 经 `owner` 映射到融合后节点。
+
+### 顺带修掉的 3.5 缺陷（父级独立复现并证伪）
+
+`throw_sites`/`handler_rows` 在 `Phase::Handlers`（**融合前**）算出，`assemble` 却**原样发布**，而 `blocks` 是**融合后**的节点。于是「抛点所在块 / 被保护块 / handler 入口块被融合吸收」的 body 会让 postcondition 的 `ids.contains(&site.block)` 失败。
+
+**父级独立复现**（合法 body：`goto` 进入受保护块，`idiv` 在可融合的尾块里；异常表 `[(3,6,8,catch-all)]`）：
+```
+stages=[Completed, Completed, Completed, Partial, NotPerformed, NotPerformed]
+codes=["ir_legacy_normalization_unbounded"]
+message=throw site ... block: CanonicalBlockId { bci: 3, path: [] } ... names a block the graph does not hold
+```
+——**合法体假 fallback + 错误的码**（`ir_legacy_normalization_unbounded` 意为「超过自己的界」，此处并未超界），与已修过的 fusion 方向缺陷同类。**父级变异**：去掉重映射 → 新回归用例转红并打印**同一条 message**（`sha256sum -c` 还原）。
+
+**修法选择**：**重映射**而非放宽 postcondition。理由已写入代码注释：放宽会让 `throw_sites` 带着不存在的 id 流出，而 4.2 的 frame 正按 `site.block == block.id` 找抛点——那些点会**静默消失**（不是被报成可疑）。`owner` 是身份的唯一权威；返回前先**闭包化**，故 `edges` 两端与调用方读到的都已是最终 head。
+
+### 证据
+
+**CI**：`409ef1a` → run 35386223586，四 job success。
+
+- `cargo test -p jarde-jvm --locked` = **154**；全量 **698 passed / 0 failed / 1 ignored**；`p2_canonical` = 8；`p2_frame` = 2；`p2_contracts` = 29；`p1_xref_golden` = 5；fmt 与 clippy 1.98.1 干净；两个 CI example exit 0。
+- **实现者证伪四组**：① 异常输入改用块**出口**状态 → 3 条转红；② new-site 改回**原始 BCI** → 克隆身份用例转红；③ handler 入口栈不压异常引用 → 4 条转红；③b catch 类型恒为未知 → 构造调用异常输入用例转红。
+- **公共入口**：自造**合法** try/catch 真字节（`idiv` 在 catch-all 保护下）由 `stages=[C,C,C,C,Partial,...] codes=["ir_frame_deferred"]` 变为 `[C,C,C,C,Completed,Failed{ir_pass_not_implemented}]` —— handler 入口不再拒绝。
+- **ECJ v45–v52 的 `add`/`finallyPath`/`<init>` 24 个 body** 修前修后逐字节一致（该缺陷需要「`goto` 进入受保护块 + 受保护块被前驱吸收」的特定形状，ECJ 语料里没有，故只由新形状用例承担）。
+
+### 被修正的既有断言（逐条，未放宽）
+
+1. `an_exception_edge_stops_the_body_at_the_4_2_boundary` → 更名 `an_exception_edge_is_entered_with_the_state_of_its_throw_site`：原断言 `unproven` + 消息含「exception edge/4.2」；新断言 handler 入口的 locals、栈 `[Ref(Unknown)]` 与唯一逻辑输入。**该停止已不存在，替换断言更强**。
+2. `the_pass_bills_exactly_its_declared_dimensions`：`ir_items` 公式加入「每逻辑输入记录 1」，且新公式由**已存储的表**推导并断言记录数 `== 4`，不是放宽。
+3. 纯文档：`frame.rs` 模块头、`IR_FRAME_DEFERRED` 与 `FrameOutcome::Unsupported` 的说明、`engine.rs` 一处注释不再称 handler 入口属 4.2。
+
+### 交接后半的观察
+
+- `ir_frame_deferred` 现在**只剩一个触发点**：「未初始化值被用在只有翻转才能使其可读的位置」（`p2_frame` 的构造函数用例仍走这条）。
+- **一处需注意的测试事实**：`invokespecial <init>` 的接收者若为**未初始化**引用会 defer，故构造调用样本用的是 `null` 接收者——这是**有意**不对操作数合法性做校验（4.1 判定线），已在用例文档中写明。
+- **新疑点（未改，单列）**：融合实际只成对合并两节点、不走更长的单后继链（吸收一步后剩余边的 `from` 仍是已被吸收的节点，`from != &head` 立即 break）。探针跑遍 `jarde-jvm` 全部用例未触发更长链，故当前与「super block」的文档描述只有二元组成立；改它会改变所有 body 的图形态，不属本片。
