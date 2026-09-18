@@ -237,16 +237,16 @@
 
 | 验收 | 承担任务 | 现状 | 还缺什么（退出 P2 前必须补） |
 | --- | --- | --- | --- |
-| A11 Base.foo / Sub CP owner | 0.1、2.3、2.4、2.5 | **单 loader 基线已覆盖，跨 loader 修正未完成**：2.3 成员解析（46 条用例 + 探针，含 JVMS 5.4.3 三条搜索路径、访问与调用种类规则、default conflict）；2.4 声明引用查询（`Base.foo` 在 `Sub` 调用时 `mentions_symbol(Base.foo)`=0 而声明查询返回该 use-site、`resolved` 指向 `Base`；未使用 CP 不算引用；未决候选保留 use-site 不当作已排除）；2.5 已知范围 dispatch（候选 + open-world 证据，单一候选不声称唯一运行目标） | 0.1 关闭 R1，重跑声明查询/dispatch 的定义身份对照，再执行 5.4 总门禁 |
+| A11 Base.foo / Sub CP owner | 0.1、2.3、2.4、2.5 | **功能面已达成（0.1 起含跨 loader）**：2.3 的三条 JVMS 5.4.3 搜索路径、访问与调用种类规则、default conflict；2.4 的 `Base.foo` 在 `Sub` 调用的端到端对照（`mentions_symbol(Base.foo)`=0 而声明查询返回该 use-site）；2.5 的 dispatch 候选与 open-world；**0.1** 关闭跨 loader 身份（R1 反例转永久回归：child ChildFirst + parent 定义的 Owner → 解析到 **parent 的 Base 物理定义**），并证明 dispatch 祖先按节点而非 owner 名字 | 5.4 的总门禁与文档同步 |
 | A14 全范围中断/缺失依赖 | 1.3、2.1、2.2、2.3、2.4、2.5、5.1 | **部分**：18 项预算维度与两个高水位就位；2.1–2.5 的停止语义（`Partial`/`Cancelled`/`BudgetExceeded` + 前缀）各有实证，2.5 补上 scope 枚举预算与 `DependencyDepth`→listing 截断的停止路径 | 5.1 的库/CLI 一致性与终止语义逐字段一致；4.x 阶段的停止（Frame/SSA 预算） |
 | A16 单方法按需边界 | 2.2、2.3、2.4、2.5、5.2 | **部分**：`reads` 记录 (definition, loader) 与理由（含 `DispatchScope`）；成员搜索与 dispatch 都不读 Body（`code_bytes == 0` 有真实对照，2.4 另有"与同 consumers 的 P1 扫描计费相等"口径） | 5.2 的实际入口读取/构造计数（不加载无关 Body、不建全局 XRef） |
 | A17 X1 零 CFG/SSA/AST | 1.1、3.3、5.2 | **部分**：petgraph、cfg、passes 的 token 守卫已由 3.3 补齐；工作区另有 call_context token | 5.2 的实际构造计数；新增私有模块的守卫覆盖仍须审计，源码 token 不是行为证明 |
-| A09 历史 jsr/finally | 0.2、0.3、3.3–3.5 | **部分**：raw CFG 已交付，3.4 候选被 R2/R3/R4 阻塞 | 修正值流/异常/预算、真实历史 finally 与 3.5 有界规范化 |
+| A09 历史 jsr/finally | 0.2、0.3、3.3–3.5 | **部分**：raw CFG（3.3）与真实历史 finally 语料已交付；0.2 正在补 wide/数组/调用操作数并同步分类；3.4 候选被 R2/R3/R4 与 D-1/D-2 阻塞，0.3（派生存储计费）与 0.4（非块首 jsr）是其前置 | 修正值流/异常/预算、重跑历史语料与 3.5 有界规范化 |
 | A10 缺失 StackMap/debug | 4.1–4.3 | **未开始** | Frame 推导、版本合法性诊断、`NotPerformed` 语义 |
 | A13 成员级失败 | 5.1 | **未开始** | 同类正常与失败方法并存、五平面分开报告 |
 | A18 输入变化 | P0/P1 已覆盖 | **保持** | 每个缓存/并行阶段引入时回归（P5） |
 
-当前结论：2.x/3.3 的已有证据保留；本轮跨 loader 反例使 A11 重新需要修正，3.4 尚未通过。A14/A16/A17 仍缺各自后续入口/资源证据，不能因某片测试全绿就宣布 P2 完成。
+当前结论：A11 的功能面已随 0.1 关闭（跨 loader 身份修正经独立复核 Approve、CI 绿），但仍只在 5.4 总门禁跑完后才算通过。A09 的 0.2/0.3/0.4 是 3.4 的前置，3.4 尚未通过；A14/A16/A17 仍缺各自后续入口/资源证据。**不能因某片测试全绿就宣布 P2 完成**。
 
 ## 第一片（1.1–1.3）状态与闸口
 
