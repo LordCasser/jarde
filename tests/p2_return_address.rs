@@ -620,3 +620,170 @@ fn the_p1_query_coordinates_are_unchanged_by_a_call_context_run() {
         "a call-context run leaves the P1 query coordinates and their count unchanged"
     );
 }
+
+/// One constant-pool-and-method builder for the synthetic D-1 fixture below: the file-local
+/// shape `tests/p2_cfg.rs` uses, with the `max_locals` this body needs.
+#[derive(Default)]
+struct Pool {
+    bytes: Vec<u8>,
+    count: u16,
+}
+
+impl Pool {
+    fn push(&mut self, entry: &[u8]) -> u16 {
+        self.bytes.extend_from_slice(entry);
+        self.count += 1;
+        self.count
+    }
+
+    fn utf8(&mut self, value: &[u8]) -> u16 {
+        let mut entry = vec![1];
+        entry.extend_from_slice(
+            &u16::try_from(value.len())
+                .expect("fixture name fits u16")
+                .to_be_bytes(),
+        );
+        entry.extend_from_slice(value);
+        self.push(&entry)
+    }
+
+    fn class(&mut self, name: u16) -> u16 {
+        let mut entry = vec![7];
+        entry.extend_from_slice(&name.to_be_bytes());
+        self.push(&entry)
+    }
+}
+
+/// A structurally valid class file of the `jsr` era (major 50, where `jsr`/`ret` are still
+/// legal) with one `public static illegal()V` whose `Code` is `code` and nothing else.
+fn illegal_call_graph_class(code: &[u8], max_locals: u16) -> Vec<u8> {
+    let mut pool = Pool::default();
+    let this_name = pool.utf8(b"Test");
+    let this_class = pool.class(this_name);
+    let object_name = pool.utf8(b"java/lang/Object");
+    let object_class = pool.class(object_name);
+    let code_name = pool.utf8(b"Code");
+    let name_index = pool.utf8(b"illegal");
+    let descriptor_index = pool.utf8(b"()V");
+
+    let mut content = Vec::new();
+    content.extend_from_slice(&1_u16.to_be_bytes()); // max_stack: a `jsr` pushes one word
+    content.extend_from_slice(&max_locals.to_be_bytes());
+    content.extend_from_slice(
+        &u32::try_from(code.len())
+            .expect("fixture code fits u32")
+            .to_be_bytes(),
+    );
+    content.extend_from_slice(code);
+    content.extend_from_slice(&0_u16.to_be_bytes()); // exception table
+    content.extend_from_slice(&0_u16.to_be_bytes()); // Code attributes
+
+    let mut method = Vec::new();
+    method.extend_from_slice(&0x0009_u16.to_be_bytes()); // ACC_PUBLIC | ACC_STATIC
+    method.extend_from_slice(&name_index.to_be_bytes());
+    method.extend_from_slice(&descriptor_index.to_be_bytes());
+    method.extend_from_slice(&1_u16.to_be_bytes()); // one attribute
+    method.extend_from_slice(&code_name.to_be_bytes());
+    method.extend_from_slice(
+        &u32::try_from(content.len())
+            .expect("fixture Code content fits u32")
+            .to_be_bytes(),
+    );
+    method.extend_from_slice(&content);
+
+    let mut bytes = 0xcafebabe_u32.to_be_bytes().to_vec();
+    bytes.extend_from_slice(&0_u16.to_be_bytes()); // minor
+    bytes.extend_from_slice(&50_u16.to_be_bytes()); // major: the last dialect before 51
+    bytes.extend_from_slice(&(pool.count + 1).to_be_bytes());
+    bytes.extend_from_slice(&pool.bytes);
+    bytes.extend_from_slice(&0x0021_u16.to_be_bytes()); // ACC_PUBLIC | ACC_SUPER
+    bytes.extend_from_slice(&this_class.to_be_bytes());
+    bytes.extend_from_slice(&object_class.to_be_bytes());
+    bytes.extend_from_slice(&0_u16.to_be_bytes()); // interfaces
+    bytes.extend_from_slice(&0_u16.to_be_bytes()); // fields
+    bytes.extend_from_slice(&1_u16.to_be_bytes()); // methods
+    bytes.extend_from_slice(&method);
+    bytes.extend_from_slice(&0_u16.to_be_bytes()); // class attributes
+    bytes
+}
+
+#[test]
+fn a_live_call_site_behind_a_mid_block_jsr_is_still_refused() {
+    // D-1 (0.4), on the public path: the `jsr` at BCI 3 is **not** the first instruction of its
+    // block — BCIs 0..3 are ordinary straight-line code — so the call at BCI 3 is a transfer out
+    // of block `[0, 6)`, and its continuation is the block at BCI 6. That continuation holds the
+    // second call site, whose subroutine body owns no `ret`, so this body is illegal and must be
+    // refused:
+    //
+    //   0  iconst_1        6  jsr +10 -> 16   (return address 9; body without a `ret`)
+    //   1  istore_1        9  ireturn
+    //   2  nop            10  astore_1        (the body of the call at BCI 3)
+    //   3  jsr +7 -> 10   11  ret 1
+    //                     13  nop, 14 nop, 15 nop
+    //                     16  astore_2        (the body of the call at BCI 6)
+    //                     17  return
+    //
+    // Losing the continuation relation reads the live call site at BCI 6 as dead, skips the
+    // refusal, and answers `Established` for a method whose return address is never used: the
+    // `LegacyNormalization` phase must stay `Partial` under its own code instead.
+    let code = [
+        0x04, // 0: iconst_1
+        0x3c, // 1: istore_1
+        0x00, // 2: nop
+        0xa8, 0x00, 0x07, // 3: jsr +7 -> 10 (return address 6)
+        0xa8, 0x00, 0x0a, // 6: jsr +10 -> 16 (return address 9)
+        0xac, // 9: ireturn
+        0x4c, // 10: astore_1
+        0xa9, 0x01, // 11: ret 1
+        0x00, // 13: nop
+        0x00, // 14: nop
+        0x00, // 15: nop
+        0x4d, // 16: astore_2
+        0xb1, // 17: return
+    ];
+    let fixture = fixture(&illegal_call_graph_class(&code, 3));
+    let method = PhysicalMethodId {
+        owner: fixture.method.owner.clone(),
+        name: bytes(b"illegal"),
+        descriptor: bytes(b"()V"),
+    };
+    let request = request(&fixture, method, vec![AnalysisStage::Ssa]);
+    let (report, budget) = analyze(&fixture, &request, limits());
+
+    assert_eq!(
+        stage_states(&report),
+        vec![
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Partial,
+            StageState::NotPerformed,
+            StageState::NotPerformed,
+            StageState::NotPerformed,
+        ],
+        "the raw facts survive, the call graph is refused, and nothing canonical is built"
+    );
+    assert_eq!(
+        diagnostic_codes(&report),
+        vec!["ir_call_context_unresolved"]
+    );
+    assert_eq!(
+        report.diagnostics[0].severity,
+        DiagnosticSeverity::Warning,
+        "an unestablished call graph is a limitation, not damage"
+    );
+    assert_eq!(
+        without_wall_clock(&report.execution),
+        ExecutionReport::Partial {
+            reason: TerminationReason::Error {
+                code: "ir_call_context_unresolved".to_string(),
+            },
+            usage: counted_usage(&budget.usage()),
+        }
+    );
+    assert_eq!(report.body, MethodBodyState::Present);
+    assert!(
+        budget.usage().ir_edges >= 2,
+        "both calls are raw edges, so the graph really was built: {}",
+        budget.usage().ir_edges
+    );
+}

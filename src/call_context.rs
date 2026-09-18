@@ -433,11 +433,12 @@ fn block_bcis(cfg: &RawCfg) -> Vec<u32> {
 /// Position of the block that holds one BCI, or of the block that starts there.
 ///
 /// A block covers the half-open range `bci..end_bci`, and a `jsr`/`ret` cannot sit before the
-/// first block: the position is the last block whose start is at or below the BCI.
+/// first block: the position is the last block whose start is at or below the BCI. The reading
+/// itself is [`crate::cfg::block_of`]'s — the crate has one BCI→block rule (0.4), so a `jsr`
+/// that is not the first instruction of its block is placed the same way by this pass and by the
+/// raw graph — and this wrapper only names that case with the code of *this* pass.
 fn block_of(blocks: &[u32], bci: u32) -> Result<usize> {
-    blocks
-        .partition_point(|start| *start <= bci)
-        .checked_sub(1)
+    crate::cfg::block_of(blocks, bci, |start| *start)
         .ok_or_else(|| inconsistent(format!("BCI {bci} lies before the first raw block")))
 }
 

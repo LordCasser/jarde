@@ -757,6 +757,12 @@ fn jsr_call_sites(facts: &MethodCodeFacts) -> Result<Vec<u32>> {
 }
 
 /// The continuation of every `jsr`, as a block index: where the subroutine's `ret` returns.
+///
+/// Both ends are read with [`block_of`], the crate's "block *containing* this BCI" rule: a `jsr`
+/// may sit in the middle of a block — the instructions before it transfer into it, so the block
+/// ends at the `jsr` and not before it — and its continuation is then a successor of *that*
+/// block. Requiring the call site to start a block (an exact match) would find no block, drop
+/// this relation silently, and let the truth table call a live continuation dead.
 fn jsr_continuations(facts: &MethodCodeFacts, blocks: &[RawBlock]) -> Vec<Option<NodeIndex>> {
     let mut continuations = vec![None; blocks.len()];
     for (index, (instruction, operands)) in facts
@@ -771,9 +777,9 @@ fn jsr_continuations(facts: &MethodCodeFacts, blocks: &[RawBlock]) -> Vec<Option
         let Some(next) = facts.instructions.get(index + 1) else {
             continue;
         };
-        let (Ok(from), Ok(to)) = (
-            block_position(blocks, instruction.bci),
-            block_position(blocks, next.bci),
+        let (Some(from), Some(to)) = (
+            block_of(blocks, instruction.bci, |block| block.bci),
+            block_of(blocks, next.bci, |block| block.bci),
         ) else {
             continue;
         };
@@ -979,7 +985,32 @@ fn instruction_index(facts: &MethodCodeFacts, bci: u32) -> Result<usize> {
         })
 }
 
-/// Position of the block that starts at one BCI.
+/// Index of the block **containing** one BCI: the last block whose start is at or below it.
+///
+/// This is the crate's one BCI→block reading (0.4): 3.4's call contexts pass their own block
+/// list to this same function, so `cfg` and `call_context` cannot drift apart on what "the block
+/// of a BCI" means. It is a `partition_point` search and not an exact match because a BCI that
+/// lies inside a block belongs to that block — `jsr` is what makes the difference observable: a
+/// `jsr` that is not the first instruction of its block still belongs to it, and the
+/// continuation of that call is a successor of that block.
+///
+/// `blocks` is ordered by start BCI ascending, as every published block list is. `None` means
+/// the BCI lies before the first block, which a graph consistent with the reader's facts cannot
+/// produce; callers name that case with their own diagnostic. `start_bci` reads the start of one
+/// entry so the same reading serves a [`RawBlock`] list and 3.4's list of start BCIs.
+pub(crate) fn block_of<T>(blocks: &[T], bci: u32, start_bci: impl Fn(&T) -> u32) -> Option<usize> {
+    blocks
+        .partition_point(|block| start_bci(block) <= bci)
+        .checked_sub(1)
+}
+
+/// Position of the block that starts at one BCI: the block identity of one graph coordinate.
+///
+/// Exact on purpose, and only for inputs that are block starts **by construction**: its callers
+/// are the endpoints of the published edges, whose BCIs are branch, switch or handler targets or
+/// the fall-through after a block ender, and [`leader_flags`] makes every one of those a leader.
+/// A BCI that merely *lies inside* a block is not this function's question — that one is
+/// [`block_of`]'s, and `jsr` is the case where the two answers differ.
 fn block_position(blocks: &[RawBlock], bci: u32) -> Result<usize> {
     blocks
         .binary_search_by_key(&bci, |block| block.bci)
@@ -1531,6 +1562,88 @@ mod tests {
     }
 
     #[test]
+    fn a_jsr_inside_a_block_keeps_its_continuation_reachable() {
+        // The shape the shared `finally` of the ECJ corpus has (0.4, D-1): the `jsr` at BCI 5 is
+        // **not** the first instruction of its block — nothing before BCI 4 ends a block, so the
+        // `istore_1` at BCI 4 and the `jsr` belong to the same block `[4, 8)`. Its continuation
+        // is a successor of that block, so reading the call site as "the block that starts at
+        // BCI 5" finds no block, drops the relation, and the truth table then lists the live
+        // continuation at BCI 8 as dead. The dead tail at BCI 12 is unreachable for real and
+        // must stay listed: the fix narrows the table, it does not empty it.
+        let facts = body(
+            vec![
+                plain(0, 0x04),                                              // iconst_1
+                branch(1, 0x99, 3), // ifeq +3 -> 4 (the block before the call)
+                plain(4, 0x3c),     // istore_1: the instruction before the call
+                branch(5, OPCODE_JSR, 4), // jsr +4 -> 9, inside the call's own block
+                plain(8, 0xac),     // ireturn: the continuation of the call
+                plain(9, 0x4c),     // astore_1: the subroutine entry
+                instruction(10, OPCODE_RET, 2, local(1, false, OPCODE_RET)), // ret 1
+                plain(12, 0xb1),    // return: no transfer enters it
+            ],
+            Vec::new(),
+            13,
+        );
+        let outcome = raw_cfg(&facts, &mut budget()).expect("the fixture is a valid body");
+        assert_eq!(
+            block_bcis(&outcome.cfg),
+            vec![0, 4, 8, 9, 12],
+            "the `jsr` at BCI 5 shares block `[4, 8)` with the `istore_1` before it, and the \
+             `ret` shares block `[9, 12)` with the `astore_1` that stores the return address"
+        );
+        assert_eq!(
+            edge_tuples(&outcome.cfg),
+            vec![
+                (0, EdgeKind::Normal, 4),
+                (4, EdgeKind::SubroutineReturn { call_site: 5 }, 9),
+            ],
+            "the call is an edge from the block that holds it, not from a block starting at 5"
+        );
+        assert_eq!(outcome.cfg.unresolved_returns, vec![5]);
+        assert_eq!(
+            outcome.cfg.unreachable,
+            vec![12],
+            "the continuation at BCI 8 is where the `ret` returns, and only the dead tail is dead"
+        );
+    }
+
+    #[test]
+    fn the_historical_finally_paths_keep_the_subroutine_return_reachable() {
+        // The same defect on the committed corpus: `finallyPath(I)I` of 45–48 calls its shared
+        // subroutine from BCI 5, which sits inside block `[0, 8)` (the `istore_1` at BCI 4 before
+        // it is no leader), so the block at BCI 8 — where `ret 1` returns — is live, and the
+        // truth table has to say so. The two blocks that stay listed are the handler path
+        // `[11, 15)` (entered through the exception table, which no raw edge of this body can
+        // reach) and `[15, 17)`, the continuation of the `jsr` inside that dead path.
+        const V45: &[u8] = include_bytes!(
+            "../tests/fixtures/historical/ecj-4.6.1/v45/HistoricalControlFlow.class"
+        );
+        const V46: &[u8] = include_bytes!(
+            "../tests/fixtures/historical/ecj-4.6.1/v46/HistoricalControlFlow.class"
+        );
+        const V47: &[u8] = include_bytes!(
+            "../tests/fixtures/historical/ecj-4.6.1/v47/HistoricalControlFlow.class"
+        );
+        const V48: &[u8] = include_bytes!(
+            "../tests/fixtures/historical/ecj-4.6.1/v48/HistoricalControlFlow.class"
+        );
+        for (major, bytes) in [(45_u16, V45), (46, V46), (47, V47), (48, V48)] {
+            let facts = historical(bytes, b"finallyPath");
+            let outcome = raw_cfg(&facts, &mut budget()).expect("the fixture is a valid body");
+            assert_eq!(
+                block_bcis(&outcome.cfg),
+                vec![0, 8, 11, 15, 17],
+                "classfile major {major}"
+            );
+            assert_eq!(
+                outcome.cfg.unreachable,
+                vec![11, 15],
+                "classfile major {major}: `ret` returns to BCI 8, so `[8, 11)` is not dead"
+            );
+        }
+    }
+
+    #[test]
     fn effects_classify_locals_throw_sites_and_stack_deltas() {
         let facts = body(
             vec![
@@ -1624,7 +1737,18 @@ mod tests {
     /// reader: these bytes are decoded by the same path the engine uses, so the classification
     /// below is exercised on reader facts rather than on hand-written ones.
     fn decoded(code: &[u8], major: u16) -> MethodCodeFacts {
-        let bytes = crate::classfile::test_class::single_method(major, 8, 8, code);
+        decoded_with_locals(code, major, 8, 8)
+    }
+
+    /// The same with the fixture's own frame: a body that names a local above 255 — the case the
+    /// wide forms of 0.2 are for — has to declare that many local slots.
+    fn decoded_with_locals(
+        code: &[u8],
+        major: u16,
+        max_stack: u16,
+        max_locals: u16,
+    ) -> MethodCodeFacts {
+        let bytes = crate::classfile::test_class::single_method(major, max_stack, max_locals, code);
         let mut budget = Budget::new(Limits {
             // The real reader charges the byte dimensions of this module's own fixture.
             class_bytes: 1 << 20,
@@ -1639,6 +1763,26 @@ mod tests {
             .first()
             .expect("the fixture declares one method");
         crate::classfile::method_code_facts(&bytes, member, &mut budget)
+            .expect("the fixture's body decodes")
+    }
+
+    /// The decoded facts of one method of a committed historical fixture, through the real
+    /// reader: the ECJ corpus bytes 3.4's own unit tests read, decoded here for the raw graph.
+    fn historical(bytes: &[u8], name: &[u8]) -> MethodCodeFacts {
+        let mut budget = Budget::new(Limits {
+            class_bytes: 1 << 20,
+            attribute_bytes: 1 << 20,
+            code_bytes: 1 << 20,
+            ..limits()
+        });
+        let facts =
+            crate::classfile::class_facts(bytes, &mut budget).expect("the fixture is a class file");
+        let member = facts
+            .methods
+            .iter()
+            .find(|member| member.name.raw().0.as_slice() == name)
+            .expect("the fixture declares the method");
+        crate::classfile::method_code_facts(bytes, member, &mut budget)
             .expect("the fixture's body decodes")
     }
 
@@ -1740,6 +1884,88 @@ mod tests {
         assert_eq!(
             (effect(7).locals_read.clone(), effect(7).stack_delta),
             (vec![0], Some(0))
+        );
+        assert!(
+            effects.iter().all(|effect| !effect.may_throw),
+            "a local access cannot enter a handler, wide or not"
+        );
+    }
+
+    #[test]
+    fn category_two_wide_local_accesses_match_their_short_forms() {
+        // D40: the other half of the same classification — the two-slot local accesses, in both
+        // encodings, with the wide form naming a local above 255 so the wrapped opcode's width
+        // cannot be confused with the prefix's:
+        //
+        //   0  lload 30          4  wide lload 300
+        //   2  lstore 31         8  wide lstore 301
+        //                       12  return
+        //
+        // A `wide lload` reads one local and pushes two slots exactly like `lload`, and a
+        // `wide lstore` writes one local and pops two exactly like `lstore`.
+        let code = [
+            0x16, 0x1e, // lload 30
+            0x37, 0x1f, // lstore 31
+            0xc4, 0x16, 0x01, 0x2c, // wide lload 300
+            0xc4, 0x37, 0x01, 0x2d, // wide lstore 301
+            0xb1, // return
+        ];
+        let facts = decoded_with_locals(&code, 52, 4, 302);
+        assert!(matches!(facts.execution, ExecutionReport::Complete { .. }));
+        assert_eq!(facts.stopped_at, None);
+        assert_eq!(
+            facts.max_locals, 302,
+            "the fixture declares the slots it names"
+        );
+
+        let outcome = raw_cfg(&facts, &mut budget()).expect("the fixture is a valid body");
+        let effects = &outcome.effects.instructions;
+        let effect = |bci: u32| {
+            effects
+                .iter()
+                .find(|effect| effect.bci == bci)
+                .unwrap_or_else(|| panic!("no effect at BCI {bci}"))
+        };
+        /// One effect with the *identity* of its locals erased: `wide lload 300` and `lload 30`
+        /// must differ in which local they name and in nothing else, so the comparison below runs
+        /// on the classification with each local list replaced by its positions.
+        fn classification_without_the_local(effect: &InstructionEffect) -> InstructionEffect {
+            let positions = |locals: &[u16]| -> Vec<u16> {
+                (0..locals.len())
+                    .map(|index| u16::try_from(index).expect("a local list is tiny"))
+                    .collect()
+            };
+            InstructionEffect {
+                bci: 0,
+                locals_read: positions(&effect.locals_read),
+                locals_written: positions(&effect.locals_written),
+                ..effect.clone()
+            }
+        }
+        for (short_bci, wide_bci) in [(0_u32, 4_u32), (2, 8)] {
+            assert_eq!(
+                classification_without_the_local(effect(short_bci)),
+                classification_without_the_local(effect(wide_bci)),
+                "BCI {wide_bci} must classify exactly like the short form at BCI {short_bci}"
+            );
+        }
+        // The pairs are not two identical empty classifications: the wrapped opcode decides the
+        // local, the direction and the two-slot delta, and the raw prefix decides none of them.
+        assert_eq!(effect(0).locals_read, vec![30]);
+        assert_eq!(effect(4).locals_read, vec![300]);
+        assert!(effect(4).locals_written.is_empty());
+        assert_eq!(effect(2).locals_written, vec![31]);
+        assert_eq!(effect(8).locals_written, vec![301]);
+        assert!(effect(8).locals_read.is_empty());
+        assert_eq!(
+            (effect(0).stack_delta, effect(4).stack_delta),
+            (Some(2), Some(2)),
+            "`lload` pushes two slots, wide or not"
+        );
+        assert_eq!(
+            (effect(2).stack_delta, effect(8).stack_delta),
+            (Some(-2), Some(-2)),
+            "`lstore` pops two slots, wide or not"
         );
         assert!(
             effects.iter().all(|effect| !effect.may_throw),
