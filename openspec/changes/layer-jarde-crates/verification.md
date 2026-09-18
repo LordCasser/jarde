@@ -184,6 +184,18 @@
 
 否则它们会成为永久公开 API。**2.2 的验收须包含门面白名单收窄**（不是可选）。
 
+### 独立复核（Approve）的三点重要结论
+
+**1. 门面收窄的承重部分只有一处（必须写进 3.1，否则会被误读成安全边界）**：`classfile` 的 55 名单是**表面收窄**——`jarde::classfile` 模块路径仍在，任何 reader 公开项都能经它到达（`test_class` 就是例子）。真正承重的是**删除 `query`/`xref` 的模块路径**（which 让 `execute`、`scan_candidates` 等接缝真正不可达）。3.1 决定 `test-support` 去留时须按此判断，不得把名单当作安全边界。
+
+**2. 偏离 A 的技术理由已由复核者独立复现**：把 `src/facade.rs` 复制成 `src/engine.rs` 后，`physical_entry_modules_do_not_reference_the_p2_modules` 直接 panic（`found ["src/engine.rs", "crates/jarde-jvm/src/engine.rs"]`）；删掉后同一测试通过。改名是**不改守卫机制前提下的最小选项**。
+
+**3. 搬迁等价性有逐字证据**：driver 的 `run_method_analysis`(234 行)/`reader_stop`(41)/`raw_cfg_failure`(28)/`stage_state`(9) 花括号抽取后 **diff 0 行**；`termination_code` 只 1 行路径改写；三个 P2 入口函数体逐字等价（仅缩进不同）；旧 `src/engine.rs` 的 13 个顶层项在新 jvm 与 facade 中**全部存在**（`ONLY IN OLD: []`）。
+
+**额外验证（超出父级已验范围）**：复核者在副本里跑了 `cd fuzz && cargo check --locked --all-targets` → **exit 0**，证明门面收窄没有打破 `fuzz/`（独立 workspace、不在主 workspace 测试覆盖内）这个真实消费者。
+
+**flaky 修复的独立判定：未被削弱**。`budget.rs` 的新写法把往返结果与**同一份**快照比较（比原来更严：连 `elapsed_millis` 都要经 serde 逐位相等），第二次读取只在两侧归零该字段，其余 17 维仍精确相等；`classfile.rs` 的 helper 同样只归零该字段。仓库既有同形惯例（`tests/engine.rs`、`cli/tests/*.rs` 的 `normalized_usage`）未被触碰。**可选改进**：`elapsed_millis` 的单调性现在无断言，复核者建议补一句 `assert!(later.elapsed_millis >= snapshot.elapsed_millis)`。
+
 ### 未完成 / 待办
 
 - ~~独立复核未做~~ → 已完成并 Approve（见上）。
@@ -262,6 +274,66 @@
 
 - ~~独立复核待做~~ → 已完成并 Approve（见下节）。
 - 归属后续片：3.2 的 Cargo 依赖闭包门禁与 `query→jvm` 反例；2.2 的门面白名单收窄（本片使 `jarde::query::execute`、`jarde::xref::scan_candidates`、`jarde::CandidateFilter`、`jarde::CandidateScan` 可从门面触达）；`blake3` 向 reader 收敛。
+
+## 2.2 抽出 `jarde-jvm`，根包缩为门面（2026-09-18，实现完成，待独立复核）
+
+**新包** `crates/jarde-jvm/`：`environment`/`providers`/`members`/`dispatch`/`resolver`/`cfg`/`call_context`/`passes`/`ir`（同名搬迁）+ **driver**（在原 `engine.rs` 里，`report_unimplemented` 起）+ 自己的 `test_fixtures.rs`（深度 `../../tests/fixtures`）。
+
+**根包 `src/` 只剩 `lib.rs`（69 行）+ `facade.rs`（161 行）**，11 个旧文件删除。`Engine` 的 10 个入口都是一行委托；三个 P2 入口委托 `jarde_jvm::{resolve_symbol, declaration_references, analyze_method}`。
+
+**零新增 `pub`**：本片没有把任何 `pub(crate)` 升为 `pub`。jvm 的公开面 = 3 个入口函数 + 4 个模块路径（`engine`/`environment`/`ir`/`resolver`）+ 原有 request/report 类型。
+
+### 门面白名单收窄（2.1 的验收项，已做）
+
+| 项 | 前 | 后 |
+| --- | --- | --- |
+| `query` gloss 再导出 | `pub use jarde_query::query::*` + 模块路径 | 改为 **21 个产品类型的显式列表**；`xref` 整条移除（其公开面只有那三个接缝名） |
+| `query`/`xref` **模块路径** | 让 `jarde::query::execute`、`jarde::xref::scan_candidates` 可达 | **删除**（design：「不为旧模块布局保留双实现或兼容层」；全仓无消费者） |
+| `classfile` gloss | 连 `test_class` 一起到 `jarde::` | 改为 **55 个名字的显式列表**，`test_class` 不在其中 |
+
+### 两处已申报偏离
+
+- **A：根 `src/engine.rs` 改名 `src/facade.rs`**。原因：A17 守卫的 `resolve_layout` 对身份 `engine.rs` 断言「候选中恰好一个存在」，而候选是 `["src/engine.rs", "crates/jarde-jvm/src/engine.rs"]`——两边同名会直接 panic。`jarde::Engine` 路径保持（`pub mod facade; pub use facade::*;`），`jarde::engine::Engine` 模块路径消失（全仓 grep 确认无人使用）。**更正**：本记录初稿写「守卫本身一行未改」**与提交不符**——`tests/p2_contracts.rs` 本次改了 43 行（新增 `A17_ENVIRONMENT_MODULE`/`A17_RESOLVER_MODULE`/`A17_IR_MODULE` 三个 identity 常量、`A17_P2_SOURCE_MODULES` 改为引用它们、ALL-list 测试改按 identity 解析）。准确表述是：**`resolve_layout` 检测器与 control 候选表未动，守卫文件为配合搬迁改了身份表的读取方式**——而且这个改动是必需的，否则 ALL-list 测试会去找已不存在的 `src/environment.rs`。
+- **C（复核者补记，本记录初稿漏报）**：随 `pub use engine::*`/`ir::*`/`resolver::*` 的移除，**`jarde::{analyze_method, resolve_symbol, declaration_references}` 三个自由函数路径也消失**（探针确认 E0432；全仓无消费者；`Engine` 上的同名方法仍在）。它不是 A/B 的一部分，容易被后续读者当成漏报。
+- **B：删除 `pub use jarde_query::{query, xref};` 模块路径**。与 1.2 记录里「模块路径保留」的措辞冲突，但符合 design 第 70 行「只保留有产品意义的再导出」，且全仓无消费者使用这两个模块路径。
+
+### 依赖归属（实测）
+
+| 包 | `[dependencies]` |
+| --- | --- |
+| `jarde-jvm` | `blake3`、`jarde-query`、`jarde-reader`、`petgraph`、`serde`；dev：`jarde-reader`(test-support)、`rawzip`、`serde_json` |
+| 根 `jarde` | **只剩** `jarde-jvm`、`jarde-query`、`jarde-reader`（移除 `blake3`/`petgraph`/`serde`；dev 侧补 `blake3`/`petgraph` 供 `tests/**` 使用） |
+
+`cargo tree -p jarde --edges normal --depth 1` 只有三个层包。`fuzz/Cargo.lock` 只新增 `jarde-jvm` 条目、第三方零变动；`cargo metadata --locked`、`cargo deny check bans`、`cargo build --locked --bins` 均通过。
+
+### 证据（父级独立复跑确认）
+
+| 项 | 结果 |
+| --- | --- |
+| `cargo check/test -p jarde-jvm --locked` | 干净 / **95 passed** |
+| `cargo tree -p jarde-jvm --edges normal` 含根 `jarde` | **0 命中** |
+| 全仓 `--workspace --all-targets --all-features --locked` | **628 passed / 0 failed / 1 ignored**（与基线一致；连跑 4 次全部 628/0，见下） |
+| `p1_xref_golden` / `p2_contracts` | 5 / 29 |
+| `fmt --check` / `clippy -D warnings` | 干净 |
+| 两个 example 输出 | 与 `git archive` 基线**逐字节相同**（仅 `elapsed_millis` 归一化后比较） |
+
+**反例（实现者在副本/临时探针里做）**：`crates/jarde-jvm/src/lib.rs` 加 `use jarde::Engine;` → `E0432`；根 `tests/` 探针 `jarde::{execute, scan_candidates}` → E0425、`jarde::{CandidateScan, CandidateFilter}` → E0412、`jarde::{query::execute, xref::scan_candidates}` → E0433；`jarde::{HeaderClosure, FactLedger, IrPhase, CallContexts}` → E0412。探针与临时 `use` 均已删除。
+
+### 顺带修掉的既有 flaky 测试（同一提交，如实记录）
+
+全量跑时复现了**复核者此前诊断过、由 `824971f` 引入**的既有 flake：`UsageSnapshot::elapsed_millis` 每次读取都按墙钟重算，导致「快照读两次再比较」必然偶发不等（实测 `0` vs `4`）。修法按本仓库既有约定（任务 0.5）：**比较前归一化该字段**，其余 17 个维度照旧逐项比较。
+
+- `crates/jarde-reader/src/budget.rs` 的 `usage_snapshot_is_json_serializable`：拆成两条断言——① JSON round-trip 与**同一份**快照相等；② 第二次读取与第一次在**除墙钟外**全部维度相等。
+- `crates/jarde-reader/src/classfile.rs` 的 `assert_bytecode_report_invariants`：新增 `assert_usage_matches_budget` 辅助（零化 `elapsed_millis` 后比较），两处调用点改用它。
+- **连跑 4 次全量确认**：`exit=0, 628 passed / 0 failed` ×4，无一次复现。
+- 该修复**未削弱断言**：只零化一个按定义会变的字段，其余维度仍逐项相等；且原断言的「报告 usage 忠实反映预算」这一意图被保留（第二条断言）。
+
+### 未完成 / 待办
+
+- ~~独立复核待做~~ → 已完成并 Approve（见下节）。
+- 残余：`jarde::classfile::test_class` 在 `test-support` 打开时仍可经**模块路径** `jarde::classfile::test_class` 触达（顶层列表已移除它）；彻底不可达需撤掉 reader 的模块路径再导出，会推翻 1.2 已复核的门面形态，**留待 3.1 连同 feature 一并决定**。
+- 两条失效路径注释：`tests/p2_contracts.rs:25`（`src/engine.rs`）、`tests/p2_cfg.rs:5`（`src/cfg.rs`）→ 3.2 范围。
+- `JVM_Rust_Engine_Final_Architecture.md` 有用户**既有未提交改动**（把 crate 分层记为「尚未实施」），现与实现状态不符 → 3.1/3.3 文档同步。
 
 ## 1.4 A17 守卫的改造方案（供 2.1/2.2 与 3.2 执行）
 

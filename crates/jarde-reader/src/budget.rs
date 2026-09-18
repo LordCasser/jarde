@@ -706,6 +706,10 @@ mod tests {
         // differ by — zeroing it is this repository's convention for comparing a snapshot read
         // twice, rather than asserting that no millisecond can pass between two calls.
         let mut later = budget.usage();
+        assert!(
+            later.elapsed_millis >= snapshot.elapsed_millis,
+            "the wall clock does not run backwards"
+        );
         later.elapsed_millis = 0;
         snapshot.elapsed_millis = 0;
         assert_eq!(
