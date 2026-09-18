@@ -37,6 +37,11 @@
 - **WHEN** Frame/SSA 构建及本地不变量通过，但未执行完整 verifier 或差分验证
 - **THEN** 可报告 LocalInvariants，verification 仍为 NotPerformed，compile_status 仍为 NotAttempted
 
+#### Scenario: Fixture oracle succeeds
+
+- **WHEN** 固定样本通过 JVM 或其他差分 oracle，但生产方法请求未运行完整 verifier
+- **THEN** 验证记录限定到该 fixture/profile，普通报告仍为 verification=NotPerformed；不能用测试通过升级生产 verifier 状态
+
 ### Requirement: Method-level demand boundary
 
 方法分析 SHALL 只物化目标 Body、必要 Header 和有 reason 的最小依赖闭包，不要求预建全局 XRef、所有方法 Body、Region 或 Java AST。库与 CLI SHALL 使用相同结果和终止语义。

@@ -18,6 +18,11 @@ IR SHALL 消费共享 reader 提供的类型化 immediate、local、CP、branch 
 - **WHEN** 方法含 wide local/iinc、正负相对分支、tableswitch 或 lookupswitch
 - **THEN** 类型化 facts 与原始字节及指令边界一致，保留 switch default/key/target 和 local/immediate，不通过展示字符串重建语义
 
+#### Scenario: Effective opcode and allocation operands
+
+- **WHEN** 方法含 wide load/store/ret、newarray、multianewarray 或 invokeinterface
+- **THEN** 共享 facts 保留有效 opcode、atype、dimensions 与 count；CFG/Frame 使用该事实，raw opcode/width/BCI 保持原样，不能因有效 opcode 丢失而漏掉 ret 终结或误拒绝现代 wide load/store
+
 ### Requirement: Bounded analysis storage and work
 
 闭包和 IR 阶段 SHALL 共用一个请求预算生命周期。系统 MUST 在分配、排队、加边和克隆前计费，并限制 IR 存储项、边、分析步骤与规范化克隆；frame 槽、phi 输入和 origin 成员也必须计入，不能仅限制 block 数。输出 SHALL 继续受结果/字节限额约束。
@@ -32,9 +37,14 @@ IR SHALL 消费共享 reader 提供的类型化 immediate、local、CP、branch 
 - **WHEN** Frame/SSA 或 returnAddress 工作列表耗尽步骤/时间预算或收到取消
 - **THEN** 停止并保留最后有效阶段，不把半初始化 facts 发布为完整分析
 
+#### Scenario: Private call-context storage exhausts its limit
+
+- **WHEN** returnAddress 分析需要创建 context、状态槽、worklist、local/token/handler 关系或装配结果，而剩余 IrItems 不足
+- **THEN** 在增长前停止，保持相应预算原因且不发布 CallContexts；crate-private 载荷、临时状态和乘积数量不因输入已计费而豁免，IrItems 为零时不能成功创建非空上下文
+
 ### Requirement: Phase-ordered JVM IR
 
-系统 SHALL 按 raw facts、raw CFG/returnAddress、dialect normalization、CanonicalCFG、Frame、stack/local SSA 与 type/effect 前置关系创建 IR。每个 Pass MUST 声明 phase、required/produced facts、失效分析、dialect/capability、scope 和 budget class。Region/Java AST 不属于本阶段输出。
+系统 SHALL 按 raw facts、raw CFG/returnAddress、dialect normalization、CanonicalCFG、Frame、stack/local SSA 与 type/effect 前置关系创建 IR。每个 Pass MUST 声明 phase、required/produced facts、失效分析和实际可能计费的 budget 类别集合；dialect/capability 与 scope 由请求和固定阶段契约约束。Region/Java AST 不属于本阶段输出。
 
 #### Scenario: Pass dependency violation
 
@@ -45,6 +55,11 @@ IR SHALL 消费共享 reader 提供的类型化 immediate、local、CP、branch 
 
 - **WHEN** pass 改变 CFG 或异常边
 - **THEN** dominator、liveness、SSA 等相关分析失效，后续必须重新计算或拒绝使用
+
+#### Scenario: Call-context analysis consumes effects
+
+- **WHEN** 调用上下文阶段要读取 effects，但该事实尚未产出或已经失效
+- **THEN** requires 校验拒绝执行；阶段成功必须保留实际产物供后继使用，不能只登记 produced 而丢弃其载荷
 
 ### Requirement: Legacy normalization before canonical frames
 
@@ -60,6 +75,16 @@ IR SHALL 消费共享 reader 提供的类型化 immediate、local、CP、branch 
 - **WHEN** classfile 51+ 包含 jsr/jsr_w/ret
 - **THEN** 原始取证事实仍可展示，但报告 dialect 违规，不将其标为合法规范化输入
 
+#### Scenario: Ret reads the wrong or overwritten local
+
+- **WHEN** jsr 返回地址存入 local 0，但 ret 读取 local 1，或原槽已被普通值覆盖
+- **THEN** 不得仅因 CFG 可达而建立返回边；报告无法证明的 returnAddress 值流并 fallback，不发布可被规范化消费的完整 CallContexts
+
+#### Scenario: Handler returns within a subroutine
+
+- **WHEN** 子程序抛出后由 handler 改写 locals 并回接 ret
+- **THEN** 按 throw-site 与 active context 传播 handler 状态，包含该路径的 locals 和返回地址变更；无法确定归属时 fallback，不得跳过全部异常边后声称上下文完整
+
 ### Requirement: JVM frame exception and effect semantics
 
 Frame/SSA SHALL 处理 category-1/category-2、双槽、dup/swap、uninitializedThis、new-site、初始化转换、handler entry 和 null/数组/引用合流。异常边 SHALL 保留 throwing instruction、handler 顺序、保护区间和该点 locals/effect 状态。未知类型或 effect MUST 保守保留。
@@ -73,6 +98,21 @@ Frame/SSA SHALL 处理 category-1/category-2、双槽、dup/swap、uninitialized
 
 - **WHEN** 正常或异常 predecessor 合流产生 stack/local phi
 - **THEN** 输入对应真实 predecessor 与值形状，定义/use、category-2 和 origin 不变量均通过；矛盾时返回诊断和最后有效阶段
+
+#### Scenario: Incompatible dead locals merge
+
+- **WHEN** 两条路径给同一 local 写入不兼容的值，但合流后不读取该槽
+- **THEN** local 合流为不可用 Top，不仅因此拒绝方法；后续读取 Top 才诊断失败，operand stack 的形状冲突仍须拒绝
+
+#### Scenario: Constructor initializes aliases
+
+- **WHEN** 同一 new-site 或 uninitializedThis token 经 dup/astore 留下多个别名，适用的 invokespecial init 正常完成
+- **THEN** 当前 frame 的 stack/locals 中全部同 token 别名同步初始化；构造器返回 void，异常后继不能套用正常完成后的初始化状态
+
+#### Scenario: Multiple throw sites share one raw edge
+
+- **WHEN** 同一 block 内两个 throwing instruction 经同一 handler 记录到达入口，raw CFG 聚合为一条异常边
+- **THEN** Frame/SSA 仍区分各 throw-site/context 的逻辑输入及 locals/effect，不用聚合的 raw edge 数替代 phi 输入数
 
 ### Requirement: IR invariants and honest verification
 

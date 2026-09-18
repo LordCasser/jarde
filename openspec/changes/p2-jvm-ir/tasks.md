@@ -1,6 +1,13 @@
+## 0. 本轮 review 的前置修正（先执行）
+
+- [ ] 0.1 修正 HeaderClosure/HierarchyWalk 的 initiating/defining loader 传播及身份去重，覆盖 members、声明引用、dispatch；核对 caller/driver 物理定义与环境绑定，不以 snapshot 相等代替绑定。用 ChildFirst 的 parent Owner/双 Base 反例断言解析到 parent Base；增加单请求同名跨 loader、dispatch 同名非祖先、身份不在 root 与合法跨 snapshot 对照，重跑 2.x 并独立复核（R1、D10/D15/D25，A11/A14/A16）。
+- [ ] 0.2 在共享 noak 适配保留 wide effective opcode、newarray atype、multianewarray dimensions、invokeinterface count；同步 CFG/effects，不另写 decoder。验证宽化 load/store/iinc/ret、现代无 jsr 的 wide 方法、51+ wide ret 违规及数组/调用操作数对照，重跑 1.2/3.3 与 P0 oracle、P1 BCI/XRef 回归（D03/D27，A09/A10/A17）。
+- [ ] 0.3 修正 3.4 派生存储的分配前 IrItems 计费、实际边/工作列表计费与取消检查，补 Effects requires；同步静态表与未来 3.5/4.x 预算声明，不实现这些后续阶段。以零/恰好/超限、乘积状态、装配期取消、Effects stale/未产出反例证明停止且不发布 CallContexts；阶段成功应保留真实 payload 供后继消费（R4、D22，A14）。
+
+- [ ] 0.4 修正 raw CFG 的 BCI→块查法不一致：`jsr_continuations` 不得要求 `jsr` 恰在块首，续块归属按「包含该 BCI 的块」（与 `call_context::block_of` 同一 `partition_point` 读法）解析；`cfg` 与 `call_context` 只保留一种查法。以**非块首 `jsr`** 的 3.3 回归（含子程序体无 `ret` 的非法字节码必须被 3.4 拒绝、不得 Established）与 ECJ 45–48 的 `unreachable` 由 `[8,11,15]` 修正为 `[11,15]` 的实际断言证明，并重跑 3.3/3.4 相关证据与 P1 golden（D-1/D29，A09）。
 ## 1. 基础契约与第一片交接
 
-执行前确认 [harden-p1-validation](../archive/2026-09-17-harden-p1-validation/verification.md) 的维护提交及对应 CI 通过；该维护已提交（`555c785`、`acbba49`）并由 CI run `35238994798` 证明（四个 job success），并已归档。本清单只跟踪 P2，第一轮仅做 1.1–1.3，验证并只读复核后再进入 2.x。所有任务均未实现，既有债务不并入本清单。
+P1 与验证维护均已归档；当前基线为 `4beb6b9` 加未提交的 3.4 工作区。原任务 1.1–1.3、2.1–2.5、3.1–3.3 共 11 项有交付记录，3.4 已写但未验收。新增 0.1–0.4 后为 **11/24**；已勾选不表示本轮发现的缺陷已消失。当前顺序：**0.1 → 0.2 → 0.4 → 0.3 → 3.4 → 3.5 → 4.x → 5.x**。本轮仅 review 和修订规划，不新增实现或勾选任务。
 
 - [x] 1.1 固定解析/声明查询与方法分析的请求、provider 绑定、阶段结果、origin 和预算计费契约；交付可编译的最小类型/API 及示例，验证缺少运行环境不能隐式启动解析，Bytecode/NotJava/NotPerformed 与 coverage/execution 可分别表达（A13、A17）（2026-09-17 完成：契约先经只读复核定稿，`src/environment.rs`/`resolver.rs`/`ir.rs` + 三个 `Engine` 入口 + 示例 + 28 条契约测试；实现复核首轮 Approve 的 F1–F4 与复审的 N1–N3/D1/D2 已关闭，证据见 verification 的 1.1 节）
 - [x] 1.2 在现有 noak reader 适配中提供内部类型化操作数与目标校验；用 wide/iinc、正负 branch、switch default/key/target、handler 边界、溢出/跳入操作数反例及 P0 oracle 回归验证，不另建 decoder（A09、A10）（2026-09-18 完成并独立复核 Approve：`InstructionOperands`/`control_flow_targets` 全 crate-private、公共输出与计费逐字段未变；保护区间按 JVMS 4.7.3 收紧；7 条补测关闭首轮 5 组盲点，9 个变异全部被捕获；证据见 verification 的 1.2 节）
@@ -19,18 +26,18 @@
 - [x] 3.1 完成 petgraph 候选准入：复核候选版本/维护状态并验证 MSRV 1.88、许可/feature、平行异常边、不可达节点、自环、多出口、稳定排序和预算/取消粒度；通过后引入并仅调整 CI 的 petgraph 禁令，保存依赖树与准入证据，未通过须记录可复现阻碍和替代比较（2026-09-18 完成并独立复核 Approve：准入证据见 verification 的 3.1 节；依赖以 `=0.8.3` + `std`-only 引入，两个 lock 只新增不升级，CI 只删 petgraph 禁令并加双向 feature 断言；无生产代码引用；登记 A17 守卫缺口与升级门槛两项债务，守卫在 3.3 落地时补）
 - [x] 3.2 实现固定 phase/PassDescriptor 静态依赖与 invalidation 校验；用缺失前置、环、错误顺序和 CFG 变更后拒用旧分析的反例验证，不引入动态调度框架（2026-09-18 完成并独立复核 Approve：`passes.rs` 的静态表 + 启动校验（缺前置/逆序/成环）+ `FactLedger` 失效与失败隔离；复核发现 `budget` 单一类别表达不了多维度计费、已在 3.3 前改为维度集合并加金标断言；证据见 verification 的 3.2 节）
 - [x] 3.3 实现 raw CFG、指令级 throw sites、handler order、保护区间和 effect facts；用分支/switch/不可达块/重叠 handlers 验证异常边来源及 locals/effect 状态，P1 原 BCI 与引用数量不变（A09、A17）（2026-09-18 完成；独立复核首轮 Reject（条件分支目标等于 fall-through 时重复发边并重复计费、异常边去重零用例、A17 token 缺 `crate::cfg`/`crate::passes`），四项修正后各自变异被捕获；`analyze_method` 首次真跑方法分析，`method_bodies`/`ir_items`/`ir_edges`/`analysis_steps` 成为真实维度；证据见 verification 的 3.3 节）
-- [ ] 3.4 实现 raw returnAddress/调用上下文分析；真实历史 finally、共享/嵌套子程序和异常路径须有可核对的返回点及受影响 locals，非法 51+ jsr/ret 明确违规（A09）
+- [ ] 3.4 在现有候选上修正 returnAddress 值流和异常上下文：ret 的 local 必须持有已证明的返回地址，handler 回接 ret 的 locals/返回值必须计入；保留 accessed/written 区别和嵌套来源。0.2/0.3 完成后，以错槽/覆盖/共享/嵌套/异常回接与真实历史 finally 对照、版本违规及预算停止验收，并逐触发证明可达性作用域一致（死调用点不阻塞活调用点：每类触发同时断言死代码形态仍 Established，使删除可达性判定的变异必被捕获），证明旧实现反例失败并独立复核；通过前不得进入 3.5（R2/R3，A09）
 - [ ] 3.5 实现有界 jsr/ret 克隆规范化及 CanonicalCFG；验证一对多 origin、异常范围、恰好/超界克隆、取消和 bytecode fallback，保存失败反例及本片只读复核（A09、A13）
 
 ## 4. Frame 与 stack/local SSA
 
-- [ ] 4.1 实现 descriptor 驱动的 Frame 与 category-1/2、双槽、dup/swap；以合法/非法组合及缺失 debug/StackMap fixtures 验证状态、不变量和 NotPerformed，不能把推导成功当 verifier 成功（A10）
-- [ ] 4.2 补齐 uninitializedThis/new-site/初始化转换、handler entry、null/数组/未知引用合流；用同一 block 不同 throw-site 的 locals 对照、缺失依赖和循环收敛/超限验证，不伪造确定类型（A10、A14）
-- [ ] 4.3 实现 stack/local SSA、正常/异常 predecessor 的 phi、定义/use、origin 与 effect 顺序；以 diamond/loop/不可约/异常合流、高扇出 phi 和多槽位预算验证，保留最后有效阶段并完成本片只读复核（A10、A13）
+- [ ] 4.1 实现 descriptor 驱动的 Frame、可用/Top 区分、category-1/2、双槽覆盖、dup/swap；以死亡 local 不兼容合流可接受、随后读取 Top 被拒绝的双侧对照补充验收；以合法/非法组合及缺失 debug/StackMap fixtures 验证状态、不变量和 NotPerformed，不能把推导成功当 verifier 成功（A10）
+- [ ] 4.2 补齐 uninitializedThis/new-site 所有别名的初始化转换及构造调用异常状态、handler entry、null/数组/未知引用合流；验证 new/dup/astore 别名，以及同 raw edge 下不同 throw-site 输入；用同一 block 不同 throw-site 的 locals 对照、缺失依赖和循环收敛/超限验证，不伪造确定类型（A10、A14）
+- [ ] 4.3 实现 stack/local SSA、正常边及指令级异常逻辑 predecessor 的 phi、定义/use、origin 与 effect 顺序；以 diamond/loop/不可约/异常合流、高扇出 phi 和多槽位预算验证，保留最后有效阶段并完成本片只读复核（A10、A13）
 
 ## 5. Bytecode 产品与最终验收
 
 - [ ] 5.1 接通方法分析库与薄 JSON CLI；验证 Bytecode/Conservative/Fallback、NotJava、NotAttempted、独立语义证据/verification、阶段 coverage/execution、成员失败隔离、abstract/native 无 Body，库/CLI 逐字段一致（A13）
 - [ ] 5.2 加入实际入口的读取/构造计数：单方法不加载无关 Body，P1 X0/X1 不启动 resolver/CFG/SSA/Region/Java AST；重复运行输出身份与顺序一致（A14、A16、A17）
 - [ ] 5.3 建立固定 replay 名单的 P2 golden、性质与有预算 fuzz：45–52 历史 class、缺失依赖/debug、非法版本、共享 jsr、异常重叠及资源边界均可到达；复用维护后 harness，断言执行状态和阶段不变量，不仅断言形状或不 panic（A09–A11、A13、A14、A16）
-- [ ] 5.4 同步五维支持矩阵、库/CLI 文档和验证记录；运行 fmt、clippy -D warnings、测试及 oracle、MSRV、两个 workspace 的 supply-chain、规定时长 fuzz、OpenSpec strict 和 diff 检查。记录精确 commit/CI run 与各片只读复核结论；确认未宣称 Java/Region 恢复，全部通过才归档
+- [ ] 5.4 同步五维支持矩阵、库/CLI 文档和验证记录，直接修正 analysis-contracts Purpose 与 query-api 的过时 P2 承诺并保持 X0/X1 行为不变；运行 fmt、clippy -D warnings、测试及 oracle、MSRV、两个 workspace 的 supply-chain、规定时长 fuzz、OpenSpec strict 和 diff 检查。记录精确 commit/CI run 与各片只读复核结论；确认未宣称 Java/Region 恢复，全部通过才归档

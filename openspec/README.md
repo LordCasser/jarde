@@ -1,6 +1,6 @@
 # OpenSpec 规划入口
 
-P0–P5 的 proposal、design、specs 和 tasks 已建立。P0 与 P1 均已完成、验证并归档，六份主规格已同步：P0 的 `analysis-contracts`、`artifact-snapshots`、`classfile-inspection` 与 P1 的 `artifact-views`、`query-api`、`structural-xref`。P1 交付公共 query/view/identity 模型、bounded artifact-tree/nested/Boot/WAR 物理 provider、标准 MR-JAR 选择、结构 XRef consumer、query API 与 CLI，以及验收语料索引/golden/proptest 性质与有界 fuzz 门禁；P2–P5 仍未实现。阶段完成度以归档或 active tasks、实际代码和行为验收为准，在对应门槛满足前不发布能力或性能承诺。
+P0–P5 的 proposal、design、specs 和 tasks 已建立。P0 与 P1 均已完成、验证并归档，六份主规格已同步：P0 的 `analysis-contracts`、`artifact-snapshots`、`classfile-inspection` 与 P1 的 `artifact-views`、`query-api`、`structural-xref`。P1 交付公共 query/view/identity 模型、bounded artifact-tree/nested/Boot/WAR 物理 provider、标准 MR-JAR 选择、结构 XRef consumer、query API 与 CLI，以及验收语料索引/golden/proptest 性质与有界 fuzz 门禁；P2 已交付 1.x/2.x/3.1–3.3，3.4 工作区候选尚未通过本轮 review；当前 11/23 项，先做三项前置修正。P3–P5 尚未实施。阶段完成度以归档或 active tasks、实际代码和行为验收为准，在对应门槛满足前不发布能力或性能承诺。
 
 - [架构基线](../JVM_Rust_Engine_Final_Architecture.md)：产品目标、I1–I12、模型与管线。
 - [阶段路线](roadmap.md)：阶段依赖、范围与进入/出口门槛。
@@ -20,8 +20,8 @@ P0–P5 的 proposal、design、specs 和 tasks 已建立。P0 与 P1 均已完�
 
 ```sh
 openspec list
-openspec status --change p1-query-xref
+openspec status --change p2-jvm-ir
 openspec validate --all --strict --no-interactive
 ```
 
-P0 归档记录及最终验证位于 `changes/archive/2026-09-17-establish-p0-foundation/`，P1 位于 `changes/archive/2026-09-17-p1-query-xref/`（两者都按各自 tasks 逐项实现并有 verification 记录，最终候选 CI 通过后才归档并同步主规格）。下一实施阶段为 `p2-jvm-ir`。已有 `.agents/skills` 为 OpenSpec 生成的工作流文档，不属于引擎代码；当前不发布 crate。
+P0 归档记录及最终验证位于 `changes/archive/2026-09-17-establish-p0-foundation/`，P1 位于 `changes/archive/2026-09-17-p1-query-xref/`（两者都按各自 tasks 逐项实现并有 verification 记录，最终候选 CI 通过后才归档并同步主规格）。当前继续 `p2-jvm-ir`，执行顺序与闸口见 [阶段路线](roadmap.md) 和 [任务清单](changes/p2-jvm-ir/tasks.md)。已有 `.agents/skills` 为 OpenSpec 生成的工作流文档，不属于引擎代码；当前不发布 crate。

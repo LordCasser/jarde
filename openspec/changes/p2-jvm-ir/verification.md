@@ -1,6 +1,8 @@
 # P2 实施验证记录
 
-日期：2026-09-17。规划与契约基线 `35fdf6d`。本轮只实现 **1.1**；1.2/1.3 与 2.x–5.x 均未开始，解析、闭包、CFG、SSA 与预算维度扩展都没有实现。所有命令按单作业执行（`CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 RUST_TEST_THREADS=1`）。
+以下各片记录保留实施时点。当前状态和本轮发现以文末「2026-09-18 当前工作区复核」为准；本轮仅审查、修订文档，未修复实现。
+
+1.1 历史记录日期：2026-09-17。规划与契约基线 `35fdf6d`。本轮只实现 **1.1**；1.2/1.3 与 2.x–5.x 均未开始，解析、闭包、CFG、SSA 与预算维度扩展都没有实现。所有命令按单作业执行（`CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 RUST_TEST_THREADS=1`）。
 
 ## 1.1 公共契约与最小 API
 
@@ -179,52 +181,125 @@
 | # | 债务 | 来源 | 处置 |
 | --- | --- | --- | --- |
 | D01 | `artifact_tree` 的 fuzz 峰值 RSS 470–500 MB 对 512 MB 限额（余量 2–8%） | P1 验证 | 保持观察：CI 未 OOM；**禁止用缩短运行掩盖**，一旦 OOM 先留证据（`/usr/bin/time -l` / CI 日志）再按 design 的处置顺序决策；5.3/5.4 需带证据复核 |
-| D02 | `control_flow_targets` 在截断方法体上 sound-but-incomplete | 1.2 复核 | **3.3 处理**：raw CFG 必须读 `execution`/`stopped_at` 并把图标为不完全 |
-| D03 | `newarray` atype、`multianewarray` dimensions、`invokeinterface` count 未保留 | 1.2 补充 | 接受为边界（P2 不需要）；若 4.x 需要须先扩 reader 事实 |
+| D02 | `control_flow_targets` 在截断方法体上 sound-but-incomplete | 1.2 复核 | 已由 3.3 的 completeness/可靠前缀与 p2_cfg 回归处理；本轮该测试目标 9 passed，0.2 修改分块后须重跑 |
+| D03 | `newarray` atype、`multianewarray` dimensions、`invokeinterface` count 未保留 | 1.2 补充 | 撤回“P2 不需要”：4.x 消费前必需；转 0.2 共享 reader 补齐与真实字节对照 |
 | D04 | 操作数事实 ≈80 B/指令，只按 `CodeBytes` 计费 | 1.2 | 接受：1.3 的 churn 表已记录；如需更细粒度须改 1.3 口径 |
 | D05 | `Location::Entry.span` 坐标与其它来源不一致；record component 的 descriptor 类别不一致 | P1 | 接受为既有边界；5.4 文档同步时在支持矩阵的已知边界里点名 |
 | D06 | `has_more = true` 且 `cursor = null` 的组合 | P1 | 已在支持矩阵写明（停止且未发布新项时调用方需重试同一请求）；5.1/5.3 的 golden 覆盖该形态 |
 | D07 | 重复物化 / 方法体解两遍（P1 `Type`-only 请求、2.x 的多次枚举） | P1/2.2 | 归 P5（索引）；2.2/2.5 已登记为「2.5 全 scope 枚举前需索引」 |
 | D08 | `output_bytes` 在 standalone root（`root_bytes`）与 ZIP/tree entry 之间口径不对称 | 2.1 复核 | 接受并已写入支持矩阵；5.3 按维度断言前须引用该口径 |
 | D09 | `skipped` 是整请求求和的**保守上界**（高报未决、绝不低报） | 2.2/2.5 复核 | 已写进 2.5 契约；**5.3** 要么收紧为逐查找集合，要么在 golden 里固定该上界语义 |
-| D10 | 闭包键 `(loader, name)` 的 loader 分量在公开路径不可证伪 | 2.2 复核 | 已写进契约：可观测条件是「出现第一个以非调用方 loader 发起需求的调用方」（可能晚于 2.5） |
+| D10 | 闭包键 `(loader, name)` 的 loader 分量在公开路径不可证伪 | 2.2 复核 | 撤回不可证伪边界：R1 已用公开成员查询证明错误，转 0.1；闭包后继必须由 defining loader 发起 |
 | D11 | `providers` 的 `remembered`/`record_read`/`visited` 线性扫描 | 2.2 复核 | 归 P5（索引）；规模受 `class_headers`/`analysis_steps`/`elapsed_millis` 约束 |
-| D12 | `method_bodies` 在 3.x 接通计费前没有计费点 | 2.2/2.3 复核 | **3.3 起接通**（本片让 `analyze_method` 真有工作）；在此之前任何「以 `method_bodies == 0` 证明不读 Body」的断言都不成立（已改用 `code_bytes`） |
+| D12 | `method_bodies` 在 3.x 接通计费前没有计费点 | 2.2/2.3 复核 | 已由 3.3 接通；本轮 p2_cfg 回归通过。旧切片的零计费证据仍按当时 code_bytes 对照解释 |
 | D13 | `subtype_of` 遇到调用方层级成环时静默跳过 → `Inaccessible` 且无环诊断 | 2.3 复核 | 接受为不对称边界；若 5.x 需要诊断须先给调用方层级加环码 |
 | D14 | signature-polymorphic 警告在调用点描述符恰好等于声明描述符时文案仍称「两者按规则不同」 | 2.3 复核 | 低优先：改文案或在 5.4 文档里说明 |
-| D15 | `read_definition` 的记录挂在请求声明的 `caller.loader` 上（`PhysicalDefinitionId` 不含 loader，API 内不可校验） | 2.3 复核 | 接受为边界（按请求输入语义）；若 5.x 需要严格校验须扩身份模型 |
+| D15 | `read_definition` 的记录挂在请求声明的 `caller.loader` 上（`PhysicalDefinitionId` 不含 loader，API 内不可校验） | 2.3 复核 | 转 0.1：显式校验 caller/driver 的 loader 与物理定义绑定；不同 snapshot 可以是合法 provider，不能只校验 snapshot 相等 |
 | D16 | `DeclarationRefQuery.consumers.version` 不校验（`Engine::query` 会拒绝非 1） | 2.4 复核 | 接受；若要统一，属小改动，5.4 前决定 |
 | D17 | 「解析到别的声明」无独立报告桶（只能由 `reads`/usage 观察） | 2.4 复核 | 已写进契约（报告不设第三个桶）；5.3 的 golden 覆盖该形态 |
 | D18 | `ResolutionReport.resolved`/`candidates` 不单独计费 | 2.5 复核 | 已写进契约（判定证据字段不重复收费）；由绝对账单边界守护 |
-| D19 | petgraph A17 守卫缺口：受守卫文件里 `use petgraph::…` 不被捕获 | 3.1 复核 | **3.3 处理**：把 `petgraph::`/`petgraph as`/`extern crate petgraph` 加进 `A17_IMPORT_TOKENS` 并证伪 |
+| D19 | petgraph A17 守卫缺口：受守卫文件里 `use petgraph::…` 不被捕获 | 3.1 复核 | 已由 3.3 增加 petgraph 三类 token 与注入自检；工作区另覆盖 call_context，5.2 仍需实际构造计数 |
 | D20 | 第二个 petgraph 版本只剩 `cargo-deny` 的 warn 可见；升级门槛（重推 feature 名清单）依赖人工 | 3.1 复核 | 记入升级清单；升级时必须重跑 3.1 的行为证据 |
-| D21 | `engine.rs` 的 pass 校验接入在公共路径不可观测；前缀规则在 `ir::scheduled_stages` 与 `passes::validate_schedule` 各有一份 | 3.2 复核 | **5.1 处理**：以校验器返回的表前缀作为唯一执行/阶段来源，并断言「报告 `stages` == 校验器前缀」 |
-| D22 | `Effects` 目前无消费者（其失效在运行时不被强制） | 3.2 复核 | 契约已写「事实的消费者必须写进 `requires`」；4.x 接通消费者时须同步 |
+| D21 | `engine.rs` 的 pass 校验接入在公共路径不可观测；前缀规则在 `ir::scheduled_stages` 与 `passes::validate_schedule` 各有一份 | 3.2 复核 | 3.3 已使 Engine 消费 validate_requested_stages 返回的 pass 前缀；5.1 保留 stages 与执行前缀的一致性验收 |
+| D22 | `Effects` 目前无消费者（其失效在运行时不被强制） | 3.2 复核 | 当前 3.4 已读取 raw.effects 但漏 Effects requires；转 0.3，加 stale/未产出反例，见本轮 R6 |
 | D23 | `progress()` 的「尚无 phase 完成」分支与空集合分支仓内无覆盖 | 3.2 复核 | 探针证明可达且正确；5.1 装配真实 `stages` 时会走到 |
-| D24 | `analysis-contracts` 的 Purpose 仍是 P1 口径；`query-api` 仍称 P2 会处理 `references_definition`；`jvm-ir` spec 写「budget class」单数而契约为维度集合 | P1/P2 记录 | **5.4 归档前必修**：同步 Purpose、把 `query-api` 的那句改成与实现一致、把 `jvm-ir` 的 budget 措辞改成集合 |
-| D25 | `analyze_method` 的 driver 读取按**物理身份**，不受环境 domain/root 约束（构造「环境指向快照 B、请求 owner 在快照 A」可读到 A 的定义并把 loader 记成 app） | 3.3 复核 | **5.1 决策**：要么要求 `method.owner` 的 snapshot 与 `runtime.physical.snapshot` 一致，要么在契约里写清身份读取与 loader 归属口径 |
+| D24 | `analysis-contracts` 的 Purpose 仍是 P1 口径；`query-api` 仍称 P2 会处理 `references_definition`；`jvm-ir` spec 写「budget class」单数而契约为维度集合 | P1/P2 记录 | jvm-ir budget 集合已在本轮 delta 修订；5.4 仍须直接修正主规格 Purpose 和 query-api 的过时阶段承诺，不接线 P1 query |
+| D25 | `analyze_method` 的 driver 读取按**物理身份**，不受环境 domain/root 约束（构造「环境指向快照 B、请求 owner 在快照 A」可读到 A 的定义并把 loader 记成 app） | 3.3 复核 | 转 0.1，与 D15 一起固定 driver 的真实 loader/definition 绑定；不能给 content 中任意物理定义贴 app 身份 |
 | D26 | 内部块上限（16 384）与请求级 `ir_items` 在报告层只能靠诊断文案里的 `limit=16384` 区分（`Error::BudgetExceeded` 的 limit/consumed/requested 在 `ir::terminal` 被丢弃） | 3.3 复核 | 接受为现状；5.1 若要发布计数需先决定是否给独立 code |
-| D27 | `wide` 包裹的 opcode 在 1.2 未保留（`wide iload/istore/ret` 既不分类局部读写也不结束块；`wide iinc` 经 increment 仍分类） | 3.3 实现 | 接受为 1.2 边界（与 `newarray` atype 同类）；若 3.4/4.x 需要 `wide ret`，先扩 1.2 事实 |
+| D27 | `wide` 包裹的 opcode 在 1.2 未保留（`wide iload/istore/ret` 既不分类局部读写也不结束块；`wide iinc` 经 increment 仍分类） | 3.3 实现 | 不再接受为可推迟边界：转 0.2，需回归 1.2/3.3 与 3.4 的现代 wide 方法、51+ wide ret 分支 |
 | D28 | catch 类型匹配不在 `cfg` 层做（throw site 的 handler 列表只按保护区间与声明顺序，不过滤类型） | 3.3 契约 | 已写进契约：类型层次属 resolver，`cfg` 不得依赖 |
+| D29 | BCI→块有两种查法：`cfg::block_position` 用 `binary_search_by_key`（要求恰为块起始），`call_context::block_of` 用 `partition_point`（最后一个起始 ≤ bci）；`jsr_continuations` 用前者，故 `jsr` 非块首时静默丢掉续块关系 | 3.4 复核（D-1） | **转 0.4**：统一为「包含该 BCI 的块」并各补一条非块首 `jsr` 回归；修正后 ECJ 45–48 的 `unreachable` 应为 `[11,15]` |
+| D30 | `Established` 的载荷可以含 `targets: []` 的 `SubroutineReturn`（死代码里的 `ret`）；契约未规定 3.5 如何消费「已发布但无归属」的返回点 | 3.4 复核 | 已写进 3.4 的载荷不变量：`targets` 为空时 3.5 MUST NOT 据其建边；3.5 验收须含该形态 |
+| D31 | 截断体但上下文恰好完整时是 `Established` + stage `Partial`；原「截断体 ⇒ 触发①」的叙述只覆盖失败的那一半 | 3.4 复核 | 契约已改为逐触发声明作用域；3.4 验收须同时断言这一组合 |
+| D32 | `ir_call_context_inconsistent` 不是「公共路径不可达」，而是「raw 图与 reader facts 自洽时不可达」；它经 `ir::terminal` 映射为 `Failed{Error}` + Error 诊断写进公共 diagnostics | 3.4 复核 | 措辞已按此修正；`provenance: None` 与 A09/A13 的 origin 期望差距仍归 5.1 |
+| D33 | 装配期（`assemble`/`instruction_ranges`/`successors`/`plans`）没有 poll/charge，是唯一不按 pass 边界检查取消的窗口 | 3.4 复核 | **转 0.3**：建表与最终装配均需 poll，派生存储在增长前计 `IrItems` |
+| D34 | `ir_pass_not_implemented` 的产物面组合：3.4 正常完成后 `stages` 为 C,C,C + 后续 `Failed{ir_pass_not_implemented}`，此时 `quality = Fallback` 是 `analysis_report` 的字面量（`ir.rs` 无分支），不构成「走了 fallback」的分类证据 | 3.4 复核 | 3.5 前不得用 `quality` 作断言依据（示例与文档已注明）；5.1 给出真实分类后补断言 |
 ## P2 验收映射现状（滚动更新）
 
 按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
 
 | 验收 | 承担任务 | 现状 | 还缺什么（退出 P2 前必须补） |
 | --- | --- | --- | --- |
-| A11 Base.foo / Sub CP owner | 2.3、2.4、2.5 | **已达成（待 5.4 总门禁）**：2.3 成员解析（46 条用例 + 探针，含 JVMS 5.4.3 三条搜索路径、访问与调用种类规则、default conflict）；2.4 声明引用查询（`Base.foo` 在 `Sub` 调用时 `mentions_symbol(Base.foo)`=0 而声明查询返回该 use-site、`resolved` 指向 `Base`；未使用 CP 不算引用；未决候选保留 use-site 不当作已排除）；2.5 已知范围 dispatch（候选 + open-world 证据，单一候选不声称唯一运行目标） | 5.4 的总门禁与文档同步（功能面已全部落地并有独立复核） |
+| A11 Base.foo / Sub CP owner | 0.1、2.3、2.4、2.5 | **单 loader 基线已覆盖，跨 loader 修正未完成**：2.3 成员解析（46 条用例 + 探针，含 JVMS 5.4.3 三条搜索路径、访问与调用种类规则、default conflict）；2.4 声明引用查询（`Base.foo` 在 `Sub` 调用时 `mentions_symbol(Base.foo)`=0 而声明查询返回该 use-site、`resolved` 指向 `Base`；未使用 CP 不算引用；未决候选保留 use-site 不当作已排除）；2.5 已知范围 dispatch（候选 + open-world 证据，单一候选不声称唯一运行目标） | 0.1 关闭 R1，重跑声明查询/dispatch 的定义身份对照，再执行 5.4 总门禁 |
 | A14 全范围中断/缺失依赖 | 1.3、2.1、2.2、2.3、2.4、2.5、5.1 | **部分**：18 项预算维度与两个高水位就位；2.1–2.5 的停止语义（`Partial`/`Cancelled`/`BudgetExceeded` + 前缀）各有实证，2.5 补上 scope 枚举预算与 `DependencyDepth`→listing 截断的停止路径 | 5.1 的库/CLI 一致性与终止语义逐字段一致；4.x 阶段的停止（Frame/SSA 预算） |
 | A16 单方法按需边界 | 2.2、2.3、2.4、2.5、5.2 | **部分**：`reads` 记录 (definition, loader) 与理由（含 `DispatchScope`）；成员搜索与 dispatch 都不读 Body（`code_bytes == 0` 有真实对照，2.4 另有"与同 consumers 的 P1 扫描计费相等"口径） | 5.2 的实际入口读取/构造计数（不加载无关 Body、不建全局 XRef） |
-| A17 X1 零 CFG/SSA/AST | 1.1、3.3、5.2 | **部分**：源码级守卫（`query`/`xref` 不得引用 P2 模块与类型，含推导的类型名单与注入自检） | **已证实的缺口**：3.1 引入 petgraph 后，受守卫文件里 `use petgraph::…` 能编译且守卫不报警（3.3 必须把 `petgraph::`/`petgraph as`/`extern crate petgraph` 加入 `A17_IMPORT_TOKENS`）；`crate::dispatch` 等新 crate-private 模块也不在 token 表；5.2 的构造计数是行为侧证据 |
-| A09 历史 jsr/finally | 3.3–3.5 | **未开始** | raw CFG/returnAddress/有界规范化 + 真实历史 finally 语料 |
+| A17 X1 零 CFG/SSA/AST | 1.1、3.3、5.2 | **部分**：petgraph、cfg、passes 的 token 守卫已由 3.3 补齐；工作区另有 call_context token | 5.2 的实际构造计数；新增私有模块的守卫覆盖仍须审计，源码 token 不是行为证明 |
+| A09 历史 jsr/finally | 0.2、0.3、3.3–3.5 | **部分**：raw CFG 已交付，3.4 候选被 R2/R3/R4 阻塞 | 修正值流/异常/预算、真实历史 finally 与 3.5 有界规范化 |
 | A10 缺失 StackMap/debug | 4.1–4.3 | **未开始** | Frame 推导、版本合法性诊断、`NotPerformed` 语义 |
 | A13 成员级失败 | 5.1 | **未开始** | 同类正常与失败方法并存、五平面分开报告 |
 | A18 输入变化 | P0/P1 已覆盖 | **保持** | 每个缓存/并行阶段引入时回归（P5） |
 
-结论：A11 的功能面已随 2.3–2.5 全部落地并有独立复核，但**只有 5.4 的总门禁跑完才算通过**；A14/A16/A17 仍各缺 5.x 的入口侧证据（A17 另有一处已被证实的守卫缺口，必须由 3.3 关闭）。上表在每片收口时更新。
+当前结论：2.x/3.3 的已有证据保留；本轮跨 loader 反例使 A11 重新需要修正，3.4 尚未通过。A14/A16/A17 仍缺各自后续入口/资源证据，不能因某片测试全绿就宣布 P2 完成。
 
 ## 第一片（1.1–1.3）状态与闸口
 
 - 1.1、1.2、1.3 均已完成、独立复核 **Approve** 并有各自 CI 记录；第一片的退出条件（reader 类型化操作数、预算维度、结果/请求契约可用）已满足。第一片整体以提交 `0cba0d6`（实现）+ `6344508`（文档）推送，CI run [`35253446169`](https://github.com/LordCasser/jarde/actions/runs/35253446169) 四个 job 全部 success（`stable` 含 ignored JDK 25 oracle、`MSRV 1.88.0`、双 workspace `supply chain`、`fuzz smoke`）。
-- 2.5 已完成实现并经两轮独立只读复核（首轮有条件 Approve，三项必须改已关闭；复审要求补三条用例，收口记录见 2.5 节）。3.x 起未开始。按 `tasks.md`，各片逐项实现、验证并只读复核后再交接。
-- 债务池（登记，不阻塞）：1.2 的操作数存储放大与未完整解码前缀语义（3.x 消费前收紧）、`fuzz/README.md` 措辞、P2 维度真实膨胀由 3.5/4.3 验收、`query-api` 与 `analysis-contracts` 的 spec delta 在 P2 归档时同步主规格。
+- 2.5 已完成实现并经两轮独立只读复核（首轮有条件 Approve，三项必须改已关闭；复审要求补三条用例，收口记录见 2.5 节）。3.1–3.3 已有交付，3.4 为未提交候选且本轮 review 未通过；当前执行顺序改为 tasks 的 0.x 后再继续 3.4/3.5。
+- 债务按上表区分已关闭、必须前置与继续延期；D03/D10/D15/D22/D25/D27 已提升为 0.x 的进入门槛。P5 物化/索引、P1 坐标口径和文案维护继续拆分，不混入这些正确性修正。
+
+## 2026-09-18 当前工作区复核
+
+### 基线与结论
+
+**结论：需要修正后继续；3.4 不接受交接到 3.5。** 本轮不改实现、不归档、不勾选任务，保留其他 agent 已写的代码。原 11/20 项历史勾选保留，新增 0.1–0.3 后为 11/23；0.x 是明确未完成的修正义务。审查重点是 2.x 定义身份、3.3/3.4 边界及后续 Frame/SSA 设计，不是对全部 P2 代码的无缺陷证明。
+
+- HEAD 与 origin/main 同为 `4beb6b9ce5322a94ff0a0c571ae532d687096523`。3.4 工作区包含 `src/call_context.rs`、`tests/p2_return_address.rs` 及 engine/cfg/passes/ir/API、示例和文档修改；均未提交。
+- `src/call_context.rs` SHA-256 为 `dfcbe0ed9b81dd5acef3507cfb5b06c69bb5d26bb00825e4eb55d54988817d30`，`src/cfg.rs` 为 `bf7395c26fc520643c4b77ea6880ad23ad2a7765df898a8d7046770573ac6f00`，`src/engine.rs` 为 `ff37579dbbd87aa79407654aaf8c9d2c62cebaae32e4799873a71fba040e2242`，`src/passes.rs` 为 `dff9fa158d8fd8d5ece16ab5c0ce29938fd36b615394a3a62581c68990b0302b`。本地验证起止 hash 相同。
+- 3.3 后续文档提交 `66ee2d87d8db3abeb63bf6718004e1ff308383d3` 的 [CI 35291411285](https://github.com/LordCasser/jarde/actions/runs/35291411285) 与 HEAD 的 [CI 35293844696](https://github.com/LordCasser/jarde/actions/runs/35293844696) 均四 job success。后者不含未提交 3.4，不能给该候选背书。
+- 3.3 原复核写“待连续性确认”；本轮确认其后续提交/CI 与本地 CFG 回归，但未取得原复核者新增的 Approve，因此不改写原结论。0.2 改到 reader/分块后须重新确认受影响部分。
+
+### 本轮门禁与反例
+
+默认 `/opt/homebrew/bin/cargo` 为 1.98.1。本轮独立只读核验：fmt check、workspace/all-targets/all-features clippy `-D warnings` 均 exit 0；`cargo test --locked --test p2_return_address --test p2_cfg --test p2_passes --test p2_contracts` 分别 7、9、4、29 passed，合计 **49 passed / 0 failed**。修改规划前 OpenSpec strict **10/10**。未重跑完整测试、MSRV、oracle 或完整 fuzz，本轮不冒认这些为新增本地证据。
+
+四个反例均在复制 tracked/untracked 源码的隔离副本运行，新增探针没有写回工作区：
+
+| 编号 / 优先级 | 输入与实际结果 | 原因与影响 | 修正归属 |
+| --- | --- | --- | --- |
+| R1 / P1 | ChildFirst 的 child 中有 Base；parent 中有 Owner extends Base 和另一个 Base；两 Base 都声明 public f:I。公共 `resolve_symbol(Owner.f)` 实际返回 **child Base** 的物理定义/loader，并报 Resolved、Complete、无诊断；期望 parent Base | `HeaderClosure::demand` 总从 runtime loader 开始，HierarchyWalk 待展开项只有 name，没有定义 loader。错误声明会传入声明查询、dispatch 和后续类型分析 | 0.1，重新验证 2.x |
+| R2 / P1 | v49：`0:jsr 4; 3:return; 4:astore_0; 5:ret 1`。实际 Established，返回目标 BCI 3；local 1 从未保存返回地址 | `Walk::visit` 只按 ret 所在 active context 加入 targets，不消费 ret local/token。后续克隆会凭空建立控制流；NotPerformed 不能授权伪造已证明的返回点 | 3.4 |
+| R3 / P1 | v49：jsr 4；子程序 astore_0 后在 BCI 7 idiv，handler 写 local 1/2 再 goto ret 0。实际 Established 的 affected_locals 为 `[0]`，应包含 `[0,1,2]` | `Walk::step` 丢弃全部 Exception 边，只记录覆盖 ordinal；handler 在同一上下文继续执行时，其写入和 token 变化全部漏掉。原 design 的“handler locals 不进入遍历”也错误，已撤回 | 3.4 |
+| R4 / P2 | 先以充足预算建立 raw CFG，再对合法 jsr/astore_0/ret 0 调 `call_contexts`，新 budget `ir_items=0`、steps 充足。实际成功创建非空 contexts/returns | plans、visited、每上下文集合和装配只消耗 Steps，越过独立 IR 存储限额；私有载荷同样可能按 context×block/handler 膨胀 | 0.3 |
+
+探针命令：`cargo test --locked --lib call_context::tests::review_ -- --nocapture`（新增三项都应在旧实现失败）；`cargo test --locked --test p2_members review_parent_defined_owner -- --nocapture`（新增一项在旧实现失败）。首次用较宽 `--lib review_` 过滤时另外命中一项既有 classfile 测试且通过，不能计成新增探针通过。
+
+最小复现资料（复用相应测试文件已有 helper，修复轮需转成永久回归）：
+
+```text
+R2 / R4：call_context.rs tests::body
+instructions = [jsr(0,4), plain(3,0xb1), store(4,0x4b,0), ret(5,N)]
+handlers = []; code_length = 7; major = 49
+R2: N=1; assert Unresolved（或等价的明确失败，无 CallContexts）
+R4: N=0; graph 先建立；call_contexts 的 Budget 仅 ir_items=0，其他相关维度充足；assert Err(IrItems)
+
+R3：同一 body helper；code_length=17; major=49
+0 jsr +4; 3 return; 4 astore_0; 5 iconst_1; 6 iconst_0;
+7 idiv; 8 pop; 9 ret 0; 11 astore_1; 12 iconst_0; 13 istore_2;
+14 goto -5（到9）
+exception table: ordinal 0, start=5, end=8, handler=11, catch_all
+assert contexts[0].affected_locals == [0,1,2]
+
+R1：p2_members.rs 的 Class/open/zip_of/domain/environment/World helpers
+child snapshot: p/Base { public int f; }
+parent snapshot: p/Owner extends p/Base; p/Base { public int f; }; java/lang/Object
+child domain: ChildFirst, parent_loader=parent, roots=[child snapshot]
+parent domain: ParentFirst, roots=[parent snapshot]
+content=[child,parent]; runtime domain=child; caller=abstract_caller(child)
+resolve(field(p/Owner,f,I), FieldRead)
+assert state=Resolved && resolved.loader=parent
+并断言 resolved.definition 对应 parent snapshot 的 Base，而非仅 owner 名字相等
+```
+
+以上前三类语义反例依据 JVMS 的 defining loader、ret local 与子程序数据流规则，不要求本引擎实现完整 verifier。参考 [JVMS 5.3/5.4.3.1](https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-5.html#jvms-5.4.3.1)、[ret 指令](https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.ret)；R4 来自本项目既有的分配前预算契约。
+
+### 静态发现及规划修正
+
+- **R5（前置 facts）**：wide effective opcode 缺失会使合法现代 wide 方法 unresolved，且 wide ret 无法进入 51+ 违规判定；atype/dimensions/count 也不能继续登记成“P2 不需要”。0.2 补齐共享 reader，并回归 raw CFG/effects。
+- **R6（Pass 契约）**：当前 call_context 读取 `raw.effects`，`legacy_normalization.requires` 未声明 Effects。0.3 加入依赖与 stale 反例；后续阶段预算集合同时补齐，并保留真正可消费的 payload。
+- **R7（未实施的 Frame/SSA 设计）**：locals 合流缺 Top、初始化只转换单槽、把 `<init>` 的返回值当转换来源、phi 只数聚合 raw 边，以及允许 fixture 证据升级 verification 的描述均已修订。参考 [JVMS 4.10.2](https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html#jvms-4.10.2)；该项是防止后续实现照错误设计推进，不宣称发现已有 Frame/SSA 实现错误。
+
+不追加依赖；继续复用已准入 noak/petgraph。P5 索引/重复物化与 P1 坐标/类别等债务保持拆分。依次执行 0.1 → 0.2 → 0.3 → 3.4，通过定向反例与独立复核后再进入 3.5/4.x。本轮文档修订不等于这些修正任务完成。
+
+### 文档修订后的核验
+
+独立只读核验：`openspec validate --all --strict --no-interactive` 为 **10 passed / 0 failed**，`git diff --check` exit 0；tasks 为 **11 checked / 12 unchecked（11/23）**，0.1–0.3 均未勾选。12 个变更 Markdown 文件的 41 个本地文件链接均存在，当前状态文字与历史记录已区分。对照本轮开始时的 10 个相关源码/测试 hash，无一变化；另对隔离快照比对其余源码、manifest/lock 和 CI 文件，未发现实现变更。本轮新增内容仅为文档，四个探针及其运行产物留在隔离副本。

@@ -1,6 +1,10 @@
 ## Context
 
-规划基线为 `8fcdd664b656c4e8cdf383f9c3756a95777ccf7b`，复核日期 2026-09-17。P1 已归档于 `../archive/2026-09-17-p1-query-xref/`，tasks 11/11；本 change 仍未实现。动机和能力边界见 proposal.md。
+当前复核基线为 `4beb6b9ce5322a94ff0a0c571ae532d687096523`（2026-09-18）及未提交的 3.4 工作区。1.1–1.3、2.1–2.5、3.1–3.3 有交付记录；3.4 已有候选实现，尚未验收；3.5、4.x、5.x 未完成。原 11/20 项勾选保留为历史交付，本轮新增三项前置修正后为 **11/23**；这不表示已发现的问题被修复。P1 与其验证维护均已归档。
+
+本轮确认四个反例，涉及定义 loader 的层级解析、returnAddress 值来源、异常路径 locals 和调用上下文存储预算；同时修订 wide facts、Pass requires 与 Frame/SSA 设计。当前执行顺序以「Migration Plan」和 tasks 的 0.x 为准，3.4 不得直接交接 3.5。详细输入、实际结果及验证边界见 [verification.md](verification.md) 的「2026-09-18 当前工作区复核」。
+
+以下 P1 复核及各片交付说明保留历史时点；标为契约的段落以本次修订为实施目标，不表示代码已符合新要求。
 
 ### P1 复核证据
 
@@ -31,7 +35,7 @@ RSS 决策：暂保留 CI 512 MB 限额。P1 本地 artifact_tree 的 482 MB 峰
 
 维护后本地 60 秒实测：query 216 MB、artifact_tree 500 MB，均 exit 0；后者距限制仅 12 MB，已记入维护验证记录，不宣称余量充足。
 
-### P2 进入时的接口缺口
+### P2 进入时的接口缺口（历史基线；1.x/2.x 已交付，剩余缺口见 0.x）
 
 | 代码现状 | 处理 |
 | --- | --- |
@@ -122,8 +126,9 @@ P2 实际只产生 `representation=Bytecode`、`syntax_status=NotJava`、`compil
 | `src/providers.rs`（2.1/2.2 起，crate-private） | 有效搜索序、位置展开、候选匹配与读取、按需 Header 闭包与 `WalkGaps` | `artifact`、`budget`、`classfile`、`environment`、`error`、`model`、`view`（不引用 `resolver`，报告装配留在 resolver） |
 | `src/members.rs`（2.3 起，crate-private） | JVMS 5.4.3 三条搜索路径、maximally-specific 集合、访问与调用种类规则 | `providers`、`classfile`、`error`、`model`（用 crate-private 的 `MemberUse` 镜像避免依赖 `resolver`） |
 | `src/dispatch.rs`（2.5 起，crate-private） | 范围枚举（P1 scope 词汇）、CHA-lite 候选发现、open-world 事实分类 | `providers`、`artifact`、`environment`、`error`、`model`、`view` |
-| `src/passes.rs`（3.2 起计划，crate-private） | pass 描述表与启动校验（前置/invalidation/顺序） | `ir`（阶段与事实词汇）、`error` |
-| `src/cfg.rs`（3.3 起计划，crate-private） | raw CFG、指令级 throw site、handler 顺序、effect facts；3.4/3.5 的 returnAddress 与有界规范化 | `classfile`（1.2 的操作数事实）、`passes`、`budget`、`error`、`model`、`petgraph`（准入见 3.1；**不得**被 `query`/`xref` 引用） |
+| `src/passes.rs`（3.2 已交付，crate-private） | pass 描述表与启动校验（前置/invalidation/顺序） | `ir`（阶段与事实词汇）、`error` |
+| `src/cfg.rs`（3.3 已交付，crate-private） | raw CFG、指令级 throw site、handler 顺序、effect facts；0.2 将修正 wide 分类 | `classfile`（1.2 的操作数事实）、`passes`、`budget`、`error`、`model`、`petgraph`（准入见 3.1；**不得**被 `query`/`xref` 引用） |
+| `src/call_context.rs`（3.4 工作区候选，crate-private） | returnAddress/调用上下文；当前候选须先完成 0.3/3.4 修正 | `cfg`、`classfile`、`budget`、`error` |
 | `src/frames.rs`、`src/ssa.rs`（4.x 起计划，crate-private） | descriptor 驱动的 Frame、未初始化值合流、stack/local SSA 与 phi | `cfg`、`passes`、`budget`、`error`、`model` |
 | `src/ir.rs`（新） | 方法分析请求/报告、阶段与产物状态 | `artifact`、`budget`、`environment`、`classfile`（`VerificationStatus`）、`error`、`model`、`resolver`（`HeaderRead`/`ReadReason` 词汇，2.2 起）、`view` |
 | `src/engine.rs` | 三个薄委托入口 | 上述 |
@@ -498,7 +503,9 @@ pub struct HeaderRead {
 
 ### 闭包算法与去重
 
-- **起点**：请求目标所在 loader（`CallerContext.loader`）与目标内部名。展开顺序：目标自身 → 其 parent/interface（若目标需要成员解析，2.3 触发）→ 显式范围（仅 2.5 的 dispatch）。
+- **起点与后继**：首个符号需求使用调用方的 initiating loader；选中 Header 后，父类/接口符号由该 Header 的 **defining loader** 发起查找。不能把整次请求固定为 `runtime.load_domain.loader`。查找 memo 用 `(initiating_loader, internal_name)`，层级节点与已展开/祖先集合用解析后的 `(defining_loader, definition)`；记录与声明比较沿用既有物理身份，不因同名或同 bytes 合并。ParentFirst/ChildFirst 逐 loader 生效。
+- **0.1 修正边界**：沿用 `HeaderClosure`/`HierarchyWalk` 与现有身份，给需求及待展开层携带搜索起点；同步 members、声明引用和 dispatch 的层级比较。dispatch 的祖先必须匹配目标声明的 loader/definition，只有 owner 字符串相等不构成继承证据。不新增 resolver 框架或缓存。
+- **driver/caller 绑定**：读取物理 Header 后，在声明的 loader 环境下核对其名称解析结果是否为该 `(loader, definition)`；不能给任意 content 中的定义直接贴调用方 loader。不同 snapshot 可以是合法依赖 root，不能以 snapshot 必须相等替代绑定校验；不在绑定内或同名被遮蔽的定义须明确诊断、停止运行时语义阶段，原物理 facts 可保留。该规则一并关闭 D15/D25 的身份口径，进入 Frame 前完成。
 - **去重键是 (物理定义, loader)**：同一请求内同一绑定只读一次，同一 `definition` 在不同 loader 下是两条独立记录（同 bytes 不同 origin/loader **不得**合并）。
 - **深度**：每向上一层（parent 链或接口闭包）调用 `Budget::observe_dependency_depth`（1.3 已交付），超限即停并保留可信前缀；`DependencyDepth` 与 `nested_depth` 独立。
 - **计费**：Header 读取尝试记 `ClassHeaders`；方法 Body 读取尝试记 `MethodBodies`（2.2 只允许 `DriverMethodBody` 一个理由，其他理由出现在 3.x/4.x 的分析阶段）；工作列表迭代记 `AnalysisSteps`。**不读无关 Body**：闭包只读 Header，Body 读取必须带显式 reason 且只有目标方法。
@@ -519,7 +526,7 @@ pub struct HeaderRead {
 
 - **范围的发布方式**：单次查找的 extent 由 2.1 的 `HeaderSearch` 提供；请求级的覆盖由 `HeaderClosure::searched_extent()` 对**一次请求内各次查找求和**发布（2.3 起沿用、2.5 的 scope 枚举同样如此）。memo 命中的需求不再返回 extent，所以覆盖平面必须走这个求和入口，而不是读某次 demand 的返回值。
 
-- 闭包键 `(loader, internal name)` 的 loader 分量在当前公开路径上**不可证伪**：一次请求只有一个搜索起点（`CallerContext` 不移动起点，1.1 又以 `CallerLoaderMismatch` 拒绝分叉），因此「只按 name 去重」的变异存活；同一防线的另两条（记录用定义所在 loader、记录去重）已被捕获。该分量的可观测条件是「出现第一个以非 `runtime.load_domain.loader` 发起需求的调用方」（可能晚于 2.5），届时应补一条让该分量可观测的用例。
+- **历史边界已撤回**：2.2 当时把 loader 分量视为公开路径不可证伪；本轮通过 ChildFirst → parent 定义 Owner → parent Base 的公开成员查询证明，后继查找必须切换起点。当前代码错误选择 child Base，见复核 R1；由 0.1 修正并重新验证 2.2–2.5，不再作为可接受边界。
 - 层级展开（`ParentChain`/`HierarchyClosure`、`WalkGaps`、环诊断）在本切片无公开入口，语义由 `providers` 的 lib 单测固定，消费者是 2.3/2.5（相关项带 `#[allow(dead_code)]`，移除即产生 9 条 warning）；复核指出的四类未固定语义（`parent_chain` 不跟接口、损坏/读取失败不入记录、Ambiguous 每候选一条、停止的需求不被记忆）已由补测固定。
 - 公开层只能构造预取消与预算停止；「两个 demand 之间被取消」由 lib 两层之间的用例证明。
 
@@ -531,7 +538,7 @@ pub struct HeaderRead {
 - **循环引用**：A→B→A 的继承环（非法 class）→ 不无限扩展（去重键终止）、给出可定位诊断。
 - **预算/取消**：预取消与中途取消分别得到 `Cancelled`，`usage` 与 `reads` 一致（`reads.len() <= class_headers`）。
 - **无关 Body 读取为零**：闭包请求后断言 `usage.method_bodies == 0`（除非显式请求目标方法 Body），且 `reads` 的 reason 集合不超过本次请求允许的理由。
-- **同 bytes 不同 origin/loader 不合并**：同一 class 字节放在两个 loader 的 roots 下时，分别以各自环境请求会得到两次各自的选择与两条记录（单请求只有一个搜索起点，故「一次请求内两条记录」不是本片的形态）。
+- **同 bytes 不同 origin/loader 不合并**：同一 class 字节放在两个 loader 的 roots 下时，分别以各自环境请求会得到两次各自的选择与两条记录；0.1 必须增加单次请求跨 defining loader 的对照，断言实际物理定义而非仅比较返回名字。
 - **深度 0 的边界**：闭包目标自身是依赖深度 0、即使 `dependency_depth = 0` 也允许读取；停止时 `reads` 与 `coverage` 一起发布可信前缀。
 - **不读无关 Body 的证据是 `code_bytes == 0`**（配一条真实 body 读取路径的对照，例如同一 fixture 经 `inspect_method_bytecode` 得到非零 `code_bytes`）；`method_bodies` 在 3.x 接通计费前没有计费点，因此不能单独作为该证据。
 
@@ -680,6 +687,12 @@ pub struct HeaderRead {
 
 ## 3.2–3.5 契约：Pass 契约、raw CFG、returnAddress 与有界规范化
 
+### 0.2 共享 reader 补齐（3.4/4.x 前置）
+
+在现有 noak 事件适配上保留 wide 的 effective opcode，并保留 `newarray` atype、`multianewarray` dimensions、`invokeinterface` count；raw opcode、width、BCI 与公共取证事实保持原样。CFG/effects/returnAddress/Frame 使用同一有效操作数事实，不自行重解字节或解析展示文本。宽化 local 的读写、category-2 双槽和 wide ret 的终结行为必须准确。modern 方法只有 wide load/store 时不能因此拒绝 legacy 阶段；51+ wide ret 必须走 dialect 违规分支。
+
+验收含真实字节的普通/宽化 load、store、iinc、ret 对照，数组分配维数/atype、invokeinterface count 的合法与非法样本；重跑 1.2/3.3 oracle、CFG/effects 与 P1 原始 BCI/XRef 回归。D03/D27 是确定的前置缺口，不能留作“若未来需要”。
+
 ### 3.2 PassDescriptor 与 invalidation（不引入动态调度）
 
 ```rust
@@ -708,7 +721,8 @@ pub(crate) struct PassDescriptor {
 - **失效后的重算者要指定**：`Frames` 由 `frame` 重算，`Ssa` 与 `Effects` 由 `ssa` 重算——「必须重算」没有指定落点就只是一句空话。
 - **invalidate 未产出的事实是 no-op**：状态停在 `NotProduced`，其缺失随后以 `ir_pass_prerequisite_missing` 报出（不是 `ir_stale_fact`）。
 - **检查范围分工**：phase 顺序与成环是**整表**性质（不在被调度前缀里的环也报错）；缺前置只判**被调度前缀**（前缀外的悬空 `requires` 不算错）。
-- **事实的消费者必须把该事实写进自己的 `requires`**：否则 invalidation 检查对它不生效（校验器只能看到声明过的依赖）。
+- **事实的消费者必须把该事实写进自己的 `requires`**：否则 invalidation 检查对它不生效。当前 3.4 读取 `raw.effects` 却未声明 `Effects`，0.3 必须补齐并以 Effects 为 stale/未产出的反例证明入口拒绝。成功发布阶段时必须保留实际 facts 供下一 pass 使用；不能只在 ledger 标记存在而丢掉 payload。
+- **0.3 收紧预算声明**：复用现有 `Blocks`（IR 存储/边）、`Steps`、`Clones` 集合；3.4 至少声明 `[Blocks, Steps]`，3.5 为 `[Blocks, Steps, Clones]`，Frame/SSA 为 `[Blocks, Steps]`。这里声明可能计费的维度类别，不要求无 clone/无边/空方法也产生非零消耗；不能用零工作样本证明漏计正确。计费表须逐结构明确单位，边只在实际创建时计 `IrEdges`。
 - **重入语义**：同一执行内重新施加某 pass（3.5 在更大克隆预算下重试、或 5.1 的失败重装配）是合法操作——重入前必须重新满足 `requires`，其 `invalidates` 照常生效；3.5 的默认行为仍是「超限即停 + fallback」，重试由调用方以更大预算重新发起。`last_completed` 的语义是**已完成的最高 phase**（重入不得使其回退）——5.1 装配 `stages` 时以它为准，而不是「最后施加的那个 pass」。
 - **phase 命名**：`LegacyNormalization`（3.4）产 `CallContexts`，真正的克隆规范化发生在 `CanonicalCfg`（3.5）；不要把 `legacy_normalization` 读成克隆 pass。
 - **运行期复用同一记账**：3.3 起每个 pass 的入口必须走 3.2 的 `FactLedger::apply`（先全量检查 `requires`、再记 `invalidates`、再 `produces`、最后推进 `last_completed`），**禁止**另写一套事实记账——否则启动校验与运行期检查会各自漂移，`ir_stale_fact` 也就失去意义。
@@ -738,22 +752,31 @@ pub(crate) struct PassDescriptor {
 - **块上限的落点**：`max_blocks` 默认 16 384、硬上限 65 535 是 `cfg` 的 **crate-private 常量**，不是新增的请求级 limit（1.3 的维度表已定稿，不为它加字段）；请求级控制是 `ir_items`——超限以 `BudgetExceeded{IrItems}` 形式停止，请求级与内部护栏各司其职。
 - **不完整方法体**：`RawCfg` 带 `completeness`（`Complete` / `Truncated{stopped_at}`）。截断体上只覆盖**可靠前缀**，且**分两种**：截断且目标无法校验（1.2 的 sound-but-incomplete 视图）⇒ `Partial` + `ir_raw_cfg_incomplete_body`（**不报损坏**）；截断但前缀自洽 ⇒ `Partial` + reader 自己的 stop code（不额外加诊断）。完整体上同样的校验错才是 `Failed{code}`。这正是 1.2 登记的 `stopped_at` 债务的处置点。
 - **`jsr` 在原始图里不展开**：`jsr`/`jsr_w` 出 `SubroutineReturn{call_site}` 进子程序，`ret` 无后继并结束其块，call site 记入 `unresolved_returns` 交 3.4；可达性把「可达 `jsr` 的后继块」也算可达，因此 `unresolved_returns` 非空时 `unreachable` 是**欠报**（不是谎称死块）。
+- **`jsr` 所在块与续块按「包含该 BCI 的块」查**，不按「块起始 BCI 相等」查：`jsr` 可以出现在块中间（前面是同块的普通指令），此时它的续块仍是**该 jsr 所在块**的后继。BCI→块的查法在 `cfg` 与 `call_context` 之间必须是同一种（`partition_point`：最后一个起始 ≤ bci）。用精确相等（`binary_search_by_key` + 失败即 `continue`）会在 `jsr` 非块首时静默丢掉这条关系，使**活调用点的续块被真值表判为不可达**，进而让 3.4 跳过「可达子程序体无 `ret`」的拒绝、对非法字节码报 `Established`，并把活调用点误列为 `unreachable_call_sites`。3.3 的既有证据（ECJ 语料与 `jsr_returns_stay_unresolved_…`）恰好都把 `jsr` 放在块首，所以该缺陷零覆盖；修正必须配一条**非块首 `jsr`** 的 3.3 回归与一条 3.4 回归（ECJ 45–48 的 `unreachable` 在此修正后由 `[8,11,15]` 变为 `[11,15]`，这才是 JVMS 语义：`ret` 返回到 8）。
 - **catch 类型不在本层过滤**：throw site 的 handler 列表 = 保护区间覆盖该 BCI 的记录（声明顺序），**不做 catch 类型匹配**——那需要类型层次（resolver），`cfg` 不得依赖。空 handler 列表也要记录（「此处无人捕获」是事实）。
 - **本片新增的报告级诊断码**：`ir_pass_not_implemented`（请求的阶段尚无实现）、`ir_raw_cfg_incomplete_body`（截断体的图不完整）、`ir_method_declared_without_body`（abstract/native 是事实，Info 级）。
 - **reader 事实的补充**：`MethodCodeFacts` 增 crate-private 的 `exception_handler_count`（复刻 `BytecodeInspection` 的既有字段），只为 coverage 能命名「未读 handler ordinal 区间」。
-- **`wide` 包裹的 opcode 缺口**（属 1.2 边界，与 `newarray` atype 同类）：1.2 不保留 `wide` 包裹的 opcode 名，因此 `wide iload/istore/ret` 既不分类局部读写也不结束块；`wide iinc` 经 `increment` 仍分类。若 3.4/4.x 需要 `wide ret`，先扩 1.2 事实。
+- **`wide` 缺口**：当前 3.3 不识别 wide load/store/ret 的有效 opcode；0.2 修正 reader 后同步分块、终结指令与 effects，重新跑对应反例，之后才接受 3.4。
 - **载荷的可见性**（不变量 11）：raw CFG 与 effect 载荷建完即在本片内部使用，公共面只暴露状态/覆盖/诊断；消费者是 3.4/3.5/5.1。
 
 ### 3.4 raw returnAddress 与调用上下文
 
-- 对 45–52 且含 `jsr`/`jsr_w`/`ret` 的方法，建立**调用上下文**：每个 `jsr` 站点一个 `SubroutineContext { call_site_bci, return_bci, entry_bci, affected_locals }`；`ret` 的返回点来自该上下文而不是猜测（`CallContexts` 事实）。**"每个站点"不按可达性过滤**：raw 图判为不可达的调用点同样建立上下文并单列 `unreachable_call_sites`，因为共享子程序的全部返回点都要可核对；拒绝规则只作用于 raw 可达部分，死调用点不阻塞活调用点的分析。
-- 共享子程序（多个 `jsr` 指向同一 `entry_bci`）与嵌套子程序都要保留**各自上下文**；嵌套时外层上下文的 `affected_locals` 包含嵌套体写入，而 `ret` 只归属其自身上下文的返回点。异常覆盖子程序（保护区间横跨 `jsr`）必须记录，不得把 handler 入口当成普通后继（handler 入口与其 locals 不进入子程序遍历）。
-- **51+ 的 `jsr`/`jsr_w`/`ret`**：原始事实仍保留，但报告 dialect 违规（`ir_legacy_opcode_forbidden`），不进入 CanonicalCFG；`51+` 判定只由 classfile version 决定。
-- 无法建立完整上下文的（例如 `ret` 的返回点集合无法收敛或超出步骤预算）→ 保留 raw facts + `Fallback`，不伪造调用图。3.4 把该情形的触发集合写死为五类，均报 `ir_call_context_unresolved`（Warning，execution `Partial{Error{code}}`，不发布 `CallContexts`）：返回点不在已解码前缀（截断体）、可达调用点的子程序体无 `ret`、可达 `ret` 无归属、调用点成环（嵌套无界）、以及 `wide` 包裹形态无法识别；步数超限仍走既有 `BudgetExceeded{AnalysisSteps}`。结构性不一致（raw 图与事实矛盾）另用 crate-private 的 `ir_call_context_inconsistent` 返回 `Err`，公共路径不可达。
-- **`wide` 的处置边界**：1.2 不保留 `wide` 包裹的 opcode，因此 `wide ret` 无法被识别——本片按"无法建立上下文"处理（保守方向：含 `wide` 形态但无 `jsr`/`ret` 的现代方法同样报 unresolved），**绝不静默出错**。正路是扩 1.2 保留 wrapped opcode，但那会牵动 3.3 的分块与 effect 分类并重跑其证据，属独立决策（见 `verification.md` 的债务登记）。
-- **计费**：`legacy_normalization` 只计 `AnalysisSteps`（与其 `budget` 声明 `[Steps]` 逐项相等）；`ir_items`/`ir_edges` 在本阶段为零。载荷（`returns`、`exception_coverage`、`unreachable_call_sites`）是 crate-private，公共面只有阶段状态与诊断（不变量 11）。
+**状态**：工作区候选尚未通过本轮 review。R2/R3/R4 是继续到 3.5 的阻塞项；现有 topology walk 可以保留为骨架，不能把其 `Established` 当作已证明的 returnAddress 数据流。
+
+- **值来源**：对每个 `jsr/jsr_w` 创建原始 call-site/return-BCI token，沿 operand stack 与 locals 的存储、覆盖、合流追踪。`ret n` 的后继取自 local n 中已证明的 token；不能仅凭 ret 可达于某个子程序就归属该上下文。未定义、被普通值覆盖、错误槽位、不支持的传递或不可靠合流均不发布 `CallContexts`，保留 raw facts 与明确的 unresolved/fallback。
+- **实现边界**：在同一指令事实/effect 适配上做有界的 returnAddress 专用数据流，只区分返回地址来源及必需的栈形状/其他值；不提前交付 4.x 的完整 Frame，也不另写 decoder。无法证明安全的指令形态先明确 fallback。共享及嵌套调用的 token 与调用链分开；嵌套 continuation 必须有实际返回证明，不能无条件排入正常路径。
+- **异常路径**：逐 throw-site、handler ordinal 和 active call context 传播。handler 入口清空原 operand stack 后压入异常值，并保留该点 locals；handler 不是普通 fall-through，但也不能整类跳过。若 handler 在当前子程序中继续或回接 ret，其 local 读写与返回地址变更必须参与分析；跨出上下文或无法判定归属时 fallback。嵌套上下文影响传回外层时保持来源，不能把异常路径压成保护区间 ordinal 集合即认为完成。
+- **locals**：分别保留分析需要的 accessed/written 信息（category-2 包含两槽）。当前 `affected_locals` 若继续表示写集，名称和消费者需写明；不可把写集当成 ret 状态合流所需的全部访问集。3.5 不得恢复/丢弃实际上已访问或改变的槽。
+- **dialect 与可读性**：classfile 51+ 的 jsr/jsr_w/ret（含 wide ret）为违规；保留取证字节和 BCI，verification 仍为 NotPerformed。不可达指令的 dialect 检查与可达上下文证明分开，不能仅因现代方法使用合法 wide load/store 就 unresolved。
+- **停止与发布**：有缺口/不支持的值流返回 `ir_call_context_unresolved`，Warning、Partial/Error、Fallback，且不发布 `CallContexts`；预算/取消保持各自终止原因。图与 facts 不一致才用 `ir_call_context_inconsistent`。只有所有可达返回转移与异常状态均有证明时才 Established；原有“五类固定触发”不足，改由上述不变量约束。
+- **不可达边界逐触发声明**（不得再用一句“只作用于可达部分”概括，实测该句零覆盖且各触发作用域不一致）：返回点不在已解码前缀 ⇒ 只对**可达**调用点拒绝，死调用点的缺失返回点作为 payload 事实发布（不得让它阻塞活调用点的分析）；子程序体无 `ret`、可达 `ret` 无归属 ⇒ 按可达判定；嵌套成环 ⇒ 只对活在路径上的环拒绝；`wide` 缺口 ⇒ 按 0.2 之后取消整方法粒度的拒绝。每一类各配一条 fixture，并同时断言**反方向**（死代码里的对应形态必须仍 Established），否则删除可达性判定的变异不会被任何测试捕获。
+- **Established 的载荷不变量写成等式而非叙述**：`contexts.len()` 等于已解码前缀内 `jsr`/`jsr_w` 的站点数（不按可达过滤）、`returns.len()` 等于前缀内 `ret` 数、每个 `ret` 的 `targets` 是**证明持有其返回地址**的那些调用点；`targets` 为空时 3.5 MUST NOT 据其建边。
+- **计费**：0.3 为 plans、(context, block/BCI) 状态槽、visited/worklist、token/return 关系、local 集合成员、handler 关系和输出 origin 制定单位，在增长前计 `IrItems`；真实派生边计 `IrEdges`，传播/合流计 `AnalysisSteps`，建表与最终装配均有 poll。共享/嵌套导致的乘积项按实际数量计费，不能只给外层 vector 或输入 bytes 计一次。无克隆时 `NormalizationClones=0`；crate-private 不豁免预算。
+- **验收**：正确 ret 与错槽/覆盖的双侧对照、共享/嵌套和 handler 回接 ret、不同 throw-site locals、wide/版本边界、零/恰好/超限存储与步骤、取消和不可达边界。至少一份真实历史 finally 语料；合成 fixture 断言实际 opcode/operand 及运行状态，不能只断言载荷形状。将本轮反例转成仓内回归，并证明恢复旧实现会失败，独立复核后才能勾选。
 
 ### 3.5 有界 jsr/ret 规范化与 CanonicalCFG
+
+进入条件：0.2/0.3 和修订后的 3.4 均验收；依赖真实保留的 CallContexts，不重新推测返回点。规范化同步维护每个 throw-site 的 handler/context/origin。raw 图按 (block, handler ordinal) 聚合的异常边只作结构表示，不能取代值流输入。
 
 - **克隆语义**：一个子程序被 N 个调用上下文共享时，为每个上下文克隆其块集合（`NormalizationClones` 按克隆节点计费）；克隆块保留 **一对多 origin**：`OriginMember::MethodPoint { method, bci }` 指向原始 BCI，且 `OriginSet` 保留全部原始 BCI（不得只留一个）。
 - **超级块/边**：`ret` 在规范化后按其上下文确定后继；异常边按原始 handler 序重建；保护区间按上下文映射到克隆后的块范围。
@@ -766,25 +789,26 @@ pub(crate) struct PassDescriptor {
 ### 4.1 描述符驱动的 Frame（缺 debug/StackMap 也能算）
 
 - **输入**：`CanonicalCFG` + 每个块的入口状态（locals 槽类型、栈形状、异常入口的 locals 快照）。指令语义来自 `InstructionOperands`（1.2）与一份按 opcode 的稠密表（push/pop 类别与数量），**不从展示文本恢复语义**。
-- **类型格（crate-private）**：`FrameValue::{UninitializedThis, Uninitialized{new_site}, Int, Float, Long, Double, Null, Reference{class}, Unknown}`；category-2（`Long`/`Double`）占两槽；`Unknown` 是**保守保留**而不是通配（合并时不把 `Unknown` 与具名引用合并成具名引用）。
-- **合流**：同一块多个 predecessor（正常与异常分开）逐槽合并——相同类型取自身；`Null` 与 `Reference` 取 `Reference`；不同类引用且范围外不可判定取 `Unknown`（P2 不做类型层次合并的闭世界假设）；`Reference` 与 `Int` 之类的**矛盾**是结构化错误（`ir_frame_inconsistent`），不是静默取一个。
-- **不变量（本地）**：每个块的入口状态 = 前驱出口状态的合流；栈深在 JVM 上限内；`dup`/`swap`/`pop` 族按类别配对（category-2 的 `dup2` 语义必须显式覆盖）；`invoke*` 的参数量与返回类型由 descriptor 决定；`<init>` 的返回值是 `UninitializedThis` 转换点。
+- **类型格（crate-private）**：值状态需区分不可读取的 `Top`、`UninitializedThis`、带 new-site 的未初始化引用、基本类别、Null 与有 loader 身份的引用；category-2 值占两槽并显式标识第二槽不可独立读。引用信息不足与 `Top` 分开，保守未知引用不能被当成任意基本类型。先在现有私有 Frame 表示中落实这些区别，不要求为每个区别新增公共实体。
+- **合流**：operand stack 要求深度/类别兼容，冲突返回 `ir_frame_inconsistent`；locals 允许不兼容或未定义的槽合成不可用 `Top`，之后读取 Top 才失败，不能拒绝只在已死亡 local 上不同的合法路径。category-2 的任一槽被覆盖会使原双槽绑定失效；Null/引用和缺失依赖的合流保持保守，引用身份含 defining loader。
+- **不变量（本地）**：每个块的入口状态 = 前驱出口状态的合流；栈深在 JVM 上限内；`dup`/`swap`/`pop` 族按类别配对（category-2 的 `dup2` 语义必须显式覆盖）；`invoke*` 的参数量与返回类型由 descriptor 决定；`<init>` 返回描述符为 void，初始化转换由成功的 `invokespecial <init>` 对 receiver 的作用触发，不来自返回值。
 - **`verification` 恒为 `NotPerformed`**：本片只做本地不变量，`semantic_validation` 先 `Unproven`，在 4.3 有不变量证据后可升为 `LocalInvariants`。缺 `StackMapTable`/`LineNumberTable`/`LVT` 不构成失败理由（按契约从 descriptor 与数据流推导）。
 
 ### 4.2 未初始化值、handler 入口与引用合流
 
-- **`new`/`<init>` 链**：`new` 产出 `Uninitialized{new_site}`；只有同一 `new_site` 的 `invokespecial <init>` 能把它转成 `Reference`，且转换只对该站点之后同一栈槽/局部槽生效；跨块传播时 `Uninitialized{new_site}` 的站点身份必须保留（不同 `new` 站点的未初始化值不可合并）。
-- **`UninitializedThis`**：构造器入口的 `this` 状态；在 `invokespecial <init>`（自身或父类）之前不得用于 `getfield` 等方法（`ir_frame_this_used_before_init`）；`<init>` 返回后转成 `Reference{this_class}`。
-- **handler 入口**：异常 handler 的入口 locals 状态来自 **每个 throwing instruction 在该点**的 locals（不是块尾状态）；栈只有该 handler 的异常类型；多个 throw site 进同一 handler 时按 4.1 的合流规则合并。**locals 与 effect 必须来自同一个 throw site**，不得混用（契约的风险表已列）。
-- **保守保留**：任何无法判定的状态（缺依赖、未知引用、超出步骤预算）都保留为 `Unknown` 或明确停止，不伪造确定类型。
+- **`new`/`<init>` 链**：new-site token 沿 dup/astore 等保留别名。适用的 `invokespecial <init>` 正常完成后，将当前 Frame 的 locals 与 stack 中该 token 的**全部别名**转为已初始化引用；不同 new-site 不合并。异常后继不能复用正常完成后的初始化状态，按该指令的异常规则处理，证明不足则停止而非猜测。
+- **`UninitializedThis`**：构造器入口 token；适用的自身/父类构造调用正常完成后，同步所有别名。允许的初始化前访问按具体 opcode 与所属类判断（例如对当前类字段的受限 putfield），不以“所有使用都非法”概括规范。
+- **handler 入口**：输入取自每条 throwing instruction 的 locals/effect，栈只有异常引用。raw CFG 可能把同一 block 内多个 throw sites 聚为一条异常边；Frame/SSA 的逻辑输入仍以 `(raw edge, throw-site, normalization context)` 区分。不得因为 petgraph 边数相同就抹平不同 BCI 的状态。handler 声明顺序保留，类型匹配缺信息时保守保留候选。
+- **4.1/4.2 必需反例**：分支分别给死亡 local 写 Int/Reference 后合流应可分析；随后读取该槽应拒绝；new/dup/astore/构造调用后的多个别名应一致初始化，构造调用异常后继不得套用正常状态；同 block 两个 throw-sites 写入不同 local 值后进入同一 handler 的输入应区分。
+- **保守保留**：缺依赖/未知引用以保守的未知引用状态保留；栈形状或返回地址来源无法证明时明确停止，预算耗尽始终返回相应终止原因，不把预算停止改写为 Unknown 后继续。
 
 ### 4.3 stack/local SSA、phi 与 effect 顺序
 
-- **形状**：每个块入口的 `Phi` 节点按（predecessor 边）取值，正常与异常 predecessor 都参与；locals 与 stack 分别建 SSA（stack SSA 在块边界按栈深对齐，深度不一致即错误）。
-- **不变量**：每个 value 恰有一个定义（phi 是定义）；每个 use 都能追溯到定义（def-use 双向一致）；phi 输入数 = 该块 predecessor 数（含异常边）；phi 的类型 = 输入类型的合流（与 4.1 同一规则）；category-2 值的两槽在 SSA 里作为一个值处理。
+- **形状**：每个块入口的 Phi 按逻辑值流 predecessor 取值：普通转移按实际 CFG 边，异常转移按 4.2 的 throw-site/context 输入；locals 与 stack 分别建 SSA（stack 在块边界按栈形状对齐）。不可读取的 Top 槽不制造可用值或伪定义。
+- **不变量**：每个 value 恰有一个定义（phi 是定义）；每个 use 都能追溯到定义（def-use 双向一致）；phi 输入数 = 该槽实际参与合流的逻辑 predecessor 数（异常输入不能按聚合后的 raw edge 数计算）；phi 的类型 = 输入类型的合流（与 4.1 同一规则）；category-2 值的两槽在 SSA 里作为一个值处理。
 - **origin 与 effect 顺序**：每个 SSA 值带 `OriginSet`（`MethodPoint` 指向产生它的指令 BCI）；effect 顺序按**指令级 throw site** 记录（异常边上的 effect 属于该 throw site，不属于块尾）；规范化克隆产生的值保留全部原始 BCI。
 - **计费与停止**：`IrItems` 按 frame 槽、SSA 值、phi 输入、origin 成员计；`IrEdges` 按 CFG 边与 def-use 边计；工作列表迭代计 `AnalysisSteps`；停止时保留**最后有效阶段**（`stages` 到该阶段为止），不发布半初始化 facts。
-- **4.3 验收**：diamond/loop/不可约控制流/异常合流各一组；高扇出 phi（多 predecessor + 多异常边）与多槽位样本验证 `IrItems`/`IrEdges` 上界；矛盾输入返回 `ir_frame_inconsistent` 或 `ir_ssa_inconsistent` + 最后有效阶段；`verification` 保持 `NotPerformed`（除非 5.3 的差分证据另行支撑）。
+- **4.3 验收**：diamond/loop/不可约控制流/异常合流各一组；高扇出 phi（多 predecessor + 多异常边）与多槽位样本验证 `IrItems`/`IrEdges` 上界；矛盾输入返回 `ir_frame_inconsistent` 或 `ir_ssa_inconsistent` + 最后有效阶段；`verification` 始终保持 `NotPerformed`；5.3 的 fixture/oracle 证据只能说明被测样本，不能把生产报告升为完整 verifier 已执行。
 ## 5.1–5.4 契约：库/CLI 接通、入口计数、golden/fuzz 与归档
 
 ### 5.1 方法分析库与薄 JSON CLI
@@ -831,12 +855,19 @@ pub(crate) struct PassDescriptor {
 
 ## Migration Plan
 
-先独立完成 V1/V2 验证维护，再按 tasks 的基础契约、resolver、raw/legacy CFG、Frame/SSA、产品验收逐片执行。第一轮只做 1.1–1.3，退出时证明 reader、预算、结果模型可用。每片记录命令/结果和只读复核结论，阻塞项修复后以定向反例复验，再开始依赖片。交接列明未完成项和允许修改模块，不一次派发整条管线。
+本次 review 仅更新规划与证据，保留当前未提交 3.4 代码。下一轮按以下闸口实施；旧任务的勾选和 Approve 记录保留原时点，不作为新反例已经关闭的证据。
 
-P2 本轮只修改规划与过时的 OpenSpec 阶段上下文，不新增 P2 代码、不勾选本 change 的实现任务。P1 的 harness/CI/deny 修复及实际验证归 harden-p1-validation（已归档，见 `../archive/2026-09-17-harden-p1-validation/`）。CI 状态按具体 commit/run 查询，不追加“记录文档提交自己的 CI”的循环提交。
+1. **0.1 resolver 身份修正**：关闭 R1，重跑 2.1–2.5 的 loader/声明/dispatch 测试；同时固定 driver/caller 的环境绑定，不再让 D10/D15/D25 延后到产品装配。
+2. **0.2 reader 与 CFG facts 修正**：关闭 wide/数组维数等确定缺口，给 3.4/4.x 提供唯一操作数事实来源；重新确认 3.3 的分块/effect 与 P1 对照。
+3. **0.3 预算与 Pass 依赖修正**：关闭 R4 和 Effects requires 缺口，明确后续阶段的存储/边/步骤/clone 计费，不提前实现 3.5/4.x。
+4. **3.4 值流与异常上下文**：关闭 R2/R3，四个本轮探针转为仓内回归；真实语料、失败路径和独立复核通过后才能交接 3.5。
+5. **3.5 → 4.1 → 4.2 → 4.3**：先有界规范化，再按修订后的 Top/初始化别名/指令级异常输入契约建立 Frame/SSA；不得以 test oracle 替代 verifier。
+6. **5.1–5.4**：库/CLI、真实读取与构造计数、golden/fuzz、文档及全门禁；P3 仍以 P2 整体出口为前置。
+
+每片提供最小反例与旧行为失败证据，记录对应 commit/CI run；本轮工作区的本地门禁不能冒充 HEAD 的 CI 证据。不为“记录文档提交自己的 CI”循环提交。P1 的维护已在独立归档关闭，不重新打开或混入上述修正。
 
 ### 保持拆分的既有债务
 
 重复 unit/Code 物化和 Type-only 二次解码继续归 P5；has_more=true/cursor=null、record descriptor 类别、Entry.span、MR/tree aggregate 优先级和冗余 allow 等分别维护，不顺便清理。P2 通过直接 Header、显式停止状态和 class/BCI origin 避开这些依赖；实际受阻再以最小独立 change 修正，不能悄悄改变 query 契约。
 
-`query-api` 主规格写的"`references_definition` 由 P2 的 resolver 处理"在本阶段不兑现：P2 只提供独立的、显式运行环境的解析与声明引用入口，`Engine::query` 的关系语义保持 `UnsupportedAnalysis`（不变量 12）。把 query 接线到 resolver 需要先改该主规格与 `QueryResolution`，属独立变更，不在 P2 的 20 项任务内。P2 归档时只同步本 change 的三份 capability spec，不修改 `query-api` 的既有措辞。
+`query-api` 主规格写的"`references_definition` 由 P2 的 resolver 处理"在本阶段不兑现：P2 只提供独立的、显式运行环境的解析与声明引用入口，`Engine::query` 的关系语义保持 `UnsupportedAnalysis`（不变量 12）。把 query 接线到 resolver 需要先改该主规格与 `QueryResolution`，属独立变更。5.4 须消除主规格的过时阶段承诺：`query-api` 保持 unsupported 行为但指向独立声明查询入口，`analysis-contracts` 的 Purpose 直接编辑并复核；不得借文档同步接入运行时解析。本 change 归档同步三份新增 capability 和一份 analysis-contracts delta。
