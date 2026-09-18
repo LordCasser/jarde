@@ -5,7 +5,7 @@
 
 ## 2. Query and JVM ownership
 
-- [ ] 2.1 抽出 `jarde-query` 的 query+xref 与最小 candidate scan 接口，同步 resolver 调用而不改变其语义；运行只依赖 query 的实际查询 consumer，独立 check/test、分页/coverage/cancel 回归及声明引用对照通过，生产和测试依赖均无 jvm/facade/petgraph
+- [x] 2.1 抽出 `jarde-query` 的 query+xref 与最小 candidate scan 接口，同步 resolver 调用而不改变其语义；运行只依赖 query 的实际查询 consumer，独立 check/test、分页/coverage/cancel 回归及声明引用对照通过，生产和测试依赖均无 jvm/facade/petgraph（2026-09-18 完成并**独立复核 Approve**：新包 `crates/jarde-query/`（query + xref）；`cargo test -p jarde-query` = 3 独立通过，normal 与 all 边依赖树均无 petgraph/jvm/门面（编译器强制）；全仓 628 passed / 0 failed / 1 ignored；golden 5、`p2_contracts` 29；**`CandidateFilter` 最小面**：内部 `CandidateRule` 保持 crate 内，公开枚举只含两种候选形状，`Exact` 无公开拼法（`From` 的无通配 match 由编译器保证穷尽）；搬迁无语义改动（归一化 diff 逐字等价）；fuzz lock 只新增包、第三方零变动。**必须带进 2.2**：本片使 `jarde::{scan_candidates, CandidateScan, CandidateFilter, execute}` 从门面可达（搬迁前为 `pub(crate)`），2.2 须收窄白名单。CI run 35351589131 四 job 全绿）
 - [ ] 2.2 抽出 `jarde-jvm` 的运行环境、resolver、CFG/call-context/pass/IR 及方法分析 driver；门面只保留委托与选定再导出，用当前全部 P2 反例验证阶段/预算/身份/原 BCI 一致，不为搬迁公开 HeaderClosure、FactLedger 等可变内部结构
 
 ## 3. Integration and gates

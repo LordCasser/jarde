@@ -169,6 +169,21 @@
 
 **fuzz lock（复核者与实现者都曾把它记为 3.1 的范围，实测不能延后）**：新包使 `fuzz/Cargo.lock` 过期，CI 的 `supply chain` 与 `fuzz smoke` 两个 job 直接红（`--locked` 拒绝更新 lock）。已就地修复：`cargo update -p jarde` 只**新增** `jarde-reader` 条目，**第三方版本零变动**（diff 无 `version` 行变化），`cargo metadata --locked` 通过、`cargo deny check bans` 通过、`cargo build --locked --bins`（nightly-2026-07-20）通过。**不延后**的理由：本仓库的纪律是每一步留一个绿色边界，红着的 CI 不是可以带着走的状态。
 
+### 独立复核（Approve）与它要求带进 2.2 的一项
+
+复核者 **Approve**，并逐条核实：依赖方向是编译期事实（含 `--edges all`）；`CandidateFilter` 的最小面是**「不可拼写」而非「导出后写文档禁止」**——`From` 的 `match` 只有两个臂且无通配臂，**编译器已证明**没有第三个变体，`#[non_exhaustive]` 全包 0 处；搬迁**无任何语义改动**（归一化 diff 后 `xref/{code,metadata,bootstrap,resource}.rs` 逐字等价，`query.rs` 仅 `execute` 升 `pub`）；`src/resolver.rs`/`src/engine.rs` 的调用形态与搬迁前完全等价；`CandidateScan` 的 5 个公开字段**恰好**等于 resolver 的实际读取面（不过宽也不过窄）。
+
+**必须带进 2.2 的一项（复核者判定不阻塞 2.1）**：本片造成**门面净扩张**——搬迁前这四个项在根包是 `pub(crate)`，现在可从 `jarde::` 触达：
+
+| 项 | 判断 |
+| --- | --- |
+| `scan_candidates` | **不该在门面上**（设计上只给分析层的 jvm 接缝，且绕过 `Engine::query` 的游标/分页语义） |
+| `CandidateScan`（含 5 个字段） | **不该在门面上**，与上一条同生共死 |
+| `CandidateFilter` | **不该在门面上**（门面消费者无从表达合法 filter） |
+| `execute` | 低风险（语义与 `Engine::query` 相同），**随 2.2「门面只保留委托」一并决定去留** |
+
+否则它们会成为永久公开 API。**2.2 的验收须包含门面白名单收窄**（不是可选）。
+
 ### 未完成 / 待办
 
 - ~~独立复核未做~~ → 已完成并 Approve（见上）。
@@ -202,6 +217,51 @@
 **范围外发现（转 2.2 处理）**：`tests/p2_contracts.rs` 的 `all_lists_are_complete_and_align_with_the_serde_names` 仍写死读 `src/environment.rs`/`src/ir.rs`，2.2 搬走后会直接 panic；它不在 A17 守卫范围内，但可直接复用本片的 `resolve_guarded_file`。
 
 证据：`p2_contracts` = **29 passed**；全仓 **628 passed / 0 failed / 1 ignored**；`p1_xref_golden` = 5；`fmt`/`clippy -D warnings` 干净。提交 `5ada874`、`90fed85`。
+
+## 2.1 抽出 `jarde-query`（2026-09-18，实现完成，待独立复核）
+
+**新包** `crates/jarde-query/`：`query.rs` + `xref/{mod,code,metadata,bootstrap,resource}.rs`。根包保留 resolver/environment/ir/cfg/passes/call_context/providers/members/dispatch/engine，并再导出 query 面，因此 CLI/examples/fuzz/根 `tests/**` 的 `use` 行一行未改。
+
+**搬迁差异**（对副本逐行比对）：`query.rs` 16 行、`xref/mod.rs` 118、`code.rs` 18、`metadata.rs` 14、`bootstrap.rs` 22、`resource.rs` 10——**全部是 `crate::` → `jarde_reader::`/`jarde_query::` 路径改写与可见性/接缝改动**，无语义变更。
+
+### 接缝收敛（本片的重点）
+
+| 项 | 处置 |
+| --- | --- |
+| `query::execute` | 升 `pub`（门面唯一入口） |
+| `xref::scan_candidates` + `CandidateScan` | 升 `pub`，其字段（`items`/`has_more`/`coverage`/`execution`/`diagnostics`）按 resolver 实际读取面公开 |
+| **`CandidateFilter`** | **不整体公开**：内部枚举改名 `CandidateRule`（`pub(crate)`，保留 `Exact`/`MemberShape`/`SignaturePolymorphic`），新增**只含两个变体**的公开 `CandidateFilter`，用 `impl From<CandidateFilter> for CandidateRule` 直接搬移（同名变体，非二次翻译）。**未用** `#[non_exhaustive]`——那等于把 scanner 语义面放开。`Exact` **没有任何公开拼法**，`CandidateRule` 不被再导出 |
+| `query::validate_request`、`xref::scan`/`ScanResult`、coverage 辅助 | 保持 crate 内（消费者都在 query 包内） |
+| `src/resolver.rs`（jvm 侧） | 改经 `jarde_query::{CandidateFilter, scan_candidates}` 调用，**语义不变**——这是 design 明确保留的真实依赖 |
+| `src/engine.rs` | query 入口改为委托 `jarde_query::query::execute` |
+
+### 依赖归属（实测）
+
+- `jarde-query` normal：`blake3`、`jarde-reader`、`serde`；dev：`serde_json`。**无** `petgraph`/`jarde-jvm`/`jarde-java`/根 `jarde`。
+- `blake3` 暂留 query 侧（`query.rs` 直接构造 cursor 绑定摘要），注释标明这是 design §3.5 的**后续收敛项**，本片按边界未做。
+- 根包 normal 仍持 `blake3`（`providers.rs`，属 2.2 的 jvm 侧）、`petgraph`、`jarde-reader`、`jarde-query`、`serde`。
+
+### 证据（父级独立复跑确认）
+
+| 项 | 结果 |
+| --- | --- |
+| `cargo check/test -p jarde-query --locked` | 干净 / **3 passed**（独立可执行，design 退出门槛之一） |
+| `cargo tree -p jarde-query --edges normal --locked` 中 `petgraph\|jarde-jvm\|jarde-java\|根 jarde` | **0 命中**（退出门槛之二）；含 dev 边同样 0 命中 |
+| `cargo test --workspace --all-targets --all-features --locked` | **628 passed / 0 failed / 1 ignored**（与基线一致） |
+| `cargo test --test p1_xref_golden --locked` / `--test p2_contracts --locked` | **5** / **29** |
+| `cargo fmt --all -- --check`、`clippy -D warnings` | 干净 |
+| `fuzz/Cargo.lock` | 只新增 `jarde-query` 条目；`version =` 行**仅**多一条本地 `0.1.0`，**第三方零变动**；`cargo metadata --locked`、`cargo deny check bans`、`cargo build --locked --bins` 均通过 |
+
+**反例（实现者在副本里做，复核者复测并更正）**：加 `use petgraph::…` → `E0433`；加 `use jarde_jvm::…` → `E0432`（不是 `E0433`，本记录初稿口径有误，已更正）；`CandidateFilter::Exact` → `E0599`（无该变体）；`CandidateRule`/`xref::scan`/`ScanResult` → `E0603`（私有）；反向用例（两个形状可构造 + `execute`/`scan_candidates` 签名 + `CandidateScan` 五字段可读）通过。
+
+**复核者指出的一处空真（重要）**：`jarde-jvm` **这个包目前还不存在**（workspace members 只有 `.`/`jarde-cli`/`jarde-query`/`jarde-reader`），所以「query 够不到 jvm」在今天有相当部分是**空真**。真正承重的是它补的那条反例：在 query 里 `use jarde::…` → `E0432`，即**查询包不反向依赖承载全部分析能力的根包/门面**。3.2 的依赖闭包门禁应以这条为主用例，而不是尚不存在的 `jarde-jvm`。
+
+**A17 守卫已跟着走**（证明它不是空转）：在副本的 `crates/jarde-query/src/xref/resource.rs` 注入 `// probe: crate::resolver` → `p2_contracts` 失败并指名 `crates/jarde-query/src/xref/resource.rs: crate::resolver`——守卫确实在扫搬迁后的文件。
+
+### 未完成 / 待办
+
+- ~~独立复核待做~~ → 已完成并 Approve（见下节）。
+- 归属后续片：3.2 的 Cargo 依赖闭包门禁与 `query→jvm` 反例；2.2 的门面白名单收窄（本片使 `jarde::query::execute`、`jarde::xref::scan_candidates`、`jarde::CandidateFilter`、`jarde::CandidateScan` 可从门面触达）；`blake3` 向 reader 收敛。
 
 ## 1.4 A17 守卫的改造方案（供 2.1/2.2 与 3.2 执行）
 
