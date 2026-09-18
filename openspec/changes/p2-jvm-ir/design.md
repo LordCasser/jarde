@@ -700,6 +700,8 @@ pub struct HeaderRead {
 在现有 noak 事件适配上保留 wide 的 effective opcode，并保留 `newarray` atype、`multianewarray` dimensions、`invokeinterface` count；raw opcode、width、BCI 与公共取证事实保持原样。CFG/effects/returnAddress/Frame 使用同一有效操作数事实，不自行重解字节或解析展示文本。宽化 local 的读写、category-2 双槽和 wide ret 的终结行为必须准确。modern 方法只有 wide load/store 时不能因此拒绝 legacy 阶段；51+ wide ret 必须走 dialect 违规分支。
 
 验收含真实字节的普通/宽化 load、store、iinc、ret 对照，数组分配维数/atype、invokeinterface count 的合法与非法样本；重跑 1.2/3.3 oracle、CFG/effects 与 P1 原始 BCI/XRef 回归。D03/D27 是确定的前置缺口，不能留作“若未来需要”。
+- **必须改读 `effective_opcode` 的位置**（父级已枚举，避免漏改）：`src/cfg.rs` 的 `ends_block`（约 385）、块尾 opcode（约 524）、`may_throw`（约 634）、effect 事实的 opcode（约 722）、`stack_delta`（约 725）、`is_jsr`（约 738/749），以及**三个 `!local.wide &&` 守卫**（约 697/700/704）——这三个守卫正是「`wide iload/istore/ret` 既不分类局部读写也不结束块」的直接原因，改用 effective opcode 后应删除；`src/call_context.rs` 的方言扫描（约 403/405/406，`wide ret` 目前从 51+ 违规判定里漏掉）、`ret` 识别（约 600）与 jsr/jsr_w/ret 分类（约 1115–1117）。`ir.rs`/`engine.rs` 不读 opcode，无需改动。
+- **改动的次序**：先让分类只认 `effective_opcode`，再删那三个 `wide` 守卫，最后跑反例——否则中间态会出现「wide 形态被算两次」或「窄化形态被漏」。`LocalOperand.wide` 保留（它记录的是**编码形态**，5.x 取证仍需要），只是不再参与分类判定。
 
 ### 3.2 PassDescriptor 与 invalidation（不引入动态调度）
 
