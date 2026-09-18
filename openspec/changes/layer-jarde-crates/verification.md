@@ -68,4 +68,37 @@
 
 **已核实的耦合面**：`crates/jarde-cli/src/main.rs:3`、`crates/jarde-cli/tests/{json_cli,query_cli}.rs`、`examples/*.rs`、`fuzz/src/lib.rs:20-25` 都只 `use jarde::{…}`，**不触及任何 `pub(crate)`**——因此只要门面再导出白名单不变，它们无需改动；CLI 与 fuzz 的耦合风险集中在白名单收窄那一步。
 
+## 1.3 搬迁前的前置动作（2026-09-18）
+
+盘点列出的 7 项里有 2 项属于「不先做、一搬就断」，已先做并各自验证。其余 5 项随对应搬迁步骤处理。
+
+| # | 前置动作 | 状态 |
+| --- | --- | --- |
+| 1 | `classfile::test_class` 跨包可达 | **已完成** |
+| 4 | fixtures 路径不再相对 `src/` | **已完成** |
+| 2、3 | A17 守卫改造（`tests/p2_contracts.rs` 的硬编码路径与文件数） | 随 2.1/2.2 搬迁同步 |
+| 5 | `providers.rs:2140` 的 `rawzip` 改 jvm dev-dependency | 随 2.2 |
+| 6 | 根包补 `[dev-dependencies]` | 随 1.2 |
+| 7 | CI `jvm` 边界正则实测 | 随 3.2 |
+
+### 1.3.1 `classfile::test_class` 的门禁改为 feature
+
+`cfg.rs` 与 `call_context.rs` 共 4 处单测直接调用 reader 的 `#[cfg(test)] mod test_class`；拆包后 4 处都在 jvm，而 jvm 的 `cfg(test)` 看不到 reader 的测试模块，**会直接编译失败**。
+
+- 门禁改为 `#[cfg(any(test, feature = "test-support"))]`，根 `Cargo.toml` 新增 `test-support = []`；jvm 搬迁后用 `[dev-dependencies] jarde-reader = { path = "...", features = ["test-support"] }` 启用。
+- **不进生产 API**：没有任何 normal 依赖启用它；模块内也没有 `pub`（包级可见性）项。已实测：`cargo check --lib --locked`（无 feature）与 `cargo test --workspace --all-targets --locked`（无 `--all-features`）都不含该模块，且全量仍 **628 passed / 0 failed / 1 ignored**。
+- **注意**：CI 用 `--all-features`，因此该模块在 CI 的普通 lib 构建里也会被编译。已按此写 `#[allow(dead_code, reason = ...)]`，`clippy -D warnings` 在 `--all-features` 下干净。
+
+### 1.3.2 fixtures 改为从 crate 根寻址
+
+11 处 `include_bytes!("../tests/fixtures/…")`（`classfile.rs` 1 处、`call_context.rs` 5 处、`cfg.rs` 4 处，另有 `classfile.rs` 1 处运行期 `CARGO_MANIFEST_DIR`）都**相对所在文件**拼路径；文件一旦搬进 `crates/<name>/src/`，同一字面量会解析到新 crate 内部而编译失败。
+
+- 新增 `src/test_fixtures.rs`：一个 `fixture!` 宏（编译期嵌入）与一个 `fixtures_root()`（运行期遍历），两者各自把**深度写在一处**；调用点只写 fixture 名。搬迁时改这一个模块，而不是逐个字面量。
+- 唯一一份 fixtures 仍在仓库根 `tests/fixtures`，**未复制**。
+- **证伪**：把宏里的路径段指向「搬迁后新 crate 会去找的位置」，编译立刻失败，11 个调用点**全部通过 `src/test_fixtures.rs:29` 这一个位置报错**（`couldn't read ...: No such file or directory`）——即路径错误是响亮的编译错误，且修复点唯一。还原后 `sha256sum -c` OK。
+
+### 证据
+
+`cargo fmt --all -- --check` 干净；`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **628 passed / 0 failed / 1 ignored**（与基线一致，本片为纯结构改动）；无 feature 的 `cargo test --workspace --all-targets --locked` 同样 628/0/1；提交 `d845a2d`。
+
 **未做**：文件搬迁（1.2 起）。cross-check 待办：`ci.yml:81` 的 `jvm` 边界正则需在真实 `cargo tree` 输出上实测不误命中 `jarde-jvm`。
