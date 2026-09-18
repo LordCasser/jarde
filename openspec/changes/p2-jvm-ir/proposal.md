@@ -8,6 +8,7 @@ P1 及其验证维护已归档。P2 已交付基础契约、Header resolver/声�
 - 增加显式绑定 snapshot、RuntimeView、loader domains 和平台 Header providers 的 Demand Resolver，区分 Resolved/Missing/Ambiguous 等状态。
 - 增加带运行环境的独立解析入口及声明引用查询，覆盖 A11 的 Base/Sub 关系，避免先按 CP owner 精确过滤导致漏项。
 - 在已有 raw CFG 上补齐 wide/数组操作数、returnAddress 值流和异常上下文的可靠性，再交付有界规范化、CanonicalCFG、Frame、stack/local SSA 与指令级异常模型；Frame 区分 Top、初始化别名和每个 throw-site 输入。
+- SSA 在私有实现中分开 JVM 语义驱动和名字分配，借鉴 droidsaw 的职责边界与独立小图对照；前驱尚未就绪不能被当成无定义，内部块存储顺序不能改变值来源。当前不引入 droidsaw-common 或跨项目共享 crate，具体取舍见 design 的 6.1。
 - 增加固定 Phase/Pass 契约、origin/diagnostic 传播及 Bytecode 输出，分别报告 quality、syntax_status、compile_status、semantic_validation、verification、coverage 和 execution。
 - 保持结构 XRef 可独立运行；P2 不承诺 Java 8 高阶源码恢复。
 

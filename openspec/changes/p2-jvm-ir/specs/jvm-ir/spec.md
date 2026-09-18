@@ -114,6 +114,11 @@ Frame/SSA SHALL 处理 category-1/category-2、双槽、dup/swap、uninitialized
 - **WHEN** 同一 block 内两个 throwing instruction 经同一 handler 记录到达入口，raw CFG 聚合为一条异常边
 - **THEN** Frame/SSA 仍区分各 throw-site/context 的逻辑输入及 locals/effect，不用聚合的 raw edge 数替代 phi 输入数
 
+#### Scenario: SSA does not depend on internal block storage order
+
+- **WHEN** 同一 CanonicalCFG 在预算充足时仅改变内部 block 存储顺序，控制流、指令顺序、throw-site/context 与物理身份均不变，且某 use 的前驱定义尚待处理
+- **THEN** 最终 use 来源、phi 输入对应关系及 origin/effect 保持等价；前驱尚未处理不得被最终解释为无定义或可用 undef，循环回边也不得因遍历顺序遗漏
+
 ### Requirement: IR invariants and honest verification
 
 每层 SHALL 保留物理方法身份、OriginSet 和 diagnostics；origin 以 class offset/BCI 锚定，规范化不能制造新的物理 XRef。未完整执行规范 verifier 时 MUST 返回 verification=NotPerformed。

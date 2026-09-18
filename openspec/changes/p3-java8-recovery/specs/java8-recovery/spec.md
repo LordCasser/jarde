@@ -18,6 +18,16 @@
 - **WHEN** IR 证明 StringBuilder/StringBuffer 拼接模式及每个转换的求值顺序
 - **THEN** 输出拼接表达式或等价结构，不重复调用、移动可能抛异常的操作或丢失转换语义
 
+#### Scenario: Generic output without a compiler-specific match
+
+- **WHEN** 方法已满足支持范围内的普通控制流、类型与 effect 前提，但没有命中编译器语法糖规则
+- **THEN** 仍能生成带稳定名称与 source map 的通用 Java 表达；不得仅因没有语法糖匹配就放弃已证明的基础结构或声称恢复了原始源码写法
+
+#### Scenario: Loop header has observable effects
+
+- **WHEN** 可恢复循环的条件或 header 包含调用、读取或可能抛异常的操作
+- **THEN** 输出保持这些操作在每条正常/异常路径上的执行次数与次序；不能把每轮执行的操作移到循环外，证明不足时保留可靠表示与降级原因
+
 ### Requirement: Historical and Java 8 compiler patterns
 
 系统 SHALL 覆盖已验证的 synthetic accessor、inner/local/anonymous capture、bridge、enum/enum switch、try-with-resources、default/static interface、synchronized/finally 和构造器/字段初始化模式；编译器来源未知时 MUST 使用 generic JVM semantics。

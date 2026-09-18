@@ -155,7 +155,7 @@
 ### 3.2 Pass 契约与 invalidation 校验
 
 - 交付：新增 crate-private `src/passes.rs`（`IrPhase`/`FactKind`/`PassBudgetClass`/`PassDescriptor`/`PASSES` 静态表/`FactLedger`/`validate_requested_stages`）；`src/engine.rs` 在 `ir::validate_request` 之后接入启动校验（错误为 `Error::InvalidInput{code}`）；`src/lib.rs` 加私有模块。**没有动态注册、插件、运行时图或 `dyn`**（复核者 grep 全文件零命中，唯一「图」是判定成环用的局部 Kahn 草稿，不参与排序）。
-- 表（一 phase 一 pass，按 `IrPhase` 升序，执行顺序即表顺序）：`raw_facts`（产 `Instructions`/`ExceptionTable`，不计费——解码是 reader 的工作，字节已按 `ClassBytes`/`AttributeBytes`/`CodeBytes` 收过费）、`raw_cfg`（产 `RawCfg`/`ThrowSites`/`Effects`，计 `[Blocks, Steps]`）、`legacy_normalization`（产 `CallContexts`，计 `[Steps]`）、`canonical_cfg`（产 `CanonicalCfg`，失效 `Effects`/`Frames`/`Ssa`，计 `[Clones]`）、`frame`、`ssa`（重算 `Effects`）。
+- 表（一 phase 一 pass，按 `IrPhase` 升序，执行顺序即表顺序）：`raw_facts`（产 `Instructions`/`ExceptionTable`，不计费——解码是 reader 的工作，字节已按 `ClassBytes`/`AttributeBytes`/`CodeBytes` 收过费）、`raw_cfg`（产 `RawCfg`/`ThrowSites`/`Effects`，计 `[Blocks, Steps]`）、`legacy_normalization`（产 `CallContexts`，计 `[Blocks, Steps]`；0.3 修正前是 `[Steps]`）、`canonical_cfg`（产 `CanonicalCfg`，失效 `Effects`/`Frames`/`Ssa`，计 `[Clones]`）、`frame`、`ssa`（重算 `Effects`）。
 - 校验语义：phase 降序 → `ir_pass_order_invalid`（同 phase 多 pass 合法，为 3.3–4.x 拆 phase 留门）；整表的 producer→consumer 环 → `ir_pass_graph_cycle`；**被调度前缀**的缺前置 → `ir_pass_prerequisite_missing`；使用未重算的失效事实 → `ir_stale_fact`。顺序/成环是整表性质，缺前置只判前缀——复核者用自建非法表逐条最小触发验证，并确认固定表下四个码经 `analyze_method` **均不可达**（合法请求永远走不到）。
 - 失败隔离：`apply` 先全量检查 `requires`、再记 `invalidates`、再 `produces`、最后单调推进 `last_completed`（`max`，重入不回退）；被拒时一个事实都不发布、`invalidates` 一项都不落地，ledger 恰等于「该 pass 之前的前缀」（复核者用 replay 对照证明）。
 - 反例与证伪：实现者 5 组变异（前置校验跳过、表逆序、`invalidates` 被忽略、映射错位、先发布后检查）；复核者 10 组变异（含 `invalidates` 空实现、同 phase 也算降序、成环检查直接 Ok、前缀取 min、校验器拒绝一切请求）——除两项外全部被捕获；**M8「删掉 `engine.rs` 的校验调用」与 M10「交换两条校验调用顺序」存活**，即该接入在公共路径上行为不可观测（已登记）。
@@ -255,6 +255,15 @@
 - **证据**：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **606 passed / 0 failed / 1 ignored**；`cargo test --test p1_xref_golden --locked` = 5；示例 exit 0；由主 Agent 独立复跑确认（含「唯一读法」的实际形态）。
 - 远端 CI：实现与文档提交 `0827c68`、`abe1b09` 推送 `main` 后，CI run [`35314168328`](https://github.com/LordCasser/jarde/actions/runs/35314168328) 四个 job 全部 success。
 - **独立复核结论**：**Approve，无必须改项**。复核者另确认：生产代码里**没有第三处**「该按包含关系查却用了精确匹配」；合并**无语义漂移**（逐字等价 + `None` 映射与消息不变）；两条新断言有真实判别力（且「清空真值表」式伪修法同样会红）；既有断言**零放宽**（diff 的 9 条删除行无一为断言）。登记债务：**合并只做了一侧**——`call_context::successors` 仍自带精确匹配（同类输入的第三处读法，今天安全）；新 p2 测只钉 cfg 那一半（call_context 那一半由 4 条既有单测钉住），且它走 `Unresolved` 分支，故「活调用点被误列为 `unreachable_call_sites`」这一面仍无可观测断言；`ir_edges >= 2` 是宽松界。
+
+### 0.3 pass 表的 Effects 依赖与预算集合
+
+- **交付**：`legacy_normalization` 的 `requires` 补 `FactKind::Effects`（它读 `raw.effects`，不声明就绕过 invalidation 检查）；四处预算集合按契约改为 `legacy_normalization`→`[Blocks, Steps]`、`canonical_cfg`→`[Blocks, Steps, Clones]`、`frame`/`ssa`→`[Blocks, Steps]`（`raw_facts`/`raw_cfg` 不变）；金标 `DECLARED_BUDGETS` 与「声明==实际计费」断言同步。
+- **修正了成环判定的假环（契约已写进 3.2）**：`Effects` 有两位生产者（`raw_cfg` 的原始图、`ssa` 的正规图），原判定对「每个生产者 → 每个消费者」都建边，于是 `ssa` 连回 `legacy_normalization` 与 `legacy_normalization → canonical_cfg → ssa` 闭成环，**整表被 `ir_pass_graph_cycle` 拒、`analyze_method` 全部请求失败**。规则改为「某 fact 若存在早于消费者 C 的生产者，则不为晚于 C 的生产者建边」；真正互依赖（`a↔b`、自冲突）仍报环。
+- **新增用例**：未产出 `Effects` 的消费者 → `ir_pass_prerequisite_missing`（未产出事实停在 `NotProduced`，按「invalidate 未产出事实是 no-op」其缺失由缺前置码报出，**不是** `ir_stale_fact`）；真实表重入 `canonical_cfg` 使 `Effects` 转 `Stale` 后，消费者被拒为 `ir_stale_fact` 且 ledger 逐字节未变，经 `ssa` 重产后再通过；双生产者护栏（早生产者满足需求时不因晚生产者成环）。
+- **反例与证伪**：4 组变异——① 去掉 `Effects` requires → stale 用例与金标各红；② `frame` 回 `[Blocks]` → 两条金标红；③ 删「更早生产者」规则 → 6 红（含整表可用性）；④ Kahn 判据恒通过 → 环用例红。
+- **证据**：`cargo fmt`/`clippy -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **609 passed / 0 failed / 1 ignored**；`cargo test --lib passes::` = 15；`p1_xref_golden` = 5；示例 end-to-end 仍走通（`RawFacts/RawCfg/LegacyNormalization` 三段 `Completed`，`CanonicalCfg` 停在 `ir_pass_not_implemented`）；由主 Agent 独立复跑确认。
+- **独立复核**：待派（本片为 pass 表声明 + 校验规则收窄，规模小）。登记债务：`Effects` 的双生产者建模张力（同一 `FactKind` 语义随当前图变化）已在用例内以断言钉住位置，留待 3.5。
 
 ## P2 验收映射现状（滚动更新）
 

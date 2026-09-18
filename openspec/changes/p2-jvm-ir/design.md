@@ -4,6 +4,8 @@
 
 本轮确认四个反例，涉及定义 loader 的层级解析、returnAddress 值来源、异常路径 locals 和调用上下文存储预算；同时修订 wide facts、Pass requires 与 Frame/SSA 设计。当前执行顺序以「Migration Plan」和 tasks 的 0.x 为准，3.4 不得直接交接 3.5。详细输入、实际结果及验证边界见 [verification.md](verification.md) 的「2026-09-18 当前工作区复核」。
 
+2026-09-18 补充 crate 归属：按独立的 [layer-jarde-crates](../layer-jarde-crates/design.md)，当前修正与 3.4 验收后、3.5/4.x 前迁移 reader/query/jvm。本文既有 `src/` 路径描述当前或原计划落点；迁移后 Frame/SSA/pass/driver 属于 `crates/jarde-jvm/src/`，reader facts 属于 reader，不继续往根门面填入算法。“不新增共享 crate”特指未经需求证明的跨项目通用包，不否定这次有现存实现支撑的 workspace 分层。
+
 以下 P1 复核及各片交付说明保留历史时点；标为契约的段落以本次修订为实施目标，不表示代码已符合新要求。
 
 ### P1 复核证据
@@ -105,6 +107,26 @@ OriginSet 锚定物理 class/method 与 class offset/BCI，不把有口径债务
 延续 `../../dependencies.md` 的 noak 与 petgraph 候选。petgraph 0.8.3 的容器、SCC/支配算法先验证 Rust 1.88、许可/纯 Rust feature tree、确定性输出、平行 normal/exception edges、不可达节点、自环、多出口和预算。稳定输出按物理/BCI 身份排序，不依赖 hash 顺序；算法适用条件核对[官方 dominators 文档](https://docs.rs/petgraph/0.8.3/petgraph/algo/dominators/fn.simple_fast.html)。
 
 通过后引入依赖，并在同一提交中只移除 CI normal-tree 对 petgraph 的阶段性禁令，保留 JVM、网络、数据库和异步依赖边界。依赖进入生产图不意味着 X1 可以构图。缺少协作取消接口的算法要记录规模界限和取消延迟；确有不满足契约的证据再评估其他库或局部实现。JVM frame、returnAddress、异常/effect 属于项目语义适配，不能用通用图算法代替，也不因此自写整套图算法。
+
+#### 6.1 droidsaw 复用取舍（2026-09-18）
+
+本次核对的是本地 Rust ASC 所用的 `droidsaw-common 2.0.0`，发布包记录的 commit 为 `04eeb3d2c4e0c6614748614c7cdc5ddc4f1b6670`；DEX 消费方为 ASC commit `15d97ca3cc53da86a949b451efa1b52787e98531` 下的 `vendor/droidsaw-dex`。这是源码与接口评估，未完成 JVM 集成实验或性能比较，不能据此宣称 Jarde 的恢复质量、速度或总代码量更优。
+
+| 对象 | 已核对的边界 | 当前选择 |
+| --- | --- | --- |
+| `common::graph` | `Graph` 提供节点和前后继；与已准入的 petgraph 职责重叠 | 继续调用 petgraph，不增加第二套生产图算法 |
+| `common::ssa::Builder` | 调用方驱动 `read_variable`/`write_variable`，库分配名字并填充 phi；指令分类、类型、origin/effect 和 trivial-phi 消除仍在调用方 | 吸收职责拆分；4.3 在现有私有模块内实现有预算的名字分配与 JVM 驱动 |
+| `common::region` | 异常入口为 `BTreeMap<BlockId, BlockId>`，`build_try_catch` 接收单个 handler；没有直接表达 JVM 有序多 handler 的接口 | P3 参考普通控制流 structuring，异常恢复消费 Jarde 自己的异常事实 |
+| DEX 实际消费路径 | `src/ssa.rs::SsaBody::build` 调 common SSA；`src/structure.rs` 自行恢复结构、复用 common 图算法，并未调用 common Region builder | 不把 ASC 的 Java 输出能力等同于 common Region 的现成能力 |
+| 工程约束 | common 2.0.0 标注 BSD-3-Clause，要求 Rust 1.93；无 graph/ssa/region 独立 feature，带入 chrono/ron 等依赖；SSA/Region 接口没有请求预算钩子 | 当前不引入该版本，也不为此预先升 MSRV、fork 整包或新增共享 crate；若以后复用源码，单独记录来源与许可证要求 |
+
+栈机与寄存器机的区别只决定语义驱动，**不构成通用 SSA 不能复用的理由**。异常输入可以经细分块或逻辑前驱节点表达；关键是保存 throw-site/context 的状态和边身份，而不是让名字分配器理解 JVM opcode。Region 的单 handler 接口不能直接代替完整异常模型，但其无异常控制流部分仍有参考价值。
+
+同样，不能仅凭 `SsaBody::build` 没有 Budget 参数就认为 ASC 没有限制：其 checked 入口在 `src/analysis.rs::decompile_checked` 通过 `src/memory.rs::reserve_class_pipeline` 预留 CFG/SSA 存储，并在 pipeline 阶段之间检查取消。Jarde 对第三方不可中断调用也已经采用规模界限和前后检查（见 3.1）。直接复用的实际缺口，是尚未证明 common SSA 的内部状态、phi 输入、临时空间和工作量能在 Jarde 已声明的计费与停止语义内被可靠约束；固定迭代上限不能自动替代请求预算。
+
+本阶段选择私有实现，是为了让 JVM 状态、origin/effect 与已存在的 Budget 直接配合；**算法优先依据 [Braun 等人的 SSA 构造论文](https://pp.ipd.kit.edu/uploads/publikationen/braun13cc.pdf) 和独立测试，droidsaw 是实现参考，不是正确性 oracle**。不照搬其“walk 后统一 seal”调用顺序、undef 行为或数值上限。4.3 的具体协议见下文。
+
+以后重评直接依赖，应提交同一接口上的小型对照证据：普通 diamond/loop（含改变内部存储顺序）、同块多 throw-site 的异常 locals、低预算/中途取消/高扇出 phi。比较薄适配、上游小补丁与私有实现的实际维护范围；若库通过契约且总体改动更少，可以替换名字分配实现。MSRV 和依赖面是可评估的工程成本，不作为永久拒绝理由。当前不安排跨项目拆包任务，也不把这组候选实验插入正在进行的 0.x/3.x 修正。
 
 ### 7. Bytecode 是 P2 的输出基线
 
@@ -728,6 +750,7 @@ pub(crate) struct PassDescriptor {
 ```
 
 - **描述表是静态常量**（`&'static [PassDescriptor]`），按 `IrPhase` 升序声明；引擎只按该表顺序执行，**没有动态注册、插件或运行时图**。
+- **成环判定的方向性**（0.3 实测的假环，必须按此实现）：一个事实可以有**多个生产者**（`Effects` 就同时由 `raw_cfg` 的原始图和 `ssa` 的正规图产出）。若把「每个生产者 → 每个消费者」都建成依赖边，`ssa`（晚）会连回 `legacy_normalization`（早），与 `legacy_normalization → canonical_cfg → ssa` 闭成环，**整张表被 `ir_pass_graph_cycle` 拒、`analyze_method` 的所有请求全部失败**。因此规则是：**某 fact 若存在早于消费者 C 的生产者，则不为晚于 C 的生产者建边**；否则保持原样。据此 `raw_cfg` 满足 `legacy_normalization` 的 `Effects` 需求，`ssa` 的重产不影响它，环判定只对真正的互相依赖生效（`a↔b`、自冲突仍报环）。
 - **阶段词汇一一对应**：公共的 `AnalysisStage`（1.1）与 crate-private 的 `IrPhase` 是 1:1 映射（同序、同名），`IrPhase::RawFacts = 1` 起编；请求里的 `requested_stages` 直接投影成阶段前缀，不引入第二套编号。
 - **启动校验**：请求的阶段集合在开跑前解析成"该表的前缀"（与 1.1 的 `scheduled_stages` 同规则），并检查每个被调度 pass 的 `requires` 都能由**更早的已调度 pass** 产出；缺失前置、`IrPhase` 逆序、`requires` 与 `produces` 冲突、表自身成环都在**启动时**返回结构化错误（`ir_pass_prerequisite_missing` / `ir_pass_order_invalid` / `ir_pass_graph_cycle`），不执行任何半初始化 IR。
 - **invalidation**：任何 pass 声明了非空 `invalidates` 时，其"之后"的既得事实必须被丢弃（`CanonicalCfg` 改变异常边即让 `Frames`/`Ssa`/`Effects` 失效），后续阶段若要使用必须重算或拒绝使用。运行时用一个"已产出事实集合"检查：使用未被重算的失效事实即 `ir_stale_fact`（结构化错误），不是静默沿用。
@@ -833,11 +856,16 @@ pub(crate) struct PassDescriptor {
 
 ### 4.3 stack/local SSA、phi 与 effect 顺序
 
+- **内部职责**：JVM 驱动消费 4.1/4.2 的 Frame 和共享操作数 facts，负责 stack/local 读写、category-2、初始化别名、异常入口和 origin/effect；名字分配部分只处理槽身份、定义/use 和逻辑 predecessor 的 phi。两部分放在分层后的 `jarde-jvm` 私有 `ssa` 模块中，不增加公共 trait、通用指令框架、第二套 opcode 分类或可替换后端注册表。
+- **构造协议**：采用 Braun 风格的按需 reaching-definition 查询与 phi 补全，用显式工作列表限制调用栈并接入现有 Budget。实现必须区分“前驱定义尚未处理”和“该路径确实无可用值”；只有相关前驱出口定义与边集合已就绪才最终解析输入，未就绪时保留待决关系。不能按 BCI/数组顺序提前缓存 undef，再把后来写入的真定义遗漏；不可读取的 JVM Top 也不能借通用 undef 变成可用值。用重排内部 block 存储、后置定义与回边的对照验证协议，而不是把 droidsaw 的两阶段实现直接视为证明。
 - **形状**：每个块入口的 Phi 按逻辑值流 predecessor 取值：普通转移按实际 CFG 边，异常转移按 4.2 的 throw-site/context 输入；locals 与 stack 分别建 SSA（stack 在块边界按栈形状对齐）。不可读取的 Top 槽不制造可用值或伪定义。
+- **异常适配**：用现有 canonical 身份和 4.2 的逻辑输入表示选择足够细的块或输入视图，使每个异常输入对应自己的状态；不为调用块级库而丢弃 throw-site，也不额外持久化一套丢失 origin 的寄存器 IR。具体表示在 4.2/4.3 联调时以最小存储和反例为准。
 - **不变量**：每个 value 恰有一个定义（phi 是定义）；每个 use 都能追溯到定义（def-use 双向一致）；phi 输入数 = 该槽实际参与合流的逻辑 predecessor 数（异常输入不能按聚合后的 raw edge 数计算）；phi 的类型 = 输入类型的合流（与 4.1 同一规则）；category-2 值的两槽在 SSA 里作为一个值处理。
+- **trivial phi**：仅有一个不同于自身的有效输入值时才可替换；同步修改全部 uses、def-use 关系和 origin 映射，保留控制/effect 事实。全自引用、无可用输入和 Top 不伪造定义。该简化属于同一 SSA 阶段，不增加全局优化框架，也不承诺不可约 CFG 的全局最小 SSA。
 - **origin 与 effect 顺序**：每个 SSA 值带 `OriginSet`（`MethodPoint` 指向产生它的指令 BCI）；effect 顺序按**指令级 throw site** 记录（异常边上的 effect 属于该 throw site，不属于块尾）；规范化克隆产生的值保留全部原始 BCI。
 - **计费与停止**：`IrItems` 按 frame 槽、SSA 值、phi 输入、origin 成员计；`IrEdges` 按 CFG 边与 def-use 边计；工作列表迭代计 `AnalysisSteps`；停止时保留**最后有效阶段**（`stages` 到该阶段为止），不发布半初始化 facts。
 - **4.3 验收**：diamond/loop/不可约控制流/异常合流各一组；高扇出 phi（多 predecessor + 多异常边）与多槽位样本验证 `IrItems`/`IrEdges` 上界；矛盾输入返回 `ir_frame_inconsistent` 或 `ir_ssa_inconsistent` + 最后有效阶段；`verification` 始终保持 `NotPerformed`；5.3 的 fixture/oracle 证据只能说明被测样本，不能把生产报告升为完整 verifier 已执行。
+- **独立对照**：吸收 droidsaw 的小图 oracle 方法，在测试侧用独立的朴素 reaching-definition/数据流实现核对小规模 CFG 的实际 use 来源与 phi 输入；比较时消除 SSA 编号差异和允许的 trivial phi，不要求两算法生成相同 phi 数量。oracle 不调用生产名字分配或合流助手。普通边随机图与 JVM 异常输入 fixtures 分开声明覆盖，尤其覆盖同 raw edge 下的两个 throw-sites；参考库的普通图测试通过不能替代这些异常测试。不把 oracle 或 droidsaw 加入生产依赖。
 ## 5.1–5.4 契约：库/CLI 接通、入口计数、golden/fuzz 与归档
 
 ### 5.1 方法分析库与薄 JSON CLI
@@ -889,8 +917,8 @@ pub(crate) struct PassDescriptor {
 1. **0.1 resolver 身份修正**：关闭 R1，重跑 2.1–2.5 的 loader/声明/dispatch 测试；同时固定 driver/caller 的环境绑定，不再让 D10/D15/D25 延后到产品装配。
 2. **0.2 reader 与 CFG facts 修正**：关闭 wide/数组维数等确定缺口，给 3.4/4.x 提供唯一操作数事实来源；重新确认 3.3 的分块/effect 与 P1 对照。
 3. **0.3 预算与 Pass 依赖修正**：关闭 R4 和 Effects requires 缺口，明确后续阶段的存储/边/步骤/clone 计费，不提前实现 3.5/4.x。
-4. **3.4 值流与异常上下文**：关闭 R2/R3，四个本轮探针转为仓内回归；真实语料、失败路径和独立复核通过后才能交接 3.5。
-5. **3.5 → 4.1 → 4.2 → 4.3**：先有界规范化，再按修订后的 Top/初始化别名/指令级异常输入契约建立 Frame/SSA；不得以 test oracle 替代 verifier。
+4. **3.4 值流与异常上下文**：关闭 R2/R3，四个本轮探针转为仓内回归；真实语料、失败路径和独立复核通过后，先完成独立的 `layer-jarde-crates` 及其回归门槛，再交接 3.5。文件搬迁不与本片修复混做。
+5. **3.5 → 4.1 → 4.2 → 4.3**：在 `jarde-jvm` 内先有界规范化，再按修订后的 Top/初始化别名/指令级异常输入契约建立 Frame/SSA；4.3 在私有模块内分开 JVM 驱动与名字分配，落实前驱就绪协议和独立小图对照。按 6.1 的决定吸收 droidsaw 设计，不增加跨项目共享 crate 前置；不得以 test oracle 替代 verifier。
 6. **5.1–5.4**：库/CLI、真实读取与构造计数、golden/fuzz、文档及全门禁；P3 仍以 P2 整体出口为前置。
 
 每片提供最小反例与旧行为失败证据，记录对应 commit/CI run；本轮工作区的本地门禁不能冒充 HEAD 的 CI 证据。不为“记录文档提交自己的 CI”循环提交。P1 的维护已在独立归档关闭，不重新打开或混入上述修正。

@@ -4,7 +4,9 @@
 
 ## 技术栈边界
 
-生产核心使用 Rust 2024，MSRV 1.88 已由本地单作业检查及 Linux x86_64 CI 实际验证。首期仅库 `jarde` 和薄适配器 `jarde-cli` 两个 crate；artifact、classfile、model、query、resolver、IR、Java 输出先保持逻辑模块边界，随真实编译依赖再拆包。
+生产核心使用 Rust 2024，MSRV 1.88 已由本地单作业检查及 Linux x86_64 CI 实际验证。当前仍为库 `jarde` 和薄适配器 `jarde-cli` 两个 crate。2026-09-18 依据已存在的生产依赖，规划独立的 [layer-jarde-crates](changes/layer-jarde-crates/design.md)：新增 reader、query、jvm 三包，根包作为门面，Java 包随 P3 第一个实际恢复闭环创建；不是每个模块各建一个包，也不预建 common/core。前提是当前 P2 修正和 3.4 验收通过，拆包完成后继续 3.5/4.x。
+
+目标生产依赖为 query→reader、jvm→reader+query、facade→三包、CLI→facade；query 不依赖 jvm 或 petgraph。现有第三方版本/features 按所有者迁移，不因拆包升级；reader/query 的独立消费、单一身份/预算、A17 和 fuzz/CI 路径是实际验收项，不提前宣称编译提速。
 
 公共 API 同步、可取消，不强制 Tokio、线程池或数据库。CLASS/JAR/WAR 为必需输入；目标代码、bootstrap、JNI 和 launcher 均不执行。JDK、javap、其他反编译器只用于受控测试 oracle，用户依赖不自动联网下载。纯 Rust 要求覆盖生产依赖链，不能只检查顶层 crate 名称。
 
@@ -43,6 +45,12 @@
 | P5 缓存、并行、持久索引 | 实测后选型 | 在出现真实瓶颈时评估有界缓存库、Rayon、SQLite/Rust 原生存储等；必须检查纯 Rust 约束、权重淘汰、取消、损坏回退和许可。当前不锁定产品或格式，也不预先自研 |
 
 只有通用库无法满足已经声明的 JVM 语义或边界时才新增专用实现。发现依赖问题时依次考虑正确使用现有 API、上游修复/升级、局部有测试的补丁，最后才替换依赖或实现缺失部分；禁止另起一套完整 ZIP、DEFLATE、MUTF-8 或图算法。
+
+### ASC / droidsaw 复用复核（2026-09-18）
+
+本轮核对固定的本地 ASC checkout 与 droidsaw-common 2.0.0 发布源码，不代表对最新上游的全面评测；修订和接口证据见 [P2 design §6.1](changes/p2-jvm-ir/design.md)。当前不引入 common 整包：SSA 仍需 JVM Frame、异常逻辑 predecessor、origin/effect 与预算适配，Region 的单 handler 接口不直接承载完整 JVM 异常结构；其 Rust 1.93 要求及未按子模块裁剪的依赖是额外工程成本，不是永久禁用理由。
+
+通用 SSA 在转换输入后可复用，ASC checked 路径也已有预算/取消/内存预留，不能据“DEX vs JVM”或“它没有资源治理”直接排除。当前吸收职责分离、独立小图对照与通用输出先行的路线，不复制 DEX 语义、不 fork 整包、不先建跨项目共享 crate；以后用同一组异常、块顺序、资源停止探针比较薄适配和私有实现后再决定。该决定与 Jarde 内部 workspace 分层是两个问题。
 
 ## 上游准入门槛与已知关注点
 
