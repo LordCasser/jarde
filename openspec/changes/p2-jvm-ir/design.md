@@ -392,6 +392,10 @@ impl Engine {
       pub(crate) constant_pool_index: Option<u16>,         // 与 InstructionFact 同值
       pub(crate) branch_offset: Option<i32>,               // 相对分支偏移（编码值）
       pub(crate) switch: Option<SwitchOperands>,           // tableswitch/lookupswitch
+      pub(crate) effective_opcode: u8,                     // wide 时是被包裹的 opcode，否则等于原始 opcode（0.2）
+      pub(crate) atype: Option<u8>,                        // newarray 的元素类型码（0.2）
+      pub(crate) dimensions: Option<u8>,                   // multianewarray 的维数（0.2）
+      pub(crate) interface_count: Option<u8>,              // invokeinterface 编码的 count（0.2）
   }
   pub(crate) enum ImmediateValue { Int(i32), Long(i64), Float(u32), Double(u64) }   // 浮点用位模式
   pub(crate) enum SwitchOperands {
@@ -424,7 +428,11 @@ impl Engine {
   - `Handler` 行的 `instruction_bci` 取 `handler_bci`（异常表记录没有唯一的"发出指令"；保护区间仍由 `exception_handlers[ordinal]` 给出）。
   - Body 未完整解码（预算/取消/decode 停止）时 `control_flow_targets` 是**可靠但不完备**的视图：不会放过非法目标，但会把"落在未读后缀里的合法目标"报成非法。调用方 MUST 先查 `execution`/`stopped_at`，不得把该 `Err` 直接当成方法损坏；3.x 消费前若需要更强的类型级保护再收紧。
 - **switch 条目**：语义取自已解码事件（default/low/high/npairs 来自指令事件），条目本身允许从该指令**已记录字节区间**按 checked 偏移读取，且区域长度必须等于解码形状；这不算"再次遍历字节流重建语义"，也不得迭代 noak 的 `TablePairs`/`LookupPairs`（其 `high == i32::MAX` 会在 overflow-checks 下 panic）。
-- **有意不保留的操作数**：`newarray` 的 atype、`multianewarray` 的 dimensions、`invokeinterface` 的 count（3.x 若需要先改本节）；`immediate` 只表示 CP 条目或指令本身的字面量类型，不承担 ldc 变体与 CP tag 的配对合法性（那属 4.x verifier 领域）。
+- **保留的指令操作数（0.2 补齐，D03/D27）**：`newarray` 的 atype、`multianewarray` 的 dimensions、`invokeinterface` 的 count 与 **wide 的 effective opcode** 都在 crate-private 的 `InstructionOperands` 上保留（见上面的字段），由共享 noak 事件适配直接给出，**不另写 decoder**。
+  - `effective_opcode` 恒存在且等于原始 opcode，**只有** `wide` 包裹形态不同（`wide iload/istore/fload/dload/aload/astore/…/ret/iinc` 取被包裹的那个 opcode）。公共的 `InstructionFact`（raw opcode/width/span/BCI）**保持原样不变**，这两点是 `cfg`/`call_context` 决定分块、终结指令、`may_throw`、局部读写与方言违规的**唯一依据**——它们必须改读 `effective_opcode`，不得再看原始 opcode 猜 wide。
+  - atype/dimensions/count 是**语义不同**于 `immediate` 的事实：`immediate` 仍只表示「指令本身压入的常量或 CP 条目」，`newarray` 的类型码不是压栈常量，两者不得混用（4.x 的 Frame 要按 atype 决定元素类型、按 dimensions 决定弹栈槽数）。
+  - 合法/非法样本都要有：atype 全取值区间与越界、dimensions 为 0、count 与描述符推导出的参数槽数不一致；`InvokeInterface` 的 count 是**校验事实**，不是信任来源（5.1 若要用它，先与本项目自己的描述符推导对账）。
+  - `immediate` 不承担 ldc 变体与 CP tag 的配对合法性（那属 4.x verifier 领域）。
 - **存储与计费**：操作数 facts 只按既有 `CodeBytes` 1:1 计入，不新增维度；实测约 80 B/指令的派生放大（有绝对上界）在 1.3 由 `IrItems` 记账或在本节写明上界。
 - **1.2 不构建 CFG**（3.x 才做），只交付可复核的校验事实与错误。
 - **错误语义**：无效目标/溢出/形状不符各给稳定 code + 原 BCI 的定位诊断，不 panic、不静默跳过该指令；已有错误码（`classfile_instruction_*`）优先复用，必要时才新增。
