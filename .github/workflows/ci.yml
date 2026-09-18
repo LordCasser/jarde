@@ -104,39 +104,47 @@ jobs:
           # matching `jarde-reader` and vice versa.
           closure_violation() {
             local edges="$1"
-            local package="$2"
-            shift 2
-            local raw="$RUNNER_TEMP/closure-$package-$edges.raw"
-            local names="$RUNNER_TEMP/closure-$package-$edges.txt"
-            if ! cargo tree -p "$package" --edges "$edges" --locked --prefix none \
+            local features="$2"
+            local package="$3"
+            shift 3
+            # The feature flag has to be part of the file name: the same package is checked
+            # under both feature configurations and the second run would otherwise overwrite
+            # the first one's evidence.
+            local tag="$package-$edges${features:+-all-features}"
+            local raw="$RUNNER_TEMP/closure-$tag.raw"
+            local names="$RUNNER_TEMP/closure-$tag.txt"
+            if ! cargo tree -p "$package" --edges "$edges" $features --locked --prefix none \
               --format '{p}' > "$raw"; then
-              echo "cargo tree could not read the $edges closure of $package" >&2
+              echo "cargo tree could not read the $edges closure of $package ($tag)" >&2
               cat "$raw" >&2
               return 1
             fi
             sed -E 's/ .*$//' "$raw" | sort -u > "$names"
             if ! grep -qxF "$package" "$names"; then
-              echo "$package is missing from its own $edges closure; no tree was read" >&2
+              echo "$package is missing from its own $edges closure ($tag); no tree was read" >&2
               return 1
             fi
             for forbidden in "$@"; do
               if grep -qxF "$forbidden" "$names"; then
-                echo "$package reaches $forbidden across the layering ($edges edges):" >&2
+                echo "$package reaches $forbidden across the layering ($tag):" >&2
                 cat "$names" >&2
                 return 1
               fi
             done
-            echo "$package $edges closure: $(wc -l < "$names" | tr -d ' ') packages, none of [$*]"
+            echo "$tag closure: $(wc -l < "$names" | tr -d ' ') packages, none of [$*]"
           }
-          # Production edges first, then `all` — which adds the dev and build edges. A layer
-          # whose tests pull the layer above it is not independently verifiable either, so the
-          # same forbidden names are checked on both. The feature configuration is whatever the
-          # manifest declares (no `--all-features` here): this step is about which packages a
-          # layer can reach at all, not about which optional parts of them are enabled.
+          # Four configurations per layer. `normal` and `all` cover the production, dev and
+          # build edges; `--all-features` covers a dependency that is only reachable with a
+          # feature that is not enabled by default - without it, a layer could pull a forbidden
+          # package behind such a feature and this step would still read a clean tree. The
+          # feature flags are the only thing that varies here: a dependency being optional
+          # widens the reachable set, so the union is what has to be checked.
           for edges in normal all; do
-            closure_violation "$edges" jarde-reader jarde jarde-query jarde-jvm petgraph
-            closure_violation "$edges" jarde-query jarde jarde-jvm petgraph
-            closure_violation "$edges" jarde-jvm jarde
+            for features in "" "--all-features"; do
+              closure_violation "$edges" "$features" jarde-reader jarde jarde-query jarde-jvm petgraph
+              closure_violation "$edges" "$features" jarde-query jarde jarde-jvm petgraph
+              closure_violation "$edges" "$features" jarde-jvm jarde
+            done
           done
 
       - name: Install OpenSpec 1.11.0
