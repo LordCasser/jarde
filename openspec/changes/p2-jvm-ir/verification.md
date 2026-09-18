@@ -218,6 +218,9 @@
 | D36 | `DeclarationShape.owner` 字段被删除，改为按节点比较（`declaring: NodeIdentity`）；任何后续切片若引用该字段需改用 `declaring` | 0.1 实现 | 由「owner 字符串不构成继承证据」直接导致；改动在 crate-private，公共面不变
 | D37 | `elapsed_millis` 比较造成假红：6 次未变异全量运行中 2 次仅因该字段 0 vs 1 失败（涉及 `p2_cfg` 2 条、`p2_return_address` 2 条，前者 HEAD 上即存在） | 0.1 复核 | **转任务 0.5**：按 P1 golden 同款做法剔除该字段后比较，并审计全部 P2 用例；不修会让「绿跑」证据不可信，也会把变异实验误判为捕获 |
 | D38 | memo 捷径的历史依赖（F1）：同一物理定义的绑定判定因「先前以哪个名字被解析」而不同（成员路径接受、driver fresh 路径拒绝） | 0.1 复核 | **本轮修**（契约已写明「memo 捷径只能复用已在自己声明名下核对过的绑定」）+ 新用例；触发需 entry 路径 ≠ `this_class` 的畸形 artifact |
+| D39 | `InstructionOperands::default()` 的 `effective_opcode` 是 `0x00`：夹具漏设会静默按 `nop` 分类，靠 `cfg`/`call_context` 测试 helper 的 `debug_assert` 兜底 | 0.2 复核 | 接受（已核对全部 27 处 `..Default()` 构造都显式设了 effective）；契约已写明「夹具必须显式给出编码事实」 |
+| D40 | 仓内缺 category-2（双槽 ±2）的宽化对照断言：`wide lload/lstore` 的 `Some(2)`/`Some(-2)` 目前只有间接证据（映射测试 + 未改动的 delta 表） | 0.2 复核 | **转 0.4 轮一起补**（同一文件 `cfg.rs`，一次改动完成，避免为一条断言单独开一轮） |
+| D41 | `multianewarray` 的 `stack_delta` 为 `None`（`1 - dimensions` 未定） | 0.2 复核 | **转 4.1**：Frame 按 atype 决定元素类型、按 dimensions 决定弹槽数；4.1 的验收须含这一条 |
 ### 0.1 loader 身份修正（initiating / defining loader）
 
 - **缺陷与根因**：用户复核的反例 R1 证明 child 域（ChildFirst）里请求 parent 定义的 `p/Owner extends p/Base` 时，解析返回 **child 的同名 Base** 并报 `Resolved`/`Complete`。根因有三处耦合：`HeaderClosure::demand` 把每次需求的起点硬编码为 `runtime.load_domain.loader`；`ordered_domains` 只从该 loader 起走父链；`HierarchyWalk` 的待展开层只携带名字。JVMS 5.4.3.1 要求父类/接口符号由**该类的 defining loader** 解析。2.2 曾把「闭包键的 loader 分量不可证伪」记为可接受边界，该边界被 R1 证伪并撤回。
@@ -230,6 +233,17 @@
 - **证据**：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked --no-fail-fast` = **596 passed / 0 failed / 1 ignored**（连跑 4 次一致），`p1_xref_golden` = 5；示例 exit 0；由主 Agent 独立复跑确认。
 - 远端 CI：实现与文档提交 `0d7906c`、`ed96928` 推送 `main` 后，CI run [`35311183845`](https://github.com/LordCasser/jarde/actions/runs/35311183845) 四个 job 全部 success。
 - **独立复核结论**：**Approve**（含复核者自建 13 条 fixture；其最担心的「字节相同定义不同被复用误接受」经专门 fixture 证伪为**正确拒绝**）。登记债务：D35（已处置）、D36、D37（已转 0.5 并完成）、D38（已修）。
+
+### 0.2 reader 操作数补齐（effective opcode、atype、dimensions、count）
+
+- **关闭的缺口**：`wide` 包裹形态此前只保留前缀字节 `0xc4`，导致 `wide iload/istore/ret` 既不参与分块与 effect 分类、也不进入 51+ 方言违规判定（`wide ret` 被保守的 wide 分支吸收成 unresolved）；`newarray` atype / `multianewarray` dimensions / `invokeinterface` count 此前被 1.2 显式列为「有意不保留」，而 0.2 与 4.x 都需要它们。
+- **交付**：`InstructionOperands` 增 `effective_opcode`/`atype`/`dimensions`/`interface_count` 四个 crate-private 字段，全部由**同一个 noak 事件**填充（不迭代 `TablePairs`/`LookupPairs`，不重扫字节，不另写 decoder）；`cfg` 与 `call_context` 共 17 处分类站点改读 `effective_opcode`，**删除三个 `!local.wide` 守卫**（load/store/ret 三条臂此前正因它们不对宽化形态分类），并删净已死的 `ambiguous_wide` 机制与 wide→unresolved 边界分支；`LocalOperand.wide` 保留（记录编码形态，供 5.x 取证）。
+- **公共面未变**：`InstructionFact`/`BytecodeInspection`/`MethodCodeFacts`/`inspect_method_bytecode` 的定义与输出逐字段未动（差异中无相关 hunk；P0 指令边界 oracle、P1 行事实与 `p1_xref_golden` 5 条全绿）。
+- **映射完备性**：`wide` 在 JVMS 6.5 里只能包裹 12 个 opcode，实现逐条对齐；noak 0.7.0 的解码分派对这 12 个以外**直接报 `InvalidInstruction`**，因此适配层的 `_ => opcode` 兜底在钉死版本下不可达——映射 totality 由「版本钉死 + 3.1 的升级门槛」保证，`debug_assert` 只在 debug/测试构建下把映射遗漏判为失败（**不得**把它当作 release 保证）。
+- **反例与证伪**：实现者 6 组变异（effective 退回 raw、方言扫描读 raw、`ends_block`/`stack_delta`/`may_throw` 读 raw、三个守卫保留）+ 复核者 16 组变异。捕获计数以复核者实测为准：① effective 退回 raw **5 红**（若连同读端自带的 `debug_assert` 计入则 8 红）、⑤ 三个守卫保留 **3 红**（`call_context::a_wide_local_access_…`、`cfg::effects_classify…`、`cfg::wide_forms_…`），实现者自报的 2 红偏少。`may_throw`（m6）、`ThrowSite.opcode`（m15）与 `is_jsr`（m11）的 effective 读取是**语义等价**变异（12 种被包裹 opcode 无一可抛、jsr 永不是 wide 形态），无测试可捕获，属一致性防御。
+- **边界（复核确认，非缺口）**：`multianewarray` 的 `stack_delta` 仍为 `None`（其 `1 - dimensions` 归 4.1 的 Frame 决定，与 `athrow` 同为「仅靠 opcode 定不了」的一类）；`InstructionEffect.opcode`/`ThrowSite.opcode` 现为 effective（crate-private 载荷，当前无生产消费者）。
+- **证据**：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`（另加 `cargo check --release --all-targets`）均干净；`cargo test --workspace --all-targets --all-features --locked` = **602 passed / 0 failed / 1 ignored**；`cargo test --test p1_xref_golden --locked` = 5；示例 exit 0；由主 Agent 独立复跑确认（含 `effective_opcode` 在三个文件的接入与三个 wide 守卫的消失）。
+- **独立复核结论**：**Approve**（16 组变异 + 自建字节码探针，含 atype 全取值与越界、dimensions=0/255、count 不一致、`immediate` 不得混用的三组反例）。登记债务：wide 映射 totality 只有 debug 守卫（release 下未映射事件会退化为「前缀不决定任何分类」，靠版本钉死与升级门槛缓解）；`InstructionOperands::default()` 的 `effective_opcode` 是 `0x00`，夹具漏设会静默变成 `nop` 语义（靠测试 helper 的 `debug_assert` 兜底）；**4.1 需关闭 `multianewarray` 的 `stack_delta`**；**仓内缺少 category-2（双槽 ±2）的宽化对照断言**（行为已由复核者探针证明正确，待补进仓内回归）。
 
 ## P2 验收映射现状（滚动更新）
 
