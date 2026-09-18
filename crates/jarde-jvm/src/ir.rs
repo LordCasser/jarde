@@ -16,7 +16,10 @@
 //! locates and decodes the driver method's body and builds its raw CFG, and 3.4 adds the
 //! `jsr`/`ret` call contexts over that graph — keeping the raw facts and reporting a dialect
 //! violation or an unestablished call graph instead of publishing contexts it cannot justify.
-//! The report states which stages completed, which stopped and what was read on the way.
+//! 3.5 consumes exactly those contexts to publish the canonical CFG, which is also what fixed
+//! the quality plane's rule: the run decides it, and only a published canonical artifact makes
+//! it `Conservative` ([`Quality`]). The report states which stages completed, which stopped and
+//! what was read on the way.
 
 use crate::environment::{
     EnvironmentIdentity, EnvironmentProblem, ResolutionEnvironment, environment_diagnostics,
@@ -101,10 +104,13 @@ pub enum Representation {
 /// Strength of what was produced.
 ///
 /// `Conservative` keeps low-level structures that are still faithful; `Fallback`
-/// publishes the bytecode baseline with its failure reasons. The classification rule is
-/// only fixed once the normalization and product slices (3.5/5.1) land, so this is a
+/// publishes the bytecode baseline with its failure reasons. This is a
 /// property of a *produced* artifact and nothing else:
 ///
+/// - the artifact of the method-IR pipeline is the canonical CFG, so since 3.5 a run
+///   that published one is `Conservative` — including the canonical graph of a
+///   reliable decoded prefix — and every run that stopped before it, or never
+///   scheduled it, is `Fallback`;
 /// - when `analysis = NotPerformed` there is no artifact at all, so `Fallback` merely
 ///   means "not `Conservative`" and MUST NOT be read as evidence that a real fallback
 ///   recovery happened, or that a body was read, decoded or degraded;
@@ -249,6 +255,10 @@ pub(crate) struct AnalysisRun {
     pub(crate) stages: Vec<StageResult>,
     pub(crate) reads: Vec<HeaderRead>,
     pub(crate) coverage: Coverage,
+    /// Quality of the artifact this run produced, decided by the run: a run that published a
+    /// canonical CFG is `Conservative`, and a run that stopped before the pass, or never
+    /// scheduled it, is `Fallback`. The report does not re-derive it.
+    pub(crate) quality: Quality,
     pub(crate) execution: ExecutionReport,
     pub(crate) diagnostics: Vec<Diagnostic>,
 }
@@ -271,6 +281,7 @@ impl AnalysisRun {
                 .collect(),
             reads: Vec::new(),
             coverage: Coverage::not_requested(),
+            quality: Quality::Fallback,
             execution: ExecutionReport::Failed {
                 reason: TerminationReason::Unsupported {
                     code: code.to_string(),
@@ -338,11 +349,10 @@ pub(crate) fn terminal(error: &Error, usage: UsageSnapshot) -> (ExecutionReport,
 /// The environment problems and their diagnostics come first, then the run's diagnostics, which
 /// is the order 1.1 fixed for a rejected environment and keeps every problem visible next to
 /// the capability it prevented. The product planes are the P2 baseline (`Bytecode`, `NotJava`,
-/// `NotAttempted`, `Unproven`, `NotPerformed`): this slice builds no Java, compiles nothing and
-/// proves no semantic invariant, and `quality = Fallback` means "not `Conservative`" until 3.5
-/// fixes the classification of a produced artifact. `origin` stays empty because the IR
-/// payloads are crate-private in P2 (invariant 11): the report anchors the request by
-/// `method`, and 5.1 is where a published IR count would have to add its own field first.
+/// `NotAttempted`, `Unproven`, `NotPerformed`); the quality plane is the run's own — see
+/// [`Quality`] for the rule 3.5 fixed — and `origin` stays empty because the IR payloads are
+/// crate-private in P2 (invariant 11): the report anchors the request by `method`, and 5.1 is
+/// where a published IR count would have to add its own field first.
 pub(crate) fn analysis_report(
     request: &MethodAnalysisRequest,
     problems: Vec<EnvironmentProblem>,
@@ -360,7 +370,7 @@ pub(crate) fn analysis_report(
         loader: request.environment.runtime.load_domain.loader.clone(),
         body: run.body,
         representation: Representation::Bytecode,
-        quality: Quality::Fallback,
+        quality: run.quality,
         syntax_status: SyntaxStatus::NotJava,
         compile_status: CompileStatus::NotAttempted,
         semantic_validation: SemanticValidation::Unproven,

@@ -71,10 +71,13 @@ fn limits() -> Limits {
         ir_items: 1 << 20,
         ir_edges: 1 << 20,
         analysis_steps: 1 << 20,
+        normalization_clones: 1 << 20,
         nested_depth: 8,
         dependency_depth: 4,
         elapsed_millis: u64::MAX,
-        ..Limits::default()
+        // Every dimension of `Limits` is named here on purpose: the canonicalization of 3.5 bills
+        // a dimension of its own, and a fixture that inherited the rest silently would leave it
+        // at the default of zero.
     }
 }
 
@@ -265,7 +268,9 @@ fn the_historical_jsr_finally_completes_the_call_context_pass() {
     // The 45–48 corpus really compiles `finally` into two `jsr` calls of one subroutine. The
     // pass that turns that into call contexts is the third phase this build implements: it
     // completes, it is not refused, and it charges analysis steps of its own — while the
-    // dimensions `raw_cfg` owns stay exactly what that pass charged.
+    // dimensions `raw_cfg` owns stay exactly what that pass charged. 3.5's `canonical_cfg` then
+    // consumes exactly those contexts and completes as well, so the frame phase behind it is the
+    // one this build does not implement.
     for version in 45..=48 {
         let fixture = fixture(historical(version));
         let pipeline = request(&fixture, fixture.method.clone(), vec![AnalysisStage::Ssa]);
@@ -276,13 +281,13 @@ fn the_historical_jsr_finally_completes_the_call_context_pass() {
                 StageState::Completed,
                 StageState::Completed,
                 StageState::Completed,
+                StageState::Completed,
                 StageState::Failed {
                     code: "ir_pass_not_implemented".to_string()
                 },
                 StageState::NotPerformed,
-                StageState::NotPerformed,
             ],
-            "classfile major {version}: the three implemented phases really ran"
+            "classfile major {version}: the four implemented phases really ran"
         );
         assert_eq!(
             diagnostic_codes(&report),
@@ -290,7 +295,9 @@ fn the_historical_jsr_finally_completes_the_call_context_pass() {
             "classfile major {version}: neither the dialect nor the call graph was refused"
         );
         assert_eq!(report.body, MethodBodyState::Present);
-        assert_eq!(report.quality, Quality::Fallback);
+        // The canonical CFG is the artifact of this pipeline, so a run that published one is
+        // `Conservative`; the plane says nothing about the phases behind it.
+        assert_eq!(report.quality, Quality::Conservative);
         assert_eq!(
             report.coverage.artifact_structural.state,
             CoverageState::CompleteWithinSchema
@@ -306,27 +313,45 @@ fn the_historical_jsr_finally_completes_the_call_context_pass() {
             vec![AnalysisStage::RawCfg],
         );
         let (_, raw_budget) = analyze(&fixture, &without, limits());
+        // A run that stops at the contexts isolates this pass's own charges from the
+        // canonicalization 3.5 runs behind it.
+        let contexts_only = request(
+            &fixture,
+            fixture.method.clone(),
+            vec![AnalysisStage::LegacyNormalization],
+        );
+        let (_, context_budget) = analyze(&fixture, &contexts_only, limits());
         assert!(
-            budget.usage().analysis_steps > raw_budget.usage().analysis_steps,
+            context_budget.usage().analysis_steps > raw_budget.usage().analysis_steps,
             "classfile major {version}: the call-context walk charged steps of its own"
         );
         assert!(
-            budget.usage().ir_items > raw_budget.usage().ir_items,
+            context_budget.usage().ir_items > raw_budget.usage().ir_items,
             "classfile major {version}: the contexts and their sets are derived items: {} vs {}",
-            budget.usage().ir_items,
+            context_budget.usage().ir_items,
             raw_budget.usage().ir_items
         );
         assert!(
-            budget.usage().ir_edges > raw_budget.usage().ir_edges,
+            context_budget.usage().ir_edges > raw_budget.usage().ir_edges,
             "classfile major {version}: the successor lists are derived edges: {} vs {}",
-            budget.usage().ir_edges,
+            context_budget.usage().ir_edges,
             raw_budget.usage().ir_edges
         );
         assert!(
             raw_budget.usage().ir_edges >= 2,
             "the two `jsr` calls of this fixture are raw edges"
         );
-        assert_eq!(budget.usage().normalization_clones, 0, "cloning is 3.5");
+        assert_eq!(
+            context_budget.usage().normalization_clones,
+            0,
+            "the call contexts are not clones"
+        );
+        // One clone per call site of the one shared subroutine: the charge 3.5 exists for.
+        assert_eq!(
+            budget.usage().normalization_clones,
+            2,
+            "classfile major {version}: the shared subroutine is cloned per call site"
+        );
         // The pass reads the body the reader already decoded: no second read, no second charge.
         assert_eq!(budget.usage().method_bodies, 1);
         assert_eq!(budget.usage().class_headers, 1);
@@ -346,10 +371,10 @@ fn the_modern_dialect_pays_nothing_for_its_empty_context_set() {
             StageState::Completed,
             StageState::Completed,
             StageState::Completed,
+            StageState::Completed,
             StageState::Failed {
                 code: "ir_pass_not_implemented".to_string()
             },
-            StageState::NotPerformed,
             StageState::NotPerformed,
         ]
     );
@@ -359,10 +384,23 @@ fn the_modern_dialect_pays_nothing_for_its_empty_context_set() {
         vec![AnalysisStage::RawCfg],
     );
     let (_, raw_budget) = analyze(&fixture, &without, limits());
+    // The same run without the canonicalization behind it: this is the walk's own charge, and a
+    // body whose context set is empty has no walk to pay for.
+    let contexts_only = request(
+        &fixture,
+        fixture.method.clone(),
+        vec![AnalysisStage::LegacyNormalization],
+    );
+    let (_, context_budget) = analyze(&fixture, &contexts_only, limits());
     assert_eq!(
-        budget.usage().analysis_steps,
+        context_budget.usage().analysis_steps,
         raw_budget.usage().analysis_steps,
         "a body without `jsr`/`ret` has no walk to charge"
+    );
+    assert_eq!(
+        budget.usage().normalization_clones,
+        0,
+        "and nothing to clone"
     );
 }
 

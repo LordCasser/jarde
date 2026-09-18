@@ -143,7 +143,10 @@ fn report_unimplemented(
 /// `legacy_normalization` is 3.4's contract over that graph: one call context per `jsr` site,
 /// the return point of every `ret` from the context that owns it, the exception records that
 /// cross a call, and a reported refusal — dialect violation or unestablished call graph —
-/// instead of an invented one.
+/// instead of an invented one. `canonical_cfg` is 3.5's contract over exactly those contexts:
+/// the bounded clone normalization, which publishes a canonical graph, stops under
+/// `ir_legacy_normalization_unbounded` when its own bound is reached, and is the artifact that
+/// makes the report's quality plane `Conservative`.
 fn run_method_analysis(
     content: &[ArtifactSnapshot],
     request: &crate::ir::MethodAnalysisRequest,
@@ -161,6 +164,7 @@ fn run_method_analysis(
             .collect(),
         reads: Vec::new(),
         coverage: Coverage::not_requested(),
+        quality: crate::ir::Quality::Fallback,
         execution: ExecutionReport::Complete {
             usage: budget.usage(),
         },
@@ -173,6 +177,12 @@ fn run_method_analysis(
     // and both are facts of the passes that already completed.
     let mut major_version: Option<u16> = None;
     let mut raw: Option<crate::cfg::RawCfgOutcome> = None;
+    // The call contexts 3.4b established, kept for `canonical_cfg` (3.5): the payload stays in
+    // this run, so the cloning pass consumes the proven contexts instead of re-deriving them.
+    let mut contexts: Option<crate::call_context::CallContexts> = None;
+    // Whether this run published a canonical graph: the one artifact that makes the report's
+    // quality `Conservative` instead of `Fallback`.
+    let mut canonical_cfg: Option<Box<crate::canonical::CanonicalCfg>> = None;
     for (index, pass) in scheduled.iter().enumerate() {
         if !implemented(pass.phase) {
             stop = stop.or(Some(report_unimplemented(
@@ -293,7 +303,7 @@ fn run_method_analysis(
                     break;
                 };
                 match crate::call_context::call_contexts(decoded, raw, version, budget) {
-                    Ok(crate::call_context::CallContextOutcome::Established(_contexts)) => {
+                    Ok(crate::call_context::CallContextOutcome::Established(established)) => {
                         if let Err(error) = ledger.apply(pass) {
                             let (execution, diagnostic) =
                                 crate::ir::terminal(&error, budget.usage());
@@ -310,10 +320,11 @@ fn run_method_analysis(
                         } else {
                             StageState::Partial
                         };
-                        // The contexts are a crate-private payload (invariant 11) with no
-                        // consumer in this build yet: the ledger publishes the fact, 3.5 reads
-                        // it, 5.1 decides what becomes public, and the report keeps publishing
-                        // the status planes.
+                        // The contexts are a crate-private payload (invariant 11): they stay in
+                        // this run, because the canonical CFG pass consumes exactly this payload
+                        // instead of re-deriving any return point (3.5), and 5.1 decides what
+                        // becomes public.
+                        contexts = Some(established);
                     }
                     Ok(crate::call_context::CallContextOutcome::Forbidden { message }) => {
                         // A dialect violation, not a limitation: the raw facts are kept, the
@@ -358,6 +369,79 @@ fn run_method_analysis(
                     }
                 }
             }
+            IrPhase::CanonicalCfg => {
+                let (Some(decoded), Some(raw), Some(contexts)) =
+                    (facts.as_ref(), raw.as_ref(), contexts.as_ref())
+                else {
+                    // The pass requires the facts of the passes before it, so a run that reached
+                    // it without them is the ledger's own `ir_pass_prerequisite_missing` (the
+                    // schedule validation makes it unreachable).
+                    if let Err(error) = ledger.apply(pass) {
+                        let (execution, diagnostic) = crate::ir::terminal(&error, budget.usage());
+                        run.stages[index].state = stage_state(&execution);
+                        run.diagnostics.push(diagnostic);
+                        stop = stop.or(Some(execution));
+                    }
+                    break;
+                };
+                match crate::canonical::canonical_cfg(
+                    decoded,
+                    raw,
+                    contexts,
+                    &request.method,
+                    budget,
+                ) {
+                    Ok(crate::canonical::CanonicalOutcome::Canonical(graph)) => {
+                        if let Err(error) = ledger.apply(pass) {
+                            let (execution, diagnostic) =
+                                crate::ir::terminal(&error, budget.usage());
+                            run.stages[index].state = stage_state(&execution);
+                            run.diagnostics.push(diagnostic);
+                            stop = stop.or(Some(execution));
+                            break;
+                        }
+                        // The graph covers the decoded prefix: a body whose decode stopped early
+                        // gets the canonical graph of that prefix and says so, exactly like the
+                        // two passes before it.
+                        run.stages[index].state = if graph.completeness.is_complete() {
+                            StageState::Completed
+                        } else {
+                            StageState::Partial
+                        };
+                        // The graph is a crate-private payload (invariant 11) with no consumer in
+                        // this build: 4.x reads it, and 5.1 decides what becomes public. What
+                        // this run keeps of it is the fact that it exists — the report's quality
+                        // plane is about a produced artifact and nothing else.
+                        canonical_cfg = Some(graph);
+                    }
+                    Ok(crate::canonical::CanonicalOutcome::Fallback { message }) => {
+                        // The normalization stopped on a bound of its own: the raw bytecode facts
+                        // and the proven call contexts are what survives, the canonical fact is
+                        // not published, and the pass says why instead of completing over a graph
+                        // it could not build.
+                        let code = crate::canonical::IR_LEGACY_NORMALIZATION_UNBOUNDED.to_string();
+                        run.stages[index].state = StageState::Partial;
+                        run.diagnostics.push(Diagnostic {
+                            code: code.clone(),
+                            severity: DiagnosticSeverity::Warning,
+                            message,
+                            provenance: None,
+                        });
+                        stop = stop.or(Some(ExecutionReport::Partial {
+                            reason: TerminationReason::Error { code },
+                            usage: budget.usage(),
+                        }));
+                        break;
+                    }
+                    Err(error) => {
+                        let (execution, diagnostic) = canonical_failure(&error, budget);
+                        run.stages[index].state = stage_state(&execution);
+                        run.diagnostics.push(diagnostic);
+                        stop = stop.or(Some(execution));
+                        break;
+                    }
+                }
+            }
             _ => {
                 // A phase this build does not implement: the request is answered with the
                 // failure of that pass, and the phases behind it stay `NotPerformed` instead
@@ -369,6 +453,16 @@ fn run_method_analysis(
             }
         }
     }
+    // Quality of the produced artifact: the canonical CFG is the artifact this slice produces,
+    // so a run that published one is `Conservative`, and a run that never got there — because it
+    // stopped, or because the caller never scheduled the pass — is `Fallback`. The plane is about
+    // the artifact and not about the coverage or the termination: a canonical graph of a
+    // truncated prefix is still the faithful low-level structure it is.
+    run.quality = if canonical_cfg.is_some() {
+        crate::ir::Quality::Conservative
+    } else {
+        crate::ir::Quality::Fallback
+    };
     run.execution = match stop {
         // The usage of the whole request, under whichever termination stopped it first.
         Some(execution) => jarde_reader::accounting::with_usage(execution, budget.usage()),
@@ -609,6 +703,40 @@ fn raw_cfg_failure(
                     "the raw CFG was not built: the body decode stopped before its end, so the \
                      branch and handler targets of the unread suffix cannot be validated \
                      ({error})"
+                ),
+                provenance: None,
+            },
+        );
+    }
+    crate::ir::terminal(error, budget.usage())
+}
+
+/// The failure of the `canonical_cfg` pass, mapped to the report's planes.
+///
+/// A bound this pass runs into — the clone ceiling, or an exhausted `Blocks`/`Steps`/`Clones`
+/// dimension it declares — is exactly what 3.5 answers with a fallback: the raw bytecode facts
+/// and the proven call contexts stay, no canonical fact is published, and the reason is the
+/// normalization code of the design rather than a dimension name a reader would have to translate
+/// back into "the cloning stopped". The underlying measure is not hidden: the message names the
+/// `Error` the budget layer raised, and `usage` carries the counts.
+///
+/// Cancellation and a structural failure keep the ordinary mapping: neither is a bound of this
+/// pass, and `ExecutionReport::Cancelled` must stay a cancellation.
+fn canonical_failure(error: &Error, budget: &Budget) -> (ExecutionReport, Diagnostic) {
+    if matches!(error, Error::BudgetExceeded { .. }) {
+        let code = crate::canonical::IR_LEGACY_NORMALIZATION_UNBOUNDED.to_string();
+        return (
+            ExecutionReport::Partial {
+                reason: TerminationReason::Error { code: code.clone() },
+                usage: budget.usage(),
+            },
+            Diagnostic {
+                code,
+                severity: DiagnosticSeverity::Warning,
+                message: format!(
+                    "the legacy normalization stopped at its own bound ({error}): the raw \
+                     bytecode facts and the proven call contexts of the decoded prefix are kept, \
+                     and no canonical CFG was published"
                 ),
                 provenance: None,
             },

@@ -25,6 +25,7 @@ pub mod ir;
 pub mod resolver;
 
 mod call_context;
+mod canonical;
 mod cfg;
 mod dispatch;
 mod members;

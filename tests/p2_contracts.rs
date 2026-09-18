@@ -103,6 +103,7 @@ fn analysis_limits() -> Limits {
         ir_items: 1 << 20,
         ir_edges: 1 << 20,
         analysis_steps: 1 << 20,
+        normalization_clones: 1 << 20,
         ..limits()
     }
 }
@@ -1675,9 +1676,9 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
     // The scheduled phases of this build really run in table order: `raw_facts` reads the
     // driver method's class definition and decodes its body, `raw_cfg` builds the raw graph
     // over those facts, `legacy_normalization` establishes the `jsr`/`ret` call contexts (none
-    // for this body: the 52 fixture inlines its `finally`), and the first phase this build does
-    // not implement fails where the pipeline reaches it — the phases behind it stay
-    // `NotPerformed` rather than looking performed.
+    // for this body: the 52 fixture inlines its `finally`), `canonical_cfg` normalizes the graph
+    // under them, and the first phase this build does not implement fails where the pipeline
+    // reaches it — the phases behind it stay `NotPerformed` rather than looking performed.
     assert_eq!(
         report
             .stages
@@ -1688,10 +1689,10 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
             StageState::Completed,
             StageState::Completed,
             StageState::Completed,
+            StageState::Completed,
             StageState::Failed {
                 code: "ir_pass_not_implemented".to_string()
             },
-            StageState::NotPerformed,
             StageState::NotPerformed,
         ]
     );
@@ -1903,7 +1904,10 @@ fn result_planes_are_reported_side_by_side_and_never_inferred() {
     assert_eq!(report.syntax_status, SyntaxStatus::NotJava);
     assert_eq!(report.compile_status, CompileStatus::NotAttempted);
     assert_eq!(report.verification, VerificationStatus::NotPerformed);
-    assert_eq!(report.quality, Quality::Fallback);
+    // The canonical CFG is the artifact this pipeline produces, and this run published one, so
+    // the quality plane is `Conservative` — while the run itself still ends on the phase this
+    // build does not implement, which is why the planes are reported side by side.
+    assert_eq!(report.quality, Quality::Conservative);
     assert_eq!(report.semantic_validation, SemanticValidation::Unproven);
     // The body plane states what was located: this run really read the member's body, and
     // `Present` says nothing about how much of the pipeline ran.
@@ -1913,14 +1917,15 @@ fn result_planes_are_reported_side_by_side_and_never_inferred() {
         report.body,
         MethodBodyState::DeclaredWithoutBody { .. }
     ));
-    // `quality` is a property of a produced artifact; it only means "not Conservative" and
-    // must not be read as a performed fallback recovery.
+    // `quality` is a property of a produced artifact: it is `Conservative` here because a
+    // canonical CFG was produced, and it must not be read as a completed run — the phase this
+    // build does not implement still ends the request.
     assert!(
         !matches!(report.execution, ExecutionReport::Complete { .. }),
-        "a non-Conservative quality does not mean a completed run"
+        "a Conservative quality does not mean a completed run"
     );
 
-    // Capability, range, termination and verification are separate planes: three phases really
+    // Capability, range, termination and verification are separate planes: four phases really
     // completed and the body was fully covered, while a later phase this build does not
     // implement ends the run as an unsupported capability — and none of that says anything
     // about the product planes above.
@@ -1938,8 +1943,8 @@ fn result_planes_are_reported_side_by_side_and_never_inferred() {
             .iter()
             .filter(|stage| stage.state == StageState::Completed)
             .count(),
-        3,
-        "`raw_facts`, `raw_cfg` and `legacy_normalization` completed"
+        4,
+        "`raw_facts`, `raw_cfg`, `legacy_normalization` and `canonical_cfg` completed"
     );
     assert_eq!(
         report.coverage.artifact_structural.state,
@@ -1959,7 +1964,10 @@ fn result_planes_are_reported_side_by_side_and_never_inferred() {
         SemanticValidation::LocalInvariants
     );
     assert_eq!(report.verification, VerificationStatus::NotPerformed);
-    assert_ne!(report.quality, Quality::Conservative);
+    assert_ne!(
+        report.semantic_validation,
+        SemanticValidation::LocalInvariants
+    );
     assert!(
         !matches!(
             report.execution,

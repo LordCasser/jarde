@@ -40,9 +40,10 @@ use jarde::{
     EnvironmentProblemCode, ExecutionReport, HeaderProvider, InspectionMode, JvmBytes, LayoutMode,
     Limits, LoadDomain, LoadRoot, LoaderId, MethodAnalysisRequest, MethodBodyState, ModuleMode,
     MultiReleasePolicy, PhysicalDefinitionId, PhysicalMethodId, PhysicalScope, PhysicalVariant,
-    PhysicalView, ProviderId, ReadReason, ReferenceUse, ResolutionAnalysis, ResolutionEnvironment,
-    ResolutionRequest, ResolutionState, ResolvedMemberRef, RuntimeProfile, RuntimeUncertainty,
-    RuntimeView, SnapshotId, StageState, SymbolRef, TerminationReason, UsageSnapshot,
+    PhysicalView, ProviderId, Quality, ReadReason, ReferenceUse, ResolutionAnalysis,
+    ResolutionEnvironment, ResolutionRequest, ResolutionState, ResolvedMemberRef, RuntimeProfile,
+    RuntimeUncertainty, RuntimeView, SnapshotId, StageState, SymbolRef, TerminationReason,
+    UsageSnapshot,
 };
 use std::env;
 use std::path::{Path, PathBuf};
@@ -405,10 +406,11 @@ fn run(path: PathBuf) -> jarde::Result<()> {
         report.loader.0,
         report.origin.members.len(),
     );
-    // The body was located and read by this run, and `quality = Fallback` only means "not
-    // Conservative": it is not evidence that a fallback recovery ran. The three phases this
-    // build implements completed and the first one it does not implement fails, so the run
-    // ends as the unsupported capability it is — never as a completed pipeline.
+    // The body was located and read by this run, and the canonical CFG was built from the call
+    // contexts the phase before it proved: a produced artifact is what makes `quality`
+    // `Conservative` rather than `Fallback`. The phases this build implements completed and the
+    // first one it does not implement fails, so the run ends as the unsupported capability it
+    // is — never as a completed pipeline.
     assert_eq!(report.body, MethodBodyState::Present);
     assert_eq!(
         report
@@ -416,8 +418,13 @@ fn run(path: PathBuf) -> jarde::Result<()> {
             .iter()
             .filter(|stage| matches!(stage.state, StageState::Completed))
             .count(),
-        3,
-        "`raw_facts`, `raw_cfg` and `legacy_normalization` completed"
+        4,
+        "`raw_facts`, `raw_cfg`, `legacy_normalization` and `canonical_cfg` completed"
+    );
+    assert_eq!(
+        report.quality,
+        Quality::Conservative,
+        "a produced canonical CFG is the artifact `quality` classifies"
     );
     assert!(matches!(
         report.execution,
