@@ -739,6 +739,12 @@ pub(crate) struct PassDescriptor {
 - **phase 命名**：`LegacyNormalization`（3.4）产 `CallContexts`，真正的克隆规范化发生在 `CanonicalCfg`（3.5）；不要把 `legacy_normalization` 读成克隆 pass。
 - **运行期复用同一记账**：3.3 起每个 pass 的入口必须走 3.2 的 `FactLedger::apply`（先全量检查 `requires`、再记 `invalidates`、再 `produces`、最后推进 `last_completed`），**禁止**另写一套事实记账——否则启动校验与运行期检查会各自漂移，`ir_stale_fact` 也就失去意义。
 - **计费语句在本片只有声明**：3.2 只建立 pass 表与校验，`IrItems`/`IrEdges`/`AnalysisSteps`/`NormalizationClones` 的真实计费点从 3.3/3.4/3.5 起出现；在此之前 `analyze_method` 的 counted usage 全零（1.1 语义不变）。
+- **0.3 要落地的预算集合与 requires（父级已按各阶段契约推导，照此改表并在实现时逐项对账）**：
+  - `legacy_normalization`：`requires` **补 `FactKind::Effects`**（它读 `raw.effects`，不声明就绕过 invalidation 检查）+ 预算由 `[Steps]` 改为 **`[Blocks, Steps]`**——调用上下文、plans、visited、每上下文 local 集合都是派生存储（增长前计 `IrItems`），沿边传播计 `AnalysisSteps`，实际派生边计 `IrEdges`。
+  - `canonical_cfg`：由 `[Clones]` 改为 **`[Blocks, Steps, Clones]`**——3.5 会重建块与边（`IrItems`/`IrEdges`）、走克隆工作列表（`AnalysisSteps`）并计克隆节点（`NormalizationClones`）。
+  - `frame`、`ssa`：由 `[Blocks]` 改为 **`[Blocks, Steps]`**——4.x 的契约写明按 frame 槽/SSA 值/phi 输入/origin 成员计 `IrItems`、按 def-use 边计 `IrEdges`、工作列表迭代计 `AnalysisSteps`。
+  - `raw_facts`（`[]`）与 `raw_cfg`（`[Blocks, Steps]`）**不变**。
+  - 这样改的意义是**强制函数**：3.5/4.x 若漏计 `AnalysisSteps` 或派生存储，`声明集合 == 实际计费` 的断言会直接失败，而不是像 3.4 那样要先由复核发现。
 - **本表的属性 vs 通用规则**：固定表满足"一 phase 一 pass、前缀即 pass 前缀"，由金标单测钉住；校验器本身只拒绝 phase **降序**（同 phase 多 pass 合法），这样 3.3–4.x 若要给一个 phase 拆两个 pass 不必改校验。
 
 ### 3.3 raw CFG 与 effect facts
