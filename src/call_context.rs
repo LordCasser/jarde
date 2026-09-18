@@ -514,6 +514,21 @@ enum Phase {
     Assembly,
 }
 
+#[cfg(test)]
+/// Every phase, so a test can put its seam on each one in turn.
+///
+/// The list is beside the enum on purpose: a phase left out of it would keep its checkpoint
+/// unproven, and the sweep that uses it would pass without ever reaching the new phase.
+const PHASES: [Phase; 7] = [
+    Phase::Plans,
+    Phase::Successors,
+    Phase::InstructionRanges,
+    Phase::Walk,
+    Phase::Visited,
+    Phase::CycleSearch,
+    Phase::Assembly,
+];
+
 /// The published fact's own charge: the last thing a successful run pays for.
 ///
 /// The fact a caller receives is derived storage too, and publishing it is the only point where
@@ -846,6 +861,21 @@ fn covering_handlers(handlers: &[ExceptionHandlerFact], bci: u32) -> Vec<u32> {
         .collect()
 }
 
+/// What the walk produced for every plan, in plan order.
+///
+/// The collections are keyed by plan index, so they travel together: grouping them keeps
+/// [`assemble`] to the arguments it actually decides with, and it makes the invariant they share
+/// — the two per-plan lists are as long as the plan list, and the owner map is keyed by the `ret`
+/// BCI — a property of one value instead of three parameters that could be passed out of step.
+struct Walked {
+    /// The locals each context's subroutine wrote, by plan index.
+    affected: Vec<BTreeSet<u16>>,
+    /// The contexts that reach every `ret`, by `ret` BCI.
+    returns: BTreeMap<u32, BTreeSet<usize>>,
+    /// The exception records each context covers, by plan index.
+    coverage: Vec<BTreeSet<u32>>,
+}
+
 /// The published context set, with every `Vec<_>` in its own order.
 ///
 /// `returns` is the owner relation the walk collected and `rets` every `ret` of the decoded
@@ -860,21 +890,6 @@ fn covering_handlers(handlers: &[ExceptionHandlerFact], bci: u32) -> Vec<u32> {
 /// before it starts, after every entry it assembles and before it hands the fact out, so a
 /// cancelled or exhausted request ends without a context set instead of publishing the payload of
 /// a run that was refused.
-/// What the walk produced for every plan, in plan order.
-///
-/// The three collections are keyed by plan index, so they travel together: grouping them keeps
-/// [`assemble`] to the arguments it actually decides with, and it makes the one invariant they
-/// share — every vector is as long as the plan list — a property of one value instead of three
-/// parameters that could be passed out of step.
-struct Walked {
-    /// The locals each context's subroutine wrote, by plan index.
-    affected: Vec<BTreeSet<u16>>,
-    /// The contexts that reach every `ret`, by `ret` BCI.
-    returns: BTreeMap<u32, BTreeSet<usize>>,
-    /// The exception records each context covers, by plan index.
-    coverage: Vec<BTreeSet<u32>>,
-}
-
 fn assemble(
     cfg: &RawCfg,
     blocks: &[u32],
@@ -2185,6 +2200,47 @@ mod tests {
     }
 
     #[test]
+    fn the_item_bill_of_the_fixture_matches_its_published_composition() {
+        // A boundary test cannot see every charge: a one-item deficit is absorbed by the charges
+        // that follow it, so `complete - 1` stops for reasons that do not identify *which* charge
+        // was refused — deleting a constant from any single charge leaves that test green. The
+        // pinned total is the other half: it is measured once on this fixture and then compared,
+        // so every charge contributes and a dropped item changes it.
+        //
+        // The composition of the two-context, five-block fixture, as the walk charges it:
+        //
+        //   visited rows      2 contexts x (1 map entry + 5 blocks)        = 12
+        //   plans             2 call sites x 1                             =  2
+        //   entries           2 distinct call site -> edge targets         =  2
+        //   affected locals   2 contexts x 1 written slot                  =  2
+        //   ret owners        1 ret x (1 entry + 2 owning contexts)        =  3
+        //   coverage          2 contexts x (1 record + 0 handlers)         =  2
+        //   nesting edges     0 (neither call site nests)                  =  0
+        //   published fact    1                                            =  1
+        //   assembled entries 2 contexts + 3 returns + 2 coverage + 0 dead =  7
+        //   cycle search      0 nodes (acyclic) + 0 edges + 0 colours      =  0
+        //   walk state        3 per-context collections x 2 contexts       =  6
+        //                                                          total = 34
+        let facts = billing_fixture();
+        let complete = baseline_usage(&facts).counted_usage(CountedBudgetDimension::IrItems);
+        assert_eq!(
+            complete, 34,
+            "the item bill of this fixture is the sum above; a charge that lost an item, or a \
+             fixture that changed shape, moves this number"
+        );
+        assert_eq!(
+            raw_block_count(&facts),
+            5,
+            "the block count the row charge is read from"
+        );
+        assert_eq!(
+            baseline_contexts(&facts),
+            2,
+            "the context count the row charge is multiplied by"
+        );
+    }
+
+    #[test]
     fn one_item_short_of_the_items_stops_the_pass_and_exactly_enough_completes_it() {
         // The bound is exact: with one item less than a complete run charges, some charge of the
         // run is refused; with exactly that many, every charge is accepted and the context set is
@@ -2374,6 +2430,28 @@ mod tests {
             matches!(error, Error::Cancelled { .. }),
             "the stop is the crate's own cancellation: {error:?}"
         );
+    }
+
+    #[test]
+    fn every_phase_of_the_pass_stops_a_cancelled_run() {
+        // One case per phase, because a checkpoint only stops a run if it is *reached*: the
+        // contract names four phases that must each poll (the plans, the successor lists, the
+        // instruction ranges and the assembly), and three more carry the walk, the visited rows
+        // and the cycle search. A seam on one phase therefore proves that phase alone — deleting
+        // any single checkpoint has to fail this test. `instruction_ranges` is the one with no
+        // charge of its own, so without this sweep its only stop point would be invisible.
+        for phase in PHASES {
+            let facts = billing_fixture();
+            let raw = graph(&facts, &mut budget());
+            let _seam = checkpoint_seam(phase);
+            let mut budget = budget();
+            let error = call_contexts(&facts, &raw, 45, &mut budget)
+                .expect_err("a cancelled run stops at the phase it was cancelled in");
+            assert!(
+                matches!(error, Error::Cancelled { .. }),
+                "the stop at {phase:?} is the crate's own cancellation: {error:?}"
+            );
+        }
     }
 
     #[test]
