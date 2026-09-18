@@ -960,3 +960,87 @@ message=throw site ... block: CanonicalBlockId { bci: 3, path: [] } ... names a 
 **证据**：`-p jarde-jvm` = **180**；全量 **730 passed / 0 failed / 1 ignored**；`p2_ssa` 4、`p2_frame` 4、`p2_canonical` 8、`p2_contracts` 29、`p1_xref_golden` 5（均与基线一致）；fmt 与 clippy 1.98.1 干净；**既有断言零改动**（唯一改动是测试基建 `audit(table)` → `audit(what, table)`，只加失败报文的标签）。**顺带收益**：`a_cycle_with_two_entries_is_named_at_its_merge_point` 里「全部已发布 phi 的 `inputs.len() >= 2`」这条断言，现在对**被替换的 phi 也成立**（此前若有该形态即会违反而无覆盖）。
 
 **父级的一处前提错误（已由实现者以证据纠正，如实记录）**：父级在派单时说「第一条用例（四种体）应当在修复前红」——**不成立**。四种体的合流点操作数本来就互不相同（diamond 2 个、循环头 3 个、category-2 2 个），**没有**可被替换的 phi，折叠分支根本不执行；这正是复核者原报告里「除最后一种外全部通过」的意思。真实的红在 `def_use_over_a_mixed_transfer_and_exception_input` 的 trivial-phi 变体上，实现者用两处独立实测（复核者未修改的原文件 + 仓库内移植版）给出同一 left/right 签名，判别力据此闭环。
+
+## 2026-09-19 4.3 后半：测试侧独立 oracle 对照
+
+按契约「独立对照」建立**测试侧的朴素 reaching-definition/数据流 oracle**，用它核对生产 SSA 的**实际 use 来源与 phi 输入**。
+
+### 交付
+
+- **新模块** `crates/jarde-jvm/src/ssa_oracle.rs`（纯测试模块，`lib.rs` 只加 `#[cfg(test)] mod ssa_oracle;`）——**生产构建里不存在**。
+- **它读什么（全部是输入）**：`CanonicalCfg`、`frame::FrameTable`（含每个 `LogicalInput.throw_site`）、`frame::block_touches`（逐指令槽访问）、`entry_slots`、`starts_value`（用于界定比较域）。**没有用 `flow_facts`**（那是生产的语义半）。
+- **它明确不调用**：`Assigner`、名字半的任何助手、合流判断。**独立性的准确范围（复核者核定）**：oracle 是**对「命名半边」的第二读法**——它自己实现 category-2、`stack_after` 剪栈、throw-site 前快照与入口 reach 的合并规则，但**与生产共用** `block_touches` 的 access 序列、`frame.inputs`、`entry_slots`、`starts_value`、`canonical.throw_sites`，因此 **4.1/4.2 的共错对它不可见**；自扫描测试的 token 表也只覆盖命名半边（不含 `caught_reference`/`merge_local` 等 frame 侧合流助手）。不得据此声称「对整条链的第二读法」。这条**不是口头承诺**——`the_oracle_never_names_a_helper_of_the_naming_half` 用 `include_str!` 扫描本文件（token 由 `concat!` 拼装以免自匹配）并断言不出现 `ssa(`。
+- **算法**：Kleene 式整图迭代到最小不动点（Jacobi，一轮一块）；每轮按逻辑前驱合并出块入口 reach，再按 `accesses` 顺序走块内（读记当时 reach、写替换该槽、按 `width` 处理 category-2、按 `stack_after` 剪栈）；**throw site 在指令生效前快照 locals**。
+- **比较器消除编号与 trivial-phi 差异**：定义身份用可外部陈述的元组 `Param{block,slot}` / `Store{block,bci,slot}` / `Caught{block,bci}`（**不含 SSA 编号**）；生产侧先沿 `replaced_by` 走到终点，再对 phi 操作数图取**最小不动点**。于是 trivial phi 的保留与否、phi 个数、编号差异都不影响结果。不等时报出块、槽与**缺的/多的定义**。
+- **零可见性缝**：所需项本来就已是 `pub(crate)`；新文件里 `pub` 计数为 0，模块私有且 `#[cfg(test)]`，**公共 API 面无变化**。
+
+### 覆盖三组（分开声明、各自断言、各自打印计数）
+
+| 组 | 数量 | 比较量 |
+| --- | --- | --- |
+| 普通边（真实字节） | **6** 个 fixture：直线、diamond、循环（回边）、不可约、category-2、高扇出（4 前驱 phi=4 操作数） | 9 入口槽（7 合流）、33 读、27 块 |
+| 随机图（固定种子，自写 PRNG，**全部真实字节**） | 生成 **64**，**0 拒绝**（**在该族内**：3–7 块、local 0–2、仅 `iload/iconst/iadd/istore/ifeq/goto/return`、`max_stack 8`，且每条路径上每个 local 都有定义） | 474 入口槽（198 合流）、666 出口槽、1898 读、33 张含回边 |
+| 异常输入（真实字节 + 自建 exception table） | **5** 个：单 throw site、**同 raw edge 下两个 throw site 进同一 handler（核心）**、两条 record→两个 handler、handler 自身再 throw、构造调用别名转换 | 15 入口槽、42 读 |
+
+核心异常用例另带**结构断言**：canonical 图中源→handler 的 exception 边**恰 1 条**、`throw_sites` **2 条**、frames 给出 **2 个**逻辑输入（`throw_site` = 4/9）、oracle 在 handler 的 local 1 上到达两个定义。**普通组的通过没有用来代替异常组**。
+
+### oracle 自身的判别力（证伪三组，副本 + `sha256sum -c`）
+
+把每种弱化**设为默认**后跑 `ssa_oracle` 全体——**是 oracle/比较器被削弱时转红**，故证明它**不是恒真**：
+
+| 弱化 | 结果 |
+| --- | --- |
+| ① oracle 异常前驱按**聚合边**算（不看 `throw_site`） | **5 failed / 13**（`extra on the published side [@1 …]`） |
+| ② oracle 只走**前向边**（忽略回边） | **4 failed / 13**（回边携带的定义丢失） |
+| ③ 比较器**少解析一个槽** | **10 failed / 14** |
+
+三者都在**永久测试**里（`flaw_one_*`/`flaw_two_*`/`flaw_three_*`）：先断言严格读法一致、再断言弱化读法转红。
+
+### oracle 发现的生产缺陷（父级已独立复现，已修复于 `c971002`）
+
+**随机图 64 张里有 3 张被生产拒绝**，报的是**本实现自身产物**的矛盾码 `ir_ssa_inconsistent`：
+```
+a phi in block CanonicalBlockId { bci: 50, path: [] } is named as a use of one value
+without holding it as an operand
+```
+三张都是**合法** body（reader 解出、4.1 成帧），且**确定性可复现**（固定种子；测试打印完整 code 数组）。
+
+**机制**（父级读 `ssa.rs::replace` 确认）：`complete` 为**每个操作数出现**各记一条 use；而 `replace` 的操作数分支**一次性重写全部**持有该值的 phi 操作数。于是当一个值被**两个不同位置**当操作数持有时，第一条记录就把全部出现改完，第二条找不到可改的 → `rewrote = false` → **误报矛盾**。**读分支有同一缺陷**（一条指令两处读同一个值，如同样的 `[v, v]` 栈）。即：use 记录是**出现次数的多重集**，而检查写成了「每条记录都必须改到至少一处」。
+
+**修复**：检查改为「**重写到的出现总数 == 该类记录条数**」（读分支与操作数分支各一处）——那才是记录所陈述的不变量；块存在性校验与计数不等的报错都保留。**最小复现 10 字节**（`04 03 99 00 07 03 99 ff fb b1`，人工按机制重建；自动 ddmin 只降到 31 字节，因逐字节删除会打乱分支偏移），已作永久回归 `one_value_held_as_two_phi_operands_is_not_a_contradiction`（10 字节栈槽版 + 11 字节局部量版）；随机组由「3 拒绝」改为**断言拒绝列表为空**（`assert!(refused.is_empty())` + `assert_eq!(graphs, RANDOM_GRAPHS)`；那 3 张图现在全部进入比较）。**父级记录的一处口径错误已更正**：早期记录里的 `REFUSALS_THIS_BUILD_REPORTS = 3` 常量在最终提交里**并不存在**（最终形态就是断言空列表）。**父级独立证伪**：把检查还原成原触发条件（记录数 ≥2 即矛盾）→ 随机组与新回归用例**双双转红**（`sha256sum -c` 还原）。
+
+**覆盖缺口（如实记录）**：读分支的同一缺陷在全部 744 测试 + 64 随机图内**0 次命中**，故**只修未加永久反例**——该分支的误报需要「一条指令在两处读同一个值」，而语料内没有这种 body（`dup` 的两次 push 在 SSA 里各生成新值、category-2 只读低槽）。这是**未覆盖**，不是已证明不可达。
+
+### 诚实声明的覆盖限制
+
+普通组无 `jsr`/`ret` 克隆形态；异常组只到「handler 自身再抛」一层、无更深嵌套；随机生成器只用 int 局部量 0..2 且栈恒空，故**栈槽合流只出现在手写的 category-2/diamond fixture 里**；按构造随机组不出现「读 `Top` 槽」。这些是**未被 oracle 覆盖**的区域，不得据 oracle 通过而声称覆盖。
+
+### 4.3b 独立复核（Approve）与据其修正（提交 `c971002`）
+
+复核者（只读 + 两组**生产侧变异**实测）给出 **Approve**，无阻塞项，并独立复现了三组计数、14 个测试与「0 拒绝」。
+
+**它用生产侧变异证明比较器真有牙**（这两条是本片最有价值的独立证据）：
+
+| 变异（改**生产**） | 结果 |
+| --- | --- |
+| M1：`simplify` 去掉 `!unique` 守卫（对有多个不同操作数的 phi 也做 trivial-phi 消除） | **8/14 转红**（三组全红 + 两个结构断言），精确指认 `missing on the published side [… into Local(0)]` |
+| M2：`resolve` 的异常输入改读源块 **exit**（即聚合 raw edge 的读法） | **只有异常组红**（含核心用例 `missing … @1 into Local(1)`），普通组与随机组**全绿** |
+
+M2 **实测印证了契约那句「普通图测试通过不能替代异常测试」**，并证明 trivial-phi 消除没有掩盖这类缺陷。复核者另做 M3（仪器化断言被比较的集合非空）跑遍 85 个 body 未命中退化区间。
+
+**它提出的三项记录修正（均为措辞，非代码）已落地**：
+
+1. 「0 拒绝」记录为**「在该族内 0 拒绝」**并附族边界（3–7 块、local 0–2、仅 `iload/iconst/iadd/istore/ifeq/goto/return`、`max_stack 8`、每条路径上每个 local 都有定义）——不得外推为总体无拒绝。
+2. oracle 的独立性写明为**「对命名半边的第二读法」**：自实现 category-2/剪栈/throw-site 前快照/入口合并规则，但与生产**共用** `block_touches` 的 access 序列、`frame.inputs`、`entry_slots`、`starts_value`、`canonical.throw_sites`，故 **4.1/4.2 的共错不可见**；自扫描 token 表只覆盖命名半边。
+3. 父级记录里 `REFUSALS_THIS_BUILD_REPORTS = 3` 的常量在最终提交里**并不存在**（最终形态是 `assert!(refused.is_empty())`）——父级口径错误，已更正。
+
+**复核者判定为「可接受的弱化」而非不变量丢失**：计数改为聚合后，理论上「一条记录指到没有该值出现的位置（贡献 0）+ 另一处恰有两次出现（贡献 2）」可互相抵消；它沿「写记录与重写扫描同源于 `block_touches`、每条记录被 `mem::take` 只消费一次」论证构造不出可达路径，且**不污染产出**（`publish()` 统一走 `target()`/`replaced_by` 投影，漏改的出现仍会被改名）。保留的是**诊断层面**的弱化。
+
+**债务（已记，不阻塞）**：
+- **D1** 比较域排除 `Top`/`Second`，且「空 ≡ 空」算一致（自指 phi 投影为 ∅）——M3 实测语料未触及，但**无断言守着**；建议加「被比较集合非空」断言或一个 `Top` 槽 fixture。
+- **D2** `named_value` 跟随 `replaced_by` **无步数上界/无环断言**：今天靠 `simplify` 的两道 guard 保证无环，将来若成环是 **hang 而非 fail**（仅测试侧，低危）。
+- **D3** 自扫描 token 表不含 frame 侧合流助手。
+- **D4** 无 `jsr/ret`/`ReturnAddress`、无嵌套 handler 范围、无 `wide`/`switch`、无 canonical 克隆块的 fixture。
+- **D5** 读分支的同一缺陷**只修未加永久反例**（能击中它的形状是「某指令一次读同一值两次且该值是被消除的 trivial phi」，语料内没有）；补一个「读两次」的 fixture 即可关闭。
+
+**CI**：`c971002` → run 35400527137，四 job success。
