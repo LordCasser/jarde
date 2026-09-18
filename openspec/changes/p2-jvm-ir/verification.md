@@ -352,7 +352,7 @@
 - **父级在本轮又自查出并修掉一项**：`is_astore` 之外，记录范围曾漏掉非引用写入，导致 `1d`（`astore_0` 后 `istore 0`）仍误报 `Established`；现已并入上表③。
 - **仍存在的已知限制（需 4.x 才能关闭，已登记）**：地址槽被写入一个**与返回地址无关的引用**时无法区分——例如 `aconst_null → astore_1 → astore_0 → ret 1`，当前判为 `Established`，但槽 1 里其实是 `null`。根因是这里没有操作数栈的值追踪（`local` 的**值**不可见），只有 `locals_written` 的**位置**；完整值身份属 4.x 的 Frame/SSA。契约已按此写明，不得声称 3.4 已证明值身份。
 - 计费随改动上调并如实记录：金标总数 34 → **40**（每次 local 写入与每个 `ret` 都是一个 `IrItems`），元素差值断言 2 → 4；两处注释已写明新口径。
-- 证据：`fmt`/`clippy -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **622 passed / 0 failed / 1 ignored**；`p1_xref_golden` = 5；`call_context` 单测 30 条。提交 `3f5e224`。
+- 证据：`fmt`/`clippy -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **622 passed / 0 failed / 1 ignored**；`p1_xref_golden` = 5；`call_context` 单测 30 条。提交 `3f5e224`、`11af512` 已推送；CI run [`35339477535`](https://github.com/LordCasser/jarde/actions/runs/35339477535) 四个 job 全部 success。
 
 #### 父级自查发现的**未闭合合流缺口**（2026-09-18，3.4 不能勾选的首要原因）
 
