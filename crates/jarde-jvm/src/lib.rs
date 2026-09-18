@@ -33,6 +33,8 @@ mod members;
 mod passes;
 mod providers;
 mod ssa;
+#[cfg(test)]
+mod ssa_oracle;
 #[cfg(any(test, feature = "test-support"))]
 mod test_fixtures;
 

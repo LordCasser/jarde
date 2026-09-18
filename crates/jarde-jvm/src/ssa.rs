@@ -1574,60 +1574,71 @@ impl Assigner {
     /// What the replaced value keeps is what it *is*: its own operands, which are the merge point
     /// it stood for, and its origin, which is that merge point's. Only the name of the slot and
     /// the def-use edges move.
+    ///
+    /// The use records are a **multiset of occurrences**, not one record per place: a read touch
+    /// records one for every operand of an instruction that holds the value, and an entry records
+    /// one for every participant that hands it to a phi. So the same instruction can name one
+    /// value twice, and one phi can hold it as two operands. What the two checks below count is
+    /// therefore the occurrences rewritten against the records held, because "every record rewrote
+    /// at least one occurrence" is false of a multiset: the first record of one place's two
+    /// occurrences would answer for the second record as well and the second would find nothing.
     fn replace(&mut self, from: ValueId, to: ValueId, budget: &mut Budget) -> Norm<()> {
         let uses = std::mem::take(&mut self.values[from.index()].uses);
         self.values[from.index()].replaced_by = Some(to);
-        for use_record in uses {
-            match use_record.bci {
-                Some(bci) => {
-                    let Some(position) = self.index_of.get(&use_record.block).copied() else {
-                        return inconsistent(format!(
-                            "a use of one value names the block {:?}, which the frames do not hold",
-                            use_record.block
-                        ));
-                    };
-                    let mut rewrote = false;
-                    for instruction in self.blocks[position].instructions.iter_mut() {
-                        if instruction.bci != bci {
-                            continue;
-                        }
-                        for read in instruction.reads.iter_mut() {
-                            if read.1 == from {
-                                read.1 = to;
-                                rewrote = true;
-                            }
-                        }
-                    }
-                    if !rewrote {
-                        return inconsistent(format!(
-                            "a use of one value at BCI {bci} of block {:?} names no read of that \
-                             instruction",
-                            use_record.block
-                        ));
-                    }
+        let mut reads_named = 0u64;
+        let mut reads_rewritten = 0u64;
+        let mut operands_named = 0u64;
+        for use_record in &uses {
+            let Some(bci) = use_record.bci else {
+                operands_named += 1;
+                continue;
+            };
+            reads_named += 1;
+            let Some(position) = self.index_of.get(&use_record.block).copied() else {
+                return inconsistent(format!(
+                    "a use of one value names the block {:?}, which the frames do not hold",
+                    use_record.block
+                ));
+            };
+            for instruction in self.blocks[position].instructions.iter_mut() {
+                if instruction.bci != bci {
+                    continue;
                 }
-                None => {
-                    let mut rewrote = false;
-                    for phi in self.phis.iter_mut() {
-                        if phi.value == from {
-                            continue;
-                        }
-                        for input in phi.inputs.iter_mut() {
-                            if matches!(input, PhiInput::Value(value) if *value == from) {
-                                *input = PhiInput::Value(to);
-                                rewrote = true;
-                            }
-                        }
-                    }
-                    if !rewrote {
-                        return inconsistent(format!(
-                            "a phi in block {:?} is named as a use of one value without holding it \
-                             as an operand",
-                            use_record.block
-                        ));
+                for read in instruction.reads.iter_mut() {
+                    if read.1 == from {
+                        read.1 = to;
+                        reads_rewritten += 1;
                     }
                 }
             }
+        }
+        if reads_rewritten != reads_named {
+            return inconsistent(format!(
+                "one value is named as a read {reads_named} time(s) while the instructions at the \
+                 named BCIs hold {reads_rewritten} read(s) of it"
+            ));
+        }
+        // Rewriting the phis is one global, idempotent pass: every operand occurrence of the value
+        // is answered by exactly one record, wherever the phis that hold it are.
+        let mut operands_rewritten = 0u64;
+        for phi in self.phis.iter_mut() {
+            if phi.value == from {
+                continue;
+            }
+            for input in phi.inputs.iter_mut() {
+                if matches!(input, PhiInput::Value(value) if *value == from) {
+                    *input = PhiInput::Value(to);
+                    operands_rewritten += 1;
+                }
+            }
+        }
+        if operands_rewritten != operands_named {
+            return inconsistent(format!(
+                "one value is named as a phi operand {operands_named} time(s) while the phis hold \
+                 it as an operand {operands_rewritten} time(s)"
+            ));
+        }
+        for use_record in uses {
             self.record_use(to, &use_record.block, use_record.bci, budget)?;
         }
         for block in self.blocks.iter_mut() {
