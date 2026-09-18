@@ -948,3 +948,15 @@ message=throw site ... block: CanonicalBlockId { bci: 3, path: [] } ... names a 
 - **`Frame.touches` 在 `#[derive(PartialEq)]` 里**：复核者**核实实现者的声明为真**——`touches: Some(...)` 只在 `block_touches` 内的函数局部重放帧构造一次，所有会被存储/合流/比较/发布的状态都是 `None`；全 crate 唯一的 `Frame` 相等比较是 fixpoint 的 `merged != *current`（两侧都是存储帧），`FrameTable` 只 derive `Debug`。**本片可接受**（这个 trace sink 正是「不二次分类 opcode」的手段，是设计要的），但属潜在陷阱——将来任何对重放帧的 `assert_eq!`/合流都会把轨迹算进相等。记债务，等 4.3 后半再动 `block_touches` 时一并偿还。
 - **`ir_ssa_inconsistent` 无端到端见证**：触发集合由「4.1 的表与 4.3 的重放必须一致」把守，合法字节到不了；对照之下 `ir_frame_inconsistent` **有**端到端见证。判断为「可接受但不理想」（映射只 3 行机械代码、消息文本已被单测覆盖），记为**已接受的缺口 + 原因**。
 - **被替换 phi 的 `OriginSet` 不并入 target**：复核者判断**不并才是诚实的**（target 仍只由一条 BCI 定义，被替换值连同其 origin 仍在 `values` 里），据此写入模块文档，行为不变。
+
+### 4.3a 修正落地（提交 `aaf048e`）
+
+**修法**：`simplify` 删除对 `phis[index].inputs` 的折叠覆写——被替换的 phi **保留它实际合并过的操作数**（那是它的记录，不是替换值的第二个名字；消费者跟随 `replaced_by`）。**理由写进代码注释**：折叠会同时伪造两条不变量（phi 声称只被一个前驱进入；target 的 use 记录仍在数已发布操作数不再持有的出现次数），而「裁剪 uses 到 1」是从另一侧伪造同一事实、丢掉「曾合并 N 路」。`replace` 对**消费者** use 的搬迁一字未动（那部分本来就对）。模块文档同步写明「被替换 phi 的 `OriginSet` 不并入 target」的取舍（target 仍由恰好一个定义产生，被替换值连同其 origin 留在 `values` 里，`replaced_by` 是唯一连接点）。
+
+**父级独立证伪**：把折叠覆写加回去 → `a_replaced_phi_keeps_one_operand_per_logical_predecessor` 与 `def_use_over_a_mixed_transfer_and_exception_input` **双双转红**（`178 passed; 2 failed`，`sha256sum -c` 还原）。即判别力落在 trivial-phi 路径上。
+
+**收进仓库的三条独立检查**（复核者自写，父级确认移植）：`def_use_records_are_the_reads_and_phi_operands_over_four_bodies`、`def_use_over_a_mixed_transfer_and_exception_input`（含 trivial-phi 变体）、`def_use_holds_under_every_rotation_of_a_loop_body`；另补 `a_replaced_phi_keeps_one_operand_per_logical_predecessor`。实现者把三条移植改为调用仓库**既有**的 `audit` 检查器（加 `what` 标签），并证等价：`audit` 不跟随替换（更强——已发布引用必须指向定义），绿 ⇒ 跟随替换是恒等，故两者不可能在被 `audit` 接受的表上分歧；另用复核者**未修改的原文件**实测三条判决一致。
+
+**证据**：`-p jarde-jvm` = **180**；全量 **730 passed / 0 failed / 1 ignored**；`p2_ssa` 4、`p2_frame` 4、`p2_canonical` 8、`p2_contracts` 29、`p1_xref_golden` 5（均与基线一致）；fmt 与 clippy 1.98.1 干净；**既有断言零改动**（唯一改动是测试基建 `audit(table)` → `audit(what, table)`，只加失败报文的标签）。**顺带收益**：`a_cycle_with_two_entries_is_named_at_its_merge_point` 里「全部已发布 phi 的 `inputs.len() >= 2`」这条断言，现在对**被替换的 phi 也成立**（此前若有该形态即会违反而无覆盖）。
+
+**父级的一处前提错误（已由实现者以证据纠正，如实记录）**：父级在派单时说「第一条用例（四种体）应当在修复前红」——**不成立**。四种体的合流点操作数本来就互不相同（diamond 2 个、循环头 3 个、category-2 2 个），**没有**可被替换的 phi，折叠分支根本不执行；这正是复核者原报告里「除最后一种外全部通过」的意思。真实的红在 `def_use_over_a_mixed_transfer_and_exception_input` 的 trivial-phi 变体上，实现者用两处独立实测（复核者未修改的原文件 + 仓库内移植版）给出同一 left/right 签名，判别力据此闭环。
