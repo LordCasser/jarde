@@ -3020,6 +3020,48 @@ mod tests {
     }
 
     #[test]
+    fn the_diagnostic_names_the_call_site_not_the_context_index() {
+        // Two call sites, the second of which is the one that fails: it enters a subroutine that
+        // reads a local nothing wrote. The message must name the *call site* - the second `jsr`
+        // sits at BCI 3 - because a context index means nothing to whoever reads the diagnostic,
+        // and on this body the two happen to differ (index 1, BCI 3).
+        //
+        //   0: jsr +4 -> 4    first call site: enters a subroutine that stores and returns
+        //   3: return
+        //   4: astore_0       the address goes into local 0
+        //   5: ret 0          proven for the first context
+        //   7: jsr +4 -> 11   second call site: its subroutine reads a local nothing wrote
+        //  10: return
+        //  11: ret 1          local 1 is never written by that context
+        let facts = body(
+            vec![
+                jsr(0, 4),
+                plain(3, 0xb1),
+                store(4, 0x4b, 0),
+                ret(5, 0),
+                jsr(7, 4),
+                plain(10, 0xb1),
+                ret(11, 1),
+            ],
+            Vec::new(),
+            13,
+        );
+        let raw = graph(&facts, &mut budget());
+        let outcome = call_contexts(&facts, &raw, 49, &mut budget());
+        let Ok(CallContextOutcome::Unresolved { message }) = outcome else {
+            panic!("the second call site's subroutine cannot prove its return: {outcome:?}");
+        };
+        assert!(
+            message.contains("call site at BCI 7"),
+            "the stop names the call site's BCI: {message}"
+        );
+        assert!(
+            !message.contains("call site at BCI 1"),
+            "and never the context's index: {message}"
+        );
+    }
+
+    #[test]
     fn one_item_short_of_the_items_stops_the_pass_and_exactly_enough_completes_it() {
         // The bound is exact: with one item less than a complete run charges, some charge of the
         // run is refused; with exactly that many, every charge is accepted and the context set is
