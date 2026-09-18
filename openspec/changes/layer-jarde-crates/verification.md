@@ -103,4 +103,26 @@
 
 **1.2 的可行性已核实**：reader 侧 7 个文件（`artifact`/`classfile`/`model`/`budget`/`error`/`view`/`multi_release`）的 `crate::` 引用**全部落在彼此之间**（`artifact`↔`budget`、`error`↔`budget` 互相引用类型，design 已允许同包），**没有任何一条指向 query/jvm/engine**——即设计所称的「源码依赖支持拆分」已由实测确认。`engine.rs` 882 行中，检查入口部分（`ClassTarget`/`ClassSource`/`materialize`/`inspect_header`/`inspect_method_bytecode`/`header_coverage`/`bytecode_coverage`）随 reader 走，driver 部分（`run_method_analysis` 起）随 jvm 走。
 
-**未做**：文件搬迁（1.2 起）。cross-check 待办：`ci.yml:81` 的 `jvm` 边界正则需在真实 `cargo tree` 输出上实测不误命中 `jarde-jvm`。
+## 1.4 A17 守卫的改造方案（供 2.1/2.2 与 3.2 执行）
+
+`tests/p2_contracts.rs` 的 A17 守卫今天**写死了布局**，搬迁后必然失败，而且必须**在搬迁前**先改造好——它是拆包「没有改变依赖方向」的可执行验证，不能等拆完再补。
+
+当前写死之处：
+
+| 项 | 位置 | 搬迁后为何失败 |
+| --- | --- | --- |
+| `A17_EXPECTED_FILES: [&str; 6]` | `tests/p2_contracts.rs:2571` | 六个 `src/…` 路径里 query/xref 会搬到 `crates/jarde-query/src/` |
+| `A17_GUARDED_FILES: usize = 6` | `:2584` | 数量断言绑在旧布局 |
+| 正对照读 `src/engine.rs` | `:2915` | driver 搬入 jvm 后，门面的 `engine.rs` 不再调用 P2 入口 |
+| `derived_p2_type_tokens` 读 `src/environment.rs`/`resolver.rs`/`ir.rs` | `:2685` | 三个文件搬到 `crates/jarde-jvm/src/` |
+| `A17_MODULE_TOKENS` 12 条 | `:2602` | 拆包后要补**跨 crate 形态**（`jarde_jvm::`）与 facade 再导出形态 |
+
+**改造要求**：
+
+1. **按模块身份寻址、按布局解析**：把硬编码路径换成 `(模块身份 → 候选路径列表)`，解析时断言**恰好命中一个**；候选同时包含旧布局与拆包后布局。这样同一个守卫在搬迁前后都能跑，且搬完不会因为「枚举不到」而假绿。
+2. **token 表加入跨 crate 形态**：`jarde_jvm::`、`jarde_query::`（以及 facade 再导出形态），否则拆包后 query 调 jvm 就绕过了守卫。
+3. **正对照迁移**：正对照要指向「按契约允许调用 P2 入口」的那个 crate 的文件（拆包后是 jvm 侧），且断言它**不在**被守集合内。
+4. **反例必须仍然有效**：`the_a17_guard_detects_rewritten_references_and_added_files` 的 sandbox 用例要在**两种布局**下各跑一遍（旧布局一套 + 新布局一套），证明守卫不是只认其中一种。
+5. **3.2 的依赖闭包门禁**（Cargo 层面的证据）与本守卫**并存**：本守卫看源码 token，门禁看 `cargo tree` 输出；design 明确「`src/` 变空不能让旧字符串守卫假绿」，所以两者都要，且 3.2 要用「临时加一条 query→jvm 依赖」的反例证明门禁会失败。
+
+**未做**：文件搬迁（1.2 进行中）。cross-check 待办：`ci.yml:81` 的 `jvm` 边界正则需在真实 `cargo tree` 输出上实测不误命中 `jarde-jvm`。
