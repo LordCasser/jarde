@@ -337,6 +337,23 @@
 - 提交：R2 = `aa7f918`、R3 = `ac12967`，均已推送 `main`。
 - **本机环境异常（如实记录）**：期间本机链接器失效——`xcrun --sdk macosx --show-sdk-path` 因 **Xcode 许可未接受**而失败，`cargo test` 在链接阶段报 `library 'System' not found`，与代码无关。绕行方式（不改动机器状态）：`SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk` 且把 `/Library/Developer/CommandLineTools/usr/bin` 置于 `PATH` 首位。**本片全部验证均在该绕行下完成**；这也意味着本机无法再复现「默认工具链可用」的前提，CI 侧不受影响（Linux runner）。
 
+### 3.4 第二轮独立复核（Reject → 修正，2026-09-18）
+
+复核者（第三个独立者）对提交 `a914fdc` 给出 **Reject**，指出四项必修。父级逐项修正并各自证伪：
+
+| 复核问题 | 判定 | 修正 | 证伪 |
+| --- | --- | --- | --- |
+| ① 归属在**遍历中**决定，已发布的 `ret` 无法撤回，结局随 worklist 顺序翻转 | 成立 | 改为**先收集、后裁决**：`visit` 只记录事实（每次 local 写入 + 标记是否引用存储、每个 `ret` 及其读取槽），`run` 收尾时按位置序裁决 | 删掉「单写入者」要求 → 两条用例转红 |
+| ② 异槽存储被静默忽略（`other => other`），不可靠合流被当作已证明 | 成立 | 规则改为「`ret` 读的槽必须**恰好一次**写入且该写入是引用存储」——不同槽的写入不再能污染判定，同时保留 R3（handler 写别的槽不影响本地地址槽） | 同上 + 镜像顺序用例 |
+| ③ 只有 `is_astore` 参与判定，**普通值覆盖**（如 `istore`）完全不被识别 | 成立 | 记录**全部** local 写入（不只是引用存储），非引用写入同样计入「单写入者」判定 | `a_slot_written_by_another_value_kind_is_unresolved` |
+| ④ **提交态带调试残渣** `zz_r3b`（仅 `eprintln`、零断言） | 成立（父级失职：该测试在 `a914fdc` 里被提交） | 已删除 | 全仓搜索 `fn zz_` = 0 |
+
+- 复核者另确认：R3 的异常边**未引入跨上下文串味**（handler 只会进入「确实执行了受保护指令」的上下文）；`a_handler_entry_is_no_successor_and_its_range_is_recorded` 的 `[1]→[1,2]` 是**正确的语义修正**而非掩盖回归（在恢复丢弃异常边的变异下它恰在 `affected_locals` 处失败，而图结构断言不受影响）；两条我早先的证伪中，M2/M3 并非「整仓唯一失败」——记录时已按此口径更正。
+- **父级在本轮又自查出并修掉一项**：`is_astore` 之外，记录范围曾漏掉非引用写入，导致 `1d`（`astore_0` 后 `istore 0`）仍误报 `Established`；现已并入上表③。
+- **仍存在的已知限制（需 4.x 才能关闭，已登记）**：地址槽被写入一个**与返回地址无关的引用**时无法区分——例如 `aconst_null → astore_1 → astore_0 → ret 1`，当前判为 `Established`，但槽 1 里其实是 `null`。根因是这里没有操作数栈的值追踪（`local` 的**值**不可见），只有 `locals_written` 的**位置**；完整值身份属 4.x 的 Frame/SSA。契约已按此写明，不得声称 3.4 已证明值身份。
+- 计费随改动上调并如实记录：金标总数 34 → **40**（每次 local 写入与每个 `ret` 都是一个 `IrItems`），元素差值断言 2 → 4；两处注释已写明新口径。
+- 证据：`fmt`/`clippy -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **622 passed / 0 failed / 1 ignored**；`p1_xref_golden` = 5；`call_context` 单测 30 条。提交 `3f5e224`。
+
 #### 父级自查发现的**未闭合合流缺口**（2026-09-18，3.4 不能勾选的首要原因）
 
 在复核者到达之前，父级按契约「不可靠合流均不发布」自查，构造出**一个仍然误报 `Established` 的反例**并实测确认：
