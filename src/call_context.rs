@@ -2204,29 +2204,19 @@ mod tests {
         // A boundary test cannot see every charge: a one-item deficit is absorbed by the charges
         // that follow it, so `complete - 1` stops for reasons that do not identify *which* charge
         // was refused — deleting a constant from any single charge leaves that test green. The
-        // pinned total is the other half: it is measured once on this fixture and then compared,
-        // so every charge contributes and a dropped item changes it.
+        // pinned total is the other half: it was measured on this fixture and is compared here, so
+        // a charge that changes its amount moves this number.
         //
-        // The composition of the two-context, five-block fixture, as the walk charges it:
-        //
-        //   visited rows      2 contexts x (1 map entry + 5 blocks)        = 12
-        //   plans             2 call sites x 1                             =  2
-        //   entries           2 distinct call site -> edge targets         =  2
-        //   affected locals   2 contexts x 1 written slot                  =  2
-        //   ret owners        1 ret x (1 entry + 2 owning contexts)        =  3
-        //   coverage          2 contexts x (1 record + 0 handlers)         =  2
-        //   nesting edges     0 (neither call site nests)                  =  0
-        //   published fact    1                                            =  1
-        //   assembled entries 2 contexts + 3 returns + 2 coverage + 0 dead =  7
-        //   cycle search      0 nodes (acyclic) + 0 edges + 0 colours      =  0
-        //   walk state        3 per-context collections x 2 contexts       =  6
-        //                                                          total = 34
+        // The fixture is two call-site contexts over five blocks with one `ret`, no handlers and
+        // no nesting, and a complete run of it bills 34 items. The number is deliberately not
+        // decomposed into per-charge arithmetic: neutralising one charge also changes the charges
+        // that follow it, so per-site deltas are not additive and a table of them would be a
+        // plausible-looking fiction. The shape assertions below say what the total is read from.
         let facts = billing_fixture();
         let complete = baseline_usage(&facts).counted_usage(CountedBudgetDimension::IrItems);
         assert_eq!(
             complete, 34,
-            "the item bill of this fixture is the sum above; a charge that lost an item, or a \
-             fixture that changed shape, moves this number"
+            "the item bill of this fixture is the measured composition above"
         );
         assert_eq!(
             raw_block_count(&facts),
