@@ -1168,11 +1168,11 @@ fn standalone_probe(
 /// prove an entry absent, and the bytes at the definition's own location must be the bytes the
 /// definition names (a definition whose content changed under the same coordinate would
 /// otherwise be measured against a class the request never named).
-fn read_definition_header(
+pub(crate) fn read_definition_content(
     content: &[ArtifactSnapshot],
     definition: &PhysicalDefinitionId,
     budget: &mut Budget,
-) -> Result<ClassHeaderFacts> {
+) -> Result<DefinitionContent> {
     let label = definition_label(definition);
     let Some(snapshot) = content
         .iter()
@@ -1205,7 +1205,33 @@ fn read_definition_header(
     })?;
     require_definition_bytes(definition, &digest, length, &label)?;
     let facts = class_facts(&bytes, budget).map_err(|error| at_origin(error, &label))?;
-    Ok(ClassHeaderFacts { facts })
+    Ok(DefinitionContent {
+        bytes,
+        header: ClassHeaderFacts { facts },
+    })
+}
+
+/// The bytes and the header facts of one class definition, read by identity.
+///
+/// A body demand needs both halves of the same read: it locates the member in the header and
+/// decodes the `Code` attribute from the bytes the definition names. Returning them together
+/// keeps that one read — one charge, one identity check — instead of making the caller read
+/// the same definition twice and compare two readings itself.
+pub(crate) struct DefinitionContent {
+    pub(crate) bytes: Vec<u8>,
+    pub(crate) header: ClassHeaderFacts,
+}
+
+/// The header facts of one class definition, read by identity.
+///
+/// The read (and its `ClassHeaders` charge, identity check and diagnostics) belongs to
+/// [`read_definition_content`]; this is the header-only view of it.
+pub(crate) fn read_definition_header(
+    content: &[ArtifactSnapshot],
+    definition: &PhysicalDefinitionId,
+    budget: &mut Budget,
+) -> Result<ClassHeaderFacts> {
+    Ok(read_definition_content(content, definition, budget)?.header)
 }
 
 /// The listed entry one definition names, so its bytes can be read.

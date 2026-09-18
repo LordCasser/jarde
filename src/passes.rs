@@ -44,6 +44,15 @@ const IR_PASS_GRAPH_CYCLE: &str = "ir_pass_graph_cycle";
 /// Code of a pass that requires a fact an earlier pass invalidated and nothing recomputed.
 const IR_STALE_FACT: &str = "ir_stale_fact";
 
+/// Code of a scheduled pass this build does not implement yet.
+///
+/// The table is complete — its phases, facts and dependencies are 3.2's contract — but a build
+/// implements the phases slice by slice (3.3 runs `raw_facts` and `raw_cfg`). A scheduled pass
+/// the pipeline reached and cannot run is `Failed { code }` with this code and an `Unsupported`
+/// termination, and the phases behind it stay `NotPerformed`: the request is answered honestly
+/// instead of pretending the pipeline finished. 5.1 removes this code with the last phase.
+pub(crate) const IR_PASS_NOT_IMPLEMENTED: &str = "ir_pass_not_implemented";
+
 /// One phase of the fixed P2 IR pipeline; declaration order is the phase order.
 ///
 /// The numbering is part of the contract (`RawFacts` starts at 1) and the name of a phase is
@@ -82,6 +91,29 @@ impl IrPhase {
             Self::Ssa => "ssa",
         }
     }
+
+    /// The request stage this phase is: the inverse of [`IrPhase::from_stage`], used when a
+    /// report has to list the stage of a pass.
+    pub(crate) fn stage(self) -> AnalysisStage {
+        match self {
+            Self::RawFacts => AnalysisStage::RawFacts,
+            Self::RawCfg => AnalysisStage::RawCfg,
+            Self::LegacyNormalization => AnalysisStage::LegacyNormalization,
+            Self::CanonicalCfg => AnalysisStage::CanonicalCfg,
+            Self::Frame => AnalysisStage::Frame,
+            Self::Ssa => AnalysisStage::Ssa,
+        }
+    }
+}
+
+/// Whether this build implements the pass of one phase.
+///
+/// The implemented phases are a **prefix** of the table — a later phase never runs while an
+/// earlier one is missing — which is what makes a request stop at exactly one point instead of
+/// skipping a hole in the pipeline. 3.3 implements `raw_facts` (the reader's own work, see the
+/// table) and `raw_cfg`; 3.4/3.5/4.x extend this list, and 5.1 deletes it with the last phase.
+pub(crate) fn implemented(phase: IrPhase) -> bool {
+    matches!(phase, IrPhase::RawFacts | IrPhase::RawCfg)
 }
 
 /// One fact of the method IR pipeline, as the pass table names it.
@@ -802,10 +834,40 @@ mod tests {
         }
     }
 
+    /// The phases this build implements: 3.3 runs `raw_facts` and `raw_cfg`.
+    const IMPLEMENTED_PHASES: [IrPhase; 2] = [IrPhase::RawFacts, IrPhase::RawCfg];
+
+    #[test]
+    fn the_implemented_phases_are_a_prefix_of_the_table() {
+        // The property the pipeline relies on: a later phase never runs while an earlier one
+        // is missing, so a request stops at exactly one point. A build that implemented
+        // `frame` but not `canonical_cfg` would fail here.
+        for pass in PASSES {
+            assert_eq!(
+                implemented(pass.phase),
+                IMPLEMENTED_PHASES.contains(&pass.phase),
+                "{} is implemented in this build",
+                pass.name
+            );
+        }
+        let implemented_count = PASSES
+            .iter()
+            .take_while(|pass| implemented(pass.phase))
+            .count();
+        assert_eq!(implemented_count, IMPLEMENTED_PHASES.len());
+        assert!(
+            PASSES[implemented_count..]
+                .iter()
+                .all(|pass| !implemented(pass.phase)),
+            "the implemented phases are a prefix, not a set with holes"
+        );
+    }
+
     #[test]
     fn every_stage_maps_to_its_own_phase_in_order() {
         for (index, stage) in AnalysisStage::ALL.into_iter().enumerate() {
             let phase = IrPhase::from_stage(stage);
+            assert_eq!(phase.stage(), stage, "{stage:?} round-trips");
             assert_eq!(
                 phase_index(phase),
                 index,

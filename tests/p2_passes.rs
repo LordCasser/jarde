@@ -5,14 +5,15 @@
 //! has to prove through the public API is the wiring around it:
 //!
 //! 1. the validation accepts every request a caller can shape — all 63 non-empty stage sets,
-//!    including the unordered and the repeated ones — and each one is still answered with the
-//!    honest unavailable state of 1.1: no phase ran (`stages` all `NotPerformed`),
-//!    `Failed{Unsupported{method_analysis_not_implemented}}`, the body stays `NotInspected`, no
-//!    environment problem, and not one counted dimension charged. A schedule the validator
-//!    refuses would raise an input error instead of producing this report, so the report is
-//!    the evidence that the validator accepted this schedule — the table it validates against
-//!    is crate-private, so how the table and the phases agree is pinned by the unit tests of
-//!    `src/passes.rs`, not here;
+//!    including the unordered and the repeated ones — and each one is answered with a report
+//!    whose stages are the prefix of the phase order up to the last requested phase. A schedule
+//!    the validator refuses would raise an input error instead of producing this report, so the
+//!    report is the evidence that the validator accepted this schedule — the table it validates
+//!    against is crate-private, so how the table and the phases agree is pinned by the unit
+//!    tests of `src/passes.rs`, not here. Since 3.3 the run is real, so the same 63 sets also
+//!    show what the passes did: with a budget that refuses the very first charge the first pass
+//!    is `Partial` and nothing behind it ran, and with a funded budget the two implemented
+//!    phases are `Completed` while the first unimplemented one is `Failed`;
 //! 2. the schedule is read from the request's phases alone: the reported `stages` is the prefix
 //!    of the phase order up to the last requested phase, once each, in phase order — which is
 //!    the prefix the table schedules, because the table has one pass per phase (unit test);
@@ -47,8 +48,8 @@ fn limits() -> Limits {
 }
 
 /// Every counted limit is zero, so a dimension the request charges would fail the request
-/// instead of producing a report: the pass validation reads no artifact byte and runs no pass,
-/// and this is what says so.
+/// instead of producing a report: a request the engine refuses publishes no report at all, and
+/// this is what says so.
 fn zero_limits() -> Limits {
     Limits {
         input_bytes: 0,
@@ -66,6 +67,27 @@ fn zero_limits() -> Limits {
     }
 }
 
+/// The same fail-closed limits with the wall clock funded, so the dimension a *work* charge
+/// refused is the deterministic one.
+fn zero_work_limits() -> Limits {
+    Limits {
+        elapsed_millis: u64::MAX,
+        ..zero_limits()
+    }
+}
+
+/// The funded limits plus the dimensions a method-analysis run charges (3.3).
+fn analysis_limits() -> Limits {
+    Limits {
+        class_headers: 10,
+        method_bodies: 10,
+        ir_items: 1 << 20,
+        ir_edges: 1 << 20,
+        analysis_steps: 1 << 20,
+        ..limits()
+    }
+}
+
 fn bytes(value: &[u8]) -> JvmBytes {
     JvmBytes(value.to_vec())
 }
@@ -74,16 +96,6 @@ fn counted_usage_is_zero(usage: &UsageSnapshot) -> bool {
     CountedBudgetDimension::ALL
         .iter()
         .all(|dimension| usage.counted_usage(*dimension) == 0)
-}
-
-fn unsupported_code(execution: &ExecutionReport) -> Option<&str> {
-    match execution {
-        ExecutionReport::Failed {
-            reason: TerminationReason::Unsupported { code },
-            ..
-        } => Some(code.as_str()),
-        _ => None,
-    }
 }
 
 fn invalid_input_code(error: &Error) -> Option<&str> {
@@ -192,13 +204,15 @@ fn scheduled_prefix(stages: &[AnalysisStage]) -> Vec<AnalysisStage> {
 }
 
 #[test]
-fn every_stage_set_is_accepted_and_answered_with_the_honest_unavailable_state() {
+fn every_stage_set_is_accepted_and_answered_with_the_state_of_its_passes() {
     let fixture = fixture();
     let environment = environment(&fixture);
 
     // Every non-empty stage set a caller can write, including the singletons and the whole
-    // pipeline: the startup validation must not refuse any of them, and the answer must stay
-    // the honest unavailable state of 1.1, because 3.2 still runs no pass.
+    // pipeline: the startup validation must not refuse any of them, and the answer must be the
+    // report of the passes that really ran. `raw_facts` is always scheduled, and a budget that
+    // refuses its first charge stops it there: the first pass is `Partial`, nothing behind it
+    // ran, and not one counted dimension was charged.
     for mask in 1u32..(1u32 << AnalysisStage::ALL.len()) {
         let stages: Vec<AnalysisStage> = AnalysisStage::ALL
             .into_iter()
@@ -207,7 +221,7 @@ fn every_stage_set_is_accepted_and_answered_with_the_honest_unavailable_state() 
             .map(|(_, stage)| stage)
             .collect();
         let request = analysis_request(&fixture, environment.clone(), stages.clone());
-        let mut budget = Budget::new(zero_limits());
+        let mut budget = Budget::new(zero_work_limits());
         let report = Engine::new()
             .analyze_method(slice::from_ref(&fixture.snapshot), &request, &mut budget)
             .unwrap_or_else(|error| panic!("{stages:?} is a legal request: {error}"));
@@ -234,40 +248,72 @@ fn every_stage_set_is_accepted_and_answered_with_the_honest_unavailable_state() 
             expected,
             "{stages:?} schedules its own phase prefix"
         );
+        assert_eq!(
+            report.stages[0].state,
+            StageState::Partial,
+            "{stages:?}: the refused first pass is partial, not performed"
+        );
         assert!(
-            report
-                .stages
+            report.stages[1..]
                 .iter()
                 .all(|scheduled| scheduled.state == StageState::NotPerformed),
-            "{stages:?}: no pass ran in this slice"
-        );
-        assert_eq!(
-            unsupported_code(&report.execution),
-            Some("method_analysis_not_implemented"),
-            "{stages:?} keeps the honest unavailable state"
+            "{stages:?}: a phase behind the stop never ran"
         );
         assert_eq!(
             report.body,
             MethodBodyState::NotInspected,
-            "{stages:?}: no body fact may be claimed"
+            "{stages:?}: the stop preceded the read, so no body fact is stated"
+        );
+        assert!(report.reads.is_empty());
+        assert_eq!(report.coverage, Coverage::not_requested());
+        assert_eq!(
+            report.execution,
+            ExecutionReport::Partial {
+                reason: TerminationReason::BudgetExceeded {
+                    dimension: BudgetDimension::ClassHeaders,
+                },
+                usage: budget.usage(),
+            },
+            "{stages:?}: the pass that stopped names the dimension it was refused"
         );
         assert!(
             counted_usage_is_zero(&budget.usage()),
-            "{stages:?}: scheduling a pass charges none of its budget"
+            "{stages:?}: a refused charge charges nothing"
         );
     }
 
     // The last phase schedules the whole pipeline, so the phase prefix cannot be a truncated
-    // part of the order without this failing.
+    // part of the order without this failing. With the run funded, the two phases this build
+    // implements complete, the first one it does not implement fails, and the phases behind
+    // that failure stay `NotPerformed` instead of looking performed.
     let request = analysis_request(&fixture, environment, vec![AnalysisStage::Ssa]);
+    let mut budget = Budget::new(analysis_limits());
     let report = Engine::new()
-        .analyze_method(
-            slice::from_ref(&fixture.snapshot),
-            &request,
-            &mut Budget::new(zero_limits()),
-        )
+        .analyze_method(slice::from_ref(&fixture.snapshot), &request, &mut budget)
         .expect("the whole pipeline schedules");
     assert_eq!(report.stages.len(), AnalysisStage::ALL.len());
+    assert_eq!(
+        report
+            .stages
+            .iter()
+            .map(|stage| stage.state.clone())
+            .collect::<Vec<_>>(),
+        vec![
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Failed {
+                code: "ir_pass_not_implemented".to_string()
+            },
+            StageState::NotPerformed,
+            StageState::NotPerformed,
+            StageState::NotPerformed,
+        ]
+    );
+    assert_eq!(
+        report.body,
+        MethodBodyState::Present,
+        "the funded run really read the driver method's body"
+    );
 }
 
 #[test]

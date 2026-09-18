@@ -3,8 +3,8 @@
 use crate::budget::{Budget, CountedBudgetDimension};
 use crate::error::{Error, Result};
 use crate::model::{
-    ByteSpan, Diagnostic, DiagnosticSeverity, ExecutionReport, JvmBytes, JvmString,
-    TerminationReason,
+    ByteSpan, Coverage, CoverageDimension, CoverageRange, CoverageState, Diagnostic,
+    DiagnosticSeverity, ExecutionReport, JvmBytes, JvmString, TerminationReason,
 };
 use noak::reader::attributes::{Code, RawInstruction};
 use noak::reader::{Attribute, Class};
@@ -176,6 +176,100 @@ impl BytecodeStop {
             Self::Instructions { .. } => BytecodeStopPhase::Instructions,
         }
     }
+}
+
+/// Coverage of one body decode, in the reader's own BCI and handler-ordinal coordinates.
+///
+/// One body has one coverage plane, whichever reader path produced it: the public
+/// [`BytecodeInspection`] and the crate-private [`MethodCodeFacts`] call this same mapping, so
+/// an analysis caller and a bytecode caller cannot publish two different ranges for the same
+/// `Code` attribute. The scanned ranges are the decoded instruction prefix
+/// (`method_code_bci`) and the handler records that were read
+/// (`exception_handler_ordinal`), the skipped ranges are the rest of each, and the state is
+/// `CompleteWithinSchema` exactly when the decode ran to the end of the body.
+///
+/// Handlers are decoded before instructions, so a handler-phase stop leaves
+/// `handlers_returned < handlers_total` while the instruction prefix is empty, and an
+/// instruction-phase stop leaves the handler list complete.
+pub(crate) fn method_code_coverage(
+    code_length: u64,
+    instructions: &[InstructionFact],
+    handlers_returned: usize,
+    handlers_total: u32,
+    execution: &ExecutionReport,
+    stopped_at: Option<&BytecodeStop>,
+) -> Result<Coverage> {
+    let prefix_end = instructions.last().map_or(Ok(0), |fact| {
+        u64::from(fact.bci)
+            .checked_add(u64::from(fact.width))
+            .ok_or_else(|| {
+                Error::invalid_input("classfile_coverage_overflow", "instruction prefix overflow")
+            })
+    })?;
+    if prefix_end > code_length {
+        return Err(Error::invalid_input(
+            "classfile_coverage_out_of_bounds",
+            "instruction prefix exceeds code length",
+        ));
+    }
+    let handlers_returned = u64::try_from(handlers_returned).map_err(|_| {
+        Error::invalid_input(
+            "classfile_coverage_overflow",
+            "handler count does not fit u64",
+        )
+    })?;
+    let handlers_total = u64::from(handlers_total);
+    if handlers_returned > handlers_total {
+        return Err(Error::invalid_input(
+            "classfile_coverage_out_of_bounds",
+            "returned handler count exceeds declared count",
+        ));
+    }
+    let complete = matches!(execution, ExecutionReport::Complete { .. });
+    let handlers_complete = complete
+        || !matches!(
+            stopped_at.map(BytecodeStop::phase),
+            Some(BytecodeStopPhase::ExceptionHandlers)
+        );
+    let mut scanned = vec![CoverageRange {
+        label: "method_code_bci".into(),
+        start: 0,
+        end: prefix_end,
+    }];
+    scanned.push(CoverageRange {
+        label: "exception_handler_ordinal".into(),
+        start: 0,
+        end: handlers_returned,
+    });
+    let mut skipped = Vec::new();
+    if prefix_end < code_length {
+        skipped.push(CoverageRange {
+            label: "method_code_bci".into(),
+            start: prefix_end,
+            end: code_length,
+        });
+    }
+    if !handlers_complete && handlers_returned < handlers_total {
+        skipped.push(CoverageRange {
+            label: "exception_handler_ordinal".into(),
+            start: handlers_returned,
+            end: handlers_total,
+        });
+    }
+    Ok(Coverage {
+        artifact_structural: CoverageDimension {
+            state: if complete {
+                CoverageState::CompleteWithinSchema
+            } else {
+                CoverageState::Partial
+            },
+            scanned,
+            skipped,
+            uninterpreted_extensions: Vec::new(),
+        },
+        runtime_resolution: CoverageDimension::not_requested(),
+        dynamic_analysis: CoverageDimension::not_requested(),
+    })
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -2437,6 +2531,13 @@ pub(crate) struct MethodCodeFacts {
     /// like `inspect_method_bytecode`, so these are complete even when the instruction
     /// stream is the phase that stopped.
     pub exception_handlers: Vec<ExceptionHandlerFact>,
+    /// Exception-table size the `Code` attribute declares.
+    ///
+    /// The same fact [`BytecodeInspection::exception_handler_count`] carries: with
+    /// [`Self::stopped_at`] in [`BytecodeStopPhase::ExceptionHandlers`] the list above is a
+    /// prefix of this count, and a consumer that publishes a coverage plane needs the total
+    /// to name the range it did not read.
+    pub exception_handler_count: u32,
     pub execution: ExecutionReport,
     pub stopped_at: Option<BytecodeStop>,
 }
@@ -3343,6 +3444,13 @@ pub(crate) fn method_code_facts(
         _ => unreachable!("raw Code name selected"),
     };
 
+    let exception_handler_count =
+        u32::try_from(code.exception_handlers().count()).map_err(|_| {
+            Error::invalid_input(
+                "classfile_result_overflow",
+                "handler count does not fit u32",
+            )
+        })?;
     let mut handlers = Vec::new();
     for (ordinal, handler) in code.exception_handlers().enumerate() {
         let ordinal = u32::try_from(ordinal).map_err(|_| {
@@ -3542,6 +3650,7 @@ pub(crate) fn method_code_facts(
         instructions,
         operands,
         exception_handlers: handlers,
+        exception_handler_count,
         execution: ExecutionReport::Complete {
             usage: budget.usage(),
         },
@@ -3626,6 +3735,14 @@ fn stopped_code_facts(
         instructions,
         operands,
         exception_handlers: handlers,
+        exception_handler_count: u32::try_from(code.exception_handlers().count()).map_err(
+            |_| {
+                Error::invalid_input(
+                    "classfile_result_overflow",
+                    "handler count does not fit u32",
+                )
+            },
+        )?,
         execution,
         stopped_at: Some(stopped_at),
     })

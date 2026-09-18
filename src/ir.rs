@@ -5,31 +5,41 @@
 //! phase order and deduplicated) and the scheduled phase list (which also carries the
 //! prerequisites of the requested phases), plus the product planes `representation`,
 //! `quality`, `syntax_status`, `compile_status`, `semantic_validation` and `verification`.
-//! No plane is derived from another: an unimplemented stage does not make the bytecode
-//! representation incomplete, and a complete bytecode range does not make an IR stage
-//! performed.
+//! No plane is derived from another: a stage this build does not implement does not make the
+//! bytecode representation incomplete, and a complete bytecode range does not make an IR
+//! stage performed.
 //!
-//! This slice delivers the schema and the honest unavailable state: [`validate_request`]
-//! checks the request shape, [`analysis_report`] reports that no phase ran, that the body
-//! was never located ([`MethodBodyState::NotInspected`]) and that no byte was read. The IR
-//! itself is implemented by the following slices.
+//! This module owns the request shape ([`validate_request`]) and the report assembly
+//! ([`analysis_report`], from an [`AnalysisRun`]); the code that drives the stages themselves
+//! is the engine's, because it needs the reader, the providers and the raw CFG builder, which
+//! this module does not depend on. 3.3 is the first slice whose runs are real: the engine
+//! locates and decodes the driver method's body and builds its raw CFG, and the report states
+//! which stages completed, which stopped and what was read on the way.
 
 use crate::artifact::ArtifactSnapshot;
-use crate::budget::Budget;
+use crate::budget::{Budget, UsageSnapshot};
 use crate::classfile::VerificationStatus;
 use crate::environment::{
     EnvironmentIdentity, EnvironmentProblem, ResolutionEnvironment, environment_diagnostics,
-    require_content_snapshot, unavailable_diagnostic, validate_environment,
+    require_content_snapshot, unavailable_diagnostic,
 };
 use crate::error::{Error, Result};
 use crate::model::{
-    Coverage, Diagnostic, ExecutionReport, OriginSet, PhysicalMethodId, TerminationReason,
+    Coverage, Diagnostic, DiagnosticSeverity, ExecutionReport, OriginSet, PhysicalMethodId,
+    TerminationReason,
 };
 use crate::resolver::HeaderRead;
 use crate::view::LoaderId;
 use serde::{Deserialize, Serialize};
 
-/// Capability name of the method-analysis entry point while it is not implemented.
+/// Capability code of a method-analysis request that may not run at all.
+///
+/// Since 3.3 the entry point really runs the phases this build implements, so this code no
+/// longer describes the entry point itself: it is what a request gets when the environment
+/// validator rejected its environment, where no phase and no read may start (invariants 1
+/// and 2). A request whose environment is legal but whose pipeline stops reports the stop
+/// instead, and a phase this build does not implement (`ir_pass_not_implemented`) is that
+/// phase's own failure.
 pub(crate) const METHOD_ANALYSIS_NOT_IMPLEMENTED: &str = "method_analysis_not_implemented";
 
 /// Fixed phase order of the P2 IR pipeline; declaration order is the phase order.
@@ -47,8 +57,10 @@ pub enum AnalysisStage {
 impl AnalysisStage {
     /// Every phase in the fixed order.
     ///
-    /// Ordering helpers (`normalize` on a request, prerequisite expansion) iterate this
-    /// list, so a new phase is added in one place, in phase order.
+    /// Ordering helpers iterate this list, so a new phase is added in one place, in phase
+    /// order. The schedule of a request — the requested phases plus their prerequisites — is
+    /// the prefix rule of the crate-private pass table (`crate::passes::PASSES`), which is
+    /// declared in this same order and is what the engine runs.
     pub const ALL: [Self; 6] = [
         Self::RawFacts,
         Self::RawCfg,
@@ -57,14 +69,6 @@ impl AnalysisStage {
         Self::Frame,
         Self::Ssa,
     ];
-
-    /// Position in the fixed phase order; also the number of prerequisites.
-    fn position(self) -> usize {
-        Self::ALL
-            .iter()
-            .position(|stage| *stage == self)
-            .unwrap_or(Self::ALL.len())
-    }
 }
 
 /// State of one phase of one request.
@@ -194,11 +198,11 @@ pub struct MethodAnalysisReport {
     /// Every class header this request read, in read order, at most once per
     /// `(definition, loader)`; empty when the request read nothing.
     ///
-    /// This slice has no body path at all, so `reads` is empty here. A body is upgraded only
-    /// by an explicit request for the target method's body, which the analysis slices record
-    /// in this same list under
-    /// [`crate::resolver::ReadReason::DriverMethodBody`] — the one reason that may name a
-    /// body read, and the one that lets `reads` differ from the header-only closure.
+    /// A method-analysis request reads the driver method's own class definition by identity,
+    /// recorded under [`crate::resolver::ReadReason::DriverMethodBody`] — the one reason that
+    /// may name a body read, and the one that lets `reads` differ from the header-only
+    /// closure. A refused charge and a rejected environment record nothing, so an empty list
+    /// is also what a run that never reached its first read reports.
     pub reads: Vec<HeaderRead>,
     pub coverage: Coverage,
     pub execution: ExecutionReport,
@@ -212,25 +216,6 @@ impl MethodAnalysisRequest {
             .into_iter()
             .filter(|stage| self.stages.contains(stage))
             .collect()
-    }
-
-    /// Requested stages plus the prerequisites of each requested phase.
-    ///
-    /// The phases form one fixed order, so requesting a phase also requires every earlier
-    /// phase; the scheduled list is the prefix of the phase order up to the last requested
-    /// phase. The crate-private pass table (`crate::passes::PASSES`) is declared in this
-    /// same phase order, which is what lets the engine validate the schedule of a request
-    /// against the passes that will really run it.
-    fn scheduled_stages(&self) -> Vec<AnalysisStage> {
-        let Some(last) = self
-            .normalized_stages()
-            .into_iter()
-            .map(AnalysisStage::position)
-            .max()
-        else {
-            return Vec::new();
-        };
-        AnalysisStage::ALL.into_iter().take(last + 1).collect()
     }
 }
 
@@ -249,36 +234,121 @@ pub(crate) fn validate_request(
     Ok(())
 }
 
-/// Honest result of a legally shaped method-analysis request in this slice.
+/// One method-analysis run: what the scheduled passes reached, and what they read and
+/// produced on the way.
 ///
-/// The scheduled phases are listed as `NotPerformed` because that is what happened: the
-/// request was validated and no phase ran. The product planes keep the P2 baseline
-/// (`Bytecode`, `NotJava`, `NotAttempted`, `NotPerformed`); `quality = Fallback` only means
-/// "not `Conservative`" here, because no artifact was produced to classify, and
-/// `semantic_validation` stays `Unproven` for the same reason. Nothing was located or read,
-/// so the body is `NotInspected` — not a `Present`/`DeclaredWithoutBody` claim. Coverage
-/// stays `NotRequested` and the counted usage stays zero, so an unimplemented request
-/// cannot be read as a partial analysis.
+/// The passes themselves are driven by the engine (they need the reader, the providers and the
+/// raw CFG builder); this is the outcome a report is assembled from, so the report layer keeps
+/// owning the schema and the engine keeps owning the pipeline. Nothing here is derived from
+/// another field: a run that read no body states `NotInspected`, a run that covered a prefix
+/// states `Partial`, and a run that stopped states why.
+pub(crate) struct AnalysisRun {
+    pub(crate) body: MethodBodyState,
+    pub(crate) stages: Vec<StageResult>,
+    pub(crate) reads: Vec<HeaderRead>,
+    pub(crate) coverage: Coverage,
+    pub(crate) execution: ExecutionReport,
+    pub(crate) diagnostics: Vec<Diagnostic>,
+}
+
+impl AnalysisRun {
+    /// A run that performs nothing: every scheduled stage stays `NotPerformed`, the body was
+    /// never located, and the capability is reported as unavailable under `code`.
+    ///
+    /// This is the honest state of a request whose environment the validator rejected
+    /// (invariant 2: a rejected environment never yields a result and never starts a read).
+    pub(crate) fn not_performed(scheduled: &[AnalysisStage], code: &str, budget: &Budget) -> Self {
+        Self {
+            body: MethodBodyState::NotInspected,
+            stages: scheduled
+                .iter()
+                .map(|stage| StageResult {
+                    stage: *stage,
+                    state: StageState::NotPerformed,
+                })
+                .collect(),
+            reads: Vec::new(),
+            coverage: Coverage::not_requested(),
+            execution: ExecutionReport::Failed {
+                reason: TerminationReason::Unsupported {
+                    code: code.to_string(),
+                },
+                usage: budget.usage(),
+            },
+            diagnostics: vec![unavailable_diagnostic(code, "method IR analysis")],
+        }
+    }
+}
+
+/// Terminal mapping of a refusal, under the same contract the physical reports use: a budget
+/// stop is a partial execution that names its dimension, a cancellation is a cancellation, and
+/// a structural failure keeps the reader's own code.
+pub(crate) fn terminal(error: &Error, usage: UsageSnapshot) -> (ExecutionReport, Diagnostic) {
+    let diagnostic = |code: String, severity: DiagnosticSeverity| Diagnostic {
+        code,
+        severity,
+        message: error.to_string(),
+        provenance: None,
+    };
+    match error {
+        Error::Cancelled { .. } => (
+            ExecutionReport::Cancelled { usage },
+            diagnostic("cancelled".to_string(), DiagnosticSeverity::Warning),
+        ),
+        Error::BudgetExceeded { dimension, .. } => (
+            ExecutionReport::Partial {
+                reason: TerminationReason::BudgetExceeded {
+                    dimension: *dimension,
+                },
+                usage,
+            },
+            diagnostic(
+                format!(
+                    "budget_exceeded_{}",
+                    crate::artifact::budget_dimension_code(*dimension)
+                ),
+                DiagnosticSeverity::Warning,
+            ),
+        ),
+        Error::InvalidInput { code, .. }
+        | Error::Io {
+            operation: code, ..
+        } => (
+            ExecutionReport::Failed {
+                reason: TerminationReason::Error { code: code.clone() },
+                usage,
+            },
+            diagnostic(code.clone(), DiagnosticSeverity::Error),
+        ),
+        Error::Unsupported { code, .. } => (
+            ExecutionReport::Failed {
+                reason: TerminationReason::Unsupported { code: code.clone() },
+                usage,
+            },
+            diagnostic(code.clone(), DiagnosticSeverity::Error),
+        ),
+    }
+}
+
+/// Report of one method-analysis request: the environment facts, the run's own planes and the
+/// product planes of this slice.
+///
+/// The environment problems and their diagnostics come first, then the run's diagnostics, which
+/// is the order 1.1 fixed for a rejected environment and keeps every problem visible next to
+/// the capability it prevented. The product planes are the P2 baseline (`Bytecode`, `NotJava`,
+/// `NotAttempted`, `Unproven`, `NotPerformed`): this slice builds no Java, compiles nothing and
+/// proves no semantic invariant, and `quality = Fallback` means "not `Conservative`" until 3.5
+/// fixes the classification of a produced artifact. `origin` stays empty because the IR
+/// payloads are crate-private in P2 (invariant 11): the report anchors the request by
+/// `method`, and 5.1 is where a published IR count would have to add its own field first.
 pub(crate) fn analysis_report(
-    content: &[ArtifactSnapshot],
     request: &MethodAnalysisRequest,
-    budget: &Budget,
+    problems: Vec<EnvironmentProblem>,
+    environment_identity: EnvironmentIdentity,
+    run: AnalysisRun,
 ) -> MethodAnalysisReport {
-    let (problems, environment_identity) = validate_environment(content, &request.environment);
     let mut diagnostics = environment_diagnostics(&problems);
-    diagnostics.push(unavailable_diagnostic(
-        METHOD_ANALYSIS_NOT_IMPLEMENTED,
-        "method IR analysis",
-    ));
-    let requested_stages = request.normalized_stages();
-    let stages = request
-        .scheduled_stages()
-        .into_iter()
-        .map(|stage| StageResult {
-            stage,
-            state: StageState::NotPerformed,
-        })
-        .collect();
+    diagnostics.extend(run.diagnostics);
     MethodAnalysisReport {
         environment_identity,
         environment_problems: problems,
@@ -286,31 +356,19 @@ pub(crate) fn analysis_report(
         // The request binds one caller domain; the defining loader of the method is a
         // resolution result and is therefore not claimed here.
         loader: request.environment.runtime.load_domain.loader.clone(),
-        // No class byte was read, so nothing was located: the body stays `NotInspected`.
-        // Claiming `Present` or `DeclaredWithoutBody` here would state a body fact this
-        // slice never observed, and the same state is what a budget stop or a canceled
-        // request reports before the `Code` attribute is read.
-        body: MethodBodyState::NotInspected,
+        body: run.body,
         representation: Representation::Bytecode,
         quality: Quality::Fallback,
         syntax_status: SyntaxStatus::NotJava,
         compile_status: CompileStatus::NotAttempted,
         semantic_validation: SemanticValidation::Unproven,
         verification: VerificationStatus::NotPerformed,
-        requested_stages,
-        stages,
-        // No IR artifact was generated.
+        requested_stages: request.normalized_stages(),
+        stages: run.stages,
         origin: OriginSet::default(),
-        // No header was demanded: this slice performs no closure work at all, and the only
-        // reason that may upgrade to a body read (`DriverMethodBody`) belongs to 3.x.
-        reads: Vec::new(),
-        coverage: Coverage::not_requested(),
-        execution: ExecutionReport::Failed {
-            reason: TerminationReason::Unsupported {
-                code: METHOD_ANALYSIS_NOT_IMPLEMENTED.to_string(),
-            },
-            usage: budget.usage(),
-        },
+        reads: run.reads,
+        coverage: run.coverage,
+        execution: run.execution,
         diagnostics,
     }
 }

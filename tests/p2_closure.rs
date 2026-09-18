@@ -794,16 +794,18 @@ fn a_budget_stop_keeps_every_record_inside_the_charged_attempts() {
 
 #[test]
 fn the_other_two_reports_also_publish_their_reads() {
-    // This fixture holds no member reference at all, so neither the declaration query (which
-    // resolves the candidates it finds) nor the method analysis (which locates no body)
-    // demands a class header: both report an empty list. The field exists on every report,
-    // which is what makes it comparable.
+    // The declaration query resolves the candidates it finds, and this fixture holds no member
+    // reference at all, so it demands no class header and reports an empty list. The method
+    // analysis does read: since 3.3 it locates the driver method's body, and that is the one
+    // header read of the request — recorded under `DriverMethodBody`, whatever the body lookup
+    // then decides. The field exists on every report, which is what makes them comparable.
     let bytes = class_bytes(b"p/S", 52);
     let snapshot = open(zip_of(&[(b"p/S.class", &bytes)]));
     let environment = single_loader(&snapshot);
+    let definition = archive_definition(&snapshot, b"p/S.class", &bytes);
     let declaration = ResolvedMemberRef {
         loader: loader("app"),
-        definition: archive_definition(&snapshot, b"p/S.class", &bytes),
+        definition: definition.clone(),
         member: SymbolRef::Field {
             owner: JvmBytes(b"p/S".to_vec()),
             name: JvmBytes(b"f".to_vec()),
@@ -829,7 +831,7 @@ fn the_other_two_reports_also_publish_their_reads() {
     let analysis = MethodAnalysisRequest {
         environment,
         method: PhysicalMethodId {
-            owner: archive_definition(&snapshot, b"p/S.class", &bytes),
+            owner: definition.clone(),
             name: JvmBytes(b"m".to_vec()),
             descriptor: JvmBytes(b"()V".to_vec()),
         },
@@ -842,8 +844,16 @@ fn the_other_two_reports_also_publish_their_reads() {
             &mut Budget::new(limits()),
         )
         .expect("a legal request is answered, not raised");
-    assert!(
-        analysis_report.reads.is_empty(),
-        "no header was demanded, so nothing is recorded"
+    assert_eq!(
+        analysis_report.reads,
+        vec![HeaderRead {
+            loader: loader("app"),
+            definition,
+            reason: ReadReason::DriverMethodBody,
+        }],
+        "the driver method's own class definition is the header a body demand reads"
     );
+    // This fixture declares no method `m`, so there is no body to state: the read happened,
+    // and the body fact stays the honest "nothing located or read".
+    assert_eq!(analysis_report.body, MethodBodyState::NotInspected);
 }

@@ -84,6 +84,29 @@ fn zero_limits() -> Limits {
     }
 }
 
+/// Every counted limit is zero as well, so the dimension a *work* charge refused is
+/// deterministic instead of possibly being the wall clock.
+fn zero_work_limits() -> Limits {
+    Limits {
+        elapsed_millis: u64::MAX,
+        ..zero_limits()
+    }
+}
+
+/// The funded limits with the dimensions a method-analysis run charges on top of them: the two
+/// read attempts, the IR storage items and edges, and the analysis steps (3.3). The byte
+/// dimensions the reader charges (`class`/`attribute`/`code`) come from [`limits`].
+fn analysis_limits() -> Limits {
+    Limits {
+        class_headers: 10,
+        method_bodies: 10,
+        ir_items: 1 << 20,
+        ir_edges: 1 << 20,
+        analysis_steps: 1 << 20,
+        ..limits()
+    }
+}
+
 struct Fixture {
     snapshot: ArtifactSnapshot,
     definition: PhysicalDefinitionId,
@@ -481,6 +504,17 @@ fn unsupported_code(execution: &ExecutionReport) -> Option<&str> {
     match execution {
         ExecutionReport::Failed {
             reason: TerminationReason::Unsupported { code },
+            ..
+        } => Some(code.as_str()),
+        _ => None,
+    }
+}
+
+/// The structured code of a failed run (a damaged input rather than an unsupported one).
+fn failure_code(execution: &ExecutionReport) -> Option<&str> {
+    match execution {
+        ExecutionReport::Failed {
+            reason: TerminationReason::Error { code },
             ..
         } => Some(code.as_str()),
         _ => None,
@@ -1582,7 +1616,7 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
         vec![AnalysisStage::Ssa, AnalysisStage::Frame, AnalysisStage::Ssa],
     );
 
-    let mut budget = Budget::new(zero_limits());
+    let mut budget = Budget::new(analysis_limits());
     let report = Engine::new()
         .analyze_method(
             std::slice::from_ref(&fixture.snapshot),
@@ -1605,29 +1639,54 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
         AnalysisStage::ALL.to_vec(),
         "a request for `Ssa` schedules every earlier phase"
     );
-    assert!(
+    // The scheduled phases of this build really run in table order: `raw_facts` reads the
+    // driver method's class definition and decodes its body, `raw_cfg` builds the raw graph
+    // over those facts, and the first phase this build does not implement fails where the
+    // pipeline reaches it — the phases behind it stay `NotPerformed` rather than looking
+    // performed.
+    assert_eq!(
         report
             .stages
             .iter()
-            .all(|stage| stage.state == StageState::NotPerformed),
-        "nothing ran, so no stage may claim more"
+            .map(|stage| stage.state.clone())
+            .collect::<Vec<_>>(),
+        vec![
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Failed {
+                code: "ir_pass_not_implemented".to_string()
+            },
+            StageState::NotPerformed,
+            StageState::NotPerformed,
+            StageState::NotPerformed,
+        ]
     );
     assert_eq!(report.method, fixture.method);
     assert_eq!(report.loader, loader("app"));
     assert!(report.origin.is_empty());
-    assert!(
-        report.reads.is_empty(),
-        "no phase ran, so no class header was demanded and none was read"
+    assert_eq!(
+        report.reads,
+        vec![HeaderRead {
+            loader: loader("app"),
+            definition: fixture.definition.clone(),
+            reason: ReadReason::DriverMethodBody,
+        }],
+        "the one header read of a method-analysis request is the driver method's own class"
     );
-    assert_eq!(report.coverage, Coverage::not_requested());
+    assert_eq!(
+        report.coverage.artifact_structural.state,
+        CoverageState::CompleteWithinSchema,
+        "the whole body was decoded, so the BCI plane is complete"
+    );
     assert_eq!(
         unsupported_code(&report.execution),
-        Some("method_analysis_not_implemented")
+        Some("ir_pass_not_implemented")
     );
     assert_eq!(
         diagnostic_codes(&report.diagnostics),
-        vec!["method_analysis_not_implemented"]
+        vec!["ir_pass_not_implemented"]
     );
+    assert_eq!(report.body, MethodBodyState::Present);
     assert_eq!(
         report.environment_identity,
         EnvironmentIdentity {
@@ -1637,6 +1696,63 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
             content: vec![fixture.snapshot.id().clone()],
         }
     );
+    // The counted dimensions 3.3 uses are real now: one header read, one body attempt, and the
+    // IR items and steps of the raw graph. This fixture's body is straight-line code with a
+    // handler no instruction of its protected range can enter, so its raw graph really holds
+    // no edge; `tests/p2_cfg.rs` pins the edge charge on a body that has transfers.
+    let usage = budget.usage();
+    assert_eq!(usage.class_headers, 1);
+    assert_eq!(usage.method_bodies, 1);
+    assert!(
+        usage.code_bytes > 0,
+        "the decoded instructions were charged"
+    );
+    assert!(usage.ir_items > 0, "the raw graph's items were charged");
+    assert_eq!(usage.ir_edges, 0, "this body holds no transfer to charge");
+    assert!(usage.analysis_steps > 0, "the raw pass ran a worklist");
+
+    // A zero budget stops the first pass at its first charge: the prefix semantics of a budget
+    // stop, where nothing was read and no phase behind the stop ran.
+    let mut budget = Budget::new(zero_work_limits());
+    let report = Engine::new()
+        .analyze_method(
+            std::slice::from_ref(&fixture.snapshot),
+            &request,
+            &mut budget,
+        )
+        .expect("a legal request is answered, not raised");
+    assert_eq!(
+        report
+            .stages
+            .iter()
+            .map(|stage| stage.state.clone())
+            .collect::<Vec<_>>(),
+        vec![
+            StageState::Partial,
+            StageState::NotPerformed,
+            StageState::NotPerformed,
+            StageState::NotPerformed,
+            StageState::NotPerformed,
+            StageState::NotPerformed,
+        ],
+        "the pass that was refused is partial and the phases behind it never ran"
+    );
+    assert!(report.reads.is_empty(), "a refused charge records no read");
+    assert_eq!(report.body, MethodBodyState::NotInspected);
+    assert_eq!(report.coverage, Coverage::not_requested());
+    assert_eq!(
+        report.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::ClassHeaders,
+            },
+            usage: budget.usage(),
+        }
+    );
+    assert_eq!(
+        diagnostic_codes(&report.diagnostics),
+        vec!["budget_exceeded_class_headers"]
+    );
     assert!(counted_usage_is_zero(&budget.usage()));
 
     // A single requested phase does not schedule the phases after it.
@@ -1644,7 +1760,7 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
         .analyze_method(
             std::slice::from_ref(&fixture.snapshot),
             &analysis_request(&fixture, environment, vec![AnalysisStage::Frame]),
-            &mut Budget::new(zero_limits()),
+            &mut Budget::new(analysis_limits()),
         )
         .expect("a legal request is answered, not raised");
     assert_eq!(report.requested_stages, vec![AnalysisStage::Frame]);
@@ -1669,40 +1785,67 @@ fn an_unread_body_is_not_inspected_never_a_body_fact() {
     let fixture = fixture();
     let environment = healthy_environment(&fixture);
 
-    // The slice reads no class byte, so it cannot tell a real body from an abstract one:
-    // every method identity reports `NotInspected`. The second identity does not exist in
-    // the fixture at all, which is the sharpest form of the same statement — a request that
-    // was never resolved must not come back with a body fact.
+    // A budget that refuses the first charge stops the run before any byte was read, so the
+    // report states no body fact at all: `NotInspected` is neither `Present` nor a
+    // `DeclaredWithoutBody` claim, and it is also what a stopped read leaves behind.
+    let mut budget = Budget::new(zero_work_limits());
+    let report = Engine::new()
+        .analyze_method(
+            std::slice::from_ref(&fixture.snapshot),
+            &analysis_request(&fixture, environment.clone(), vec![AnalysisStage::RawFacts]),
+            &mut budget,
+        )
+        .expect("a legal request is answered, not raised");
+    assert_eq!(report.body, MethodBodyState::NotInspected);
+    assert!(report.reads.is_empty());
+    assert!(counted_usage_is_zero(&budget.usage()));
+
+    // The fixture declares no method `run()V`: the class definition is read — that read is a
+    // fact and is recorded — but there is no body to state, so the body plane stays
+    // `NotInspected` and the member lookup's own code is the failure.
     let absent = method_id(&fixture.definition, b"run", b"()V");
-    for method in [fixture.method.clone(), absent] {
-        let request = MethodAnalysisRequest {
-            environment: environment.clone(),
-            method: method.clone(),
-            stages: vec![AnalysisStage::RawFacts],
-        };
-        let mut budget = Budget::new(zero_limits());
-        let report = Engine::new()
-            .analyze_method(
-                std::slice::from_ref(&fixture.snapshot),
-                &request,
-                &mut budget,
-            )
-            .expect("a legal request is answered, not raised");
-        assert_eq!(
-            report.body,
-            MethodBodyState::NotInspected,
-            "{method:?} was never located or read"
-        );
-        assert!(!matches!(
-            report.body,
-            MethodBodyState::Present | MethodBodyState::DeclaredWithoutBody { .. }
-        ));
-        assert_eq!(
-            unsupported_code(&report.execution),
-            Some("method_analysis_not_implemented")
-        );
-        assert!(counted_usage_is_zero(&budget.usage()));
-    }
+    let request = MethodAnalysisRequest {
+        environment,
+        method: absent.clone(),
+        stages: vec![AnalysisStage::RawFacts],
+    };
+    let mut budget = Budget::new(analysis_limits());
+    let report = Engine::new()
+        .analyze_method(
+            std::slice::from_ref(&fixture.snapshot),
+            &request,
+            &mut budget,
+        )
+        .expect("a legal request is answered, not raised");
+    assert_eq!(
+        report.body,
+        MethodBodyState::NotInspected,
+        "{absent:?} has no declared body to state"
+    );
+    assert!(!matches!(
+        report.body,
+        MethodBodyState::Present | MethodBodyState::DeclaredWithoutBody { .. }
+    ));
+    assert_eq!(report.stages.len(), 1);
+    assert_eq!(
+        report.stages[0].state,
+        StageState::Failed {
+            code: "classfile_method_not_found".to_string()
+        }
+    );
+    assert_eq!(
+        failure_code(&report.execution),
+        Some("classfile_method_not_found")
+    );
+    assert_eq!(report.reads.len(), 1, "the header read really happened");
+    assert_eq!(report.coverage, Coverage::not_requested());
+    assert_eq!(budget.usage().class_headers, 1);
+    assert_eq!(
+        budget.usage().method_bodies,
+        0,
+        "a member that is not declared has no body to attempt"
+    );
+    assert_eq!(budget.usage().ir_items, 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -1717,7 +1860,7 @@ fn result_planes_are_reported_side_by_side_and_never_inferred() {
         .analyze_method(
             std::slice::from_ref(&fixture.snapshot),
             &analysis_request(&fixture, environment, vec![AnalysisStage::Ssa]),
-            &mut Budget::new(zero_limits()),
+            &mut Budget::new(analysis_limits()),
         )
         .expect("a legal request is answered, not raised");
 
@@ -1728,48 +1871,51 @@ fn result_planes_are_reported_side_by_side_and_never_inferred() {
     assert_eq!(report.verification, VerificationStatus::NotPerformed);
     assert_eq!(report.quality, Quality::Fallback);
     assert_eq!(report.semantic_validation, SemanticValidation::Unproven);
-    // Nothing was located or read, so the body plane states no body fact: `NotInspected` is
-    // neither `Present` nor `DeclaredWithoutBody`.
-    assert_eq!(report.body, MethodBodyState::NotInspected);
-    assert_ne!(report.body, MethodBodyState::Present);
+    // The body plane states what was located: this run really read the member's body, and
+    // `Present` says nothing about how much of the pipeline ran.
+    assert_eq!(report.body, MethodBodyState::Present);
+    assert_ne!(report.body, MethodBodyState::NotInspected);
     assert!(!matches!(
         report.body,
         MethodBodyState::DeclaredWithoutBody { .. }
     ));
-    // `quality` is a property of a produced artifact; with nothing produced it only means
-    // "not Conservative" and must not be read as a performed fallback recovery.
+    // `quality` is a property of a produced artifact; it only means "not Conservative" and
+    // must not be read as a performed fallback recovery.
     assert!(
         !matches!(report.execution, ExecutionReport::Complete { .. }),
         "a non-Conservative quality does not mean a completed run"
     );
 
-    // Capability, range and termination are separate planes: the capability did not run,
-    // the range is not requested, and the termination is an unsupported capability, which
-    // is none of the three product planes above.
+    // Capability, range, termination and verification are separate planes: two phases really
+    // completed and the body was fully covered, while a later phase this build does not
+    // implement ends the run as an unsupported capability — and none of that says anything
+    // about the product planes above.
     let ExecutionReport::Failed {
         reason: TerminationReason::Unsupported { code },
         ..
     } = &report.execution
     else {
-        panic!("an unimplemented capability ends as `Failed {{ Unsupported }}`");
+        panic!("the first unimplemented phase ends as `Failed {{ Unsupported }}`");
     };
-    assert_eq!(code, "method_analysis_not_implemented");
-    assert_eq!(report.coverage, Coverage::not_requested());
-    assert!(
+    assert_eq!(code, "ir_pass_not_implemented");
+    assert_eq!(
         report
             .stages
             .iter()
-            .all(|stage| stage.state != StageState::Completed),
-        "no stage is complete while nothing ran"
+            .filter(|stage| stage.state == StageState::Completed)
+            .count(),
+        2,
+        "`raw_facts` and `raw_cfg` completed"
+    );
+    assert_eq!(
+        report.coverage.artifact_structural.state,
+        CoverageState::CompleteWithinSchema,
+        "the bytecode range is complete even though a later phase is not implemented"
     );
 
-    // The planes do not imply one another: the bytecode representation does not make the
-    // range complete, an unsupported capability does not become a budget stop, and missing
-    // verification does not grant semantic evidence.
-    assert_ne!(
-        report.coverage.artifact_structural.state,
-        CoverageState::CompleteWithinSchema
-    );
+    // The planes do not imply one another: a complete bytecode range does not make the
+    // runtime plane complete, an unsupported capability does not become a budget stop, and a
+    // present body does not grant semantic evidence or verification.
     assert_ne!(
         report.coverage.runtime_resolution.state,
         CoverageState::Partial
@@ -1778,6 +1924,7 @@ fn result_planes_are_reported_side_by_side_and_never_inferred() {
         report.semantic_validation,
         SemanticValidation::LocalInvariants
     );
+    assert_eq!(report.verification, VerificationStatus::NotPerformed);
     assert_ne!(report.quality, Quality::Conservative);
     assert!(
         !matches!(
@@ -2410,13 +2557,24 @@ const A17_MIN_SOURCE_LEN: usize = 1_000;
 /// The bare `resolver::` / `environment::` / `ir::` forms close the crate-root re-export
 /// route (`use crate::ResolutionReport as _;` keeps the type name instead) and the
 /// `use crate::{…}` group form.
-const A17_MODULE_TOKENS: [&str; 6] = [
+///
+/// `cfg` (the raw CFG constructor of 3.3) and `passes` (the pass table) are P2 modules the
+/// physical entries must not reach either, and the derived type table does not cover them:
+/// `use crate::cfg::raw_cfg;` names a builder whose own types live below the module and whose
+/// name no declaration in the three derived modules contains, so the module path is the only
+/// signal. The `super::`-relative spelling of the same reach (`super::cfg::…` from a
+/// `src/xref/` module is the crate root) is covered by the bare forms.
+const A17_MODULE_TOKENS: [&str; 10] = [
     "crate::environment",
     "crate::resolver",
     "crate::ir",
+    "crate::cfg",
+    "crate::passes",
     "environment::",
     "resolver::",
     "ir::",
+    "cfg::",
+    "passes::",
 ];
 
 /// Import forms that reach a whole P2 module under a name of the caller's choosing.
@@ -2425,7 +2583,22 @@ const A17_MODULE_TOKENS: [&str; 6] = [
 /// `use crate::{resolver as r};` renames the module, so neither the path token nor the type
 /// name is guaranteed to appear next to the other: the glob and the `… as …` group form are
 /// matched on their own.
-const A17_IMPORT_TOKENS: [&str; 4] = ["crate::*", "environment as", "resolver as", "ir as"];
+///
+/// The graph dependency is guarded here as well (3.5's A17 obligation): `petgraph::` covers
+/// `use petgraph::algo::…` and every fully qualified path alike, and the two other forms cover
+/// the alias and the `extern crate` spelling of the same reach. The raw CFG (3.3) is the
+/// dependency's only consumer, and it is not a physical entry point: letting `query`/`xref`
+/// reach a graph algorithm would be a new construction path in X0/X1 that no budget accounts
+/// for.
+const A17_IMPORT_TOKENS: [&str; 7] = [
+    "crate::*",
+    "environment as",
+    "resolver as",
+    "ir as",
+    "petgraph::",
+    "petgraph as",
+    "extern crate petgraph",
+];
 
 /// P2 type names that the P2 modules do not declare themselves.
 ///
@@ -2849,6 +3022,50 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
             ],
             offenders: &["src/xref/clean.rs"],
             evidence: &["ir as", "StageState"],
+            tiny_files: &[],
+        },
+        Case {
+            // The graph dependency is reached through an ordinary `use`, a renamed alias or
+            // the `extern crate` spelling; none of the P2 module tokens fires, so only the
+            // petgraph tokens added with 3.3's first consumer can catch these.
+            name: "petgraph_import",
+            files: &[
+                (
+                    "src/query.rs",
+                    "use petgraph::algo::kosaraju_scc;\nfn probe() {}\n",
+                ),
+                ("src/xref/mod.rs", "mod clean;\n"),
+                (
+                    "src/xref/clean.rs",
+                    "use petgraph as graphs;\nfn probe() {}\n",
+                ),
+                ("src/xref/tiny.rs", "extern crate petgraph;\n"),
+            ],
+            offenders: &["src/query.rs", "src/xref/clean.rs", "src/xref/tiny.rs"],
+            evidence: &["petgraph::", "petgraph as", "extern crate petgraph"],
+            tiny_files: &[],
+        },
+        Case {
+            // 3.3 added the raw CFG (`cfg`) and the pass table (`passes`). `use
+            // crate::cfg::raw_cfg;` is a construction path that names no derived type, so
+            // only the module-path tokens can catch these three spellings: the builder
+            // through its module path, the table through its module path, and the module
+            // under an alias of the caller's choosing.
+            name: "cfg_and_passes_module_paths",
+            files: &[
+                ("src/query.rs", "use crate::cfg::raw_cfg;\nfn probe() {}\n"),
+                ("src/xref/mod.rs", "mod clean;\nmod tiny;\n"),
+                (
+                    "src/xref/clean.rs",
+                    "use crate::passes::PASSES;\nfn probe() {}\n",
+                ),
+                (
+                    "src/xref/tiny.rs",
+                    "use crate::cfg as graphs_cfg;\nfn probe() {}\n",
+                ),
+            ],
+            offenders: &["src/query.rs", "src/xref/clean.rs", "src/xref/tiny.rs"],
+            evidence: &["crate::cfg", "crate::passes", "cfg::", "passes::"],
             tiny_files: &[],
         },
         Case {

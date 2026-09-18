@@ -6,6 +6,7 @@
 
 pub mod artifact;
 pub mod budget;
+mod cfg;
 pub mod classfile;
 mod dispatch;
 pub mod engine;

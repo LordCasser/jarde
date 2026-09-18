@@ -10,16 +10,19 @@
 //!    selected position, the header read it caused and the demand that caused it,
 //! 3. `Engine::resolve_symbol` on a member symbol, which the member slice (2.3) resolves for
 //!    real: the report names the declaration the search selected, the class header it was read
-//!    from and the reason for that read; and `Engine::declaration_references`, which the
+//!    from and the reason for that read; `Engine::declaration_references`, which the
 //!    declaration-query slice (2.4) performs for real: it scans the fixture's structure
 //!    consumers for candidate use sites of the declared member shape, resolves each candidate's
 //!    owner, and reports the candidate whose owner the environment does not provide as
 //!    *unresolved* — with its use site and a partial resolution coverage — instead of calling it
-//!    excluded. `Engine::analyze_method` still answers `NotPerformed` / `Failed { Unsupported }`
-//!    / `NotRequested` and lists the scheduled method-analysis phases as `NotPerformed`,
+//!    excluded; and `Engine::analyze_method`, which the raw-CFG slice (3.3) performs for real as
+//!    far as this build goes: it reads the driver method's class definition and body, builds the
+//!    raw graph over the decoded instructions, and reports the two phases that completed plus
+//!    the first phase this build does not implement,
 //! 4. the product planes of one report (`representation`, `quality`, `syntax_status`,
 //!    `compile_status`, `semantic_validation`, `verification`, `body`) printed side by
-//!    side; the body stays `NotInspected` because nothing was located or read, and
+//!    side; the body is `Present` because the analysis really located and read it, the
+//!    `Bytecode`/`NotJava`/`NotAttempted`/`NotPerformed` baseline is the P2 delivery, and
 //!    `quality = Fallback` is printed with it only as "not Conservative", not as a claim
 //!    that a fallback recovery happened,
 //! 5. a second environment whose caller domain declares a parent that no domain binds:
@@ -37,7 +40,7 @@ use jarde::{
     MultiReleasePolicy, PhysicalDefinitionId, PhysicalMethodId, PhysicalScope, PhysicalVariant,
     PhysicalView, ProviderId, ReadReason, ReferenceUse, ResolutionAnalysis, ResolutionEnvironment,
     ResolutionRequest, ResolutionState, ResolvedMemberRef, RuntimeProfile, RuntimeUncertainty,
-    RuntimeView, SnapshotId, SymbolRef, TerminationReason, UsageSnapshot,
+    RuntimeView, SnapshotId, StageState, SymbolRef, TerminationReason, UsageSnapshot,
 };
 use std::env;
 use std::path::{Path, PathBuf};
@@ -58,13 +61,17 @@ fn limits() -> Limits {
         // charges one analysis step per class it processes and one dependency depth per layer
         // above the class it starts from. The steps must be funded for any member request; the
         // depth only has to be for a search that climbs (this example's declaration sits in the
-        // class the reference names, which is depth 0 and needs no allowance at all). Every
-        // other P2 dimension stays at the fail-closed default, because this example performs no
-        // IR work.
+        // class the reference names, which is depth 0 and needs no allowance at all).
         class_headers: 1_000,
         dependency_depth: 16,
         analysis_steps: 100_000,
         nested_depth: 8,
+        // The one method-analysis request reads one header and one body, and the raw graph it
+        // builds charges IR items, edges and worklist steps (3.3). Every other P2 dimension
+        // stays at the fail-closed default.
+        method_bodies: 10,
+        ir_items: 1 << 20,
+        ir_edges: 1 << 20,
         elapsed_millis: 30_000,
         ..Limits::default()
     }
@@ -396,9 +403,20 @@ fn run(path: PathBuf) -> jarde::Result<()> {
         report.loader.0,
         report.origin.members.len(),
     );
-    // No class byte was read, so no body fact is stated, and `quality = Fallback` only
-    // means "not Conservative": it is not evidence that a fallback recovery ran.
-    assert_eq!(report.body, MethodBodyState::NotInspected);
+    // The body was located and read by this run, and `quality = Fallback` only means "not
+    // Conservative": it is not evidence that a fallback recovery ran. The two phases this
+    // build implements completed and the first one it does not implement fails, so the run
+    // ends as the unsupported capability it is — never as a completed pipeline.
+    assert_eq!(report.body, MethodBodyState::Present);
+    assert_eq!(
+        report
+            .stages
+            .iter()
+            .filter(|stage| matches!(stage.state, StageState::Completed))
+            .count(),
+        2,
+        "`raw_facts` and `raw_cfg` completed"
+    );
     assert!(matches!(
         report.execution,
         ExecutionReport::Failed {
@@ -406,6 +424,12 @@ fn run(path: PathBuf) -> jarde::Result<()> {
             ..
         }
     ));
+    assert_eq!(report.reads.len(), 1);
+    assert_eq!(
+        report.reads[0].reason,
+        ReadReason::DriverMethodBody,
+        "the driver method's own class definition is the header this request read"
+    );
     println!(
         "analyze_method: coverage=({:?}, {:?}, {:?}) execution={:?} diagnostics={:?}",
         report.coverage.artifact_structural.state,
