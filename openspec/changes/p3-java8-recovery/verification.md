@@ -603,3 +603,24 @@ V1 uses = [bci 4]（返回的正是加载的旧值）；V2 无人使用
 
 `MethodParameters` 未读（方法级属性，不在 `Code` 条目内，读它需为一类新输入新增 `AttributeBytes` 计费——按派单条件不做「顺手改口径」）；LVT 的 `descriptor` 未用于类型；LVT range 未作锚点；`LocalDebugTable::Unstated`（声明了但内容解不出）无 fixture；**`access_flags` 已进载荷并交给 `bridge@1`，但仓库无声明 `ACC_BRIDGE` 的样例**，故「门面 → bridge 规则」无端到端 fixture。
 **另发现一处既有缺口（非本片引入）**：`if` 的 else 臂为空、跳转目标就是 join 的形状会被 `region.rs` 判成 `arms_do_not_meet` + `uncovered_blocks` → 整段引用；fixture 因此改成两臂都非空。记录在此，不在本片范围。
+
+## 2026-09-19 附加发现（父级独立验收 3.1 时测得，**不在复核的 R1–R4 之列**）
+
+**P3-R5 · 候选：`boolean` 参数被写成整数比较，产物按方法自己的签名无法编译。**
+
+- **复现**（父级用提交的 fixture 自行执行）：`tests/fixtures/p3-scope/v8-debug/Scope.class` 的 `scope(Z)I` 经公开入口产出
+  ```java
+  int x;
+  if (b != 0) { x = 1; } else { x = 2; }
+  return x;
+  ```
+  把这段原样包成 `public static int scope(boolean b)` 后 `javac --release 8 -g:none` **报错**：
+  ```
+  Gen.java:4: 错误: 不可比较的类型: boolean和int
+          if (b != 0) {
+  ```
+  包成 `int b` 则编译通过且执行同值（`b=1→1`、`b=0→2`）——**即当前产物只对 int 型原语成立**。
+- **为什么不算 R3 的失败**：复核自己就排除过该项（其 R3 原文：「即便给测试包装提供 `int local0` 以**单独排除条件类型问题**」），本片正是按同一口径验收的；R3 的作用域缺陷**确实已修**。
+- **但它是什么**：产物在方法**自己的签名**下无法编译，而报告此时仍写 `representation=Java` / `syntax_status=Checked`（若 `Checked` 由本层断言）——即**声称了比证据更强的可编译性**。`boolean`/`byte`/`char`/`short` 四个 int 型原语在 frames 里同形，故类型信息只能来自**描述符或 LVT 的 descriptor**，而两者当前都未用于参数类型（3.1 的如实边界）。
+- **建议归属**：**3.2 之后、3.3 之前**（3.3 要求「把 P3-R1/R2/R3 纳入可重放的实际 Java 8 编译/执行对照」，本项天然属于同一对照组）。两条可行方向：①用**同次运行的声明事实**（3.1 已把 `descriptor` 放进载荷）给参数定型，`boolean` 参数写 `if (b)`；②无法定型时**拒绝**（`syntax_status` 不得声称 `Checked`）。
+- **未擅自实施**：用户的 tasks 未列本项，且 3.1 的边界是用户复核时明确排除的；父级在此**只记录证据**，不改 tasks，等复核裁决。
