@@ -134,17 +134,95 @@ pub enum PreviewMarker {
     Present,
 }
 
+/// The output level an artifact's modern facts are asked to be consumed at.
+///
+/// A level is a *request*, not a property of the artifact: a class compiled at major 61 is asked to
+/// be consumed by a Java 8 toolchain, and the answer is stated over the facts that class really
+/// carries — never over the compiler that produced it and never over its own `major_version`.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum OutputLevel {
+    /// Java 8: the level the recovery layer this reader feeds targets.
+    Java8,
+}
+
+/// One modern construct a target output level either represents or cannot.
+///
+/// The three are exactly the constructs P4 design decision 5 names for the Java 8 question: record
+/// components, sealed permitted subclasses and a `StringConcatFactory` `invokedynamic` site. Module,
+/// nestmate and constant-dynamic facts are Java 9+ structures too, and this vocabulary deliberately
+/// makes no claim about them: a feature is listed here only because the pass that reports it decides
+/// the output-level answer for it, and inventing a conflict for a construct no pass evaluates would
+/// report a verdict nobody produced.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ModernFeature {
+    /// The `Record` attribute and its components (JVMS 4.7.30).
+    RecordComponents,
+    /// The `PermittedSubclasses` attribute of a sealed class (JVMS 4.7.31).
+    PermittedSubclasses,
+    /// A `java.lang.invoke.StringConcatFactory` `invokedynamic` site.
+    StringConcat,
+}
+
+/// Where one modern fact was read from, kept so the fact's **modern origin** survives an
+/// output-level conflict (P4 design decision 5): the fallback answer names the bytes the fact came
+/// from, and those bytes are never replaced by an equivalent-looking Java 8 construct.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum ModernOrigin {
+    /// A class-level `attribute_info`: the raw name, the `attribute_name_index` that spells it, the
+    /// class-file range of the whole entry and the range of its content.
+    ClassAttribute {
+        name: JvmBytes,
+        name_index: u16,
+        span: ByteSpan,
+        content_span: ByteSpan,
+    },
+    /// The constant-pool entry the construct lives in, by 1-based index, with its own span.
+    ConstantPoolEntry { index: u16, span: ByteSpan },
+}
+
+/// One modern fact a target output level cannot represent.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub struct OutputLevelConflict {
+    pub feature: ModernFeature,
+    pub level: OutputLevel,
+    /// The lowest `major_version` whose release defines the construct, taken from the release-bound
+    /// registry rule the fact was read under.
+    pub since: u16,
+    /// The JVMS section that rule was read from.
+    pub source: String,
+    /// The bytes the fact came from. The fact itself is still published by the pass that read it:
+    /// the conflict is reported, not resolved by rewriting the construct.
+    pub origin: ModernOrigin,
+}
+
 /// Whether an output-level evaluation ran over this artifact, and what it concluded.
 ///
-/// `NotEvaluated` is the only variant this layer produces: classifying a version and reading a
-/// structure is not a statement about what an output level can represent. The Java 8 output level's
-/// conflict and fallback for record, sealed and modern concat output (P4 design decision 5) is
-/// stated by the pass that really evaluates it over the modern facts; until then this plane must
-/// not be read as "the artifact survives the requested output level".
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+/// `NotEvaluated` is the only variant the **header** plane produces: classifying a version and
+/// reading a structure is not a statement about what an output level can represent. `Representable`
+/// and `Conflict` are produced by the pass that really evaluates the questions over the modern
+/// facts ([`crate::modern::modern_facts`], P4 1.2), and `Conflict` is the shape design decision 5
+/// asks for: the Java 8 output level returns the conflict **and** keeps each conflicting fact as a
+/// fallback that still names its modern origin, instead of hiding a syntax transformation behind an
+/// equivalent-looking downgrade.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum OutputLevelStatus {
     NotEvaluated,
+    /// The evaluation ran over the artifact's modern facts and every one of them has an equivalent
+    /// at this level.
+    Representable {
+        level: OutputLevel,
+    },
+    /// The evaluation ran and at least one modern fact has no equivalent at this level. Each
+    /// conflict names the fact's origin, the release that requires the construct and the JVMS
+    /// section that release rule was read from.
+    Conflict {
+        level: OutputLevel,
+        conflicts: Vec<OutputLevelConflict>,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -1568,11 +1646,11 @@ fn checked_span(bytes: &[u8], start: u64, length: u64) -> Result<ByteSpan> {
     Ok(ByteSpan::new(start, length))
 }
 
-fn charge_item(budget: &mut Budget) -> Result<()> {
+pub(crate) fn charge_item(budget: &mut Budget) -> Result<()> {
     budget.charge(CountedBudgetDimension::ResultItems, 1)
 }
 
-fn to_u64(value: usize) -> Result<u64> {
+pub(crate) fn to_u64(value: usize) -> Result<u64> {
     u64::try_from(value).map_err(|_| {
         Error::invalid_input("classfile_size_overflow", "classfile size does not fit u64")
     })
@@ -1660,7 +1738,7 @@ fn read_u32(bytes: &[u8], offset: usize) -> Result<u32> {
     Ok(u32::from_be_bytes(value))
 }
 
-fn read_u16(bytes: &[u8], offset: usize) -> Result<u16> {
+pub(crate) fn read_u16(bytes: &[u8], offset: usize) -> Result<u16> {
     let end = offset.checked_add(2).ok_or_else(cp_guard_overflow)?;
     let pair: [u8; 2] = bytes
         .get(offset..end)
@@ -2103,7 +2181,7 @@ pub fn attribute_slice<'a>(
 
 /// `6 + content length` of one attribute entry: the unit one pass over an
 /// `attribute_info` is billed in.
-fn attribute_shell_length(content_span: &ByteSpan) -> Result<u64> {
+pub(crate) fn attribute_shell_length(content_span: &ByteSpan) -> Result<u64> {
     content_span
         .length
         .checked_add(ATTRIBUTE_HEADER_LENGTH as u64)
@@ -2484,7 +2562,8 @@ impl<'a> DescriptorReader<'a> {
 // Nested attributes
 // ---------------------------------------------------------------------------
 
-/// One nested `attribute_info` inside a `Code` attribute.
+/// One nested `attribute_info`: inside a `Code` attribute or inside one `record_component_info`
+/// (JVMS 4.7.30).
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NestedAttributeFact {
@@ -2616,7 +2695,7 @@ pub fn code_nested_attributes(
 }
 
 /// Class-file offset of one position inside an attribute content.
-fn entry_offset(content_span: &ByteSpan, position: usize) -> Result<u64> {
+pub(crate) fn entry_offset(content_span: &ByteSpan, position: usize) -> Result<u64> {
     let position = u64::try_from(position).map_err(|_| {
         Error::invalid_input(
             "classfile_span_overflow",
@@ -4606,20 +4685,27 @@ fn constant_pool_layout_mismatch() -> Error {
 /// A read past the end and unread trailing bytes both stop with
 /// `classfile_invalid_attribute_content`: an attribute whose declared structure
 /// does not match its content is malformed, not partially usable.
-struct AttributeReader<'a> {
+/// A bounded cursor over one attribute's content: the same reader every attribute fact in this
+/// module and the modern-fact pass in [`crate::modern`] reads its fields with.
+pub(crate) struct AttributeReader<'a> {
     content: &'a [u8],
     position: usize,
 }
 
 impl<'a> AttributeReader<'a> {
-    const fn new(content: &'a [u8]) -> Self {
+    pub(crate) const fn new(content: &'a [u8]) -> Self {
         Self {
             content,
             position: 0,
         }
     }
 
-    fn u16(&mut self) -> Result<u16> {
+    /// Bytes read so far, in attribute-content coordinates.
+    pub(crate) const fn position(&self) -> usize {
+        self.position
+    }
+
+    pub(crate) fn u16(&mut self) -> Result<u16> {
         let start = self.position;
         let end = offset_plus(start, 2)?;
         let pair: [u8; 2] = self
@@ -4632,7 +4718,7 @@ impl<'a> AttributeReader<'a> {
         Ok(u16::from_be_bytes(pair))
     }
 
-    fn u32(&mut self) -> Result<u32> {
+    pub(crate) fn u32(&mut self) -> Result<u32> {
         let start = self.position;
         let end = offset_plus(start, 4)?;
         let value: [u8; 4] = self
@@ -4645,7 +4731,7 @@ impl<'a> AttributeReader<'a> {
         Ok(u32::from_be_bytes(value))
     }
 
-    fn skip(&mut self, length: usize) -> Result<()> {
+    pub(crate) fn skip(&mut self, length: usize) -> Result<()> {
         let end = offset_plus(self.position, length)?;
         if end > self.content.len() {
             return Err(attribute_eoi(self.position));
@@ -4654,7 +4740,7 @@ impl<'a> AttributeReader<'a> {
         Ok(())
     }
 
-    fn expect_end(&self) -> Result<()> {
+    pub(crate) fn expect_end(&self) -> Result<()> {
         if self.position != self.content.len() {
             return Err(Error::invalid_input(
                 "classfile_invalid_attribute_content",
@@ -4675,7 +4761,7 @@ fn attribute_eoi(position: usize) -> Error {
     )
 }
 
-fn ensure_unique(seen: &mut Vec<&'static str>, name: &'static str) -> Result<()> {
+pub(crate) fn ensure_unique(seen: &mut Vec<&'static str>, name: &'static str) -> Result<()> {
     if seen.contains(&name) {
         return Err(Error::invalid_input(
             "classfile_duplicate_attribute",
@@ -4686,7 +4772,7 @@ fn ensure_unique(seen: &mut Vec<&'static str>, name: &'static str) -> Result<()>
     Ok(())
 }
 
-fn read_class_name_list(
+pub(crate) fn read_class_name_list(
     reader: &mut AttributeReader<'_>,
     pool: &[CpEntryFacts],
     budget: &Budget,
@@ -9600,10 +9686,14 @@ mod tests {
     /// rules must not reject real code, and real historical subroutines must go through
     /// the same target checks.
     ///
-    /// The counts are the measured population — 26 classes, 116 bodies, 44 exception table
+    /// The counts are the measured population — 37 classes, 138 bodies, 44 exception table
     /// records, 86 branch/switch targets, 8 `jsr`/`jsr_w` instructions (the ECJ 4.6.1 45–48
-    /// `finally` codegen) — so a fixture that silently stops being visited, or a body that stops
-    /// decoding, fails here instead of quietly shrinking the sweep. The one count the P3 samples do
+    /// `finally` codegen; neither the P3 samples nor the P4 modern samples contain a
+    /// subroutine) — so a fixture that silently stops being visited, or a body that stops
+    /// decoding, fails here instead of quietly shrinking the sweep. The P4 modern samples raise
+    /// the first two counts by their own files and bodies and leave the last three where they
+    /// were, which is also how the sweep states that a javac 23.0.1 class at major 60 or 61 is
+    /// read by the same structural path as every earlier fixture. The one count the P3 samples do
     /// not move is the last: `p3-local-rewrite`, `p3-scope`, `p3-handlers` and `p3-corpus` are
     /// javac 23.0.1 output, which has no subroutines at all, so every `jsr` in the sweep is the ECJ
     /// corpus's.
@@ -9667,7 +9757,7 @@ mod tests {
                 branch_targets,
                 subroutines
             ),
-            (26, 116, 44, 86, 8),
+            (37, 138, 44, 86, 8),
             "fixture population changed: re-measure these counts"
         );
     }

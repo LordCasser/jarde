@@ -18,6 +18,7 @@ pub mod classfile;
 pub mod error;
 pub mod inspect;
 pub mod model;
+pub mod modern;
 pub mod multi_release;
 pub mod release_registry;
 #[cfg(any(test, feature = "test-support"))]

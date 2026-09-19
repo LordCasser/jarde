@@ -88,12 +88,23 @@ pub use jarde_reader::classfile::{
     DialectValidationScope, EnclosingMethodFacts, EntryDescriptor, ExceptionHandlerFact,
     HeaderInspection, HeaderStructuralRead, ImmediateValue, InnerClassFacts, InspectionMode,
     InstructionFact, InstructionOperands, Java8RuntimeCompatibility, LocalOperand, MemberHeader,
-    MethodCodeFacts, MethodSelector, ModuleFacts, NestedAttributeFact, OutputLevelStatus,
-    PreviewMarker, ProvidesFacts, SwitchOperands, VerificationStatus, VersionCapability,
-    VersionDialectSupport, VersionRuleStatus, attribute_content, attribute_facts, attribute_slice,
-    bootstrap_methods, class_facts, code_nested_attributes, cp_class_name, cp_entry, cp_utf8,
-    descriptor_types, entry_descriptor, inspect_header, inspect_method_bytecode,
-    method_code_coverage, method_code_facts, push_unique,
+    MethodCodeFacts, MethodSelector, ModernFeature, ModernOrigin, ModuleFacts, NestedAttributeFact,
+    OutputLevel, OutputLevelConflict, OutputLevelStatus, PreviewMarker, ProvidesFacts,
+    SwitchOperands, VerificationStatus, VersionCapability, VersionDialectSupport,
+    VersionRuleStatus, attribute_content, attribute_facts, attribute_slice, bootstrap_methods,
+    class_facts, code_nested_attributes, cp_class_name, cp_entry, cp_utf8, descriptor_types,
+    entry_descriptor, inspect_header, inspect_method_bytecode, method_code_coverage,
+    method_code_facts, push_unique,
+};
+// The modern structural facts (P4 1.2) cross the same way `classfile`'s names do: the fact types and
+// the one entry point that reads them, never the module path. What a caller gets is record
+// components, the deferred constant-dynamic graph, the modern concat sites and the output-level
+// answer over them, each carrying the class-file origin it was read from.
+pub use jarde_reader::modern::{
+    ConcatSite, ConcatStrategy, CondyBudget, CondyCycle, CondyEdge, CondyEdgeKind, CondyGraph,
+    CondyNode, CondyNodeKind, CondyNodeRef, CondyReach, CondyStop, CondyUseSite,
+    ModernAttributePlacement, ModernFacts, PermittedSubclassesFacts, RecordComponentFacts,
+    RecordFacts, modern_facts,
 };
 pub use jarde_reader::release_registry::{
     AttributePlacement, AttributeRule, ClassfileLocation, ConstantPoolTagRule,

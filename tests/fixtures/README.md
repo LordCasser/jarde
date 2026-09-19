@@ -101,3 +101,13 @@ moved, and every exception with its suppressed exceptions. It is `#[ignore]`d so
 stays green without a JDK, and CI's `stable` job runs it with `-- --ignored`. The samples' provenance,
 the flag matrix, the recorded tables and every boundary it found are in `p3-corpus/README.md`.
 
+## P4 modern samples (`p4-modern/`)
+
+| directory | compiler / command | outputs and digests | read by |
+| --- | --- | --- | --- |
+| `p4-modern/` | `javac 23.0.1` (`/usr/bin/javac`); `--release 16` for the record and its annotation type, `--release 17` for the sealed, nest, module and concat samples, `--release 8` for the Java 8 contrast | eleven `.class` files at 52, 60 and 61, SHA-256 and byte counts in `p4-modern/README.md` | `tests/p4_modern_facts.rs` (P4 1.2 modern structural facts); the reader's own `repository_class_fixtures_validate_without_false_target_rejections` sweep also reads every one of them |
+
+The directory's `README.md` records what each output carries, and what this compiler does **not**
+produce: `javac 23.0.1` emits no `CONSTANT_Dynamic` at all, so the constant-dynamic graph's
+fixtures are hand-built in `tests/p4_modern_facts.rs` (`condy_fixture`), exactly as P1's
+`p1_xref_bootstrap.rs` builds its condy samples.
