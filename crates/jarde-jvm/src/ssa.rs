@@ -137,7 +137,7 @@ pub(crate) enum SsaOutcome {
 /// The stack is aligned at block boundaries by that depth, which the frame pass has already proven
 /// to agree between every pair of blocks that meet.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub(crate) enum Slot {
+pub enum Slot {
     Local(u16),
     Stack(u32),
 }
@@ -171,7 +171,7 @@ impl Slot {
 
 /// Identity of one SSA value: an index into the table's own list.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub(crate) struct ValueId(u32);
+pub struct ValueId(u32);
 
 impl ValueId {
     fn index(self) -> usize {
@@ -181,7 +181,7 @@ impl ValueId {
 
 /// Where one SSA value comes into existence.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum Definition {
+pub enum Definition {
     /// The method's own entry state: a parameter, `this`, or a value the caller hands the method.
     /// No instruction produces it, so it carries no origin.
     Entry { block: CanonicalBlockId, slot: Slot },
@@ -195,7 +195,7 @@ pub(crate) enum Definition {
 
 /// One use of one value.
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
-pub(crate) struct SsaUse {
+pub struct SsaUse {
     /// The block the use sits in.
     pub(crate) block: CanonicalBlockId,
     /// BCI of the using instruction, or `None` for the operand of a phi, which no instruction
@@ -203,9 +203,21 @@ pub(crate) struct SsaUse {
     pub(crate) bci: Option<u32>,
 }
 
+impl SsaUse {
+    /// The block the use sits in.
+    pub fn block(&self) -> &CanonicalBlockId {
+        &self.block
+    }
+
+    /// BCI of the using instruction, or `None` for a phi operand.
+    pub fn bci(&self) -> Option<u32> {
+        self.bci
+    }
+}
+
 /// One SSA value: its class, its definition, its origin and its uses.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SsaValue {
+pub struct SsaValue {
     /// The class 4.1 established for the slot, or the one it merged for a phi.
     pub(crate) ty: Value,
     pub(crate) def: Definition,
@@ -218,9 +230,36 @@ pub(crate) struct SsaValue {
     pub(crate) replaced_by: Option<ValueId>,
 }
 
+impl SsaValue {
+    /// The class the frame pass established for the slot, or the one it merged for a phi.
+    pub fn ty(&self) -> &Value {
+        &self.ty
+    }
+
+    /// Where this value comes into existence.
+    pub fn def(&self) -> &Definition {
+        &self.def
+    }
+
+    /// Physical anchors of this value, in origin order.
+    pub fn origin(&self) -> &OriginSet {
+        &self.origin
+    }
+
+    /// Every use of this value, in the order the pass recorded them.
+    pub fn uses(&self) -> &[SsaUse] {
+        &self.uses
+    }
+
+    /// The value that replaced this one, for a phi that was removed as trivial.
+    pub fn replaced_by(&self) -> Option<ValueId> {
+        self.replaced_by
+    }
+}
+
 /// One entry phi: the definition one block's entry state gives one slot.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SsaPhi {
+pub struct SsaPhi {
     pub(crate) block: CanonicalBlockId,
     pub(crate) slot: Slot,
     /// The value this phi defines.
@@ -231,9 +270,31 @@ pub(crate) struct SsaPhi {
     pub(crate) inputs: Vec<PhiInput>,
 }
 
+impl SsaPhi {
+    /// The block whose entry state this phi names.
+    pub fn block(&self) -> &CanonicalBlockId {
+        &self.block
+    }
+
+    /// The slot this phi defines a value in.
+    pub fn slot(&self) -> Slot {
+        self.slot
+    }
+
+    /// The value this phi defines.
+    pub fn value(&self) -> ValueId {
+        self.value
+    }
+
+    /// One operand per participating logical predecessor, in the block's own input order.
+    pub fn inputs(&self) -> &[PhiInput] {
+        &self.inputs
+    }
+}
+
 /// One operand of an entry phi.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum PhiInput {
+pub enum PhiInput {
     /// The value the slot arrives with along this input.
     Value(ValueId),
     /// The phi itself: this input's copy of the slot is the value the merge point already names,
@@ -244,7 +305,7 @@ pub(crate) enum PhiInput {
 
 /// What one instruction of one block reads, writes and may raise.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SsaInstruction {
+pub struct SsaInstruction {
     pub(crate) bci: u32,
     pub(crate) opcode: u8,
     /// One record per read, in the order the instruction performed them.
@@ -254,9 +315,31 @@ pub(crate) struct SsaInstruction {
     pub(crate) writes: Vec<(Slot, ValueId)>,
 }
 
+impl SsaInstruction {
+    /// BCI of the instruction.
+    pub fn bci(&self) -> u32 {
+        self.bci
+    }
+
+    /// The instruction's effective opcode.
+    pub fn opcode(&self) -> u8 {
+        self.opcode
+    }
+
+    /// One record per read, in the order the instruction performed them.
+    pub fn reads(&self) -> &[(Slot, ValueId)] {
+        &self.reads
+    }
+
+    /// One record per write, in the order the instruction performed them.
+    pub fn writes(&self) -> &[(Slot, ValueId)] {
+        &self.writes
+    }
+}
+
 /// The SSA of one block: its entry definitions, its instructions and its exit definitions.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct SsaBlock {
+pub struct SsaBlock {
     pub(crate) block: CanonicalBlockId,
     /// One record per slot the entry state starts a value in, ascending.
     pub(crate) entry: Vec<(Slot, ValueId)>,
@@ -267,6 +350,28 @@ pub(crate) struct SsaBlock {
     pub(crate) instructions: Vec<SsaInstruction>,
 }
 
+impl SsaBlock {
+    /// The block these names belong to.
+    pub fn block(&self) -> &CanonicalBlockId {
+        &self.block
+    }
+
+    /// One record per slot the entry state starts a value in, ascending.
+    pub fn entry(&self) -> &[(Slot, ValueId)] {
+        &self.entry
+    }
+
+    /// One record per slot the exit state starts a value in, ascending.
+    pub fn exit(&self) -> &[(Slot, ValueId)] {
+        &self.exit
+    }
+
+    /// The block's instructions, in execution order.
+    pub fn instructions(&self) -> &[SsaInstruction] {
+        &self.instructions
+    }
+}
+
 /// The effect facts of one canonical instruction.
 ///
 /// The shape mirrors 3.3's raw [`crate::cfg::InstructionEffect`] — the same question about what an
@@ -275,7 +380,7 @@ pub(crate) struct SsaBlock {
 /// never to the end of its block, and the block is named beside it. The raw facts are neither
 /// replaced nor rewritten by this one; each describes its own graph.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct CanonicalInstructionEffect {
+pub struct CanonicalInstructionEffect {
     pub(crate) block: CanonicalBlockId,
     pub(crate) bci: u32,
     pub(crate) opcode: u8,
@@ -294,57 +399,121 @@ pub(crate) struct CanonicalInstructionEffect {
     pub(crate) origin: OriginSet,
 }
 
+impl CanonicalInstructionEffect {
+    /// The canonical block the instruction runs in.
+    pub fn block(&self) -> &CanonicalBlockId {
+        &self.block
+    }
+
+    /// BCI of the instruction.
+    pub fn bci(&self) -> u32 {
+        self.bci
+    }
+
+    /// The instruction's effective opcode.
+    pub fn opcode(&self) -> u8 {
+        self.opcode
+    }
+
+    /// Locals this instruction reads, ascending, deduplicated.
+    pub fn locals_read(&self) -> &[u16] {
+        &self.locals_read
+    }
+
+    /// Locals this instruction writes, ascending, deduplicated.
+    pub fn locals_written(&self) -> &[u16] {
+        &self.locals_written
+    }
+
+    /// Change of the operand-stack depth, in slots, as the frame pass measured it.
+    pub fn stack_delta(&self) -> i32 {
+        self.stack_delta
+    }
+
+    /// Whether this instruction may raise.
+    pub fn may_throw(&self) -> bool {
+        self.may_throw
+    }
+
+    /// The handler records this throw site feeds, in declaration order, at this BCI.
+    pub fn handlers(&self) -> &[u32] {
+        &self.handlers
+    }
+
+    /// Physical anchor of the instruction.
+    pub fn origin(&self) -> &OriginSet {
+        &self.origin
+    }
+}
+
 /// The `Effects` fact of the canonical graph: one record per instruction, in block order and then
 /// in execution order.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct CanonicalEffectFacts {
+pub struct CanonicalEffectFacts {
     pub(crate) instructions: Vec<CanonicalInstructionEffect>,
+}
+
+impl CanonicalEffectFacts {
+    /// One record per instruction, in block order and then in execution order.
+    pub fn instructions(&self) -> &[CanonicalInstructionEffect] {
+        &self.instructions
+    }
 }
 
 /// The published artifact: every value, every phi and every block's names.
 ///
-/// The table is derived storage whose consumer in this build is the next slice, so it stays
-/// crate-private exactly like the frames and the graph it is derived from.
+/// The table is derived storage whose consumers are this crate's later slices and, through the
+/// read-only handoff ([`crate::method_ir`]), the recovery layer above it. What is published is the
+/// read surface of the table — values, phis, blocks and the effect facts of the same instructions
+/// are read, never written, and the four fields stay private.
 #[derive(Debug)]
-pub(crate) struct SsaTable {
+pub struct SsaTable {
     values: Vec<SsaValue>,
     phis: Vec<SsaPhi>,
     blocks: Vec<SsaBlock>,
     effects: CanonicalEffectFacts,
 }
 
-#[allow(
-    dead_code,
-    reason = "the next slice consumes this payload; 5.1 decides what becomes public"
-)]
 impl SsaTable {
     /// Every value, by identity.
-    pub(crate) fn values(&self) -> &[SsaValue] {
+    pub fn values(&self) -> &[SsaValue] {
         &self.values
     }
 
+    /// Every value together with the identity that names it, in table order.
+    ///
+    /// The pair is what a consumer that walks the table and follows [`SsaValue::replaced_by`],
+    /// a phi operand or a block's entry record needs: the identities it meets are resolved with
+    /// [`Self::value`], which takes exactly the [`ValueId`] this iterator hands out.
+    pub fn values_with_ids(&self) -> impl Iterator<Item = (ValueId, &SsaValue)> {
+        self.values
+            .iter()
+            .enumerate()
+            .map(|(index, value)| (ValueId(u32::try_from(index).unwrap_or(u32::MAX)), value))
+    }
+
     /// One value.
-    pub(crate) fn value(&self, id: ValueId) -> &SsaValue {
+    pub fn value(&self, id: ValueId) -> &SsaValue {
         &self.values[id.index()]
     }
 
     /// Every entry phi, in creation order.
-    pub(crate) fn phis(&self) -> &[SsaPhi] {
+    pub fn phis(&self) -> &[SsaPhi] {
         &self.phis
     }
 
     /// Every block the frames hold, in the canonical graph's order.
-    pub(crate) fn blocks(&self) -> &[SsaBlock] {
+    pub fn blocks(&self) -> &[SsaBlock] {
         &self.blocks
     }
 
     /// The effect facts of the same instructions.
-    pub(crate) fn effects(&self) -> &CanonicalEffectFacts {
+    pub fn effects(&self) -> &CanonicalEffectFacts {
         &self.effects
     }
 
     /// One block's names, or `None` when the entry cannot reach it.
-    pub(crate) fn block(&self, block: &CanonicalBlockId) -> Option<&SsaBlock> {
+    pub fn block(&self, block: &CanonicalBlockId) -> Option<&SsaBlock> {
         self.blocks.iter().find(|entry| &entry.block == block)
     }
 }

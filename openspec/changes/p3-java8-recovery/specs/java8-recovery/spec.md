@@ -55,3 +55,17 @@
 
 - **WHEN** 方法的区域恢复遇到不可约 CFG 或交叉异常区域
 - **THEN** 结果保留可靠低级结构和 origin，不能输出空 body 或成功 Structured 标志；若扫描完整，coverage 仍可为 CompleteWithinScope，只有扫描失败才为 Partial（验收 A13）
+
+### Requirement: Read-only IR handoff owned by jarde-jvm
+
+恢复层 SHALL 只通过 `jarde-jvm` 自有的只读载荷取得一个方法请求的真实 IR（canonical CFG、frames、SSA/effects 及其 origin），该载荷 MUST 就是该次运行发布的那三张表本身，MUST NOT 由 `MethodAnalysisReport` 的摘要字段重建，也 MUST NOT 给恢复侧留下可变访问或伪造表的构造路径。所有权 SHALL 为“一次请求产生一份载荷、调用方在其作用域内以 `&` 交给恢复层”；交接 MUST NOT 重复运行 P2、重复计费或改变既有停止/取消语义。恢复侧实现（`jarde-java`）只在 1.3 随首个真实闭环创建，1.1 不为它建通用 backend trait、动态 pass 注册或跨层 IR 抽象。
+
+#### Scenario: Recovery input is the published table
+
+- **WHEN** 一个方法请求跑到某阶段并发布了 canonical/frames/SSA 表
+- **THEN** 恢复侧能读到这些表的只读内容（块/边/throw site/handler row/帧/值/phi/effect 与 origin），且其中至少一个量（例如块数、BCI 或 phi 数）在报告里没有对应字段
+
+#### Scenario: Stopped or refused run
+
+- **WHEN** 请求因预算、取消或环境被拒而停止
+- **THEN** 载荷只含停止前已发布的那部分表（环境被拒时为空载荷），报告保持原有阶段/执行/诊断语义，且两个入口对同一请求的计费与停止一致

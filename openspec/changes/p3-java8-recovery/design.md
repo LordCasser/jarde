@@ -38,6 +38,26 @@
 
 当前 common Region 的单 handler 接口不能直接表达完整 JVM 异常区域；ASC 的 DEX 后端也使用自己的 `structure.rs`，未直接调用这个 Region builder。因此 P3 当前按上述边界实施自己的 JVM 区域恢复，图算法继续复用 petgraph，formatter 按 1.2 准入。未来若有可薄适配的库，按无异常/多 handler/effect/资源停止四类证据重评；不预设拆分 droidsaw 才能继续 P3，也不宣称自研实现已优于现成实现。
 
+### 1.1 的只读 IR 交接：所有权、生命周期与不建通用框架（2026-09-19 已落地）
+
+`layer-jarde-crates` 把恢复侧输入的所有权留给 1.1 决定，本片按该决定落地，接缝放在 `jarde-jvm` 自己的公开面上（`jarde_jvm::method_ir` 与 `jarde_jvm::engine::analyze_method_ir`）；根门面**不**再导出它，因为 1.3 的 `jarde-java` 直接依赖 `jarde-jvm`，门面的再导出属于 1.3/5.1 的呈现决定，不是本片的必需面。
+
+- **载荷与只读面。** `MethodIr` 由 `jarde-jvm` 拥有，按值持有该次请求发布的三个表（canonical CFG、frames、SSA/effects），每张表是一个 `Option`；`canonical()`/`frames()`/`ssa()` 只交出 `&`，且 `ssa()` 存在的前提是其下有 frames、frames 同理依赖 canonical。表类型（`CanonicalCfg`、`FrameTable`、`SsaTable` 及其记录/标识类型）从私有模块逐个再导出，字段保持 `pub(crate)`，读只经访问器：不建镜像类型，也不公开中端机器（raw CFG、call contexts、fact ledger、pass table、analysis run 与各 pass 入口）。
+- **所有权与生命周期。** 一次请求 → 一次运行 → 一份载荷，由调用方按值持有；载荷不借用请求、快照字节或 reader 缓冲（类型无生命周期参数），把 `&MethodIr` 交给恢复层就是调用方作用域内的普通借用。**不需要 `Arc`、全局缓存或第二套生命周期**：同一进程只有一个消费者、没有跨请求身份可供缓存，而缓存会让上一次请求的产物活过为它付费的预算——正是本流水线要保持诚实的计费语义。若将来确有产物需活过作用域，那是带自己所有权与预算故事的新决定，不由本接缝预设。
+- **入口选择。** 新增 `analyze_method_ir`，与 `analyze_method` 共享同一条 `run_request` 路径（同样校验、同样调度、同样计费、同样停止），返回 `MethodIrAnalysis`（同一次运行的 report + 载荷）。没有改 `analyze_method` 的签名或行为，也没有把载荷塞进 `MethodAnalysisRequest`/`MethodAnalysisReport` 的 schema：后者会无故改动 P2 的报告、serde 与 golden 契约。
+- **不从摘要重建。** 载荷就是那些表本身（`Box` 移入 `MethodIr`），而 `MethodAnalysisReport` 没有任何字段能承载块、BCI、值或 phi（`origin` 仍按 P2 契约留空）。证据见下。
+- **不建通用框架。** 一个生产者（`jarde-jvm`）、一个消费者（`jarde-java`，1.3）、一个具体载荷；没有 backend trait、动态 pass 注册、跨层 IR 抽象，也没有为此提前创建 `jarde-java` 骨架（1.3 才随首个真实闭环建包）。
+- **计费与停止语义不变。** 交接只移动已发布的表，不读、不重跑、不重复计费；环境被拒的运行交出空载荷，停止/取消的运行交出它在停止前已发布的那部分表。
+
+验证（本片实际执行，命令与数字见下节）：
+
+- `tests/p3_method_ir.rs` 的主用例用 ECJ 4.6.1 v45 `HistoricalControlFlow.finallyPath(I)I`：载荷为 6 块 / 4 边（2 个 `jsr` call + 2 个 return）/ 2 clone / 3 个不可达节点 / 1 个 throw site、3 个 frame 条目、10 个 SSA 值、10 条 effect 记录；帧的 locals 数等于该 body 独立读出的 `max_locals`(5)，块起点是真实指令起点的子集，每条具名指令恰有一条 effect 记录；同一次运行的 report `origin` 为空——摘要面没有可重建 IR 的量。
+- 同文件另有两条：只请求 `canonical_cfg` 的运行只交出图（frames/ssa 为 `None`），且两个入口对同一请求计费相同；已取消的运行交出空载荷并保持 `Cancelled`，两个入口一致。
+- `crates/jarde-jvm/src/method_ir.rs` 的单元测试汇编一个分支 body（提交语料里没有需要 phi 的 body），载荷交出 1 个 entry phi、2 个操作数、位于合并块与 local slot——phi 面只有真实表能给。
+- 源码守卫（同一集成测试）：`jarde-jvm` 公开面没有 `pub fn …(&mut self)` 或 `-> &mut`，接缝模块不公开任何字段；把可变访问器或公开字段加回去守则会红（该守卫是源码级检查，不是编译器证明——Rust 无法在测试里断言"没有 `&mut`"本身）。
+
+仍未完成：1.1 还要定义 RecoveryProfile、模式前置条件、rule version、representation/quality/compile_status/semantic_validation/verification/fallback 类型，以及"未满足前置条件 fixture"的边界验证；本片只落地其中的 IR 交接、阶段有效性与计费/停止不变量。
+
 ## Risks / Trade-offs
 
 - [Risk] 模式误识别造成“漂亮但错误”的 Java → 所有 pass 要求完整前置条件，失败即 fallback；保留原始 evidence。

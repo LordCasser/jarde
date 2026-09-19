@@ -220,10 +220,10 @@ impl Ty {
 
 /// A reference's type, as far as these facts establish it.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum RefType {
+pub enum RefType {
     /// The class file spells the type at the instruction or in a descriptor — an array creation,
     /// `checkcast`, `this`, a reference parameter — together with the loader anchor of the
-    /// request; see [`FrameMethod::loader`].
+    /// request, which the pass reads from its own input view and never from a resolution.
     Named {
         name: Vec<u8>,
         loader: Box<LoaderId>,
@@ -243,16 +243,28 @@ pub(crate) enum RefType {
 /// keeps the two apart. `UninitializedThis` needs no site: a constructor's own `this` is one
 /// token by definition rather than one per allocation.
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub(crate) struct NewSite {
+pub struct NewSite {
     /// The canonical node the `new` runs in.
     pub(crate) block: CanonicalBlockId,
     /// BCI of the `new` instruction, inside the original code that node stands for.
     pub(crate) bci: u32,
 }
 
+impl NewSite {
+    /// The canonical node the `new` runs in.
+    pub fn block(&self) -> &CanonicalBlockId {
+        &self.block
+    }
+
+    /// BCI of the `new` instruction.
+    pub fn bci(&self) -> u32 {
+        self.bci
+    }
+}
+
 /// One slot's state.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum Value {
+pub enum Value {
     /// No readable value: an unwritten or disagreeing local, or a slot a merge gave up on.
     Top,
     /// The upper slot of the category-2 value held in the slot below.
@@ -2650,7 +2662,7 @@ pub(crate) enum FrameOutcome {
 /// disagree, because a record list that folded two edges into one group would state a block
 /// entered with a class none of the inputs it lists defines.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct LogicalInput {
+pub struct LogicalInput {
     /// The block the state comes from.
     pub(crate) from: CanonicalBlockId,
     /// BCI of the throwing instruction this input is taken at, for an input that arrives through
@@ -2658,9 +2670,21 @@ pub(crate) struct LogicalInput {
     pub(crate) throw_site: Option<u32>,
 }
 
+impl LogicalInput {
+    /// The block this input's state comes from.
+    pub fn from(&self) -> &CanonicalBlockId {
+        &self.from
+    }
+
+    /// BCI of the throwing instruction this input is taken at, or `None` for a plain transfer.
+    pub fn throw_site(&self) -> Option<u32> {
+        self.throw_site
+    }
+}
+
 /// The entry state of one canonical block.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct BlockFrame {
+pub struct BlockFrame {
     /// Identity of the block this state belongs to.
     pub(crate) block: CanonicalBlockId,
     /// One entry per local slot.
@@ -2675,18 +2699,37 @@ pub(crate) struct BlockFrame {
     pub(crate) inputs: Vec<LogicalInput>,
 }
 
+impl BlockFrame {
+    /// Identity of the block this entry state belongs to.
+    pub fn block(&self) -> &CanonicalBlockId {
+        &self.block
+    }
+
+    /// One entry per local slot, the entry state's locals array.
+    pub fn locals(&self) -> &[Value] {
+        &self.locals
+    }
+
+    /// The operand stack this block is entered with, bottom first.
+    pub fn stack(&self) -> &[Value] {
+        &self.stack
+    }
+
+    /// The logical inputs this entry state was merged from, in the pass's own order.
+    pub fn inputs(&self) -> &[LogicalInput] {
+        &self.inputs
+    }
+}
+
 /// The published artifact: the entry state of every block the entry reaches, each with the
 /// logical inputs it was merged from.
 ///
-/// The table is derived storage whose only consumers in this build are the later slices — 4.2's
-/// initialization analysis and 4.3's SSA — and 5.1 decides what becomes public, so it stays
-/// crate-private exactly like the canonical graph it is derived from.
-#[allow(
-    dead_code,
-    reason = "4.2 and 4.3 consume this payload; 5.1 decides its surface"
-)]
+/// The table is derived storage whose consumers are the later slices of this crate and, through
+/// the read-only handoff ([`crate::method_ir`]), the recovery layer above it: 3.5's graph and
+/// 4.3's names are built over exactly these frames. What is published is the read surface of the
+/// table — the entry states are read, never written, and the three fields stay private.
 #[derive(Debug)]
-pub(crate) struct FrameTable {
+pub struct FrameTable {
     /// One entry per reached block, in the canonical graph's block order.
     blocks: Vec<BlockFrame>,
     /// Slots of one locals array of this body (`max_locals`).
@@ -2695,28 +2738,24 @@ pub(crate) struct FrameTable {
     deepest_stack: usize,
 }
 
-#[allow(
-    dead_code,
-    reason = "4.2 and 4.3 consume this payload; 5.1 decides its surface"
-)]
 impl FrameTable {
     /// The entry states, in the canonical graph's block order.
-    pub(crate) fn blocks(&self) -> &[BlockFrame] {
+    pub fn blocks(&self) -> &[BlockFrame] {
         &self.blocks
     }
 
     /// The entry state of one block, or `None` when the entry cannot reach it.
-    pub(crate) fn entry(&self, block: &CanonicalBlockId) -> Option<&BlockFrame> {
+    pub fn entry(&self, block: &CanonicalBlockId) -> Option<&BlockFrame> {
         self.blocks.iter().find(|entry| &entry.block == block)
     }
 
     /// Slots of one locals array of this body.
-    pub(crate) fn locals_slots(&self) -> usize {
+    pub fn locals_slots(&self) -> usize {
         self.locals_slots
     }
 
     /// Deepest operand stack any block is entered with.
-    pub(crate) fn deepest_stack(&self) -> usize {
+    pub fn deepest_stack(&self) -> usize {
         self.deepest_stack
     }
 }

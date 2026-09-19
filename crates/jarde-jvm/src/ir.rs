@@ -379,6 +379,10 @@ pub(crate) fn terminal(error: &Error, usage: UsageSnapshot) -> (ExecutionReport,
 /// phase that checks it can raise it ([`SemanticValidation`]); `origin` stays empty because the
 /// IR payloads are crate-private in P2 (invariant 11): the report anchors the request by
 /// `method`, and 5.1 is where a published IR count would have to add its own field first.
+///
+/// The tables themselves leave the run beside this report, read-only, through
+/// [`crate::engine::analyze_method_ir`] and [`crate::method_ir`] (P3 1.1) — never through a field
+/// of this summary, and never by re-deriving one from it.
 pub(crate) fn analysis_report(
     request: &MethodAnalysisRequest,
     problems: Vec<EnvironmentProblem>,

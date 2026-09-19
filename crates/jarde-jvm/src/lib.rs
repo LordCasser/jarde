@@ -10,10 +10,12 @@
 //!
 //! The dependency direction is one-way on purpose: this crate reads artifact facts through
 //! `jarde-reader` and the declaration-reference candidates through `jarde-query`, and it never
-//! depends on the facade above it. What a consumer outside can name is the request, the report
-//! and the three entry points; the mutable analysis internals — the header closure, the fact
-//! ledger, the analysis run, the pass table and the call contexts — stay crate-private, so the
-//! facade cannot widen them back into the product surface.
+//! depends on the facade above it. What a consumer outside can name is the request, the report,
+//! the four entry points, and — since P3 1.1 — the read-only IR handoff (`method_ir`) that carries
+//! one run's canonical graph, frames and SSA tables to the recovery layer above it; the mutable
+//! analysis internals — the header closure, the fact ledger, the analysis run, the pass table and
+//! the call contexts — stay crate-private, so the facade cannot widen them back into the product
+//! surface.
 //!
 //! `engine` is the one module allowed to call the resolver, the environment and the IR: it is
 //! the P2 driver, and everything below it is reachable from outside only through the entry
@@ -22,6 +24,7 @@
 pub mod engine;
 pub mod environment;
 pub mod ir;
+pub mod method_ir;
 pub mod resolver;
 
 mod call_context;
@@ -42,4 +45,4 @@ mod ssa_oracle;
 #[cfg(any(test, feature = "test-support"))]
 mod test_fixtures;
 
-pub use engine::{analyze_method, declaration_references, resolve_symbol};
+pub use engine::{analyze_method, analyze_method_ir, declaration_references, resolve_symbol};

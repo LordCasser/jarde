@@ -190,8 +190,12 @@ pub(crate) struct ThrowSite {
 pub(crate) type HandlerFact = ExceptionHandlerFact;
 
 /// How complete the graph is with respect to the method body it describes.
+///
+/// Published through the read-only handoff ([`crate::method_ir`]) beside the canonical graph it
+/// belongs to: a consumer that decides between a structured result and a fallback has to know
+/// whether the graph covers the whole body or its reliable decoded prefix.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) enum CfgCompleteness {
+pub enum CfgCompleteness {
     /// The reader decoded the whole `Code` attribute, so the blocks cover the whole body.
     Complete,
     /// The reader stopped before the end of the body: the graph covers the reliable decoded
@@ -202,7 +206,7 @@ pub(crate) enum CfgCompleteness {
 
 impl CfgCompleteness {
     /// Whether the graph covers the whole method body.
-    pub(crate) fn is_complete(&self) -> bool {
+    pub fn is_complete(&self) -> bool {
         matches!(self, Self::Complete)
     }
 }

@@ -6,7 +6,7 @@
 //! table, reads one driver method through the reader, and turns every pass outcome into the
 //! report's stage, coverage, read and execution planes.
 //!
-//! The three entry points below are what the facade delegates to, one line each; the
+//! The four entry points below are what the facade delegates to, one line each; the
 //! composition story — which entry runs what, and what a caller observes — is documented on
 //! `jarde::Engine`, which is the surface a consumer names.
 
@@ -21,11 +21,13 @@ use jarde_reader::model::{
     Coverage, Diagnostic, DiagnosticSeverity, ExecutionReport, TerminationReason,
 };
 
+use crate::environment::{EnvironmentIdentity, EnvironmentProblem};
 use crate::frame::{FrameMethod, FrameOutcome, IR_FRAME_DEFERRED, IR_FRAME_INCONSISTENT};
 use crate::ir::{
     MethodAnalysisReport, MethodAnalysisRequest, MethodBodyState, NoBodyKind, StageResult,
     StageState,
 };
+use crate::method_ir::{MethodIr, MethodIrAnalysis};
 use crate::passes::{FactLedger, IR_PASS_NOT_IMPLEMENTED, IrPhase, PassDescriptor, implemented};
 use crate::ssa::{IR_SSA_INCONSISTENT, SsaOutcome};
 
@@ -71,36 +73,98 @@ pub fn declaration_references(
 /// input error rather than a half-initialized run. What the scheduled passes then do, and what
 /// each stop keeps, is [`run_method_analysis`]'s contract; the report is assembled from the
 /// validated request and the run.
+///
+/// This entry answers with the report alone and drops the IR payload of the run;
+/// [`analyze_method_ir`] performs the very same run and hands both over.
 pub fn analyze_method(
     content: &[ArtifactSnapshot],
     request: &MethodAnalysisRequest,
     budget: &mut Budget,
 ) -> Result<MethodAnalysisReport> {
+    let analyzed = run_request(content, request, budget)?;
+    Ok(crate::ir::analysis_report(
+        request,
+        analyzed.problems,
+        analyzed.environment_identity,
+        analyzed.run,
+    ))
+}
+
+/// The same analysis, handing over the IR payload of the same run (P3 1.1 entry point).
+///
+/// One request is one run: this entry performs exactly what [`analyze_method`] performs — the same
+/// request and schedule validation, the same environment check, the same passes under the same
+/// budget, the same stop and the same report — and returns the tables those passes published
+/// beside it, so a recovery consumer does not run the pipeline a second time to get them.
+///
+/// The payload is owned by the caller for as long as it keeps the returned value, and reads
+/// through it are ordinary borrows ([`crate::method_ir`]); the report states the phases, the
+/// quality, the coverage, the execution and the diagnostics of that one run, and a stopped or
+/// refused run hands over exactly what it published, which is nothing at all for a request whose
+/// environment was rejected.
+pub fn analyze_method_ir(
+    content: &[ArtifactSnapshot],
+    request: &MethodAnalysisRequest,
+    budget: &mut Budget,
+) -> Result<MethodIrAnalysis> {
+    let analyzed = run_request(content, request, budget)?;
+    Ok(MethodIrAnalysis::new(
+        crate::ir::analysis_report(
+            request,
+            analyzed.problems,
+            analyzed.environment_identity,
+            analyzed.run,
+        ),
+        analyzed.ir,
+    ))
+}
+
+/// One validated request and the run it performed: everything the report and the payload need.
+///
+/// The run is constructed in one place because one request gets one run: the two entry points
+/// above differ only in what they hand back from this, never in what was performed, charged or
+/// stopped.
+struct Analyzed {
+    problems: Vec<EnvironmentProblem>,
+    environment_identity: EnvironmentIdentity,
+    run: crate::ir::AnalysisRun,
+    ir: MethodIr,
+}
+
+/// Validates one method-analysis request and runs it.
+fn run_request(
+    content: &[ArtifactSnapshot],
+    request: &MethodAnalysisRequest,
+    budget: &mut Budget,
+) -> Result<Analyzed> {
     crate::ir::validate_request(content, request)?;
     let scheduled = crate::passes::validate_requested_stages(&request.stages)?;
     let (problems, environment_identity) =
         crate::environment::validate_environment(content, &request.environment);
-    let run = if problems.is_empty() {
+    let (run, ir) = if problems.is_empty() {
         run_method_analysis(content, request, scheduled, budget)
     } else {
         // A rejected environment never yields a definition and never starts a read, so the
-        // pipeline is not run at all; the report names the problems and the capability that
-        // did not run.
-        crate::ir::AnalysisRun::not_performed(
-            &scheduled
-                .iter()
-                .map(|pass| pass.phase.stage())
-                .collect::<Vec<_>>(),
-            crate::ir::METHOD_ANALYSIS_NOT_IMPLEMENTED,
-            budget,
+        // pipeline is not run at all; the report names the problems and the capability that did
+        // not run, and no pass published a table for the payload to hold.
+        (
+            crate::ir::AnalysisRun::not_performed(
+                &scheduled
+                    .iter()
+                    .map(|pass| pass.phase.stage())
+                    .collect::<Vec<_>>(),
+                crate::ir::METHOD_ANALYSIS_NOT_IMPLEMENTED,
+                budget,
+            ),
+            MethodIr::new(None, None, None),
         )
     };
-    Ok(crate::ir::analysis_report(
-        request,
+    Ok(Analyzed {
         problems,
         environment_identity,
         run,
-    ))
+        ir,
+    })
 }
 
 /// Reports a scheduled pass this build does not implement: its stage fails under
@@ -133,7 +197,8 @@ fn report_unimplemented(
     }
 }
 
-/// Runs the scheduled passes of one method-analysis request in table order.
+/// What the scheduled passes of one method-analysis request produced: the run, and the read-only
+/// payload of the tables it published ([`MethodIr`]).
 ///
 /// The ledger is the single accounting path (3.2): every pass publishes its facts through
 /// [`FactLedger::apply`], and it is applied only after the pass completed, so a stopped run
@@ -162,7 +227,7 @@ fn run_method_analysis(
     request: &crate::ir::MethodAnalysisRequest,
     scheduled: &[PassDescriptor],
     budget: &mut Budget,
-) -> crate::ir::AnalysisRun {
+) -> (crate::ir::AnalysisRun, MethodIr) {
     let mut run = crate::ir::AnalysisRun {
         body: MethodBodyState::NotInspected,
         stages: scheduled
@@ -201,10 +266,11 @@ fn run_method_analysis(
     // read `raw_facts` performed.
     let mut declaration: Option<FrameDeclaration> = None;
     // The frames 4.1 published. 4.2 is their first consumer, so the payload stays in this run
-    // under the same plan the canonical graph is kept under; nothing in this build reads it back.
+    // under the same plan the canonical graph is kept under — and it is what the run hands over
+    // to the recovery layer (P3 1.1).
     let mut frame_table: Option<Box<crate::frame::FrameTable>> = None;
     // The names 4.3 published, over exactly those frames and the canonical graph: the artifact the
-    // next slice consumes, kept in this run for the same reason.
+    // next slice consumes, kept in this run for the same reason and handed over with it.
     let mut ssa_table: Option<Box<crate::ssa::SsaTable>> = None;
     for (index, pass) in scheduled.iter().enumerate() {
         if !implemented(pass.phase) {
@@ -297,10 +363,11 @@ fn run_method_analysis(
                         } else {
                             StageState::Partial
                         };
-                        // The graph and the effect facts are crate-private IR payloads
-                        // (invariant 11): 3.4/3.5 consume them, 5.1 decides what becomes
-                        // public, and the report keeps publishing their status planes. The
-                        // payload stays in this run because the next pass reads it.
+                        // The graph and the effect facts are the raw pass's own payload: 3.4/3.5
+                        // consume them, the report keeps publishing their status planes, and they
+                        // stay out of the handoff of P3 1.1, which publishes the canonical tables of
+                        // this run instead of this raw one. The payload stays in this run because
+                        // the next pass reads it.
                         raw = Some(outcome);
                     }
                     Err(error) => {
@@ -382,10 +449,10 @@ fn run_method_analysis(
                         } else {
                             StageState::Partial
                         };
-                        // The contexts are a crate-private payload (invariant 11): they stay in
-                        // this run, because the canonical CFG pass consumes exactly this payload
-                        // instead of re-deriving any return point (3.5), and 5.1 decides what
-                        // becomes public.
+                        // The contexts are a payload of this run alone: they stay in it because the
+                        // canonical CFG pass consumes exactly this payload instead of re-deriving
+                        // any return point (3.5), and the read-only handoff of P3 1.1 publishes the
+                        // canonical graph rather than the contexts it was built from.
                         contexts = Some(established);
                     }
                     Ok(crate::call_context::CallContextOutcome::Forbidden { message }) => {
@@ -470,10 +537,9 @@ fn run_method_analysis(
                         } else {
                             StageState::Partial
                         };
-                        // The graph is a crate-private payload (invariant 11) with no consumer in
-                        // this build: 4.x reads it, and 5.1 decides what becomes public. What
-                        // this run keeps of it is the fact that it exists — the report's quality
-                        // plane is about a produced artifact and nothing else.
+                        // The graph is the first table of the read-only handoff (P3 1.1): the run
+                        // keeps it for the passes above and hands it over in its payload, and the
+                        // report's quality plane is about the fact that it exists and nothing else.
                         canonical_cfg = Some(graph);
                     }
                     Ok(crate::canonical::CanonicalOutcome::Fallback { message }) => {
@@ -538,9 +604,9 @@ fn run_method_analysis(
                         } else {
                             StageState::Partial
                         };
-                        // The table is a crate-private payload (invariant 11): 4.2 reads it, and
-                        // 5.1 decides what becomes public. What this run keeps of it is the
-                        // payload itself, because the fact is what the next slice consumes.
+                        // The table is a table of the read-only handoff (P3 1.1): 4.2 reads it, and
+                        // the run hands it over in its payload beside the graph it was derived
+                        // from.
                         frame_table = Some(table);
                     }
                     Ok(FrameOutcome::Unsupported { message }) => {
@@ -629,9 +695,9 @@ fn run_method_analysis(
                         } else {
                             StageState::Partial
                         };
-                        // The table is a crate-private payload (invariant 11): the next slice reads
-                        // it, and 5.1 decides what becomes public. The effect facts it carries are
-                        // the canonical graph's own `Effects`, which this pass re-publishes — the
+                        // The table is a table of the read-only handoff (P3 1.1): the run hands it
+                        // over in its payload, and the effect facts it carries are the canonical
+                        // graph's own `Effects`, which this pass re-publishes — the
                         // canonicalization invalidated the raw pass's copy.
                         ssa_table = Some(names);
                     }
@@ -700,7 +766,13 @@ fn run_method_analysis(
             usage: budget.usage(),
         },
     };
-    run
+    // What this run hands over (P3 1.1): the very tables the passes published, moved into the
+    // payload in phase order, each present exactly when its pass published one. Nothing here
+    // re-derives an artifact from the report, and nothing was read, charged or run again to build
+    // it — a stopped run hands over the tables it published before the stop, and a run that never
+    // reached a pass hands over `None` for it.
+    let ir = MethodIr::new(canonical_cfg, frame_table, ssa_table);
+    (run, ir)
 }
 
 /// What the `raw_facts` pass found for the driver method.

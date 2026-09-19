@@ -74,27 +74,38 @@ pub(crate) enum CanonicalOutcome {
 /// clone a different node from the original block and from the clone of another call site,
 /// which is the whole point of the slice: two call sites never share one cloned block.
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub(crate) struct CanonicalBlockId {
+pub struct CanonicalBlockId {
     /// BCI of the first original block of this node.
     pub(crate) bci: u32,
     pub(crate) path: Vec<u32>,
 }
 
 impl CanonicalBlockId {
+    /// BCI of the first original block of this node.
+    pub fn bci(&self) -> u32 {
+        self.bci
+    }
+
+    /// The `jsr` call-site stack of this node, outermost first; empty exactly for the blocks of
+    /// the method's own code.
+    pub fn path(&self) -> &[u32] {
+        &self.path
+    }
+
     /// Whether this node exists only because a `jsr` was crossed: a clone node.
-    pub(crate) fn is_clone(&self) -> bool {
+    pub fn is_clone(&self) -> bool {
         !self.path.is_empty()
     }
 
     /// The call site this node's path was entered by, for a clone.
-    pub(crate) fn call_site(&self) -> Option<u32> {
+    pub fn call_site(&self) -> Option<u32> {
         self.path.last().copied()
     }
 }
 
 /// Kind of one canonical edge.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub(crate) enum CanonicalEdgeKind {
+pub enum CanonicalEdgeKind {
     /// A fall-through, a conditional branch, a `goto`, a switch target — or the successor of a
     /// `ret`, which is a plain transfer once the context decided where it returns.
     Normal,
@@ -110,10 +121,27 @@ pub(crate) enum CanonicalEdgeKind {
 
 /// One edge of the canonical graph.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct CanonicalEdge {
+pub struct CanonicalEdge {
     pub(crate) from: CanonicalBlockId,
     pub(crate) to: CanonicalBlockId,
     pub(crate) kind: CanonicalEdgeKind,
+}
+
+impl CanonicalEdge {
+    /// The block this edge leaves.
+    pub fn from(&self) -> &CanonicalBlockId {
+        &self.from
+    }
+
+    /// The block this edge enters.
+    pub fn to(&self) -> &CanonicalBlockId {
+        &self.to
+    }
+
+    /// What the edge is: a plain transfer, one exception-table record, or one half of a `jsr`.
+    pub fn kind(&self) -> CanonicalEdgeKind {
+        self.kind
+    }
 }
 
 /// One canonical block: a set of original blocks that one call path runs as a unit.
@@ -123,7 +151,7 @@ pub(crate) struct CanonicalEdge {
 /// get to is a node like any other here: [`CanonicalCfg::unreachable`] names it, and neither its
 /// absence from [`CanonicalCfg::blocks`] nor its merge into another node is what says so.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct CanonicalBlock {
+pub struct CanonicalBlock {
     pub(crate) id: CanonicalBlockId,
     /// The original block starts this node stands for, ascending and deduplicated. One entry for
     /// a plain block, more for a fused chain (and for a clone of a shared subroutine, each of
@@ -141,8 +169,37 @@ pub(crate) struct CanonicalBlock {
 }
 
 impl CanonicalBlock {
+    /// Identity of this node: its original start and the call path it runs under.
+    pub fn id(&self) -> &CanonicalBlockId {
+        &self.id
+    }
+
+    /// The original block starts this node stands for, ascending and deduplicated.
+    pub fn blocks(&self) -> &[u32] {
+        &self.blocks
+    }
+
+    /// BCI just past the last original block of this node.
+    pub fn end_bci(&self) -> u32 {
+        self.end_bci
+    }
+
+    /// Physical anchors of this node, in origin order.
+    pub fn origin(&self) -> &OriginSet {
+        &self.origin
+    }
+
+    /// Exception-table ordinals whose protected range covers this node, in declaration order.
+    pub fn protected(&self) -> &[u32] {
+        &self.protected
+    }
+
     /// The original BCIs this node maps back to, in origin order.
-    pub(crate) fn origin_bcis(&self) -> Vec<u32> {
+    ///
+    /// The same list [`Self::blocks`] holds, read through the origin: a consumer that maps a
+    /// result back to the bytes wants the physical anchor, and one that iterates code wants the
+    /// starts. A canonical origin holds method points only, and this function is what says so.
+    pub fn origin_bcis(&self) -> Vec<u32> {
         self.origin
             .members
             .iter()
@@ -162,12 +219,39 @@ impl CanonicalBlock {
 /// [`Self::block`], because a clone's throw site is the same instruction executed under one
 /// call path.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct CanonicalThrowSite {
+pub struct CanonicalThrowSite {
     pub(crate) bci: u32,
     pub(crate) opcode: u8,
     pub(crate) block: CanonicalBlockId,
     pub(crate) handlers: Vec<u32>,
     pub(crate) origin: OriginSet,
+}
+
+impl CanonicalThrowSite {
+    /// BCI of the throwing instruction.
+    pub fn bci(&self) -> u32 {
+        self.bci
+    }
+
+    /// The instruction's effective opcode.
+    pub fn opcode(&self) -> u8 {
+        self.opcode
+    }
+
+    /// The canonical node the instruction runs in.
+    pub fn block(&self) -> &CanonicalBlockId {
+        &self.block
+    }
+
+    /// The exception-table ordinals the instruction feeds, in declaration order.
+    pub fn handlers(&self) -> &[u32] {
+        &self.handlers
+    }
+
+    /// Physical anchor of the instruction.
+    pub fn origin(&self) -> &OriginSet {
+        &self.origin
+    }
 }
 
 /// One exception-table record as the graph's exception edges use it, under one call path.
@@ -176,7 +260,7 @@ pub(crate) struct CanonicalThrowSite {
 /// a record no throw site of the body names is no row, and a record two call paths reach is one row
 /// per path.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct CanonicalHandlerRow {
+pub struct CanonicalHandlerRow {
     /// Ordinal of the original record, in declaration order.
     pub(crate) ordinal: u32,
     pub(crate) catch_type_index: Option<u16>,
@@ -195,9 +279,38 @@ pub(crate) struct CanonicalHandlerRow {
     pub(crate) protected: Vec<CanonicalBlockId>,
 }
 
+impl CanonicalHandlerRow {
+    /// Ordinal of the original exception-table record, in declaration order.
+    pub fn ordinal(&self) -> u32 {
+        self.ordinal
+    }
+
+    /// Constant-pool index of the record's `catch_type`, or `None` for a catch-all record.
+    pub fn catch_type_index(&self) -> Option<u16> {
+        self.catch_type_index
+    }
+
+    /// Original BCI of the handler entry.
+    pub fn handler_bci(&self) -> u32 {
+        self.handler_bci
+    }
+
+    /// The canonical block the entry maps to under this row's path, or `None` when no clone of
+    /// this path reaches it — the exception path leaves the graph instead of being replaced by an
+    /// invented successor.
+    pub fn handler(&self) -> Option<&CanonicalBlockId> {
+        self.handler.as_ref()
+    }
+
+    /// The canonical blocks of this row's call path that hold a throw site the record covers.
+    pub fn protected(&self) -> &[CanonicalBlockId] {
+        &self.protected
+    }
+}
+
 /// The canonical CFG of one decoded method body.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct CanonicalCfg {
+pub struct CanonicalCfg {
     /// Blocks: **every** node the normalization published, in the order it created them, the ones
     /// the entry reaches and the ones it does not alike. Reachability is [`Self::unreachable`]'s
     /// truth table, not this list: the dead nodes are created on purpose (the traversal starts at
@@ -231,6 +344,44 @@ pub(crate) struct CanonicalCfg {
     /// The raw graph's own completeness, carried over: a body whose decode stopped early has the
     /// canonical graph of its reliable prefix.
     pub(crate) completeness: CfgCompleteness,
+}
+
+impl CanonicalCfg {
+    /// Every node the normalization published, in creation order, reachable or not.
+    ///
+    /// Read this list together with [`Self::unreachable`]: a node the entry cannot reach is a
+    /// node of this list too, and one the walk never created is in neither.
+    pub fn blocks(&self) -> &[CanonicalBlock] {
+        &self.blocks
+    }
+
+    /// Every edge, by `(from, kind, to)`.
+    pub fn edges(&self) -> &[CanonicalEdge] {
+        &self.edges
+    }
+
+    /// Throw sites by `(BCI, path)`: one per throwing instruction per clone of its block.
+    pub fn throw_sites(&self) -> &[CanonicalThrowSite] {
+        &self.throw_sites
+    }
+
+    /// The exception table as the graph's exception edges use it, in declaration order.
+    pub fn handler_rows(&self) -> &[CanonicalHandlerRow] {
+        &self.handler_rows
+    }
+
+    /// The nodes this graph published and the entry cannot reach, ascending.
+    ///
+    /// A truth table, not a deletion, and not a partition either: an original block no walk
+    /// created a node for is in neither [`Self::blocks`] nor here.
+    pub fn unreachable(&self) -> &[CanonicalBlockId] {
+        &self.unreachable
+    }
+
+    /// Whether the graph covers the whole body or the reliable decoded prefix.
+    pub fn completeness(&self) -> &CfgCompleteness {
+        &self.completeness
+    }
 }
 
 impl CanonicalCfg {
