@@ -34,7 +34,10 @@
 mod bootstrap;
 mod code;
 mod metadata;
-mod resource;
+// The resource consumer owns what a `META-INF/services` entry is for this engine. The plugin
+// plane (P4 3.1) reads the same configuration through the same matcher rather than restating the
+// format, so the two planes cannot disagree about which entries are configurations.
+pub(crate) mod resource;
 
 use crate::query::{
     ConsumerKind, ConsumerSchema, LiteralValue, QUERY_ENGINE_SCHEMA, QueryBoundary, QueryCoverage,
@@ -798,7 +801,7 @@ fn class_candidate_message(entry: &PhysicalEntry, bytes: &[u8]) -> String {
 ///
 /// A name is raw bytes, so anything outside printable ASCII is escaped rather than
 /// replaced by a lossy character.
-fn escaped_raw_name(raw: &[u8]) -> String {
+pub(crate) fn escaped_raw_name(raw: &[u8]) -> String {
     use std::fmt::Write as _;
     let mut escaped = String::new();
     for &byte in raw {
@@ -1330,7 +1333,7 @@ fn terminal_diagnostic(error: &Error, unit: Option<&ScanUnit>) -> Diagnostic {
 }
 
 /// Shared size conversion for the scan modules.
-pub(super) fn to_u64(value: usize) -> Result<u64> {
+pub(crate) fn to_u64(value: usize) -> Result<u64> {
     u64::try_from(value).map_err(|_| {
         Error::invalid_input(
             "query_size_overflow",

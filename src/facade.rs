@@ -177,6 +177,38 @@ impl Engine {
         jarde_jvm::reflection_patterns(content, request, budget)
     }
 
+    /// Versioned framework/resource plugin scan (P4 3.1/3.2 entry point).
+    ///
+    /// Same request-level shape checks as the query entry: a request that enables no rule
+    /// (`plugin_no_rules`), a physical view of another snapshot (`plugin_snapshot_mismatch`) or a
+    /// tree root this snapshot cannot have (`plugin_artifact_tree_root_mismatch`) is an input error
+    /// before anything is read.
+    ///
+    /// Every enabled rule is answered **by id and version** against the registered table
+    /// ([`crate::plugins`]): a configuration this registry does not hold — at the id or at the
+    /// version — is `Unsupported` with the code that says which, never an empty item list, because
+    /// "this engine does not read that configuration" and "that configuration declares nothing" are
+    /// different statements. A performed rule publishes derived facts, each stamped with the rule,
+    /// the rule version, the entry it was read from and the range inside that entry, beside the
+    /// rule's own coverage; a budget refusal keeps that prefix, names the dimension that refused and
+    /// the entries it did not read, and never becomes a wrong answer. The P1/P2 structural facts are
+    /// untouched by all of it: a plugin has no `QueryRelation`, no `XrefItem` and no X1 edge, and
+    /// the generic structural scan stays target-driven and cursor-bound next to it (P4 decision 4).
+    ///
+    /// Nothing is executed, loaded or fetched: a plugin reads the authorized snapshot input through
+    /// this engine's budgeted read face and reports the names a configuration spells — a name this
+    /// snapshot does not even hold is still published as declared. A plugin is ordinary in-process
+    /// code and this entry point claims no sandbox for it ([`crate::PLUGIN_TRUST_DOMAIN`]): an
+    /// untrusted extension would need a separate process or Wasm, under its own change.
+    pub fn plugins(
+        &self,
+        snapshot: &ArtifactSnapshot,
+        request: &crate::PluginRequest,
+        budget: &mut Budget,
+    ) -> Result<crate::PluginReport> {
+        jarde_query::plugin::execute(snapshot, request, budget)
+    }
+
     /// Method IR analysis under an explicit environment (P2 entry point).
     ///
     /// An empty stage set is an input error (`analysis_no_stages`); every other mismatch

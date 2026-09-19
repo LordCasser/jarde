@@ -81,6 +81,16 @@ pub use jarde_query::query::{
     QueryResolution, QueryTarget, XrefCertainty, XrefDerivation, XrefEvidence, XrefItem,
     XrefOperation, XrefTarget,
 };
+// The versioned plugin plane (P4 3.1) crosses the same way the query layer does: as its product
+// types and its registry functions, never as the query layer's module path — the entry point that
+// performs a request (`plugin::execute`) stays below and is reached through
+// [`Engine::plugins`], exactly like `query::execute` is reached through [`Engine::query`].
+pub use jarde_query::plugin::{
+    PLUGIN_TRUST_DOMAIN, PLUGINS, PluginAnalysis, PluginBudget, PluginConfigPath,
+    PluginInputCategory, PluginItem, PluginOutputSchema, PluginReport, PluginRequest, PluginRule,
+    PluginRuleAnalysis, PluginRuleReport, PluginRuleVersion, PluginSelection, PluginSupport,
+    PluginValue, plugin_for, plugins,
+};
 pub use jarde_reader::classfile::{
     AttributeFacts, AttributeShell, BootstrapMethodFacts, BytecodeInspection, BytecodeStop,
     BytecodeStopPhase, ClassFacts, ClassHeader, ClassfileVersion, ControlFlowTarget,

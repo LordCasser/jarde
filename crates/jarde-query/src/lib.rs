@@ -12,5 +12,6 @@
 //! [`query::execute`], [`xref::scan_candidates`] and the two candidate shapes of
 //! [`xref::CandidateFilter`] are the whole seam, and the scanner's other filters stay internal.
 
+pub mod plugin;
 pub mod query;
 pub mod xref;

@@ -30,7 +30,7 @@ use jarde_reader::model::{
 };
 
 const MANIFEST_PATH: &[u8] = b"META-INF/MANIFEST.MF";
-const SERVICES_PREFIX: &[u8] = b"META-INF/services/";
+pub(crate) const SERVICES_PREFIX: &[u8] = b"META-INF/services/";
 const AGENT_ATTRIBUTES: [&[u8]; 3] = [b"Premain-Class", b"Agent-Class", b"Launcher-Agent-Class"];
 
 pub(super) fn scan(
@@ -358,7 +358,14 @@ fn parse_main_section(
 /// `java.util.ServiceLoader` syntax: a `#` starts a comment that ends the line,
 /// blank lines are ignored, surrounding whitespace is trimmed, and a name that ends
 /// with `.` continues on the next line.
-fn service_providers(content: &[u8], budget: &mut Budget) -> Result<Vec<(ByteSpan, Vec<u8>)>> {
+///
+/// This parser is the engine's one reading of that syntax: the plugin plane (P4 3.1)
+/// reads the very same declarations through it, so a rule cannot interpret a
+/// configuration file differently from the structural scan that also reads it.
+pub(crate) fn service_providers(
+    content: &[u8],
+    budget: &mut Budget,
+) -> Result<Vec<(ByteSpan, Vec<u8>)>> {
     let mut providers = Vec::new();
     let mut pending: Option<(ByteSpan, Vec<u8>)> = None;
     let mut offset = 0_usize;
@@ -388,7 +395,7 @@ fn service_providers(content: &[u8], budget: &mut Budget) -> Result<Vec<(ByteSpa
 
 /// Registration key of a `META-INF/services` entry, matched case-insensitively
 /// while the raw service name bytes are preserved.
-fn service_key(raw_name: &[u8]) -> Option<&[u8]> {
+pub(crate) fn service_key(raw_name: &[u8]) -> Option<&[u8]> {
     if raw_name.len() <= SERVICES_PREFIX.len()
         || !ascii_eq(&raw_name[..SERVICES_PREFIX.len()], SERVICES_PREFIX)
     {
