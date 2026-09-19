@@ -19,6 +19,7 @@ pub mod error;
 pub mod inspect;
 pub mod model;
 pub mod multi_release;
+pub mod release_registry;
 #[cfg(any(test, feature = "test-support"))]
 mod test_fixtures;
 pub mod view;

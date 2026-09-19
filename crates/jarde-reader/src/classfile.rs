@@ -6,6 +6,10 @@ use crate::model::{
     ByteSpan, Coverage, CoverageDimension, CoverageRange, CoverageState, Diagnostic,
     DiagnosticSeverity, ExecutionReport, JvmBytes, JvmString, TerminationReason,
 };
+use crate::release_registry::{
+    HIGHEST_REGISTERED_MAJOR, MINIMUM_MAJOR, PREVIEW_MARKER, ReleaseLookup, ReleaseRegistration,
+    feature_registry,
+};
 use noak::reader::attributes::{ArrayType, Code, RawInstruction};
 use noak::reader::{Attribute, Class};
 use serde::{Deserialize, Serialize};
@@ -117,22 +121,69 @@ pub enum HeaderStructuralRead {
     Complete,
 }
 
+/// Whether the version's `minor_version` carries the preview marker (JVMS 4.1).
+///
+/// The marker is a fact about the *format*: from major 56 on, minor 65535 marks a preview class
+/// file. It says nothing about whether this build validates a preview dialect — that is
+/// [`VersionCapability::version_dialect_support`], and the two stay separate statements so that a
+/// marker this build does not support can never read as support.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PreviewMarker {
+    Absent,
+    Present,
+}
+
+/// Whether an output-level evaluation ran over this artifact, and what it concluded.
+///
+/// `NotEvaluated` is the only variant this layer produces: classifying a version and reading a
+/// structure is not a statement about what an output level can represent. The Java 8 output level's
+/// conflict and fallback for record, sealed and modern concat output (P4 design decision 5) is
+/// stated by the pass that really evaluates it over the modern facts; until then this plane must
+/// not be read as "the artifact survives the requested output level".
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum OutputLevelStatus {
+    NotEvaluated,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct VersionCapability {
     pub version: ClassfileVersion,
     pub version_rule: VersionRuleStatus,
-    /// P0 support inferred from major/minor only; no CP, flags, attribute, or opcode dialect validation.
+    /// The dialect support this build declares, read from the release-bound registry: `Supported`
+    /// only where the registry validates the dialect, `StructuralProbeOnly` where the structure is
+    /// read without dialect validation, and the preview/future states where the registry holds no
+    /// validating record. The registry's tag, attribute, flag and opcode constraints are stated by
+    /// [`crate::release_registry`] and are not applied here yet, which is what
+    /// `dialect_validation_scope` records.
     pub version_dialect_support: VersionDialectSupport,
     pub dialect_validation_scope: DialectValidationScope,
     pub java8_runtime: Java8RuntimeCompatibility,
+    /// Whether the input carries the release's preview marker.
+    pub preview_marker: PreviewMarker,
+    /// Whether the registry holds a record for the input's major.
+    ///
+    /// `UnregisteredFutureRelease` and `UnregisteredBelowMinimum` are the conservative path: the
+    /// registry claims nothing about such a version's constraints, so no capability of a registered
+    /// release may be read into it.
+    pub release_registration: ReleaseRegistration,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct HeaderInspection {
     pub header: ClassHeader,
+    /// Parse plane: how much of the structure this read established. `Complete` says the header was
+    /// read to the end of its schema — nothing about the dialect, and nothing about verification.
     pub structural_read: HeaderStructuralRead,
+    /// Dialect-validation plane: the version rule, and the dialect support the registry declares for
+    /// the release.
     pub version_capability: VersionCapability,
+    /// Verification plane: whether a verifier really ran, and what it concluded. This layer never
+    /// runs one, so it states `NotPerformed` whatever the dialect plane says.
     pub verification: VerificationStatus,
+    /// Output-level plane: whether an output-level evaluation ran. This layer never runs one.
+    pub output_level: OutputLevelStatus,
     pub diagnostics: Vec<Diagnostic>,
 }
 
@@ -329,8 +380,10 @@ pub(crate) fn probe_minimal_header(
     })
 }
 
-/// Reads declaration-level structure and applies the implemented version-only P0 gate.
-/// Attribute content, instructions, and JVM verification are never performed here.
+/// Reads declaration-level structure and applies the version rule of the release-bound registry.
+/// Attribute content, attribute and flag legality, instructions, and JVM verification are never
+/// performed here: the registry states those constraints, and the passes that read the facts apply
+/// them.
 pub fn inspect_header(
     bytes: &[u8],
     budget: &mut Budget,
@@ -351,6 +404,7 @@ pub fn inspect_header(
         structural_read: HeaderStructuralRead::Complete,
         version_capability,
         verification: VerificationStatus::NotPerformed,
+        output_level: OutputLevelStatus::NotEvaluated,
         diagnostics,
     })
 }
@@ -847,30 +901,50 @@ fn inspect_header_structure(bytes: &[u8], budget: &mut Budget) -> Result<ClassHe
     })
 }
 
+/// Classifies one class-file version from the release-bound registry.
+///
+/// P0 compared `major` and `minor` against literal ranges here. The rules are the same rules, but
+/// they are now read from the registry record of the release the version names, so the version rule,
+/// the dialect band, the preview marker and the Java 8 profile all follow the release table instead
+/// of a second copy of it:
+///
+/// - the major floor, the minor rule of modern releases and the preview marker are the registry's
+///   own constants and rules (JVMS 4.1), and the minor rule deliberately reaches *above* the
+///   registry ceiling — it is a rule of the format, not a capability of a recorded release;
+/// - the dialect support and the Java 8 profile verdict are the record's, and a major the registry
+///   does not hold makes no claim: a later release states [`VersionDialectSupport::FutureRelease`],
+///   a major below the format's minimum keeps the structural-probe band it always had;
+/// - preview support is decided by the record's preview rule, never by the marker alone, so a
+///   preview class file this build does not validate reports `UnsupportedPreview` while its
+///   `preview_marker` stays `Present`.
 fn classify_version(major: u16, minor: u16) -> VersionCapability {
-    let version_rule = if major < 45 {
+    let registry = feature_registry();
+    let release = registry.release(major);
+    let version_rule = if major < MINIMUM_MAJOR {
         VersionRuleStatus::InvalidMajor
-    } else if major >= 56 && minor != 0 && minor != u16::MAX {
+    } else if major >= registry.modern_minor_since() && minor != 0 && minor != PREVIEW_MARKER {
         VersionRuleStatus::InvalidModernMinor
     } else {
         VersionRuleStatus::Valid
     };
-    let preview = major >= 56 && minor == u16::MAX;
-    let version_dialect_support = if major > 71 {
-        VersionDialectSupport::FutureRelease
-    } else if preview {
-        VersionDialectSupport::UnsupportedPreview
-    } else if (53..=71).contains(&major) {
-        VersionDialectSupport::StructuralProbeOnly
-    } else if (45..=52).contains(&major) {
-        VersionDialectSupport::Supported
+    let preview_marker = if major >= registry.modern_minor_since() && minor == PREVIEW_MARKER {
+        PreviewMarker::Present
     } else {
-        VersionDialectSupport::StructuralProbeOnly
+        PreviewMarker::Absent
     };
-    let java8_runtime = if (45..=51).contains(&major) || (major == 52 && minor == 0) {
-        Java8RuntimeCompatibility::Accepted
-    } else {
-        Java8RuntimeCompatibility::Rejected
+    let version_dialect_support = match release {
+        ReleaseLookup::Registered(record) => match (preview_marker, record.preview()) {
+            (PreviewMarker::Present, Some(preview)) => preview.dialect_support,
+            _ => record.dialect_support(),
+        },
+        ReleaseLookup::UnregisteredFutureRelease => VersionDialectSupport::FutureRelease,
+        ReleaseLookup::UnregisteredBelowMinimum => VersionDialectSupport::StructuralProbeOnly,
+    };
+    let java8_runtime = match release {
+        ReleaseLookup::Registered(record) => record.java8_runtime(minor),
+        ReleaseLookup::UnregisteredFutureRelease | ReleaseLookup::UnregisteredBelowMinimum => {
+            Java8RuntimeCompatibility::Rejected
+        }
     };
     VersionCapability {
         version: ClassfileVersion { major, minor },
@@ -878,6 +952,8 @@ fn classify_version(major: u16, minor: u16) -> VersionCapability {
         version_dialect_support,
         dialect_validation_scope: DialectValidationScope::VersionOnly,
         java8_runtime,
+        preview_marker,
+        release_registration: release.registration(),
     }
 }
 
@@ -888,7 +964,9 @@ fn classify_version(major: u16, minor: u16) -> VersionCapability {
 /// version fields — a method-analysis request reads the header by identity instead of through
 /// 1.2's inspection — asks this function instead of restating the rule, so the two plans cannot
 /// drift apart. `major` below 45 is below the minimum the format defines, and a `minor` that is
-/// neither `0` nor `65535` contradicts a major of 56 or above (JVMS 4.1).
+/// neither `0` nor `65535` contradicts a major of 56 or above (JVMS 4.1). Both numbers and the
+/// dialect bands they select are read from [`crate::release_registry`]; the constraints that table
+/// holds for tags, attributes, flags and opcodes are queried there rather than restated here.
 pub fn version_capability(major: u16, minor: u16) -> VersionCapability {
     classify_version(major, minor)
 }
@@ -931,15 +1009,17 @@ fn version_diagnostics(capability: &VersionCapability) -> Vec<Diagnostic> {
             "classfile_version_structural_probe_only",
             DiagnosticSeverity::Warning,
             format!(
-                "classfile version {}.{} is only structurally inspected; dialect validation scope is version_only",
-                capability.version.major, capability.version.minor
+                "classfile version {}.{} is only structurally inspected; the release registry validates the dialect up to major {}",
+                capability.version.major,
+                capability.version.minor,
+                feature_registry().dialect_validated_ceiling()
             ),
         )),
         VersionDialectSupport::UnsupportedPreview => diagnostics.push(version_diagnostic(
             "classfile_preview_unsupported",
             DiagnosticSeverity::Warning,
             format!(
-                "preview classfile version {}.{} is not supported by the P0 dialect",
+                "preview classfile version {}.{} is not supported: the registry records the preview marker and this build validates no preview dialect",
                 capability.version.major, capability.version.minor
             ),
         )),
@@ -947,8 +1027,8 @@ fn version_diagnostics(capability: &VersionCapability) -> Vec<Diagnostic> {
             "classfile_future_release",
             DiagnosticSeverity::Warning,
             format!(
-                "classfile version {}.{} is newer than the P0 structural range ending at major 71",
-                capability.version.major, capability.version.minor
+                "classfile version {}.{} is above the highest release the registry holds (major {})",
+                capability.version.major, capability.version.minor, HIGHEST_REGISTERED_MAJOR
             ),
         )),
     }
@@ -1001,19 +1081,25 @@ fn enforce_strict_version_gate(capability: &VersionCapability) -> Result<()> {
         VersionDialectSupport::StructuralProbeOnly => {
             return Err(Error::unsupported(
                 "classfile_version_structural_probe_only",
-                "strict header inspection requires P0 version-dialect support",
+                format!(
+                    "strict header inspection requires a dialect-validated release; the registry validates the dialect up to major {}",
+                    feature_registry().dialect_validated_ceiling()
+                ),
             ));
         }
         VersionDialectSupport::UnsupportedPreview => {
             return Err(Error::unsupported(
                 "classfile_preview_unsupported",
-                "strict header inspection does not support preview classfiles",
+                "strict header inspection validates no preview dialect",
             ));
         }
         VersionDialectSupport::FutureRelease => {
             return Err(Error::unsupported(
                 "classfile_future_release",
-                "strict header inspection does not support future classfile releases",
+                format!(
+                    "strict header inspection does not support releases above the registry's highest registered release (major {})",
+                    HIGHEST_REGISTERED_MAJOR
+                ),
             ));
         }
     }
@@ -6190,6 +6276,7 @@ pub mod test_class {
 mod tests {
     use super::*;
     use crate::budget::{BudgetDimension, CancellationToken, Limits};
+    use crate::release_registry::ClassfileLocation;
     use proptest::prelude::*;
 
     fn limits(value: u64) -> Limits {
@@ -7446,6 +7533,216 @@ mod tests {
                 "strict result for {major}.{minor}"
             );
         }
+    }
+
+    /// The preview and unregistered-release scenario, on the report the reader publishes.
+    ///
+    /// The three planes must stay separate in the answer: the structure was read, no verification
+    /// ran, no output level was evaluated, and the dialect plane states non-support. A readable
+    /// structure is never evidence of dialect or verifier success, and an unregistered release
+    /// carries no registered capability with it.
+    #[test]
+    fn preview_and_unregistered_releases_stay_readable_and_are_never_reported_as_supported() {
+        let registry = feature_registry();
+        let cases = [
+            (
+                56,
+                u16::MAX,
+                VersionDialectSupport::UnsupportedPreview,
+                ReleaseRegistration::Registered,
+                PreviewMarker::Present,
+                "classfile_preview_unsupported",
+            ),
+            (
+                71,
+                u16::MAX,
+                VersionDialectSupport::UnsupportedPreview,
+                ReleaseRegistration::Registered,
+                PreviewMarker::Present,
+                "classfile_preview_unsupported",
+            ),
+            (
+                62,
+                0,
+                VersionDialectSupport::StructuralProbeOnly,
+                ReleaseRegistration::Registered,
+                PreviewMarker::Absent,
+                "classfile_version_structural_probe_only",
+            ),
+            (
+                72,
+                0,
+                VersionDialectSupport::FutureRelease,
+                ReleaseRegistration::UnregisteredFutureRelease,
+                PreviewMarker::Absent,
+                "classfile_future_release",
+            ),
+            (
+                72,
+                u16::MAX,
+                VersionDialectSupport::FutureRelease,
+                ReleaseRegistration::UnregisteredFutureRelease,
+                PreviewMarker::Present,
+                "classfile_future_release",
+            ),
+            (
+                99,
+                3,
+                VersionDialectSupport::FutureRelease,
+                ReleaseRegistration::UnregisteredFutureRelease,
+                PreviewMarker::Absent,
+                "classfile_future_release",
+            ),
+        ];
+        for (major, minor, dialect, registration, preview_marker, code) in cases {
+            let fixture = fixture_version(major, minor);
+            let forensic = inspect_header(
+                &fixture.bytes,
+                &mut Budget::new(limits(u64::MAX)),
+                InspectionMode::Forensic,
+            )
+            .unwrap();
+            // Parse: the structure was read, and this success belongs to that plane alone.
+            assert_eq!(forensic.structural_read, HeaderStructuralRead::Complete);
+            // Verification: this layer ran none, whatever the format claims.
+            assert_eq!(forensic.verification, VerificationStatus::NotPerformed);
+            // Output level: this layer evaluated none either.
+            assert_eq!(forensic.output_level, OutputLevelStatus::NotEvaluated);
+            // Dialect: explicit non-support, never a supported band.
+            assert_eq!(forensic.version_capability.version_dialect_support, dialect);
+            assert_eq!(forensic.version_capability.preview_marker, preview_marker);
+            assert_eq!(
+                forensic.version_capability.release_registration, registration,
+                "{major}.{minor}"
+            );
+            assert!(
+                forensic
+                    .diagnostics
+                    .iter()
+                    .any(|diagnostic| diagnostic.code == code),
+                "diagnostic {code} for {major}.{minor}"
+            );
+            if registration == ReleaseRegistration::UnregisteredFutureRelease {
+                // The conservative path: no record, so no constraint of a registered release.
+                assert!(registry.release_record(major).is_none());
+                assert_eq!(registry.attributes(major).count(), 0);
+                assert_eq!(registry.flags(major).count(), 0);
+            }
+            assert!(
+                inspect_header(
+                    &fixture.bytes,
+                    &mut Budget::new(limits(u64::MAX)),
+                    InspectionMode::Strict,
+                )
+                .is_err(),
+                "strict refusal for {major}.{minor}"
+            );
+        }
+    }
+
+    /// The report's version facts are the registry record's, so the two cannot drift apart.
+    #[test]
+    fn header_capability_follows_the_release_registry() {
+        let registry = feature_registry();
+        for major in [45, 50, 52, 53, 55, 56, 60, 61, 71] {
+            let record = registry.release_record(major).expect("registered release");
+            let capability = version_capability(major, 0);
+            assert_eq!(
+                capability.release_registration,
+                ReleaseRegistration::Registered,
+                "{major}"
+            );
+            assert_eq!(capability.preview_marker, PreviewMarker::Absent, "{major}");
+            assert_eq!(
+                capability.version_dialect_support,
+                record.dialect_support(),
+                "{major}"
+            );
+            assert_eq!(capability.java8_runtime, record.java8_runtime(0), "{major}");
+            let fixture = fixture_version(major, 0);
+            let inspection = inspect_header(
+                &fixture.bytes,
+                &mut Budget::new(limits(u64::MAX)),
+                InspectionMode::Forensic,
+            )
+            .unwrap();
+            assert_eq!(inspection.version_capability, capability, "{major}");
+        }
+
+        assert_eq!(registry.dialect_validated_ceiling(), 52);
+        // The minor rule of the format reaches above the ceiling, and below the format's minimum the
+        // band stays the conservative structural probe it was.
+        let unregistered_future = version_capability(72, 1);
+        assert_eq!(
+            unregistered_future.version_rule,
+            VersionRuleStatus::InvalidModernMinor
+        );
+        assert_eq!(
+            unregistered_future.release_registration,
+            ReleaseRegistration::UnregisteredFutureRelease
+        );
+        let below_minimum = version_capability(44, 0);
+        assert_eq!(below_minimum.version_rule, VersionRuleStatus::InvalidMajor);
+        assert_eq!(
+            below_minimum.release_registration,
+            ReleaseRegistration::UnregisteredBelowMinimum
+        );
+        assert_eq!(
+            below_minimum.version_dialect_support,
+            VersionDialectSupport::StructuralProbeOnly
+        );
+        assert_eq!(below_minimum.preview_marker, PreviewMarker::Absent);
+    }
+
+    /// The boundary this slice draws: 1.1 states the release rules and answers them on demand; the
+    /// passes that read an artifact's attributes and flags report them (1.2/1.3).
+    #[test]
+    fn header_inspection_leaves_attribute_and_flag_legality_to_the_fact_passes() {
+        let fixture = fixture_version(55, 0);
+        let inspection = inspect_header(
+            &fixture.bytes,
+            &mut Budget::new(limits(u64::MAX)),
+            InspectionMode::Forensic,
+        )
+        .unwrap();
+        for diagnostic in &inspection.diagnostics {
+            assert!(
+                matches!(
+                    diagnostic.code.as_str(),
+                    "classfile_version_structural_probe_only"
+                        | "classfile_preview_unsupported"
+                        | "classfile_future_release"
+                        | "classfile_invalid_major_version"
+                        | "classfile_invalid_modern_minor_version"
+                        | "classfile_java8_runtime_rejected"
+                ),
+                "the header plan states version facts only, not {}",
+                diagnostic.code
+            );
+        }
+
+        let registry = feature_registry();
+        let version = registry
+            .attribute_diagnostic("Record", ClassfileLocation::ClassFile, 55)
+            .expect("the registry states the rule");
+        assert_eq!(version.code, "classfile_attribute_version_not_applicable");
+        assert_eq!(
+            version.message,
+            "attribute \"Record\" is registered from major 60 (JVMS 4.7.30); it is not valid at major 55"
+        );
+        assert!(version.provenance.is_none());
+        assert_eq!(
+            registry.attribute_diagnostic("Record", ClassfileLocation::ClassFile, 60),
+            None
+        );
+        let location = registry
+            .attribute_diagnostic("NestMembers", ClassfileLocation::MethodInfo, 55)
+            .expect("the registry states the rule");
+        assert_eq!(location.code, "classfile_attribute_location_not_applicable");
+        assert_eq!(
+            location.message,
+            "attribute \"NestMembers\" is registered only for ClassFile (JVMS 4.7.29); it is not valid in a method_info structure"
+        );
     }
 
     #[test]

@@ -88,12 +88,18 @@ pub use jarde_reader::classfile::{
     DialectValidationScope, EnclosingMethodFacts, EntryDescriptor, ExceptionHandlerFact,
     HeaderInspection, HeaderStructuralRead, ImmediateValue, InnerClassFacts, InspectionMode,
     InstructionFact, InstructionOperands, Java8RuntimeCompatibility, LocalOperand, MemberHeader,
-    MethodCodeFacts, MethodSelector, ModuleFacts, NestedAttributeFact, ProvidesFacts,
-    SwitchOperands, VerificationStatus, VersionCapability, VersionDialectSupport,
-    VersionRuleStatus, attribute_content, attribute_facts, attribute_slice, bootstrap_methods,
-    class_facts, code_nested_attributes, cp_class_name, cp_entry, cp_utf8, descriptor_types,
-    entry_descriptor, inspect_header, inspect_method_bytecode, method_code_coverage,
-    method_code_facts, push_unique,
+    MethodCodeFacts, MethodSelector, ModuleFacts, NestedAttributeFact, OutputLevelStatus,
+    PreviewMarker, ProvidesFacts, SwitchOperands, VerificationStatus, VersionCapability,
+    VersionDialectSupport, VersionRuleStatus, attribute_content, attribute_facts, attribute_slice,
+    bootstrap_methods, class_facts, code_nested_attributes, cp_class_name, cp_entry, cp_utf8,
+    descriptor_types, entry_descriptor, inspect_header, inspect_method_bytecode,
+    method_code_coverage, method_code_facts, push_unique,
+};
+pub use jarde_reader::release_registry::{
+    AttributePlacement, AttributeRule, ClassfileLocation, ConstantPoolTagRule,
+    ConstantPoolTagStatus, FeatureRegistry, FlagPlacement, FlagRule, IntroducedConstraints,
+    Java8RuntimeRule, MinorForm, OpcodeConstraint, OpcodeRule, OpcodeStatus, Placement,
+    PreviewRule, ReleaseBand, ReleaseLookup, ReleaseRecord, ReleaseRegistration, feature_registry,
 };
 pub use model::*;
 pub use multi_release::*;
