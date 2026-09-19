@@ -9167,10 +9167,12 @@ mod tests {
     /// rules must not reject real code, and real historical subroutines must go through
     /// the same target checks.
     ///
-    /// The counts are the measured population — 15 classes, 42 bodies, 8 exception table
-    /// records, 8 branch/switch targets, 8 `jsr`/`jsr_w` instructions (the ECJ 4.6.1
-    /// 45–48 `finally` codegen) — so a fixture that silently stops being visited, or a
-    /// body that stops decoding, fails here instead of quietly shrinking the sweep.
+    /// The counts are the measured population — 16 classes, 51 bodies, 8 exception table
+    /// records, 11 branch/switch targets, 8 `jsr`/`jsr_w` instructions (the ECJ 4.6.1
+    /// 45–48 `finally` codegen; the single class and its nine bodies beyond that corpus are
+    /// `p3-local-rewrite/v8/LocalRewrite.class`, the javac 23.0.1 P3 1.3d sample) — so a fixture
+    /// that silently stops being visited, or a body that stops decoding, fails here instead of
+    /// quietly shrinking the sweep.
     #[test]
     fn repository_class_fixtures_validate_without_false_target_rejections() {
         let fixtures = class_fixture_paths();
@@ -9231,7 +9233,7 @@ mod tests {
                 branch_targets,
                 subroutines
             ),
-            (15, 42, 8, 8, 8),
+            (16, 51, 8, 11, 8),
             "fixture population changed: re-measure these counts"
         );
     }

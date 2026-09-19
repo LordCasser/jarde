@@ -138,9 +138,11 @@ pub(crate) fn build(
     budget: &mut Budget,
 ) -> Result<Program, StopReason> {
     let mut instructions: BTreeMap<u32, &SsaInstruction> = BTreeMap::new();
+    let mut block_of: BTreeMap<u32, CanonicalBlockId> = BTreeMap::new();
     for block in ssa.blocks() {
         for instruction in block.instructions() {
             instructions.insert(instruction.bci(), instruction);
+            block_of.insert(instruction.bci(), block.block().clone());
         }
     }
     let mut builder = Builder {
@@ -160,6 +162,7 @@ pub(crate) fn build(
         fields: inputs.fields,
         enums: inputs.enums,
         instructions,
+        block_of,
         budget,
         declared: BTreeSet::new(),
         stmts: Vec::new(),
@@ -212,6 +215,9 @@ struct Builder<'a> {
     /// The dispatch-table reads this body performs (P3 2.3).
     enums: &'a enumswitch::Plan,
     instructions: BTreeMap<u32, &'a SsaInstruction>,
+    /// The block each instruction belongs to: which block's own entry state and writes state what a
+    /// local slot holds where that instruction runs (P3 1.3d).
+    block_of: BTreeMap<u32, CanonicalBlockId>,
     budget: &'a mut Budget,
     declared: BTreeSet<u16>,
     stmts: Vec<Stmt>,
@@ -821,6 +827,48 @@ impl Builder<'_> {
         Ok(Some(ty))
     }
 
+    /// Whether writing the **name** of local `slot` at the use BCI `at` denotes the value `denotes`.
+    ///
+    /// A local's name is not a name for a value: it is a name for whatever the slot holds where the
+    /// name is read. The two agree exactly where the value in use at `at` *is* `denotes` — the last
+    /// write to the slot before `at`, or the block's own entry state where nothing in the block wrote
+    /// it. The smallest disagreement is a post-increment, `iload_0; iinc 0,1; ireturn`: the load
+    /// reads the slot, the increment writes it, and the return reads the *loaded* value — so `local0`
+    /// at the return denotes the incremented value, and naming the slot there is the opposite program.
+    ///
+    /// `at` is the **use** point — the BCI of the instruction that reads the value — and never the
+    /// definition the value came from: what a slot holds is a statement about the reader's own point
+    /// of the program, which is why a load's value can stop being the slot's value after it was read.
+    fn slot_name_denotes_the_same_value(&self, slot: u16, denotes: ValueId, at: u32) -> bool {
+        let Some(block) = self
+            .block_of
+            .get(&at)
+            .and_then(|block| self.ssa.block(block))
+        else {
+            // No block of this run holds the use: nothing states what the slot holds there, and a
+            // name written on no evidence states the wrong value half the time.
+            return false;
+        };
+        let mut in_use = block
+            .entry()
+            .iter()
+            .find_map(|(candidate, value)| match candidate {
+                Slot::Local(candidate) if *candidate == slot => Some(*value),
+                _ => None,
+            });
+        for instruction in block.instructions() {
+            if instruction.bci() >= at {
+                break;
+            }
+            for (written, value) in instruction.writes() {
+                if matches!(written, Slot::Local(written) if *written == slot) {
+                    in_use = Some(*value);
+                }
+            }
+        }
+        in_use == Some(denotes)
+    }
+
     /// Renders one SSA value as an expression.
     fn render_value(&mut self, value: ValueId, at: u32, depth: usize) -> Result<Expr, String> {
         if depth > MAX_VALUE_DEPTH {
@@ -829,11 +877,23 @@ impl Builder<'_> {
             ));
         }
         match self.ssa.value(value).def() {
-            Definition::Entry { slot, .. } | Definition::Phi { slot, .. } => match slot {
-                Slot::Local(slot) => match self.names.text(*slot) {
-                    Some(name) => Ok(Expr::direct(ExprKind::Local(name.to_string()), at)),
-                    None => Err(format!("local {slot} has no name to write")),
-                },
+            Definition::Entry { block, slot } | Definition::Phi { block, slot } => match slot {
+                Slot::Local(slot) => {
+                    // The value is a slot's own, and a slot's name is a name for it only where the
+                    // slot still holds it at the use (P3 1.3d). Where the body wrote the slot in
+                    // between, the name denotes the newer value, so this value is refused rather
+                    // than spelled wrongly.
+                    if !self.slot_name_denotes_the_same_value(*slot, value, at) {
+                        return Err(format!(
+                            "the value at BCI {at} is what local {slot} holds at BCI {}, and the body writes the slot again before BCI {at}: the slot's name would denote the value written in between, not this one",
+                            block.bci()
+                        ));
+                    }
+                    match self.names.text(*slot) {
+                        Some(name) => Ok(Expr::direct(ExprKind::Local(name.to_string()), at)),
+                        None => Err(format!("local {slot} has no name to write")),
+                    }
+                }
                 Slot::Stack(stack) => Err(format!(
                     "the value at BCI {at} is the entry state of stack depth {stack}, which no instruction produced"
                 )),
@@ -853,10 +913,30 @@ impl Builder<'_> {
                 };
                 match operation {
                     Operation::Push(constant) => Ok(Expr::direct(literal(constant), bci)),
-                    Operation::Load { slot } => match self.names.text(*slot) {
-                        Some(name) => Ok(Expr::direct(ExprKind::Local(name.to_string()), bci)),
-                        None => Err(format!("local {slot} has no name to write")),
-                    },
+                    // A load yields the value its slot held *where the load ran*, and that value is
+                    // what a reader of it means — not the slot. Writing the slot's name at the use
+                    // is the same expression only while the slot still holds it (P3 1.3d); where
+                    // the body wrote the slot in between, the name would read the newer value and
+                    // the text would state the opposite program, so the read is refused instead.
+                    Operation::Load { slot } => {
+                        let Some(instruction) = self.instructions.get(&bci).copied() else {
+                            return Err(format!("no names record for the load at BCI {bci}"));
+                        };
+                        let Some(read) = local_read(instruction, *slot) else {
+                            return Err(format!(
+                                "the value at BCI {at} comes from the load at BCI {bci}, whose read of local {slot} this run does not state"
+                            ));
+                        };
+                        if !self.slot_name_denotes_the_same_value(*slot, read, at) {
+                            return Err(format!(
+                                "the value at BCI {at} is the value local {slot} held at BCI {bci}, and the slot does not hold it at BCI {at}: the slot's name would read the value the body wrote in between"
+                            ));
+                        }
+                        match self.names.text(*slot) {
+                            Some(name) => Ok(Expr::direct(ExprKind::Local(name.to_string()), bci)),
+                            None => Err(format!("local {slot} has no name to write")),
+                        }
+                    }
                     Operation::Arithmetic { op } => {
                         let Some(instruction) = self.instructions.get(&bci).copied() else {
                             return Err(format!(
@@ -1334,13 +1414,14 @@ impl Builder<'_> {
         let mut bcis = vec![at];
         if let Some(instruction) = self.instructions.get(&at).copied() {
             for (_, value) in stack_operands(instruction) {
-                self.deferred_producers(value, &mut bcis, 0);
+                self.deferred_producers(value, at, &mut bcis, 0);
             }
         }
         bcis
     }
 
-    /// The BCIs of the invocations behind one value that no statement wrote.
+    /// The BCIs of the instructions behind one value that no statement wrote, every one of them read
+    /// by the instruction at `reader`.
     ///
     /// A call whose value reaches a reader writes no statement of its own
     /// ([`Self::call_value_reaches_a_reader`]), and the reader *usually* writes the value: that is
@@ -1350,7 +1431,12 @@ impl Builder<'_> {
     /// build did present, the deferred producers of the values they read. A producer that is a
     /// deferred invocation is quoted and the walk stops there: the invocation itself is the effect,
     /// and its operands' statements are their own instructions' business.
-    fn deferred_producers(&self, value: ValueId, into: &mut Vec<u32>, depth: usize) {
+    ///
+    /// A **load** belongs to the same class for the same reason: it writes no statement either, its
+    /// text lands where its value is consumed, and where the slot no longer holds what it read at
+    /// `reader` that text is refused (P3 1.3d) — so the read itself is what the quote has to name,
+    /// and the read is named rather than dropped from the answer.
+    fn deferred_producers(&self, value: ValueId, reader: u32, into: &mut Vec<u32>, depth: usize) {
         if depth > MAX_VALUE_DEPTH {
             return;
         }
@@ -1369,8 +1455,19 @@ impl Builder<'_> {
             return;
         }
         if let Some(instruction) = self.instructions.get(&bci).copied() {
+            if let Some(Operation::Load { slot }) = self.operations.get(bci)
+                && let Some(read) = local_read(instruction, *slot)
+                && !self.slot_name_denotes_the_same_value(*slot, read, reader)
+            {
+                if !into.contains(&bci) {
+                    into.push(bci);
+                }
+                return;
+            }
             for (_, operand) in stack_operands(instruction) {
-                self.deferred_producers(operand, into, depth + 1);
+                // The operand of *this* instruction is read here, not by the reader the walk
+                // started from: the walk descends one instruction, and so does the use point.
+                self.deferred_producers(operand, bci, into, depth + 1);
             }
         }
     }
@@ -1841,6 +1938,21 @@ impl Builder<'_> {
             .map(|block| block.blocks().to_vec())
             .unwrap_or_default()
     }
+}
+
+/// The value one instruction reads out of one local slot, when it reads that slot at all.
+///
+/// A load of a slot *produces* a value rather than consuming one, so this is deliberately not
+/// [`stack_operands`]: it is what the slot held where the instruction ran, which is what the value
+/// the instruction yields stands for — and therefore what a reader of that value means.
+fn local_read(instruction: &SsaInstruction, slot: u16) -> Option<ValueId> {
+    instruction
+        .reads()
+        .iter()
+        .find_map(|(read, value)| match read {
+            Slot::Local(read) if *read == slot => Some(*value),
+            _ => None,
+        })
 }
 
 /// The values one instruction reads off the operand stack, ordered by depth.

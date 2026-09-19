@@ -74,3 +74,10 @@ them, and a missing or changed file is a test failure.
 
 The real `zip()`/`rawzip` writer produces all archives, so enumeration, CRC and
 compression are the production paths, not a test double.
+
+## P3 real compiled samples
+
+| directory | compiler / command | outputs and digests | read by |
+| --- | --- | --- | --- |
+| `p3-local-rewrite/` | javac 23.0.1; `javac --release 8 -g:none -d v8 LocalRewrite.java` | `v8/LocalRewrite.class` (52.0, 650 bytes, SHA-256 `f755f062…6158a6`), with the bytecode of every member in that directory's `README.md` | `tests/p3_local_rewrite.rs` (P3-R1: a slot written between a load and its reader at a return, a store and a branch; P3-R2: the producer behind a presented cast) |
+
