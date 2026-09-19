@@ -54,7 +54,7 @@
 #### Scenario: Unstructured control flow
 
 - **WHEN** 方法的区域恢复遇到不可约 CFG 或交叉异常区域
-- **THEN** 结果保留可靠低级结构和 origin，不能输出空 body 或成功 Structured 标志；若扫描完整，coverage 仍可为 CompleteWithinScope，只有扫描失败才为 Partial（验收 A13）
+- **THEN** 结果保留可靠低级结构和 origin，不能输出空 body 或成功 Structured 标志；若扫描完整，coverage 仍可为 CompleteWithinSchema，只有扫描失败才为 Partial（验收 A13）
 
 ### Requirement: Read-only IR handoff owned by jarde-jvm
 

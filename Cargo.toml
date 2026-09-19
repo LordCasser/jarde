@@ -3,6 +3,7 @@ resolver = "3"
 members = [
     ".",
     "crates/jarde-cli",
+    "crates/jarde-java",
     "crates/jarde-jvm",
     "crates/jarde-query",
     "crates/jarde-reader",

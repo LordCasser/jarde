@@ -16,7 +16,7 @@
 #### Scenario: Complete scan with fallback quality
 
 - **WHEN** 完整扫描成功但某些区域只能保留低级结构
-- **THEN** 结果可为 representation=Mixed、quality=Fallback，同时 coverage=CompleteWithinScope；quality 不得改写为 Partial
+- **THEN** 结果可为 representation=Mixed、quality=Fallback，同时 coverage=CompleteWithinSchema；quality 不得改写为 Partial
 
 #### Scenario: Controlled fixture equivalence
 

@@ -338,6 +338,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "jarde-java"
+version = "0.1.0"
+dependencies = [
+ "blake3",
+ "jarde-jvm",
+ "jarde-reader",
+ "petgraph",
+]
+
+[[package]]
 name = "jarde-jvm"
 version = "0.1.0"
 dependencies = [

@@ -169,7 +169,7 @@
    - 一次 `if (count + 1) { other.count + 1; } else { return; } return 0;` 的发射得 **71 字节 / 12 段**；字段节点自身的区间**恰为 `other.count`**，其 origin 为 `primary bci 30 / cp 9（Direct）` + `derived bci 55（Derived）`；**共享同一 BCI 30 的表达式段与语句段各自保留不同区间**（`other.count + 1` 与 `    other.count + 1;\n`）——即「node → 文本区间」是映射表说了算，不需要回扫文本。
    - 预算：同一发射在 `limit=65` 时于写出 **61 字节**后停在 **bci 20**，返回 `Budget { written: 61, limit: 65, at: bci 20 }`，缓冲里只剩这 61 字节且调用方不构造输出——**中断发生在节点内部**，不是语句边界。
    - 转义 9 条向量 + 2 条性质：`"` → `\"`、`\` → `\\`、`\n` → `\n`（转义）、`\u0000`/`\u0007`/`\u007f`/`\u2028` 全部走 `\uXXXX`、`😀` → `\ud83d\ude00`（UTF-16 语义）；产物无裸控制字符、`"` 只由 `\"` 产生；`int` 不是合法标识符且获得确定性别名 `int_`。
-   - 平面：`Mixed + Fallback + CompleteWithinScope` 与 `Java + NotJava` 两组组合在产物上直接构造成功（见下节）。
+   - 平面：`Mixed + Fallback + CompleteWithinSchema` 与 `Java + NotJava` 两组组合在产物上直接构造成功（见下节）。
    `probe.rs` `sha256 43db4815…7598`；二进制 `sha256 517d26e8…2195`。**注意它的定位**：它证明的是**路线可行**（三类准入由一层同时满足），**不是**证明自研实现优于现成实现——后者本片没有证据，也不宣称。
 6. **若要走许可例外（`oak-java`/`oak-pretty-print` 的 MPL-2.0）**：需要往 `deny.toml` 的 `[[licenses.exceptions]]` 加一条 crate/版本收窄的例外（P1 对 `libfuzzer-sys@0.4.13` 的 NCSA 已有先例）。代价明显更高：NCSA 那条是 **test-only** 依赖，而 MPL-2.0 是弱 copyleft，会覆盖一个生产依赖；且这两个 crate 仍不满足准入 3。**1.2 不建议走**，理由与代价一并记在此处供 1.3 复核。
 
@@ -216,12 +216,33 @@ jarde-java  ①正常流图视图 → ②异常事实 → ③Region → ④AST +
 
 规格明写的两种组合，本路线都能产出（探针上直接构造成功）：
 
-- **`representation=Mixed` + `quality=Fallback` + `coverage=CompleteWithinScope`**：扫描**完整**跑完，但某个区域只保留了可靠低级结构（`BytecodeFallback` 节点，文本形如 `// @bytecode 44 45 46 …`）。三件事分别来自「区域呈现混合」「区域结构强度」「扫描是否完成」，没有任何一步把它们绑在一起——`quality` 也不会被改写成 `Partial`（`Partial` 属 coverage，不属 quality）。
+- **`representation=Mixed` + `quality=Fallback` + `coverage=CompleteWithinSchema`**：扫描**完整**跑完，但某个区域只保留了可靠低级结构（`BytecodeFallback` 节点，文本形如 `// @bytecode 44 45 46 …`）。三件事分别来自「区域呈现混合」「区域结构强度」「扫描是否完成」，没有任何一步把它们绑在一起——`quality` 也不会被改写成 `Partial`（`Partial` 属 coverage，不属 quality）。
 - **`representation=Java` + `syntax_status=NotJava`**：原始名是 Java 关键字/非法标识符/混淆名时，文本里出现的是**确定性别名**（例：`int` → `int_`），呈现仍是 Java（`representation=Java`），但该结果不被声称为合法 Java 语法（`syntax_status=NotJava`），并同时是 `compile_status=NotAttempted`、`semantic_validation=Unproven`、`verification=NotPerformed`——与 `recovery-validation` 的 `Structured output cannot compile` 场景逐字对应。
 
 做不到的（明说）：本片**没有**任何生产者能写出 `Checked`/`Compiles`/`Performed` 这些强状态（1.1b 已如此记录），1.3 也只写 `Unchecked`/`NotAttempted`/`NotPerformed` 一侧；谁能写 `Compiles`/`Failed` 与 `Performed`/`Failed` 仍由 3.3 决定。
 
+#### 1.3a 的实际落点与事实缝（2026-09-19）
+
+1.2 定下的 Route A 已按原样落地，**没有**新增第三方包（`Cargo.lock` 只多出 `jarde-java` 这一个 workspace 成员），四者职责各有一个模块，数据流单向：
+
+| 层 | 模块 | 实际提供的面 | 明确不做 |
+| --- | --- | --- | --- |
+| ① 正常流图视图 | `normal_flow::NormalFlowView` | 只保留 `Normal` + `Return` 边的投影（`petgraph::DiGraph`）、`successors/predecessors`、`immediate_post_dominator`（虚出点 + 反向支配）、`cyclic_blocks`（`tarjan_scc`）、`excluded()` 计数 | 不删 canonical 的边、不写回、不从投影推异常语义；异常/`jsr` 边只在 `excluded()` 里计数 |
+| ② 异常与解码事实 | `facts::{RecoveryFacts, Operation}` | 方法身份、每槽 debug 名、每条 BCI 的解码操作（Push/Load/Store/Arithmetic/Comparison/Invoke/Return/Transfer/Other） | 不产语句、不决定语法；`Other` 与「未解码」是**被陈述**的输入，不是猜测 |
+| ③ Region | `region::{recover, Region, FallbackReason}` | 直线 run、`If{prefix, branch, then_arm, else_arm, join}`、`Fallback{blocks, reason}`；六条前置条件各带一种 `FallbackReason`（异常边/`jsr` 入口/≥3 后继/可重入/分支极性未解码/操作数不可渲染/两臂不相交/未覆盖块/块自身证据缺） | 不发文本、不解码字节码、不决定语法；证据不足**不产空 body** |
+| ④ AST + emitter | `ast` / `build` / `emit` | 带 `OriginSet` 的语句与表达式、语句化规则（`Store`/`Invoke`/`Return` 成句，`Push`/`Load`/`Arithmetic`/`Comparison`/`Transfer` 不成句）、文本与段表**同一批写入**产生、每个写入口先查 `OutputBytes` 再写、超限丢弃缓冲 | 不做边发现/循环识别/异常范围推导 |
+
+2. **段表载体（3.2 长在它上面）**：`source_map::{Origin, OriginSet, Segment, SourceMap}`。`Origin { bci, cp: Option<u16>, provenance: Direct|Derived }`；`Segment { start, end, origin }` 用**生成文本字节区间**做键；表按**完成顺序**记录（嵌套节点在内层先完成），因此 `covering(byte)` 给出最具体节点、`of_bci(bci)` 给出该 BCI 触到的全部节点（`direct_of_bci`/`derived_of_bci` 分开）。`Origin::cp` 本片恒为 `None`：1.1 载荷不发布 CP 索引，字段留出以免 3.2 改表形状。
+3. **命名/转义/预算各在一层**：命名在 `names`（关键字/非法拼写→`alias_for` 纯函数别名，无 debug→`argN`/`localN`，冲突按槽序加后缀；别名只在**呈现**上生效，原始拼写留在证据里）；转义与预算都在 `emit`（字符串按 **UTF-16 单元**转义，含代理对 `😀`→`\ud83d\ude00`；注释走 `comment_text` 去掉可起 `\u` 转义的 `\` 与换行）。
+4. **平面写入方式**（各自独立输入，互不派生）：任一区域或任一语句回退 → `Mixed`/`Fallback`；有别名 → `syntax_status=NotJava`（其余 `Unchecked`，本片无检查器，从不写 `Checked`）；`NotAttempted`/`Unproven`/`NotPerformed` 恒为本片取值。停止（预算/取消/缺表）不写任何平面为成功：`text`/`source_map` 为空 + `execution` 为 `Partial{BudgetExceeded}`/`Cancelled` + `RecoveryOutcome::Stopped`。
+
+5. **本片发现的契约与代码缝（需要 1.3b 接上，本片不擅自扩契约）**：1.1 的只读载荷发布**结构**（块/边/BCI/frames/SSA/effects），但**不发布符号与操作数词汇**——常量池引用的 owner/name/descriptor、`ldc`/`*const*` 推的常量值、`*load*`/`*store*` 命名的是哪个槽、分支跳转的**极性**（`ifeq` 还是 `ifne`：两者图同构、极性的唯一来源是解码事实）都不在里面。要让呈现有内容，这些事实经 `RecoveryFacts` **由调用方交入**（按 BCI 键控），与 debug 名同一条缝；**把这些事实从 class 字节/CP 与真实解码派生出来，是驱动侧（1.3b）的工作**，本片的测试用一张只覆盖它能核对的 opcode 的小表来填（`operations_of`，未知 opcode → `Other` 而不是错分类）。`Origin::cp` 同理。**不**新增 backend trait、**不**给恢复侧可变访问，1.2 的边界未动。
+
+6. **验证与证伪（本片实际执行）**：`cargo test --workspace --all-targets --all-features --locked --no-fail-fast` = **846 passed / 0 failed / 1 ignored**（基线 818 + 新 28：`jarde-java` 19 单元 + 9 集成）；`cargo fmt --all -- --check` 与 `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`openspec validate --all --strict --no-interactive` = **12 passed**；两个 CI example exit 0；分层门禁按 CI 口径本机复跑 12 个配置全绿（`jarde-reader`/`jarde-query`/`jarde-jvm` 的 normal/all × 有无 `--all-features` 都不含 `jarde-java`）；`fuzz/Cargo.lock` 无需更新（`cargo metadata --locked` 通过）。三组证伪（`/tmp` 副本 + 独立 `CARGO_TARGET_DIR`，用完删除）：① 段表区间整体 +1 字节 → 映射用例红；② 超限时改为「报成功」→ 预算用例红；③ 超限时保留半成品缓冲但仍返回停止理由 → 「停止不交半成品」用例红。
+
+7. **遗留 1.3b**：循环/`switch` 与 header effect 次数；不可约/交叉异常区域的 fallback 细化；独立小图 oracle（分支极性/循环 header/return/异常优先级）；A09/A10/A13/A16 覆盖；库/CLI 一致性（CLI 入口本片未接）；上述事实缝的驱动侧派生；以及 1.2 记录的 `coverage=CompleteWithinSchema` 与 `CoverageState::CompleteWithinSchema` 的取值裁决。
+
 #### 需要的裁决与发现的冲突（不在本片擅自改）
 
 1. **决策 5 的前提在本生态不成立。** 决策 5 说「通用语法能力优先复用成熟 Rust 库……避免重复实现通用语法基础设施」，但 6 条准入里真正决定性的两条（③ origin、⑤ 预算）**没有任何现存库满足**，③ 更是所有候选发射 API 的形状问题（一次调用回 `String`）。本片按下述读法落地：**能复用的复用**（`petgraph` 复用图算法；classfile/ZIP 继续用既有成熟库；将来若宽度重排或标准 source map 序列化成为需求，`pretty` 族与 `sourcemap` 是现成候选），**不能复用的不假装能复用**（Java 呈现面自研，范围收在决策 2 的可证明子集）。若父级认为决策 5 应解释为「必须引入某个库、可以接受 origin 粒度下降」，那是**契约变更**（决策 3 的「source map 是一等输出、不得事后反推」与准入 ③ 都要改），需要 OpenSpec 修订，不能由 1.3 自行降级。
-2. **spec 里的 coverage 取值名与现有类型不一致。** 三份 P3 delta 写的是 `coverage=CompleteWithinScope`（`recovery-validation/spec.md:19`、`java8-recovery/spec.md:57`），而仓库里唯一的 coverage 平面是 `jarde-reader::CoverageState::{NotRequested, CompleteWithinSchema, Partial, Unknown}`——`CompleteWithinScope` 这个拼写在源码与 spec 里都**不存在**（`CompleteWithinSchema` 有约 30 处使用）。1.1b 的产物词汇表没有覆盖这一项。需要在 1.3/3.2 前裁决：是给「恢复范围内的完整」新立一个类型/取值（与 P1/P2 的 schema-scope 语义区分），还是把 spec 句子改成 `CompleteWithinSchema`（并说明为何 schema 与 scope 在这里同义）。本片只记录，不改 spec。
+2. **spec 里的 coverage 取值名与现有类型不一致。** 三份 P3 delta 写的是 `coverage=CompleteWithinSchema`（`recovery-validation/spec.md:19`、`java8-recovery/spec.md:57`），而仓库里唯一的 coverage 平面是 `jarde-reader::CoverageState::{NotRequested, CompleteWithinSchema, Partial, Unknown}`——`CompleteWithinSchema` 这个拼写在源码与 spec 里都**不存在**（`CompleteWithinSchema` 有约 30 处使用）。1.1b 的产物词汇表没有覆盖这一项。需要在 1.3/3.2 前裁决：是给「恢复范围内的完整」新立一个类型/取值（与 P1/P2 的 schema-scope 语义区分），还是把 spec 句子改成 `CompleteWithinSchema`（并说明为何 schema 与 scope 在这里同义）。本片只记录，不改 spec。

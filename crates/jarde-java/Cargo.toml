@@ -1,0 +1,30 @@
+[package]
+name = "jarde-java"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT OR Apache-2.0"
+description = "Java 8 recovery: normal-flow regions, a minimal Java AST, and a position-recording emitter"
+
+[dependencies]
+# The read-only IR handoff of one method-analysis run (P3 1.1). This is the payload the recovery
+# layer reads a method's structure from; nothing below names a Region, an AST node or a segment.
+jarde-jvm = { path = "../jarde-jvm", version = "=0.1.0" }
+# The recovery report reuses the fact layer's own vocabulary — `ExecutionReport`,
+# `TerminationReason`, `Diagnostic` and the budget — instead of growing a second set of
+# same-meaning types. The reader did not move; this layer simply sits above `jarde-jvm`.
+jarde-reader = { path = "../jarde-reader", version = "=0.1.0" }
+# The normal-flow view (P3 1.2: `petgraph` belongs to the layer that runs graph algorithms over the
+# canonical blocks). Same version and feature set as `jarde-jvm`'s raw CFG, so the workspace holds
+# exactly one `petgraph`: no `graphmap`/`stable_graph`/`matrix_graph`, `std` only.
+petgraph = { version = "=0.8.3", default-features = false, features = ["std"] }
+
+[dev-dependencies]
+# The reader's test-only class-file builder, so a test can assemble the body it wants to recover
+# without committing a compiled fixture for every shape. Same route `jarde-jvm`'s own tests take:
+# the builder writes real bytes and the real decode path reads them.
+jarde-reader = { path = "../jarde-reader", version = "=0.1.0", features = ["test-support"] }
+# The identity of a class definition is a digest of its bytes (the provider layer binds a header to
+# the identity it claims by hashing the bytes it read), so a test that names a definition has to
+# hash one. The same crate and feature set the workspace's own tests use — no new package.
+blake3 = { version = "=1.8.7", default-features = false, features = ["pure"] }
