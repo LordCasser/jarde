@@ -551,6 +551,19 @@ impl FeatureRegistry {
             .flat_map(|record| record.introduced.flags.iter())
     }
 
+    /// Every access-flag rule the registry holds, from every record, in ascending release order.
+    ///
+    /// [`FeatureRegistry::flags`] is the registration view at one release. This is the whole table,
+    /// which is what a caller needs to resolve a *set bit* to a name: `ACC_MODULE` is not applicable
+    /// at major 52, so the record of 53 is the only entry that can name the bit a class file of 52
+    /// sets. A name the registry holds twice (the `ACC_SYNTHETIC` of a class, field or method, and
+    /// the `ACC_SYNTHETIC` of a method parameter) appears twice, once per rule.
+    pub fn flag_rules(&self) -> impl Iterator<Item = &'static FlagRule> {
+        RELEASES
+            .iter()
+            .flat_map(|record| record.introduced.flags.iter())
+    }
+
     /// Whether `name` is a legal access flag of the `location` structure at `major`.
     pub fn flag_placement(
         &self,

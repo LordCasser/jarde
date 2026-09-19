@@ -31,6 +31,31 @@
 //! and this pass is where an attribute's placement is answered — the boundary P4 1.1 drew and its
 //! `header_inspection_leaves_attribute_and_flag_legality_to_the_fact_passes` test pins.
 //!
+//! # The other three kinds of registry rule
+//!
+//! The registry holds four kinds of name: attributes, access flags, constant-pool tags and opcodes.
+//! This pass consumes three of them, each where its evidence already is:
+//!
+//! * **Member attributes** — the field and method shells the class read holds are placed against
+//!   `field_info`/`method_info`. Their *content* stays with the pass that owns that structure, so
+//!   only the registry's diagnostic for an illegal placement is stated here.
+//! * **Access flags** — the class's own word, each field's and each method's, resolved from the set
+//!   bits to the names the registry holds. Only the *release* claim is stated, because the registry
+//!   holds the flags each release **introduced**, not the whole flag vocabulary of any structure: a
+//!   bit it answers `LocationNotApplicable` for may just as well be a flag of that release it holds
+//!   no rule for ([`flag_diagnostics`] carries the evidence).
+//! * **Opcodes** — every method body is decoded by the bytecode reader's own cursor
+//!   ([`crate::classfile::method_body_opcodes`]) and placed against the release's opcode rules. An
+//!   instruction fact, its span and the BCI a body stopped at remain
+//!   [`crate::classfile::inspect_method_bytecode`]'s answer, not this pass's.
+//!
+//! The fourth kind — a constant-pool tag — is deliberately **not** turned into a diagnostic here: no
+//! tag-diagnostic generator exists, and the answer a caller needs is already a published fact.
+//! [`CondyGraph::dynamic_tag`] carries the registry's status for the tag the graph was walked over,
+//! so the graph's own evidence says whether the release defines the tag; a code invented here would
+//! be a second statement that has to agree with it. The tag rules are consumed where they decide
+//! something — the placement rows of the entries the pool holds — not restated as a verdict.
+//!
 //! # The facts this pass owns
 //!
 //! | fact | type | origin |
@@ -428,7 +453,9 @@ pub struct ModernFacts {
     /// The answer for the requested output level. Never `NotEvaluated`: this pass is the one that
     /// evaluates it, and `NotEvaluated` remains the header plane's honest state.
     pub output_level: OutputLevelStatus,
-    /// The registry's placement diagnostics, then this pass's own structural ones, in that order.
+    /// The registry's placement diagnostics — the class-level entries this pass read, the member
+    /// entries and the access flags it only placed, and the opcodes of the bodies it probed — then
+    /// this pass's own structural ones, in that order.
     pub diagnostics: Vec<Diagnostic>,
 }
 
@@ -599,6 +626,13 @@ pub fn modern_facts(
             read,
         });
     }
+
+    // The member shells, the access flags and the opcodes of the bodies the class points at: the
+    // class read already holds all three, and the registry's rules for them are asked here — where
+    // an artifact's facts are read — never in the header pass that only classifies the version.
+    member_attribute_diagnostics(facts, major, &mut diagnostics);
+    flag_diagnostics(facts, major, &mut diagnostics);
+    opcode_diagnostics(bytes, major, budget, &mut diagnostics)?;
 
     let bootstraps = match bootstrap_shell {
         Some(shell) => bootstrap_methods(bytes, shell, &facts.constant_pool, budget)?,
@@ -1214,6 +1248,106 @@ fn concat_sites(
         });
     }
     Ok(sites)
+}
+
+// ---------------------------------------------------------------------------
+// Legality whose evidence the class read already holds
+// ---------------------------------------------------------------------------
+
+/// The registry's placement answer for the attribute shells of the class's fields and methods.
+///
+/// The class-level loop above asks about the entries this pass *reads*; a member attribute's content
+/// belongs to the pass that owns that structure (module, nest, annotation or code facts), so this
+/// states the placement alone: the registry's diagnostic for a name that is not legal in a field or
+/// method at this release, and nothing at all for a name the registry does not hold.
+fn member_attribute_diagnostics(facts: &ClassFacts, major: u16, diagnostics: &mut Vec<Diagnostic>) {
+    let registry = feature_registry();
+    for (members, location) in [
+        (&facts.fields[..], ClassfileLocation::FieldInfo),
+        (&facts.methods[..], ClassfileLocation::MethodInfo),
+    ] {
+        for member in members {
+            for shell in &member.attributes {
+                // The registry holds JVMS names, which are ASCII: a name that is not valid UTF-8
+                // cannot be one of them, so it is not this pass's to report.
+                let Ok(name) = std::str::from_utf8(&shell.name.raw().0) else {
+                    continue;
+                };
+                diagnostics.extend(registry.attribute_diagnostic(name, location, major));
+            }
+        }
+    }
+}
+
+/// The registry's **release** answer for the access flags the class, its fields and its methods set.
+///
+/// Only a flag whose rule declares this very structure *and* a later release than the class declares
+/// is reported, because that is the claim the registry can make about a set bit: the bit is a flag of
+/// a release this class file is older than.
+///
+/// The **location** claim is deliberately not made, and the reason is the table's own shape: it holds
+/// the flags each release *introduced*, not the complete flag vocabulary of any structure. The
+/// committed `javac 23.0.1` output proves what a bit-driven location claim would do — the class word,
+/// every field and every method of `fixtures/p4-modern/v16/RecordSample.class` sets `0x0010`, which
+/// JVMS 4.1, 4.5 and 4.6 define as `ACC_FINAL` at all three positions, while the registry's only
+/// `0x0010` rule is `ACC_FINAL` for `MethodParameters` (major 52). Reporting that placement would
+/// state a violation about a legal class. `ACC_RECORD` has the same shape twice over: the registry
+/// holds no rule for the name at all, and its bit (`0x1000`) is `ACC_SYNTHETIC` wherever a record flag
+/// could be misplaced. A caller that knows which flag it means asks by name
+/// ([`FeatureRegistry::flag_placement`], [`FeatureRegistry::flag_diagnostic`]); this pass never
+/// guesses a name from the bits it read.
+fn flag_diagnostics(facts: &ClassFacts, major: u16, diagnostics: &mut Vec<Diagnostic>) {
+    let registry = feature_registry();
+    let words = std::iter::once((facts.access_flags, ClassfileLocation::ClassFile))
+        .chain(
+            facts
+                .fields
+                .iter()
+                .map(|field| (field.access_flags, ClassfileLocation::FieldInfo)),
+        )
+        .chain(
+            facts
+                .methods
+                .iter()
+                .map(|method| (method.access_flags, ClassfileLocation::MethodInfo)),
+        );
+    for (word, location) in words {
+        if word == 0 {
+            continue;
+        }
+        for rule in registry
+            .flag_rules()
+            .filter(|rule| rule.since > major && rule.locations.contains(&location))
+        {
+            if word & rule.bits == 0 {
+                continue;
+            }
+            // A release the registry does not hold answers `UnregisteredRelease` and states nothing.
+            diagnostics.extend(registry.flag_diagnostic(rule.name, location, major));
+        }
+    }
+}
+
+/// The registry's answer for the opcodes the class's method bodies really contain.
+///
+/// The opcodes come from the bytecode read path's own cursor
+/// ([`crate::classfile::method_body_opcodes`]) and the rules from the registry: this pass states no
+/// instruction fact, no span and no stop of its own. An opcode the registry holds no rule for makes
+/// no claim either way, and a release the registry does not hold is never asked — the probe's own
+/// opcode list is then placed against `UnregisteredRelease`, which is `None` for every opcode.
+fn opcode_diagnostics(
+    bytes: &[u8],
+    major: u16,
+    budget: &mut Budget,
+    diagnostics: &mut Vec<Diagnostic>,
+) -> Result<()> {
+    let registry = feature_registry();
+    for body in crate::classfile::method_body_opcodes(bytes, budget)? {
+        for opcode in body {
+            diagnostics.extend(registry.opcode_diagnostic(opcode, major));
+        }
+    }
+    Ok(())
 }
 
 /// One diagnostic of this pass: a structural finding, with no provenance.

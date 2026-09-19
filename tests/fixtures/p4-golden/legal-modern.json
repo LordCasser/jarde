@@ -1,0 +1,257 @@
+{
+  "file": "legal-modern.json",
+  "replays": [
+    {
+      "blake3": "dd78d9d6f5fb570a0a2b9b8828e59f2f420a4da237a725ca16b9d7c0ae2cc816",
+      "bytes": 1245,
+      "expect": {
+        "header": {
+          "diagnostics": [
+            {
+              "code": "classfile_version_structural_probe_only",
+              "message": "classfile version 60.0 is only structurally inspected; the release registry validates the dialect up to major 52",
+              "severity": "warning"
+            },
+            {
+              "code": "classfile_java8_runtime_rejected",
+              "message": "classfile version 60.0 is not accepted by the Java 8 runtime profile",
+              "severity": "warning"
+            }
+          ],
+          "output_level": "not_evaluated",
+          "structural_read": "complete",
+          "verification": "not_performed",
+          "version_capability": {
+            "dialect_validation_scope": "version_only",
+            "java8_runtime": "rejected",
+            "preview_marker": "absent",
+            "release_registration": "registered",
+            "version": {
+              "major": 60,
+              "minor": 0
+            },
+            "version_dialect_support": "structural_probe_only",
+            "version_rule": "valid"
+          }
+        },
+        "illegal": false,
+        "modern": {
+          "attributes": [
+            {
+              "name": "Record",
+              "placement": "legal",
+              "read": true
+            },
+            {
+              "name": "BootstrapMethods",
+              "placement": "legal",
+              "read": true
+            },
+            {
+              "name": "InnerClasses",
+              "placement": "legal",
+              "read": false
+            }
+          ],
+          "concat_sites": 0,
+          "conflict_features": [
+            "record_components"
+          ],
+          "diagnostics": [],
+          "dynamic_tag": "registered",
+          "output_level": "conflict",
+          "permitted_subclasses_read": false,
+          "record_read": true
+        },
+        "strict": {
+          "error": "classfile_version_structural_probe_only"
+        }
+      },
+      "fixture": "record-sample",
+      "name": "legal-record-at-60",
+      "note": "the same class as the 59 entry, unpatched: the placement row is legal, the components are read, and the release's band is still a structural probe rather than a validated dialect",
+      "source": "tests/fixtures/p4-modern/v16/RecordSample.class, unpatched (committed `javac 23.0.1` output, SHA-256 in tests/fixtures/p4-modern/README.md)"
+    },
+    {
+      "blake3": "5206007eb997eb688cbefd1c37cd45918c05456813943651de6173654b6a2ea4",
+      "bytes": 119,
+      "expect": {
+        "header": {
+          "diagnostics": [
+            {
+              "code": "classfile_version_structural_probe_only",
+              "message": "classfile version 61.0 is only structurally inspected; the release registry validates the dialect up to major 52",
+              "severity": "warning"
+            },
+            {
+              "code": "classfile_java8_runtime_rejected",
+              "message": "classfile version 61.0 is not accepted by the Java 8 runtime profile",
+              "severity": "warning"
+            }
+          ],
+          "output_level": "not_evaluated",
+          "structural_read": "complete",
+          "verification": "not_performed",
+          "version_capability": {
+            "dialect_validation_scope": "version_only",
+            "java8_runtime": "rejected",
+            "preview_marker": "absent",
+            "release_registration": "registered",
+            "version": {
+              "major": 61,
+              "minor": 0
+            },
+            "version_dialect_support": "structural_probe_only",
+            "version_rule": "valid"
+          }
+        },
+        "illegal": false,
+        "modern": {
+          "attributes": [
+            {
+              "name": "PermittedSubclasses",
+              "placement": "legal",
+              "read": true
+            }
+          ],
+          "concat_sites": 0,
+          "conflict_features": [
+            "permitted_subclasses"
+          ],
+          "diagnostics": [],
+          "dynamic_tag": "registered",
+          "output_level": "conflict",
+          "permitted_subclasses_read": true,
+          "record_read": false
+        },
+        "strict": {
+          "error": "classfile_version_structural_probe_only"
+        }
+      },
+      "fixture": "sealed-sample",
+      "name": "legal-sealed-at-61",
+      "note": "`PermittedSubclasses` at the release that introduces it, with two permitted names",
+      "source": "tests/fixtures/p4-modern/v17/SealedSample.class, unpatched (committed `javac 23.0.1` output, SHA-256 in tests/fixtures/p4-modern/README.md)"
+    },
+    {
+      "blake3": "ee2498f82333a55ab54b7aac8cc946d691ebb71b93b5757cf7f6cd04ab31fa72",
+      "bytes": 884,
+      "expect": {
+        "header": {
+          "diagnostics": [
+            {
+              "code": "classfile_version_structural_probe_only",
+              "message": "classfile version 61.0 is only structurally inspected; the release registry validates the dialect up to major 52",
+              "severity": "warning"
+            },
+            {
+              "code": "classfile_java8_runtime_rejected",
+              "message": "classfile version 61.0 is not accepted by the Java 8 runtime profile",
+              "severity": "warning"
+            }
+          ],
+          "output_level": "not_evaluated",
+          "structural_read": "complete",
+          "verification": "not_performed",
+          "version_capability": {
+            "dialect_validation_scope": "version_only",
+            "java8_runtime": "rejected",
+            "preview_marker": "absent",
+            "release_registration": "registered",
+            "version": {
+              "major": 61,
+              "minor": 0
+            },
+            "version_dialect_support": "structural_probe_only",
+            "version_rule": "valid"
+          }
+        },
+        "illegal": false,
+        "modern": {
+          "attributes": [
+            {
+              "name": "BootstrapMethods",
+              "placement": "legal",
+              "read": true
+            },
+            {
+              "name": "InnerClasses",
+              "placement": "legal",
+              "read": false
+            }
+          ],
+          "concat_sites": 2,
+          "conflict_features": [
+            "string_concat",
+            "string_concat"
+          ],
+          "diagnostics": [],
+          "dynamic_tag": "registered",
+          "output_level": "conflict",
+          "permitted_subclasses_read": false,
+          "record_read": false
+        },
+        "strict": {
+          "error": "classfile_version_structural_probe_only"
+        }
+      },
+      "fixture": "concat-sample",
+      "name": "legal-concat-at-61",
+      "note": "two `StringConcatFactory` sites at 61: the output-level plane answers the Java 8 question with a conflict and the sites themselves stay published",
+      "source": "tests/fixtures/p4-modern/v17/ConcatSample.class, unpatched (committed `javac 23.0.1` output, SHA-256 in tests/fixtures/p4-modern/README.md)"
+    },
+    {
+      "blake3": "cecc0aa6452dc1c0c8bcf4b9338f5dc4b659c4c0b8d049cecbee154aca27b933",
+      "bytes": 1087,
+      "expect": {
+        "header": {
+          "diagnostics": [],
+          "output_level": "not_evaluated",
+          "structural_read": "complete",
+          "verification": "not_performed",
+          "version_capability": {
+            "dialect_validation_scope": "version_only",
+            "java8_runtime": "accepted",
+            "preview_marker": "absent",
+            "release_registration": "registered",
+            "version": {
+              "major": 52,
+              "minor": 0
+            },
+            "version_dialect_support": "supported",
+            "version_rule": "valid"
+          }
+        },
+        "illegal": false,
+        "modern": {
+          "attributes": [
+            {
+              "name": "BootstrapMethods",
+              "placement": "legal",
+              "read": true
+            },
+            {
+              "name": "InnerClasses",
+              "placement": "legal",
+              "read": false
+            }
+          ],
+          "concat_sites": 0,
+          "conflict_features": [],
+          "diagnostics": [],
+          "dynamic_tag": "version_not_applicable",
+          "output_level": "representable",
+          "permitted_subclasses_read": false,
+          "record_read": false
+        },
+        "strict": {
+          "read": "complete"
+        }
+      },
+      "fixture": "java8-concat-sample",
+      "name": "legal-java8-concat-at-52",
+      "note": "a 52 class whose concat is a `StringBuilder` chain: nothing here is a modern fact, so the Java 8 question is representable and no conflict is reported",
+      "source": "tests/fixtures/p4-modern/v8/ConcatJava8.class, unpatched (committed `javac 23.0.1` output, SHA-256 in tests/fixtures/p4-modern/README.md)"
+    }
+  ]
+}

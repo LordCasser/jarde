@@ -1,0 +1,134 @@
+{
+  "file": "version-boundaries.json",
+  "replays": [
+    {
+      "blake3": "a7ec59c653d1c5c0bebddc363c66213deaf5d4babdda2d5e3555d60ff4a11b71",
+      "bytes": 1245,
+      "expect": {
+        "header": {
+          "diagnostics": [
+            {
+              "code": "classfile_future_release",
+              "message": "classfile version 72.0 is above the highest release the registry holds (major 71)",
+              "severity": "warning"
+            },
+            {
+              "code": "classfile_java8_runtime_rejected",
+              "message": "classfile version 72.0 is not accepted by the Java 8 runtime profile",
+              "severity": "warning"
+            }
+          ],
+          "output_level": "not_evaluated",
+          "structural_read": "complete",
+          "verification": "not_performed",
+          "version_capability": {
+            "dialect_validation_scope": "version_only",
+            "java8_runtime": "rejected",
+            "preview_marker": "absent",
+            "release_registration": "unregistered_future_release",
+            "version": {
+              "major": 72,
+              "minor": 0
+            },
+            "version_dialect_support": "future_release",
+            "version_rule": "valid"
+          }
+        },
+        "illegal": true,
+        "modern": {
+          "attributes": [],
+          "concat_sites": 0,
+          "conflict_features": [],
+          "diagnostics": [],
+          "dynamic_tag": "unregistered_release",
+          "output_level": "representable",
+          "permitted_subclasses_read": false,
+          "record_read": false
+        },
+        "strict": {
+          "error": "classfile_future_release"
+        }
+      },
+      "fixture": "record-at-72",
+      "name": "record-in-an-unregistered-release",
+      "note": "major 72 is above every release the registry holds: the structure stays readable, the registry makes no claim about the `Record` entry, and the dialect plane says the release is unknown rather than refused",
+      "source": "tests/fixtures/p4-modern/v16/RecordSample.class (committed `javac 23.0.1` output, SHA-256 in tests/fixtures/p4-modern/README.md) with only bytes 4..6 (minor_version) and 6..8 (major_version) patched by tests/p4_golden.rs::version_patched"
+    },
+    {
+      "blake3": "f9c1825e7ea144834686c770a70c6ccef0effa71bb63ad0f63a4df403dc62818",
+      "bytes": 1245,
+      "expect": {
+        "header": {
+          "diagnostics": [
+            {
+              "code": "classfile_invalid_modern_minor_version",
+              "message": "classfile version 60.7 requires minor 0 or 65535 for major >= 56",
+              "severity": "error"
+            },
+            {
+              "code": "classfile_version_structural_probe_only",
+              "message": "classfile version 60.7 is only structurally inspected; the release registry validates the dialect up to major 52",
+              "severity": "warning"
+            },
+            {
+              "code": "classfile_java8_runtime_rejected",
+              "message": "classfile version 60.7 is not accepted by the Java 8 runtime profile",
+              "severity": "warning"
+            }
+          ],
+          "output_level": "not_evaluated",
+          "structural_read": "complete",
+          "verification": "not_performed",
+          "version_capability": {
+            "dialect_validation_scope": "version_only",
+            "java8_runtime": "rejected",
+            "preview_marker": "absent",
+            "release_registration": "registered",
+            "version": {
+              "major": 60,
+              "minor": 7
+            },
+            "version_dialect_support": "structural_probe_only",
+            "version_rule": "invalid_modern_minor"
+          }
+        },
+        "illegal": true,
+        "modern": {
+          "attributes": [
+            {
+              "name": "Record",
+              "placement": "legal",
+              "read": true
+            },
+            {
+              "name": "BootstrapMethods",
+              "placement": "legal",
+              "read": true
+            },
+            {
+              "name": "InnerClasses",
+              "placement": "legal",
+              "read": false
+            }
+          ],
+          "concat_sites": 0,
+          "conflict_features": [
+            "record_components"
+          ],
+          "diagnostics": [],
+          "dynamic_tag": "registered",
+          "output_level": "conflict",
+          "permitted_subclasses_read": false,
+          "record_read": true
+        },
+        "strict": {
+          "error": "classfile_invalid_modern_minor_version"
+        }
+      },
+      "fixture": "record-at-60-minor-7",
+      "name": "minor-form-invalid-at-60",
+      "note": "the format rule of JVMS 4.1 requires minor 0 or 65535 for major >= 56: a *format* refusal, not a dialect band, so strict and forensic differ for a reason the unregistered release does not share",
+      "source": "tests/fixtures/p4-modern/v16/RecordSample.class (committed `javac 23.0.1` output, SHA-256 in tests/fixtures/p4-modern/README.md) with only bytes 4..6 (minor_version) and 6..8 (major_version) patched by tests/p4_golden.rs::version_patched"
+    }
+  ]
+}

@@ -1,0 +1,423 @@
+{
+  "file": "illegal-modern.json",
+  "replays": [
+    {
+      "blake3": "941f2e7108db11b5276dd168ace61b5e5c8e0cb3e8b4def5629c49f36d12a156",
+      "bytes": 1245,
+      "expect": {
+        "header": {
+          "diagnostics": [
+            {
+              "code": "classfile_version_structural_probe_only",
+              "message": "classfile version 59.0 is only structurally inspected; the release registry validates the dialect up to major 52",
+              "severity": "warning"
+            },
+            {
+              "code": "classfile_java8_runtime_rejected",
+              "message": "classfile version 59.0 is not accepted by the Java 8 runtime profile",
+              "severity": "warning"
+            }
+          ],
+          "output_level": "not_evaluated",
+          "structural_read": "complete",
+          "verification": "not_performed",
+          "version_capability": {
+            "dialect_validation_scope": "version_only",
+            "java8_runtime": "rejected",
+            "preview_marker": "absent",
+            "release_registration": "registered",
+            "version": {
+              "major": 59,
+              "minor": 0
+            },
+            "version_dialect_support": "structural_probe_only",
+            "version_rule": "valid"
+          }
+        },
+        "illegal": true,
+        "modern": {
+          "attributes": [
+            {
+              "name": "Record",
+              "placement": "version_not_applicable",
+              "read": false
+            },
+            {
+              "name": "BootstrapMethods",
+              "placement": "legal",
+              "read": true
+            },
+            {
+              "name": "InnerClasses",
+              "placement": "legal",
+              "read": false
+            }
+          ],
+          "concat_sites": 0,
+          "conflict_features": [],
+          "diagnostics": [
+            {
+              "code": "classfile_attribute_version_not_applicable",
+              "message": "attribute \"Record\" is registered from major 60 (JVMS 4.7.30); it is not valid at major 59",
+              "severity": "error"
+            }
+          ],
+          "dynamic_tag": "registered",
+          "output_level": "representable",
+          "permitted_subclasses_read": false,
+          "record_read": false
+        },
+        "strict": {
+          "error": "classfile_version_structural_probe_only"
+        }
+      },
+      "fixture": "record-at-59",
+      "name": "record-in-a-59-class",
+      "note": "the `Record` attribute is registered from major 60 (JVMS 4.7.30); this class declares major 59, so the entry is misplaced by release and the components are not read",
+      "source": "tests/fixtures/p4-modern/v16/RecordSample.class (committed `javac 23.0.1` output, SHA-256 in tests/fixtures/p4-modern/README.md) with only bytes 4..6 (minor_version) and 6..8 (major_version) patched by tests/p4_golden.rs::version_patched"
+    },
+    {
+      "blake3": "7c0e5d5144c06645e530c6fb53001ab6749e725ac64b261a0d7f2ce75d00af42",
+      "bytes": 119,
+      "expect": {
+        "header": {
+          "diagnostics": [
+            {
+              "code": "classfile_version_structural_probe_only",
+              "message": "classfile version 60.0 is only structurally inspected; the release registry validates the dialect up to major 52",
+              "severity": "warning"
+            },
+            {
+              "code": "classfile_java8_runtime_rejected",
+              "message": "classfile version 60.0 is not accepted by the Java 8 runtime profile",
+              "severity": "warning"
+            }
+          ],
+          "output_level": "not_evaluated",
+          "structural_read": "complete",
+          "verification": "not_performed",
+          "version_capability": {
+            "dialect_validation_scope": "version_only",
+            "java8_runtime": "rejected",
+            "preview_marker": "absent",
+            "release_registration": "registered",
+            "version": {
+              "major": 60,
+              "minor": 0
+            },
+            "version_dialect_support": "structural_probe_only",
+            "version_rule": "valid"
+          }
+        },
+        "illegal": true,
+        "modern": {
+          "attributes": [
+            {
+              "name": "PermittedSubclasses",
+              "placement": "version_not_applicable",
+              "read": false
+            }
+          ],
+          "concat_sites": 0,
+          "conflict_features": [],
+          "diagnostics": [
+            {
+              "code": "classfile_attribute_version_not_applicable",
+              "message": "attribute \"PermittedSubclasses\" is registered from major 61 (JVMS 4.7.31); it is not valid at major 60",
+              "severity": "error"
+            }
+          ],
+          "dynamic_tag": "registered",
+          "output_level": "representable",
+          "permitted_subclasses_read": false,
+          "record_read": false
+        },
+        "strict": {
+          "error": "classfile_version_structural_probe_only"
+        }
+      },
+      "fixture": "permitted-subclasses-at-60",
+      "name": "permitted-subclasses-in-a-60-class",
+      "note": "`PermittedSubclasses` is registered from major 61 (JVMS 4.7.31); a 60 class that carries it is refused at 60 and read at 61",
+      "source": "tests/fixtures/p4-modern/v17/SealedSample.class (committed `javac 23.0.1` output, SHA-256 in tests/fixtures/p4-modern/README.md) with only bytes 4..6 (minor_version) and 6..8 (major_version) patched by tests/p4_golden.rs::version_patched"
+    },
+    {
+      "blake3": "e039cb49034b82dc8b12d40855db39a83f039fa82c5fb5fdccc03bb3b0f06275",
+      "bytes": 142,
+      "expect": {
+        "header": {
+          "diagnostics": [
+            {
+              "code": "classfile_version_structural_probe_only",
+              "message": "classfile version 61.0 is only structurally inspected; the release registry validates the dialect up to major 52",
+              "severity": "warning"
+            },
+            {
+              "code": "classfile_java8_runtime_rejected",
+              "message": "classfile version 61.0 is not accepted by the Java 8 runtime profile",
+              "severity": "warning"
+            }
+          ],
+          "output_level": "not_evaluated",
+          "structural_read": "complete",
+          "verification": "not_performed",
+          "version_capability": {
+            "dialect_validation_scope": "version_only",
+            "java8_runtime": "rejected",
+            "preview_marker": "absent",
+            "release_registration": "registered",
+            "version": {
+              "major": 61,
+              "minor": 0
+            },
+            "version_dialect_support": "structural_probe_only",
+            "version_rule": "valid"
+          }
+        },
+        "illegal": true,
+        "modern": {
+          "attributes": [],
+          "concat_sites": 0,
+          "conflict_features": [],
+          "diagnostics": [
+            {
+              "code": "classfile_attribute_location_not_applicable",
+              "message": "attribute \"NestMembers\" is registered only for ClassFile (JVMS 4.7.29); it is not valid in a method_info structure",
+              "severity": "error"
+            }
+          ],
+          "dynamic_tag": "registered",
+          "output_level": "representable",
+          "permitted_subclasses_read": false,
+          "record_read": false
+        },
+        "strict": {
+          "error": "classfile_version_structural_probe_only"
+        }
+      },
+      "fixture": "nest-members-in-a-method",
+      "name": "nest-members-in-a-method",
+      "note": "`NestMembers` is a class-level attribute (JVMS 4.7.29); in a `method_info` of a 61 class the release is right and the location is wrong",
+      "source": "hand-built in tests/p4_golden.rs::nest_members_in_a_method: a 61 class whose only method carries a `Code` entry and a `NestMembers` entry, the attribute JVMS 4.7.29 declares for a class file only"
+    },
+    {
+      "blake3": "49d4f226f66348baf4b7c988fe942c4e3cca771ab7984cffee0e310bc5757c4d",
+      "bytes": 136,
+      "expect": {
+        "header": {
+          "diagnostics": [
+            {
+              "code": "classfile_version_structural_probe_only",
+              "message": "classfile version 60.0 is only structurally inspected; the release registry validates the dialect up to major 52",
+              "severity": "warning"
+            },
+            {
+              "code": "classfile_java8_runtime_rejected",
+              "message": "classfile version 60.0 is not accepted by the Java 8 runtime profile",
+              "severity": "warning"
+            }
+          ],
+          "output_level": "not_evaluated",
+          "structural_read": "complete",
+          "verification": "not_performed",
+          "version_capability": {
+            "dialect_validation_scope": "version_only",
+            "java8_runtime": "rejected",
+            "preview_marker": "absent",
+            "release_registration": "registered",
+            "version": {
+              "major": 60,
+              "minor": 0
+            },
+            "version_dialect_support": "structural_probe_only",
+            "version_rule": "valid"
+          }
+        },
+        "illegal": true,
+        "modern": {
+          "attributes": [],
+          "concat_sites": 0,
+          "conflict_features": [],
+          "diagnostics": [
+            {
+              "code": "classfile_attribute_location_not_applicable",
+              "message": "attribute \"ConstantValue\" is registered only for field_info (JVMS 4.7.2); it is not valid in a method_info structure",
+              "severity": "error"
+            }
+          ],
+          "dynamic_tag": "registered",
+          "output_level": "representable",
+          "permitted_subclasses_read": false,
+          "record_read": false
+        },
+        "strict": {
+          "error": "classfile_version_structural_probe_only"
+        }
+      },
+      "fixture": "constant-value-in-a-method",
+      "name": "constant-value-in-a-method",
+      "note": "`ConstantValue` is a `field_info` attribute (JVMS 4.7.2); in a `method_info` of a 60 class the release is right and the location is wrong",
+      "source": "hand-built in tests/p4_golden.rs::constant_value_in_a_method: a 60 class whose only method carries a `Code` entry and a `ConstantValue` entry, the attribute JVMS 4.7.2 declares for a field_info only"
+    },
+    {
+      "blake3": "b99656a1d2727d931a0fc770e2f315b26e9350be54a8063f594ad1e658330b32",
+      "bytes": 111,
+      "expect": {
+        "header": {
+          "diagnostics": [],
+          "output_level": "not_evaluated",
+          "structural_read": "complete",
+          "verification": "not_performed",
+          "version_capability": {
+            "dialect_validation_scope": "version_only",
+            "java8_runtime": "accepted",
+            "preview_marker": "absent",
+            "release_registration": "registered",
+            "version": {
+              "major": 52,
+              "minor": 0
+            },
+            "version_dialect_support": "supported",
+            "version_rule": "valid"
+          }
+        },
+        "illegal": true,
+        "modern": {
+          "attributes": [],
+          "concat_sites": 0,
+          "conflict_features": [],
+          "diagnostics": [
+            {
+              "code": "classfile_flag_version_not_applicable",
+              "message": "access flag ACC_MODULE (0x8000) is registered from major 53 (JVMS 4.1); it is not valid at major 52",
+              "severity": "error"
+            }
+          ],
+          "dynamic_tag": "version_not_applicable",
+          "output_level": "representable",
+          "permitted_subclasses_read": false,
+          "record_read": false
+        },
+        "strict": {
+          "read": "complete"
+        }
+      },
+      "fixture": "acc-module-at-52",
+      "name": "acc-module-in-a-52-class",
+      "note": "the `ACC_MODULE` bit (0x8000) is assigned in a class file from major 53 (JVMS 4.1); a 52 class that sets it sets a flag of a later release — the one flag claim the registry's introduced-only table can carry about a set bit",
+      "source": "hand-built in tests/p4_golden.rs::acc_module_class(52): ACC_PUBLIC | ACC_SUPER | 0x8000 (the `ACC_MODULE` bit JVMS 4.1 assigns from major 53) on a two-releases-earlier class"
+    },
+    {
+      "blake3": "7838dcc122007a975dd0feb8936d81eef4813b90032b6825bf59d8c8ac7a7c8b",
+      "bytes": 113,
+      "expect": {
+        "header": {
+          "diagnostics": [],
+          "output_level": "not_evaluated",
+          "structural_read": "complete",
+          "verification": "not_performed",
+          "version_capability": {
+            "dialect_validation_scope": "version_only",
+            "java8_runtime": "accepted",
+            "preview_marker": "absent",
+            "release_registration": "registered",
+            "version": {
+              "major": 52,
+              "minor": 0
+            },
+            "version_dialect_support": "supported",
+            "version_rule": "valid"
+          }
+        },
+        "illegal": true,
+        "modern": {
+          "attributes": [],
+          "concat_sites": 0,
+          "conflict_features": [],
+          "diagnostics": [
+            {
+              "code": "classfile_opcode_forbidden",
+              "message": "opcode 0xa8 (jsr) is forbidden from major 51 (JVMS 4.9.1); it must not appear at major 52",
+              "severity": "error"
+            },
+            {
+              "code": "classfile_opcode_forbidden",
+              "message": "opcode 0xa9 (ret) is forbidden from major 51 (JVMS 4.9.1); it must not appear at major 52",
+              "severity": "error"
+            }
+          ],
+          "dynamic_tag": "version_not_applicable",
+          "output_level": "representable",
+          "permitted_subclasses_read": false,
+          "record_read": false
+        },
+        "strict": {
+          "read": "complete"
+        }
+      },
+      "fixture": "jsr-at-52",
+      "name": "jsr-in-a-52-class",
+      "note": "`jsr` is forbidden from major 51 on (JVMS 4.9.1); the body is one call site and its handler, so the class is a legacy shape at a release that forbids it",
+      "source": "hand-built in tests/p4_golden.rs::jsr_class(52): `jsr +4; return; astore_0; ret 0`, one subroutine call site, at a major the opcode is forbidden from"
+    },
+    {
+      "blake3": "d392636144b934f5e42d0b1183b09071247df700c0d7ffea9c30576ca6878f47",
+      "bytes": 208,
+      "expect": {
+        "header": {
+          "diagnostics": [],
+          "output_level": "not_evaluated",
+          "structural_read": "complete",
+          "verification": "not_performed",
+          "version_capability": {
+            "dialect_validation_scope": "version_only",
+            "java8_runtime": "accepted",
+            "preview_marker": "absent",
+            "release_registration": "registered",
+            "version": {
+              "major": 50,
+              "minor": 0
+            },
+            "version_dialect_support": "supported",
+            "version_rule": "valid"
+          }
+        },
+        "illegal": true,
+        "modern": {
+          "attributes": [
+            {
+              "name": "BootstrapMethods",
+              "placement": "version_not_applicable",
+              "read": false
+            }
+          ],
+          "concat_sites": 0,
+          "conflict_features": [],
+          "diagnostics": [
+            {
+              "code": "classfile_attribute_version_not_applicable",
+              "message": "attribute \"BootstrapMethods\" is registered from major 51 (JVMS 4.7.23); it is not valid at major 50",
+              "severity": "error"
+            },
+            {
+              "code": "classfile_opcode_version_not_applicable",
+              "message": "opcode 0xba (invokedynamic) is registered from major 51 (JVMS 6.5, 4.9.1); it is not valid at major 50",
+              "severity": "error"
+            }
+          ],
+          "dynamic_tag": "version_not_applicable",
+          "output_level": "representable",
+          "permitted_subclasses_read": false,
+          "record_read": false
+        },
+        "strict": {
+          "read": "complete"
+        }
+      },
+      "fixture": "invokedynamic-at-50",
+      "name": "invokedynamic-in-a-50-class",
+      "note": "`invokedynamic` is registered from major 51 (JVMS 6.5); the site names a real `CONSTANT_InvokeDynamic` entry, so the violation is the opcode and not a dangling constant-pool index",
+      "source": "hand-built in tests/p4_golden.rs::invokedynamic_class(50): an `invokedynamic` instruction naming the `CONSTANT_InvokeDynamic` entry this generator placed, then `pop`, `return`, with a `BootstrapMethods` table whose one entry is a `CONSTANT_MethodHandle` for `p/Fixture.bootstrap:()V`"
+    }
+  ]
+}

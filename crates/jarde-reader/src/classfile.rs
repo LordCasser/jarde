@@ -496,6 +496,79 @@ pub fn inspect_method_bytecode(
     inspect_method_bytecode_with(bytes, selector, budget, |_| {}, |_| {})
 }
 
+/// Every instruction opcode of every method body in one class, one entry per method in declaration
+/// order, decoded by the same cursor the bytecode read path uses.
+///
+/// The fact pass needs the *opcodes* a release gates (`invokedynamic`, `jsr`, `ret` and the reserved
+/// opcodes) without publishing a second body report: an instruction fact, its span and the BCI a
+/// stop happened at belong to [`inspect_method_bytecode`], which charges the body it reads and says
+/// where it stopped. This probe states opcodes and nothing else, so no instruction fact is published
+/// twice.
+///
+/// # Failure and charging
+///
+/// A body whose structure does not decode states **no** opcode instead of failing the probe — the
+/// convention `local_debug_table` already follows — because a body this probe cannot read is no
+/// evidence that the release's opcode rules hold in it, and it must not turn a class whose
+/// declaration structure read completely into an error. The probe charges `CodeBytes` for every code
+/// array it reads, the dimension the read path charges for the same bytes; the class structure and
+/// its constant pool are the structure the caller already holds and are charged no second time.
+pub(crate) fn method_body_opcodes(bytes: &[u8], budget: &mut Budget) -> Result<Vec<Vec<u8>>> {
+    budget.poll()?;
+    let Ok(class) = Class::new(bytes) else {
+        return Ok(Vec::new());
+    };
+    let pool = class.pool();
+    let mut bodies = Vec::new();
+    for method in class.methods() {
+        budget.poll()?;
+        let Ok(method) = method else { break };
+        let mut opcodes = Vec::new();
+        'attributes: for attribute in method.attributes() {
+            budget.poll()?;
+            let Ok(attribute) = attribute else { break };
+            let Ok(name) = pool.get(attribute.name()) else {
+                break;
+            };
+            if name.content.as_bytes() != b"Code" {
+                continue;
+            }
+            // The code array is the `Code` content's own slice (JVMS 4.7.3), bounded exactly as the
+            // read path bounds it before it decodes the same bytes.
+            let content = attribute.content();
+            let Ok(code_length) = read_u32(content, 4) else {
+                break;
+            };
+            let Ok(code_length) = usize::try_from(code_length) else {
+                break;
+            };
+            let Some(code) = content.get(8..).and_then(|rest| rest.get(..code_length)) else {
+                break;
+            };
+            let Ok(noak::reader::AttributeContent::Code(decoded)) = attribute.read_content(pool)
+            else {
+                break;
+            };
+            budget.charge(CountedBudgetDimension::CodeBytes, to_u64(code.len())?)?;
+            for item in decoded.raw_instructions() {
+                budget.poll()?;
+                let Ok((index, _instruction)) = item else {
+                    break 'attributes;
+                };
+                let Ok(at) = usize::try_from(index.as_u32()) else {
+                    break 'attributes;
+                };
+                let Some(opcode) = code.get(at) else {
+                    break 'attributes;
+                };
+                opcodes.push(*opcode);
+            }
+        }
+        bodies.push(opcodes);
+    }
+    Ok(bodies)
+}
+
 fn inspect_method_bytecode_with(
     bytes: &[u8],
     selector: MethodSelector,

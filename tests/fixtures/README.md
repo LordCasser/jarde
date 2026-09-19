@@ -111,3 +111,26 @@ The directory's `README.md` records what each output carries, and what this comp
 produce: `javac 23.0.1` emits no `CONSTANT_Dynamic` at all, so the constant-dynamic graph's
 fixtures are hand-built in `tests/p4_modern_facts.rs` (`condy_fixture`), exactly as P1's
 `p1_xref_bootstrap.rs` builds its condy samples.
+
+## P4 golden diagnostics (`p4-golden/`)
+
+Each JSON file records one group of replays for one input: its generator, its provenance, the blake3
+digest and length of the bytes that generator produces, and the answer the public reader entries
+returned for it — the header planes under `forensic` and the code of the `strict` refusal, the
+modern-fact planes, and every diagnostic's code, severity and message verbatim.
+`tests/p4_golden.rs` rebuilds every fixture from the named generator and asserts the digest, so a
+changed builder or a rewritten expectation fails here instead of being absorbed; the files never
+regenerate themselves.
+
+| file | entries |
+| --- | --- |
+| `illegal-modern.json` | readable class files that break a release rule of their own release: a `Record` entry at 59, `PermittedSubclasses` at 60, `NestMembers` and `ConstantValue` inside a `method_info`, the `ACC_MODULE` bit at 52, `jsr` at 52, `invokedynamic` at 50 |
+| `version-boundaries.json` | a `Record` sample at major 72 (above every registered release) and one with a `minor_version` the format rule rejects |
+| `legal-modern.json` | the unpatched `p4-modern/` samples, whose legal placements and empty diagnostic list are the negative space of the entries above |
+
+Only two entries have checked-in bytes of their own, and both are the committed samples themselves:
+the version-patched fixtures, whose bytes are `p4-modern/`'s with the two version fields changed by
+`version_patched`, and so keep the sample's own SHA-256 as their provenance. Everything else is
+assembled by the named generators in `tests/p4_golden.rs`, because `javac` cannot be asked to emit
+an illegal release shape.
+
