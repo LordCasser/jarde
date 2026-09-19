@@ -41,6 +41,7 @@
 //! this crate refuses to make.
 
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
+use jarde_reader::model::PhysicalMethodId;
 
 use crate::ast::{Expr, ExprKind, Stmt, StmtKind};
 use crate::declaration::Declaration;
@@ -63,13 +64,20 @@ pub(crate) struct Emitted {
 /// read one: it is written into the envelope, because that comment is the only place in this
 /// artifact that can state what the member *is* without claiming a signature this layer cannot prove
 /// (the descriptor is not parsed into types here — that is 3.x's presentation question).
+///
+/// `member` is the identity of the body being presented, as the payload's own declaration states it
+/// (P3 3.2): every anchor of this body that names no member of its own is recorded as an anchor **of
+/// this member**, which is what makes BCI 3 here tellable from BCI 3 inside a callee's body. `None`
+/// when the run read no member header, in which case the table states that no member is known rather
+/// than one it did not read.
 pub(crate) fn emit(
     stmts: &[Stmt],
     facts: &RecoveryFacts,
     declaration: Option<&Declaration>,
+    member: Option<&PhysicalMethodId>,
     budget: &mut Budget,
 ) -> Result<Emitted, StopReason> {
-    let mut emitter = Emitter::new(budget);
+    let mut emitter = Emitter::new(budget, member);
     emitter.envelope(facts, declaration)?;
     emitter.stmts(stmts, 1)?;
     emitter.put("}\n", None)?;
@@ -83,10 +91,12 @@ struct Emitter<'a> {
     segments: Vec<Segment>,
     written: u64,
     limit: u64,
+    /// The member body every anchor of this emission belongs to, when the payload stated one.
+    member: Option<&'a PhysicalMethodId>,
 }
 
 impl<'a> Emitter<'a> {
-    fn new(budget: &'a mut Budget) -> Self {
+    fn new(budget: &'a mut Budget, member: Option<&'a PhysicalMethodId>) -> Self {
         let limit = budget.limits().output_bytes;
         Self {
             budget,
@@ -94,6 +104,7 @@ impl<'a> Emitter<'a> {
             segments: Vec::new(),
             written: 0,
             limit,
+            member,
         }
     }
 
@@ -142,6 +153,12 @@ impl<'a> Emitter<'a> {
     }
 
     /// Writes one node's text, recording its span against the same anchors.
+    ///
+    /// This is where the body being presented is stated for its own anchors (P3 3.2): the node's
+    /// anchors name no member when a rule built them (only a rule that read *another* member's body
+    /// has one to name), and the member of the whole artifact is the one the payload's declaration
+    /// states. Recording happens in the same call as the write, so a segment cannot exist without
+    /// the member it belongs to.
     fn node(
         &mut self,
         origin: &OriginSet,
@@ -151,7 +168,8 @@ impl<'a> Emitter<'a> {
         write(self)?;
         let end = self.text.len();
         if end > start {
-            self.segments.push(Segment::new(start, end, origin.clone()));
+            let origin = origin.in_body(self.member);
+            self.segments.push(Segment::new(start, end, origin));
         }
         Ok(())
     }
@@ -580,7 +598,7 @@ mod tests {
         // observed: the buffer itself holds nothing after a refusal, so no consumer that ever gets
         // hold of an emitter can read a half-written node out of it.
         let mut budget = budget_with(32);
-        let mut emitter = Emitter::new(&mut budget);
+        let mut emitter = Emitter::new(&mut budget, None);
         emitter
             .put("// a first line\n", None)
             .expect("within the bound");
@@ -604,13 +622,13 @@ mod tests {
         let stmts = body();
         let exact = {
             let mut budget = budget_with(1 << 20);
-            emit(&stmts, &facts(), None, &mut budget)
+            emit(&stmts, &facts(), None, None, &mut budget)
                 .expect("an ample budget writes")
                 .written
         };
         let mut budget = budget_with(exact);
         let emitted =
-            emit(&stmts, &facts(), None, &mut budget).expect("the exact bound is allowed");
+            emit(&stmts, &facts(), None, None, &mut budget).expect("the exact bound is allowed");
         assert_eq!(emitted.written, exact);
         assert!(
             emitted.text.contains("run();"),
@@ -619,7 +637,7 @@ mod tests {
         );
 
         let mut budget = budget_with(exact - 1);
-        let stop = emit(&stmts, &facts(), None, &mut budget).expect_err("one byte short");
+        let stop = emit(&stmts, &facts(), None, None, &mut budget).expect_err("one byte short");
         match stop {
             StopReason::Budget {
                 dimension,
@@ -653,7 +671,7 @@ mod tests {
         )];
         let whole = {
             let mut budget = budget_with(1 << 20);
-            emit(&stmts, &facts(), None, &mut budget)
+            emit(&stmts, &facts(), None, None, &mut budget)
                 .expect("ample")
                 .written
         };
@@ -664,7 +682,7 @@ mod tests {
         let mut inside_a_node = 0usize;
         for bound in 1..whole {
             let mut budget = budget_with(bound);
-            match emit(&stmts, &facts(), None, &mut budget) {
+            match emit(&stmts, &facts(), None, None, &mut budget) {
                 Ok(emitted) => panic!("a {bound}-byte bound produced {} bytes", emitted.written),
                 Err(StopReason::Budget { written, at, .. }) => {
                     assert!(
@@ -688,7 +706,7 @@ mod tests {
     fn the_segment_table_covers_the_nodes_in_writing_order() {
         let stmts = body();
         let mut budget = budget_with(1 << 20);
-        let emitted = emit(&stmts, &facts(), None, &mut budget).expect("ample");
+        let emitted = emit(&stmts, &facts(), None, None, &mut budget).expect("ample");
         // Two nodes, because a statement contains its expression, and the table is in completion
         // order: the expression's span is recorded when its own writes finish, the statement's when
         // the indentation and the terminator around it are written too.

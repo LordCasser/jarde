@@ -1,10 +1,11 @@
 use clap::Parser;
 use jarde::{
-    AnalysisStage, ArtifactInput, Budget, ClassTarget, ConsumerSchema, CountedBudgetDimension,
-    Engine, EngineBytecodeReport, EngineHeaderReport, EnumerationReport, Error, InspectionMode,
-    JvmBytes, Limits, MethodAnalysisReport, MethodAnalysisRequest, MethodSelector, PhysicalEntry,
-    PhysicalMethodId, PhysicalScope, PhysicalView, QueryCursor, QueryRelation, QueryReport,
-    QueryRequest, QueryTarget, RecoveryReport, ResolutionEnvironment, UsageSnapshot,
+    AnalysisStage, ArtifactInput, Budget, CalleeReadReport, ClassTarget, ConsumerSchema,
+    CountedBudgetDimension, Engine, EngineBytecodeReport, EngineHeaderReport, EnumerationReport,
+    Error, InspectionMode, JvmBytes, Limits, MethodAnalysisReport, MethodAnalysisRequest,
+    MethodSelector, PhysicalEntry, PhysicalMethodId, PhysicalScope, PhysicalView, QueryCursor,
+    QueryRelation, QueryReport, QueryRequest, QueryTarget, RecoveryReport, ResolutionEnvironment,
+    UsageSnapshot,
 };
 use serde::{Deserialize, Serialize};
 use std::ffi::OsStr;
@@ -226,6 +227,12 @@ enum OperationResult {
     /// itself. A caller that wants to know what the request read and which stages completed reads
     /// `analysis`; a caller that wants the Java text, its segment table and the planes that describe
     /// it reads `report`.
+    ///
+    /// `callees` is what the request read **beyond** that run, when the body it presented named a
+    /// call site the `accessor@1` rule would decide from (P3 3.2): the one class the members were
+    /// read from, the members it declares among the candidates, the candidates it refused with the
+    /// reason, the read's own reason and what it charged. It is `null` for every request whose body
+    /// named no such call site, because nothing was read and nothing was charged.
     RecoverMethod {
         /// Both halves are boxed for the size reason the environments above are boxed for: this is
         /// the largest result any operation carries, and the adapter holds exactly one request at a
@@ -233,6 +240,8 @@ enum OperationResult {
         /// own and nothing here is a second schema of it.
         analysis: Box<MethodAnalysisReport>,
         report: Box<RecoveryReport>,
+        /// Boxed for the same reason, and `None` exactly when no callee was read.
+        callees: Option<Box<CalleeReadReport>>,
     },
 }
 
@@ -432,10 +441,11 @@ fn execute(
             engine
                 .recover_method(slice::from_ref(&snapshot), &request, budget)
                 .map(|recovered| {
-                    let (analysis, report) = recovered.into_parts();
+                    let (analysis, report, callees) = recovered.into_parts();
                     OperationResult::RecoverMethod {
                         analysis: Box::new(analysis),
                         report: Box::new(report),
+                        callees: callees.map(Box::new),
                     }
                 })
         }

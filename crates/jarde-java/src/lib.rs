@@ -79,7 +79,9 @@ pub(crate) mod emit;
 mod oracle;
 pub(crate) mod refusal;
 
-pub use accessor::{AccessorField, AccessorRecord, AccessorRefusal, AccessorShape};
+pub use accessor::{
+    AccessorCandidate, AccessorField, AccessorRecord, AccessorRefusal, AccessorShape,
+};
 pub use bridge::{BridgeRecord, BridgeRefusal};
 pub use concat::{ConcatAppend, ConcatRecord, ConcatRefusal};
 pub use declaration::{DeclarationForm, DeclarationRecord, DeclarationRefusal};

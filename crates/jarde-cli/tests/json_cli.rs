@@ -325,6 +325,16 @@ fn environment(snapshot: &ArtifactSnapshot) -> ResolutionEnvironment {
 /// that derive them) rather than recomputed from the fixture, which is what keeps the two answers
 /// comparable and keeps this test free of a hashing dependency the CLI package does not declare.
 fn method_request(path: &Path, stages: Vec<AnalysisStage>) -> MethodAnalysisRequest {
+    member_request(path, b"run", b"()V", stages)
+}
+
+/// The same request for one named member of the fixture.
+fn member_request(
+    path: &Path,
+    name: &[u8],
+    descriptor: &[u8],
+    stages: Vec<AnalysisStage>,
+) -> MethodAnalysisRequest {
     let mut budget = Budget::new(analysis_limits());
     let engine = Engine::new();
     let snapshot = engine
@@ -348,8 +358,8 @@ fn method_request(path: &Path, stages: Vec<AnalysisStage>) -> MethodAnalysisRequ
                 class_bytes: header.source.class_bytes,
                 variant: PhysicalVariant::Base,
             },
-            name: JvmBytes(b"run".to_vec()),
-            descriptor: JvmBytes(b"()V".to_vec()),
+            name: JvmBytes(name.to_vec()),
+            descriptor: JvmBytes(descriptor.to_vec()),
         },
         stages,
     }
@@ -395,6 +405,113 @@ const RECOVERY_BODY: &[u8] = &[
 /// The recovery cases' fixture class: [`RECOVERY_BODY`] with the slots it uses declared.
 fn recovery_class() -> Vec<u8> {
     class_with_locals(RECOVERY_BODY, &[], 1, 2)
+}
+
+/// `Test` with the field a compiler generated an accessor for, the accessor itself, and the member
+/// that calls it (P3 3.2's shape: the call site names a member of *this* class, whose body the
+/// operation has to read to present the call as the field access it forwards):
+///
+/// ```text
+/// f:I                 private
+/// access$100(LTest;)I public static synthetic: aload_0; getfield Test.f:I; ireturn
+/// method()I           public: iconst_0; istore_1; aload_0;
+///                             invokestatic Test.access$100(LTest;)I; ireturn
+/// ```
+fn accessor_class() -> Vec<u8> {
+    let mut output = 0xcafebabe_u32.to_be_bytes().to_vec();
+    u16b(&mut output, 0);
+    u16b(&mut output, 52);
+    u16b(&mut output, 16);
+    utf8(&mut output, b"Test"); // 1
+    output.push(7);
+    u16b(&mut output, 1); // 2: class Test
+    utf8(&mut output, b"java/lang/Object"); // 3
+    output.push(7);
+    u16b(&mut output, 3); // 4: class Object
+    utf8(&mut output, b"f"); // 5
+    utf8(&mut output, b"I"); // 6
+    output.push(12);
+    u16b(&mut output, 5);
+    u16b(&mut output, 6); // 7: NameAndType f:I
+    output.push(9);
+    u16b(&mut output, 2);
+    u16b(&mut output, 7); // 8: Fieldref Test.f:I
+    utf8(&mut output, b"access$100"); // 9
+    utf8(&mut output, b"(LTest;)I"); // 10
+    output.push(12);
+    u16b(&mut output, 9);
+    u16b(&mut output, 10); // 11: NameAndType access$100(LTest;)I
+    output.push(10);
+    u16b(&mut output, 2);
+    u16b(&mut output, 11); // 12: Methodref Test.access$100
+    utf8(&mut output, b"method"); // 13
+    utf8(&mut output, b"()I"); // 14
+    utf8(&mut output, b"Code"); // 15
+
+    u16b(&mut output, 0x21);
+    u16b(&mut output, 2);
+    u16b(&mut output, 4);
+    u16b(&mut output, 0); // no interfaces
+    u16b(&mut output, 1); // one field
+    u16b(&mut output, 0x0002);
+    u16b(&mut output, 5);
+    u16b(&mut output, 6);
+    u16b(&mut output, 0);
+    u16b(&mut output, 2); // two members
+    /// One member of the fixture: its body, its flags, its name and descriptor indexes, and the two
+    /// slots its `Code` attribute declares.
+    struct FixtureMember {
+        code: &'static [u8],
+        flags: u16,
+        name: u16,
+        descriptor: u16,
+        max_stack: u16,
+        max_locals: u16,
+    }
+    let members = [
+        // access$100(LTest;)I: aload_0; getfield Test.f:I; ireturn
+        FixtureMember {
+            code: &[0x2a, 0xb4, 0x00, 0x08, 0xac],
+            flags: 0x1008,
+            name: 9,
+            descriptor: 10,
+            max_stack: 1,
+            max_locals: 1,
+        },
+        // method()I: iconst_0; istore_1; aload_0; invokestatic access$100; ireturn
+        FixtureMember {
+            code: &[0x03, 0x3c, 0x2a, 0xb8, 0x00, 0x0c, 0xac],
+            flags: 0x0001,
+            name: 13,
+            descriptor: 14,
+            max_stack: 1,
+            max_locals: 2,
+        },
+    ];
+    for member in members {
+        u16b(&mut output, member.flags);
+        u16b(&mut output, member.name);
+        u16b(&mut output, member.descriptor);
+        u16b(&mut output, 1); // one attribute
+        u16b(&mut output, 15); // "Code"
+        let mut attribute = Vec::new();
+        u16b(&mut attribute, member.max_stack);
+        u16b(&mut attribute, member.max_locals);
+        u32b(
+            &mut attribute,
+            u32::try_from(member.code.len()).expect("fixture code length fits u32"),
+        );
+        attribute.extend_from_slice(member.code);
+        u16b(&mut attribute, 0); // no exception handlers
+        u16b(&mut attribute, 0); // no nested attributes
+        u32b(
+            &mut output,
+            u32::try_from(attribute.len()).expect("fixture attribute length fits u32"),
+        );
+        output.extend_from_slice(&attribute);
+    }
+    u16b(&mut output, 0);
+    output
 }
 
 /// One report as JSON with every `elapsed_millis` removed: the one measurement two entry paths
@@ -1043,6 +1160,89 @@ fn recovery_matches_the_library_entry_field_by_field() {
     assert_eq!(
         value["result"]["analysis"]["execution"]["usage"]["method_bodies"],
         1
+    );
+
+    // P3 3.2's own read, on the same wire: this body names no call site the accessor rule would read
+    // a callee for, so the operation answers `callees: null` — nothing was read and nothing was
+    // charged beyond the run — which is what the library's own answer says too.
+    assert_eq!(value["result"]["callees"], Value::Null);
+    assert!(
+        direct.callees().is_none(),
+        "the library read no member for a body that names none"
+    );
+}
+
+#[test]
+fn a_presented_accessor_and_the_members_it_reads_cross_the_wire() {
+    // P3 3.2's success half through the CLI: the request names a body that calls a member of its own
+    // class, the operation reads that member (and only it), presents the call as the field access it
+    // forwards, and states on the wire which class and which members it read, why, and what it
+    // charged. The library's own answer is the reference, as in the case above.
+    let temp = TempDir::new();
+    let class_path = temp.write("Test.class", &accessor_class());
+    let analysis = member_request(&class_path, b"method", b"()I", AnalysisStage::ALL.to_vec());
+
+    let output = run_stdin(
+        &request(
+            &class_path,
+            &analysis_limits(),
+            recover_operation(&analysis),
+        ),
+        false,
+        false,
+    );
+    let value = assert_ok(&output, "recover_method");
+
+    let engine = Engine::new();
+    let mut budget = Budget::new(analysis_limits());
+    let snapshot = engine
+        .open(ArtifactInput::Path(class_path), &mut budget)
+        .expect("open the fixture directly");
+    let direct = engine
+        .recover_method(std::slice::from_ref(&snapshot), &analysis, &mut budget)
+        .expect("the same request through the library");
+    let callees = direct.callees().expect("the call site names a member");
+
+    assert_eq!(
+        strip_elapsed_document(&value["result"]["callees"]),
+        strip_elapsed_document(&serde_json::to_value(callees).expect("the callee read serializes")),
+        "the adapter's document is the library's own read, field by field"
+    );
+
+    // The text is the direct field expression the source had, and the call the compiler made is not
+    // in it.
+    let text = value["result"]["report"]["text"].as_str().expect("text");
+    assert!(text.contains("return arg0.f;"), "{text}");
+    assert!(!text.contains("access$100("), "{text}");
+
+    // The evidence the read states: one class, one member of it — with the reason the read happened
+    // under — and the one member body it attempted beyond the run's own.
+    let read = &value["result"]["callees"];
+    assert_eq!(read["class"], "Test");
+    assert_eq!(read["members"].as_array().expect("members").len(), 1);
+    assert_eq!(
+        read["members"][0]["identity"]["name"],
+        json!([97, 99, 99, 101, 115, 115, 36, 49, 48, 48])
+    );
+    assert!(read["members"][0]["body"].is_object(), "{read}");
+    assert_eq!(read["refusals"].as_array().expect("refusals").len(), 0);
+    assert_eq!(
+        read["reads"][0]["reason"],
+        json!("callee_member_body"),
+        "{read}"
+    );
+    assert_eq!(read["usage"]["class_headers"], 2, "{read}");
+    assert_eq!(read["usage"]["method_bodies"], 2, "{read}");
+
+    // And the presented call is recorded as presented, with the member it read.
+    let accessors = value["result"]["report"]["accessors"]
+        .as_array()
+        .expect("accessors");
+    assert_eq!(accessors.len(), 1);
+    assert_eq!(accessors[0]["presented"], json!(true));
+    assert_eq!(
+        accessors[0]["callee"]["name"],
+        json!([97, 99, 99, 101, 115, 115, 36, 49, 48, 48])
     );
 }
 

@@ -32,6 +32,14 @@
 //! declared in the same class file. A caller therefore cannot state "this is a getter"; it can only
 //! hand over bytes and let the rule decide.
 //!
+//! Since P3 3.2 that handover has an identity of its own, and the identity is what keeps the pool
+//! honest: every member of a table is read out of **one** class-file definition (its bytes by digest
+//! and length), and [`crate::facts::MemberBody::identity`] states which — so "the same pool" is not
+//! an assumption about two reads agreeing but the definition both reads were performed under, and a
+//! member of any other class file is not evidence this rule can use however its name reads. What a
+//! call site is worth reading for is decided here too ([`names_an_accessor`], [`candidates`]), so
+//! the caller reads the members this rule would decide from and no others.
+//!
 //! # What A12 asks for, and what this rule does not do
 //!
 //! X1's facts — the caller's call to the accessor and the accessor's read of the field — are the
@@ -39,8 +47,22 @@
 //! recorded in the segment table with both original BCIs (the call site's, and the field access in
 //! the accessor's body). Both original edges survive exactly as they were; nothing here rewrites,
 //! merges or drops either of them.
+//!
+//! # Which member each BCI belongs to (P3 3.2)
+//!
+//! The two anchors of that derived presentation are coordinates in **two different member bodies**,
+//! and a bytecode index alone cannot say which: the call site's BCI 3 is in the body being
+//! presented, and the field access's BCI 1 is in the callee's — and a second accessor of the same
+//! class would put *its* field access at a BCI of its own. So the shape this rule returns carries
+//! the callee's physical identity ([`PhysicalMethodId`]: the class-file definition, plus the
+//! member's own name and descriptor), and the builder states it on the derived anchor. That is also
+//! what binds the field reference's constant pool: the indices the callee's body was decoded against
+//! are the pool of that one definition, the same class file the presented body was read from —
+//! which is why a member of any *other* class file is not evidence this rule can use, however its
+//! name reads.
 
 use jarde_reader::classfile::CpEntryFacts;
+use jarde_reader::model::PhysicalMethodId;
 use serde::Serialize;
 
 use crate::ast::Type;
@@ -80,6 +102,11 @@ pub(crate) struct Evidence {
     pub(crate) descriptor: String,
     /// The callee's access flags, when the run's member table holds the member.
     pub(crate) access_flags: Option<u16>,
+    /// The member the rule read, as the class-file definition it was read from states it — the
+    /// binding of everything else in this record (P3 3.2). `None` when the run held no member table,
+    /// or when the table holds no member of that name and descriptor: nothing was read, so there is
+    /// no identity to state.
+    pub(crate) identity: Option<PhysicalMethodId>,
     /// The field the accessor's body named, when the body was read far enough to state it.
     pub(crate) field: Option<AccessorField>,
     /// Which of the two bodies it was, when it was one of them.
@@ -116,6 +143,70 @@ pub(crate) struct Shape {
     /// The BCI of the field access **inside the callee's body**: the second original anchor the
     /// derived presentation carries.
     pub(crate) field_bci: u32,
+    /// The callee's own physical identity (P3 3.2): the class-file definition its body was read
+    /// from, and its name and descriptor. The derived anchor states this, which is what makes the
+    /// field BCI a coordinate in *this* member's body rather than in the presented one — and what
+    /// makes its constant pool the pool the field reference was decoded against.
+    pub(crate) method: PhysicalMethodId,
+}
+
+/// Whether a call site is one this rule reads a callee for at all: a **static** call whose name
+/// carries the marker a compiler puts in front of the member it generated for an access.
+///
+/// This is the rule's own first question, and the one place it is asked: [`verify`] answers
+/// "ordinary" for every call site this returns `false` for, and [`candidates`] enumerates exactly
+/// the call sites it returns `true` for — so what a run reads the class's members *for* is what the
+/// rule would decide from, and never a second opinion about which calls matter.
+fn names_an_accessor(target: &CallTarget) -> bool {
+    matches!(target.kind(), InvokeKind::Static) && target.name().starts_with(MARKER)
+}
+
+/// One call site this rule would read a callee for, as the presented body's own decode states it.
+///
+/// The identity half of a [`CalleeCandidate`] read: which member the call named, on which class, at
+/// which bytecode index. Whether that member's body is worth reading is [`names_an_accessor`]'s
+/// answer, so a caller that reads the members named here reads exactly what the rule decides from
+/// and nothing else (A16).
+///
+/// [`CalleeCandidate`]: jarde_jvm::callee::CalleeCandidate
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct AccessorCandidate {
+    /// The BCI of the call site in the presented body.
+    pub call_site: u32,
+    /// The owner the call named, in internal form (`Test`), exactly as the class file spells it.
+    pub owner: String,
+    /// The member name the call named.
+    pub name: String,
+    /// The member descriptor the call named.
+    pub descriptor: String,
+}
+
+/// Every call site of one payload that would make this rule read a callee's body, in BCI order.
+///
+/// The payload is the same one the presentation reads: the call sites come from its own decode
+/// (`[`crate::decode`]`'s reading of the run's `MethodCodeFacts` and constant pool), so a candidate
+/// is a fact of the run rather than a second look at the bytes. Nothing else is enumerated — not
+/// the class's members, not the sites the rule will answer "ordinary" for — because reading a body
+/// is a bounded, charged demand and this list is its justification (P3 3.2, A16).
+pub fn candidates(ir: &jarde_jvm::method_ir::MethodIr) -> Vec<AccessorCandidate> {
+    let Some(code) = ir.code() else {
+        return Vec::new();
+    };
+    let operations = Operations::of(code, ir.constant_pool());
+    code.instructions
+        .iter()
+        .filter_map(|instruction| match operations.get(instruction.bci) {
+            Some(Operation::Invoke(target)) if names_an_accessor(target) => {
+                Some(AccessorCandidate {
+                    call_site: instruction.bci,
+                    owner: target.owner().to_string(),
+                    name: target.name().to_string(),
+                    descriptor: target.descriptor().to_string(),
+                })
+            }
+            _ => None,
+        })
+        .collect()
 }
 
 /// Decides what one call site is.
@@ -129,7 +220,7 @@ pub(crate) fn verify(
     pool: &[CpEntryFacts],
 ) -> Verdict {
     let name = target.name().to_string();
-    if !matches!(target.kind(), InvokeKind::Static) || !name.starts_with(MARKER) {
+    if !names_an_accessor(target) {
         // An accessor is a static member a compiler generated; a call that is not both of those is
         // an ordinary call, and this rule says nothing about it.
         return Verdict::Ordinary;
@@ -139,6 +230,7 @@ pub(crate) fn verify(
         name: name.clone(),
         descriptor: target.descriptor().to_string(),
         access_flags: None,
+        identity: None,
         field: None,
         shape: None,
     };
@@ -185,6 +277,7 @@ pub(crate) fn verify(
         };
     };
     evidence.access_flags = Some(member.access_flags());
+    evidence.identity = Some(member.identity().clone());
     if member.access_flags() & (ACC_SYNTHETIC | ACC_STATIC) != ACC_SYNTHETIC | ACC_STATIC {
         return Verdict::Refused {
             evidence,
@@ -223,9 +316,22 @@ fn forward_shape(
     pool: &[CpEntryFacts],
     evidence: &mut Evidence,
 ) -> Result<Shape, Refusal> {
-    let operations = Operations::of(member.code(), pool);
-    let bcis: Vec<u32> = member
-        .code()
+    // A member the class declares without a body is not a member this rule can read a shape from:
+    // the class's declaration of it is evidence and the body is simply absent — which is a different
+    // statement from "this class declares no such member", and it is stated as itself.
+    let Some(code) = member.code() else {
+        return Err(Refusal::shape(
+            "jre_accessor_body",
+            format!(
+                "the class declares `{}{}` with the flags {:#06x} and no body, and an accessor a compiler generated is a member with the body that forwards the access",
+                member.name(),
+                member.descriptor(),
+                member.access_flags()
+            ),
+        ));
+    };
+    let operations = Operations::of(code, pool);
+    let bcis: Vec<u32> = code
         .instructions
         .iter()
         .map(|instruction| instruction.bci)
@@ -242,7 +348,7 @@ fn forward_shape(
             ),
         )
     };
-    let Some((parameters, returns)) = parse_method(member.descriptor()) else {
+    let Some((parameters, returns)) = parse_method(&member.descriptor()) else {
         return Err(Refusal::shape(
             "jre_accessor_shape",
             format!(
@@ -411,6 +517,7 @@ fn forward_shape(
         kind,
         name: name.clone(),
         field_bci,
+        method: member.identity().clone(),
     })
 }
 
@@ -439,6 +546,12 @@ pub struct AccessorRecord {
     pub descriptor: String,
     /// The callee's access flags, when the run's member table held the member.
     pub access_flags: Option<u16>,
+    /// The member the rule read, as the class-file definition it was read from states it (P3 3.2):
+    /// the definition by digest and length, plus the member's own name and descriptor. A name and a
+    /// descriptor in the table above say which member the call named; this says which class file's
+    /// member was really read, and it is what binds the field BCI and the field reference's constant
+    /// pool to that definition.
+    pub callee: Option<PhysicalMethodId>,
     /// The field the callee's body accesses, when it was read far enough to state one.
     pub field: Option<AccessorField>,
     /// Which of the two verified bodies the callee has, when it has one.
@@ -463,6 +576,7 @@ impl AccessorRecord {
             name: evidence.name.clone(),
             descriptor: evidence.descriptor.clone(),
             access_flags: evidence.access_flags,
+            callee: evidence.identity.clone(),
             field: evidence.field.clone(),
             shape: evidence.shape,
             presented: presented.is_some(),

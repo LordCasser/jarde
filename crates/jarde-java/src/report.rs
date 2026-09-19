@@ -376,6 +376,13 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         &program.stmts,
         request.facts,
         declaration.declaration(),
+        // The identity of the body being presented, as the payload's own declaration states it: the
+        // member every anchor of this artifact belongs to (P3 3.2). A run that read no member header
+        // states none.
+        request
+            .ir
+            .declaration()
+            .map(|declaration| declaration.identity()),
         budget,
     ) {
         Ok(emitted) => emitted,

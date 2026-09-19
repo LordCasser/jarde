@@ -183,6 +183,9 @@ pub enum ReadReason {
     MemberOwner,
     /// The target method's body — the only reason that upgrades to a body read (3.x).
     DriverMethodBody,
+    /// The class definition a presented body's named callees were read from (P3 3.2): the members
+    /// one recovery run's own call sites named, read on demand and one body attempt each.
+    CalleeMemberBody,
 }
 
 /// One class header a request really read.
@@ -825,6 +828,7 @@ pub(crate) fn published_reads(closure: &HeaderClosure<'_>) -> Vec<HeaderRead> {
                 HeaderDemand::MemberOwner => ReadReason::MemberOwner,
                 HeaderDemand::DispatchScope => ReadReason::DispatchScope,
                 HeaderDemand::DriverMethodBody => ReadReason::DriverMethodBody,
+                HeaderDemand::CalleeMemberBody => ReadReason::CalleeMemberBody,
             },
         })
         .collect()

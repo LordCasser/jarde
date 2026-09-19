@@ -33,6 +33,12 @@
 //! to itself.
 
 pub use jarde_jvm::{environment, ir, resolver};
+// The on-demand callee read (P3 3.2) crosses as its report's own types: [`RecoveredMethod::callees`]
+// hands one over and an adapter serializes it, so a consumer needs the names to hold. The entry that
+// performs the read (`callee::read_callees`) and the candidate type it takes stay below — a consumer
+// reaches this read through [`Engine::recover_method`], which enumerates the candidates from the
+// body's own decode, and never by naming call sites of its own.
+pub use jarde_jvm::callee::{CalleeBody, CalleeMember, CalleeReadReport, CalleeRefusal};
 pub use jarde_reader::inspect;
 // `classfile` is deliberately absent: it is re-exported as the names below, not as a module
 // path, so that the reader's `test-support` builder (`classfile::test_class`) and everything

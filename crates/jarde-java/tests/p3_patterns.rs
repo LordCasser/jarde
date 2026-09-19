@@ -182,24 +182,67 @@ fn facts_without_flags(class: &[u8], name: &[u8], parameters: u16) -> RecoveryFa
     ))
 }
 
+/// The class-file definition one fixture's bytes are, as this file builds it in every helper.
+fn definition_of(class: &[u8]) -> PhysicalDefinitionId {
+    let mut budget = Budget::new(limits());
+    let snapshot = ArtifactSnapshot::open(ArtifactInput::bytes(class.to_vec()), &mut budget)
+        .expect("the fixture opens as a standalone CLASS");
+    PhysicalDefinitionId {
+        location: PhysicalClassLocation::StandaloneRoot {
+            snapshot: snapshot.id().clone(),
+        },
+        class_bytes: ClassBytesId {
+            digest: Digest(blake3::hash(class).to_hex().to_string()),
+            length: u64::try_from(class.len()).expect("fixture length fits u64"),
+        },
+        variant: PhysicalVariant::Base,
+    }
+}
+
+/// One member's physical identity in the fixture's own definition.
+fn member_identity(class: &[u8], name: &[u8], descriptor: &[u8]) -> PhysicalMethodId {
+    PhysicalMethodId {
+        owner: definition_of(class),
+        name: JvmBytes(name.to_vec()),
+        descriptor: JvmBytes(descriptor.to_vec()),
+    }
+}
+
 /// Every member of the fixture's class, as the same read decoded them: the declaration plus the
 /// decoded body. This is the evidence a synthetic accessor call site is decided from.
+///
+/// Each member's identity is built from the **same** class-file definition the presented payload was
+/// analyzed under (P3 3.2): the fixture's own bytes, by digest and length, in the one snapshot this
+/// helper opens for itself. So a member of this table is a member of the definition the presented
+/// body was read from — which is what makes the derived anchor's BCI and constant pool a coordinate
+/// in one class file rather than in "some class called `Test`".
 fn members_of(class: &[u8]) -> ClassMembers {
     let mut budget = Budget::new(limits());
     let header = class_facts(class, &mut budget).expect("the fixture is a class file");
     let owner = String::from_utf8_lossy(&header.this_class.raw().0).into_owned();
+    let definition = definition_of(class);
     let members = header
         .methods
         .iter()
-        .filter_map(|member| {
-            let code = method_code_facts(class, member, &mut budget).ok()?;
-            Some(MemberBody::new(
-                owner.clone(),
-                String::from_utf8_lossy(&member.name.raw().0),
-                String::from_utf8_lossy(&member.descriptor.raw().0),
-                member.access_flags,
-                code,
-            ))
+        .map(|member| {
+            let identity = PhysicalMethodId {
+                owner: definition.clone(),
+                name: member.name.raw().clone(),
+                descriptor: member.descriptor.raw().clone(),
+            };
+            // Which members have a body is the class's own shell list, not an error from the reader:
+            // a member the class declares without a `Code` attribute is a member of the table with
+            // no body (P3 3.2).
+            let has_code = member
+                .attributes
+                .iter()
+                .any(|shell| shell.name.raw().0.as_slice() == b"Code");
+            if !has_code {
+                return MemberBody::without_body(owner.clone(), identity, member.access_flags);
+            }
+            let code = method_code_facts(class, member, &mut budget)
+                .expect("a member the class declares a `Code` attribute for decodes");
+            MemberBody::new(owner.clone(), identity, member.access_flags, code)
         })
         .collect();
     ClassMembers::new(owner, members)
@@ -1417,16 +1460,19 @@ fn accessor_class() -> Vec<u8> {
     let write = member_ref(&mut pool, test, "access$102", "(LTest;I)V");
     let extra = member_ref(&mut pool, test, "access$200", "(LTest;)I");
     let plain = member_ref(&mut pool, test, "access$300", "(LTest;)I");
+    let second_read = member_ref(&mut pool, test, "access$400", "(LTest;)I");
     let literal_name = pool.utf8("!");
     let literal = pool.string(literal_name);
     let access100 = pool.utf8("access$100");
     let access102 = pool.utf8("access$102");
     let access200 = pool.utf8("access$200");
     let access300 = pool.utf8("access$300");
+    let access400 = pool.utf8("access$400");
     let method_name = pool.utf8("method");
     let write_name = pool.utf8("write");
     let other_200_name = pool.utf8("other_200");
     let other_300_name = pool.utf8("other_300");
+    let both_fields_name = pool.utf8("both_fields");
     let combined_name = pool.utf8("combined");
     let access_int = pool.utf8("(LTest;)I");
     let access_setter = pool.utf8("(LTest;I)V");
@@ -1481,6 +1527,16 @@ fn accessor_class() -> Vec<u8> {
         .op(0xb8)
         .index(plain) // 1: invokestatic access$300
         .op(0xac) // 4: ireturn
+        .done();
+    let both_fields_body = Code::default()
+        .op(0x2a) // 0: aload_0
+        .op(0xb8)
+        .index(read) // 1: invokestatic access$100
+        .op(0x2a) // 4: aload_0
+        .op(0xb8)
+        .index(second_read) // 5: invokestatic access$400
+        .op(0x60) // 8: iadd
+        .op(0xac) // 9: ireturn
         .done();
     let combined_body = Code::default()
         .op(0xbb)
@@ -1544,12 +1600,30 @@ fn accessor_class() -> Vec<u8> {
                 code: read_body.clone(),
             },
             MemberDef {
+                // A second synthetic read of the same field: its `getfield` sits at BCI 1, exactly
+                // where `access$100`'s does, in a member body of its own (P3 3.2).
+                flags: 0x1008,
+                name: access400,
+                descriptor: access_int,
+                max_stack: 1,
+                max_locals: 1,
+                code: read_body.clone(),
+            },
+            MemberDef {
                 flags: 0x0001,
                 name: method_name,
                 descriptor: no_arguments,
                 max_stack: 1,
                 max_locals: 2,
                 code: method_body,
+            },
+            MemberDef {
+                flags: 0x0001,
+                name: both_fields_name,
+                descriptor: no_arguments,
+                max_stack: 2,
+                max_locals: 1,
+                code: both_fields_body,
             },
             MemberDef {
                 flags: 0x0001,
@@ -1688,6 +1762,115 @@ fn an_accessor_whose_body_does_more_than_forward_is_refused() {
     assert_eq!(refusal.rule.citation(), "accessor@1");
     // The call it had is the call it keeps: nothing about the member's body is presented.
     assert!(report.text.contains("access$200(self)"), "{}", report.text);
+}
+
+#[test]
+fn a_member_the_class_declares_without_a_body_is_refused_as_itself() {
+    // The one difference a member table with an *absent* body has to keep: "the class declares no
+    // such member" and "the class declares this member and there is no body to read" are two
+    // different statements, and the second one is the one this table makes.
+    let class = accessor_class();
+    let identity = member_identity(&class, b"access$100", b"(LTest;)I");
+    let members = ClassMembers::new(
+        "Test",
+        vec![MemberBody::without_body("Test", identity, 0x1108)],
+    );
+    let payload = analyze(&class, b"method", b"()I");
+    let facts = facts_of(&class, b"method", 1, vec![Some("self".into())]);
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, Some(&members), &mut budget);
+
+    assert!(report.produced(), "{:?}", report.stop());
+    assert_eq!(report.accessors.len(), 1);
+    let accessor = &report.accessors[0];
+    assert!(!accessor.presented());
+    assert_eq!(accessor.access_flags, Some(0x1108));
+    let refusal = accessor.refusal.as_ref().expect("the refusal is recorded");
+    assert_eq!(refusal.code, "jre_accessor_body");
+    assert!(
+        refusal.message.contains("no body") && refusal.message.contains("access$100"),
+        "the absence of the body is stated as itself: {}",
+        refusal.message
+    );
+    assert!(
+        !refusal.message.contains("declares no"),
+        "and never as a member the class does not declare: {}",
+        refusal.message
+    );
+    assert!(report.text.contains("access$100(self)"), "{}", report.text);
+}
+
+#[test]
+fn the_anchor_of_a_presented_field_access_states_the_member_its_bci_is_in() {
+    // Two call sites, two different callees whose field access sits at **one** BCI (1) each: the
+    // bytecode index alone cannot tell the two derived anchors apart, and the member they name is
+    // what does — and that member is a member of the same class-file definition the presented body
+    // was read from.
+    let class = accessor_class();
+    let report = present(&class, b"both_fields", b"()I", 1, vec![Some("self".into())]);
+    assert!(report.produced(), "{:?}", report.stop());
+    assert!(
+        report.text.contains("return self.f + self.f;"),
+        "{}",
+        report.text
+    );
+    assert_eq!(report.accessors.len(), 2);
+    assert!(
+        report.accessors.iter().all(|accessor| accessor.presented()),
+        "{:?}",
+        report.accessors
+    );
+
+    let anchors: Vec<jarde_java::Origin> = [1_u32, 5]
+        .into_iter()
+        .map(|call_site| {
+            let node = report
+                .source_map
+                .direct_of_bci(call_site)
+                .into_iter()
+                .next()
+                .unwrap_or_else(|| panic!("the call site at BCI {call_site} anchors a node"));
+            assert_eq!(node.text(&report.text), "self.f", "{}", report.text);
+            let derived = node.origin().derived();
+            assert_eq!(derived.len(), 1);
+            assert_eq!(
+                derived[0].bci(),
+                1,
+                "the field access inside the callee's body"
+            );
+            derived[0].clone()
+        })
+        .collect();
+    assert_ne!(anchors[0], anchors[1], "one BCI, two member bodies");
+    assert_eq!(
+        anchors[0].bci(),
+        anchors[1].bci(),
+        "and the same bytecode index in both"
+    );
+    assert_eq!(
+        anchors[0].method().map(|method| method.name.0.clone()),
+        Some(b"access$100".to_vec())
+    );
+    assert_eq!(
+        anchors[1].method().map(|method| method.name.0.clone()),
+        Some(b"access$400".to_vec())
+    );
+    assert_eq!(
+        anchors[0].method().map(|method| method.owner.clone()),
+        anchors[1].method().map(|method| method.owner.clone()),
+        "both members are declared in one definition, which is what binds their constant pools"
+    );
+    // And the member of the body being presented is a fact of its own anchors.
+    let own = report.source_map.direct_of_bci(1);
+    assert_eq!(
+        own[0]
+            .origin()
+            .primary()
+            .method()
+            .map(|method| method.name.0.clone()),
+        Some(b"both_fields".to_vec()),
+        "the run's own declaration names the presented member"
+    );
 }
 
 #[test]

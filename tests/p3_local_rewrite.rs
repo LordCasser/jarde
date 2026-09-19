@@ -152,6 +152,25 @@ fn fixture(engine: &Engine) -> Fixture {
 
 /// One recovery run over one member of the sample, through the entry point the CLI calls.
 fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -> RecoveryReport {
+    recover_all(
+        engine,
+        fixture,
+        name,
+        descriptor,
+        &mut Budget::new(limits()),
+    )
+    .recovery()
+    .clone()
+}
+
+/// The same run, whole: the analysis half, the presentation and what the request charged.
+fn recover_all(
+    engine: &Engine,
+    fixture: &Fixture,
+    name: &[u8],
+    descriptor: &[u8],
+    budget: &mut Budget,
+) -> RecoveredMethod {
     let request = MethodAnalysisRequest {
         environment: environment(&fixture.snapshot),
         method: PhysicalMethodId {
@@ -167,12 +186,9 @@ fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -
         },
         stages: AnalysisStage::ALL.to_vec(),
     };
-    let mut budget = Budget::new(limits());
     engine
-        .recover_method(slice::from_ref(&fixture.snapshot), &request, &mut budget)
+        .recover_method(slice::from_ref(&fixture.snapshot), &request, budget)
         .expect("a legal request is answered, not raised")
-        .recovery()
-        .clone()
 }
 
 /// The bytecode indexes the artifact's own quotes name, in the order each quote states them.
@@ -239,6 +255,98 @@ fn a_value_the_slot_no_longer_holds_is_not_returned_through_the_slot_name() {
         SyntaxStatus::Checked,
         "the artifact is not claimed to be Java: {report:?}"
     );
+}
+
+/// A `Mixed` artifact's fallback is mapped and stated as completely as a structured region (P3 3.2).
+///
+/// The property is about the artifact's own record of itself: every bytecode a quote names is an
+/// anchor of that quote, and every fallback region the report records states its code and has the
+/// diagnostic the run published for it — while the *scan* the run performed stays complete. A
+/// degraded presentation is not a degraded read, and `quality` is where the degradation is stated:
+/// the coverage plane is not the place to move it to `Partial` (A12/A13/A16).
+#[test]
+fn a_mixed_artifacts_quotes_are_mapped_whole_and_its_scan_stays_complete() {
+    let engine = Engine::new();
+    let fixture = fixture(&engine);
+    let mut budget = Budget::new(limits());
+    let recovered = recover_all(&engine, &fixture, b"post", b"(I)I", &mut budget);
+    let report = recovered.recovery();
+    let text = &report.text;
+
+    // The artifact is the degraded shape this case is about, and it says so.
+    assert_eq!(report.representation, Representation::Mixed, "{report:?}");
+    assert_eq!(report.quality, Quality::Fallback, "{report:?}");
+
+    // The complete scan and the degraded presentation are two planes, and neither moves the other:
+    // the body was decoded to its end (nothing was skipped), and the presentation *of it* is the
+    // weaker one. `Partial` is a statement about what was scanned, and nothing here was not scanned.
+    let analysis = recovered.analysis();
+    assert_eq!(
+        analysis.coverage.artifact_structural.state,
+        CoverageState::CompleteWithinSchema,
+        "a complete scan stays complete: {analysis:?}"
+    );
+    assert!(
+        analysis.coverage.artifact_structural.skipped.is_empty(),
+        "{:?}",
+        analysis.coverage.artifact_structural
+    );
+
+    // Every bytecode a quote names is an anchor of that quote: the text states which instructions
+    // the quote accounts for, and the map answers for each of them — the same list, instruction for
+    // instruction.
+    let quoted = quoted_bcis(text);
+    assert!(!quoted.is_empty(), "{text}");
+    for bci in &quoted {
+        assert!(
+            !report.source_map.of_bci(*bci).is_empty(),
+            "the quote that names BCI {bci} is the node the map answers with:\n{text}"
+        );
+    }
+    let mut anchored: Vec<u32> = report
+        .source_map
+        .segments()
+        .iter()
+        .filter(|segment| segment.text(text).trim_start().starts_with("// @bytecode"))
+        .flat_map(|segment| {
+            std::iter::once(segment.origin().primary()).chain(segment.origin().derived().iter())
+        })
+        .map(|anchor| anchor.bci())
+        .collect();
+    anchored.sort_unstable();
+    anchored.dedup();
+    let mut named = quoted.clone();
+    named.sort_unstable();
+    named.dedup();
+    assert_eq!(
+        anchored, named,
+        "the quotes' own anchors are exactly the bytecodes the quotes name:\n{text}"
+    );
+
+    // And the run's record of itself: every region is either presented as Java or quoted, and a
+    // quoted region states the code it fell back for — which the run's diagnostics state too.
+    let mut presented = 0usize;
+    for region in &report.regions {
+        if region.structured {
+            presented += 1;
+            continue;
+        }
+        let code = region.code.expect("a fallback region states its code");
+        assert!(region.message.is_some(), "{region:?}");
+        assert!(
+            report
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == code),
+            "the fallback is stated in the run's diagnostics: {code} not in {:?}",
+            report
+                .diagnostics
+                .iter()
+                .map(|diagnostic| diagnostic.code.as_str())
+                .collect::<Vec<_>>()
+        );
+    }
+    assert!(presented > 0, "the mixed artifact is part Java:\n{text}");
 }
 
 #[test]

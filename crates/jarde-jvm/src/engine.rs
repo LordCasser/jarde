@@ -1037,7 +1037,7 @@ fn read_driver_method(
 
 /// Whether the member declares a `Code` attribute at all, decided from the header's shells so
 /// the question costs no read.
-fn has_code_attribute(member: &MemberHeader) -> bool {
+pub(crate) fn has_code_attribute(member: &MemberHeader) -> bool {
     member
         .attributes
         .iter()

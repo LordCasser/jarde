@@ -215,15 +215,104 @@ impl Engine {
             &request.method,
         );
         let profile = request.environment.runtime.profile.clone();
+        // The callee evidence one recovery run's own call sites justify, read on demand from the very
+        // definition the run read the presented body from (P3 3.2). It happens **between** the run
+        // and the presentation — not inside the recovery layer, which holds no artifact, no loader
+        // and no budget — and it is the only read this entry performs beyond the one run: a recovery
+        // request whose body names no such call site reads no member at all.
+        let callees = read_named_callees(content, request, analyzed.ir(), budget)?;
+        let members = callees.as_ref().map(member_table);
+        let request = jarde_java::RecoveryRequest::new(analyzed.ir(), &facts, profile);
         let recovery = jarde_java::recover(
-            &jarde_java::RecoveryRequest::new(analyzed.ir(), &facts, profile),
+            &match &members {
+                Some(members) => request.with_members(members),
+                None => request,
+            },
             budget,
         );
         Ok(RecoveredMethod {
             analysis: analyzed.report().clone(),
             recovery,
+            callees,
         })
     }
+}
+
+/// The class's own members the presented body's call sites named, read on demand (P3 3.2).
+///
+/// The candidates are the presented body's **own decode**: the call sites the `accessor@1` rule
+/// would decide from, enumerated by that rule ([`jarde_java::accessor::candidates`]) so that what a
+/// run reads the class's members for is what the rule reads a verdict from, and never a second
+/// opinion about which calls matter. A body that names no such call site reads nothing here — no
+/// header, no member — and `None` is what this entry then hands on.
+///
+/// The class they may come from is the definition the run read the presented body from, as the
+/// payload's own declaration states it: not a name a call site spells, and never a second class. A
+/// call site naming another class is refused by the read with that stated, so "a member of a class
+/// that happens to share this name" cannot be read as this call's callee.
+fn read_named_callees(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    budget: &mut Budget,
+) -> Result<Option<jarde_jvm::callee::CalleeReadReport>> {
+    let candidates = jarde_java::accessor::candidates(ir);
+    if candidates.is_empty() {
+        return Ok(None);
+    }
+    // A run that read no member header states no definition its members could come from: there is
+    // nothing to bind the evidence to, so no member is read and the rule states the table it is
+    // missing (P3 3.1/3.2).
+    let Some(declaration) = ir.declaration() else {
+        return Ok(None);
+    };
+    let candidates: Vec<jarde_jvm::callee::CalleeCandidate> = candidates
+        .iter()
+        .map(|candidate| {
+            jarde_jvm::callee::CalleeCandidate::new(
+                candidate.call_site,
+                candidate.owner.as_bytes(),
+                candidate.name.as_bytes(),
+                candidate.descriptor.as_bytes(),
+            )
+        })
+        .collect();
+    let read = jarde_jvm::callee::read_callees(
+        content,
+        &jarde_jvm::callee::CalleeReadRequest::new(
+            &request.environment,
+            &declaration.identity().owner,
+            &candidates,
+        ),
+        budget,
+    )?;
+    Ok(Some(read))
+}
+
+/// One callee read as the member table the accessor rule reads (P3 3.2).
+///
+/// The read hands over the class's declarations and bodies in the reader's vocabulary; this is the
+/// one adapter between it and [`jarde_java::ClassMembers`], which is `jarde-java`'s own type: the
+/// fact layer cannot produce it (it does not depend on the layer above), and it is the layer that
+/// owns what a member means. Every member keeps the identity it was read under, so the anchors the
+/// presentation derives from one state which class file their BCI and constant pool belong to.
+fn member_table(read: &jarde_jvm::callee::CalleeReadReport) -> jarde_java::ClassMembers {
+    let members = read
+        .members()
+        .iter()
+        .map(|member| {
+            let owner = read.class().to_string();
+            let identity = member.identity().clone();
+            let flags = member.access_flags();
+            match member.body() {
+                Some(body) => {
+                    jarde_java::MemberBody::new(owner, identity, flags, body.facts().clone())
+                }
+                None => jarde_java::MemberBody::without_body(owner, identity, flags),
+            }
+        })
+        .collect();
+    jarde_java::ClassMembers::new(read.class(), members)
 }
 
 /// One method-analysis run and the presentation of its own payload (P3 1.3).
@@ -234,10 +323,17 @@ impl Engine {
 /// recovery describe one request. A caller that wants only the presentation reads
 /// [`RecoveredMethod::recovery`] and ignores the other half; a caller that wants the run's own
 /// evidence (which reads it charged, which stages completed) reads both.
+///
+/// [`RecoveredMethod::callees`] is the third part and the only thing this entry reads beyond that
+/// run (P3 3.2): the class's own members the presented body's call sites named, read on demand,
+/// charged, and bound to the definition the run read the body from. It is `None` when the body named
+/// no such call site — which is the ordinary case, and the reason a recovery request that presents
+/// an ordinary body still reads exactly one header and one body.
 #[derive(Clone, Debug, Serialize)]
 pub struct RecoveredMethod {
     analysis: crate::ir::MethodAnalysisReport,
     recovery: jarde_java::RecoveryReport,
+    callees: Option<jarde_jvm::callee::CalleeReadReport>,
 }
 
 impl RecoveredMethod {
@@ -251,9 +347,22 @@ impl RecoveredMethod {
         &self.recovery
     }
 
-    /// Both halves, by value: the adapter that serializes them does not clone what it owns.
-    pub fn into_parts(self) -> (crate::ir::MethodAnalysisReport, jarde_java::RecoveryReport) {
-        (self.analysis, self.recovery)
+    /// The class's own members this request read for the presented body's named call sites, when it
+    /// named any: which class was read, which members it declares among them, which candidates it
+    /// refused and what the read charged (P3 3.2).
+    pub fn callees(&self) -> Option<&jarde_jvm::callee::CalleeReadReport> {
+        self.callees.as_ref()
+    }
+
+    /// Every part, by value: the adapter that serializes them does not clone what it owns.
+    pub fn into_parts(
+        self,
+    ) -> (
+        crate::ir::MethodAnalysisReport,
+        jarde_java::RecoveryReport,
+        Option<jarde_jvm::callee::CalleeReadReport>,
+    ) {
+        (self.analysis, self.recovery, self.callees)
     }
 }
 

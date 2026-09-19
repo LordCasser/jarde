@@ -30,6 +30,8 @@
 //! [`Operation::Other`] and makes the statement it belongs to unrenderable, which is a declared
 //! fallback with a diagnostic and never an invented expression.
 
+use jarde_reader::model::PhysicalMethodId;
+
 /// The access-flag bit a class or a member sets when it is `public`.
 pub const ACC_PUBLIC: u16 = 0x0001;
 
@@ -539,30 +541,61 @@ pub fn internal_form(name: &str) -> &str {
 /// can only see it if the caller hands it over. What the caller hands over is not a verdict — it
 /// is the same two things the payload holds for the presented body (the member's declaration facts
 /// and its decoded body), and every judgement about that body is made in [`crate::accessor`].
+///
+/// # What one member states, and what it does not (P3 3.2)
+///
+/// The member's [`MemberBody::identity`] is the class file it was read from — the definition, by
+/// digest and length — *and* the member's own name and descriptor as that read spells them. It is
+/// not decoration: a name and a descriptor alone are a claim about *some* class, and the anchors a
+/// presentation derives from this member's body have to say which class file their BCI and CP index
+/// are coordinates in. The identity is the only thing a caller can hand over that answers both, and
+/// it is what the facade builds one from a read of **one** definition — a member of any other class
+/// file is not a member this type can hold.
+///
+/// [`MemberBody::name`] and [`MemberBody::descriptor`] spell that identity's bytes for the rule's
+/// comparisons and messages; they are the identity's own bytes, in the spelling those need, and
+/// never a second source.
+///
+/// A member the class declares **without a body** (abstract or native) is a member of this table
+/// too, with [`MemberBody::code`] `None`: the class's declaration of it is evidence, and its body is
+/// simply not there to read — which is a different statement from "this class declares no such
+/// member", and the rule states the difference.
 #[derive(Clone, Debug)]
 pub struct MemberBody {
     owner: String,
-    name: String,
-    descriptor: String,
+    identity: PhysicalMethodId,
     access_flags: u16,
-    code: jarde_reader::classfile::MethodCodeFacts,
+    code: Option<jarde_reader::classfile::MethodCodeFacts>,
 }
 
 impl MemberBody {
     /// One member of a class, exactly as the same read of that class stated it.
     pub fn new(
         owner: impl Into<String>,
-        name: impl Into<String>,
-        descriptor: impl Into<String>,
+        identity: PhysicalMethodId,
         access_flags: u16,
         code: jarde_reader::classfile::MethodCodeFacts,
     ) -> Self {
         Self {
             owner: owner.into(),
-            name: name.into(),
-            descriptor: descriptor.into(),
+            identity,
             access_flags,
-            code,
+            code: Some(code),
+        }
+    }
+
+    /// The same member, as a class that declares it without a body: the declaration and the flags
+    /// are read, and no `Code` attribute is there.
+    pub fn without_body(
+        owner: impl Into<String>,
+        identity: PhysicalMethodId,
+        access_flags: u16,
+    ) -> Self {
+        Self {
+            owner: owner.into(),
+            identity,
+            access_flags,
+            code: None,
         }
     }
 
@@ -571,14 +604,20 @@ impl MemberBody {
         &self.owner
     }
 
-    /// The member's name.
-    pub fn name(&self) -> &str {
-        &self.name
+    /// The member's physical identity: the class-file definition it was read from, and its own name
+    /// and descriptor as that read spells them.
+    pub fn identity(&self) -> &PhysicalMethodId {
+        &self.identity
     }
 
-    /// The member's descriptor.
-    pub fn descriptor(&self) -> &str {
-        &self.descriptor
+    /// The member's name, in the spelling the class file's bytes decode to.
+    pub fn name(&self) -> String {
+        String::from_utf8_lossy(&self.identity.name.0).into_owned()
+    }
+
+    /// The member's descriptor, in the spelling the class file's bytes decode to.
+    pub fn descriptor(&self) -> String {
+        String::from_utf8_lossy(&self.identity.descriptor.0).into_owned()
     }
 
     /// The member's access flags, as the class declared them.
@@ -586,9 +625,9 @@ impl MemberBody {
         self.access_flags
     }
 
-    /// The member's decoded body.
-    pub fn code(&self) -> &jarde_reader::classfile::MethodCodeFacts {
-        &self.code
+    /// The member's decoded body, or `None` when the class declares it without one.
+    pub fn code(&self) -> Option<&jarde_reader::classfile::MethodCodeFacts> {
+        self.code.as_ref()
     }
 }
 
@@ -599,6 +638,13 @@ impl MemberBody {
 /// accessor decidable at all. The seam keeps the discipline of the payload: a member arrives as
 /// its declaration and its **decoded body**, never as a claim about what it does, and
 /// [`crate::accessor`] is the only place that reads a meaning into it.
+///
+/// Every member of one table is a member of **one class-file definition** ([`MemberBody::identity`]),
+/// which since P3 3.2 is what binds the two things a rule reads from it: the definition's bytes are
+/// the bytes the member was read from, and its constant pool is the pool its body's references were
+/// decoded against. A member of another class file is not one this table can hold, and `owner` — the
+/// name the *definition* declares for itself — is the name a rule compares a call site's owner
+/// against.
 #[derive(Clone, Debug)]
 pub struct ClassMembers {
     owner: String,

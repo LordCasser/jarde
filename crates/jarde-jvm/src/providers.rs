@@ -442,6 +442,15 @@ pub(crate) enum HeaderDemand {
     /// as the starting point of its supertype walk — and every header it reads is one class of
     /// that range.
     DispatchScope,
+    /// The class definition a presented body's named callees are read from (P3 3.2).
+    ///
+    /// This is the same identity-read shape as [`HeaderDemand::DriverMethodBody`] — the request
+    /// carries the definition, not a name — asked a second time, *on demand*, for the members a
+    /// recovery run's own call sites named: the class whose bytes and constant pool those members'
+    /// bodies are decoded against. It is not a wider read of that class: the bodies read under it
+    /// are the ones the candidates named, one charged `MethodBodies` attempt each, and a class
+    /// declares as many other members as it likes without one of them being read.
+    CalleeMemberBody,
 }
 
 /// One header this request read, with the demand that read it.

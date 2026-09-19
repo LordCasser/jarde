@@ -1435,7 +1435,7 @@ impl Builder<'_> {
             match receiver.map(|receiver| self.render_value(receiver, bci, 0)) {
                 Some(Ok(receiver)) => {
                     let origin = OriginSet::new(Origin::direct(bci))
-                        .plus_derived(Origin::derived(shape.field_bci));
+                        .plus_derived(Origin::derived(shape.field_bci).in_method(&shape.method));
                     self.accessors
                         .push(AccessorRecord::of(bci, &evidence, Some(&shape), None));
                     return Ok(Expr::new(
@@ -1491,7 +1491,7 @@ impl Builder<'_> {
         match rendered {
             Some((Ok(receiver), Ok(value))) => {
                 let origin = OriginSet::new(Origin::direct(at))
-                    .plus_derived(Origin::derived(shape.field_bci));
+                    .plus_derived(Origin::derived(shape.field_bci).in_method(&shape.method));
                 self.accessors
                     .push(AccessorRecord::of(at, &evidence, Some(&shape), None));
                 self.push(Stmt::new(
@@ -2213,12 +2213,23 @@ impl Builder<'_> {
     /// Appends the quoted bytecode of one region or instruction.
     fn fallback(&mut self, bcis: Vec<u32>, reason: &str, at: u32) -> Result<(), StopReason> {
         self.ragged = true;
+        // Every BCI the quote's text names is an anchor of the quoted node — the region's own
+        // instruction first, the rest presented — so a Mixed artifact's fallback is mapped as
+        // completely as one of its structured regions: for each bytecode the quote accounts for,
+        // the table answers which text covers it. The list is the same one the emitter prints, so
+        // the anchors and the quoted line cannot disagree (P3 3.2, A12/A13).
+        let origin = bcis
+            .iter()
+            .filter(|bci| **bci != at)
+            .fold(OriginSet::new(Origin::direct(at)), |origin, bci| {
+                origin.plus_derived(Origin::derived(*bci))
+            });
         self.push(Stmt::new(
             StmtKind::Fallback {
                 reason: reason.to_string(),
                 bcis,
             },
-            OriginSet::new(Origin::direct(at)),
+            origin,
         ))
     }
 

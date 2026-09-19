@@ -2457,6 +2457,30 @@ fn a_captured_lambda_is_written_with_its_capture_in_order_before_the_sam_paramet
         "{}",
         report.text
     );
+    // The site's anchor carries the constant-pool entry the site *is* — and, since P3 3.2, the
+    // member body that entry is an index in: a CP index means nothing without the class file that
+    // holds the pool. The member is the one the run's own declaration read.
+    let site = report
+        .source_map
+        .direct_of_bci(3)
+        .into_iter()
+        .next()
+        .expect("the dynamic site at BCI 3 anchors a node")
+        .origin()
+        .primary()
+        .clone();
+    assert_eq!(
+        site.cp(),
+        Some(site_of(&report, 3).site_cp),
+        "the anchor names the site's own pool entry"
+    );
+    assert_eq!(
+        site.method()
+            .map(|method| (method.name.0.clone(), method.descriptor.0.clone())),
+        Some((b"method".to_vec(), b"()V".to_vec())),
+        "and the member body whose pool that index is an index in"
+    );
+    assert!(site.member().is_some(), "the anchor is a method point");
     assert!(report.fallbacks.is_empty(), "{:?}", report.fallbacks);
 }
 

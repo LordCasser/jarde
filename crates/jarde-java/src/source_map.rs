@@ -30,13 +30,32 @@
 //!
 //! # The CP field
 //!
-//! [`Origin::cp`] is `None` throughout this slice, and that is a statement about the evidence
-//! rather than a placeholder somebody forgot to fill: the 1.1 IR handoff publishes no
-//! constant-pool index, so a run that reads only the payload has none to record. The field exists
-//! so that 3.2's CP/attribute mapping can fill it without reshaping the table — adding an optional
-//! CP later would change the type of every node the table holds.
+//! [`Origin::cp`] is `None` for an anchor whose producing rule had no constant-pool index to
+//! record, and that is a statement about the evidence rather than a placeholder somebody forgot to
+//! fill: a `ldc`-less instruction names no pool entry, and the 1.1 IR handoff publishes none at
+//! all, so a run that reads only the payload has none to record. Where a rule does hold one — the
+//! `invokedynamic` site of a lambda (`lambda@1`) — the anchor carries it.
+//!
+//! # The member an anchor belongs to (P3 3.2)
+//!
+//! A bytecode index is not a place by itself: BCI 3 of the presented body and BCI 3 of a callee are
+//! different instructions, and a CP index means nothing without the pool that holds it. So every
+//! anchor states the **member** it belongs to beside its index — the reader's own
+//! [`PhysicalMethodId`], which names the member *and* the class-file definition (its bytes' digest
+//! and length) those bytes are. That pair is exactly the reader's
+//! [`OriginMember::MethodPoint`] coordinate, carried here without the enum's class-file forms
+//! because the class-file coordinate this table records is the CP index above.
+//!
+//! [`Origin::method`] is `None` for exactly one kind of anchor: one of the body this run presents
+//! whose own member declaration the run did not read (`raw_facts` located no member header), so the
+//! run has no identity to state and invents none. An anchor a rule presented from *another*
+//! member's body always states one — that member's body was read, so its identity is in hand, and
+//! that is what tells "the call site at BCI 3 here" from "the field access at BCI 1 inside
+//! `access$100`".
 
 use std::collections::BTreeSet;
+
+use jarde_reader::model::{OriginMember, PhysicalMethodId};
 
 /// Where one anchor of a node's text comes from.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, serde::Serialize)]
@@ -47,20 +66,30 @@ pub enum Provenance {
     Derived,
 }
 
-/// One anchor: a bytecode index inside the method body, and the constant-pool entry naming it when
-/// the run that produced the node had one.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, serde::Serialize)]
+/// One anchor: a bytecode index inside one member body, the constant-pool entry naming it when the
+/// run that produced the node had one, and which member body that is.
+///
+/// The member is boxed for the same reason the identities of the reader's own coordinate types are
+/// carried behind a pointer wherever one is held per node: a [`PhysicalMethodId`] states a whole
+/// class-file definition (its location, the digest and length of its bytes, its variant) beside the
+/// member's two names, and inlining that in every anchor would make every statement and expression
+/// of the tree carry it. The anchor's own reads are unaffected — [`Origin::method`] answers with the
+/// member itself.
+#[derive(Clone, Debug, Eq, PartialEq, Hash, serde::Serialize)]
 pub struct Origin {
     bci: u32,
+    method: Option<Box<PhysicalMethodId>>,
     cp: Option<u16>,
     provenance: Provenance,
 }
 
 impl Origin {
-    /// The direct anchor of a node's own instruction.
+    /// The direct anchor of a node's own instruction, in the member body the run stated for the
+    /// presented member ([`Origin::in_method`]; `None` when it stated none).
     pub fn direct(bci: u32) -> Self {
         Self {
             bci,
+            method: None,
             cp: None,
             provenance: Provenance::Direct,
         }
@@ -70,8 +99,31 @@ impl Origin {
     pub fn derived(bci: u32) -> Self {
         Self {
             bci,
+            method: None,
             cp: None,
             provenance: Provenance::Derived,
+        }
+    }
+
+    /// The same anchor, stating the member body its bytecode index is in.
+    ///
+    /// A rule that presents another member's body — the accessor whose field access is inside the
+    /// callee — states that member here, and the run's own declaration states the presented one for
+    /// every anchor that belongs to it.
+    pub fn in_method(mut self, method: &PhysicalMethodId) -> Self {
+        self.method = Some(Box::new(method.clone()));
+        self
+    }
+
+    /// The same anchor, stating `method` when it states no member at all.
+    ///
+    /// This is how the body of one run is stated once for all of its own anchors: the anchors a rule
+    /// built name no member (they cannot know the run's declaration), and the one member the whole
+    /// artifact is of is the request's own.
+    pub(crate) fn in_body(self, method: Option<&PhysicalMethodId>) -> Self {
+        match (&self.method, method) {
+            (None, Some(method)) => self.in_method(method),
+            _ => self,
         }
     }
 
@@ -86,6 +138,22 @@ impl Origin {
     /// The bytecode index this anchor names.
     pub fn bci(&self) -> u32 {
         self.bci
+    }
+
+    /// The member body this anchor's bytecode index is in, when the run stated one: the member's own
+    /// identity, and with it the class-file definition whose bytes (and whose constant pool) the
+    /// index and [`Origin::cp`] are coordinates in.
+    pub fn method(&self) -> Option<&PhysicalMethodId> {
+        self.method.as_deref()
+    }
+
+    /// The same anchor as the physical coordinate the reader states: a method point, or `None` when
+    /// the run stated no member for this anchor.
+    pub fn member(&self) -> Option<OriginMember> {
+        self.method().map(|method| OriginMember::MethodPoint {
+            method: method.clone(),
+            bci: self.bci,
+        })
     }
 
     /// The constant-pool index behind this anchor, when the producing run had one.
@@ -145,6 +213,22 @@ impl OriginSet {
             self.derived.push(origin);
         }
         self
+    }
+
+    /// The same anchors, each stating `method` when it states no member of its own.
+    ///
+    /// The one writer that knows what the presented body *is* — the request's own declaration —
+    /// states it here for every anchor that belongs to that body, and leaves the anchors a rule
+    /// presented from another member's body exactly as the rule read them (P3 3.2).
+    pub(crate) fn in_body(&self, method: Option<&PhysicalMethodId>) -> Self {
+        Self {
+            primary: self.primary.clone().in_body(method),
+            derived: self
+                .derived
+                .iter()
+                .map(|origin| origin.clone().in_body(method))
+                .collect(),
+        }
     }
 
     /// Every bytecode index this node mentions, whichever provenance carries it.
@@ -356,5 +440,82 @@ mod tests {
         let anchor = Origin::direct(12).with_cp(9);
         assert_eq!(anchor.cp(), Some(9));
         assert_eq!(Origin::derived(13).cp(), None);
+    }
+
+    /// One member's identity, as the run that read it states it: the class-file definition and the
+    /// member's own name and descriptor (both spelled raw here, as the class file does).
+    fn method(definition: &str, name: &str, descriptor: &str) -> PhysicalMethodId {
+        use jarde_reader::model::{
+            ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+            PhysicalVariant, SnapshotId,
+        };
+        PhysicalMethodId {
+            owner: PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: SnapshotId(definition.to_string()),
+                },
+                class_bytes: ClassBytesId {
+                    digest: Digest(format!("{definition}-digest")),
+                    length: 7,
+                },
+                variant: PhysicalVariant::Base,
+            },
+            name: JvmBytes(name.as_bytes().to_vec()),
+            descriptor: JvmBytes(descriptor.as_bytes().to_vec()),
+        }
+    }
+
+    #[test]
+    fn an_anchor_says_which_member_body_its_bytecode_index_is_in() {
+        // The two shapes A12 cannot tell apart from the BCI alone: the call site in the presented
+        // body and the field access at the **same** BCI inside the callee's body, and two callees
+        // whose field access sits at one BCI each.
+        let caller = method("snapshot", "method", "()I");
+        let accessor = method("snapshot", "access$100", "(LTest;)I");
+        let other = method("snapshot", "access$200", "(LTest;)I");
+
+        let call_site = Origin::direct(3).in_method(&caller);
+        let field_in_accessor = Origin::derived(3).in_method(&accessor);
+        let field_in_other = Origin::derived(3).in_method(&other);
+        assert_eq!(call_site.bci(), field_in_accessor.bci(), "the same BCI");
+        assert_ne!(call_site, field_in_accessor, "in two different members");
+        assert_ne!(
+            field_in_accessor, field_in_other,
+            "and two callees at one BCI are two anchors"
+        );
+        assert_eq!(
+            field_in_accessor.method().map(|method| &method.name.0),
+            Some(&b"access$100".to_vec()),
+            "the anchor's own method answers which member it is"
+        );
+
+        // The reader's own coordinate for the same place: a method point, with the definition the
+        // member — and therefore its constant pool — belongs to.
+        assert_eq!(
+            field_in_accessor.member(),
+            Some(OriginMember::MethodPoint {
+                method: accessor.clone(),
+                bci: 3,
+            })
+        );
+        assert_eq!(
+            field_in_accessor.method().map(|method| &method.owner),
+            field_in_other.method().map(|method| &method.owner),
+            "both callees are declared in one definition, which is what binds their CP indices"
+        );
+
+        // An anchor of the body the run presents carries that body's identity once the run states
+        // it — and stays unstated when the run read no declaration for it.
+        let set = OriginSet::derived_from(Origin::direct(3), Origin::derived(3));
+        assert_eq!(set.primary().method(), None, "no member was stated");
+        // The set one accessor node carries: its own anchor in the presented body, and the callee's
+        // field access as the member it really is in. Stating the presented body leaves the callee's
+        // anchor alone, because an anchor that already names a member is never restated.
+        let node = OriginSet::new(Origin::direct(3))
+            .plus_derived(Origin::derived(1).in_method(&accessor))
+            .in_body(Some(&caller));
+        assert_eq!(node.primary().method(), Some(&caller));
+        assert_eq!(node.derived()[0].method(), Some(&accessor));
+        assert_eq!(node.derived()[0].bci(), 1);
     }
 }
