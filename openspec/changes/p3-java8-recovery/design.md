@@ -58,6 +58,35 @@
 
 仍未完成：1.1 还要定义 RecoveryProfile、模式前置条件、rule version、representation/quality/compile_status/semantic_validation/verification/fallback 类型，以及"未满足前置条件 fixture"的边界验证；本片只落地其中的 IR 交接、阶段有效性与计费/停止不变量。
 
+### 1.1 的产物词汇：把 P3 的结果写成 P2 已有的平面（2026-09-19 已落地）
+
+上节「仍未完成」里 profile、前置条件、rule version、fallback 四项仍成立；其中的 representation/quality/compile_status/semantic_validation/verification 类型就是本节的产物词汇，本片按 P3 规格句实际写下的取值扩展完成。恢复层的**内部声明**（`RecoveryProfile`、模式前置条件、rule version、失败 fallback）不在本片：它们随**第一个真实模式 pass** 在 1.3 落地（依据见下）。本片只做一件事——让 `recovery-validation` 的「每个 source result SHALL 独立返回 representation（…）、quality（…）、syntax_status（…）、compile_status（…）、semantic_validation（…）、verification（…）」在类型上可表达。判定逐句取自规格与架构输出表，不凭印象增删：
+
+| 平面 | P2 基线（本片不改产出） | 本片新增 | 依据句 |
+| --- | --- | --- | --- |
+| `representation` | `Bytecode` | `Java`、`Mixed` | `recovery-validation`「representation（Java/Bytecode/Mixed）」；`java8-recovery`「representation=Mixed/Bytecode」 |
+| `quality` | `Conservative`/`Fallback` | `Structured` | 同上「quality（Structured/Conservative/Fallback）」；`conservative-output`「Java/Mixed 表示与 Structured **质量**留给后续能力」；架构 §13.1 输出表把 `Structured` 列在 quality 行 |
+| `syntax_status` | `NotJava` | `Checked`、`Unchecked` | 同上「syntax_status（Checked/Unchecked/NotJava）」；`java8-recovery` 的「非法 Java 名称」降级句与设计风险段都要求区分「生成了 Java」与「检查过语法」 |
+| `compile_status` | `NotAttempted` | `Compiles`、`Failed` | 同上「compile_status（NotAttempted/Compiles/Failed）」与「只有实际执行编译且失败时才使用 compile_status=Failed」 |
+| `semantic_validation` | 三值已齐 | 无 | 同上；`FixtureDifferential` 正是 P2 为受控对照预留的值，P3 3.3 的受控重编译/行为对照属同一证据类 |
+| `verification` | `NotPerformed` | `Performed`、`Failed` | 同上「verification（Performed/NotPerformed/Failed）」 |
+
+- **`Structured` 属 quality，不属 representation。**「成功 Structured 标志」是 `quality=Structured`：架构 §13.1 的输出表把它列在 quality 行，`conservative-output` 的措辞是「Java/Mixed 表示与 Structured **质量**」，`recovery-validation` 又明确「`Mixed` 只表示 representation，禁止把它当作 quality」。因此 representation 加的是 `Java`/`Mixed`，`Structured` 加在 quality；同理 `Java` 落在 representation，`syntax_status` 加的是 `Checked`/`Unchecked`（`NotJava` 已存在）。
+- **P2 产出零变化。** 报告装配仍写基线值（`Bytecode`、`NotJava`、`NotAttempted`、`NotPerformed`，quality 仍按 3.5 的规则取 `Conservative`/`Fallback`）；既有变体的名字与 serde 形状未动，既有断言一行未改（817 → 818 只因新增了一条用例）。
+- **没有生产者，也不伪造生产者。** 新增变体只被规格句与序列化用例要求；本片不新增任何能产出它们的路径（不为此造 pass、不写进 `AnalysisRun`），3.3 落地受控重编译/行为对照时才决定哪次运行写 `Compiles`/`Failed` 与 `Performed`/`Failed`。
+- **一处跨 crate 增补。** `verification` 平面的类型来自 `jarde-reader`（P2 报告复用 `classfile::VerificationStatus`），故 `Performed`/`Failed` 加在该 enum 上而不是另立同名平面；P0–P2 的 header/bytecode/multi-release 报告仍只写 `NotPerformed`，「未执行验证」的语义不变。读者层词汇随阶段扩展有先例：P2 1.3 就向 `jarde-reader` 的 `CountedBudgetDimension` 追加过六个计费维度。
+- **为什么不加 `ALL` 常量。** 穷尽性对照写在测试里（见下），因为生产代码没有任何地方遍历这些平面，公开 `ALL` 会为守卫而存在。这与 `EnvironmentProblemCode::ALL` 的分工一致：那里有消费者，所以才在类型上。
+
+**1.3 的交付与依据。** `RecoveryProfile`、模式前置条件、rule version、失败 fallback 跟随模式 pass：本 change 决策 1 要求「每个**模式 pass** 声明所需 IR/effect/metadata、输出节点、rule version 和失败 fallback」，而模式 pass 在 `jarde-java`；`layer-jarde-crates` design 又写明「P3 `1.3` 随第一个真实 Region→AST→文本闭环创建 `jarde-java`」。声明随 pass 走、pass 随首个真实闭环走，因此本片不建空壳 crate、不预置跨层抽象，也不把这份分工解释成漏做。
+
+验证：
+
+- `tests/p3_product_vocabulary.rs`（本片新增，1 条用例，经 `jarde::*` 公共面命名这些类型）：对六个平面逐个断言 (a) 每个取值发布的 JSON 名等于由变体名派生的 snake_case 名、且可反序列化回自身；(b) 该平面的取值集合与声明它的源文件里的变体完全一致且同序——即「规格句写下的取值」与「类型能表达的取值」互为闭包。将来任何加变体的人都会在这里被拦下，直到把对应句子写进这张对照表。
+- 证伪两组（`/tmp` 副本 + `sha256sum -c` 还原，独立 `CARGO_TARGET_DIR`，用完删除）：给 `Representation` 临时加 `Pseudocode` 而不改对照表 → 用例红（`left: ["Bytecode","Java","Mixed"]` / `right: […,"Pseudocode"]`）；把该 enum 的 `rename_all` 临时改成 `SCREAMING_SNAKE_CASE` → 用例红（`"BYTECODE"` vs `"bytecode"`）。
+- 「P2 从不产出这些取值」由既有断言复证，本片未改它们：`tests/p2_contracts.rs`、`tests/p2_properties.rs`、`tests/p2_frame.rs`、`tests/p2_ssa.rs`、`tests/p2_cfg.rs`、`crates/jarde-cli/tests/json_cli.rs` 都在真实请求上断言基线值。
+
+仍未完成（1.1 的剩余项）：任务文本要求的「未满足前置条件 fixture」边界与不误识别验证依赖前置条件类型，故随 1.3 的模式 pass 一并验证；「真实 P2 结果消费」由 1.1a 的 `tests/p3_method_ir.rs` 覆盖。
+
 ## Risks / Trade-offs
 
 - [Risk] 模式误识别造成“漂亮但错误”的 Java → 所有 pass 要求完整前置条件，失败即 fallback；保留原始 evidence。

@@ -11,6 +11,12 @@
 //! which the phase that checks the local invariants raises and nothing else does — while
 //! `verification` stays `NotPerformed` however far the pipeline runs.
 //!
+//! Every plane's vocabulary was widened in P3 1.1 to the values the recovery layer states, so
+//! that a P3 result can be written down without inventing a type: each enum below names its P2
+//! baseline variant and the layer that owns the rest. Nothing else moved — this pipeline still
+//! assembles the baseline variant of all six planes, and no variant the recovery layer owns has
+//! a producer in this build.
+//!
 //! This module owns the request shape ([`validate_request`]) and the report assembly
 //! ([`analysis_report`], from an [`AnalysisRun`]); the code that drives the stages themselves
 //! is the engine's, because it needs the reader, the providers and the raw CFG builder, which
@@ -96,11 +102,25 @@ pub struct StageResult {
     pub state: StageState,
 }
 
-/// Representation a report describes. P2 produces bytecode only; Java/Mixed is P3.
+/// Representation a report describes: what the output *is*, never how strong it is.
+///
+/// `Bytecode` is the P2 baseline and the only variant this pipeline publishes — a report
+/// assembled here describes the bytecode it analyzed.
+///
+/// `Java` and `Mixed` are the recovery layer's (P3 1.3): `Java` when the produced presentation
+/// is Java text throughout, `Mixed` when Java regions and bytecode fallbacks stand side by side
+/// in one result. `Mixed` is a representation and MUST NOT be read as a quality ([`Quality`]).
+/// P2 produces neither variant.
+///
+/// `Structured` is deliberately not a variant of this plane: the output contract puts it on
+/// [`Quality`], and the representation plane says nothing about how much of the input was
+/// recovered.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Representation {
     Bytecode,
+    Java,
+    Mixed,
 }
 
 /// Strength of what was produced.
@@ -117,23 +137,61 @@ pub enum Representation {
 ///   means "not `Conservative`" and MUST NOT be read as evidence that a real fallback
 ///   recovery happened, or that a body was read, decoded or degraded;
 /// - neither variant says anything about coverage, termination or verification.
+///
+/// `Structured` is the recovery layer's value (P3 1.3) for a produced Java presentation whose
+/// structure was recovered under satisfied pattern preconditions; the output contract keeps it
+/// on this plane while [`Representation`] states what the presentation is made of. P2 never
+/// produces it: the artifact of this pipeline is the canonical CFG, so a run of this build
+/// keeps choosing between `Conservative` and `Fallback` above. It says that the presentation is
+/// structured and nothing else — not that the Java compiles ([`CompileStatus`]), not that it is
+/// equivalent to the input ([`SemanticValidation`]), and not that it was run.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Quality {
     Conservative,
     Fallback,
+    Structured,
 }
 
+/// The syntax plane of the produced presentation: whether it is Java, and whether that Java was
+/// checked.
+///
+/// `NotJava` is the P2 baseline and the only variant this pipeline publishes — a report
+/// assembled here describes a bytecode analysis, so it states no Java syntax at all. The
+/// recovery layer (P3 1.3) states `NotJava` in a second case too: a readable result that holds a
+/// name or control structure Java cannot express is not claimed as Java syntax, whatever its
+/// [`Representation`] says.
+///
+/// `Checked` and `Unchecked` are the recovery layer's (P3 1.3) — P2 produces neither: `Checked`
+/// is Java text that really passed the syntax check the run declares, and `Unchecked` is Java
+/// text published without one. Neither variant says that the text compiles
+/// ([`CompileStatus`]), that it is equivalent to the input ([`SemanticValidation`]), or that it
+/// was ever run.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SyntaxStatus {
     NotJava,
+    Checked,
+    Unchecked,
 }
 
+/// Whether the produced presentation was actually recompiled in a declared environment.
+///
+/// `NotAttempted` is the P2 baseline and the only variant this pipeline publishes, and it is
+/// also what the recovery layer states whenever no compilation ran: publishing Java text does
+/// not by itself mean the text can be recompiled at all. `Compiles` and `Failed` belong to the
+/// recovery layer's controlled recompilation (P3 3.3): the run really compiled the produced text
+/// in the environment it declares, and either that compilation accepted it or it did not.
+/// `Failed` is only for a compilation that really ran and failed.
+///
+/// Either variant is evidence about the sample, compiler and profile it ran under, never a
+/// general claim that the input is Java 8 recompilable.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CompileStatus {
     NotAttempted,
+    Compiles,
+    Failed,
 }
 
 /// Strongest semantic evidence that applies to this report.
@@ -158,7 +216,9 @@ pub enum SemanticValidation {
     /// request.
     LocalInvariants,
     /// A fixture differential (5.3) compared this report's artifact with an oracle. That is
-    /// per-sample evidence and is not claimed by a production request.
+    /// per-sample evidence and is not claimed by a production request; the recovery layer's
+    /// controlled recompile and behavior comparison (P3 3.3) is the same evidence class, and it
+    /// labels the sample, compiler and profile it ran on just the same.
     FixtureDifferential,
     /// No semantic evidence applies: the run stopped before the `ssa` phase completed, never
     /// scheduled it, or was refused before it read anything.
@@ -373,8 +433,11 @@ pub(crate) fn terminal(error: &Error, usage: UsageSnapshot) -> (ExecutionReport,
 ///
 /// The environment problems and their diagnostics come first, then the run's diagnostics, which
 /// is the order 1.1 fixed for a rejected environment and keeps every problem visible next to
-/// the capability it prevented. The product planes are the P2 baseline (`Bytecode`, `NotJava`,
-/// `NotAttempted`, `NotPerformed`); the quality plane is the run's own — see [`Quality`] for the
+/// the capability it prevented. The product planes are assembled at the P2 baseline value —
+/// `Representation::Bytecode`, `SyntaxStatus::NotJava`, `CompileStatus::NotAttempted` and
+/// `VerificationStatus::NotPerformed` — while their vocabularies also carry the recovery layer's
+/// values since P3 1.1; nothing in this crate produces those, and no plane is derived from
+/// another. The quality plane is the run's own — see [`Quality`] for the
 /// rule 3.5 fixed — and `semantic_validation` is the run's evidence too, which is why only the
 /// phase that checks it can raise it ([`SemanticValidation`]); `origin` stays empty because the
 /// IR payloads are crate-private in P2 (invariant 11): the report anchors the request by

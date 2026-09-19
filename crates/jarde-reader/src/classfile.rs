@@ -91,10 +91,24 @@ pub enum Java8RuntimeCompatibility {
     Rejected,
 }
 
+/// Whether a declared verification of this artifact really ran, and what it concluded.
+///
+/// `NotPerformed` is the only variant P0, P1 and P2 produce, and it stays the honest state of
+/// every header, bytecode and multi-release report they assemble: a structural read, a dialect
+/// validation or an IR phase is not a verification, so the plane MUST NOT be read as "the
+/// artifact is legal" or "the input can be linked or run".
+///
+/// `Performed` and `Failed` are the vocabulary later phases state when they really run one: the
+/// recovery layer's controlled check (P3 3.3's recompile and behavior comparison) verifies the
+/// artifact it produced in a declared environment, and either that check accepted it or it did
+/// not. Both variants are evidence about the sample, compiler and environment they ran under,
+/// never a general claim over other inputs.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum VerificationStatus {
     NotPerformed,
+    Performed,
+    Failed,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
