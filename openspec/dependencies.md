@@ -4,9 +4,9 @@
 
 ## 技术栈边界
 
-生产核心使用 Rust 2024，MSRV 1.88。当前 workspace 有 `jarde-reader`、`jarde-query`、`jarde-jvm`、`jarde`、`jarde-cli` 五包；[layer-jarde-crates](changes/layer-jarde-crates/tasks.md) 7/7 已验收，尚未归档。`jarde-java` 留到 P3 首个真实恢复闭环，不创建空壳或 common/core。此次复核不改第三方版本、features 或已准入的依赖取舍。
+生产核心使用 Rust 2024，MSRV 1.88。当前 workspace 已有 reader/query/jvm/java、根门面、CLI 六包；P2 与分层均已归档。`jarde-java` 已实际交付，不再列为未来空壳；本轮不调整第三方版本、features 或新增依赖。
 
-生产依赖为 query→reader、jvm→reader+query、facade→三包、CLI→facade；query 不依赖 jvm 或 petgraph，reader 无上层依赖。noak/rawzip/flate2 归 reader，petgraph 归 jvm；blake3 仍由 reader/query/jvm 各按直接使用声明同一已准入版本与 pure feature。共享 Digest 类型归 reader，query 拥有游标请求的语义编码，providers 拥有定义字节核验；多个直接库依赖不等于多套身份模型，本轮不为汇聚依赖新增通用散列接口。详见 layer design §3.5 的修订决定。
+生产依赖为 query→reader、jvm→reader+query、java→jvm+reader、facade→四包、CLI→facade。noak/rawzip/flate2 归 reader；jvm 的 CFG 与 java 的正常流投影直接使用同版本/std-only petgraph，query 不依赖 jvm/java/petgraph。blake3 继续按 reader/query/jvm 的实际摘要语义声明，共享 Digest 身份不变；不新增同义散列接口或 common/core。
 
 reader/query 独立消费、测试依赖闭包、单一身份/预算和 A17/fuzz/CI 是实际验收项；不因拆包升级第三方版本/features，不提前宣称编译提速。已准入 noak/petgraph 继续复用，SSA 的复用取舍沿用 P2 design §6.1，未重新进行上游版本选型。
 
@@ -41,8 +41,8 @@ reader/query 独立消费、测试依赖闭包、单一身份/预算和 A17/fuzz
 
 | 阶段与职责 | 候选 | 准入条件 |
 | --- | --- | --- |
-| P2 CFG/SCC/支配关系/拓扑排序 | [petgraph 0.8.3](https://docs.rs/petgraph/0.8.3/petgraph/algo/index.html)，发布于 2025-09-30，**已准入**（2026-09-18，证据见 `changes/p2-jvm-ir/verification.md` 的 3.1 节） | 优先复用通用图算法；验证内存权重、确定性、异常边和遍历预算。JVM Frame、returnAddress、SSA origin/effect 仍由语义层负责，不能把普通图算法当 verifier。准入后的硬约束：feature 固定 `default-features = false, features = ["std"]`；SCC 只用迭代的 `kosaraju_scc`（`tarjan_scc` 递归会 abort）；所有输出按 (物理定义, BCI) 自排序（`immediately_dominated_by` 跨进程顺序不定）；`simple_fast` 前自校验 root 归属；多出口合成 super-exit；阶段级不可取消，靠规模上界（`max_blocks` 默认 16 384 / 硬上限 65 535）与支配阶段 195 B/block 记账 |
-| P3 Java 文本排版 | [pretty 0.12.5](https://docs.rs/pretty/0.12.5/pretty/)，发布于 2025-09-26 | 优先复用文档组合、分组和断行，验证 source map、注释/转义和输出预算；不自行实现通用 pretty-print 算法 |
+| P2 CFG/SCC/支配关系/拓扑排序 | [petgraph 0.8.3](https://docs.rs/petgraph/0.8.3/petgraph/algo/index.html)，发布于 2025-09-30，**已准入**（2026-09-18，证据见 `changes/archive/2026-09-19-p2-jvm-ir/verification.md` 的 3.1 节） | 优先复用通用图算法；验证内存权重、确定性、异常边和遍历预算。JVM Frame、returnAddress、SSA origin/effect 仍由语义层负责，不能把普通图算法当 verifier。准入后的硬约束：feature 固定 `default-features = false, features = ["std"]`；SCC 只用迭代的 `kosaraju_scc`（`tarjan_scc` 递归会 abort）；所有输出按 (物理定义, BCI) 自排序（`immediately_dominated_by` 跨进程顺序不定）；`simple_fast` 前自校验 root 归属；多出口合成 super-exit；阶段级不可取消，靠规模上界（`max_blocks` 默认 16 384 / 硬上限 65 535）与支配阶段 195 B/block 记账 |
+| P3 Java 文本排版 | 已按 1.2 选择最小 AST + 记录位置的 emitter；pretty 为后续布局候选 | 本轮不重做选型；已有实现与取舍见 [P3 design](changes/archive/2026-09-20-p3-java8-recovery/design.md)，后续排版工具仍须通过 source map/转义/输出预算准入 |
 | P3 Java 语法检查 oracle | [tree-sitter-java 0.23.5](https://github.com/tree-sitter/tree-sitter-java)，发布于 2024-12-21 | 含生成的 C parser，不符合纯 Rust 生产链；最多作为可选测试工具。语法解析也不证明类型检查或语义等价，且需核对目标 Java release 覆盖 |
 | P5 缓存、并行、持久索引 | 实测后选型 | 在出现真实瓶颈时评估有界缓存库、Rayon、SQLite/Rust 原生存储等；必须检查纯 Rust 约束、权重淘汰、取消、损坏回退和许可。当前不锁定产品或格式，也不预先自研 |
 
@@ -50,7 +50,7 @@ reader/query 独立消费、测试依赖闭包、单一身份/预算和 A17/fuzz
 
 ### ASC / droidsaw 复用复核（2026-09-18）
 
-本轮核对固定的本地 ASC checkout 与 droidsaw-common 2.0.0 发布源码，不代表对最新上游的全面评测；修订和接口证据见 [P2 design §6.1](changes/p2-jvm-ir/design.md)。当前不引入 common 整包：SSA 仍需 JVM Frame、异常逻辑 predecessor、origin/effect 与预算适配，Region 的单 handler 接口不直接承载完整 JVM 异常结构；其 Rust 1.93 要求及未按子模块裁剪的依赖是额外工程成本，不是永久禁用理由。
+本轮核对固定的本地 ASC checkout 与 droidsaw-common 2.0.0 发布源码，不代表对最新上游的全面评测；修订和接口证据见 [P2 design §6.1](changes/archive/2026-09-19-p2-jvm-ir/design.md)。当前不引入 common 整包：SSA 仍需 JVM Frame、异常逻辑 predecessor、origin/effect 与预算适配，Region 的单 handler 接口不直接承载完整 JVM 异常结构；其 Rust 1.93 要求及未按子模块裁剪的依赖是额外工程成本，不是永久禁用理由。
 
 通用 SSA 在转换输入后可复用，ASC checked 路径也已有预算/取消/内存预留，不能据“DEX vs JVM”或“它没有资源治理”直接排除。当前吸收职责分离、独立小图对照与通用输出先行的路线，不复制 DEX 语义、不 fork 整包、不先建跨项目共享 crate；以后用同一组异常、块顺序、资源停止探针比较薄适配和私有实现后再决定。该决定与 Jarde 内部 workspace 分层是两个问题。
 
