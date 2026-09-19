@@ -338,3 +338,62 @@ cargo metadata --manifest-path fuzz/Cargo.toml --locked
 ### 留待判断（实现者提出，父级记为可接受）
 
 `lambda$` 标记**只**用于在两种语义等价写法之间选一个，被写成 `lambda.rs` 的**文档化决定**而非前置条件（标记缺失时仍产出 lambda，只是用 `::` 或带接收者的调用写）。若评审认为应升级为声明式前置条件，改动面是 `pass.rs` 的 `LAMBDA` 声明 + 一处检查点，不影响其余结论。
+
+## 2026-09-19 2.2：concat / bridge / accessor（提交 `492e31e`）
+
+三条规则注册进同一张 `PASSES`（5→8），沿用 2.1 的机制：`Refusal` 从 `lambda.rs` **提到共享模块 `refusal.rs`**（诊断码按 `(rule, requirement)` 查表），`Precondition`/`RuleVersion`/`Pass::admits` 未另立。三者 `required_release = None`——它们写出的构造（`a + b`、`x.f = v`、`return x.m()`）在每个 release 都是同一段 Java，**变化的是输入**，由规则自己声明。
+
+### 形态判定
+
+- **`concat@1`**（`concat.rs`，前置 `IrTable{Ssa,Code,ConstantPool}` + `StatementFree`）：接收者只接受 `{StringBuilder, StringBuffer}` 且类名读自同一次解码；形状必须是 `new C; dup; <init>; …; toString()`，接收者由本链产生；逐 `append` 检查描述符（参数类型须属于 `+` 语义相同的重载集合 `int/long/float/double/boolean/String/Object`、返回类型须是同一拼接类）；每个操作数的产生 BCI 必须落在「上一条链指令」与「它的 append」之间；**段内不得有产出语句的指令**；`toString` 结果必须被渲染型读者消费。拒绝码 `jre_concat_split`/`_interleaved_effect`/`_shape`/`_unconsumed`/`_overlap`。
+- **`bridge@1`**（`bridge.rs`，前置 `IrTable{Ssa,Code,ConstantPool}` + `Metadata{access_flags}`）：身份只来自**声明**；body 每条指令必须是「读数槽 → 一次转发调用 → 可选 `checkcast` → return」；**唯一被接受的 cast** 是「被 cast 的正是转发调用的返回值，且 cast 类型正是该调用描述符声明的返回类型」（消去证明只依赖这一处池事实）；**参数上的 cast 一律拒绝**（那是会失败的检查）。拒绝码 `jre_bridge_shape`/`_cast_not_erasure`/`_not_declared`/`_flags_missing`。
+- **`accessor@1`**（`accessor.rs`，前置 `IrTable{Ssa,Code,ConstantPool,Members}`）：调用点须是 `invokestatic`；callee 须在调用方交出的成员表里；声明须同时有 `ACC_STATIC|ACC_SYNTHETIC`；body 恰为「一次实例字段访问 + 读取 + return」（读形态 / 写形态），字段的类须是本类、类型须与描述符一致。**`access$` 标记只决定值不值得留 refusal 记录**，与 `lambda$` 同纪律。
+
+### 拼接的求值顺序（三重守卫）
+
+**(a)** 链拥有从 `new` 到 `toString` 的**整段 BCI（含操作数生产者）**，这些 BCI 一律不产语句 → 操作数只写一次；**(b)** 每个操作数的产生 BCI 必须落在「上一条链指令」与「它自己的 append」之间 → 写出的 `+` 从左到右与字节码同序；**(c)** 段内任何产出语句的指令（store / void 调用 / iinc / 字段写 / 未建模）按 `StatementFree` **拒绝整条链**。
+断言：`"x" + 5 + f()` 逐字面 + `text.matches("f()").count() == 1` + 操作数顺序 `["\"x\"", "5", "f()"]` + 段表锚点含链的**全部** BCI；`StringBuffer` 与「抛异常调用在中间」各一条。
+
+### A12 双 origin 边（本片验收核心）
+
+读访问器 → `ExprKind::Field`（primary = **调用点** BCI，derived = **访问器 body 里 `getfield`** 的 BCI）；写访问器 → `StmtKind::FieldAssign`，同样双锚点。
+根 crate 的 `tests/p3_accessor_edges.rs`：同一 fixture（字段 `f:I` + `access$100` + 调用方 `method()I`），**一份不走恢复、一份走恢复**，两次都跑 `Engine::query`，把整份序列化文档递归归零 `elapsed_millis` 后逐字段相等；**再各自断言两条边**——① `method` 的 BCI 3 → accessor 符号，② accessor 的 BCI 1 → 字段符号，并断言两条 item **互不相等**（**不是**「总数不变」）。**该断言放在根 crate 而非 `crates/jarde-java/tests/`，因为恢复层不得依赖 query 层**（`cargo tree` 复验 0 次）。
+
+### bridge 的边界
+
+**呈现**：`ACC_BRIDGE` + body 恰为「参数槽按序载入 → 一次转发 → 对被转发返回值的 `checkcast`（类型 = 该调用描述符声明的返回类型）→ return」。**不呈现**：参数上的 cast（`_cast_not_erasure`）；body 不只转发（`_shape`，**但成员本身照旧按通用结构呈现**，多出来的语句照样写成语句）；类未声明 bridge flag（`_not_declared`——**形状像转发不等于 bridge**）；运行未交 flags（`_flags_missing`）。
+
+### 证伪三组
+
+| 变异 | 结果 |
+| --- | --- |
+| 段内语句检查改成「一律接受并拥有」 | `a_chain_whose_instance_is_stored_in_a_local_is_refused` 红——实例被存进局部量的链被当成 `+` 写出来 |
+| `concat_expr` 改成逆序取操作数 | 顺序用例红（产物 `f() + 5 + "x"`）**且** oracle 对照红 |
+| **削弱 oracle**（删掉调用序列比较） | oracle 变异用例红，**其余 23 条（含全部生产用例）全绿** |
+
+### 被修正的既有断言（6 处，均收紧）
+
+`pass.rs` 的 `PASSES.len()` 5→8 与规则表；release pin 的野生 `_ => None` 一支改为**具名一支**（把「为什么与 release 无关」写进断言）；`IrTable` 允许集合增加 `Members` 并新增三条 pin（`ACCESSOR` 确实声明 `Members`、`BRIDGE` 确实声明 `Metadata`、`IrTable::Members.name()`）；`for pass in [...]` 断言扩到新规则；`LOOP/CONCAT` 的 `StatementFree` 与 `Replayable` 声明被逐个 pin；`lambda.rs` 的 `Refusal` 提为共享 `refusal.rs`（机制**复用而非复制**）；`build::value_is_consumed` 的读者集合追加 `Field`/`CheckCast`。
+
+### 父级核查：2.2 报告里的一条「既有边界」不成立
+
+2.2 的实现者在汇报 §10 声称：「普通调用臂在值被消费时仍会**同时**写调用语句与消费处表达式（例：被拒绝的访问器写成 `access$200(self);` **与** `return access$200(self);`）」，并说 2.1 的一条用例依赖该行为。
+
+**父级用三个探针实测**（逐个打印恢复文本并数出现次数）：
+| 探针 | 文本要点 | 该调用出现次数 |
+| --- | --- | --- |
+| 被拒的 accessor（`access$100`，门面未交成员表） | `return access$100(local0);` | **1** |
+| body 不止转发的 accessor（`access$200`） | `return access$200(self);` | **1** |
+| 被拒的 capture（`produce()`） | `produce();` + 引用的站点 + `return;` | **1** |
+
+**结论：该说法不成立于交付代码**——`call_value_reaches_a_reader` 的读者集合与调用臂的 `if write.is_none() && …` 守卫正是为此而设；2.1 的用例断言的是「拒绝站点不丢 effect」（`produce();` 仍在），**不是**依赖重复写。**未据该说法修改任何代码**（只查不改）。
+**由它引出的另一个方向**（父级怀疑、已交 2.3 核查）：若消费该值的指令**本身被引用**（例如**非 `bridge@1` 所有**的 `checkcast` 走单 BCI fallback），那么调用臂**没写**语句、读者又**没渲染**值——**effect 可能从呈现里静默消失**（方向相反，更坏）。已在 2.3 的派单里作为**先做的核查项**。
+
+### 证据
+
+全量 **925 passed / 0 failed / 1 ignored**（894 + 31：`jarde-java` 单元 43→49、新 `p3_patterns` 24、新根测试 `p3_accessor_edges` 1；**既有用例一条未增未删**）；fmt 与 clippy 1.98.1 干净；`openspec validate --all --strict` 12 passed；两个 CI example exit 0；分层三包中 `jarde-java` **0** 次；**未触及依赖边**，锁文件两条均通过。
+**CI**：`492e31e` → run 35446581536，四 job success。
+
+### 已知边界（留给后续）
+
+**门面未接成员表**：`Engine::recover_method` 明说不做第二次类读，故经门面对访问器调用给 `jre_accessor_members_missing`（被陈述的拒绝，文本保留调用）。呈现这一半在库层（`ClassMembers` + `RecoveryRequest::with_members`）已可用；把成员读接到门面与 3.1 的 receiver/参数命名是**同一件事**，属 **3.1**。其余：`StringBuilder` 之外的拼接类、嵌套链、方法转发型 accessor 的呈现、`altMetafactory` 非零标志位、段表 `cp` 面与新 `*Record` 的 `Deserialize` 面（3.2）。
