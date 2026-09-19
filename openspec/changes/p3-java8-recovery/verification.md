@@ -686,3 +686,56 @@ V1 uses = [bci 4]（返回的正是加载的旧值）；V2 无人使用
 ### 未完成项（如实）
 
 `CalleeBody` 的线上摘要是**新 schema**（`instructions`/`code_bytes`），尚无文档行；新公开面（CLI `callees` 字段、`ReadReason::CalleeMemberBody`、`AccessorRecord.callee`、`MemberBody` 的身份/无体、`Origin::method`/`member()`、`into_parts` 三元组）需要文档同步（属 3.4）。本片**未做独立 review**。
+
+## 2026-09-20 2.4：TWR / synchronized / finally，并关闭 P3-R5（提交 `d4c3901`）
+
+### TWR（`twr@1`，`crates/jarde-java/src/guard.rs`）
+
+walker 遇到**异常边**时先于既有 fallback 检查。逐条证明（全部读**同一次运行**的载荷）：
+
+| 事实 | 证明方式 |
+| --- | --- |
+| 资源初始化在 `try` 之内 | 每个资源 = 一段**指令区间**，从 `L_j.start_bci` 反向生长到「恰好一条语句」（除 store 外每条指令的写入都须被区间内读；store 的读值须由区间产生），且不越过上一层起点 |
+| 正常路径 close | 指令级匹配 `aload slot; ifnull L; aload slot; invokevirtual close()V; goto L` + CFG 核（ifnull 块后继恰为 close 块与 `L`；close 块唯一后继为 `L`）；**close 的接收者必须是那次 `aload` 产出的同一 SSA 值** |
+| **close 顺序** | 从最内层区间末尾起，把 close 链与 `resources.iter().rev()` **逐个匹配**；不符或漏一即 `jre_guard_close_order` |
+| handler 覆盖与 catch 类型 | `row.start_bci == 该层首指令`、`row.end_bci ==` 内层 handler 跨度末期；`catch_type_index` **不作放宽**，靠 handler 形状判定 |
+| **`addSuppressed` 接收者是 primary** | handler 必须是 `Store{e}; Load{primary}; Load{e}; Invoke(addSuppressed)`——**两个 load 的顺序就是证明**；反向即 `jre_guard_suppressed` |
+| `athrow` 重抛 primary | handler 尾必须 `Load{primary}; Throw`，否则 `jre_guard_primary` |
+| 不可解释的 row | 语句跨度内**每条**被保护的指令，其 row 必须在 `twr@1` 自己的 row 集合内 → 带 `catch` 的 TWR 拒绝（`jre_guard_unexplained_row`） |
+
+呈现：`try (Res local0 = open("r")) { body(); }`；**证明读过的 BCI（两个 close、`addSuppressed`、`athrow`、primary 的 store）全部进 derived origin**。
+
+### synchronized（`monitor@1`）
+
+全方法**恰好一个** `monitorenter`；header 必须是「锁值表达式 + 一个 store」，且 store 填入的值与 enter 读的值同一（`dup; astore; monitorenter` 的惯用法用「同一指令产出的两个输出」证明）；全方法**恰好两个** `monitorexit`（正常 + handler）；handler 必须是 `Store{p}; Load{lock}; monitorexit; Load{p}; Throw` 且其 monitorexit 被它**自己那条 row** 保护。**异常路径缺 exit / 第二入口 / 只在部分路径 exit 一律拒绝**——不输出会漏掉异常路径退出的 `synchronized`。
+
+### finally：**如实拒绝**（本片的判断，附理由）
+
+`fin()`/`catchFinally()` 落在新码 **`jre_guard_finally_copy`，`rule: None`**（没有任何规则声称它）。理由：javac 为 `finally` 生成的是**复制**（正常路径一份 + 异常路径一份）；把两份并成一份 `finally` 只在两份**可证等价**时才忠实，而证明它需要比较本层未建模的操作数并证明**每条 exit 恰好跑一份复制**——**执行次数正是风险所在**。故引用并把 BCI 报全，诊断说明原因。**`jsr`/`ret`（v45）既有行为未变**（仍 Mixed/Fallback）。
+
+### P3-R5 关闭（父级此前记录的候选缺陷）
+
+参数类型改由**方法自己的 descriptor**（同次运行的声明事实）解析：零测试条件写 `if (b)`（`ifeq`→`!b`、`ifne`→`b`；其它零测试对 boolean 无 Java 拼法 → **拒绝**），从 boolean 参数填充的局部声明为 `boolean`。
+**父级独立验收**：取 `scope(Z)I` 的产物自行包成 `public static int scope(boolean b)` → `javac --release 8` **exit 0**（此前同一包装**编译不过**，报「不可比较的类型: boolean和int」）；执行 `b=true → generated=1 / original=1`、`b=false → generated=2 / original=2`。
+**顺带澄清**：`SyntaxStatus` 本层**从不声称 `Checked`**（只在有别名时 `NotJava`，否则 `Unchecked`），故 R5 记录里那条「可能仍称 Checked」的担忧原本不成立——用例钉住 `Unchecked` + `compile_status=NotAttempted`。
+
+### 父级独立证伪（两组，均与实现者自报一致）
+
+| 变异 | 结果 |
+| --- | --- |
+| close 链改为**声明序**匹配（不再逆序） | **2 红**：`three_resources_are_declared_in_the_order_whose_closes_run_backwards`、`a_resource_initialised_after_an_earlier_one_is_inside_the_region_that_closes_it` |
+| **suppressed 关系不检查** | **恰好 1 红**：`a_suppression_that_is_the_other_way_round_is_refused`，失败输出 `left: Java / right: Mixed`——即反向抑制的类被**错误呈现**成 Java |
+
+### 证据
+
+全量 **982 passed / 0 failed / 1 ignored**（968 + 14：`p3_guard` 13 + `p3_scope` 1；**既有目标逐项不变**）；fmt 与 clippy 1.98.1 干净；`openspec validate --all --strict` 12 passed；两个 CI example exit 0；分层三包中 `jarde-java` **0** 次；**未触及依赖边**（故 fuzz 锁两条不适用）。
+**执行对照**（实现者）：TWR/monitor 的 7 个成员产物包成 `Gen extends Guarded` 编译后与调用原成员的 runner 逐行比对 **IDENTICAL**，含 `two`/`three` 的**逆序 close**（`close s` → `close r`）与 `suppressed` 的 `caught boom` + `suppressed close-r`。
+**CI**：`d4c3901` → 见下。
+
+### 未完成（如实）
+
+- **3.3**：「产物 → 包装 → javac → 执行 → 事件流比对」目前是 shell 里的对照（与 3.1 先例一致，仓库约定测试不依赖 javac）；做成**可重放门禁**属 3.3。
+- **3.4**：本片新公开面需文档行——`jarde_java::guard`（`GuardPlan`/`GuardShape`/`GuardResource`）、`FallbackReason::Guard`、`Operation::Monitor`/`Throw`、`StmtKind::Try`/`Synchronized`、`ExprKind::Not`、`Ast::ResourceDecl`、`MethodFacts::parameter_types`、`jre_guard_*` 15 个诊断码。
+- **既有平面缺口（非本片引入，已点名）**：builder **内部**的引用（如以类字面量为锁值的 `syncBody`）使产物 `Mixed/Fallback`，但其原因只写在**产物文本**里、不进 `report.diagnostics`（诊断平面目前只收 region 级 fallback）。该形状被保留为边界用例。
+- **已知边界**：守卫语句必须**起始于其所在节点首指令**（否则更早的语句会被 claim 后丢弃，由 `explained()` 拒绝）；带 `catch` 的 TWR、分支体、`return` 值跨 close 的形状均拒绝，不做部分呈现。
+- 本片**未做独立 review**（父级已做两组独立证伪）。
