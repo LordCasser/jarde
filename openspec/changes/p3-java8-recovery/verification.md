@@ -126,3 +126,57 @@ B2 值得记：**「返回正确的停止理由」并不足以证明「没有留
 **oracle 在本片发现的生产 bug**：`iflt/ifge/ifgt/ifle`（一个值对零）与 `if_icmp*`（两个值）被合成同一个 `CompareOp` 变体，分支 arity 前置条件因此把一个合法循环判成 `UnrenderableOperand`；现已按操作数个数拆成两组变体，并由 oracle 的两个 sense × 三个输入的极性用例固定。
 
 **被修正的既有断言**：**零条被放宽**。1.3a 的 29 条用例逐条仍绿；唯一行为变化是**增强**——`an_if_else_is_written_with_the_arm_the_branch_really_picks` 的 fixture 在分支块里还有 `iconst_0; istore_1`，旧实现静默丢掉这条语句，现在它按次序写在 `if` 之前，而该用例原有的四条断言（`if (local1 != 0)`、fall-through 在 then、`} else {` 的位置、同一 BCI 的 direct+derived 两个 provenance）一条未改。
+
+## 2026-09-19 1.3b：事实缝闭合、循环与 switch、独立 oracle（提交 `a0954ed`）
+
+### 事实缝闭合（本片的架构重点）
+
+**动机（父级已裁定）**：1.3a 时 `RecoveryFacts` 的**操作表由调用方构造**。缺事实 → 已落成被陈述的 fallback（安全）；但**错的事实**（把 `ifeq` 标成 `ifne`）→ **静默产出极性相反的 Java**，下游无从发现。
+
+**落地**：
+- `MethodIr` 新增两个**按值**字段：`code: Option<Box<MethodCodeFacts>>`（`raw_facts` 解出的指令、typed operands、声明的异常表）与 `constant_pool: Vec<CpEntryFacts>`（**同一次** header 读的池）；读面只有 `code()`/`constant_pool()` 两个只读借用；引擎在 run 末尾 **move**（不重解码、不重读、计费与停止语义未变，`Cargo.lock` 一字未动）。
+- 新增 `jarde-java/src/decode.rs`：`Operations::of(code, pool)` 是 opcode → `Operation` 的**唯一**映射；未建模 opcode 与解析不出的引用 → `Other`（被陈述）。
+- `RecoveryFacts` **缩减**为 `{ method, debug_locals }`；`operations` 字段与 `with_operation()`/`operation()`/`operations()` **全部删除**。
+- **唯一来源由签名证明**（父级独立核对）：`RecoveryRequest` 现在只有 `ir` 与 `facts`，**没有任何参数**能交进极性/槽号/常量值——调用方**给不出**第二个意见。这比任何断言都强。
+- **父级修正的一处陈旧文档**：`report.rs` 里 `facts` 的注释仍写「...and the decoded operations of its body」——操作已不在 `facts` 里，已改为如实表述（`facts.rs` 的模块文档本来就把这条写对了）。
+
+**oracle 抓到的生产 bug**：`iflt/ifge/ifgt/ifle`（一个值与零比）与 `if_icmp*`（两个值比）被合成同一变体，分支 arity 前置条件因此**把合法循环判成 `UnrenderableOperand`**。已按操作数个数拆成两组（`CompareOp` 10 变体）。
+
+### 循环与 switch
+
+- `normal_flow`：immediate dominators、`dominates()`、`natural_loops()`（回边 = target 支配 source）、**SCC 级** `irreducible_blocks()`（分量内唯一入口且支配全分量，否则不可约——**回边级判据会漏**掉只有一条回边的不可约图）。
+- `region`：`Loop{header, test, test_bci, form: While|DoWhile, continuation, body, exit}`、`Switch{prefix, branch, groups, join}`。两种可证明形状：header 自测（`while`/`for`）与唯一 latch 测（`do…while`）；switch 按**终指令是否为解码出的 switch** 分派（不按后继数）。
+- **effect 次数如何保证（P3 design 明写的关键不变量）**：条件/selector 写在 `while (…)`/`do {…} while (…)`/`switch (…)` 的**括号里**，其值表达式就是 test 块指令的文本 → **每次求值一次、次序同字节码**；body 语句留在花括号内。**守卫**：循环 test 块**必须纯**，否则 `TestBlockEffect` fallback（**不搬走**）；从分支离开环的边 → `LoopLeavesEarly`；环内块必须全被走到否则 `LoopShape`。
+
+### 不可约 / 交叉异常
+
+两者都在走路**之前**判定并**整具身体**参考 bytecode：`Irreducible{blocks}` → `jre_region_irreducible`；`CrossingExceptionRegions{record, other, blocks}` → `jre_region_crossing_exception_regions`（按**声明范围**判定「部分重叠、互不包含」）。平面为 `representation=Mixed`、`quality=Fallback`、`execution=Complete`（**扫描完整不写 `Partial`**），不报 `Structured`、不产空 body。
+
+### 独立 oracle（`src/oracle.rs`，`#[cfg(test)]`）
+
+自写**朴素字节码机**（自有解码器 + 栈/局部变量机）+ 自写**文本模型**（自有解析器/求值器）+ 比较器（**calls 序列、return 值、test 求值次数**三项全等）。
+- **独立于**：生产 Region/AST/段表全部 helper——模型段（两 marker 之间）不含 `region::`/`Region`/`ast::`/`StmtKind`/`ExprKind`/`NormalFlowView`/`SourceMap`/`text_of_bci`/`build::`/`recover(`，由 `include_str!` 守卫断言，并**要求含** `run_bytecode`/`run_text`/`compare`/`parse`（非空洞性）。
+- **不独立于**：fixture 字节（共享 ground truth）与四个 opcode 的含义（自己解码，抄错即红）——**如实记录**。
+- **自造 ≥3 形状**：`polarity_fixture`（`ifeq` 与 `ifne` × 3 输入）、`while_fixture`、`do_while_fixture`、`crossing_class()`（自造 class 字节，异常表 `[2,4)`+`[3,6)`）。
+
+### 证伪四组
+
+| 变异 | 结果 |
+| --- | --- |
+| 放行循环 test 块 effect（test 块语句写在循环前） | 红，输出正是 `local1 = local1 - 1;` 排在 `while` **之前** |
+| `ifeq` 极性反转（`decode.rs` 一行） | **4 条红**（decode 单测、oracle 极性、`an_if_else_…`、`a_while_loop_…`） |
+| **削弱 oracle**（比较器不再比 calls） | oracle 用例红，而**生产 15 条全绿** —— 证明独立对照有牙、且它捕捉的是生产不会自曝的东西 |
+| 去掉不可约检查 | 红，退化为 `jre_region_arms_do_not_meet` + `jre_region_uncovered_blocks` |
+
+### 既有断言：零条放宽
+
+1.3a 的 29 条逐条仍绿。行为上的差异只有两处，**都是增强**：`invokeinterface` 的目标从测试硬编码改为**从类自己的池解析**（取值相同）；`an_if_else_…` 的分支块里原本被**静默丢掉**的 `local1 = 0` 现在按次序写在 `if` 之前（该用例原有四条断言一条未改）。
+
+### 证据
+
+全量 **867 passed / 0 failed / 1 ignored**（847 + 20：`jarde-java` 单元 20→34、集成 9→15，其余 crate 未动）；fmt 与 clippy 1.98.1 干净；`openspec validate --all --strict` 12 passed；两个 CI example exit 0；`cargo tree` 对 reader/query/jvm 三个包中 `jarde-java` 出现 **0/0/0**。
+**CI**：`a0954ed` → run 35441081367，四 job success。
+
+### 本片明说的边界（未做，留给后续）
+
+带写的循环 header 与 `break`/`continue` 形状走 `TestBlockEffect`/`LoopLeavesEarly` **fallback**（不搬走、不丢弃）；`do {} while (c)` 的空体走 `LoopShape`；`ldc` 的 `float`/`double` 字面量仍 `Other`；`athrow`/`try`/`finally` 的**呈现**属 2.4（本片只保证异常事实在 fallback 里正确）；字段/数组/转换类操作属 2.x；段表 `cp` 面属 3.2。
