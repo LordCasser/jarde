@@ -355,3 +355,67 @@
 
 `PatternTargetState::Ambiguous`、`DynamicOrigin::{Caught, ChainBeyondBound, NoDefinition}`、环境被拒 → `Analysis = NotPerformed` 的 X3 路径、「listing 截断」诊断路径、`resolution_pattern_body_not_analysable` 分支**均无 fixture**；`ServiceLoader.stream`、`Class.getConstructor` 等 overload **未登记（=不主张）**。
 **属 3.x**：把 `PATTERNS` 暴露为版本化 descriptor（3.1）、只读 plugin fixture（3.2）、现代支持矩阵与 A04–A07/A12（3.3）、X3 的 CLI/JSON 出口（本片只有 facade 入口）。
+
+## 2026-09-20 3.1 + 3.2：plugin descriptor、未注册=Unsupported 与只读 framework fixture（提交 `9b37ea8`）
+
+### descriptor 与注册表（3.1）
+
+`crates/jarde-query/src/plugin.rs`：`PluginRule { id, rule: PluginRuleVersion(name@version), input: PluginInputCategory, config_path: PluginConfigPath{prefix,declares}, schema: PluginOutputSchema{name,version,fields}, evidence, coverage, budget: PluginBudget{dimension,statement}, source, isolation, not_claimed, support }`。
+**注册表风格照 2.3 的 `PATTERNS` 与 `release_registry`**：`PLUGINS` 常量表 + `plugins()` + `plugin_for(id, version)`（**id 与 version 双维度字节精确**）+ `PluginSupport::{Performed, Unsupported{reason}}`；`not_claimed`/`source`/`isolation` **非空由单测钉住**。两条登记：`service-loader-registrations@1`（Performed）与 `spring-factories@1`（**登记但不执行**，带 reason）。
+
+**未注册 = Unsupported 的专测**（`an_unregistered_configuration_is_unsupported_and_never_an_empty_answer`）**区分三种拒绝**：id 未注册 → `plugin_rule_not_registered`；**版本**未注册 → `plugin_rule_version_not_registered`（消息点名本 registry 持有的版本）；已注册但未执行 → `plugin_rule_unsupported`（带登记 reason）。三者均 `items: []` + `coverage == not_requested()` + 请求级 `PluginAnalysis::NotPerformed{code}`。
+**对照**：只含注释的 services entry → `Performed` + 0 item + coverage `CompleteWithinSchema` 且 scanned **点名读过的 entry**——即「**声明为空**」才是 0 item，**拒绝不是**。
+**父级独立证伪**：让 `plugin_for` 对未注册配置**回退到第一条已登记规则**（即抹掉「未注册」与「跑过且没找到」的区别）→ **恰好 1 红**：`an_unregistered_configuration_is_unsupported_and_never_an_empty_answer`，其余 4 绿。
+
+### 落点与理由
+
+**`crates/jarde-query/src/plugin.rs`**：plugin 的输入就是 archive resource entry，即 query 层自己的资源消费面；放 `jarde-jvm` 会倒置分层（jvm→query），放 `jarde-reader` 则把「规则登记 + 独立 coverage + 计费纪律」塞进事实层。
+**格式所有者复用（仅可见性）**：`xref/resource.rs` 的 `SERVICES_PREFIX`/`service_key`/`service_providers` 与 `xref/mod.rs` 的 `escaped_raw_name`/`to_u64` 提升为 `pub(crate)`，plugin 用**同一个** matcher 与**同一个**解析器读同一批字节（**无第二份格式实现，行为零改动**）；descriptor 声明的 prefix 与共享常量比对，不一致则 **fail-closed 不读任何 entry**。
+**facade**：`Engine::plugins(...)` 一行委派；`src/lib.rs` **只导出产品类型与 `plugins`/`plugin_for`/`PLUGIN_TRUST_DOMAIN`**（不导出 module path；`plugin::execute` 与 `query::execute` 一样留在下面）。
+
+### 约定选择与 fixture（3.2）
+
+选 **`META-INF/services/<service-interface>`**：① 它正是 2.3 明确留下的声明面（`service-loader-load` 的 `not_claimed` 写着「no `META-INF/services` resource is opened」）——两条规则**互补不重叠**；② 语法由 `java.util.ServiceLoader` javadoc 规定，真实可验证；③ 通用结构面已对同一批字节有 target-driven 视角，**分隔可测而非纸面**。
+fixture **测试内生成**（`tests/p4_plugins.rs::archive()`，`rawzip` writer，同其他 P4 套件）：4 个 entry = manifest、`META-INF/services/com.example.Service`（124 字节，sha256 `75a4a087…e225c`，含注释/空行/续行/**不存在的类**）、`com/example/Main.class`（major 52，一个 `native` 方法）、`docs/readme.txt`。**未新增 fixture 文件**，故无文件 SHA。
+
+### 不改变 P1/P2 原始事实（**父级独立复核**）
+
+`the_plugin_plane_leaves_the_structural_planes_own_answer_untouched`：同一 snapshot 上 plugin **前后**各跑一次 X1 `QueryReport` 与 `EnumerationReport`，**serde JSON 逐字段相同**——而 **plugin 确实跑了**（`returned_items == 3`）。**两者缺一不可**：一份没被动过的报告在「声称动它的东西根本没跑」时不证明任何事。
+**分隔的表达**：① plugin item 带 `rule`/`rule_version`，X1 item 带 `relation/source/target/...` 且**证据属主断言** `evidence.attribute == Some(ArchiveNameBytes(b"com.example.Service"))`、`via` 空，另加三个身份串**均不出现在结构面**；② plugin 报告**无** `relation`/`consumers`，且 item 的 JSON 键集合 **== descriptor 声明的 `schema.fields`**（形状归 schema 而非结构面）；③ 选择规则不同：X1 对未提及的名字 → 0 item，plugin 从同批字节给出 3 条声明；④ 类型层面 plugin 平面**无** `QueryRelation`/`XrefItem`/X1 edge。
+
+### 预算生效（`Plugin sees bounded input` scenario）
+
+descriptor 声明 `budget.dimension = result_items`（1 item 1 单位，**发布前**计费），另由读取维度（`archive_entries`/`entry_bytes`/`read_bytes`）与 `elapsed_millis` 界定。专测 `a_budget_refusal_is_a_stop_with_the_range_it_read` 覆盖五种：
+**(a)** `result_items` 不足 → 发布 2 条、`has_more`、`Skipped{BudgetExceeded{ResultItems}}`、coverage `Partial` 且 **scanned 点名读过的 entry**、诊断 `budget_exceeded_result_items`；
+**(a2)** 同限下第二条规则 → `NotRequested{plugin_request_stopped}` 且 `coverage == not_requested()`；
+**(b)** `entry_bytes = 0` → 0 item、`Skipped{EntryBytes}`、scanned 空、skipped 点名该 entry、诊断带 `Location::Entry` provenance；
+**(c)** `elapsed_millis = 0` → 列举即被拒，报告 `Partial{BudgetExceeded{ElapsedMillis}}`、规则 `has_more` + `Partial`；
+**(d)** **独立结构查询同一 snapshot 用自己的预算 → `Complete` + 1 item + `CompleteWithinSchema`**（即「**主查询仍能完成其独立结构结果**」）。
+
+### 不执行（证据，非声明）
+
+`nothing_is_executed_and_a_claim_that_names_an_absent_class_is_only_a_name`：**先证明归档里真有可解码类**（`inspect_header(ClassTarget::Entry(main), Strict)` 成功且含 `native` 方法）、manifest 真写着 `Main-Class`/`Launcher-Agent-Class` 与 `Class-Path: https://example.invalid/absent.jar`。
+plugin 只发布 3 个**配置里拼写的名字**（含归档里**不存在**的 `com.example.Absent`），且该请求自身 usage：`class_bytes`/`class_headers`/`method_bodies`/`attribute_bytes`/`code_bytes`/`analysis_steps`/`ir_items`/`ir_edges`/`normalization_clones`/`output_bytes` **全 0**，`entry_bytes=124`（只物化配置），`archive_entries=4+2`；报告 `Complete`（**若真启动 launcher，缺失类会是失败**）；item 中**不含** agent/launcher 名或 URL；`dynamic_analysis` coverage `NotRequested`。URL 由**结构面**作为 literal 发布（其既有行为），**plugin 从不读 manifest**。
+
+### 隔离立场（写在何处）
+
+`PLUGIN_TRUST_DOMAIN`（plugin.rs）："…a Rust function is **not a sandbox**: an untrusted extension must run in a **separate process** or in **Wasm**…under its own change"。每条 descriptor 的 `isolation` 都引用它（单测断言相等 + 文本含 `not a sandbox`/`separate process`/`Wasm`），并在模块文档与 `Engine::plugins` 文档重复；经 `jarde::PLUGIN_TRUST_DOMAIN` 导出。**未**实现进程/Wasm，**也未**把 trait 说成沙箱。
+
+### 实现者自查中的一处**加强**
+
+原以 `serde_json::to_string(report).contains("service-loader-registrations")` 判「插件身份不污染核心平面」，实测**抓不到**——`XrefEvidence.attribute` 在 JSON 中以**字节数组**拼写，字符串搜索看不见。改为语义断言 `evidence.attribute == Some(ArchiveNameBytes(b"com.example.Service"))`（+ `via` 空 + 三个身份串文本检查），并用证伪 ②b 验证它会变红。**方向是加强，未放宽。**
+
+### 证据
+
+全量 **1074 passed / 0 failed / 3 ignored**（1065 + 9 = 4 条 plugin 单测 + 5 条集成）；`p4_plugins` 5 passed；fmt/clippy 1.98.1 干净；`openspec validate --all --strict` 14 passed；两个 CI example exit 0；分层三包中 `jarde-java` **0** 次；**既有断言零改动**（`tests/` 只新增文件）；**未触及依赖边**（故 fuzz 锁两条按纪律 3 不适用，`git status` 对 `Cargo.toml`/`Cargo.lock` 为空）。
+**实现者三组证伪**：① 未注册改「空结果」→ 专测红（`left: Performed / right: NotPerformed`）；②a 让框架字符串进通用 scanner（`target_matches → true`）→ X1 逐字段用例红（`7 vs 1`）；②b 给 X1 item 打 plugin 戳 → 同上红（`ArchiveNameBytes([112,108,117,103,105,110,…])`）；③ 忽略预算继续发布 → 预算用例红（`3 vs 2`）。**父级独立证伪**见上（未注册回退）。
+**CI**：`9b37ea8` → 见下。
+
+### 未完成（如实，属 3.3/3.4）
+
+**CLI 出口与退出码**（`crates/jarde-cli` 一字未动）；**现代支持矩阵、Java 8 output conflict、source map、A04–A07/A12 与 adversarial tests**（3.3）；`openspec/**` 未改。
+**本片如实记录的缺口**：`PhysicalScope::ArtifactTree` 嵌套树 scope 答 `NotRequested{plugin_scope_not_registered}`（**有专测，非静默等同 `SnapshotAll`**）；`PluginRuleAnalysis::Skipped{Error{code}}`/`Cancelled` 分支**无 fixture**（只经预算维度覆盖）；descriptor 的 `input` 类别**目前只有一个取值**（`ArchiveResourceEntry`），class 事实类输入未登记；**未实现进程/Wasm 隔离**（立场已写明，属另立 change）。
+
+### 一处流程注记（父级）
+
+实现者报告「共享 Skill 入口不可用」并列出其检查过的位置——它检查的是**仓内**路径与 `../../skills`，而本宿主该 Skill 位于 `~/.grow/skills/software-engineering/SKILL.md`（**父级已确认存在并读毕**）。**教训**：派单时应把 Skill 的**绝对路径**写进 brief。本片的验证面与汇报结构因此完全依父级 brief 而定，未受影响；后续派单已加入该路径。
