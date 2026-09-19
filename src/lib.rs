@@ -32,7 +32,7 @@
 //! (`HeaderClosure`, `FactLedger`, `AnalysisRun`, `IrPhase`, `CallContexts`, …) the driver keeps
 //! to itself.
 
-pub use jarde_jvm::{environment, ir, resolver};
+pub use jarde_jvm::{environment, ir, reflection, resolver};
 // The on-demand callee read (P3 3.2) crosses as its report's own types: [`RecoveredMethod::callees`]
 // hands one over and an adapter serializes it, so a consumer needs the names to hold. The entry that
 // performs the read (`callee::read_callees`) and the candidate type it takes stay below — a consumer

@@ -28,6 +28,7 @@ pub mod engine;
 pub mod environment;
 pub mod ir;
 pub mod method_ir;
+pub mod reflection;
 pub mod resolver;
 
 mod call_context;
@@ -52,4 +53,6 @@ pub use callee::{
     CalleeBody, CalleeCandidate, CalleeMember, CalleeReadReport, CalleeReadRequest, CalleeRefusal,
     read_callees,
 };
-pub use engine::{analyze_method, analyze_method_ir, declaration_references, resolve_symbol};
+pub use engine::{
+    analyze_method, analyze_method_ir, declaration_references, reflection_patterns, resolve_symbol,
+};

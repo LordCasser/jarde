@@ -65,6 +65,22 @@ pub fn declaration_references(
     crate::resolver::declaration_reference_report(content, query, budget)
 }
 
+/// Bounded reflection and `ServiceLoader` pattern scan under an explicit environment (P4 2.3
+/// entry point).
+///
+/// The request shape is checked first, exactly like [`resolve_symbol`]'s. The scan itself is
+/// [`crate::reflection`]'s: it enumerates the classes of the explicit scope, analyses the bodies
+/// that name a registered overload and answers one site per call site, and the facade
+/// (`jarde::Engine::reflection_patterns`) documents the contract a consumer observes.
+pub fn reflection_patterns(
+    content: &[ArtifactSnapshot],
+    request: &crate::reflection::ReflectionPatternRequest,
+    budget: &mut Budget,
+) -> Result<crate::reflection::ReflectionPatternReport> {
+    crate::reflection::validate_request(content, request)?;
+    crate::reflection::reflection_patterns(content, request, budget)
+}
+
 /// Method IR analysis under an explicit environment (P2 entry point).
 ///
 /// The request and the requested stages are validated against the fixed pass table before

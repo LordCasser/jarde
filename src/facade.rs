@@ -153,6 +153,30 @@ impl Engine {
         jarde_jvm::declaration_references(content, query, budget)
     }
 
+    /// Bounded reflection and `ServiceLoader` pattern scan (P4 2.3 entry point).
+    ///
+    /// Same request-level checks as [`Engine::resolve_symbol`]. The scan enumerates the classes of
+    /// the explicit scope, analyses the bodies that name a registered overload, and answers one
+    /// site per call site: a site whose target inputs are constants this engine proves under the
+    /// bounded value flow of its own body is `pattern_inferred_target` with the odd overload, the
+    /// constant input, the propagation scope, the loader assumption and the rule version, while
+    /// every other input is `Unknown` with the definition that kept it from being a constant.
+    ///
+    /// Nothing is executed, loaded or initialized, and the target is never decoded or resolved as
+    /// a member, so a name the snapshot does not even hold is still inferred — and published with
+    /// the snapshot's own separate answer beside it, so "what the call site asks for" and "what
+    /// this snapshot provides" are never one claim. A refused charge, a stopped listing and range
+    /// the scan could not read all end it with the prefix it published (`has_more`), never with a
+    /// completed answer over range it never searched.
+    pub fn reflection_patterns(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &crate::reflection::ReflectionPatternRequest,
+        budget: &mut Budget,
+    ) -> Result<crate::reflection::ReflectionPatternReport> {
+        jarde_jvm::reflection_patterns(content, request, budget)
+    }
+
     /// Method IR analysis under an explicit environment (P2 entry point).
     ///
     /// An empty stage set is an input error (`analysis_no_stages`); every other mismatch

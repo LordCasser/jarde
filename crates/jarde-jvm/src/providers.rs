@@ -451,6 +451,18 @@ pub(crate) enum HeaderDemand {
     /// are the ones the candidates named, one charged `MethodBodies` attempt each, and a class
     /// declares as many other members as it likes without one of them being read.
     CalleeMemberBody,
+    /// One class of an explicit bounded pattern scan (P4 2.3).
+    ///
+    /// The scan names the classes its own scope covers, exactly as
+    /// [`HeaderDemand::DispatchScope`] does for a dispatch range, and every header it reads for
+    /// that range is one class of that scope.
+    PatternScan,
+    /// The class a proven reflection constant spells (P4 2.3).
+    ///
+    /// A reflection target is looked up in the order the *registered rule* states — the caller's
+    /// own loader for `Class.forName(String)` — so this demand is a symbol request the caller
+    /// itself issues, and the position it selects is published beside the inference.
+    PatternTarget,
 }
 
 /// One header this request read, with the demand that read it.

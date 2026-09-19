@@ -246,6 +246,12 @@ pub enum ReadReason {
     /// The class definition a presented body's named callees were read from (P3 3.2): the members
     /// one recovery run's own call sites named, read on demand and one body attempt each.
     CalleeMemberBody,
+    /// One class of an explicit bounded pattern scan (P4 2.3): a name the scan's own scope lists,
+    /// demanded because the scope covers it.
+    PatternScan,
+    /// A class name a proven reflection constant spells (P4 2.3): the target of one pattern this
+    /// engine inferred, demanded in the order the registered rule states.
+    PatternTarget,
 }
 
 /// One class header a request really read.
@@ -928,6 +934,8 @@ fn read_reason(demand: HeaderDemand) -> ReadReason {
         HeaderDemand::DispatchScope => ReadReason::DispatchScope,
         HeaderDemand::DriverMethodBody => ReadReason::DriverMethodBody,
         HeaderDemand::CalleeMemberBody => ReadReason::CalleeMemberBody,
+        HeaderDemand::PatternScan => ReadReason::PatternScan,
+        HeaderDemand::PatternTarget => ReadReason::PatternTarget,
     }
 }
 
@@ -1168,6 +1176,23 @@ fn search_coverage(
             uninterpreted_extensions: Vec::new(),
         },
         dynamic_analysis: CoverageDimension::not_requested(),
+    }
+}
+
+/// The same projection for the planes whose own artifact dimension is not the reader's:
+/// `search_coverage` is the one place the closure's class-name searches become a coverage plane,
+/// so the 2.3 pattern scan reads its runtime-resolution dimension through it instead of stating a
+/// second rule for the same numbers.
+pub(crate) fn search_coverage_with_artifact(
+    examined: u32,
+    positions: u32,
+    concluded: bool,
+    hierarchy_complete: bool,
+    artifact: CoverageDimension,
+) -> Coverage {
+    Coverage {
+        artifact_structural: artifact,
+        ..search_coverage(examined, positions, concluded, hierarchy_complete)
     }
 }
 

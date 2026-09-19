@@ -359,13 +359,17 @@ fn provides(content: &[ArtifactSnapshot], snapshot: &SnapshotId) -> bool {
 }
 
 /// The classes one explicit range covers, in range order.
-struct RangeListing {
+///
+/// The listing is the scope vocabulary's own reading of the artifact, so the 2.3 pattern scan
+/// enumerates its scope through this same type instead of writing a second candidate rule for
+/// "which entry is a class of this range".
+pub(crate) struct RangeListing {
     /// Raw internal names, first occurrence first: a name two containers both hold is one class
     /// of the range, and the environment's order decides which definition it resolves to.
-    names: Vec<JvmBytes>,
+    pub(crate) names: Vec<JvmBytes>,
     /// The listing's own execution when it is not complete.
-    truncation: Option<ExecutionReport>,
-    diagnostics: Vec<Diagnostic>,
+    pub(crate) truncation: Option<ExecutionReport>,
+    pub(crate) diagnostics: Vec<Diagnostic>,
 }
 
 /// Lists the class names `scope` covers.
@@ -374,7 +378,10 @@ struct RangeListing {
 /// visit for the same view: `SnapshotAll` is the snapshot's root container — for a standalone
 /// CLASS root, the class itself — and `ArtifactTree` is the container tree. A nested container is
 /// a class of the range only when the tree lists it, exactly like 2.4's declaration scan.
-fn enumerate_range(
+///
+/// The 2.3 pattern scan enumerates its own scope through this entry: one scope vocabulary, one
+/// candidate rule, two planes that read it.
+pub(crate) fn enumerate_range(
     snapshot: &ArtifactSnapshot,
     scope: &PhysicalScope,
     budget: &mut Budget,
@@ -626,7 +633,10 @@ fn candidate_evidence(
 /// `SnapshotAll` covers the snapshot's root container — a standalone CLASS root *is* that
 /// container — and `ArtifactTree` covers the containers of that snapshot's tree. A position of
 /// another snapshot is never inside the range, even when its container name matches.
-fn covered_by_scope(
+///
+/// The rule is the scope vocabulary's, not this plane's, so the 2.3 pattern scan asks it instead
+/// of writing a second one: a definition its scope does not cover is undecided for that scan too.
+pub(crate) fn covered_by_scope(
     snapshot: &SnapshotId,
     scope: &PhysicalScope,
     definition: &PhysicalDefinitionId,
