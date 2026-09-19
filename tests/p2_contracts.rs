@@ -2796,7 +2796,23 @@ fn carries_size_floor(identity: &str) -> bool {
 /// — a guarded file that names it is not talking about itself as `crate::` — and `jarde::` is
 /// the facade above both: design §1 makes `jarde` depend on the three packages, so a
 /// guarded file reaching for the facade is the same edge pointing back up the layering.
-const A17_MODULE_TOKENS: [&str; 15] = [
+///
+/// `jarde_java::` is the recovery layer's package path (P3 1.3a created the crate; the root
+/// facade depends on it and the guarded crates do not). It is a token for the reason the other
+/// package paths are: the guarded files may not reach the layer that holds region and AST
+/// construction.
+///
+/// How strong that is today is a measured fact rather than a hope (P3 3.4): the guarded crates
+/// cannot name the recovery layer at all, and not only because nobody writes the path — the
+/// *dependency edge* is refused. Adding `jarde-java` to `crates/jarde-reader/Cargo.toml` or to
+/// `crates/jarde-query/Cargo.toml` stops cargo with `error: cyclic package dependency: package
+/// jarde-java depends on itself` (the cycle runs
+/// `jarde-reader`/`jarde-query` → `jarde-java` → `jarde-jvm` → `jarde-query` → `jarde-reader`), so
+/// no source in either crate is even compiled with a `Region` in scope. This token is the
+/// supplement to a structural refusal that is stronger than a source guard — and it is what
+/// re-checks the statement once the layering is rearranged: a move that stops closing the cycle
+/// leaves this guard as the thing that still says no.
+const A17_MODULE_TOKENS: [&str; 16] = [
     "crate::environment",
     "crate::resolver",
     "crate::ir",
@@ -2812,6 +2828,7 @@ const A17_MODULE_TOKENS: [&str; 15] = [
     "jarde_jvm::",
     "jarde_query::",
     "jarde::",
+    "jarde_java::",
 ];
 
 /// Import forms that reach a whole P2 module under a name of the caller's choosing.
@@ -2832,8 +2849,10 @@ const A17_MODULE_TOKENS: [&str; 15] = [
 /// (`use jarde_jvm as jv;`) hides the `jarde_jvm::` token, so the `… as` form and the
 /// `extern crate` spelling are matched on their own. `extern crate jarde` is deliberately not
 /// a token: it is a prefix of the legitimate `extern crate jarde_reader`, while the facade's
-/// own path is already covered by `jarde::` and its alias by `jarde as`.
-const A17_IMPORT_TOKENS: [&str; 12] = [
+/// own path is already covered by `jarde::` and its alias by `jarde as`. `extern crate
+/// jarde_java` is not a prefix of anything else, and the recovery layer's alias is the same
+/// shape as the other cross-crate ones.
+const A17_IMPORT_TOKENS: [&str; 14] = [
     "crate::*",
     "environment as",
     "resolver as",
@@ -2844,8 +2863,10 @@ const A17_IMPORT_TOKENS: [&str; 12] = [
     "jarde_jvm as",
     "jarde_query as",
     "jarde as",
+    "jarde_java as",
     "extern crate jarde_jvm",
     "extern crate jarde_query",
+    "extern crate jarde_java",
 ];
 
 /// P2 type names that the P2 modules do not declare themselves.
@@ -2858,20 +2879,33 @@ const A17_EXTRA_TYPE_TOKENS: [&str; 2] = ["OriginSet", "OriginMember"];
 /// Public type names one source declares with `pub struct` / `pub enum` / `pub trait` /
 /// `pub type`.
 fn declared_public_type_names(source: &str) -> Vec<String> {
+    declared_type_names(source, true)
+}
+
+/// Type names one source declares, optionally restricted to the `pub` ones.
+///
+/// The visibility filter is a parameter because the two derivations ask different questions. The P2
+/// table is read off public API, while the "shared name" subtraction of the recovery table has to
+/// see private declarations too: `crates/jarde-query/src/xref/code.rs`'s own private `Shape` collides
+/// with the recovery layer's `guard::Shape` exactly as a public one would.
+fn declared_type_names(source: &str, public_only: bool) -> Vec<String> {
     let mut names = Vec::new();
     for line in source.lines() {
         let line = line.trim();
         if line.starts_with("//") || line.starts_with('#') {
             continue;
         }
-        let Some(rest) = line.strip_prefix("pub ") else {
-            continue;
+        let rest = if public_only {
+            match line.strip_prefix("pub ") {
+                Some(rest) => rest,
+                None => continue,
+            }
+        } else {
+            strip_visibility(line)
         };
-        let Some(rest) = rest
-            .strip_prefix("struct ")
-            .or_else(|| rest.strip_prefix("enum "))
-            .or_else(|| rest.strip_prefix("trait "))
-            .or_else(|| rest.strip_prefix("type "))
+        let Some(rest) = ["struct ", "enum ", "trait ", "type ", "union "]
+            .into_iter()
+            .find_map(|keyword| rest.strip_prefix(keyword))
         else {
             continue;
         };
@@ -2884,6 +2918,82 @@ fn declared_public_type_names(source: &str) -> Vec<String> {
         }
     }
     names
+}
+
+/// Drops the visibility prefix of a declaration line — `pub `, `pub(crate) `, `pub(super) ` and
+/// `pub(in …) ` alike — and returns a private declaration unchanged.
+fn strip_visibility(line: &str) -> &str {
+    if let Some(rest) = line.strip_prefix("pub ") {
+        return rest;
+    }
+    if let Some(rest) = line.strip_prefix("pub(")
+        && let Some((_, rest)) = rest.split_once(") ")
+    {
+        return rest;
+    }
+    line
+}
+
+/// Variant names of every `enum` body in one source, at any visibility.
+///
+/// A variant is a declaration too, and it collides the same way: `ConsumerKind::Type` is the query
+/// layer's own name for one of its categories, and `crates/jarde-query/src/xref/code.rs` declares its
+/// own private `Shape` with a `DynamicSite` variant. Those words are the guarded layer's vocabulary,
+/// so they cannot be read as a reach into the recovery layer — and reading the variants here is what
+/// keeps that subtraction derived instead of hand-written.
+fn declared_variant_names(source: &str) -> Vec<String> {
+    let mut names = Vec::new();
+    let lines = source.lines().collect::<Vec<_>>();
+    let mut index = 0;
+    while index < lines.len() {
+        let line = lines[index];
+        let trimmed = line.trim();
+        let is_enum = !trimmed.starts_with("//")
+            && !trimmed.starts_with('#')
+            && strip_visibility(trimmed).starts_with("enum ");
+        if is_enum {
+            let indentation = line.len() - line.trim_start().len();
+            index += 1;
+            while index < lines.len() {
+                let inner = lines[index];
+                let inner_trimmed = inner.trim();
+                let closes = inner_trimmed.starts_with('}')
+                    && inner.len() - inner.trim_start().len() <= indentation;
+                if closes {
+                    break;
+                }
+                if !inner_trimmed.starts_with("//") && !inner_trimmed.starts_with('#') {
+                    let name = inner_trimmed
+                        .split(|character: char| !character.is_alphanumeric() && character != '_')
+                        .next()
+                        .unwrap_or_default();
+                    if name.starts_with(char::is_uppercase) {
+                        names.push(name.to_string());
+                    }
+                }
+                index += 1;
+            }
+        }
+        index += 1;
+    }
+    names
+}
+
+/// The lines of one source that are code: a line whose trimmed text starts with `//` is a comment,
+/// and a comment cannot name a type.
+///
+/// Only the *name* half of the guard reads this (see [`p2_tokens_in`]). The derived names include
+/// ordinary words — the recovery layer's `Operation`, or the query layer's own comment saying
+/// "Continuation value of one page" — so matching them against prose would report a sentence as a
+/// reach into another layer. Module paths keep matching the source as written, which is the guard's
+/// long-standing behaviour, and a trailing comment on a code line still counts as code text: this
+/// only removes a false positive, it never hides a written reference.
+fn code_lines(source: &str) -> String {
+    source
+        .lines()
+        .filter(|line| !line.trim_start().starts_with("//"))
+        .collect::<Vec<_>>()
+        .join("\n")
 }
 
 /// The P2 type names the guard looks for, derived from the P2 modules themselves.
@@ -2912,6 +3022,157 @@ fn derived_p2_type_tokens(root: &Path) -> Vec<String> {
     names.sort();
     names.dedup();
     names
+}
+
+/// The directory the recovery-layer derivation reads: the crate P3 1.3a created, whose declarations
+/// are the recovery layer's own vocabulary (region, AST, source map, report and the pattern records).
+const A17_RECOVERY_DIRECTORY: GuardedModule = GuardedModule {
+    identity: "jarde-java/src",
+    candidates: &["crates/jarde-java/src"],
+};
+
+/// The source directories of the layers a guarded file may legitimately use: the query crate the
+/// guarded files live in, and the two below it.
+const A17_SHARED_SOURCE_DIRECTORIES: [GuardedModule; 3] = [
+    GuardedModule {
+        identity: "jarde-reader/src",
+        candidates: &["crates/jarde-reader/src"],
+    },
+    GuardedModule {
+        identity: "jarde-jvm/src",
+        candidates: &["crates/jarde-jvm/src"],
+    },
+    GuardedModule {
+        identity: "jarde-query/src",
+        candidates: &["crates/jarde-query/src"],
+    },
+];
+
+/// Every `*.rs` below one resolved directory, in path order, with the text of each.
+///
+/// The walk is what makes both derivations follow the tree: a file added to any of these crates is
+/// read as soon as it exists, without a table to bring along.
+fn directory_sources(root: &Path, directory: &GuardedModule) -> Vec<GuardedSource> {
+    let resolved = resolve_guarded_directory(root, directory);
+    let mut paths = Vec::new();
+    collect_rs_files(&root.join(resolved), &mut paths);
+    paths.sort();
+    assert!(
+        !paths.is_empty(),
+        "{} holds no `.rs` file: the derivation is broken",
+        directory.identity
+    );
+    paths
+        .into_iter()
+        .map(|path| {
+            let label = path
+                .strip_prefix(root)
+                .unwrap_or(&path)
+                .to_string_lossy()
+                .replace('\\', "/");
+            let source = read_repository_file(root, &label);
+            GuardedSource {
+                identity: label.clone(),
+                label,
+                source,
+            }
+        })
+        .collect()
+}
+
+/// The names a guarded file may carry without reaching the recovery layer: every declared item and
+/// every enum variant of the layers it is allowed to use.
+///
+/// This is the second half of the recovery derivation, and it is derived as well — a name is only
+/// usable as a signal when it distinguishes the recovery layer from the vocabulary the guarded files
+/// already have. `Provenance` is declared by `jarde-reader`, `Type` is `ConsumerKind::Type` in the
+/// query layer's own schema, and `Shape` is that layer's own private reference shape; banning those
+/// names would report the query's own code as a reach into the recovery layer. What is read here are
+/// *declarations*, never usages, so an injected `use jarde_java::Region;` stays a violation: no layer
+/// below declares `Region`.
+fn derived_shared_type_tokens(root: &Path) -> Vec<String> {
+    let mut names = Vec::new();
+    for directory in &A17_SHARED_SOURCE_DIRECTORIES {
+        for source in directory_sources(root, directory) {
+            names.extend(declared_type_names(&source.source, false));
+            names.extend(declared_variant_names(&source.source));
+        }
+    }
+    names.sort();
+    names.dedup();
+    assert!(
+        names.len() >= 300,
+        "the shared-vocabulary derivation found only {} names: it is broken",
+        names.len()
+    );
+    names
+}
+
+/// Type names of the recovery layer that the guarded files must not carry.
+///
+/// The names come from the declarations of everything below `crates/jarde-java/src` — a hand-written
+/// list is exactly what the guard must not rely on, because a type it forgets is a type a physical
+/// entry could import without being noticed — and the names the layers below already declare are
+/// subtracted, so what is left is the set that really distinguishes the recovery layer.
+///
+/// Two properties, said here because they are easy to overstate. The guarded files cannot *name*
+/// these types today, and the reason is structural rather than textual: the dependency edge that
+/// would be needed is refused by cargo as a cycle (see [`A17_MODULE_TOKENS`], where the refusal was
+/// measured), so no guarded source is compiled with the recovery layer in scope and this table is
+/// the supplement to that refusal, not a replacement for it — it is what keeps the statement true
+/// after the layering is rearranged. And the table is about *names*: it is a textual policy over the
+/// guarded files, not a proof about what they can resolve. `OriginSet`/`OriginMember` are the shared
+/// identity types the P2 table bans by name (`A17_EXTRA_TYPE_TOKENS`); `OriginSet` is declared by
+/// `jarde-reader` and so is subtracted here, which the test asserts instead of assuming.
+fn derived_recovery_type_tokens(root: &Path) -> Vec<String> {
+    let mut declared = Vec::new();
+    for source in directory_sources(root, &A17_RECOVERY_DIRECTORY) {
+        declared.extend(declared_public_type_names(&source.source));
+    }
+    declared.sort();
+    declared.dedup();
+    assert!(
+        declared.len() >= 60,
+        "the recovery derivation found only {} type names: it is broken",
+        declared.len()
+    );
+
+    let shared = derived_shared_type_tokens(root);
+    let tokens = declared
+        .into_iter()
+        .filter(|name| !shared.contains(name))
+        .collect::<Vec<_>>();
+    for expected in [
+        "Region",
+        "StmtKind",
+        "ExprKind",
+        "SourceMap",
+        "Segment",
+        "RecoveryReport",
+        "FallbackReason",
+        "RecoveryOutcome",
+        "MethodFacts",
+        "RegionRecord",
+        "Pass",
+        "Precondition",
+    ] {
+        assert!(
+            tokens.iter().any(|name| name == expected),
+            "{expected} must be derived from the recovery layer and survive the subtraction: \
+             {tokens:?}"
+        );
+    }
+    assert!(
+        tokens.len() >= 50,
+        "the derived recovery table holds only {} names: {tokens:?}",
+        tokens.len()
+    );
+    assert!(
+        shared.iter().any(|name| name == "OriginSet"),
+        "`OriginSet` is declared by `jarde-reader` (`model.rs`), which is why this table leaves that \
+         name to `A17_EXTRA_TYPE_TOKENS`"
+    );
+    tokens
 }
 
 /// One guarded source file: its identity, its path relative to the scanned root — which is what
@@ -2976,15 +3237,25 @@ fn contains_token(normalized: &str, token: &str) -> bool {
     false
 }
 
-/// Tokens of one source that reach a P2 module, module paths first.
+/// Tokens of one source that reach a P2 module or the recovery layer, module paths first.
+///
+/// The module and import paths are matched against the source as written; the derived type names are
+/// matched against its code lines ([`code_lines`]), because those names include ordinary words and a
+/// sentence in a comment is not a reference.
 fn p2_tokens_in(source: &str, type_tokens: &[String]) -> Vec<String> {
     let normalized = normalize_module_paths(source);
+    let code = normalize_module_paths(&code_lines(source));
     A17_MODULE_TOKENS
         .into_iter()
         .map(str::to_string)
         .chain(A17_IMPORT_TOKENS.map(str::to_string))
-        .chain(type_tokens.iter().cloned())
         .filter(|token| contains_token(&normalized, token))
+        .chain(
+            type_tokens
+                .iter()
+                .filter(|token| contains_token(&code, token))
+                .cloned(),
+        )
         .collect()
 }
 
@@ -3226,6 +3497,75 @@ fn physical_entry_modules_do_not_reference_the_p2_modules() {
     assert!(
         !sources.iter().any(|source| source.label == control),
         "{control} calls the P2 entries by contract and is not guarded"
+    );
+}
+
+/// The module that is allowed, and required, to call the recovery layer: the root facade's
+/// `recover_method`.
+///
+/// It is the recovery half's positive control for the same reason `engine.rs` is the P2 half's: the
+/// same detector has to flag real repository code that does make the reach, or a table that matches
+/// nothing would look like a passing guard. Its path is resolved like every other one, so the control
+/// stays attached to the file it is about.
+const A17_RECOVERY_CONTROL_MODULE: GuardedModule = GuardedModule {
+    identity: "facade.rs",
+    candidates: &["src/facade.rs"],
+};
+
+/// A17 for the layer P3 added: a physical entry point may not name the recovery layer either.
+///
+/// The table is derived from the recovery layer's own declarations ([`derived_recovery_type_tokens`]),
+/// not written down, so a new type in `jarde-java` is guarded as soon as it is declared. What this
+/// does **not** claim: it is not the reason the guarded files cannot name those types today. That
+/// reason is structural and was measured in P3 3.4 — the dependency edge that would be needed is
+/// refused by cargo as a cycle (`jarde-reader`/`jarde-query` → `jarde-java` → `jarde-jvm` →
+/// `jarde-query` → `jarde-reader`), so no guarded source is even compiled with the recovery layer in
+/// scope. This test is the supplement that keeps a later rearrangement from going quiet, and its
+/// falsification shows the half it really holds: an injected name (and an injected `jarde_java::`
+/// path) in a guarded file is reported.
+#[test]
+fn physical_entry_modules_do_not_reference_the_recovery_layer() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let tokens = derived_recovery_type_tokens(root);
+
+    // The derivation is the table, so the table has to be able to see what it bans: every derived
+    // name is flagged by the same matcher the guard uses.
+    for name in &tokens {
+        let probe = format!("use crate::{{{name}}};");
+        assert!(
+            p2_tokens_in(&probe, &tokens).contains(name),
+            "{name} is derived from the recovery layer but the matcher does not flag it"
+        );
+    }
+
+    // The guarded files carry none of the names, and the crate path a reference would have to write
+    // is a module token as well.
+    assert_eq!(
+        guard_violations(root, &tokens),
+        Vec::<String>::new(),
+        "the physical entry points must not reach the recovery layer"
+    );
+
+    // Positive control on real repository code: the facade names the recovery layer by package path
+    // and by type name, and it is not part of the guarded set.
+    let control = resolve_guarded_file(root, &A17_RECOVERY_CONTROL_MODULE);
+    let facade = read_repository_file(root, control);
+    let flagged = p2_tokens_in(&facade, &tokens);
+    assert!(
+        flagged.contains(&"RecoveryReport".to_string()),
+        "the detector must flag the module that does call the recovery layer ({control}): {flagged:?}"
+    );
+    let paths = p2_tokens_in(&facade, &A17_MODULE_TOKENS.map(str::to_string));
+    assert!(
+        paths.contains(&"jarde_java::".to_string()),
+        "and the same control has to be flagged by the recovery layer's package path ({control}): \
+         {paths:?}"
+    );
+    assert!(
+        !guarded_sources(root)
+            .iter()
+            .any(|source| source.label == control),
+        "{control} calls the recovery layer by contract and is not guarded"
     );
 }
 
@@ -3495,6 +3835,23 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
             tiny_files: &[],
         },
         Case {
+            // The recovery layer is reached by the same spellings as the P2 modules, and the derived
+            // recovery table is behind the same matcher: an alias for its package path plus one of
+            // its type names is reported, in both layouts.
+            name: "recovery_layer_alias",
+            files: &[
+                ("query.rs", CLEAN_QUERY),
+                ("xref/mod.rs", "mod clean;\n"),
+                (
+                    "xref/clean.rs",
+                    "use jarde_java as java;\nlet _: Option<Region> = None;\n",
+                ),
+            ],
+            offenders: &["xref/clean.rs"],
+            evidence: &["jarde_java as", "Region"],
+            tiny_files: &[],
+        },
+        Case {
             // The size floor is about the six P1 files, not about the guarded set: a new
             // small module is legitimate and must not be reported as "unexpectedly small".
             name: "tiny_new_module",
@@ -3521,7 +3878,13 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
         },
     ];
 
-    let type_tokens = derived_p2_type_tokens(Path::new(env!("CARGO_MANIFEST_DIR")));
+    // Both derived tables run through the same matcher, so the sandbox cases cover the recovery layer
+    // as well: the set of the case below is the P2 table plus the recovery table.
+    let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let mut type_tokens = derived_p2_type_tokens(manifest);
+    type_tokens.extend(derived_recovery_type_tokens(manifest));
+    type_tokens.sort();
+    type_tokens.dedup();
 
     for layout in &SANDBOX_LAYOUTS {
         for case in &cases {
