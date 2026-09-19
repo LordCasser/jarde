@@ -115,3 +115,60 @@
 **1.3**：flag/opcode 合法性**尚未接线**（registry 已登记，读路径未消费）；**无 golden 诊断文件**；`CONSTANT_Dynamic` tag 只给证据不给诊断（1.1 无 tag 类诊断产生器）。
 **2.x**：`OutputLevelStatus` 目前只有 `Java8`；`ModernFeature` 刻意只列设计决策 5 点名的三项（condy/nestmate/module 的输出级别答案由后续切片决定）。
 **边界（已在模块文档声明）**：只查 class-level 位置（`FileInfo`/`MethodInfo`/`Code`/`MethodParameter` 位置的现代属性不产生 placement 行）。
+
+## 2026-09-20 1.3：非法 fixture、golden diagnostics 与 flag/opcode 接线（提交 `6ed448a`）
+
+### golden 机制（照 `p2_golden` 逐字段同形）
+
+`tests/p4_golden.rs` + `tests/fixtures/p4-golden/{illegal-modern,version-boundaries,legal-modern}.json`：
+- **固定回放表**（`replay_list()` 字面量）与每个 JSON 自带的 `replays` 数组**互相比对**——删/改名/加条目即使其余能回放也会失败；
+- 每条记录 `fixture` + `source`（provenance 文本，**断言相等**）+ `bytes` + **`blake3`**；回放时**按其具名生成器重建**并断言两者；
+- `expect.header` = 整个 header 平面投影（`structural_read`、`version_capability` 逐字、`verification`、`output_level`、诊断 `{code,severity,message}`，逐字段 `==`）；`expect.modern` = 事实侧投影（`attributes[]` 的 name/placement/read、`record_read`、`permitted_subclasses_read`、`concat_sites`、`dynamic_tag`、`output_level`、`conflict_features`、诊断）；
+- `expect.strict` = `{error: <code>}` 或 `{read: "complete"}`；被接受的类**另证两种模式给出相同平面**；文件是**静态**的（无测试写它）。
+- **与 P2 的两处有意差异**：条目**另钉 strict 结论与事实平面投影**；JSON 里的 `illegal` 标志被**断言必须与其所在文件一致**（`file != "legal-modern.json"`），使条目无法靠改单侧绕过平面不变式。
+
+### 非法 fixture 与可重放性
+
+**未提交新的 `.class` 字节**；两种机制都**逐字节可重放**：
+
+| 生成器 | 形状 | 可重放证据 |
+| --- | --- | --- |
+| `version_patched(base, major, minor)` | 已提交 `javac` 输出，只补 4..6/6..8 两处版本字段 | 基类的 SHA-256 在 `tests/fixtures/p4-modern/README.md`，结果由 blake3+长度钉住 |
+| `jsr_class(52)` | `jsr +4; return; astore_0; ret 0` | blake3 `d63099a9…`，141 字节 |
+| `invokedynamic_class(50)` | `invokedynamic` + 置好的 `CONSTANT_InvokeDynamic` + 一个 `CONSTANT_MethodHandle` 的 `BootstrapMethods` | blake3 `2e59c5be…` |
+| `nest_members_in_a_method` | class 级 `NestMembers` 放进 `method_info` | blake3 `ad5dd8bd…` |
+| `constant_value_in_a_method` | 仅属 `field_info` 的 `ConstantValue` 放进 `method_info` | blake3 `a9f2b7f1…` |
+| `acc_module_class(52)` | class 访问标志字 `0x0021 \| 0x8000` | blake3 `b0c3e1e7…` |
+
+**为何用派生而非再提交一份字节**：补丁是**可执行且带摘要断言**的（比同一份字节的第二份拷贝更强，后者会漂移），而其余每个字节都可证仍是已提交的编译器输出。
+
+### 接线落点与 `inspect_header` 边界
+
+`inspect_header` **一字未动**（1.1 的负向用例仍绿）；所有新诊断产在 `modern.rs::modern_facts`（事实路径），在 registry 诊断块内、先于该 pass 自身的结构诊断。成员属性经新 `member_attribute_diagnostics` 判位置；**opcode 合法性在事实路径**，opcode 取自字节码读取器自己的游标（新 `pub(crate) fn classfile::method_body_opcodes`——重复实现解码器不是选项）；**flag 只陈述 release 主张**（`rule.since > major` 且该规则确实声明该结构）；**tag 不新造 code**（`CondyGraph::dynamic_tag` 即已发布的证据）。
+
+### 两处**必须上报**的发现
+
+**发现 1（阻塞点，已绕开）**：把 `classfile_opcode_forbidden` 加到 `inspect_method_bytecode` 会**改动 P2 已冻结的回放**（`tests/p2_golden.rs:492` 的 `illegal-version-jsr-in-52`），故 opcode 合法性改接在**事实路径**；字节码路径**仍不对 release opcode 发言**。
+
+**发现 2（registry 缺口，实现者自查发现）**：**逐位解析 flag 是不成立的**。其第一版把每个置位解析为已登记名，跑**真实字节**时在 `RecordSample.class` 上产生 **8 条假诊断**（例如对 class、其字段与方法都报 `ACC_FINAL (0x0010) is registered only for MethodParameters`）——**registry 记的是每个 release 「引入」了哪些 flag，不是任一结构的 flag 词表**，故某位置上的 `LocationNotApplicable` **不能读成「非法」**。`ACC_RECORD` 同形（既无规则，又与 `ACC_SYNTHETIC` 共用一个位）。**后果**：**不在任何地方**做 flag **位置**主张；知道名字的调用方直接查 `flag_placement`/`flag_diagnostic`。由 `a_flag_is_answered_by_name_and_never_inferred_from_a_bit` 钉住，并写在 `modern.rs::flag_diagnostics` 的文档里。**扩表成全位置词表，还是维持按名驱动，是 1.1/2.x 的决定，不是本片的。**
+
+**父级独立复核该发现**：对 `tests/fixtures/p4-modern/` 的**全部 11 个真实类**跑 `class_facts` + `modern_facts` → **flag 诊断 0 条、诊断总数 0 条**（探针已删）。即「逐位解析」的假诊断**确实不在交付版本里**。
+
+### 「不冒充成功」的用例
+
+`an_illegal_class_file_is_read_and_its_planes_stay_separate`——对**每一条**非法条目（9 条）逐项断言：`structural_read == Complete`（**诊断不是读失败**）、`verification == NotPerformed`（**无 verifier 跑过**）、`output_level == NotEvaluated`、dialect 平面与记录一致（类型 + JSON 双向）、诊断码（header ∪ modern）非空且全为 `classfile_*`，并另断言 `validated_releases >= 1` 且 `probed_releases >= 1`——**最后两个计数才是要点**：本 build **校验**的 release（52 = `Supported`）**照样可以带 release 规则违规**（`ACC_MODULE` 位），而它只**探测**的 release（59/60/61）**照样被完整读出**。另有 `a_refused_placement_is_a_row_and_not_a_fact`（出行、`read=false`、无组件）与合法对照。
+
+### 实际诊断（取自已提交的 golden）
+
+`classfile_attribute_version_not_applicable`（`Record`@59、`PermittedSubclasses`@60）、`classfile_attribute_location_not_applicable`（`NestMembers`@method_info、`ConstantValue`@method_info）、`classfile_flag_version_not_applicable`（`ACC_MODULE`@52）、`classfile_opcode_forbidden`（`jsr`/`ret`@52）、`classfile_opcode_version_not_applicable`（`invokedynamic`@50）、header 侧 `classfile_future_release`@72（结构仍 `complete`）、`classfile_invalid_modern_minor_version`@60.7、`classfile_version_structural_probe_only`/`classfile_java8_runtime_rejected`。**每条消息都点名属性/flag/opcode、release 门槛与 JVMS 引用**。
+
+### 父级独立复核与证据
+
+- 全量 **1029 passed / 0 failed / 3 ignored**（1023 + 6 新用例）；`p4_golden` 6 passed；fmt/clippy 1.98.1 干净；`openspec validate --all --strict` 14 passed；两个 CI example exit 0；分层三包中 `jarde-java` **0** 次。
+- **既有断言零改动**（父级核：删除行中 `assert` 计数 **0**；唯一被替换的是 `modern.rs` 的一行文档注释）。
+- **实现者三组证伪**：① 位置拒绝改 `Err` → 3 红（含对「诊断即读失败」的证伪）；② `release()` 把 major 夹到 71 → 2 红（`future_release` vs `structural_probe_only` 等）；③ `inspect_header` 报 `verification: Performed` → 3 红。副本 323/323 文件校验无差异。
+- **CI**：`6ed448a` → 见下。
+
+### 未完成（应属 2.x/3.x）
+
+**flag 位置主张与完整 flag 词表**（registry 表决定，见发现 2）；`MethodParameters` 的**参数 flag** 与 module/nest/annotation 成员属性的**内容**仍归各自 pass；`method_body_opcodes` **重解析 class 并每 body 计一次 `CodeBytes`**（不发布事实故不计 `ClassBytes`/`ResultItems`）——成本/记账口径可能要在 2.x 的事实接线时重看，且它**容错**（解不出的 body 不陈述 opcode 而非让读取失败）；事实侧 `output_level` 目前只问 `Java8`（`OutputLevel` 现仅一个变体），多档输出问题属 **2.1/3.3**。
