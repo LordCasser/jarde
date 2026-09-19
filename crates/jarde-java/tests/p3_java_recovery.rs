@@ -26,8 +26,8 @@
 //! no table here to get wrong, and no parameter through which one could be handed in.
 
 use jarde_java::{
-    MethodFacts, RecoveryFacts, RecoveryOutcome, RecoveryRequest, StopReason, escape_string,
-    recover,
+    MethodFacts, RecoveryFacts, RecoveryOutcome, RecoveryReport, RecoveryRequest, StopReason,
+    escape_string, recover,
 };
 use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
@@ -36,9 +36,11 @@ use jarde_jvm::ir::{
     SemanticValidation, SyntaxStatus,
 };
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
+use jarde_reader::budget::UsageSnapshot;
 use jarde_reader::budget::{Budget, CancellationToken, Limits};
 use jarde_reader::classfile::VerificationStatus;
 use jarde_reader::classfile::{class_facts, method_code_facts, test_class};
+use jarde_reader::model::ExecutionReport;
 use jarde_reader::model::{
     ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
     PhysicalVariant,
@@ -53,6 +55,63 @@ use jarde_reader::view::{
 /// `finallyPath(I)I` is the committed `jsr`/`finally` body this slice cannot prove.
 const HISTORICAL_V45: &[u8] =
     include_bytes!("../../../tests/fixtures/historical/ecj-4.6.1/v45/HistoricalControlFlow.class");
+
+/// One usage snapshot with the wall clock removed: the comparison form of two reads of one budget.
+///
+/// `elapsed_millis` is a measurement, not a charge: `Budget::usage` takes it again on every read,
+/// so two runs of one request can differ by a millisecond while every counted dimension is
+/// identical. The repository compares reports this way everywhere else (`tests/p2_contracts.rs`
+/// states the same pair), and a comparison that does not is a test that fails on the clock rather
+/// than on the engine — which is what this file's determinism case did before.
+fn counted_usage(usage: &UsageSnapshot) -> UsageSnapshot {
+    UsageSnapshot {
+        elapsed_millis: 0,
+        ..usage.clone()
+    }
+}
+
+/// One execution report compared with that one measurement removed from its usage.
+fn without_wall_clock(execution: &ExecutionReport) -> ExecutionReport {
+    match execution {
+        ExecutionReport::Complete { usage } => ExecutionReport::Complete {
+            usage: counted_usage(usage),
+        },
+        ExecutionReport::Partial { reason, usage } => ExecutionReport::Partial {
+            reason: reason.clone(),
+            usage: counted_usage(usage),
+        },
+        ExecutionReport::Cancelled { usage } => ExecutionReport::Cancelled {
+            usage: counted_usage(usage),
+        },
+        ExecutionReport::Failed { reason, usage } => ExecutionReport::Failed {
+            reason: reason.clone(),
+            usage: counted_usage(usage),
+        },
+    }
+}
+
+/// The wall clock one report's execution carried, whichever outcome it states.
+fn elapsed_of(report: &RecoveryReport) -> u64 {
+    usage_of(report).elapsed_millis
+}
+
+/// The usage snapshot one report's execution carried.
+fn usage_of(report: &RecoveryReport) -> UsageSnapshot {
+    match &report.execution {
+        ExecutionReport::Complete { usage }
+        | ExecutionReport::Partial { usage, .. }
+        | ExecutionReport::Cancelled { usage }
+        | ExecutionReport::Failed { usage, .. } => usage.clone(),
+    }
+}
+
+/// One report as two runs of it compare: identical but for the wall clock.
+fn without_elapsed(report: &RecoveryReport) -> RecoveryReport {
+    RecoveryReport {
+        execution: without_wall_clock(&report.execution),
+        ..report.clone()
+    }
+}
 
 fn limits() -> Limits {
     Limits {
@@ -1310,8 +1369,37 @@ fn a_body_without_debug_names_is_named_deterministically_and_invents_no_source_s
         recover_body(&payload, &facts, &mut budget)
     };
     assert_eq!(
-        first, second,
-        "two runs of one request are one report, field by field"
+        without_elapsed(&first),
+        without_elapsed(&second),
+        "two runs of one request are one report, field by field and not counting the clock"
+    );
+    // Removing the clock must not be the same as removing the comparison: a report that differs in
+    // anything else is still seen as different, and a report that differs only in the clock is not.
+    let mut changed = first.clone();
+    changed.text.push(' ');
+    assert_ne!(
+        without_elapsed(&first),
+        without_elapsed(&changed),
+        "the comparison sees a report that differs in its text"
+    );
+    assert_eq!(
+        elapsed_of(&without_elapsed(&first)),
+        0,
+        "the comparison form carries no clock to compare"
+    );
+    let clocked = RecoveryReport {
+        execution: ExecutionReport::Complete {
+            usage: UsageSnapshot {
+                elapsed_millis: 7,
+                ..usage_of(&first)
+            },
+        },
+        ..first.clone()
+    };
+    assert_eq!(
+        without_elapsed(&first),
+        without_elapsed(&clocked),
+        "two reports differing only in the clock are one report"
     );
     assert!(
         first.text.contains("local1") && first.text.contains("local2"),
