@@ -211,3 +211,64 @@ B2 值得记：**「返回正确的停止理由」并不足以证明「没有留
 ### 本片明说的限制（不虚报）
 
 `Pass::admits` 的**拒绝分支在 2.x 之前没有生产实例**：本片 4 条已注册规则全部 `required_release: None`（结构规则与 release 无关），故只用 `pass` 模块的合同用例覆盖谓词语义（8/9 接受、7 拒绝），不伪造 pass 去触发它。入口侧的 `RecoveryFacts.parameters` **不猜 static 与否**（载荷不发布 access flags），故入口呈现一律用 `localN` 序号名，参数槽/receiver 命名属 3.1。`RecoveryReport` 的 `Deserialize` 面未做（码字段是 `&'static str`），库/CLI 一致以整份序列化文档逐字段相等为证据。`cargo doc` 对 `jarde-java` 的既有私有 intra-doc 链接告警（`build`/`emit`/`decode`/`charge`）为**既有**、非 CI 门禁（本片新增的 `facade.rs` 链接已修）。
+
+## 2026-09-19 1.3c：门面与 CLI 入口、验收覆盖、恢复侧声明类型（提交 `2d156d8` + `a681e4c`）
+
+**1.3 至此完成**（1.3a/1.3b/1.3c），1.1 遗留的四项类型也随本片落地并勾选。
+
+### 门面与 CLI
+
+- 根门面 `jarde` 依赖 `jarde-java`（分层链 `jarde → jarde-java → jarde-jvm + jarde-reader`；闭包门禁只禁 reader/query/jvm，不禁门面）。**只导出**恢复请求/报告半边与报告里名得到的只读词汇；**不导出** `jarde-java` 的任何内部模块路径（父级核对：`src/lib.rs` 里对 `region`/`ast`/`build`/`emit`/`names`/`facts`/`decode` 的引用计数 **0**）。
+- CLI 新 operation（wire tag `recover_method`）= `environment` + `method` + `stages`，与 `analyze_method` 同形；响应含 `analysis` 与 `report`。
+  - **不另设 recovery profile 字段**：门控读的就是 `environment.runtime.profile`——再加一个字段是同一事实的第二来源。
+  - **只跑一次分析**：`Engine::recover_method` 调 `analyze_method_ir` **一次**，把该次运行的 report 与该次运行的载荷一起交给恢复层（`RecoveredMethod{analysis, recovery}`）。
+  - 协议错误仍 transport 级；**报告内停止仍是成功载荷**（呈现停 ≠ 运行停，用例断言 `outcome.stopped` 与 `analysis.execution == complete` 并存）。
+
+### 恢复侧声明类型（1.1 遗留）
+
+- **`RecoveryProfile`：复用** `jarde_reader::view::RuntimeProfile`（规格句点名的就是它；新立枚举即同一事实的第二种拼写），`pass.rs` 做别名 + `JAVA_8` + `Pass::admits`。
+- **`RuleVersion`**：`straight@1`/`if@1`/`loop@1`/`switch@1`，落进报告——`RegionRecord.rule` 记**谁产出、或谁拒绝**，`RecoveryReport.rules` 记本方法引用到的规则（首现去重），另记 `profile`。
+- **`Precondition{IrTable, StatementFree, Metadata}`** 类型化 + 编译期常量表 `PASSES`（**无 trait、无动态注册**，符合 P3 design）。
+- **失败 fallback 收敛**：`FallbackReason::TestBlockEffect` → **`UnmetPrecondition{pass, requirement, block_bci, at}`**，码 `jre_region_test_block_effect` → `jre_region_unmet_precondition`；构造带 `debug_assert!(pass.requires(requirement))`，使**声明与检查点漂移在本 build 的测试里失败**。缺表仍走**停止**、前置条件未满足走 **fallback**——两条都是报告里的值 + 诊断。
+
+### 1.1 遗留的验证（父级独立证伪）
+
+`a_loop_whose_header_writes_state_is_quoted_rather_than_hoisted`：文本**无 `while`**、只有 `// @bytecode`，记录与诊断给出 `loop@1` + `StatementFree` + `BCI 5`，`Mixed`/`Fallback`/`execution=Complete`。
+**父级把前置条件检查改为恒 `Ok(())`** → 该用例转红，且失败输出正是要防住的形态：
+```
+int local1 = 2;
+while (local1 != 0) {
+}
+return;
+```
+——header 每轮的 `local1 = local1 - 1` **被丢掉而结构看起来对**。即「不误识别」这条**确有承重**。
+
+### A09/A10/A13/A16 逐条
+
+| 验收 | 用例 | 关键断言 | **属后续阶段** |
+| --- | --- | --- | --- |
+| A09 | `a_body_the_subset_cannot_prove_is_quoted_rather_than_emptied` + 既有交叉异常用例 | ECJ v45 `finallyPath`：`produced()` 但 `Mixed`/`Fallback`/`NotJava`，**无** `try {`/`} finally`/`} catch`，引用 BCI 均为该 body 指令起点，诊断码 `jre_region_*` 且至少一条点名 BCI，`execution=Complete` | **finally/jsr 恢复本身属 2.4** |
+| A10 | `a_body_without_debug_names_is_named_deterministically_and_invents_no_source_scope` | 无 LVT：两次运行**整份报告逐字段相等**；序号 `localN`、无 `arg`、无 `line`；segment 的 `cp=None`；有 debug 名时用真名、无证据时**不出现**该名 | 语料矩阵属 **3.1/3.3** |
+| A13 | `a_member_that_cannot_be_presented_leaves_the_member_that_can_alone`；`execution_quality_and_representation_each_state_their_own_thing` | 同类两成员报告互不携带对方内容，两种顺序再问逐字段相同；平面三分：`Mixed`+`Fallback` 与 `execution=Complete` 并存，差一字节预算下停止**只由 `execution=Partial` 表达**（`quality` 仍是 `Fallback` 而非 `Partial`） | 语料矩阵与 coverage 诊断属 **3.2** |
+| A16 | root `one_recovery_request_reads_one_body_and_presents_that_member` + CLI wire 断言 | 前提经 `inspect_header` 断言有 ≥3 个带 `Code` 成员；一次请求 `class_headers=1`/`method_bodies=1`/`code_bytes>0`/`reads` 恰一条 `DriverMethodBody` | 无逐 pass 计数器（5.2 已记），以「一次 header + 一次 body + 一条 read + 入口只调一次分析」作**代理**，不宣称有 |
+
+### 被修正的既有断言（4 处，均加强或等价，无放宽）
+
+`a_loop_whose_header_writes_state_…` 的 fallback 码改为 `jre_region_unmet_precondition` 并**新增**四点断言（规则版本可追溯）；A09 用例**仅新增**窄限定断言（首版的 `!text.contains("finally")` 会匹配方法名 `finallyPath`，已换成结构性三串比较——**这不是放宽，是把假断言换真**）；`RecoveryRequest::new(ir, facts)` → `+ profile`（3 个调用点补 `JAVA_8`）；CLI 测试的 fixture helper 委托化（既有调用方字节不变）。
+
+### 第二次锁文件事故（**父级记录，含教训**）
+
+`2d156d8` 的 CI **两 job 红**：`fuzz smoke` 的「Check the committed corpus against the targets」与 `supply chain` 的 fuzz 检查——**都是 `--locked` 失败**。根因：门面在本片新增了对 `jarde-java` 的依赖，而 **`fuzz` 是独立 workspace、有自己的 `Cargo.lock`**，该锁未同步。
+
+**这与 P2 期间那次是同一类错误**（当时是 reader 抽出后 `fuzz/Cargo.lock` 缺包）。**为什么本地门禁没发现**：fmt / clippy / 全量测试 / 依赖闭包**都不读那个 workspace 的锁**——本机跑 `cargo metadata --manifest-path fuzz/Cargo.toml --locked` 只需一秒就能发现，但没人跑它。
+
+**修复（`a681e4c`）**：只补 `jarde-java` 一条包记录，**无任何第三方版本/source/checksum 变动**（父级用 `diff` 逐类核对）。**教训写在此处**：凡**新增 workspace 成员**或**给根门面加依赖边**，必须跑一次
+```
+cargo metadata --manifest-path fuzz/Cargo.toml --locked
+```
+并把 `cd fuzz && cargo deny --manifest-path fuzz/Cargo.toml --workspace --locked --config deny.toml check` 一并跑过——这两条是唯一会读该 workspace 锁的门禁。
+
+### 证据
+
+全量 **877 passed / 0 failed / 1 ignored**；`-p jarde-cli` 24（基线 22）；`jarde-java` 单元 37 + 集成 18；fmt 与 clippy 1.98.1 干净；`openspec validate --all --strict` 12 passed；两个 CI example exit 0；分层 12 配置全 PASS 且 `cargo tree -p jarde` 含 `jarde-java`；**`Cargo.lock` 无新第三方包**（父级核对：`git diff Cargo.lock | grep -c '^+name ='` = 0，只有依赖边）。
+**CI**：`2d156d8` → 35442183621（**两 job 红**，见上）；`a681e4c` → **35442441114 四 job success**。
