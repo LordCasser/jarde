@@ -580,9 +580,19 @@ fn a_tableswitch_becomes_one_arm_per_target_with_its_keys_and_default() {
     assert!(text.contains("switch (local1) {"), "{text}");
     let case0 = text.find("case 0:").expect("the first key");
     let case1 = text.find("case 1:").expect("the second key");
-    let arm = text.find("int local2 = 1;").expect("the shared arm");
+    let arm = text.find("local2 = 1;").expect("the shared arm");
     let default = text.find("default:").expect("the no-match arm");
     let default_arm = text.find("local2 = 2;").expect("the default's code");
+    // P3 3.1: the slot both the shared arm and the default write is declared where both can see it —
+    // at the start of the region that holds the switch — and each write is a plain assignment.
+    let declaration = text
+        .find("int local2;")
+        .expect("the declaration is hoisted to the switch's own region");
+    let switch_at = text.find("switch (local1) {").expect("the selector");
+    assert!(
+        declaration < switch_at,
+        "the declaration precedes every arm that writes the slot:\n{text}"
+    );
     assert!(
         case0 < case1 && case1 < arm && arm < default && default < default_arm,
         "two labels, their shared arm, then the default's:\n{text}"
@@ -878,8 +888,17 @@ fn an_if_else_is_written_with_the_arm_the_branch_really_picks() {
     let text = &report.text;
     let if_at = text.find("if (").expect("the branch became an if");
     let else_at = text.find("} else {").expect("both arms were written");
-    let then_arm = text.find("int local2 = 1;").expect("the fall-through arm");
+    let then_arm = text.find("local2 = 1;").expect("the fall-through arm");
     let else_arm = text.find("local2 = 2;").expect("the branch arm");
+    // P3 3.1: the slot is written in both arms, so a declaration inside either one is out of scope in
+    // the other. It is declared where both can see it — before the `if` — and both writes assign.
+    let declaration = text
+        .find("int local2;")
+        .expect("the declaration is hoisted above the `if`");
+    assert!(
+        declaration < if_at,
+        "the declaration precedes the region that holds both writes:\n{text}"
+    );
     assert!(
         if_at < then_arm && then_arm < else_at && else_at < else_arm,
         "the fall-through arm is inside the if and the branch's target inside the else:\n{text}"

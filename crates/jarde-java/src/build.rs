@@ -127,6 +127,259 @@ pub(crate) struct Inputs<'a> {
     pub(crate) enums: &'a enumswitch::Plan,
 }
 
+/// The path of a region in the method's region tree (P3 3.1).
+///
+/// Each step is the index of a nested region inside the one that holds it, so `[2, 1]` is the
+/// `else` arm of the third top-level region. The **empty** path is the method body itself, and a
+/// declaration written there is in scope for the whole body.
+type RegionPath = Vec<u32>;
+
+/// Where each local slot's declaration is written (P3 3.1).
+///
+/// The invariant this plan keeps: a slot's declaration is written at the start of a region that
+/// contains **every** use of the slot — every read and every write — so the declaration is in scope
+/// at each of them. A Java local is in scope from its declaration to the end of the block that
+/// declares it, and that is not the same thing as "the whole method knows this slot": a slot filled
+/// in a `then` arm and read in the `else` arm or after the join is declared in a place where most of
+/// its uses cannot see it, and the text does not compile.
+///
+/// Two cases, and the evidence for each:
+///
+/// * **the write that first fills the slot is in the innermost region that contains all uses** —
+///   then that write's own statement declares the slot with the value it writes, which is the text a
+///   source would have (`int x = 1;`) and the text this layer has always written;
+/// * **otherwise** the declaration moves to the start of that innermost region and **every** write
+///   becomes a plain assignment: the declaration is no longer any write's, so no write may carry it.
+///
+/// The "innermost region that contains all uses" is read from the region tree itself: every block
+/// belongs to exactly one region (the innermost one that claims it), and the region that contains
+/// all uses is the longest common prefix of their region paths.
+///
+/// A slot whose uses are all inside one **quoted** region is left exactly as it was: a
+/// [`Region::Fallback`] writes no Java statements this layer could declare a local in, so there is
+/// nothing to hoist into, and that run is already `Mixed`/`Fallback`. The same holds for a use whose
+/// block the region tree does not claim: with no region to name, the slot keeps the declaration it
+/// has today instead of a guess.
+#[derive(Default)]
+struct Declarations {
+    /// The slots declared at the start of one region, by that region's path, in slot order.
+    at_region: BTreeMap<RegionPath, Vec<HoistedDeclaration>>,
+}
+
+/// One declaration written at the start of a region instead of at the write that fills the slot.
+#[derive(Clone)]
+struct HoistedDeclaration {
+    slot: u16,
+    ty: Type,
+    /// The write whose value states the type and whose frame entry states the slot's type: the
+    /// anchor the declaration is written under, exactly like the in-place declaration it replaces.
+    at: u32,
+}
+
+/// Plans where each local slot's declaration is written.
+fn declarations(
+    regions: &[Region],
+    ssa: &SsaTable,
+    names: &NameTable,
+    parameters: u16,
+) -> Declarations {
+    let paths = region_paths(regions);
+    let mut uses: BTreeMap<u16, Vec<SlotUse>> = BTreeMap::new();
+    for block in ssa.blocks() {
+        let path = paths.paths.get(block.block());
+        for instruction in block.instructions() {
+            for (slot, _) in instruction.reads() {
+                if let Slot::Local(slot) = slot {
+                    uses.entry(*slot).or_default().push(SlotUse {
+                        path: path.cloned(),
+                        bci: instruction.bci(),
+                        written: None,
+                    });
+                }
+            }
+            for (slot, value) in instruction.writes() {
+                if let Slot::Local(slot) = slot {
+                    uses.entry(*slot).or_default().push(SlotUse {
+                        path: path.cloned(),
+                        bci: instruction.bci(),
+                        written: Some(*value),
+                    });
+                }
+            }
+        }
+    }
+    let mut plan = Declarations::default();
+    for (slot, slot_uses) in &uses {
+        // A parameter's declaration is the signature, not the body, and a slot this layer has no
+        // name for is one whose writes are already reported as a fallback of their own.
+        if *slot < parameters || names.text(*slot).is_none() {
+            continue;
+        }
+        let Some(region) = declaration_region(slot_uses, &paths) else {
+            continue;
+        };
+        // The write that fills the slot first, in method order: the region path a block stands in
+        // is the order the regions are written in, and the bytecode index orders the blocks of one
+        // region.
+        let Some(first) = slot_uses
+            .iter()
+            .filter(|use_| use_.written.is_some())
+            .min_by_key(|use_| (use_.path.clone(), use_.bci))
+        else {
+            continue;
+        };
+        if first.path.as_ref() == Some(&region) {
+            // Every use is in the first write's own region: the declaration the write carries is in
+            // scope for all of them, which is the text this layer has always written.
+            continue;
+        }
+        let Some(value) = first.written else { continue };
+        // The same evidence the in-place declaration reads: the type the frame states for the value
+        // being written. A slot the frames do not type keeps the write's own fallback.
+        let Some(ty) = value_type(ssa.value(value).ty()) else {
+            continue;
+        };
+        plan.at_region
+            .entry(region)
+            .or_default()
+            .push(HoistedDeclaration {
+                slot: *slot,
+                ty,
+                at: first.bci,
+            });
+    }
+    plan
+}
+
+/// One local access of one instruction, with the region the instruction's block stands in.
+struct SlotUse {
+    /// The innermost region whose statements hold the instruction, or `None` when the region tree
+    /// does not claim its block.
+    path: Option<RegionPath>,
+    bci: u32,
+    /// The value a write stores; absent for a read.
+    written: Option<ValueId>,
+}
+
+/// The path of the innermost region every use of one slot sits in.
+///
+/// `None` means there is no such region this layer could write a declaration in: a use whose block
+/// the region tree does not claim, or **any** use inside a region that is quoted bytecode. The second
+/// case is why this is not just "the common region is not a fallback": a slot whose uses span a quoted
+/// region and a structured one would have to be declared at their common ancestor — but the quoted
+/// text does not name the slot at all, so a declaration written above it would declare a variable the
+/// produced text never uses. Such a slot keeps the declaration it has today (inside a quote: none),
+/// and that run is already `Mixed`/`Fallback`.
+fn declaration_region(uses: &[SlotUse], paths: &RegionPaths) -> Option<RegionPath> {
+    let mut region: Option<RegionPath> = None;
+    for use_ in uses {
+        let path = use_.path.as_ref()?;
+        if paths.fallbacks.contains(path) {
+            return None;
+        }
+        region = Some(match region {
+            None => path.clone(),
+            Some(current) => common_prefix(&current, path),
+        });
+    }
+    let region = region?;
+    (!paths.fallbacks.contains(&region)).then_some(region)
+}
+
+/// The longest prefix two region paths share: the innermost region that contains both.
+fn common_prefix(left: &RegionPath, right: &RegionPath) -> RegionPath {
+    left.iter()
+        .zip(right)
+        .take_while(|(left, right)| left == right)
+        .map(|(step, _)| *step)
+        .collect()
+}
+
+/// The path of a region nested inside the region `path` names, at the given child index.
+fn child(path: &[u32], index: u32) -> RegionPath {
+    let mut nested = path.to_vec();
+    nested.push(index);
+    nested
+}
+
+/// Which region holds each block, as the path from the method body down to it.
+struct RegionPaths {
+    paths: BTreeMap<CanonicalBlockId, RegionPath>,
+    /// The paths whose region is a [`Region::Fallback`]: a quoted run, which holds no statements
+    /// this layer could declare a local in.
+    fallbacks: BTreeSet<RegionPath>,
+}
+
+/// The region tree as paths, for the slots whose declaration has to be moved.
+fn region_paths(regions: &[Region]) -> RegionPaths {
+    let mut paths = RegionPaths {
+        paths: BTreeMap::new(),
+        fallbacks: BTreeSet::new(),
+    };
+    for (index, region) in regions.iter().enumerate() {
+        collect_paths(
+            region,
+            &child(&[], u32::try_from(index).unwrap_or(u32::MAX)),
+            &mut paths,
+        );
+    }
+    paths
+}
+
+/// Fills the path of every block one region claims, innermost region first.
+///
+/// A nested region is walked **before** the region that holds it, so a block both could claim
+/// belongs to the inner one: a loop's header is the body's first block, and the body's statements are
+/// where its statements are written while the loop's own test is written inside the loop statement.
+fn collect_paths(region: &Region, path: &RegionPath, out: &mut RegionPaths) {
+    match region {
+        Region::If {
+            then_arm, else_arm, ..
+        } => {
+            collect_paths(then_arm, &child(path, 0), out);
+            collect_paths(else_arm, &child(path, 1), out);
+        }
+        Region::Switch { groups, .. } => {
+            for (index, group) in groups.iter().enumerate() {
+                collect_paths(
+                    &group.arm,
+                    &child(path, u32::try_from(index).unwrap_or(u32::MAX)),
+                    out,
+                );
+            }
+        }
+        Region::Loop { body, .. } => collect_paths(body, &child(path, 0), out),
+        Region::Straight { .. } | Region::Fallback { .. } => {}
+    }
+    if matches!(region, Region::Fallback { .. }) {
+        out.fallbacks.insert(path.clone());
+    }
+    for block in own_blocks(region) {
+        out.paths.entry(block).or_insert_with(|| path.clone());
+    }
+}
+
+/// The blocks a region writes the statements of, as opposed to the ones its nested regions own.
+fn own_blocks(region: &Region) -> Vec<CanonicalBlockId> {
+    match region {
+        Region::Straight { blocks } => blocks.clone(),
+        Region::If { prefix, branch, .. } => {
+            let mut blocks = prefix.clone();
+            blocks.push(branch.clone());
+            blocks
+        }
+        Region::Switch { prefix, branch, .. } => {
+            let mut blocks = prefix.clone();
+            blocks.push(branch.clone());
+            blocks
+        }
+        // The test block is the condition written *inside* the loop statement; the header belongs
+        // to the body when the body claims it (`collect_paths` walks the body first).
+        Region::Loop { header, test, .. } => vec![header.clone(), test.clone()],
+        Region::Fallback { blocks, .. } => blocks.clone(),
+    }
+}
+
 /// Builds the statements of one method from its regions.
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn build(
@@ -145,6 +398,7 @@ pub(crate) fn build(
             block_of.insert(instruction.bci(), block.block().clone());
         }
     }
+    let declarations = declarations(regions, ssa, inputs.names, inputs.parameters);
     let mut builder = Builder {
         canonical,
         ssa,
@@ -172,9 +426,14 @@ pub(crate) fn build(
         lambda_params: BTreeSet::new(),
         accessors: Vec::new(),
         deferred: Vec::new(),
+        declarations,
     };
-    for region in regions {
-        builder.region(region)?;
+    // A slot whose uses span more than one top-level region is declared wherever every one of them
+    // can see it: at the start of the body, before the first region's text.
+    builder.declare_at(&[])?;
+    for (index, region) in regions.iter().enumerate() {
+        let path = child(&[], u32::try_from(index).unwrap_or(u32::MAX));
+        builder.region(region, &path)?;
     }
     Ok(Program {
         statements: builder.statements,
@@ -234,11 +493,15 @@ struct Builder<'a> {
     /// instruction that produced them: what a quote has to name when the reader turns out not to
     /// write them after all (P3 2.3 §0).
     deferred: Vec<(ValueId, u32)>,
+    /// Where each local slot's declaration is written (P3 3.1): the slot whose declaration is not
+    /// the first write's is declared at the start of the region that contains all of its uses.
+    declarations: Declarations,
 }
 
 impl Builder<'_> {
-    /// Appends the statements of one region.
-    fn region(&mut self, region: &Region) -> Result<(), StopReason> {
+    /// Appends the statements of one region, with the region's own declarations first.
+    fn region(&mut self, region: &Region, path: &RegionPath) -> Result<(), StopReason> {
+        self.declare_at(path)?;
         match region {
             Region::Straight { blocks } => {
                 for block in blocks {
@@ -274,9 +537,9 @@ impl Builder<'_> {
                 // provenances is exactly what the segment table records as it writes.
                 let cond = cond.derived_from(*branch_bci);
                 let mut then_body = Vec::new();
-                self.arm(then_arm, &mut then_body)?;
+                self.arm(then_arm, &mut then_body, &child(path, 0))?;
                 let mut else_body = Vec::new();
-                self.arm(else_arm, &mut else_body)?;
+                self.arm(else_arm, &mut else_body, &child(path, 1))?;
                 self.push(Stmt::new(
                     StmtKind::If {
                         cond,
@@ -326,9 +589,13 @@ impl Builder<'_> {
                     }
                 };
                 let mut arms = Vec::with_capacity(groups.len());
-                for group in groups {
+                for (index, group) in groups.iter().enumerate() {
                     let mut body = Vec::new();
-                    self.arm(&group.arm, &mut body)?;
+                    self.arm(
+                        &group.arm,
+                        &mut body,
+                        &child(path, u32::try_from(index).unwrap_or(u32::MAX)),
+                    )?;
                     arms.push(SwitchArm {
                         keys: group.keys.clone(),
                         default: group.default,
@@ -361,7 +628,7 @@ impl Builder<'_> {
                 };
                 let cond = cond.derived_from(*test_bci);
                 let mut loop_body = Vec::new();
-                self.arm(body, &mut loop_body)?;
+                self.arm(body, &mut loop_body, &child(path, 0))?;
                 let kind = match form {
                     LoopForm::While => StmtKind::While {
                         cond,
@@ -433,11 +700,47 @@ impl Builder<'_> {
     }
 
     /// Appends one arm's statements to a vector of its own, so the `if` can hold them.
-    fn arm(&mut self, region: &Region, into: &mut Vec<Stmt>) -> Result<(), StopReason> {
+    fn arm(
+        &mut self,
+        region: &Region,
+        into: &mut Vec<Stmt>,
+        path: &RegionPath,
+    ) -> Result<(), StopReason> {
         let outer = std::mem::take(&mut self.stmts);
-        self.region(region)?;
+        self.region(region, path)?;
         let arm = std::mem::replace(&mut self.stmts, outer);
         into.extend(arm);
+        Ok(())
+    }
+
+    /// Writes the declarations a region holds at its own start (P3 3.1).
+    ///
+    /// A slot is here when the write that first fills it is *not* in the innermost region that
+    /// contains all of its uses: declaring it at that write would put it out of scope at the uses
+    /// outside that write's region. The declaration written here carries no value — the writes that
+    /// fill the slot are the assignments that follow — and every write of the slot then writes a
+    /// plain assignment, because the declaration is not any write's any more.
+    ///
+    /// The statement is anchored at the write whose value states the slot's type, the same anchor
+    /// the in-place declaration carried: the declaration's evidence is that instruction.
+    fn declare_at(&mut self, path: &[u32]) -> Result<(), StopReason> {
+        let Some(declared) = self.declarations.at_region.get(path).cloned() else {
+            return Ok(());
+        };
+        for declaration in declared {
+            let Some(name) = self.names.text(declaration.slot).map(str::to_owned) else {
+                continue;
+            };
+            self.declared.insert(declaration.slot);
+            self.push(Stmt::new(
+                StmtKind::Declare {
+                    ty: declaration.ty,
+                    name,
+                    value: None,
+                },
+                OriginSet::new(Origin::direct(declaration.at)),
+            ))?;
+        }
         Ok(())
     }
 

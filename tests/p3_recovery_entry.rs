@@ -194,11 +194,13 @@ fn one_recovery_request_reads_one_body_and_presents_that_member() {
     // And the presentation is of that member: its name, its descriptor, its own body.
     let report = recovered.recovery();
     assert_eq!(report.method, "add(II)I");
-    // The entry states no parameter slots (the payload publishes no access flags), so the two
-    // argument slots are named by their ordinals as locals: deterministic, and no claim that was
-    // not read. What is asserted here is that the text is *this member's* body.
+    // The parameter slots are the payload's own declaration (P3 3.1): the run's one header read
+    // located the member and stated its flags and descriptor, so `add(II)I`'s two argument slots are
+    // named as the parameters they are — slot 0 is the receiver this member's flags say it has, and
+    // the arguments are slots 1 and 2. Nothing here is invented: a body with no debug metadata gets
+    // no source name, and the ordinals are the ones the signature states.
     assert!(
-        report.text.contains("return local1 + local2;"),
+        report.text.contains("return arg1 + arg2;"),
         "{}",
         report.text
     );

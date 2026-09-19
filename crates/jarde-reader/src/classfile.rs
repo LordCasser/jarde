@@ -2577,6 +2577,64 @@ pub struct MethodCodeFacts {
     pub exception_handler_count: u32,
     pub execution: ExecutionReport,
     pub stopped_at: Option<BytecodeStop>,
+    /// The body's own debug names, read from the `LocalVariableTable` this `Code` attribute may
+    /// declare (P3 3.1).
+    ///
+    /// The table is **inside** the `Code` entry this read already decoded and charged for, so reading
+    /// it here is the same read: one slice of the bytes, one `AttributeBytes` charge, no second truth
+    /// about one body. `MethodParameters` is deliberately not read: it is a *method-level* attribute
+    /// whose content lies outside the `Code` entry, so decoding it here would charge bytes this read
+    /// has not billed — that is a reader-contract decision with its own accounting, not something to
+    /// slip in beside a body read.
+    debug: LocalDebugTable,
+}
+
+/// The debug names one method body's `Code` attribute states (P3 3.1).
+///
+/// Three states, because "no name" and "no table" are different facts: a body compiled without debug
+/// metadata declares nothing, and a read that did not produce a table (its content does not decode,
+/// or the body stopped before the walk) states none. Neither is a failure of the body — the
+/// instructions decoded — and the presentation names the slots by their ordinals in both cases (A10).
+#[allow(dead_code)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum LocalDebugTable {
+    /// The `Code` attribute declares no `LocalVariableTable`: the walk completed and found none.
+    Absent,
+    /// The table as the one read decoded it, in declaration order.
+    Read(Vec<LocalDebugName>),
+    /// The walk produced no table: a declared table whose content the bytes cannot hold, or a body
+    /// read that stopped before it walked the nested attributes. No name is stated for either.
+    Unstated,
+}
+
+/// One record of a `LocalVariableTable` (JVMS 4.7.13).
+///
+/// The record names one slot **over a range of bytecode**: a compiler that reuses a slot for two
+/// variables in disjoint scopes states two records for it, which is why the range is kept — it is
+/// what tells one reused slot from one variable named twice.
+#[allow(dead_code)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LocalDebugName {
+    /// The local slot the record names.
+    pub slot: u16,
+    /// The first bytecode index the record covers.
+    pub start_bci: u32,
+    /// One past the last bytecode index the record covers.
+    pub end_bci: u32,
+    /// The name, exactly as the class file's own constant spells it (JVM bytes, never text-decoded
+    /// here).
+    pub name: JvmBytes,
+}
+
+impl LocalDebugName {
+    /// The name, as the text a presentation would write when it is one.
+    ///
+    /// A name that is not UTF-8 is not text this layer can spell: the caller decides what to do with
+    /// it (a name no Java identifier grammar accepts is aliased, never dropped — see
+    /// `jarde-java`'s naming rules).
+    pub fn name_lossy(&self) -> String {
+        String::from_utf8_lossy(&self.name.0).into_owned()
+    }
 }
 
 impl MethodCodeFacts {
@@ -2589,6 +2647,15 @@ impl MethodCodeFacts {
     /// facts the reader never produced.
     pub fn operands(&self) -> &[InstructionOperands] {
         &self.operands
+    }
+
+    /// The body's own debug names, as the same read decoded them (P3 3.1).
+    ///
+    /// The `LocalVariableTable` sits inside the `Code` entry this read already charged for, so this
+    /// is not a second read: the bytes are the ones [`Self::code_span`] and the instruction array
+    /// came from, and no additional dimension is billed for them.
+    pub fn debug(&self) -> &LocalDebugTable {
+        &self.debug
     }
 
     /// Assembles a body from parts a test names, without a decode; test support only.
@@ -2617,6 +2684,8 @@ impl MethodCodeFacts {
         exception_handler_count: u32,
         execution: ExecutionReport,
         stopped_at: Option<BytecodeStop>,
+        // The debug names the assembled body stands for, if the fixture states any.
+        debug: LocalDebugTable,
     ) -> Self {
         let (instructions, operands) = code.into_iter().unzip();
         Self {
@@ -2629,6 +2698,7 @@ impl MethodCodeFacts {
             exception_handler_count,
             execution,
             stopped_at,
+            debug,
         }
     }
 }
@@ -3626,6 +3696,11 @@ pub fn method_code_facts(
         noak::reader::AttributeContent::Code(code) => code,
         _ => unreachable!("raw Code name selected"),
     };
+    // The body's own debug names, from the `LocalVariableTable` this same `Code` entry may carry
+    // (P3 3.1). The nested bytes are inside the entry this read already charged for, so the walk costs
+    // no dimension and reads nothing twice; a table whose content does not decode states no name
+    // instead of failing a body whose instructions decoded.
+    let debug = local_debug_table(&code, pool);
 
     let exception_handler_count =
         u32::try_from(code.exception_handlers().count()).map_err(|_| {
@@ -3838,7 +3913,65 @@ pub fn method_code_facts(
             usage: budget.usage(),
         },
         stopped_at: None,
+        debug,
     })
+}
+
+/// Reads the `LocalVariableTable` nested inside one already-decoded `Code` attribute.
+///
+/// The nested attribute list is walked from the `Code` content the caller already decoded and charged
+/// for, so nothing is sliced, billed or decoded a second time: the loop runs only because this
+/// function is called, and it decodes exactly one nested attribute — the table that names slots. Every
+/// other nested attribute (`LineNumberTable`, `StackMapTable`, type annotations) is skipped by name
+/// without reading its content.
+///
+/// A table the bytes cannot hold, or a name index that does not resolve, is [`LocalDebugTable::Unstated`]
+/// rather than an error: a body's instructions decoded, and an attribute that only *names* things must
+/// not turn that body into a failure. What it must not do either is invent a name, and it does not: no
+/// name is stated.
+fn local_debug_table(
+    code: &Code<'_>,
+    pool: &noak::reader::cpool::ConstantPool<'_>,
+) -> LocalDebugTable {
+    let mut names = Vec::new();
+    for attribute in code.attributes() {
+        let Ok(attribute) = attribute else {
+            return LocalDebugTable::Unstated;
+        };
+        let Ok(name) = pool.get(attribute.name()) else {
+            return LocalDebugTable::Unstated;
+        };
+        if name.content.as_bytes() != b"LocalVariableTable" {
+            continue;
+        }
+        let Ok(noak::reader::AttributeContent::LocalVariableTable(table)) =
+            attribute.read_content(pool)
+        else {
+            return LocalDebugTable::Unstated;
+        };
+        for variable in table.locals() {
+            let Ok(variable) = variable else {
+                return LocalDebugTable::Unstated;
+            };
+            let Ok(entry) = pool.get(variable.name()) else {
+                return LocalDebugTable::Unstated;
+            };
+            let range = variable.range();
+            names.push(LocalDebugName {
+                slot: variable.index(),
+                start_bci: range.start.as_u32(),
+                end_bci: range.end.as_u32(),
+                name: JvmBytes(entry.content.as_bytes().to_vec()),
+            });
+        }
+    }
+    if names.is_empty() {
+        // No table at all, or one that declares no record: both state no name, and the difference is
+        // an empty list either way.
+        LocalDebugTable::Absent
+    } else {
+        LocalDebugTable::Read(names)
+    }
 }
 
 /// Whether one of the header's shells describes the located `Code` content.
@@ -3928,6 +4061,9 @@ fn stopped_code_facts(
         )?,
         execution,
         stopped_at: Some(stopped_at),
+        // The body stopped before the nested attributes were walked: this read states no debug name,
+        // which is what "no name" means for a record that did not reach them (P3 3.1).
+        debug: LocalDebugTable::Unstated,
     })
 }
 
@@ -9233,7 +9369,7 @@ mod tests {
                 branch_targets,
                 subroutines
             ),
-            (16, 51, 8, 11, 8),
+            (18, 67, 8, 23, 8),
             "fixture population changed: re-measure these counts"
         );
     }

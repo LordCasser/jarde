@@ -3242,8 +3242,8 @@ mod tests {
     use crate::cfg::raw_cfg;
     use jarde_reader::budget::{BudgetDimension, Limits, UsageSnapshot};
     use jarde_reader::classfile::{
-        BytecodeStop, ExceptionHandlerFact, InstructionFact, LocalOperand, class_facts,
-        method_code_facts,
+        BytecodeStop, ExceptionHandlerFact, InstructionFact, LocalDebugTable, LocalOperand,
+        class_facts, method_code_facts,
     };
     use jarde_reader::model::{
         ByteSpan, ClassBytesId, Digest, ExecutionReport, JvmBytes, PhysicalClassLocation,
@@ -4214,6 +4214,9 @@ mod tests {
                 usage: UsageSnapshot::default(),
             },
             None,
+            // An assembled body states no debug table: the names come from a class file's own
+            // `LocalVariableTable`, which no assembled fixture has (P3 3.1).
+            LocalDebugTable::Absent,
         );
         let canonical = canonical_of(&facts, 52);
         Synthetic {
@@ -5225,6 +5228,8 @@ mod tests {
                 class_offset: CODE_OFFSET + 3,
                 code: "classfile_bytecode_budget_exceeded".to_string(),
             }),
+            // A body that stopped before the nested attributes were walked states no name.
+            LocalDebugTable::Unstated,
         );
         let canonical = canonical_of(&facts, 52);
         assert!(
@@ -5406,6 +5411,9 @@ mod tests {
                 usage: UsageSnapshot::default(),
             },
             None,
+            // An assembled body states no debug table: the names come from a class file's own
+            // `LocalVariableTable`, which no assembled fixture has (P3 3.1).
+            LocalDebugTable::Absent,
         );
         let canonical = canonical_of(&facts, 50);
         Synthetic {

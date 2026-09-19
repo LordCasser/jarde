@@ -325,6 +325,9 @@ fn run_bytecode(code: &[u8], model: &ClassModel) -> Trace {
 /// One statement of the oracle's own model of the produced text, parsed from the text alone.
 #[derive(Clone, Debug, PartialEq)]
 enum Text {
+    /// A declaration with no value (`int local1;`): the local exists and holds nothing yet, which
+    /// is the one way a Java local comes into scope without being written (P3 3.1).
+    Declare(String),
     Assign(String, Expr),
     Call(Expr),
     Return(Option<Expr>),
@@ -441,11 +444,54 @@ fn parse_block<'a>(lines: &'a [&'a str]) -> (Vec<Text>, &'a [&'a str]) {
                 left.split_whitespace().last().unwrap_or(left).to_string(),
                 parse_expr(value),
             )),
-            None => statements.push(Text::Call(parse_expr(statement))),
+            // A declaration with **no** value: the slot is in scope from here and holds nothing, so
+            // a read before the first assignment to it still fails. This is the shape a declaration
+            // takes when the write that fills it is out of scope at its uses (P3 3.1).
+            None => match declares_without_value(statement) {
+                Some(name) => statements.push(Text::Declare(name.to_string())),
+                None => statements.push(Text::Call(parse_expr(statement))),
+            },
         }
         rest = tail;
     }
     (statements, rest)
+}
+
+/// The name a statement declares with no value, when that is what it is.
+///
+/// `int local1;` is a declaration of `local1` that assigns nothing: the model keeps that apart from
+/// a call so that reading the local before a write keeps failing, which is exactly what a
+/// declaration placed outside its uses' scope would do at run time — and what the bytecode's own
+/// model would never do.
+fn declares_without_value(statement: &str) -> Option<&str> {
+    if statement.contains('(') || statement.contains('"') || !statement.contains(' ') {
+        return None;
+    }
+    let (ty, name) = statement.rsplit_once(' ')?;
+    let name = name.trim();
+    if name.is_empty()
+        || !name
+            .chars()
+            .all(|character| character.is_alphanumeric() || character == '_' || character == '$')
+    {
+        return None;
+    }
+    let ty = ty.trim();
+    let primitive = matches!(
+        ty,
+        "boolean" | "byte" | "char" | "short" | "int" | "long" | "float" | "double"
+    );
+    // A reference type is spelled the way the frames state it (`java.lang.Runnable`, `int[]`); the
+    // model does not check the name against anything, only that the line is a type and a name.
+    let reference = ty.chars().all(|character| {
+        character.is_alphanumeric()
+            || character == '_'
+            || character == '$'
+            || character == '.'
+            || character == '['
+            || character == ']'
+    });
+    (primitive || reference).then_some(name)
 }
 
 /// The line after a block's own closing brace.
@@ -634,6 +680,11 @@ fn execute(
         *steps += 1;
         assert!(*steps < 10_000, "the artifact does not terminate");
         match statement {
+            Text::Declare(name) => {
+                // The local is in scope and holds nothing: a read before the first write to it is
+                // still a read of a local the text never wrote.
+                locals.remove(name);
+            }
             Text::Assign(name, value) => {
                 let value = evaluate(value, locals, trace);
                 locals.insert(name.clone(), value);

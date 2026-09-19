@@ -27,7 +27,7 @@ use crate::ir::{
     MethodAnalysisReport, MethodAnalysisRequest, MethodBodyState, NoBodyKind, StageResult,
     StageState,
 };
-use crate::method_ir::{MethodIr, MethodIrAnalysis};
+use crate::method_ir::{MethodDeclaration, MethodIr, MethodIrAnalysis};
 use crate::passes::{FactLedger, IR_PASS_NOT_IMPLEMENTED, IrPhase, PassDescriptor, implemented};
 use crate::ssa::{IR_SSA_INCONSISTENT, SsaOutcome};
 
@@ -156,7 +156,7 @@ fn run_request(
                 crate::ir::METHOD_ANALYSIS_NOT_IMPLEMENTED,
                 budget,
             ),
-            MethodIr::new(None, None, None, None, Vec::new(), Vec::new()),
+            MethodIr::new(None, None, None, None, Vec::new(), Vec::new(), None),
         )
     };
     Ok(Analyzed {
@@ -265,6 +265,12 @@ fn run_method_analysis(
     // flags, the class file's own name and its constant pool — which are part of the one header
     // read `raw_facts` performed.
     let mut declaration: Option<FrameDeclaration> = None;
+    // What the located member's own declaration says (P3 3.1): the flags, the raw name and
+    // descriptor, the parameter slots they imply and the identity the read was bound to. It is read
+    // off the same header read `raw_facts` performs — the member it located — and travels in the
+    // payload, so a consumer above this crate reads the class file's own statement instead of
+    // assuming anything about the member or reading the class a second time.
+    let mut member: Option<Box<MethodDeclaration>> = None;
     // The frames 4.1 published. 4.2 is their first consumer, so the payload stays in this run
     // under the same plan the canonical graph is kept under — and it is what the run hands over
     // to the recovery layer (P3 1.1).
@@ -286,9 +292,11 @@ fn run_method_analysis(
                         facts,
                         version: read_version,
                         declaration: read_declaration,
+                        member: read_member,
                     }) => {
                         version = Some(read_version);
                         declaration = Some(read_declaration);
+                        member = read_member;
                         *facts
                     }
                     Ok(DriverRead::DeclaredWithoutBody) => {
@@ -790,6 +798,7 @@ fn run_method_analysis(
         facts.map(Box::new),
         constant_pool,
         bootstrap_methods,
+        member,
     );
     (run, ir)
 }
@@ -809,6 +818,11 @@ enum DriverRead {
         version: VersionCapability,
         /// The declaration facts the later passes need beside the body.
         declaration: FrameDeclaration,
+        /// What the located member's own declaration says about the member (P3 3.1), from the same
+        /// header read that located it and decoded the body. Boxed for the same reason `facts` is:
+        /// the enum is moved once per request and the common path is the one that does not move a
+        /// `MethodDeclaration` by value.
+        member: Option<Box<MethodDeclaration>>,
     },
     /// The member's own declaration says it has no body: there is nothing to analyze, and that
     /// is a fact about the member rather than a failure of the request.
@@ -1008,6 +1022,16 @@ fn read_driver_method(
                 bootstrap_methods,
             }
         },
+        // The member's own declaration (P3 3.1), taken from the member this read located rather than
+        // from the request: the flags and the descriptor are what the class file states, and the
+        // parameter slots those two imply are derived once, here, from that same statement.
+        member: MethodDeclaration::new(
+            member.access_flags,
+            member.name.raw().clone(),
+            member.descriptor.raw().clone(),
+            request.method.clone(),
+        )
+        .map(Box::new),
     })
 }
 

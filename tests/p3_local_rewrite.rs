@@ -8,7 +8,7 @@
 //! command, the digest and the bytecode of every member:
 //!
 //! * **P3-R1.** `post(I)I` is `iload_0; iinc 0,1; ireturn`: the value the `ireturn` reads is the one
-//!   the load put on the stack *before* the increment wrote the slot. Writing `return local0;` there
+//!   the load put on the stack *before* the increment wrote the slot. Writing `return arg0;` there
 //!   states the incremented value, so the recovered method answers 8 where the original answers 7 —
 //!   the text was the opposite program. The property checked is that the artifact no longer writes
 //!   that statement, that the write it *can* prove is still written, and that the read it refused is
@@ -20,8 +20,15 @@
 //! The control the R1 fix needs is here too, and it is the reason the assertion is written the way
 //! it is: `bump(I)I` and `doubleIt(I)I` are `… istore_0; iload_0; ireturn` — the *same* text, a
 //! write to slot 0 followed by a return of slot 0 — and there the reload really does read the slot,
-//! so those two must keep `return local0;`. A rule that refused every such body, or one that wrote
+//! so those two must keep `return arg0;`. A rule that refused every such body, or one that wrote
 //! every slot name unconditionally, fails one half of this file or the other.
+//!
+//! The names are the ones P3 3.1's declaration facts produce: this sample's members are `static` and
+//! declare one or two `int` parameters, so the entry states that slots 0 (and 1) are the signature's
+//! and names them `arg0`/`arg1`, while a slot the body declares of its own (`saved`'s `y`, in slot 1
+//! of a one-parameter member; `loopAcross`'s `y`, in slot 2 of a two-parameter one) is named
+//! `localN`. `-g:none` means the class states no debug name at all, so every one of them is an
+//! ordinal name and no source name is invented.
 //!
 //! The same disagreement is checked at the two **other** consumption points of this slice, because
 //! the check is not the return's: `saved(I)I` stores the loaded value after the increment wrote the
@@ -195,15 +202,15 @@ fn a_value_the_slot_no_longer_holds_is_not_returned_through_the_slot_name() {
     // The write the body really performs is still presented: this is a degraded read, not a body
     // that was emptied to pass the test below.
     assert!(
-        text.contains("local0 = local0 + 1;"),
+        text.contains("arg0 = arg0 + 1;"),
         "the increment at BCI 1 is a write this layer writes:\n{text}"
     );
     // The forbidden statement, and the reason it is forbidden *here* while the same statement is
     // required for `bump` below: this body's `ireturn` reads the value the load at BCI 0 put on the
-    // stack, and the `iinc` at BCI 1 writes slot 0 before that. So `local0` at the return denotes the
+    // stack, and the `iinc` at BCI 1 writes slot 0 before that. So `arg0` at the return denotes the
     // incremented value: writing it returns 8 where `post` returns 7.
     assert!(
-        !text.contains("return local0;"),
+        !text.contains("return arg0;"),
         "slot 0 holds the incremented value at BCI 4, so a return of the slot's name states the \
          opposite of the bytecode — `post(7)` answers 7 and the written method would answer 8:\n{text}"
     );
@@ -245,7 +252,7 @@ fn a_slot_written_and_read_again_is_still_written_with_the_slot_name() {
         // slot holds at the return, so the name is the right expression and refusing it would lose
         // a body this layer can present.
         assert!(
-            text.contains("return local0;"),
+            text.contains("return arg0;"),
             "{}: `iload_0` after the write reads slot 0 again, so the name denotes exactly the \
              value being returned:\n{text}",
             String::from_utf8_lossy(member)
@@ -267,15 +274,15 @@ fn a_store_of_a_superseded_load_is_refused_with_the_read_named() {
     let fixture = fixture(&engine);
 
     // A **store** consumes the loaded value after the increment wrote the slot: `int y = x++` keeps
-    // the value the load produced, so `local1 = local0;` would carry the incremented value instead.
+    // the value the load produced, so `local1 = arg0;` would carry the incremented value instead.
     let report = recover(&engine, &fixture, b"saved", b"(I)I");
     let text = &report.text;
     assert!(
-        text.contains("local0 = local0 + 1;") && text.contains("return local1;"),
+        text.contains("arg0 = arg0 + 1;") && text.contains("return local1;"),
         "the write and the return this body does have are still presented:\n{text}"
     );
     assert!(
-        !text.contains("local1 = local0;"),
+        !text.contains("local1 = arg0;"),
         "the store at BCI 4 writes the value the load at BCI 0 produced, and slot 0 holds the \
          incremented value by then: naming the slot would store the wrong value:\n{text}"
     );
@@ -302,7 +309,7 @@ fn a_branch_on_a_superseded_load_is_refused_with_the_read_named() {
     let report = recover(&engine, &fixture, b"conditional", b"(I)I");
     let text = &report.text;
     assert!(
-        !text.contains("if (local0") && !text.contains("return local0"),
+        !text.contains("if (arg0") && !text.contains("return arg0"),
         "the condition at BCI 4 tests the value the load produced, and slot 0 is written at BCI 1 \
          before it: neither the condition nor a value read later may be written from the slot:\n{text}"
     );

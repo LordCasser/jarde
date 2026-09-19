@@ -1577,8 +1577,8 @@ mod tests {
     use crate::cfg::{CfgCompleteness, RawBlock, RawCfgOutcome, RawEdge, raw_cfg};
     use jarde_reader::budget::{BudgetDimension, Limits, UsageSnapshot};
     use jarde_reader::classfile::{
-        BytecodeStop, InstructionFact, InstructionOperands, LocalOperand, class_facts,
-        method_code_facts,
+        BytecodeStop, InstructionFact, InstructionOperands, LocalDebugTable, LocalOperand,
+        class_facts, method_code_facts,
     };
     use jarde_reader::model::{ByteSpan, ExecutionReport, TerminationReason};
 
@@ -1807,6 +1807,9 @@ mod tests {
                 usage: UsageSnapshot::default(),
             },
             None,
+            // An assembled body states no debug table: the names come from a class file's own
+            // `LocalVariableTable`, which no assembled fixture has (P3 3.1).
+            LocalDebugTable::Absent,
         )
     }
 

@@ -117,6 +117,155 @@ pub use crate::ssa::{
 
 use crate::ir::MethodAnalysisReport;
 use jarde_reader::classfile::{BootstrapMethodFacts, CpEntryFacts, MethodCodeFacts};
+use jarde_reader::model::{JvmBytes, PhysicalMethodId};
+
+/// The access-flag bit a member sets when it is `static` (JVMS 4.6).
+const ACC_STATIC: u16 = 0x0008;
+
+/// What the class file declares about the member whose body this run read (P3 3.1).
+///
+/// The `raw_facts` pass locates the member by raw name and descriptor in the **one** header read that
+/// also yields the body, and this is what that member's own declaration says — kept in the payload
+/// instead of being re-read somewhere else or assumed from the request:
+///
+/// * its **access flags**, exactly as the class declares them: `static` decides whether slot 0 is a
+///   receiver, and a member the class declares `bridge`/`synthetic` is one the presentation may act
+///   on;
+/// * its **name and descriptor**, as the member the read located states them;
+/// * the **parameter slots** its descriptor and flags imply — `this` included for an instance
+///   member, and a `long`/`double` parameter taking two slots (JVM 2.6.1). The slots below that
+///   count are the signature's, not the body's: they are named as parameters and they are never
+///   declared by a body statement;
+/// * the **physical identity** the read was performed under, which is what a presentation of this
+///   payload is a presentation *of* (P3 3.2 binds origins to it).
+///
+/// A run that read no member header states no declaration: the payload carries the run's own
+/// evidence, so an absent one is absent rather than filled in from the request.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MethodDeclaration {
+    access_flags: u16,
+    name: JvmBytes,
+    descriptor: JvmBytes,
+    parameter_slots: u16,
+    identity: PhysicalMethodId,
+}
+
+impl MethodDeclaration {
+    /// One member's declaration, as the header read that located it states it.
+    ///
+    /// `None` when the descriptor is not one this layer can walk: the count of parameter slots is
+    /// derived from the descriptor, so a descriptor the format does not allow states no declaration
+    /// at all instead of a count nobody could justify. (Such a body is refused by the passes that
+    /// read the descriptor anyway.)
+    pub(crate) fn new(
+        access_flags: u16,
+        name: JvmBytes,
+        descriptor: JvmBytes,
+        identity: PhysicalMethodId,
+    ) -> Option<Self> {
+        let parameter_slots = parameter_slots(&descriptor.0, access_flags & ACC_STATIC != 0)?;
+        Some(Self {
+            access_flags,
+            name,
+            descriptor,
+            parameter_slots,
+            identity,
+        })
+    }
+
+    /// The member's access flags, as the class declares them.
+    pub fn access_flags(&self) -> u16 {
+        self.access_flags
+    }
+
+    /// Whether the class declares the member `static`, which is what says that slot 0 is a
+    /// parameter rather than a receiver.
+    pub fn is_static(&self) -> bool {
+        self.access_flags & ACC_STATIC != 0
+    }
+
+    /// The member's name, as its own declaration spells it.
+    pub fn name(&self) -> &JvmBytes {
+        &self.name
+    }
+
+    /// The member's descriptor, as its own declaration spells it.
+    pub fn descriptor(&self) -> &JvmBytes {
+        &self.descriptor
+    }
+
+    /// How many local slots the parameters occupy.
+    ///
+    /// `this` is counted for an instance member, and a category-2 parameter (`long`/`double`) is
+    /// counted as the two slots it fills — so this is the first slot a body of this member may
+    /// declare a local in.
+    pub fn parameter_slots(&self) -> u16 {
+        self.parameter_slots
+    }
+
+    /// The physical identity this read was performed under.
+    pub fn identity(&self) -> &PhysicalMethodId {
+        &self.identity
+    }
+}
+
+/// The local slots one method descriptor's parameters occupy (JVM 2.6.1).
+///
+/// The walk is the descriptor's own: `this` takes slot 0 when the member is not `static`, and a
+/// `long` or `double` parameter takes two slots where every other type takes one. The return
+/// descriptor is not read — it occupies no local slot — and `None` means the descriptor is not one
+/// this walk can read.
+fn parameter_slots(descriptor: &[u8], is_static: bool) -> Option<u16> {
+    let mut rest = descriptor.strip_prefix(b"(")?;
+    let mut slots = u32::from(!is_static);
+    let mut closed = false;
+    while let Some((&first, tail)) = rest.split_first() {
+        if first == b')' {
+            closed = true;
+            break;
+        }
+        rest = match first {
+            b'J' | b'D' => {
+                slots += 2;
+                tail
+            }
+            b'B' | b'C' | b'F' | b'I' | b'S' | b'Z' => {
+                slots += 1;
+                tail
+            }
+            b'L' => {
+                let end = tail.iter().position(|byte| *byte == b';')?;
+                slots += 1;
+                &tail[end + 1..]
+            }
+            b'[' => {
+                // An array parameter is one slot whatever its element type, so the `[`-chain is
+                // read only to find where the parameter ends.
+                let mut element = tail;
+                while let Some((&b'[', rest)) = element.split_first() {
+                    element = rest;
+                }
+                match element.split_first() {
+                    Some((&b'L', after)) => {
+                        let end = after.iter().position(|byte| *byte == b';')?;
+                        element = &after[end + 1..];
+                    }
+                    Some((&(b'B' | b'C' | b'D' | b'F' | b'I' | b'J' | b'S' | b'Z'), after)) => {
+                        element = after;
+                    }
+                    _ => return None,
+                }
+                slots += 1;
+                element
+            }
+            _ => return None,
+        };
+    }
+    if !closed {
+        return None;
+    }
+    u16::try_from(slots).ok()
+}
 
 /// The IR payload of one method-analysis request: the tables that run published, each present
 /// exactly when the pass that produces it published one, together with the decode facts the
@@ -132,6 +281,7 @@ pub struct MethodIr {
     code: Option<Box<MethodCodeFacts>>,
     constant_pool: Vec<CpEntryFacts>,
     bootstrap_methods: Vec<BootstrapMethodFacts>,
+    declaration: Option<Box<MethodDeclaration>>,
 }
 
 impl MethodIr {
@@ -149,6 +299,7 @@ impl MethodIr {
         code: Option<Box<MethodCodeFacts>>,
         constant_pool: Vec<CpEntryFacts>,
         bootstrap_methods: Vec<BootstrapMethodFacts>,
+        declaration: Option<Box<MethodDeclaration>>,
     ) -> Self {
         debug_assert!(
             frames.is_none() || canonical.is_some(),
@@ -169,6 +320,7 @@ impl MethodIr {
             code,
             constant_pool,
             bootstrap_methods,
+            declaration,
         }
     }
 
@@ -227,6 +379,17 @@ impl MethodIr {
     /// an `invoke*`'s target.
     pub fn bootstrap_methods(&self) -> &[BootstrapMethodFacts] {
         &self.bootstrap_methods
+    }
+
+    /// What the member's own declaration says, as the header read that located it stated it (P3 3.1).
+    ///
+    /// Present exactly when the `raw_facts` pass located the member: it is read from the same header
+    /// read that produced [`Self::code`] and [`Self::constant_pool`], so a presentation that needs
+    /// the member's flags, its descriptor or how many slots its parameters occupy reads the class
+    /// file's own statement instead of a second read of the class (which would be billed again) or an
+    /// assumption about the member.
+    pub fn declaration(&self) -> Option<&MethodDeclaration> {
+        self.declaration.as_deref()
     }
 }
 
@@ -373,6 +536,10 @@ mod tests {
             Some(Box::new(facts)),
             pool,
             Vec::new(),
+            // These parts are assembled instead of read, so the payload states no member declaration:
+            // the declaration facts (P3 3.1) come from the header read that locates the member, and
+            // no assembled body has one.
+            None,
         )
     }
 

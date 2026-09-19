@@ -1056,7 +1056,7 @@ mod tests {
     use super::*;
     use jarde_reader::budget::{Limits, UsageSnapshot};
     use jarde_reader::classfile::{
-        InstructionFact, InstructionOperands, LocalOperand, SwitchOperands,
+        InstructionFact, InstructionOperands, LocalDebugTable, LocalOperand, SwitchOperands,
     };
     use jarde_reader::model::{ByteSpan, ExecutionReport, TerminationReason};
 
@@ -1209,6 +1209,9 @@ mod tests {
                 usage: UsageSnapshot::default(),
             },
             None,
+            // An assembled body states no debug table: the names come from a class file's own
+            // `LocalVariableTable`, which no assembled fixture has (P3 3.1).
+            LocalDebugTable::Absent,
         )
     }
 
