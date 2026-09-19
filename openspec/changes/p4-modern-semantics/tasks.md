@@ -1,6 +1,6 @@
 ## 1. Modern registry and facts
 
-- [ ] 1.1 定义 release-bound feature registry、preview/minor/attribute/flag 规则与 capability 输出，覆盖 53–71 和未知 future cases
+- [x] 1.1 定义 release-bound feature registry、preview/minor/attribute/flag 规则与 capability 输出，覆盖 53–71 和未知 future cases（2026-09-20 完成，提交 `8620249`。**新增** `crates/jarde-reader/src/release_registry.rs`，既有 `classify_version` 改为**消费**它；既有四类枚举/字段**全部保留**，既有版本矩阵等用例**一字未改即通过**（父级核：删除行中 `assert` 计数为 **0**）。**每个 release 一条记录**：记 CP tag / attribute / flag / opcode 四类**引入**的约束（各带 `since` 与 JVMS 来源），累积生效；**45–71 逐条无空洞**（表自身有不变式测试）。**来源诚实是本片的一半**：每条记录带**非空** `unregistered`（列**刻意不主张**的东西，测试强制非空），`NotRegistered`/`Unregistered` 是「**无主张**」而非「非法」。**四个平面分开**：parse=`structural_read`、dialect=`VersionCapability`、verification=`NotPerformed`、**output-level 新增 `HeaderInspection::output_level`**（本片仅 `NotEvaluated`，与 verification 对称）。**父级独立探针**证实未登记 release **绝不借用**上限 release 的能力（72/100 的 `Record`/`invokedynamic` 查询均返回 `UnregisteredRelease`），且探针非空洞（71/59 正常作答；`Record@59 → VersionNotApplicable`）。**证据**：1006 passed / 0 failed / 3 ignored；fmt/clippy 1.98.1 干净；openspec strict 14；CI run 35467145921 四 job success；三组证伪见 verification。**边界**：不读 module/record/sealed/nestmate 事实、不把合法性接到读路径（负向用例钉住）、不改 `dialect_validation_scope`、不产 fixture——前两项属 1.2/1.3）
 - [ ] 1.2 实现 module/nestmate/condy/record/sealed/modern concat facts 与 origin/evidence，覆盖 A05 及 output-level conflict
 - [ ] 1.3 建立现代合法/非法 fixture 和 golden diagnostics，验证结构读取不冒充 dialect/verification 成功
 
