@@ -602,3 +602,39 @@ P4 的结构面落点（本片未改，仅登记）：`crates/jarde-reader/src/{
 ### 未完成（如实收口，逐条：能力缺口 or 有意边界）
 
 见 `tasks.md` 的 3.4 子注——该处列出 P4 全部片的「未完成」汇总及每条的性质判定。
+
+## 2026-09-20 3.4 后续：两个守卫缺口已关闭（提交 `11be3f4`）
+
+3.4 的证伪自查发现两个**守卫缺口**（两者都不是实现缺陷，而是**覆盖**缺口）。本片只改 `tests/**`（**父级核：`git diff --stat -- crates/ src/` 为空**），1077 passed / 0 failed / 3 ignored（**+2**）。
+
+### 缺口 1：`RuntimeMatrix.verification` 无断言
+
+**已核实**（3.4 自查 + 父级独立复现）：把 `runtime_matrix.rs` 的 `NotPerformed` 改 `Performed` → **全量 1075 全绿、零红**；而**同一字段在 header 平面**一改就红。即 P4 引入一处**不对称**。
+**修法**：`tests/p4_runtime_matrix.rs` 新增 2 条**负向**断言——`the_matrix_never_claims_verification`（顺利路径）与 `a_matrix_that_reports_an_error_never_claims_verification`（带 `Error` 诊断的路径）。**两条都先断言这次运行真的答了东西**（`profiles.len()==3` / 存在 Error 诊断），使 `NotPerformed` **不是「因为放弃才为真」**。
+**为何两个场景够**：`Err` 的请求级拒绝**根本不产生 `RuntimeMatrix`**（无字段可断言），故「有报告但状态不干净」的最强现实场景就是 `NonConformant`。**不做更多铺开**。
+**父级独立证伪**：改 `Performed` → `p4_runtime_matrix` **11 passed / 2 failed**（恰好这两条，`left: Performed / right: NotPerformed`），其余同批全绿；还原后校验 OK。
+
+### 缺口 2：A17 源码守卫的**覆盖范围**
+
+**已核实**：守卫的受守卫集合只有 `query.rs` 与 `xref/**`；P4 新增的五个模块**全在其外**——把 `use jarde_java::RecoveryReport;` 注入 `runtime_matrix.rs` 守卫**绿**（漏过），注入 `query.rs` **红**（命中）。**盲区从 0 个模块扩到 5 个。**
+
+**范围判断（宁可少纳入，**已实测**）**：**只**纳入 `crates/jarde-query/src/plugin.rs`（同属 query 层、同属 X1 物理面，报告 `PhysicalView`）；**不纳入** `jarde-reader/src/{release_registry,modern,runtime_matrix}.rs` 与 `jarde-jvm/src/reflection.rs`。
+**理由（不是推断，是实测）**：A17 的原意是「**X1 物理入口**不得引用 P2/恢复层」，而 reader/jvm 是这些类型的**所有者**。临时把两个身份加进受守卫集后实跑：`reflection.rs` 会因 `crate::environment`/`crate::resolver`/`crate::ir`/`AnalysisStage`/`ResolutionEnvironment`/**`UnresolvedDependency`** 等**合法导入**被报——规则会变成「禁止导入任何分析面」，**改变断言原意**；`runtime_matrix.rs` 仅因散文里一处 `jarde_jvm::providers` 就被报（module-path 半边**注释也算**）。且这两层对恢复层**结构上不可达**（同一被 cargo 拒绝的依赖环），纳入只扩大政策、不增加可观测的越界。
+**父级独立证伪（纳入侧）**：往 `plugin.rs` 注入 `#[cfg(any())] use jarde_java::RecoveryReport;` → **两条 A17 守卫双双红**，输出点名 `crates/jarde-query/src/plugin.rs: jarde_java::, RecoveryReport`；还原后校验 OK。
+**未纳入侧仍绿是刻意的**，已在 `A17_PLUGIN_MODULE` 的常量文档里写明，并说明 **cargo 的循环依赖拒绝才是那两层的兜底**。
+
+### 纳入方式与非空洞性
+
+`GuardedModule { identity, candidates }` → `A17_ADDED_MODULES` → 在 `guarded_sources` 枚举；`A17_GUARDED_FILES` 6→7；`assert_single_layout` 泛化为「每个已解析文件都与 xref 目录同布局」（**半迁移树照旧失败**）；非空洞循环改为 `A17_EXPECTED_MODULES ∪ A17_ADDED_MODULES`；**尺寸下限仍只属于六个 P1 文件**（`plugin.rs` 不带）。沙箱两套布局各新增 `added_module_reference` 用例，并补上新增模块的干净桩。
+**非空洞性检查全部保持**：派生恢复 token 非空（≥60/≥50、锚点名逐条存在、`OriginSet` 被正确减去）、每个派生名必须被同一 matcher 命中、阳性对照 `src/facade.rs` 仍被命中且不在受守卫集、每个 identity 都解析成功且出现在枚举、总数 = 7。
+**承重证伪（实现者）**：把枚举退回修复前形态（`A17_ADDED_MODULES` 空、计数 6）→ **唯一**失败是 `the_a17_guard_detects_rewritten_references_and_added_files`：`case added_module_reference …: the guard must flag exactly ["plugin.rs"], got []`——**证明新用例会在旧行为上失败**。
+
+### 既有断言：**无一处放宽**
+
+删除行 27 行逐条复核：`A17_GUARDED_FILES` 6→7（**收紧**）；`assert_single_layout` 由「query ↔ xref」改为「**每个**已解析文件 ↔ xref」的循环（**同谓词、更多比较**）；枚举循环改为 `chain(A17_ADDED_MODULES)`（**要求更多**）；沙箱干净副本占位扩展到所有恒受守卫身份；其余为注释/文档重写。**没有任何 `assert` 的期望值被改写、删除或放宽**——唯一被替换的 `assert_eq!` 由同一谓词的**更广循环**取代。
+
+### 证据
+
+全量 **1077 passed / 0 failed / 3 ignored**（+2，均在 `tests/p4_runtime_matrix.rs`；`p2_contracts` 仍 30 条）；fmt/clippy 1.98.1 干净；`openspec validate --all --strict` 14 passed；两个 CI example exit 0；分层三包中 `jarde-java` **0** 次；`git diff --check` 干净；**生产代码零改动**（父级复核 `git diff --stat -- crates/ src/` 为空）；锁文件两条 exit 0。
+**CI**：`11be3f4` → run 35476894723，四 job success。
+**本片未做独立 review**（实现者自查自验 + 父级独立证伪；两条发现本身**未经第二方复核**）。
