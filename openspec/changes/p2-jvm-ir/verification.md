@@ -1277,3 +1277,130 @@ left:  [C, C, C, C, Partial, NotPerformed]   right: [C, C, C, C, C, C]
 **遗留待查（复核者提出，未归因于本次提交）**：复核者在一条 8-site 环形异常图上得到 `ir_frame_inconsistent`（`block {bci:3}` 栈深 1 vs 0），时限内未定位是 fixture 非法还是另一处既存缺陷。**记为待查**（5.3 的构造覆盖面应能顺带覆盖到）。
 
 **CI**：`535e696` → run 35424903198，四 job success。
+
+## 2026-09-19 5.3：golden、性质、独立 Frame 预期与有预算 fuzz（`e59701f` + 后续修复）
+
+### 固定 replay 名单（golden）
+
+`tests/p2_golden.rs` + `tests/fixtures/p2-golden/*.json`（6 文件、**25 条 replay**）：每条记录 fixture 的 blake3/字节数/来源、请求、limits 与 `expect` 面。名单本身是期望——**删/改名/新增即红**。**逐类对照**：
+
+| 类目 | 覆盖 |
+| --- | --- |
+| 45–52 历史 class（含 ECJ finally） | `historical-v45..v52-finally` 逐版本一条（45–49 无 StackMapTable、50–52 有） |
+| 缺失 debug | `missing-debug-derived-frames`（手写体，**字节级断言**确无三张 debug 表，并与 52 有 StackMapTable 对照） |
+| 缺失依赖 | `missing-dependency-completes`（引用快照内不存在的类，字节级前提断言） |
+| **非法版本** | `illegal-version-jsr-in-52`（**与 legacy 条目同字节、只差版本** 50→52）：`ir_legacy_opcode_forbidden`，prefix = raw_facts+raw_cfg |
+| 共享子程序（legacy clone） | `shared-subroutine-two-call-sites`（新造最小形态；真实世界见证由 `historical-v45..v48` 的双调用点提供） |
+| 异常重叠（含嵌套 handler） | `overlapping-records-and-nested-handler`（两条重叠 catch-all + 第三条覆盖 handler 自身抛点） |
+| 异常重叠（区间起于块中部 / 异常回边 / 同块多抛出点） | 各一条（与 4.2b、`535e696` 的形状同字节，golden 侧**独立固化**） |
+| R9 回归 | `r9-exception-input-follows-its-throw-site`（17 字节原件） |
+| wide/switch | `wide-forms-and-both-switches`（`wide` 局部 300 + `tableswitch` + `lookupswitch`） |
+| 资源边界 | 超预算（R10 当年探针）、深链（64 块链）、高扇出（单块 64 后继）、取消 |
+
+**每条断言的是状态与不变量、不是形状**：完整报告序列化后逐字段相等（仅删 `elapsed_millis`）+ 类型化再断言 `stages`（含 `Failed{code}`）/`quality`/`representation`/`syntax_status`/`compile_status`/`semantic_validation`/`verification`/`execution`/`diagnostic_codes`/`coverage` 三平面/`reads`/`usage` 全维/`published_prefix`/`body`。**5 条停止条目**另过 `assert_stop_is_explainable`：（a）恰一个未完成阶段即停止点、其前全 `Completed`（**已发布前缀**）、其后全 `NotPerformed`；（b）**报告携带由自身 termination 推导出的那条诊断码**；（c）prefix 非空 ⟺ coverage 已发布且 `reads` 非空。R10 的**状态**断言：8 抛点 frames 价 280088、64 抛点 1960592、差 = 56 × 30009；无 handler 时 30055；并把 4.3b 记录的 280027 写成**显式等式**。
+
+### 性质测试
+
+`tests/p2_properties.rs`：固定种子自写 SplitMix64，**96 个方法体**（合法 72：48 直线/分支/回边 + 24 带 catch-all handler；非法 24，7 种固定形状）。断言 P1 四平面恒定、`ssa Completed ⟺ LocalInvariants`（**双向各有实例**：69 / 27）、阶段单调与停止可解释、quality 跟随「是否发布 canonical」、coverage 发布 ⟺ 有阶段做过工作、确定性（每 4 体重跑逐字段相同）。
+
+### 独立 Frame 预期（用户明确要求）
+
+`crates/jarde-jvm/src/frame_oracle.rs`（`#[cfg(test)]`，17 test）。**独立于**：① 指令转移（自建槽格与栈/locals 语义，**不调用** frame 的稠密表/`apply*`/`merge*`/`replay`——有源码 token 自扫描 test 守着）；② **固定点**（纯 worklist、**无任何 skip 条件**——R9 的根因正是 skip 条件比变化的输入弱）；③ 入口状态（自己解析 descriptor 与 access flags）。**不独立于（如实）**：① canonical 图是**输入**（块/边/handler 行/抛点来自 `CanonicalCfg`；抛点分类由 oracle 自己的 `may_raise` 独立算出并比对）；② 只覆盖**声明子集**（`jsr`/`ret`、`ldc`/CP、invoke、`new`/未初始化、字段/数组、具名 catch 等**不在**子集，超出即 abstain，正反两侧都有 test）；③ 只比**块入口态**、不核块内中间态与计费。覆盖的异常形状：区间起于块中部、异常回边、同块两抛点。
+
+`crates/jarde-jvm/src/ir_audit.rs`（7 test）：**crate 内**守 origin 一对多（克隆）、def-use **双向**、**phi 输入数 = 逻辑前驱数**、可达集（reachable = blocks − unreachable）。
+
+### 有预算 fuzz
+
+`fuzz/src/lib.rs` 新增 `exercise_method_analysis` + `assert_analysis_contract`（**9 种请求形状**，含乱序+重复阶段与三种预算：充足/极小/克隆饥饿）；新 target `fuzz/fuzz_targets/method_analysis.rs`；语料 6 个（`jsr-ret.class` 是**已入库 ECJ fixture 的逐字节复制**、`legacy-clone`、`wide-switch`、`exception-overlap`、`exception-overlap-mixed`、`wide-switch.jar`）。
+
+- `fuzz` workspace `cargo test --locked` = **21 passed**（含 4 个 `#[should_panic]` 非空转检查：停止后相位被标 Completed、`Conservative` 但 canonical 从未发布、降级执行被清空诊断、调度前缀短于最后请求相位）。
+- **冒烟**：`query` 30s **325,663** execs、`artifact_tree` 30s **585,728**、`method_analysis` 120s **1,348,796**——**全部 0 crash**。
+- **CI 已加入 `method_analysis` 冒烟步**（**只加不删**，P1 两个 target 原样保留）；CI run 35427118396 四 job success（含新步）。
+
+### 由 5.3 发现、尚待修复的问题（见下节）
+
+1. **`inputs` 键折叠**（父级用 fuzz 语料独立复现）：异常输入按**源块**为键，同一源块两条异常边指向同一 handler 时**后者覆盖前者** → frame 合流到 `Unknown` 而记录只剩一条 → `ir_ssa_inconsistent`。
+2. **trivial phi 操作数计数与自引用不自洽**（5.3a 发现）：27 字节合法循环体被判 `ir_ssa_inconsistent`（`one value is named as a phi operand N time(s) while the phis hold it as an operand N-1 time(s)`）。
+3. **`analyze_method` 无版本门控**：major 44/53/56/72 都走完六阶段、零诊断、`Conservative`；而 `specs/jvm-ir/spec.md` 的 Requirement 写「**非法版本**或不能可靠规范化时保留原始 Bytecode 与原因」。**待裁决**（见下节）。
+4. **注释不实**（已随本轮修复）：`CanonicalBlock`/`CanonicalCfg.blocks` 的注释称「entry reaches 的节点」，实际包含不可达节点。
+5. **观察（未判定缺陷）**：published frames 的引用名有两种拼写——参数是字段描述符切片（`Ljava/lang/Object;`）、receiver 是内部名（`Test`）。将来若有消费者直接比较两种来源的名字会误判「不同类」。
+
+### 证据
+
+全量 **803 passed / 0 failed / 1 ignored**（767 + 36 = `p2_golden` 9 + `p2_properties` 3 + `frame_oracle` 17 + `ir_audit` 7）；`-p jarde-jvm` 221；`p1_xref_golden` 5（**未动**）、`p2_frame` 14、`p2_canonical` 8、`p2_ssa` 4、`p2_contracts` 29、`p2_cfg` 12、`p2_entry_counts` 5、`-p jarde-cli` 22；fmt 与 clippy 1.98.1 干净；两个 CI example exit 0。
+
+**四组变异证伪**：① 改错 golden 一条期望 → `p2_golden` 红；② 预算诊断丢掉维度 → golden 红；②b 停止不再 push 诊断 → `p2_properties` 红（**停止可解释**有牙）；③ `semantic_validation` 与阶段脱钩 → golden + properties 双红；④ **把独立 Frame 预期改成读生产表** → `frame_oracle` 5 红（**证明它真有独立性**）。
+
+**既有断言零改动**（唯一对既有文件的改动是 `crates/jarde-jvm/src/lib.rs` 加两个 `#[cfg(test)] mod` 声明）。
+
+## 2026-09-19 三处「合法体假报矛盾」的修复（`535e696`、`167a3f4`）
+
+### 缺陷与修法
+
+| # | 缺陷 | 触发形状 | 修法 |
+| --- | --- | --- | --- |
+| 1 | `canonical.rs::handler_rows` 以「**块起始**落在保护区间内」为判据，而 raw 异常边按**抛点**的 feasible handlers 造 | 保护区间起于块中部 | 改为**从 throw sites 派生**（行存在 ⟺ 图会为该 (record,path) 造边）；`postcondition` 增「每条异常边都必须有行列出其源块」→ 同类缺陷改为以 **Warning**（`ir_legacy_normalization_unbounded`）被拒 |
+| 2 | `frame.rs::run` 的 `inputs[target]` 以**源块**为键、每条后继边 insert 一次 | 同一源块两条异常边指向同一 handler（如具名 catch + catch-all 覆盖同一 site） | 键改为**边**（私有 `EdgeKey = (CanonicalBlockId, Option<u32>)`） |
+| 3 | `ssa.rs::replace` 的「重写到的出现数 == 记录条数」与**自引用 trivial phi** 不自洽 | 27 字节合法循环体 | 维持「**自引用只有一种拼法**」：phi 自己的值就是 `to` 时写成 `PhiInput::Itself` 且其 use 记录丢弃；等式仍是**精确相等** |
+
+**父级独立复现与证伪**：缺陷 2 由父级用 fuzz 语料 `exception-overlap-mixed.class`（189 字节）**独立发现并复现**（`slot Stack(0) of block {bci: 11} is entered with Ref(Unknown) while its only input defines Ref(Named java/lang/Throwable)`）；把键改回「只有源块」→ 回归用例转红并**打印出同一诊断逐字**（已核对）。缺陷 3 的 27 字节体与 `SUSPENDED` 表清空均由实现者证伪（还原旧口径 → 公开用例 + `p2_properties` + crate 内用例三处转红）。缺陷 1 见上节。
+
+### 独立复核（Approve，附两项必改）
+
+复核者（只读 + **自写可声明具名 catch 类型的类构造器** + 7 个新形状探针）结论：**未找到任何 legal body 在 HEAD 被判矛盾**，新形状也**没有**被过严拒绝。但给出一条重要的**阴性对照**：
+
+> 把 `inputs` 键改回「只有源块」后，仓库的回归用例逐字复现旧诊断，而**我的 7 个探针在变异前后都通过**。
+
+原因：`ssa.rs::check_class` 只在「幸存记录的类 ≠ 合流类」时报错，而探针形状里幸存的是 catch-all（Unknown）那条，故折叠不可见。**即缺陷 2 的闭合当时只由一个 fixture + 父级变异守着**。
+
+**必改项（已派单）**：① 在 `frame.rs` 加**结构不变量**「本块对某目标的逻辑输入记录条数 == 该目标的合流参与数」，使任何折叠在 frame 阶段就被当作**图缺陷**拒绝，而不是漏到 SSA 变成**误报**；并补一条**能分辨**的回归（两条记录 catch 类型不同、**幸存的是较窄的具名类型**）。② `replace` 的**位置式丢弃**（前 N 条 `bci == None`）所依赖的顺序假设要**写死**（`debug_assert!` 或改成按 `block` 精确匹配）。
+
+**复核者对其余判断**：缺陷 3 的丢弃**不丢真实 use**（指令级 use 一律带 `Some(bci)`）、`audit()` 仍精确（它证明「记录 == 表持有的 use」；写成 `Itself` 的判断本身由写侧条件保证）；`EdgeKey` 语义**未见丢边**（同源同 ordinal 的两条边内容完全相同、贡献按 ordinal 重算故幂等）；三处既有断言改动判为**等价或收紧**（golden 的 232→240/25→27 是多钉了真实账；历史 fixture 的 `handler_rows == 1` → `is_empty()` 是被删的那条恰恰覆盖不到任何可抛指令；`SUSPENDED` 清空对 legal 家族是**严格收紧**）。
+
+**关于 `exception_ordinal` 的 `find_map`（实现者自报的边界）**：复核者判定**不必本轮修**——它在公开面只会让命名**更粗**（本该 `Named{Throwable}` 的输入被写成 `Unknown`，方向**保守**），不会触发 `ir_ssa_inconsistent`；唯一能把「保守变错误」的路径（单输入 + 精确相等）已被新的边键堵住。**记为债务**（把 ordinal 放进 `LogicalInput` 而非反推）。
+
+### 父级的一处提交记录失误（如实记录）
+
+`167a3f4` 的提交信息**只描述了两处修复**，但该提交实际**同时包含了 5.3a 的全部交付**（`frame_oracle.rs`、`ir_audit.rs`、`tests/p2_golden.rs`、`tests/p2_properties.rs`、6 个 golden fixture、`lib.rs` 的 mod 声明）——因为父级用 `git add crates tests` 一次性暂存了整个子树，而当时 5.3a 的新文件尚未入库。**内容与验证都是对的**（807 passed 覆盖两者），但**提交信息低估并掩盖了 5.3 的交付**，对考古不利。**不复改已推送的提交**（避免改写历史）；此处记录，后续提交信息应仅描述其真正包含的变更，暂存时按路径精确列举。
+
+### 证据
+
+全量 **807 passed / 0 failed / 1 ignored**；`p2_frame` 15、`p2_ssa` 5、`ir_audit` 8、`frame_oracle` 17、`p2_golden` 9、`p2_properties` 3、`p2_canonical` 8、`p2_contracts` 29、`p2_cfg` 12、`p2_entry_counts` 5、`p1_xref_golden` 5、`-p jarde-jvm` 223、`-p jarde-cli` 22；`fuzz` workspace 21；fmt 与 clippy 1.98.1 干净；两个 CI example exit 0。
+
+**CI**：`535e696` → 35424903198、`e59701f`（5.3b + 新 fuzz 冒烟步）→ 35427118396、`167a3f4` → 35428563398，均四 job success（含 `method_analysis` 冒烟）。
+
+## 2026-09-19 复核必改项与非法版本门控（提交 `d2e9cda`）
+
+独立复核给上一轮 **Approve + 两项必改**，并给出一条关键的**阴性对照**：把 `inputs` 键改回「只有源块」后，仓库的回归用例逐字复现旧诊断，而复核者自造的 **7 个新形状在变异前后都通过**（因为折叠只在「幸存记录的类 ≠ 合流类」时可见）。即缺陷 1 的闭合当时**只由一个 fixture 守着**。三项修正：
+
+### 必改项 1：把折叠变成 frame 阶段的显式图缺陷
+
+- **结构不变量**：新增 `EdgeIdentity = (CanonicalBlockId, CanonicalEdgeKind)`（**图**陈述的边身份，与记录分组用的 `EdgeKey` 刻意不同源——用同一个键去数会变成复述分组）；`run` 在**同一条语句处**写出「该边交给合流多少条贡献」与「记录列表」，发布前用 `records_are_the_contributions(...)` 逐块校验：**记录条数必须等于合流参与数**。
+- **选 `inconsistent` 而非 `debug_assert!`**：后者在 release 下编译掉，复核要的「在 frame 阶段被拒、不漏到 SSA」会重新落空；且本模块对**自身图缺陷**已一律走 `inconsistent`（不声称字节有问题）。
+- **判据性回归**：新 fixture **两条记录都是具名 catch**（`RuntimeException` / `Throwable`，同一 handler）。实现者自曝：**第一版 fixture（catch-all 在前、具名在后）在旧世界仍通过**——正是复核者的阴性对照；改成「两条都具名」后**在旧世界必红**，故该用例的增量是「能分辨」而非「同 seed 重复」。
+- **父级独立证伪**：把键改回源块 → 新用例在 **frame 阶段**转红，消息为
+  `block {bci:5} holds 1 logical input record(s) for the 2 edge(s) that feed it, while its entry state was merged from 2 contribution(s): the records and the merge are two readings of one fact and cannot disagree`
+  ——**折叠现在在那里就被当图缺陷拒掉**，不再漏成下游的字节矛盾断言。
+
+### 必改项 2：位置式丢弃 → 按块精确匹配
+
+`ssa.rs::replace` 原来按「前 N 条 `bci == None`」丢弃自引用记录，依赖「两种遍历顺序一致」这一**没人保证**的前提。现改为**按 block 统计并消耗**；记录不足时 `inconsistent` 拒绝，而不是把记录挪到 `to` 上形成**错误 def-use 边**。
+- **证伪**：恢复位置式 → 新用例红，`audit` 打印出错误归属（值 14 记在块 26 上，实际属于块 50）。
+- **诚实记录**：旧位置式 + **顺序反转**在整仓 812 条用例**全部通过**，插桩比较器在整仓语料内**零**出现差异——即**现语料无法分辨**该假设（这正是复核说「未机器检查」的意思）。实现者另生成 3200 个体才找到可分辨的见证体，落成永久回归。按块式在顺序反转下仍全绿（规则本身与顺序无关）。
+
+### 第三项（父级授权的范围决定）：非法版本在 dialect 相位被拒
+
+**探明的事实**：`analyze_method` 能拿到 `major/minor`，但**拿不到版本规则结论**——`classify_version`/`version_diagnostics` 只被 P0 的 `inspect_header`/`inspect_method_bytecode` 调用且原本私有。
+
+**判断（实现者给出，父级认可）**：**报告，且以「dialect 相位停止」的形式**。依据：① 规格只要求「保留原始 Bytecode 与原因」，**没要求停止**；② 但**不停止就无法与报告自身契约相容**——仓库有三处既有断言「Complete 运行不携带诊断」，而 reader 对这两个码的惯例是 **Error**；把 Error 挂在 Complete 上等于放宽既有断言，改成 Info 又与同码不同级；③ 停止位置选 `legacy_normalization`（该规格句就在此 Requirement 内，且「保留原始 Bytecode」在本层的含义就是 raw facts + raw graph **仍被发布**）。
+**落地**：reader 新增 `version_capability(major, minor)` 与 `version_rule_diagnostic(...)`（码/文案/严重度仍是 reader 的唯一权威）；engine 的 `DriverRead::Decoded` 改为携带 `VersionCapability`，在 `IrPhase::LegacyNormalization` 拒绝（stage `Failed{code}` + Error 诊断 + `Failed{Error}`）。
+
+**major 44 实测（原→新）**：原 = 六阶段全 `Completed`、零诊断、`Conservative`、`Complete`、`LocalInvariants`；新 = `[C, C, Failed{classfile_invalid_major_version}, NotPerformed×3]`、诊断 `classfile_invalid_major_version`（Error）、`Fallback`、`Failed{Error}`、`body = Present`、coverage 仍 `CompleteWithinSchema`、`semantic = Unproven`（计费 21 vs 322，因后续相位不再运行）。
+
+**范围**：只拒「格式自身禁止的版本」（major < 45；≥56 且 minor ∉ {0, 65535}）。**能力档位**（53–71 结构探针、preview 65535、≥72 future、Java 8 profile）**不据此拒绝**——那是「本 build 支持什么」的陈述，仍归 P0 头部平面。**5.4 归档时应记一句**：「非法版本 = 格式自身规则；dialect 支持档位是 P0 的能力平面，P2 不据此拒绝」。规格措辞**不需要改**。
+
+### 证据
+
+全量 **812 passed / 0 failed / 1 ignored**（807 + 5 条新用例，**无既有断言改动**）；`p2_frame` 15→16、`p2_return_address` 9→11、`-p jarde-jvm` 223→225；`p2_golden` 9、`p2_properties` 3、`frame_oracle` 17、`ir_audit` 8、`p2_canonical` 8、`p2_contracts` 29、`p2_cfg` 12、`p1_xref_golden` 5、`-p jarde-cli` 22 不变；`fuzz` workspace 21；fmt 与 clippy 1.98.1 干净；两个 CI example exit 0；`method_analysis` fuzz 冒烟 60s = **762,532 execs / 0 crash**。
+**CI**：`d2e9cda` → run 35430946170，四 job success（含新冒烟步）。
+**过程说明（如实）**：实现者一度把 fuzz 冒烟指向仓库内语料目录，fuzzer 新增的 1262 个文件已全部删除，语料目录只剩 6 个受控种子、`fuzz/artifacts/method_analysis` 空目录亦已移除。
