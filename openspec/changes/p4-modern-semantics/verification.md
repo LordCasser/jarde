@@ -475,3 +475,130 @@ plugin 只发布 3 个**配置里拼写的名字**（含归档里**不存在**�
 **3.4**：全量门禁数字与「**结构支持 vs 源码恢复独立状态**」的结论。**本片给出的可用表述**：结构支持（parse/registry/事实/矩阵/X2/X3/plugin）已到 3.1–3.2 且**未**触及恢复层；恢复层（decompile-quality、source map）**仍是 P3 状态**，`OutputLevel` 只有 Java 8，因此 A04/A12 的「现代恢复」增量**尚未发生**（触发条件：恢复层开始消费 `ModernFacts`）。
 **前序遗留（本片未变、仍如实记录）**：CLI 出口（三个新入口只有库/门面出口）；plugin 的 `ArtifactTree` 嵌套 scope 答 `NotRequested`；X3 若干分支与 plugin `Skipped{Error}`/`Cancelled` 无 fixture；`MethodParameters` 未读；类级事实不在载荷；flag 具体位置不主张。
 **小风险（父级记录）**：矩阵/README 新增的章节锚点按 GitHub 规则推导，**未在渲染器中验证**。
+
+## 2026-09-20 3.4：最终门禁与「结构支持 vs 源码恢复」的独立状态
+
+**P4 至此 4/4。** 本节由 3.4 执行者写入（**尚未提交**；本片的改动面只有本文件与 `tasks.md`）。
+
+### 最终门禁（全部本机实跑，记录精确数字）
+
+| 项 | 命令 | 结果 |
+| --- | --- | --- |
+| 全量测试 | `cargo test --workspace --all-targets --all-features --locked --no-fail-fast` | **1075 passed / 0 failed / 3 ignored**，**57** 个 test binary，exit 0（与基线逐字相同） |
+| 可重放对照 | `cargo test --test p3_execution_comparison --locked -- --ignored` | **2 passed / 0 failed / 0 ignored**，17.66s，exit 0 |
+| 格式 | `cargo fmt --all -- --check` | exit 0（干净） |
+| lint | `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` | exit 0（干净；rustc 1.98.1 / clippy 0.1.98） |
+| MSRV | `cargo +1.88.0 check --workspace --all-targets --all-features --locked` | `Finished`，exit 0 |
+| 锁文件（fuzz） | `cargo metadata --manifest-path fuzz/Cargo.toml --locked` | exit 0 |
+| supply-chain（根） | `cargo deny --manifest-path Cargo.toml --workspace --locked --config deny.toml check` | `advisories ok, bans ok, licenses ok, sources ok`，exit 0 |
+| supply-chain（fuzz） | `cargo deny --manifest-path fuzz/Cargo.toml --workspace --locked --config deny.toml check` | `advisories ok, bans ok, licenses ok, sources ok`，exit 0 |
+| fuzz workspace | `cd fuzz && cargo test --locked` | **21 passed / 0 failed / 0 ignored**，exit 0 |
+| OpenSpec strict | `openspec validate --all --strict --no-interactive`（`@fission-ai/openspec@1.11.0`） | **14 passed / 0 failed（14 items）**，exit 0 |
+| 两个 CI example | `cargo run --example inspect_class_header \| resolve_and_analyze --locked -- tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class` | exit 0 / exit 0 |
+| 分层 | `cargo tree -p jarde-reader \| jarde-query \| jarde-jvm` 中各含 `jarde-java` 次数 | **0 / 0 / 0** |
+| 工作区 | `git diff --check` | 干净，exit 0 |
+
+**规定时长 fuzz 冒烟（三个 target 各 26s，语料用 `/tmp` scratch 副本——`fuzz/corpus/` 三份 `cp -R` 到 `/tmp/p4-corpus/`，**未写 tracked 语料**）**：
+
+| target | execs | exec/s | `slowest_unit_time_sec` | crash / timeout | exit |
+| --- | --- | --- | --- | --- | --- |
+| `query` | **218,962** | 8,421 | 0 | 无 | 0 |
+| `artifact_tree` | **370,066** | 14,233 | 0 | 无 | 0 |
+| `method_analysis` | **292,724** | 11,258 | 0 | 无 | 0 |
+
+冒烟后：`fuzz/artifacts/{query,artifact_tree,method_analysis}` **各 0 个文件**（无 crash 产物）；`git status --porcelain fuzz/corpus/` **为空**。
+
+**3 ignored 的构成（逐条点名）**：
+
+| # | 用例 | 原因 |
+| --- | --- | --- |
+| 1 | `tests/jvm_bytecode_oracle.rs::jdk25_instruction_boundaries_match_public_bytecode_inspection` | `#[ignore = "requires JDK 25 Class-File API oracle"]`——本机无该 oracle |
+| 2 | `tests/p3_execution_comparison.rs::the_corpus_is_read_the_same_way_by_every_legal_flag_set` | 需 PATH 上有 JDK：它用 `javac --release 8` 编译自己生成的 wrapper 并运行 |
+| 3 | `tests/p3_execution_comparison.rs::the_p3_findings_are_replayed_by_compiling_and_executing_the_bodies` | 同上 |
+
+后两条**在本机实跑通过**（见上表第 2 行），故 3 ignored **不是**未验证项；第 1 条是**环境缺口**（需 JDK 25 Class-File API oracle），本机未运行。
+
+### 「结构支持 vs 源码恢复」的独立状态（**本片核心交付**）
+
+两个面**互不推导**，各自给出可核实的依据。
+
+#### 结构支持面：已到 3.1–3.2，且**未触及恢复层**
+
+**依据（本片重跑的零引用 grep，逐字输出）**：
+
+```
+$ grep -rn "ModernFacts\|modern_facts\|ModernOrigin\|OutputLevelStatus" crates/jarde-java/
+$ echo $?
+1
+$ find crates/jarde-java -name '*.rs' | wc -l
+27
+```
+
+即：`crates/jarde-java/` 下 **27 个 `.rs` 文件**对 `ModernFacts` / `modern_facts` / `ModernOrigin` / `OutputLevelStatus` **零命中**（grep 退出码 **1**）。补充一条同向证据：`grep -rn "modern\|Modern" crates/jarde-java/src/` **同样零命中**——不是只差四个名字，而是整个「现代」词汇都不在该 crate 里。
+
+**方向性**：`crates/jarde-java/Cargo.toml` 依赖 `jarde-reader` 与 `jarde-jvm`，故反向引用**会被 cargo 在解析期拒绝**（P3 3.4 已实测 `error: cyclic package dependency`）。结构面在分层上是恢复层的**上游**。
+
+P4 的结构面落点（本片未改，仅登记）：`crates/jarde-reader/src/{release_registry,modern,runtime_matrix}.rs`、`crates/jarde-jvm/src/reflection.rs`、`crates/jarde-query/src/plugin.rs`。
+
+#### 恢复面：**仍是 P3 状态**
+
+| 事实 | 位置 | 当前值 |
+| --- | --- | --- |
+| `OutputLevel` **只有一个变体** | `crates/jarde-reader/src/classfile.rs:144` | `Java8`（无第二档） |
+| `OutputLevel::` 的**唯一**非测试消费者 | `crates/jarde-reader/src/modern.rs:484` | `OutputLevel::Java8 => {}`——3.3 加的**穷尽 match 空臂**，**无行为** |
+| `Origin` 仍是 P3 3.2 的形状 | `crates/jarde-java/src/source_map.rs:79` | `{ bci: u32, method: Option<Box<PhysicalMethodId>>, cp: Option<u16>, provenance: Provenance }` |
+
+结论：**P4 未改 `jarde-java` 的任何行为**，decompile-quality 与 source map 两个平面与 P3 相同。
+
+#### 因此 A04/A12 的「现代恢复」增量**尚未发生**
+
+- **A12**：「现代恢复」指把 concat 站点呈现为 `+`、把 record/sealed 呈现为源码。P4 只把这些**读成事实**，**一行文本都没产**（1.2 的量身证据：concat 事实自带 `ModernOrigin`，但无渲染器消费它）。
+- **A04**：`implementation handle 和创建/调用的区分；未知最终目标` 在 condy/concat 这条**任意 bootstrap** 路径上被证据化——**但只在事实平面**。若把该行读成要求恢复语义，则 **P4 无增量**（3.3 已按此口径写进矩阵）。
+- **触发条件（写死在这里）**：**恢复层开始消费 `ModernFacts`**。可观察的最小形状有两条，任一条出现即触发：
+  1. `OutputLevel` 出现**第二个变体**（此时 `modern.rs:484` 的穷尽 match **会编译失败**，强制给出该档自己的谓词——这是 3.3 留的机制，不是约定）；
+  2. `crates/jarde-java/**` 出现对 `ModernFacts`/`modern_facts` 的任何引用（本片那两条 grep 由零变非零）。
+  **未触发即不得声称现代恢复**。
+
+#### 三个新入口**各自报告什么平面**（读其报告类型得出，不套用恢复层词汇）
+
+| 入口 | 报告类型 | 报告的平面 | **不**报告的平面 |
+| --- | --- | --- | --- |
+| `Engine::runtime_matrix` | `RuntimeMatrix`（`runtime_matrix.rs:71`） | `physical: MultiReleasePhysicalEvidence`、`domain_graph`、`profiles`、`groups`、`coverage: Coverage`(=`CoverageDimension`/`CoverageState`)、`execution: ExecutionReport`、`scan: ScanAccounting`、`usage: UsageSnapshot`、**`verification: crate::classfile::VerificationStatus`**（`runtime_matrix.rs:770` 硬编码 `NotPerformed`） | 无 `compile_status`、无 `semantic_validation`、无 `output_level`、无任何被呈现的文本 |
+| `Engine::plugins` | `PluginReport`（`plugin.rs:472`） | `physical: PhysicalView`、`analysis: PluginAnalysis`(`Performed`/`NotPerformed{code}`)、`rules[].analysis: PluginRuleAnalysis` + `rules[].coverage: Coverage`、`execution`、`diagnostics` | **完全没有** verification 面 |
+| `Engine::reflection_patterns` | `ReflectionPatternReport`（`reflection.rs:934`） | `environment_identity`、`environment_problems`、`scope: PhysicalScope`、`analysis: ResolutionAnalysis`（**2.2 的解析面词汇**）、`sites`、`unresolved_dependencies`、`reads: Vec<HeaderRead>`、`coverage`、`execution`、`diagnostics` | **完全没有** verification 面 |
+
+**关键区分**：`compile_status` / `semantic_validation` / `quality` / `syntax_status` / `representation` 是 **jvm IR 平面**的词汇，定义在 `crates/jarde-jvm/src/ir.rs`（`RecoveredMethod` 的字段，见 `ir.rs:279`/`ir.rs:283`），即 **P3 恢复入口**的输出。**三个新入口一个都不填充这些字段。**
+
+`runtime_matrix` 那一个 `verification` 字段是**唯一**近似项，且它的类型是**header 平面自己的** `classfile::VerificationStatus`（不是 IR 平面类型），值恒 `NotPerformed`。**不得**把它读成「矩阵做了验证」或「矩阵恢复了源码」。
+
+**一句话口径**：**「结构读得出」≠「源码恢复」**。P4 的交付是**事实与证据**（parse / registry / 现代事实 / RuntimeMatrix / X2 / X3 / plugin），恢复层**原封不动**。
+
+### 证伪（副本 + `shasum -a 256` 校验；仓库事后逐字节相同）
+
+方法：`rsync -a --exclude .git --exclude target` 建 `/tmp/p4-falsify`，独立 `CARGO_TARGET_DIR=/tmp/p4-falsify-target`，编辑前把四个受改文件存入 `/tmp/p4-pristine` 并记 SHA-256；每次还原后用 `shasum -a 256` 逐文件比对。**未用** `git checkout`/`restore`/`stash`/`reset`。
+
+| # | 篡改 | 预期 | 实际 |
+| --- | --- | --- | --- |
+| **A** | `runtime_matrix.rs:770`：`RuntimeMatrix.verification` 由 `NotPerformed` **改 `Performed`**（一个 P4 新入口用**仓库自己的既有词汇**声称验证/恢复面成功） | 若有守卫必须红 | **全量 1075 passed / 0 failed / 3 ignored（57 binary，exit 0）——与基线逐字相同，零红** |
+| **C1（对照）** | `classfile.rs:484`：**header 平面**的同一个 `verification` 字段改 `Performed` | 红 | **红**：`p4_feature_registry` **2 passed / 2 failed**，exit 101（`a_preview_marker_is_reported_without_becoming_dialect_support`、`preview_and_unregistered_releases_keep_a_readable_structure_and_claim_nothing`）；`p4_golden` 6 passed |
+| **B** | 在 **P4 新文件** `crates/jarde-reader/src/runtime_matrix.rs` 注入 `#[cfg(any())] use jarde_java::RecoveryReport;`（**编译通过**） | 若在 A17 守卫范围内必须红 | **绿**：`physical_entry_modules_do_not_reference_the_recovery_layer` **1 passed** |
+| **C2（对照）** | 同一注入放进 **`crates/jarde-query/src/query.rs`**（A17 守卫范围内，置于内层文档注释**之后**，`cargo build -p jarde-query` **exit 0**） | 红 | **红**：`left: ["crates/jarde-query/src/query.rs: jarde_java::, RecoveryReport"] / right: []`，exit 101 |
+
+**发现 1（无守卫，如实报告）**：**`RuntimeMatrix.verification` 没有任何断言守卫。** A 组把该字段改成 `Performed` 后，**整个 workspace 的 1075 条测试全绿**。C1 对照证明**不是方法无效**：header 平面的同一字段一改就红（2 条集成红）——即 P4 自己引入了**不对称**：header 平面的 verification 有守卫，矩阵的没有。
+
+**为何需要守卫（不是「不需要」，故不写理由而是给建议）**：该字段虽是 `runtime_matrix.rs:770` 的硬编码常量、当前无输入能翻转它，但**这正是 1.1 给 header 平面加负向用例的理由**（`header_inspection_leaves_attribute_and_flag_legality_to_the_fact_passes` 钉住同一类边界），且该字段的类型是**跨平面共享**的 `classfile::VerificationStatus`——将来把矩阵接到任何 verifier 上，改动**不会**被任何测试拦下。
+**建议补的守卫（最小、无需新 fixture）**：在 `tests/p4_runtime_matrix.rs` 加一条负向断言，钉住 `matrix.verification == VerificationStatus::NotPerformed`；同理可对 `PluginReport`/`ReflectionPatternReport` 断言其**不含** verification / compile / semantic 面（这两个类型当前**根本没有**这些字段，属编译期保证，故只需一条注释说明，不必造断言）。**本片不代为新增该守卫**（不在允许修改面内），仅如实上报。
+
+**发现 2（守卫覆盖缺口）**：**A17「物理入口不得引用恢复层」的源码守卫，其受守卫集合只有 `crates/jarde-query/src/query.rs` + `crates/jarde-query/src/xref/**`**（见 `tests/p2_contracts.rs::guarded_sources` 与 `A17_QUERY_MODULE`/`A17_XREF_DIRECTORY` 两个常量）。**P4 新增的五个模块——`crates/jarde-reader/src/{release_registry,modern,runtime_matrix}.rs`、`crates/jarde-jvm/src/reflection.rs`、`crates/jarde-query/src/plugin.rs`——全部落在该集合之外。** B 组注入**编译通过**且守卫**照常通过**，C2 对照证明同一注入放在范围内的 `query.rs` 上立刻红。**即 P4 把守卫的盲区从 0 个模块扩到了 5 个模块**，而守卫的既定用途正是「将来重排时仍被复核」（P3 3.4 原话）。**注**：分层仍有 cargo 的循环依赖拒绝兜底，但那拦不住不构成依赖边的文本引用（B 组正是这种）。
+
+**流程注记（如实）**：C2 的**第一次**尝试是**无效对照**——注入点落在 `query.rs` 的内层文档注释 `//!` **之前**，触发 `E0753: expected outer doc comment`，exit 101 是**编译失败**而非守卫命中。改为置于文档注释之后（`cargo build -p jarde-query` exit 0）才得到上表的有效结果。**这条按无效对照上报，不计入证据。**
+
+**副本校验**：A/B/C1/C2 每次还原后逐文件 `shasum -a 256` 比对——`runtime_matrix.rs` `7c0c16c9…`、`plugin.rs` `452ae41b…`、`classfile.rs` `7c1db3a1…`、`query.rs` `0d95b7ad…` **全部 OK**（`RESTORE_BYTE_EXACT_OK`）。仓库事后 `git status --porcelain` 只有本片写入前的两处既有改动（`JVM_Rust_Engine_Final_Architecture.md`、`fuzz/README.md`，**非本片所为**）。
+
+### 既有断言：**零改动、零变弱**
+
+本片**未触碰** `crates/**`、`src/**`、`tests/**`、`fuzz/**`、`docs/**` 与 `Cargo.toml`/`Cargo.lock`（全量 1075 条与基线逐字相同即为佐证）。写入面只有 `openspec/changes/p4-modern-semantics/verification.md` 与 `tasks.md`。
+
+### 未完成（如实收口，逐条：能力缺口 or 有意边界）
+
+见 `tasks.md` 的 3.4 子注——该处列出 P4 全部片的「未完成」汇总及每条的性质判定。
