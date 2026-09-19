@@ -18,6 +18,12 @@ jarde-reader = { path = "../jarde-reader", version = "=0.1.0" }
 # canonical blocks). Same version and feature set as `jarde-jvm`'s raw CFG, so the workspace holds
 # exactly one `petgraph`: no `graphmap`/`stable_graph`/`matrix_graph`, `std` only.
 petgraph = { version = "=0.8.3", default-features = false, features = ["std"] }
+# The recovery report is a product type the CLI adapter serializes as its response document (P3
+# 1.3c), exactly as the P2 reports above it are: one schema, written where the report is defined,
+# instead of a second hand-copied response shape in the adapter. Same version and feature set as
+# the layers below — the workspace already holds `serde` with `derive`, so this adds no package to
+# the lock.
+serde = { version = "=1.0.229", features = ["derive"] }
 
 [dev-dependencies]
 # The reader's test-only class-file builder, so a test can assemble the body it wants to recover

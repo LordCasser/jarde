@@ -86,16 +86,32 @@ pub enum FallbackReason {
     UnrenderableOperand { bci: u32 },
     /// The two arms do not meet at one join.
     ArmsDoNotMeet { block_bci: u32 },
-    /// A **loop's** test block holds an instruction that would be a statement of its own — a write,
-    /// a call, an operation this subset does not model.
+    /// A pass stated a precondition ([`crate::pass::Precondition`], P3 decision 1) and this run's
+    /// evidence does not meet it: the shape was **not** claimed.
     ///
-    /// A loop's test runs once per iteration, and a `while (…)`/`do … while (…)` has nowhere to
-    /// write a statement from the test block that would run that often: hoisting it out of the loop
-    /// would run it once, and putting it in the body would run it after the test. So a loop whose
-    /// test writes state is quoted instead of being presented with its effect moved. (An `if`'s or a
-    /// `switch`'s test block has no such problem: its effects run exactly once, before the test, and
-    /// [`crate::build`] writes them there in order.)
-    TestBlockEffect { block_bci: u32, bci: u32 },
+    /// This is the one path a declared precondition fails through. The reason names the pass and
+    /// its rule version, the requirement that was not met and where the evidence fell short, so
+    /// that a reader can tell "the `loop@1` rule refused this test block" from "nothing here is a
+    /// loop"; the variable that carries the *instance* of the refusal (which block, which
+    /// instruction) is filled by the check that consulted the declaration, never invented here.
+    ///
+    /// The live instance of this slice is the loop's test block: a loop's test runs once per
+    /// iteration, and a `while (…)`/`do … while (…)` has nowhere to write a statement from the test
+    /// block that would run that often — hoisting it out of the loop would run it once, and putting
+    /// it in the body would run it after the test. So a loop whose test writes state is quoted
+    /// instead of being presented with its effect moved. (An `if`'s or a `switch`'s test block has
+    /// no such problem: its effects run exactly once, before the test, and [`crate::build`] writes
+    /// them there in order.)
+    UnmetPrecondition {
+        /// The declared pass whose precondition was checked.
+        pass: &'static crate::pass::Pass,
+        /// The precondition the pass states and this run does not meet.
+        requirement: crate::pass::Precondition,
+        /// The block the pass was about to claim (the loop's test block, here).
+        block_bci: u32,
+        /// The instruction whose evidence fell short, when the requirement is about one.
+        at: u32,
+    },
     /// Two `switch` arms claim the same block: a case whose code falls through into another case's.
     SwitchArmsOverlap { block_bci: u32 },
     /// The decoded keys and targets of a `switch` do not line up with the successors the graph
@@ -123,11 +139,48 @@ impl FallbackReason {
             Self::UnknownBranchSense { .. } => "jre_region_unknown_branch_sense",
             Self::UnrenderableOperand { .. } => "jre_region_unrenderable_operand",
             Self::ArmsDoNotMeet { .. } => "jre_region_arms_do_not_meet",
-            Self::TestBlockEffect { .. } => "jre_region_test_block_effect",
+            Self::UnmetPrecondition { .. } => "jre_region_unmet_precondition",
             Self::SwitchArmsOverlap { .. } => "jre_region_switch_arms_overlap",
             Self::SwitchShape { .. } => "jre_region_switch_shape",
             Self::UncoveredBlocks { .. } => "jre_region_uncovered_blocks",
             Self::MissingEvidence { .. } => "jre_region_missing_evidence",
+        }
+    }
+
+    /// The one way a declared precondition fails.
+    ///
+    /// The check site states *which* declaration it consulted and what the evidence was, and the
+    /// debug assertion keeps the two in step: a refusal can only be stated for a requirement the
+    /// pass really declares, so a precondition that was declared and then never checked — or
+    /// checked without being declared — fails the build's own tests instead of drifting.
+    pub fn unmet(
+        pass: &'static crate::pass::Pass,
+        requirement: crate::pass::Precondition,
+        block_bci: u32,
+        at: u32,
+    ) -> Self {
+        debug_assert!(
+            pass.requires(requirement),
+            "{} states no {requirement:?} precondition",
+            pass.rule()
+        );
+        Self::UnmetPrecondition {
+            pass,
+            requirement,
+            block_bci,
+            at,
+        }
+    }
+
+    /// The declared pass whose precondition this reason says is unmet, when that is what it says.
+    ///
+    /// The other reasons are the walk's own statements about shapes (`ArmsDoNotMeet`,
+    /// `UncoveredBlocks`, …) or preconditions 2.x will move into declarations; `None` here means
+    /// "no registered rule refused this", not "the refusal has no rule".
+    pub fn pass(&self) -> Option<&'static crate::pass::Pass> {
+        match self {
+            Self::UnmetPrecondition { pass, .. } => Some(pass),
+            _ => None,
         }
     }
 
@@ -185,8 +238,15 @@ impl FallbackReason {
             Self::ArmsDoNotMeet { block_bci } => {
                 format!("the arms of the branch in block {block_bci} do not meet at one join")
             }
-            Self::TestBlockEffect { block_bci, bci } => format!(
-                "the test block at BCI {block_bci} holds an instruction at BCI {bci} whose effect would have to move out of the structure it tests"
+            Self::UnmetPrecondition {
+                pass,
+                requirement,
+                block_bci,
+                at,
+            } => format!(
+                "the {} rule did not claim the block at BCI {block_bci}: it requires {}, and the instruction at BCI {at} is not part of one, so presenting the structure would have moved that effect out of the shape it decides",
+                pass.rule(),
+                requirement.describe()
             ),
             Self::SwitchArmsOverlap { block_bci } => format!(
                 "two switch arms of the block at BCI {block_bci} claim the same block, so one case falls through into another case's code"
@@ -369,6 +429,22 @@ impl Region {
             Self::Fallback { reason, .. } => vec![reason.clone()],
         }
     }
+
+    /// The declared rule whose pass produced this region, when a registered rule did.
+    ///
+    /// This is the traceability P3 decision 1 asks for: every recorded region says which rule, and
+    /// which version of it, the shape came from — and a fallback says which rule *refused* it. A
+    /// region no rule is answerable for (the whole-body refusals the walk itself states, such as an
+    /// irreducible graph) states `None` rather than borrowing a rule's name.
+    pub fn rule(&self) -> Option<crate::pass::RuleVersion> {
+        match self {
+            Self::Straight { .. } => Some(crate::pass::STRAIGHT.rule()),
+            Self::If { .. } => Some(crate::pass::IF.rule()),
+            Self::Switch { .. } => Some(crate::pass::SWITCH.rule()),
+            Self::Loop { .. } => Some(crate::pass::LOOP.rule()),
+            Self::Fallback { reason, .. } => reason.pass().map(|pass| pass.rule()),
+        }
+    }
 }
 
 /// The regions of one method, with what the walk claimed and what it could not.
@@ -392,6 +468,22 @@ impl Recovered {
     /// Every fallback reason the regions hold, in region order.
     pub fn fallbacks(&self) -> Vec<FallbackReason> {
         self.regions.iter().flat_map(Region::fallbacks).collect()
+    }
+
+    /// Every rule that produced a region of this method, each once, in the order it first did.
+    ///
+    /// The rules a method's output came from — reported beside the profile, so that "which rule
+    /// produced this text" is answered by the run's own record rather than by re-reading it.
+    pub fn rules(&self) -> Vec<crate::pass::RuleVersion> {
+        let mut rules: Vec<crate::pass::RuleVersion> = Vec::new();
+        for region in &self.regions {
+            if let Some(rule) = region.rule()
+                && !rules.contains(&rule)
+            {
+                rules.push(rule);
+            }
+        }
+        rules
     }
 }
 
@@ -974,10 +1066,16 @@ impl Walker<'_> {
                 Some(Operation::Push(_) | Operation::Load { .. } | Operation::Arithmetic { .. })
             );
             if !value_only {
-                return Err(FallbackReason::TestBlockEffect {
-                    block_bci: block.bci(),
-                    bci: instruction.bci(),
-                });
+                // The loop pass declares this precondition (`pass::LOOP.requires(StatementFree)`)
+                // and the check is stated through the declaration: the reason carries the rule
+                // version, so the text and the report say *which rule* refused, not just that
+                // something did.
+                return Err(FallbackReason::unmet(
+                    &crate::pass::LOOP,
+                    crate::pass::Precondition::StatementFree,
+                    block.bci(),
+                    instruction.bci(),
+                ));
             }
         }
         Ok(())

@@ -58,6 +58,7 @@ pub mod ast;
 pub mod facts;
 pub mod names;
 pub mod normal_flow;
+pub mod pass;
 pub mod region;
 pub mod report;
 pub mod source_map;
@@ -69,6 +70,7 @@ pub(crate) mod emit;
 #[cfg(test)]
 mod oracle;
 
+pub use pass::{IrTable, Pass, Precondition, RecoveryProfile, RuleVersion};
 pub use report::{RecoveryOutcome, RecoveryReport, RecoveryRequest, RegionRecord, recover};
 
 pub use ast::{BinaryOp, Expr, ExprKind, Stmt, StmtKind, Type};

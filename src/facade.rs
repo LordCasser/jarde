@@ -16,6 +16,8 @@ use jarde_reader::budget::Budget;
 use jarde_reader::classfile::{InspectionMode, MethodSelector};
 use jarde_reader::error::Result;
 use jarde_reader::inspect::{ClassTarget, EngineBytecodeReport, EngineHeaderReport};
+use jarde_reader::model::PhysicalMethodId;
+use serde::Serialize;
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Engine;
@@ -160,4 +162,103 @@ impl Engine {
     ) -> Result<crate::ir::MethodAnalysisReport> {
         jarde_jvm::analyze_method(content, request, budget)
     }
+
+    /// One recovery request: the method analysis of `request`, performed **once**, and the
+    /// presentation of the payload of that same run (P3 1.3).
+    ///
+    /// This is the one place a P3 consumer outside `jarde-java` reaches recovery, and it is why the
+    /// entry exists here rather than as a second library call: [`jarde_jvm::analyze_method_ir`] runs
+    /// the pipeline and hands over the tables it published *beside* that run's own report, so the
+    /// presentation reads the very decode the run performed instead of a second analysis of the same
+    /// bytes. Nothing is run twice, and no table is rebuilt from the report.
+    ///
+    /// The request is the P2 one — environment, member and stages — and the recovery profile is
+    /// *not* a second field: it is the environment's own runtime profile
+    /// (`environment.runtime.profile`), which is the one fact the gate reads
+    /// ([`jarde_java::pass::Pass::admits`]). A second field naming a profile would be a second
+    /// source for one fact.
+    ///
+    /// The facts the recovery layer needs and the payload does not carry — the member's identity, its
+    /// parameter slots and its debug names — are derived here from the request itself, and where the
+    /// run's own evidence does not reach, this entry states *nothing* rather than a guess:
+    ///
+    /// * the identity is the member the request named;
+    /// * **no parameter slots** are stated (see `recovery_facts`): the payload publishes no access
+    ///   flags, so slot 0 cannot be told from a receiver, and a body is presented with ordinal names
+    ///   throughout instead of being split on an assumption;
+    /// * **no debug names** are stated: the payload does not publish the `LocalVariableTable`, and
+    ///   reading it would be a second read of the class (billed again, and a second truth about one
+    ///   method).
+    ///
+    /// A body with neither is presented with deterministic ordinal names (A10) rather than refused;
+    /// naming a slot from its attribute or its parameter position is 3.1's, over the same-run header
+    /// read that slice owns.
+    pub fn recover_method(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &crate::ir::MethodAnalysisRequest,
+        budget: &mut Budget,
+    ) -> Result<RecoveredMethod> {
+        let analyzed = jarde_jvm::analyze_method_ir(content, request, budget)?;
+        let facts = crate::facade::recovery_facts(&request.method);
+        let profile = request.environment.runtime.profile.clone();
+        let recovery = jarde_java::recover(
+            &jarde_java::RecoveryRequest::new(analyzed.ir(), &facts, profile),
+            budget,
+        );
+        Ok(RecoveredMethod {
+            analysis: analyzed.report().clone(),
+            recovery,
+        })
+    }
+}
+
+/// One method-analysis run and the presentation of its own payload (P3 1.3).
+///
+/// Both halves are of the *same* run: [`RecoveredMethod::analysis`] is the report
+/// [`jarde_jvm::analyze_method_ir`] assembled for the run whose tables the recovery read, so the
+/// stage results, the coverage, the reads and the planes of the analysis and the planes of the
+/// recovery describe one request. A caller that wants only the presentation reads
+/// [`RecoveredMethod::recovery`] and ignores the other half; a caller that wants the run's own
+/// evidence (which reads it charged, which stages completed) reads both.
+#[derive(Clone, Debug, Serialize)]
+pub struct RecoveredMethod {
+    analysis: crate::ir::MethodAnalysisReport,
+    recovery: jarde_java::RecoveryReport,
+}
+
+impl RecoveredMethod {
+    /// The report of the run that produced the payload the presentation read.
+    pub fn analysis(&self) -> &crate::ir::MethodAnalysisReport {
+        &self.analysis
+    }
+
+    /// The presentation of that run's payload.
+    pub fn recovery(&self) -> &jarde_java::RecoveryReport {
+        &self.recovery
+    }
+
+    /// Both halves, by value: the adapter that serializes them does not clone what it owns.
+    pub fn into_parts(self) -> (crate::ir::MethodAnalysisReport, jarde_java::RecoveryReport) {
+        (self.analysis, self.recovery)
+    }
+}
+
+/// The facts of one member, as much as this entry can state from the request alone.
+///
+/// The identity is the member's own name and descriptor, exactly as the request spells them (JVM
+/// bytes, so a name that is not UTF-8 is presented as the decode wrote it rather than dropped).
+///
+/// The parameter-slot count is deliberately **zero**: the payload of the run does not publish the
+/// member's access flags, and a descriptor alone cannot say whether slot 0 holds a receiver, so any
+/// count this entry stated would be an assumption that the member is static. Stating none is the
+/// honest reading of the evidence the run has — every slot is then named by its ordinal as a local
+/// (`local0`, `local1`, …), which is A10's deterministic naming and no claim about which slots are
+/// parameters. A caller that does know (its own declaration facts, or the same-run header read that
+/// 3.1's naming work owns) states the count itself in [`jarde_java::RecoveryFacts`]; the recovery
+/// layer's own tests do exactly that.
+fn recovery_facts(method: &PhysicalMethodId) -> jarde_java::RecoveryFacts {
+    let name = String::from_utf8_lossy(&method.name.0).into_owned();
+    let descriptor = String::from_utf8_lossy(&method.descriptor.0).into_owned();
+    jarde_java::RecoveryFacts::new(jarde_java::MethodFacts::new(name, descriptor, 0))
 }

@@ -19,9 +19,11 @@
 //! bill: there is no path here that runs work first and discovers the limit afterwards.
 
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
+use serde::Serialize;
 
 /// Why a recovery run stopped.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum StopReason {
     /// The payload has no such table, so the phase validity of the run does not reach the recovery
     /// layer and nothing can be presented. Never an empty artifact with a success state.

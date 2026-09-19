@@ -18,10 +18,21 @@ license = "MIT OR Apache-2.0"
 description = "Bounded, provenance-preserving JVM artifact analysis contracts"
 
 [dependencies]
+# The recovery layer (P3 1.3) is the fourth, and the only one above the analysis half: the
+# facade's entry point runs the method analysis and hands its own payload to `jarde-java`, so
+# `jarde → jarde-java → jarde-jvm + jarde-reader` is the whole chain. CI's layered-dependency
+# gate forbids the three lower crates from reaching this one; the facade is the one crate that
+# may (and must) name it.
+#
+# `serde` is here for the same reason it is in the layers below: the recovery answer is a
+# product type whose wire document is written where the type is defined.
+serde = { version = "=1.0.229", features = ["derive"] }
+
 # The three layers this facade composes and re-exports. The analysis above the reader's facts —
 # resolution, the JVM environment, CFG, the pass layers and the method-analysis driver — left
 # for `jarde-jvm` in the layering work of P2 2.2, and with it the `blake3`, `petgraph` and
 # `serde` dependencies only that layer names.
+jarde-java = { path = "crates/jarde-java", version = "=0.1.0" }
 jarde-jvm = { path = "crates/jarde-jvm", version = "=0.1.0" }
 jarde-query = { path = "crates/jarde-query", version = "=0.1.0" }
 jarde-reader = { path = "crates/jarde-reader", version = "=0.1.0" }

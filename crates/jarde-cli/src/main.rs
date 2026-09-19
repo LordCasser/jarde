@@ -4,7 +4,7 @@ use jarde::{
     Engine, EngineBytecodeReport, EngineHeaderReport, EnumerationReport, Error, InspectionMode,
     JvmBytes, Limits, MethodAnalysisReport, MethodAnalysisRequest, MethodSelector, PhysicalEntry,
     PhysicalMethodId, PhysicalScope, PhysicalView, QueryCursor, QueryRelation, QueryReport,
-    QueryRequest, QueryTarget, ResolutionEnvironment, UsageSnapshot,
+    QueryRequest, QueryTarget, RecoveryReport, ResolutionEnvironment, UsageSnapshot,
 };
 use serde::{Deserialize, Serialize};
 use std::ffi::OsStr;
@@ -141,6 +141,22 @@ enum Operation {
         method: PhysicalMethodId,
         stages: Vec<AnalysisStage>,
     },
+    /// One P3 recovery request (1.3): the same three fields the method-analysis operation
+    /// carries, because it is the *same run* — the library performs the analysis once and hands
+    /// its own payload to the presentation.
+    ///
+    /// Why there is no separate recovery-profile field: the profile the gate reads is the
+    /// environment's own runtime profile, and a second field naming a release would be a second
+    /// source of truth for one fact (and a way for a request to present a Java 8 artifact under a
+    /// profile its environment never declared). Why `stages` is required and not defaulted: a
+    /// schedule is a request's own statement, and a recovery request whose stages omit the tables
+    /// the presentation reads is answered with a *stop* inside the response (`jre_ir_table_missing`)
+    /// rather than with an adapter-chosen schedule.
+    RecoverMethod {
+        environment: Box<ResolutionEnvironment>,
+        method: PhysicalMethodId,
+        stages: Vec<AnalysisStage>,
+    },
 }
 
 #[derive(Deserialize)]
@@ -190,11 +206,34 @@ struct SuccessTransport {
 #[derive(Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 enum OperationResult {
-    Enumeration { report: EnumerationReport },
-    Header { report: EngineHeaderReport },
-    Bytecode { report: EngineBytecodeReport },
-    Query { report: QueryReport },
-    MethodAnalysis { report: MethodAnalysisReport },
+    Enumeration {
+        report: EnumerationReport,
+    },
+    Header {
+        report: EngineHeaderReport,
+    },
+    Bytecode {
+        report: EngineBytecodeReport,
+    },
+    Query {
+        report: QueryReport,
+    },
+    MethodAnalysis {
+        report: MethodAnalysisReport,
+    },
+    /// The two reports of one recovery request, and both are of the same run: `analysis` is the
+    /// method-analysis report of the run whose tables were presented, `report` is the presentation
+    /// itself. A caller that wants to know what the request read and which stages completed reads
+    /// `analysis`; a caller that wants the Java text, its segment table and the planes that describe
+    /// it reads `report`.
+    RecoverMethod {
+        /// Both halves are boxed for the size reason the environments above are boxed for: this is
+        /// the largest result any operation carries, and the adapter holds exactly one request at a
+        /// time. `serde` treats a box as the value it holds, so the wire document is the library's
+        /// own and nothing here is a second schema of it.
+        analysis: Box<MethodAnalysisReport>,
+        report: Box<RecoveryReport>,
+    },
 }
 
 #[derive(Serialize)]
@@ -376,6 +415,29 @@ fn execute(
             engine
                 .analyze_method(slice::from_ref(&snapshot), &request, budget)
                 .map(|report| OperationResult::MethodAnalysis { report })
+        }
+        Operation::RecoverMethod {
+            environment,
+            method,
+            stages,
+        } => {
+            // The adapter binds the content once and calls **one** library entry: the entry runs the
+            // analysis and presents the payload of that very run, so no second analysis happens
+            // here, and no table is reconstructed from the analysis report.
+            let request = MethodAnalysisRequest {
+                environment: *environment,
+                method,
+                stages,
+            };
+            engine
+                .recover_method(slice::from_ref(&snapshot), &request, budget)
+                .map(|recovered| {
+                    let (analysis, report) = recovered.into_parts();
+                    OperationResult::RecoverMethod {
+                        analysis: Box::new(analysis),
+                        report: Box::new(report),
+                    }
+                })
         }
     }
 }

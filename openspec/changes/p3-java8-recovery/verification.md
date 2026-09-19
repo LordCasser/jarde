@@ -180,3 +180,34 @@ B2 值得记：**「返回正确的停止理由」并不足以证明「没有留
 ### 本片明说的边界（未做，留给后续）
 
 带写的循环 header 与 `break`/`continue` 形状走 `TestBlockEffect`/`LoopLeavesEarly` **fallback**（不搬走、不丢弃）；`do {} while (c)` 的空体走 `LoopShape`；`ldc` 的 `float`/`double` 字面量仍 `Other`；`athrow`/`try`/`finally` 的**呈现**属 2.4（本片只保证异常事实在 fallback 里正确）；字段/数组/转换类操作属 2.x；段表 `cp` 面属 3.2。
+
+## 2026-09-19 1.3c：门面与 CLI 入口、库/CLI 一致、A09/A10/A13/A16、模式声明类型
+
+落点与逐条裁决见 design 的「1.3c 的实际落点」，任务记录见 tasks 的 1.3 第三条。本节只记证据与限制。
+
+### 入口与分层
+
+`Engine::recover_method`（`src/facade.rs`）= `jarde_jvm::analyze_method_ir` **一次** + 把该次运行的载荷交给 `jarde_java::recover`，返回 `RecoveredMethod{analysis,recovery}`（两半同一次运行）。CLI 新增 `recover_method` operation（`environment` + `method` + `stages`；**无独立 profile 字段**，门控读 `environment.runtime.profile`），响应 `{"kind":"recover_method","analysis":…,"report":…}`；报告内停止仍是成功载荷。**只跑一次分析**：adapter 里对库的调用只有 `engine.recover_method(...)` 一次。
+
+门面收窄：跨 `jarde` 的只有 `RecoveryRequest`/`RecoveryFacts`/`MethodFacts`/`recover`（请求）、`RecoveryReport`/`RecoveryOutcome`/`RegionRecord`/`SourceMap`（报告）、`RecoveryProfile`/`RuleVersion`/`Precondition`/`IrTable`/`StopReason`（报告里名得到的只读词汇）；`region`/`ast`/`build`/`emit`/`names`/`facts`/`decode`/`normal_flow` 与 `Segment`/`Origin`/`OriginSet` **不在**门面上。
+
+### 用例与数字
+
+全量 **877 passed / 0 failed / 1 ignored**（867 + 10：`jarde-java` 单元 34→37（`pass` 合同用例 3）、集成 15→18（A10 1 + A13 2）、root `tests/p3_recovery_entry.rs` 2、CLI json_cli 11→13）；`cargo test -p jarde-cli --locked` = **24**（22 + 2）；`cargo fmt --all -- --check` 与 `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`（1.98.1）干净；`openspec validate --all --strict --no-interactive` = 12 passed；两个 CI example exit 0；分层门禁按 CI 口径 12 配置全 PASS（`jarde-reader`/`jarde-query`/`jarde-jvm` 的 normal/all × 有无 `--all-features`），`cargo tree -p jarde` 含 `jarde-java` 1 次。`Cargo.lock` diff 只有依赖边：root 的 `jarde-java`/`serde` 与 `jarde-java` 的 `serde`，**无新第三方包**。
+
+### A09/A10/A13/A16（用例名 → 断言要点 → 未覆盖的半）
+
+见 design 的 1.3c §7 表（四行，逐条列出用例名、断言与「哪半属 2.4/3.1/3.2」）。摘要：A09 = `a_body_the_subset_cannot_prove_is_quoted_rather_than_emptied`（`Mixed`/`Fallback`/`Complete`、无 `try {`/`} finally`/`} catch`、BCI 引用真实、诊断可陈述；**恢复本身属 2.4**）；A10 = `a_body_without_debug_names_is_named_deterministically_and_invents_no_source_scope`（两次运行整份报告相等、序号名、`cp=None`、带 debug 名时用 evidence、无 evidence 时不出现拼写；**语料矩阵属 3.1/3.3**）；A13 = `a_member_that_cannot_be_presented_leaves_the_member_that_can_alone` + `execution_quality_and_representation_each_state_their_own_thing`（同类两成员互不影响、两种顺序都逐字段稳定；平面三分：`Mixed`/`Fallback` 与 `execution=Complete` 并存，停止运行只由 `execution` 表达且诊断不串台；**语料矩阵属 3.2**）；A16 = `one_recovery_request_reads_one_body_and_presents_that_member`（真实 v52 fixture，前提经 `inspect_header` 断言 ≥3 个带 `Code` 成员，`class_headers=1`/`method_bodies=1`/`reads` 一条 `DriverMethodBody`）与 CLI 侧同请求的 wire 断言。
+
+### 被取代的既有取值（原→新→原因，无放宽）
+
+`FallbackReason::TestBlockEffect { block_bci, bci }` → `FallbackReason::UnmetPrecondition { pass, requirement, block_bci, at }`；诊断码 `jre_region_test_block_effect` → `jre_region_unmet_precondition`。原因：P3 决策 1 要求模式 pass 的类型化前置条件，这条拒绝必须带上**规则版本**与**要求类型**才能进报告/诊断。用例 `a_loop_whose_header_writes_state_is_quoted_rather_than_hoisted` 的断言**加强**：新码之外另断 `RegionRecord.rule == Some(loop@1)`、消息含 `loop@1`/`value expression`/`BCI 5`、`report.rules` 含 `loop@1`、`execution == Complete`。`region.rs` 其余取值一字未动（`FallbackReason::pass()` 对它们返回 `None`）。**既有的入口/报告断言无一条被放开**：`RecoveryRequest::new` 多一个必填 profile 参数（3 个调用点改为 `pass::JAVA_8`），`RegionRecord` 多一个 `rule` 字段、`RecoveryReport` 多 `profile`/`rules` 两个字段（值随运行而定，不是放开的谓词）。
+
+### 证伪两组（`/tmp` 副本 + 独立 `CARGO_TARGET_DIR`，`sha256sum -c` 逐文件核对后删除）
+
+① CLI 的恢复响应改写一个字段（`crates/jarde-cli/src/main.rs` 里把 `report.quality` 改成 `Fallback`）→ `recovery_matches_the_library_entry_field_by_field` **红**，失败输出显示两份文档**只差 `quality`（`"fallback"` vs `"structured"`）**，其余字段逐字相同——即整份文档比较确实在看每一个字段。
+② 前置条件未满足时仍产出结构（`crates/jarde-java/src/region.rs` 的 `test_is_pure` 改为 `Ok(())`）→ `a_loop_whose_header_writes_state_is_quoted_rather_than_hoisted` **红**，失败输出正是那条静默改次数的形态：`int local1 = 2; while (local1 != 0) { } return;`（header 每轮的 `local1 = local1 - 1` 被丢掉）。两组副本与独立 target 目录用完已删除。
+
+### 本片明说的限制（不虚报）
+
+`Pass::admits` 的**拒绝分支在 2.x 之前没有生产实例**：本片 4 条已注册规则全部 `required_release: None`（结构规则与 release 无关），故只用 `pass` 模块的合同用例覆盖谓词语义（8/9 接受、7 拒绝），不伪造 pass 去触发它。入口侧的 `RecoveryFacts.parameters` **不猜 static 与否**（载荷不发布 access flags），故入口呈现一律用 `localN` 序号名，参数槽/receiver 命名属 3.1。`RecoveryReport` 的 `Deserialize` 面未做（码字段是 `&'static str`），库/CLI 一致以整份序列化文档逐字段相等为证据。`cargo doc` 对 `jarde-java` 的既有私有 intra-doc 链接告警（`build`/`emit`/`decode`/`charge`）为**既有**、非 CI 门禁（本片新增的 `facade.rs` 链接已修）。

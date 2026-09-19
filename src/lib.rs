@@ -39,6 +39,24 @@ pub use jarde_reader::inspect;
 // else the module holds beyond that list stay unreachable through this crate.
 pub use jarde_reader::{artifact, budget, error, model, multi_release, view};
 
+// The recovery layer (P3 1.3), narrowed deliberately. What crosses is the *request*, the *report*
+// and the read-only vocabulary either one names — never `jarde-java`'s modules, and with them
+// never its region tree, its AST, its statement builder, its emitter or its naming table. The
+// layer's own read surface for one request is what a consumer needs; the machinery that decides a
+// shape is the layer's to keep, so it stays where it is.
+//
+// `RecoveryRequest`/`recover` are here for a caller that holds a payload of its own (the 1.1
+// handoff is `jarde_jvm::method_ir`, which this facade does not publish); a caller that only wants
+// a presented method calls [`Engine::recover_method`], which performs the run and hands the same
+// run's report to the presentation. `SourceMap` crosses because the map is a first-class output of
+// this layer (P3 1.2 decision 2) and 3.2 grows on it; the `Segment`/`Origin`/`OriginSet` types a
+// segment is read through stay below, because the map's own read surface answers the questions
+// 1.3 poses ("which text came from this BCI", "what covers this byte") without naming them.
+pub use jarde_java::{
+    IrTable, MethodFacts, Precondition, RecoveryFacts, RecoveryOutcome, RecoveryProfile,
+    RecoveryReport, RecoveryRequest, RegionRecord, RuleVersion, SourceMap, StopReason, recover,
+};
+
 pub mod facade;
 
 pub use artifact::*;

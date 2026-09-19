@@ -174,7 +174,10 @@ fn recover_body(
     facts: &RecoveryFacts,
     budget: &mut Budget,
 ) -> jarde_java::RecoveryReport {
-    recover(&RecoveryRequest::new(payload.analysis.ir(), facts), budget)
+    recover(
+        &RecoveryRequest::new(payload.analysis.ir(), facts, jarde_java::pass::JAVA_8),
+        budget,
+    )
 }
 
 /// The canonical graph of one payload, written out for a failure message.
@@ -674,19 +677,46 @@ fn a_loop_whose_header_writes_state_is_quoted_rather_than_hoisted() {
     assert!(text.contains("// @bytecode"), "{text}");
     assert_eq!(
         report.fallbacks.first().copied(),
-        Some("jre_region_test_block_effect"),
+        Some("jre_region_unmet_precondition"),
         "{:?}\n{}",
         report.regions,
         text
     );
+    // The refusal is stated as a *declared* precondition of a named rule, not as a shape that
+    // happens to look right: the record cites the rule and its version, and the message says which
+    // requirement fell short and at which instruction.
+    let record = report
+        .regions
+        .iter()
+        .find(|region| region.code == Some("jre_region_unmet_precondition"))
+        .expect("the refused loop is recorded");
+    assert_eq!(
+        record.rule,
+        Some(jarde_java::pass::LOOP.rule()),
+        "the record names the rule that refused it, not a shape that was produced"
+    );
+    let message = record.message.as_deref().expect("the refusal states why");
+    assert!(message.contains("loop@1"), "{message}");
+    assert!(message.contains("value expression"), "{message}");
+    assert!(message.contains("BCI 5"), "{message}");
     assert!(
-        report
-            .diagnostics
-            .iter()
-            .any(|diagnostic| diagnostic.code == "jre_region_test_block_effect"),
+        report.diagnostics.iter().any(|diagnostic| diagnostic.code
+            == "jre_region_unmet_precondition"
+            && diagnostic.message.contains("loop@1")),
         "{:?}",
         report.diagnostics
     );
+    assert!(
+        report.rules.contains(&jarde_java::pass::LOOP.rule()),
+        "which rule the record is answerable to is in the report: {:?}",
+        report.rules
+    );
+    // A refused shape is not a failed scan: the walk finished, and which plane says what is stated
+    // separately (A13).
+    assert!(matches!(
+        report.execution,
+        jarde_reader::model::ExecutionReport::Complete { .. }
+    ));
     assert_eq!(report.representation, Representation::Mixed);
     assert_eq!(report.quality, Quality::Fallback);
 }
@@ -1007,6 +1037,42 @@ fn a_body_the_subset_cannot_prove_is_quoted_rather_than_emptied() {
             .map(|diagnostic| diagnostic.code.clone())
             .collect::<Vec<_>>()
     );
+    // A09's half of this slice: the historical `jsr`/`finally` body is **never** reported as a
+    // success and never as a structure that merely looks like the source. The run finished (the
+    // scan is complete, so the planes do not read `Partial`), the artifact is quoted bytecode, the
+    // text claims no `try`/`finally`, and every reason is statable. Recovering the `finally`/`jsr`
+    // shape itself is 2.4's, and this test does not claim any of it.
+    assert!(
+        matches!(
+            report.execution,
+            jarde_reader::model::ExecutionReport::Complete { .. }
+        ),
+        "a quoted body is not a partial scan: {:?}",
+        report.execution
+    );
+    for claimed in ["try {", "} finally", "} catch"] {
+        assert!(
+            !report.text.contains(claimed),
+            "the text claims no shape the subset did not prove (`{claimed}`):\n{}",
+            report.text
+        );
+    }
+    assert!(
+        report
+            .diagnostics
+            .iter()
+            .all(|diagnostic| !diagnostic.message.is_empty()),
+        "{:?}",
+        report.diagnostics
+    );
+    assert!(
+        report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.message.contains("BCI")),
+        "at least one reason names where it could not prove: {:?}",
+        report.diagnostics
+    );
 }
 
 #[test]
@@ -1208,7 +1274,7 @@ fn a_payload_without_the_tables_the_recovery_needs_states_that_instead_of_an_emp
     let facts = RecoveryFacts::new(MethodFacts::new("absent", "()V", 0));
     let mut recovery_budget = Budget::new(limits());
     let report = recover(
-        &RecoveryRequest::new(analysis.ir(), &facts),
+        &RecoveryRequest::new(analysis.ir(), &facts, jarde_java::pass::JAVA_8),
         &mut recovery_budget,
     );
     assert!(!report.produced());
@@ -1221,4 +1287,249 @@ fn a_payload_without_the_tables_the_recovery_needs_states_that_instead_of_an_emp
         report.outcome,
         RecoveryOutcome::Stopped(StopReason::IrTableMissing { .. })
     ));
+}
+
+#[test]
+fn a_body_without_debug_names_is_named_deterministically_and_invents_no_source_scope() {
+    // A10's half: the fixture's `Code` carries no `LocalVariableTable`, so this run has no source
+    // spelling for any slot. What it writes must be the body's own ordinals — the same ones on
+    // every run — and the artifact must not claim a scope, a line or a name the class file never
+    // stated. The same bytes with debug evidence are presented afterwards, which is how "the names
+    // came from the evidence" is shown to be a statement about the evidence and not about the
+    // body.
+    let class = test_class::single_method(52, 1, 3, IF_ELSE);
+    let payload = analyze(&class, b"method", b"()V");
+    let facts = facts_of(&class, b"method", 0, Vec::new());
+
+    let first = {
+        let mut budget = Budget::new(limits());
+        recover_body(&payload, &facts, &mut budget)
+    };
+    let second = {
+        let mut budget = Budget::new(limits());
+        recover_body(&payload, &facts, &mut budget)
+    };
+    assert_eq!(
+        first, second,
+        "two runs of one request are one report, field by field"
+    );
+    assert!(
+        first.text.contains("local1") && first.text.contains("local2"),
+        "the body's slots are named by their ordinals:\n{}",
+        first.text
+    );
+    assert!(
+        !first.text.contains("arg"),
+        "the body has no parameter slots, so nothing is named as one:\n{}",
+        first.text
+    );
+    assert!(
+        !first.text.to_lowercase().contains("line"),
+        "no source position is claimed:\n{}",
+        first.text
+    );
+
+    // No fabricated scope: every anchor the segment table states is a BCI of this body, and none of
+    // them names a constant-pool entry or an attribute this run never read (`cp` stays `None` until
+    // 3.2 fills the CP/attribute half of the map).
+    assert!(!first.source_map.is_empty(), "{:?}", first.source_map);
+    for segment in first.source_map.segments() {
+        let origin = segment.origin();
+        assert_eq!(origin.primary().cp(), None, "{:?}", origin.primary());
+        for derived in origin.derived() {
+            assert_eq!(derived.cp(), None, "{derived:?}");
+        }
+        assert!(
+            !origin.bcis().is_empty(),
+            "a segment stands for at least one BCI: {origin:?}"
+        );
+    }
+
+    // The contrast: the same bytes with debug names spelled by the class file are presented with
+    // those names, so the ordinal names above are the *absence* of evidence and not a preference.
+    let named = facts_of(
+        &class,
+        b"method",
+        0,
+        vec![
+            Some("receiver".to_string()),
+            Some("left".to_string()),
+            Some("right".to_string()),
+        ],
+    );
+    let mut budget = Budget::new(limits());
+    let named_report = recover_body(&payload, &named, &mut budget);
+    assert!(
+        named_report.text.contains("left") && named_report.text.contains("right"),
+        "the evidence is what names a slot:\n{}",
+        named_report.text
+    );
+    assert!(
+        !named_report.text.contains("local1"),
+        "the ordinal name is gone once the evidence is there:\n{}",
+        named_report.text
+    );
+    assert!(
+        !first.text.contains("left"),
+        "a run with no evidence cannot present a spelling it never read:\n{}",
+        first.text
+    );
+    assert_eq!(first.method, named_report.method);
+    assert_eq!(
+        first.representation, named_report.representation,
+        "which slot a name belongs to does not change what the artifact is made of"
+    );
+}
+
+#[test]
+fn a_member_that_cannot_be_presented_leaves_the_member_that_can_alone() {
+    // A13's member half: one class file with a member the subset presents and a member it refuses.
+    // Each is its own request over its own payload, and neither report may carry the other's shape,
+    // stop or diagnostics — that isolation is what lets a caller read one member's result without
+    // reading the whole class.
+    let presentable = analyze(HISTORICAL_V45, b"add", b"(II)I");
+    let refused = analyze(HISTORICAL_V45, b"finallyPath", b"(I)I");
+    let add_facts = facts_of(HISTORICAL_V45, b"add", 3, Vec::new());
+    let finally_facts = facts_of(HISTORICAL_V45, b"finallyPath", 1, Vec::new());
+
+    let add = {
+        let mut budget = Budget::new(limits());
+        recover_body(&presentable, &add_facts, &mut budget)
+    };
+    assert!(add.produced(), "{:?}", add.outcome);
+    assert!(add.fallbacks.is_empty(), "{:?}", add.regions);
+    assert_eq!(add.method, "add(II)I");
+    assert_eq!(add.representation, Representation::Java);
+    assert_eq!(add.quality, Quality::Structured);
+
+    let finally = {
+        let mut budget = Budget::new(limits());
+        recover_body(&refused, &finally_facts, &mut budget)
+    };
+    assert!(finally.produced(), "{:?}", finally.outcome);
+    assert_eq!(finally.method, "finallyPath(I)I");
+    assert_eq!(finally.representation, Representation::Mixed);
+    assert_eq!(finally.quality, Quality::Fallback);
+    assert!(!finally.fallbacks.is_empty(), "{:?}", finally.regions);
+
+    // Each report is about its own member and only it: no BCI, no diagnostic and no region of one
+    // appears in the other, whichever order they are asked in.
+    assert!(!add.text.contains("finallyPath"), "{}", add.text);
+    assert!(
+        add.diagnostics
+            .iter()
+            .all(|diagnostic| !diagnostic.message.contains("finallyPath")),
+        "{:?}",
+        add.diagnostics
+    );
+    assert!(!finally.text.contains("add(II)I"), "{}", finally.text);
+    assert!(
+        add.fallbacks.is_empty() && !finally.fallbacks.is_empty(),
+        "the two members' outcomes are their own: {:?} vs {:?}",
+        add.fallbacks,
+        finally.fallbacks
+    );
+
+    // Re-asking each member after the other is the same report, field by field: a refusal (or a
+    // presentation) elsewhere changed nothing here, in either order.
+    let add_again = {
+        let mut budget = Budget::new(limits());
+        recover_body(&presentable, &add_facts, &mut budget)
+    };
+    assert_eq!(add, add_again);
+    let finally_again = {
+        let mut budget = Budget::new(limits());
+        recover_body(&refused, &finally_facts, &mut budget)
+    };
+    assert_eq!(finally, finally_again);
+}
+
+#[test]
+fn execution_quality_and_representation_each_state_their_own_thing() {
+    // A13's plane half. `representation` says what the artifact is made of, `quality` says how
+    // strong the recovered structure is, `execution` says how the run ended — and no plane borrows
+    // another's vocabulary. The same body is run under three budgets so that the planes can be
+    // seen to move independently.
+    let class = test_class::single_method(52, 8, 2, STRAIGHT_LINE);
+    let payload = analyze(&class, b"method", b"()V");
+    let facts = facts_of(&class, b"method", 0, Vec::new());
+
+    let produced = {
+        let mut budget = Budget::new(limits());
+        recover_body(&payload, &facts, &mut budget)
+    };
+    assert!(produced.produced());
+    assert_eq!(produced.representation, Representation::Java);
+    assert_eq!(produced.quality, Quality::Structured);
+    assert!(matches!(
+        produced.execution,
+        jarde_reader::model::ExecutionReport::Complete { .. }
+    ));
+
+    // One byte short of the text this very run produced: the artifact is refused, and the planes
+    // split the news the way the spec separates them — the execution plane states the stop, while
+    // quality goes on describing what there is (nothing strong) and representation what it is made
+    // of. `quality` is never rewritten to an execution value (`Partial` is not a quality).
+    let exact = u64::try_from(produced.text.len()).expect("the text fits u64");
+    let mut over = Budget::new(Limits {
+        output_bytes: exact - 1,
+        ..limits()
+    });
+    let stopped = recover_body(&payload, &facts, &mut over);
+    assert!(!stopped.produced(), "{:?}", stopped.outcome);
+    assert_eq!(stopped.text, "");
+    assert!(stopped.source_map.is_empty());
+    assert!(stopped.regions.is_empty() && stopped.fallbacks.is_empty());
+    assert_eq!(stopped.representation, Representation::Bytecode);
+    assert_eq!(
+        stopped.quality,
+        Quality::Fallback,
+        "`Fallback` here means 'no artifact was produced', and the stop itself is the execution plane's statement"
+    );
+    assert!(matches!(
+        stopped.execution,
+        jarde_reader::model::ExecutionReport::Partial {
+            reason: jarde_reader::model::TerminationReason::BudgetExceeded { .. },
+            ..
+        }
+    ));
+    assert_eq!(
+        stopped
+            .diagnostics
+            .first()
+            .map(|diagnostic| diagnostic.code.as_str()),
+        Some("jre_output_budget")
+    );
+
+    // The other direction, on a body whose region cannot be proved: the run *completed* — the walk
+    // visited the whole method — while the artifact is quoted bytecode and its quality is weak. A
+    // weak artifact is therefore not a partial scan, and a partial scan is not what quality says.
+    let irreducible = test_class::single_method(52, 1, 3, IRREDUCIBLE);
+    let irreducible_payload = analyze(&irreducible, b"method", b"()V");
+    let irreducible_facts = facts_of(&irreducible, b"method", 0, Vec::new());
+    let mut budget = Budget::new(limits());
+    let quoted = recover_body(&irreducible_payload, &irreducible_facts, &mut budget);
+    assert!(quoted.produced(), "{:?}", quoted.outcome);
+    assert_eq!(quoted.representation, Representation::Mixed);
+    assert_eq!(quoted.quality, Quality::Fallback);
+    assert!(
+        matches!(
+            quoted.execution,
+            jarde_reader::model::ExecutionReport::Complete { .. }
+        ),
+        "a quoted body is not a partial scan: {:?}",
+        quoted.execution
+    );
+    assert!(quoted.text.contains("// @bytecode"), "{}", quoted.text);
+
+    // And the diagnostics of a stopped run are its own: the stopped run's error never appears in the
+    // produced one's report, in either order.
+    assert!(
+        produced
+            .diagnostics
+            .iter()
+            .all(|diagnostic| diagnostic.code != "jre_output_budget"),
+        "{:?}",
+        produced.diagnostics
+    );
 }

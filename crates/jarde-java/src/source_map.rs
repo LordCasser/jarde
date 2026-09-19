@@ -39,7 +39,7 @@
 use std::collections::BTreeSet;
 
 /// Where one anchor of a node's text comes from.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, serde::Serialize)]
 pub enum Provenance {
     /// The node's own bytecode produced this text.
     Direct,
@@ -49,7 +49,7 @@ pub enum Provenance {
 
 /// One anchor: a bytecode index inside the method body, and the constant-pool entry naming it when
 /// the run that produced the node had one.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, serde::Serialize)]
 pub struct Origin {
     bci: u32,
     cp: Option<u16>,
@@ -105,7 +105,7 @@ impl Origin {
 /// come from" is the primary, "what else does this text reproduce" is the derived list — and
 /// because the derived list is where 3.2's double origin (the accessor call site *and* the field
 /// BCI) belongs. A node with one anchor is the ordinary case.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub struct OriginSet {
     primary: Origin,
     derived: Vec<Origin>,
@@ -171,7 +171,7 @@ impl OriginSet {
 ///
 /// `start..end` is a half-open byte range into the emitted text: `end` is one past the last byte
 /// the node wrote, so segments of adjacent nodes abut without overlapping.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize)]
 pub struct Segment {
     start: usize,
     end: usize,
@@ -232,7 +232,7 @@ impl Segment {
 /// when it asks "which node covered this byte". The table *is* the source map (P3 decision 3):
 /// nothing here is recovered from the text afterwards, because the ranges are recorded by the same
 /// writes that produce the text.
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, serde::Serialize)]
 pub struct SourceMap {
     segments: Vec<Segment>,
 }

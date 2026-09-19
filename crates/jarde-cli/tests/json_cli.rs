@@ -91,6 +91,19 @@ fn class(code: &[u8]) -> Vec<u8> {
 }
 
 fn class_with_handlers(code: &[u8], handlers: &[(u16, u16, u16, u16)]) -> Vec<u8> {
+    class_with_locals(code, handlers, 1, 0)
+}
+
+/// The same fixture class with the `Code` attribute's own `max_stack`/`max_locals` stated by the
+/// caller. The default fixture above declares one stack slot and no locals, which is the smallest
+/// body the pipeline accepts; a case that wants a body with a local (a branch on a stored value, a
+/// loop counter) has to declare the slots it uses, exactly as a compiler would.
+fn class_with_locals(
+    code: &[u8],
+    handlers: &[(u16, u16, u16, u16)],
+    max_stack: u16,
+    max_locals: u16,
+) -> Vec<u8> {
     let mut output = 0xcafebabe_u32.to_be_bytes().to_vec();
     u16b(&mut output, 0);
     u16b(&mut output, 52);
@@ -116,8 +129,8 @@ fn class_with_handlers(code: &[u8], handlers: &[(u16, u16, u16, u16)]) -> Vec<u8
     u16b(&mut output, 1);
 
     let mut code_attribute = Vec::new();
-    u16b(&mut code_attribute, 1);
-    u16b(&mut code_attribute, 0);
+    u16b(&mut code_attribute, max_stack);
+    u16b(&mut code_attribute, max_locals);
     u32b(
         &mut code_attribute,
         u32::try_from(code.len()).expect("fixture code length fits u32"),
@@ -354,9 +367,51 @@ fn method_operation(request: &MethodAnalysisRequest) -> Value {
     operation
 }
 
+/// The `recover_method` operation of one library request: the same three fields the analysis
+/// operation carries (the payload is the library's own serialization plus the operation tag, so
+/// this adapter is not a second schema of it), under the recovery kind.
+fn recover_operation(request: &MethodAnalysisRequest) -> Value {
+    let mut operation = method_operation(request);
+    operation
+        .as_object_mut()
+        .expect("the request serializes as an object")
+        .insert("kind".to_string(), json!("recover_method"));
+    operation
+}
+
+/// The body both recovery cases present: `if (local1 != 0) { return; } else { return; }` written the
+/// way a compiler writes it — `iconst_0; istore_1; iload_1; ifeq +4; return; return`, where the
+/// branch transfers past the first `return` to the second. It is presented with
+/// `max_stack 1, max_locals 2`, which is what the slots it uses need.
+const RECOVERY_BODY: &[u8] = &[
+    0x03, // 0: iconst_0
+    0x3c, // 1: istore_1
+    0x1b, // 2: iload_1
+    0x99, 0x00, 0x04, // 3: ifeq 7
+    0xb1, // 6: return
+    0xb1, // 7: return
+];
+
+/// The recovery cases' fixture class: [`RECOVERY_BODY`] with the slots it uses declared.
+fn recovery_class() -> Vec<u8> {
+    class_with_locals(RECOVERY_BODY, &[], 1, 2)
+}
+
 /// One report as JSON with every `elapsed_millis` removed: the one measurement two entry paths
 /// cannot share, and the only field the 5.1 acceptance lets them differ in.
 fn strip_elapsed(report: &MethodAnalysisReport) -> Value {
+    strip_elapsed_document(
+        &serde_json::to_value(report).expect("a method-analysis report serializes"),
+    )
+}
+
+/// The same removal, over a document that is already JSON.
+///
+/// The recovery report arrives as the adapter's own document (the CLI writes the library's type),
+/// and comparing two documents field by field does not require the CLI's to be deserialized first —
+/// which is just as well, because the recovery report's code fields are borrowed strings the wire
+/// document spells as text.
+fn strip_elapsed_document(document: &Value) -> Value {
     fn walk(value: &mut Value) {
         match value {
             Value::Object(fields) => {
@@ -373,7 +428,7 @@ fn strip_elapsed(report: &MethodAnalysisReport) -> Value {
             _ => {}
         }
     }
-    let mut value = serde_json::to_value(report).expect("a method-analysis report serializes");
+    let mut value = document.clone();
     walk(&mut value);
     value
 }
@@ -896,4 +951,147 @@ fn a_method_analysis_stop_is_the_payload_of_a_successful_response() {
         report.stages
     );
     assert_eq!(report.body, MethodBodyState::Present);
+}
+
+#[test]
+fn recovery_matches_the_library_entry_field_by_field() {
+    // The library/CLI obligation of P3 1.3: one request, two entry paths, one document. The body is
+    // an `if`/`else` so the presentation really has a structure to write, and the comparison is the
+    // whole document of both halves the operation answers with — a field this adapter dropped,
+    // reordered or rewrote would show up here even when no named plane below looks at that field.
+    // Only the wall clock is removed, because the two runs are two runs.
+    let temp = TempDir::new();
+    let class_path = temp.write("Test.class", &recovery_class());
+    let request_limits = analysis_limits();
+    let analysis = method_request(&class_path, vec![AnalysisStage::Ssa]);
+
+    let output = run_stdin(
+        &request(&class_path, &request_limits, recover_operation(&analysis)),
+        false,
+        false,
+    );
+    let value = assert_ok(&output, "recover_method");
+
+    let engine = Engine::new();
+    let mut budget = Budget::new(request_limits);
+    let snapshot = engine
+        .open(ArtifactInput::Path(class_path), &mut budget)
+        .expect("open the fixture directly");
+    let direct = engine
+        .recover_method(std::slice::from_ref(&snapshot), &analysis, &mut budget)
+        .expect("the same request through the library");
+
+    assert_eq!(
+        strip_elapsed_document(&value["result"]["report"]),
+        strip_elapsed_document(
+            &serde_json::to_value(direct.recovery()).expect("the recovery report serializes")
+        ),
+        "the adapter's document is the library's own report, field by field"
+    );
+    assert_eq!(
+        strip_elapsed_document(&value["result"]["analysis"]),
+        strip_elapsed_document(
+            &serde_json::to_value(direct.analysis()).expect("the analysis report serializes")
+        ),
+        "and the run it answers beside it is that same run's report"
+    );
+
+    // The planes the P3 acceptance names, stated on the wire document: Java text, structured,
+    // nothing checked or compiled, no semantic evidence of this run's own, never verified — and the
+    // profile the request declared, with the rules the text came from.
+    let report = &value["result"]["report"];
+    assert_eq!(report["representation"], "java");
+    assert_eq!(report["quality"], "structured");
+    assert_eq!(report["syntax_status"], "unchecked");
+    assert_eq!(report["compile_status"], "not_attempted");
+    assert_eq!(report["semantic_validation"], "unproven");
+    assert_eq!(report["verification"], "not_performed");
+    assert_eq!(report["outcome"], "produced");
+    assert_eq!(report["method"], "run()V");
+    assert_eq!(report["profile"]["java_release"], 8);
+    let rules: Vec<&str> = report["rules"]
+        .as_array()
+        .expect("the report names the rules it used")
+        .iter()
+        .map(|rule| rule["rule"].as_str().expect("a rule name"))
+        .collect();
+    assert!(
+        rules.contains(&"if"),
+        "the branch was presented by the `if` rule: {rules:?}"
+    );
+    assert!(
+        report["text"].as_str().expect("text").contains("if ("),
+        "{}",
+        report["text"]
+    );
+    assert!(
+        report["regions"]
+            .as_array()
+            .expect("regions")
+            .iter()
+            .any(|region| region["structured"] == true && region["rule"]["rule"] == "if"),
+        "each region states which rule produced it: {}",
+        report["regions"]
+    );
+
+    // A16 on the wire, in the same answer: one header read and one body attempted for a request
+    // that names one member, and the recovery added no read of its own.
+    assert_eq!(
+        value["result"]["analysis"]["execution"]["usage"]["class_headers"],
+        1
+    );
+    assert_eq!(
+        value["result"]["analysis"]["execution"]["usage"]["method_bodies"],
+        1
+    );
+}
+
+#[test]
+fn a_recovery_request_that_asks_for_no_ssa_stops_inside_a_successful_response() {
+    // A schedule is the request's own statement, and a payload without the SSA table is answered
+    // with a *stop in the payload* — status `ok`, kind `recover_method`, no text, no segments, an
+    // execution plane that says the run was partial — rather than with a transport error. That
+    // distinction is the adapter's contract: only request-level problems (unreadable JSON, a
+    // refused environment, a budget the response itself cannot pay) leave the success envelope.
+    let temp = TempDir::new();
+    let class_path = temp.write("Test.class", &recovery_class());
+    let analysis = method_request(&class_path, vec![AnalysisStage::Frame]);
+
+    let output = run_stdin(
+        &request(
+            &class_path,
+            &analysis_limits(),
+            recover_operation(&analysis),
+        ),
+        false,
+        false,
+    );
+    let value = assert_ok(&output, "recover_method");
+    let report = &value["result"]["report"];
+    assert_eq!(
+        report["outcome"]["stopped"]["ir_table_missing"]["table"],
+        "ssa"
+    );
+    assert_eq!(report["text"], "");
+    assert_eq!(report["source_map"]["segments"], json!([]));
+    assert_eq!(report["regions"], json!([]));
+    assert_eq!(report["representation"], "bytecode");
+    assert_eq!(report["quality"], "fallback");
+    assert_eq!(report["syntax_status"], "not_java");
+    assert_eq!(
+        report["diagnostics"][0]["code"], "jre_ir_table_missing",
+        "the stop is stated with its code and its message: {}",
+        report["diagnostics"]
+    );
+    // And the analysis half says the truth about its own run: the schedule it was given completed
+    // (frame and its prerequisites ran). It is the *presentation* that cannot be written from a
+    // payload without SSA, which is why the stop is in the recovery report and not in the run.
+    assert_eq!(
+        value["result"]["analysis"]["execution"]["status"],
+        "complete"
+    );
+    assert_eq!(
+        value["result"]["analysis"]["execution"]["usage"]["method_bodies"],
+        1
+    );
 }

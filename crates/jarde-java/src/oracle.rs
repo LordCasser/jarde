@@ -755,7 +755,10 @@ fn recovery_of(code: &[u8], max_locals: u16) -> RecoveryReport {
     let analysis = analyze(&class);
     let facts = RecoveryFacts::new(MethodFacts::new("method", "()V", 0));
     let mut budget = Budget::new(limits());
-    recover(&RecoveryRequest::new(analysis.ir(), &facts), &mut budget)
+    recover(
+        &RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8),
+        &mut budget,
+    )
 }
 
 /// A class file whose exception table is [`CROSSING_TABLE`], with an `athrow` inside both records.
@@ -962,7 +965,10 @@ mod tests {
         let analysis = analyze(&class);
         let facts = RecoveryFacts::new(MethodFacts::new("method", "()V", 0));
         let mut budget = Budget::new(limits());
-        let report = recover(&RecoveryRequest::new(analysis.ir(), &facts), &mut budget);
+        let report = recover(
+            &RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8),
+            &mut budget,
+        );
         assert!(report.produced(), "{:?}", report.outcome);
         assert_eq!(
             report.fallbacks,

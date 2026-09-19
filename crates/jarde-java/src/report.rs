@@ -37,6 +37,7 @@ use jarde_jvm::method_ir::MethodIr;
 use jarde_reader::budget::{Budget, BudgetDimension, UsageSnapshot};
 use jarde_reader::classfile::VerificationStatus;
 use jarde_reader::model::{Diagnostic, DiagnosticSeverity, ExecutionReport, TerminationReason};
+use serde::Serialize;
 
 use crate::build;
 use crate::decode::Operations;
@@ -44,12 +45,14 @@ use crate::emit::{Emitted, emit};
 use crate::facts::RecoveryFacts;
 use crate::names::NameTable;
 use crate::normal_flow::NormalFlowView;
+use crate::pass::{RecoveryProfile, RuleVersion};
 use crate::region::{FallbackReason, Recovered, Region};
 use crate::source_map::SourceMap;
 use crate::stop::StopReason;
 
-/// One recovery request: the payload of a P2 run and the facts that run did not publish.
-#[derive(Clone, Copy, Debug)]
+/// One recovery request: the payload of a P2 run, the facts that run did not publish, and the
+/// profile the presentation is written under.
+#[derive(Clone, Debug)]
 pub struct RecoveryRequest<'a> {
     /// The IR payload of the method-analysis run whose body is being presented.
     pub ir: &'a MethodIr,
@@ -58,17 +61,23 @@ pub struct RecoveryRequest<'a> {
     /// comparison performs, the slot a load names and the value a constant pushes have exactly one
     /// source, the run that decoded them.
     pub facts: &'a RecoveryFacts,
+    /// The recovery profile the run is presented under: the rule set whose passes the gate admits
+    /// ([`crate::pass`]). It is the request's own runtime profile, stated by the caller — the entry
+    /// point hands the environment's profile over — and it is a *policy* input, not evidence: unlike
+    /// the three tables above, it says nothing about what the bytes are.
+    pub profile: RecoveryProfile,
 }
 
 impl<'a> RecoveryRequest<'a> {
-    /// One request over one payload and one fact set.
-    pub fn new(ir: &'a MethodIr, facts: &'a RecoveryFacts) -> Self {
-        Self { ir, facts }
+    /// One request over one payload, one fact set and one profile.
+    pub fn new(ir: &'a MethodIr, facts: &'a RecoveryFacts, profile: RecoveryProfile) -> Self {
+        Self { ir, facts, profile }
     }
 }
 
 /// Whether the run produced an artifact or stopped before it had one.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum RecoveryOutcome {
     /// The artifact is in [`RecoveryReport::text`], and its positions are in
     /// [`RecoveryReport::source_map`].
@@ -93,7 +102,7 @@ impl RecoveryOutcome {
 }
 
 /// What one recovered region is, stated so that a reader can check the run's own claim about it.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct RegionRecord {
     /// The BCI the region starts at.
     pub bci: u32,
@@ -105,13 +114,22 @@ pub struct RegionRecord {
     pub code: Option<&'static str>,
     /// The fallback's message, when it has one.
     pub message: Option<String>,
+    /// The rule that produced this record: the pass that claimed the region, or the pass whose
+    /// declared precondition refused it. `None` when no registered rule is answerable for it (a
+    /// whole-body refusal the walk itself states) — never a borrowed rule name.
+    pub rule: Option<RuleVersion>,
 }
 
 /// The result of one recovery run: one artifact, or the reason there is none.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct RecoveryReport {
     /// The method this report is about, as its facts state it.
     pub method: String,
+    /// The recovery profile this run was presented under, echoed from the request.
+    pub profile: RecoveryProfile,
+    /// Every rule that produced a region of this method, each once, in the order it first did —
+    /// how "which rule produced this output" is answered by the run's own record.
+    pub rules: Vec<RuleVersion>,
     /// What the artifact is made of.
     pub representation: Representation,
     /// How strong the recovered structure is.
@@ -171,9 +189,14 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         request.facts.method().name(),
         request.facts.method().descriptor()
     );
+    // The profile the presentation is written under, taken once: every path of this function —
+    // including the ones that stop before any pass runs — echoes the request's own profile, so a
+    // stopped report cannot claim a rule set the request did not declare.
+    let profile = request.profile.clone();
     let Some(canonical) = request.ir.canonical() else {
         return stopped(
             method,
+            profile.clone(),
             StopReason::IrTableMissing { table: "canonical" },
             budget,
         );
@@ -181,24 +204,36 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     let Some(frames) = request.ir.frames() else {
         return stopped(
             method,
+            profile.clone(),
             StopReason::IrTableMissing { table: "frames" },
             budget,
         );
     };
     let Some(ssa) = request.ir.ssa() else {
-        return stopped(method, StopReason::IrTableMissing { table: "ssa" }, budget);
+        return stopped(
+            method,
+            profile.clone(),
+            StopReason::IrTableMissing { table: "ssa" },
+            budget,
+        );
     };
     // The decode facts of the same run: the operations the presentation is written in, and the
     // exception table it states. A payload that holds a graph but no decode is not one run's
     // artifact (the graph is built from the decode), so this is a malformed payload rather than a
     // body without facts.
     let Some(code) = request.ir.code() else {
-        return stopped(method, StopReason::IrTableMissing { table: "code" }, budget);
+        return stopped(
+            method,
+            profile.clone(),
+            StopReason::IrTableMissing { table: "code" },
+            budget,
+        );
     };
     let operations = Operations::of(code, request.ir.constant_pool());
     if canonical.blocks().is_empty() {
         return stopped(
             method,
+            profile.clone(),
             StopReason::IrTableMissing {
                 table: "canonical blocks",
             },
@@ -207,7 +242,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     }
     let view = match NormalFlowView::build(canonical, budget) {
         Ok(view) => view,
-        Err(stop) => return stopped(method, stop, budget),
+        Err(stop) => return stopped(method, profile.clone(), stop, budget),
     };
     let recovered: Recovered = match crate::region::recover(
         canonical,
@@ -218,7 +253,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         budget,
     ) {
         Ok(recovered) => recovered,
-        Err(stop) => return stopped(method, stop, budget),
+        Err(stop) => return stopped(method, profile.clone(), stop, budget),
     };
     // The slots the names are decided for are the body's own local slots: the frames table states
     // how many there are, and a local the debug metadata never named still needs a name.
@@ -238,11 +273,11 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         budget,
     ) {
         Ok(program) => program,
-        Err(stop) => return stopped(method, stop, budget),
+        Err(stop) => return stopped(method, profile.clone(), stop, budget),
     };
     let emitted: Emitted = match emit(&program.stmts, request.facts, budget) {
         Ok(emitted) => emitted,
-        Err(stop) => return stopped(method, stop, budget),
+        Err(stop) => return stopped(method, profile.clone(), stop, budget),
     };
 
     // The planes, each from its own input.
@@ -298,7 +333,9 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         ),
     ));
     let regions = region_records(&recovered.regions);
+    let rules = recovered.rules();
     RecoveryReport {
+        profile: request.profile.clone(),
         representation: if structured {
             Representation::Java
         } else {
@@ -328,6 +365,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         aliased_names,
         diagnostics,
         method,
+        rules,
     }
 }
 
@@ -344,13 +382,19 @@ fn region_records(regions: &[Region]) -> Vec<RegionRecord> {
                 blocks,
                 code: reasons.first().map(FallbackReason::code),
                 message: reasons.first().map(FallbackReason::message),
+                rule: region.rule(),
             }
         })
         .collect()
 }
 
 /// The report of a run that stopped: no text, no segments, and an execution plane that says so.
-fn stopped(method: String, reason: StopReason, budget: &Budget) -> RecoveryReport {
+fn stopped(
+    method: String,
+    profile: RecoveryProfile,
+    reason: StopReason,
+    budget: &Budget,
+) -> RecoveryReport {
     let usage: UsageSnapshot = budget.usage();
     let (execution, code, severity) = match &reason {
         StopReason::IrTableMissing { table: _ } => (
@@ -413,6 +457,8 @@ fn stopped(method: String, reason: StopReason, budget: &Budget) -> RecoveryRepor
     };
     RecoveryReport {
         method,
+        profile,
+        rules: Vec::new(),
         representation: Representation::Bytecode,
         quality: Quality::Fallback,
         syntax_status: SyntaxStatus::NotJava,
