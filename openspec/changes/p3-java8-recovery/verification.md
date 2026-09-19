@@ -1019,3 +1019,56 @@ generated openFailing -> java.lang.IllegalStateException: close-r
 ### 残留（如实，非本片范围）
 
 TWR 已被 `twr@1` 证明的 handler 入口**并非每条都有 segment 锚点**（`one()V` 的 BCI 20 有、BCI 32 无，但两者都被该区域的 block 记录认领）——这是 2.4 guard origin 的 **provenance 缺口**，不是「未被交代」；harness 的两条断言按「锚点/引用/被块覆盖」三选一判定，已在 `tests/fixtures/p3-corpus/README.md` 写明它**不属于** P3-R7 那一类。
+
+## 2026-09-20 3.4：A17 真实隔离回归、文档同步与最终门禁（提交 `e04b2fd`）
+
+**P3 至此 12/12**（归档由父级执行）。
+
+### A17：从「预算代理」升级为「真实恢复路径的隔离回归」
+
+**(a) 源码守卫扩到恢复层**（`tests/p2_contracts.rs`）：新增 `derived_recovery_type_tokens`——**目录遍历** `crates/jarde-java/src/**` 的公开类型声明得 **82** 个名字，再减去 `derived_shared_type_tokens`（从 reader/jvm/query 的全部 item 声明 + **enum variant** 派生的 769 个）得 **75** 个禁用 token，**无手写名单**；`A17_MODULE_TOKENS` 15→16（加 `jarde_java::`）、`A17_IMPORT_TOKENS` 12→14。新增用例 `physical_entry_modules_do_not_reference_the_recovery_layer`，含非空洞检查（declared ≥60、token ≥50、锚点名必须在表里、每个派生名必须被同一 matcher 命中）与**阳性对照**（`src/facade.rs` 必须被命中且不在受守卫集）。
+- **性质如实（已核实，写进代码文档与验收行）**：给 `jarde-reader`/`jarde-query` 加 `jarde-java` 依赖边**都被 cargo 在解析期拒绝**（`error: cyclic package dependency`，exit 101），故受守卫源码**根本不会带着恢复层作用域被编译**——这条守卫是**结构性强制之外的补充**（用于将来重排时仍被复核），**不是替代**。
+- **父级独立证伪**：在 `crates/jarde-query/src/query.rs` 注入 `#[cfg(any())] use jarde_java::RecoveryReport;` 与 `const Region: u32 = 0;` → `physical_entry_modules_do_not_reference_the_p2_modules` 与 `..._the_recovery_layer` **双双红**，输出 `left: ["…query.rs: jarde_java::, RecoveryReport, Region"] / right: []`。
+- 减去集合是**实测逼出来的**而非偏好：直接全量派生会在当前树产生 8 个误报（`Type`/`Resource`/`ConstantValue` 是 query 自己 `ConsumerKind` 的变体；`Shape`/`DynamicSite` 是自己的私有 enum；`Provenance` 是 reader 的公开类型；`Continuation`/`Operation` 只在 doc 注释里）。故**类型名**只对代码行匹配（整行注释不算），module/import 路径仍按原文匹配；对当前树零行为差异。
+
+**(b) 运行期隔离回归**（新 `tests/p3_isolation.rs`，同一 v45 fixture——`finallyPath(I)I` 真有两个 `jsr` 入口）：
+
+| 运行 | class_headers | method_bodies | code_bytes | ir_items | ir_edges | analysis_steps | normalization_clones |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `Engine::query` | 0 | 0 | 32 | **0** | **0** | **0** | **0** |
+| `Engine::recover_method` | 1 | 1 | 23 | **322** | **19** | **107** | **2** |
+
+**父级独立证伪**：在 `query::execute` 注入 `budget.charge(CountedIrItems, 1)` → 该用例红，输出 `[(IrItems, 1), (IrEdges, 0), (AnalysisSteps, 0), (NormalizationClones, 0)]`。
+**文件头明写局限**：Region/AST 仍无**逐构造**计数器——这是「两趟必经的计费全缺席」，**不是**点名它们的计数器；不把代理说成直接计数。
+
+### 文档同步（三份，逐字匹配替换全部成功）
+
+- `docs/support-matrix.md`：质量行（旧句「`return x++` 待 1.3d；then/else 待 3.1…尚未验收」→ 各项关闭 + 仍未做三项）、`output-level` 行（「已知语义反例未关闭」→ 各缺陷已关闭并指向证据）、P3 边界段（→ 声明事实/anchor 物理身份/按需 callee/类级事实缺口）。
+- `README.md`：当前状态整段（2026-09-20、**P3 12/12**、六项缺陷关闭、可重放编译/执行对照已入 CI、仍未承诺完整源码或语义等价）。
+- `openspec/acceptance.md`：**A17 行**由「须补真实恢复路径的隔离回归」改为**已完成** + (a)(b) 证据 + 「属分层依赖拒绝的补充而非替代」；**A16 行**补 P3 三处锚点（既有措辞保留）；另修正 P2 归档后**过时**的链接路径（`changes/p2-jvm-ir/` → `changes/archive/2026-09-19-p2-jvm-ir/`）。
+- **一处主动偏离并已说明**：父级给的 A16 措辞写「fixture 声明 6 个带体成员」，而该测试自己的前提是 `declared.len() >= 5`，实现者未能独立量到恰好 6，故按**可核实**措辞落笔（宁少不多）。
+
+### 最终门禁（全部本机实跑）
+
+| 项 | 结果 |
+| --- | --- |
+| 全量测试 | **990 passed / 0 failed / 3 ignored**（50 个 test binary；基线 988，+2 本片新用例） |
+| 可重放对照 | `cargo test --test p3_execution_comparison -- --ignored` = **2 passed**（17.57s） |
+| fmt / clippy | 干净 / 干净（rustc 1.98.1、clippy 0.1.98） |
+| **MSRV** | `cargo +1.88.0 check --workspace --all-targets --all-features --locked` = Finished |
+| supply-chain | 根与 fuzz **两套** `cargo deny … check` 各 `advisories ok, bans ok, licenses ok, sources ok`；`cargo metadata --manifest-path fuzz/Cargo.toml --locked` OK |
+| fuzz workspace | **21 passed / 0 failed** |
+| **fuzz 冒烟 25s×3** | query **226,984** / artifact_tree **375,820** / method_analysis **316,241** execs；三个 exit 0，**零 crash/timeout**；tracked `fuzz/corpus`/`fuzz/artifacts` **未被写** |
+| OpenSpec strict | **12 passed / 0 failed** |
+| 两个 example | exit 0 / exit 0；分层三包中 `jarde-java` **0** 次 |
+| `git diff --check` | 干净 |
+
+**父级独立复核**：全量 **990 passed / 0 failed**；`p3_isolation` 1 passed；A17 恢复层守卫 1 passed（且经上述注入证伪）；OpenSpec strict **12 passed**。
+
+### 被修正的既有断言
+
+**无既有断言被修改或放宽。** `p2_contracts.rs` 的 14 处删除逐行核过：两个数组长度常量、两行文档、`declared_public_type_names` 的三行实现（改为委托，逻辑不变）、`p2_tokens_in` 的文档与链式一行、sandbox 的 `let type_tokens` 一行。唯一语义变化已如实说明：**类型名**匹配不再命中整行注释；module/import 路径语义未变，且对当前树零差异。
+
+### 未做（三项能力边界，随归档不消失）
+
+`MethodParameters` 未读（方法级属性，需新计费口径）；类级事实（`InnerClasses`/`ACC_INTERFACE`）不在载荷（故不声称嵌套、门面级 `declaration@1` 给被陈述的拒绝）；canonical「handler 入口即根」的取舍待裁决。verifier 未实现。这三项写在本文与 tasks 的 3.4 子注里，属**如实的能力边界**而非未完成任务。
