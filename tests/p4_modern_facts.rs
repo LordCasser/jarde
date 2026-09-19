@@ -1366,6 +1366,71 @@ fn a_java8_class_has_no_output_level_conflict() {
 }
 
 #[test]
+fn a_construct_no_pass_judges_gets_no_output_level_verdict() {
+    // The vocabulary is closed over the constructs a pass really evaluates: a new variant compiles
+    // only once it is written here, i.e. once someone has named the fact that produces it. Design
+    // decision 5 names exactly these three.
+    for feature in [
+        ModernFeature::RecordComponents,
+        ModernFeature::PermittedSubclasses,
+        ModernFeature::StringConcat,
+    ] {
+        match feature {
+            ModernFeature::RecordComponents
+            | ModernFeature::PermittedSubclasses
+            | ModernFeature::StringConcat => {}
+        }
+    }
+
+    // A nestmate declaration and a module descriptor are modern structures this pass places (the P1
+    // fact reader owns their content), and neither of them is one of the judged constructs: the Java
+    // 8 answer states no conflict for them instead of inventing a verdict no pass produced.
+    let (nest, _) = read(NEST_FIXTURE, OutputLevel::Java8, limits());
+    let members = nest
+        .attributes
+        .iter()
+        .find(|row| row.name.0 == b"NestMembers")
+        .expect("NestMembers is placed");
+    assert!(!members.read, "the P1 fact reader owns the nestmate fact");
+    assert_eq!(
+        nest.output_level,
+        OutputLevelStatus::Representable {
+            level: OutputLevel::Java8
+        },
+        "a nestmate declaration is not one of the constructs this pass judges"
+    );
+
+    let (module, _) = read(MODULE_FIXTURE, OutputLevel::Java8, limits());
+    let descriptor = module
+        .attributes
+        .iter()
+        .find(|row| row.name.0 == b"Module")
+        .expect("Module is placed");
+    assert!(!descriptor.read, "the P1 fact reader owns the module fact");
+    assert_eq!(
+        module.output_level,
+        OutputLevelStatus::Representable {
+            level: OutputLevel::Java8
+        },
+        "a module descriptor is not one of the constructs this pass judges"
+    );
+
+    // The constant-dynamic graph: a complete graph over a handle that names a class no file here
+    // declares, read under the Java 8 level, and still no conflict — the graph is a deferred fact,
+    // not a creation this level would have to represent.
+    let (bytes, _) = condy_fixture();
+    let (condy, _) = read(&bytes, OutputLevel::Java8, limits());
+    assert!(condy.condy.is_complete());
+    assert_eq!(
+        condy.output_level,
+        OutputLevelStatus::Representable {
+            level: OutputLevel::Java8
+        },
+        "a constant-dynamic graph is not one of the constructs this pass judges"
+    );
+}
+
+#[test]
 fn the_header_plane_still_evaluates_no_output_level_and_applies_no_attribute_rule() {
     let inspection = inspect_header(
         CONCAT_FIXTURE,

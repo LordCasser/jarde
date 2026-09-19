@@ -4,11 +4,13 @@ jarde 是纯 Rust、library-first 的 JVM artifact 分析引擎。P0/P1 已完�
 
 **当前状态（2026-09-20）**：P2（29/29）与分层（7/7）均已归档；`jarde-java` 已交付 1.1–1.3、1.3d、2.1–2.4 与 3.1–3.3，**P3 12/12**（本片 3.4 是最后一项）。复核出的 P1/P2 缺陷——`return x++` 的旧值重读、被拒 cast 的 producer effect 丢在降级里、branch-local 声明作用域、确定性比较的 elapsed 假红——**均已关闭**；另关闭 P3-R5（`boolean` 参数按描述符定型）、R6（slot 复用按 spec 拆分）与 R7（每条已解码指令必须被块或 `unreachable` 交代）。**新增可重放的编译/执行对照**：`cargo test --test p3_execution_comparison -- --ignored` 把产物包成编译单位后用 `javac --release 8` 编译并执行，CI 的 JDK job 已挂。仍未承诺完整源码或语义等价，也未实现 verifier。现状与证据见 [P3 验证记录](openspec/changes/p3-java8-recovery/verification.md)。
 
-接下来按 [阶段路线](openspec/roadmap.md) 归档已通过出口的 P3，再进入 P4/P5；P3 的 12 项已全部落地，仍未做的三处（`MethodParameters`、类级事实、canonical 对「handler 入口即根」的裁决）记录在 [P3 验证记录](openspec/changes/p3-java8-recovery/verification.md)。轻量调用方仍可直接依赖 `jarde-reader`/`jarde-query`。
+**P4 现代语义**：1.1–1.3（release registry，以及 record/sealed/condy/concat 事实与非法 fixture、golden diagnostics）、2.1–2.3（`Engine::runtime_matrix` 的多 profile 物理保留、X2 三态与缺失依赖、有界 X3 反射/ServiceLoader 推断）、3.1–3.2（versioned plugin descriptor 与 `META-INF/services` 只读 fixture）已落地，入口与边界见 [五维支持矩阵](docs/support-matrix.md#现代5371能力与-p4-新增入口2026-09-20)；3.4 尚待把门禁数字与「结构支持 vs 源码恢复独立状态」的结论写进验证记录（本轮 3.3 已实跑 1075 passed / 0 failed / 3 ignored，fmt/clippy 1.98.1 与 `openspec validate --all --strict` 14 passed 干净）。P4 未触碰恢复层：`OutputLevel` 仍只有 `Java8`，类级事实与 `MethodParameters` 仍不在载荷。
+
+接下来按 [阶段路线](openspec/roadmap.md) 归档已通过出口的 P3，并完成 P4 的 3.4 与 P5；P3 的 12 项已全部落地，仍未做的三处（`MethodParameters`、类级事实、canonical 对「handler 入口即根」的裁决）记录在 [P3 验证记录](openspec/changes/p3-java8-recovery/verification.md)。轻量调用方仍可直接依赖 `jarde-reader`/`jarde-query`。
 
 `Engine::query` 保持 physical X0/X1，`references_definition`/`may_dispatch_to` 仍返回 UnsupportedAnalysis；`resolve_symbol`/`declaration_references` 是显式运行环境下的独立入口，回答类/字段/方法的**声明**解析与声明引用，dispatch 报告已知候选与 open-world 证据，不声称完整 JVMS 实现或 runtime selection（契约见主规格 `demand-resolver`）。`Engine::analyze_method` 可调度到 SSA；CLI 的 `analyze_method` 接收同形的 `environment`、`method`、`stages`，返回 `method_analysis`。适配层只提供 `input_path` 打开的单一 snapshot，不重写请求中的身份；方法报告含阶段与结果平面，P2 报告保持 Bytecode 契约；`jarde_jvm::analyze_method_ir` 另以只读 `MethodIr` 交付同次运行的实际表。`Engine::recover_method` 消费该载荷，CLI 同名 operation 返回方法分析与恢复报告，分析不重复执行。
 
-恢复产物目前是**方法体**，包含 `text`、source map、rules/profile、诊断和独立结果平面。完整结构可标记 Java/Structured，有低级引用时为 Mixed/Fallback；生产请求保持 `compile_status=NotAttempted`、`semantic_validation=Unproven`、`verification=NotPerformed`。门面尚未提供参数/receiver/debug 和按需成员证据，accessor 直接呈现主要通过低层 API；当前支持范围见 [支持矩阵](docs/support-matrix.md)。
+恢复产物目前是**方法体**，包含 `text`、source map、rules/profile、诊断和独立结果平面。完整结构可标记 Java/Structured，有低级引用时为 Mixed/Fallback；生产请求保持 `compile_status=NotAttempted`、`semantic_validation=Unproven`、`verification=NotPerformed`。门面已提供参数/receiver/debug 与按需成员证据（P3 3.1/3.2），accessor 的字段访问可从公开入口直接呈现；仍不在载荷里的是类级事实（`InnerClasses`/`ACC_INTERFACE`），故不声称嵌套。当前支持范围见 [支持矩阵](docs/support-matrix.md)。
 
 `Strict` 的 45.x–51.x 与 52.0 支持只表示结构读取和 version-only gate，不能解释为完整 dialect validation 或 JVM verifier。现代版本、preview、future 与缺失输入分别报告能力限制。实际边界以 [五维支持矩阵](docs/support-matrix.md) 为准。
 

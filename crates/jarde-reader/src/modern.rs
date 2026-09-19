@@ -467,7 +467,22 @@ impl ModernFacts {
     /// that requires it. The facts themselves are untouched: the conflict is the fallback answer,
     /// and no modern construct is rewritten into an equivalent-looking representation of another
     /// level.
+    ///
+    /// The predicate the arms below spell out is the predicate of the one level that has a
+    /// consumer: Java 8 is the target of the recovery layer this reader feeds, so every construct
+    /// this pass can report is a construct Java 8 has no equivalent for. It is deliberately not a
+    /// level-independent rule. Two ways of making it one are both wrong: a level whose release
+    /// already defines record (60) or sealed (61) would have to answer differently, and the
+    /// `since` a conflict names is not the yardstick either — for a `StringConcatFactory` site it is
+    /// the `invokedynamic` tag's rule (51), which is older than Java 8, so `since > level` would
+    /// call a construct-creation site representable at a level with no such factory.
+    ///
+    /// The exhaustive match is what keeps a second level from silently inheriting this predicate:
+    /// adding an [`OutputLevel`] variant has to land here and state its own answer.
     pub fn assess_output_level(&self, level: OutputLevel) -> OutputLevelStatus {
+        match level {
+            OutputLevel::Java8 => {}
+        }
         let mut conflicts = Vec::new();
         if let Some(record) = &self.record {
             conflicts.push(OutputLevelConflict {
