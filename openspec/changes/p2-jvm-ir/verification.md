@@ -1497,10 +1497,10 @@ left:  [C, C, C, C, Partial, NotPerformed]   right: [C, C, C, C, C, C]
 ### 精确提交与 CI run
 
 - 代码基线：`d2e9cda`（复核必改项与非法版本门控）与其后的 `a882ffd`（5.3 文档收口，本片开工时已在 HEAD）；本片在其之上只改文档与主规格。
-- 本片提交：`<PENDING：由父级在提交后补>`；对应 CI run：`<PENDING：由父级在 CI 确认后补>`。
+- 本片提交：`98abf9c`（文档与主规格同步）；对应 CI run：**35432074989**，四 job success——**含 JDK 25 oracle 所在的 stable job 与带 `method_analysis` 的 fuzz smoke**，即上表「本机未跑」的两项已由该 run 覆盖。
 - 已记录的最近 CI（对照用）：`535e696` → run 35424903198、`e59701f` → run 35427118396、`167a3f4` → run 35428563398、`d2e9cda` → run 35430946170，均四 job success（含 `method_analysis` 冒烟）。
 
 ### 未做
 
-- 归档本身（由父级在 CI 确认后执行）；tasks 的 5.4 勾选因此保持未勾。
+- 归档本身：本片记录时未执行；`98abf9c` 的 CI 四 job success 后由父级执行（见本节末）。
 - 支持矩阵与 README 的具体文案按本机实测能力撰写，未宣称 Java 恢复、Region 分析或 verifier 通过；A16/A17 仍标明证据是预算维度代理与源码/依赖守卫，没有逐 pass 构造计数器。
