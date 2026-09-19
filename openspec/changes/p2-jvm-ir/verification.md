@@ -1044,3 +1044,49 @@ M2 **实测印证了契约那句「普通图测试通过不能替代异常测试
 - **D5** 读分支的同一缺陷**只修未加永久反例**（能击中它的形状是「某指令一次读同一值两次且该值是被消除的 trivial phi」，语料内没有）；补一个「读两次」的 fixture 即可关闭。
 
 **CI**：`c971002` → run 35400527137，四 job success。
+
+## 2026-09-19 5.1：库与薄 JSON CLI 接通（提交 `d94f008`）
+
+### 交付
+
+- **CLI 新 operation**（`crates/jarde-cli/src/main.rs`）：`analyze_method`（wire tag）→ 结果 `method_analysis`，**薄转发**到 `Engine::analyze_method`。adapter **只绑定 content**（把打开的 snapshot 交给库），payload 的其余字段原样——因此**请求指向别的 snapshot 时由库自己的内容检查回答**（`resolution_snapshot_mismatch`），而不会被悄悄改指向本次输入。**协议错误仍是 transport 级 `error`；报告内的停止仍是成功响应里的载荷**。
+  - **一处与契约字面的偏离（已记录）**：design §5.1 写作「增 `method` operation」，实现取的 wire tag 是 **`analyze_method`**（结果 `method_analysis`）。理由：它与被转发的库入口 `Engine::analyze_method` 同名，且与既有 operation 的命名风格一致（`inspect_method_bytecode`）。契约的**承重条款**是「薄转发 + JSON 形状与库报告逐字段一致」，两者均已满足并有用例钉住。若后续要求字面 `method`，是一行改名 + 两行测试。
+- **`semantic_validation` 的升级**（`crates/jarde-jvm/src/ir.rs`）：判据 `local_invariant_evidence(&run.stages)` = 「`AnalysisStage::Ssa` 且该阶段 `Completed`」→ `LocalInvariants`，否则 `Unproven`。**`verification` 仍恒 `NotPerformed`**。文档写明该变体表示**本 build 能检查的本地不变量通过**（每值一定义、def-use 双向、phi 输入数 = 逻辑前驱数、category-2 一值两槽），**不代表字节码合法、不代表语义已验证**。
+
+### 验收清单逐项对照
+
+| 契约项 | 状态 |
+| --- | --- |
+| 库/CLI **逐字段一致** | **补**：`json_cli::method_analysis_matches_direct_engine_field_by_field`——同一请求两侧对比，**递归剥离每一处 `elapsed_millis`** 后整份 JSON 相等，另点名断言各平面 |
+| `representation = Bytecode` | 已有（库侧平面断言 + CLI） |
+| `quality = Conservative` | 已有 |
+| `quality = Fallback` | **已有，无缺口**：`p2_canonical::an_exact_clone_budget_completes_and_one_less_falls_back`（真实 ECJ v45 class、共享 `jsr` 需 2 个克隆，少一个即 `Fallback` + `ir_legacy_normalization_unbounded`）；另有步数耗尽版 |
+| `NotJava`、`NotAttempted` | 已有 |
+| **abstract/native 无 Body** | **补**：`p2_cfg::a_member_that_declares_no_body_is_a_fact_and_not_a_failed_pass` 扩到 **`ACC_ABSTRACT` 与 `ACC_NATIVE` 两者**：`DeclaredWithoutBody{no_body_kind}`、阶段全 `NotPerformed`、`representation = Bytecode`、`execution = Complete`、`method_bodies == 0`、诊断 `ir_method_declared_without_body`（Info）**点名种类** |
+| **阶段 coverage/execution** | 已有并加强：`method_analysis_normalizes…`（阶段集合→前缀形状、首个计费被拒→`Partial`、只请求 `Frame` 的前缀）+ `every_analysis_stage_is_requestable_and_schedules_its_own_prefix`（6 种集合）；这些 run 的语义平面现已一并断言 |
+| **成员失败隔离** | **补**：`p2_cfg::two_members_of_one_class_are_answered_about_themselves`（同一类里 `ok()` 完成且带上自己的证据、`stop()` 停在 `ir_frame_deferred`；各报告只属于自己那个成员；**在停止之后重问 `ok` 仍与之逐字段相同**） |
+| **类级 Header 失败不伪造方法结果** | **补**：`p2_cfg::a_class_whose_header_cannot_be_read_fabricates_no_method_result`（截断 class → `raw_facts` `Failed{classfile_decode}`、其后全 `NotPerformed`、`body = NotInspected`（**从不**是 `Present`/`DeclaredWithoutBody`）、`method_bodies == 0`） |
+
+### 被修正的既有断言（逐条，未放宽）
+
+`SemanticValidation::Unproven` 的断言原分布在**两处共享 helper**（`p2_frame::assert_planes_stay_p1`、`p2_ssa::assert_planes_stay_p1`）+ `p2_contracts` 一处。修法**不是**把 `Unproven` 换成 `LocalInvariants`：
+
+1. 两个 helper 的名称与文档**本来就说**「四个产品平面」——已改为**只断言那四个**，并说明 `semantic_validation` 是**该 run 自己的证据**、由各用例自行断言。
+2. 三个「六阶段全 `Completed`」的用例（`p2_frame` 2 条 + `p2_ssa` 1 条）显式断言 **`LocalInvariants`**。
+3. **必须仍为 `Unproven`** 的形状**各自显式断言**（这些是升级的反面证据，原先部分没有覆盖，本次**补上**）：frame 边界停止、`ssa` 被预算停住、**取消**、首个计费被拒、**只请求 `Frame`（`ssa` 从未被调度）**、在 `ssa` 内的预算停止、成员 run 停止，以及 CLI 的「停止是成功响应的载荷」。
+
+### 证据
+
+- 全量 **749 passed / 0 failed / 1 ignored**；`jarde-cli` 19 → **22**；`p2_cfg` 10 → **12**；`jarde-jvm` 194；`p2_frame` 4、`p2_ssa` 4、`p2_canonical` 8、`p2_contracts` 29、`p1_xref_golden` 5；fmt 与 clippy 1.98.1 干净；`resolve_and_analyze` 现打印 `semantic_validation=LocalInvariants`。
+- **父级独立证伪**：把判据改成恒 `LocalInvariants` → **6 条跨 4 个 suite 转红**（`p2_cfg` 成员隔离、`p2_contracts` ×2、`p2_frame` 边界停止、`p2_ssa` 取消与预算停止），即**反面证据确有承重**（`sha256sum -c` 还原）。
+- **实现者证伪**：① 同上恒 `LocalInvariants` → 6 红（含 CLI 的停止载荷用例）；② CLI 响应改写一个**未被点名断言**的字段（`loader`）→ 只有逐字段一致用例转红，且 diff 只显示该字段——说明比较器**不止**盯住点名的平面。
+
+### 过程中的环境事故（如实记录）
+
+前一位 coder 在写文件时遇到 **`No space left on device`** 而中断（`attempt persistence failed`），留下两处**未提交但可编译**的半成品（`ir.rs` 的判据、`main.rs` 的 operation）。用户清理磁盘后，父级**保留**该半成品、先盘点（`git diff` + 跑全量：740 passed / **4 failed**，失败点全在「断言 `Unproven` 而 `ssa` 现已 `Completed`」）再派单收尾，未重做已完成部分。父级另清理了自己在 `/tmp` 下遗留的构建产物。
+
+### 未做/边界
+
+- CLI 侧**不为** abstract/native 与成员隔离另造 fixture（库侧已覆盖，CLI 对它们只有一行转发 + content 绑定，已由 B1/B2/B3 钉住）——判定为重复而非缺口。
+- `FixtureDifferential` 仍无生产请求能raised它（属 5.3）。
+- MSRV、supply-chain、fuzz 冒烟、`openspec validate --strict` 属 5.4 的门禁，本片未跑。
