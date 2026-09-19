@@ -534,3 +534,72 @@ V1 uses = [bci 4]（返回的正是加载的旧值）；V2 无人使用
 
 - `Entry`/`Phi` 的 `Local` 分支在本切片**没有可达路径**（`render_value` 只被喂 stack 值）——判据在这两处是同一不变量的**补全**，但**未经实测触发**。
 - 本片只做到「不再产出错误的 Java」；把旧值**呈现**为 `x++` 或临时变量属后续模式工作。
+
+## 2026-09-19 3.1：声明事实与作用域（提交 `f7f90b7`）
+
+关闭复核的 **P3-R3**（P1/P2）并接线**方法声明事实**。
+
+### 第 1 部分：声明事实从**同一次** header 读取进载荷
+
+- `jarde-jvm/src/method_ir.rs` 新增 `MethodDeclaration { access_flags, name, descriptor, parameter_slots, identity }`，作为 `MethodIr` 的**私有字段** `declaration: Option<Box<MethodDeclaration>>`，只给 `Option<&…>`（与 `code()/constant_pool()/bootstrap_methods()` 同形）。
+- 取值点：`engine.rs::read_driver_method` 里 `read_own_definition(…, HeaderDemand::DriverMethodBody)` 的**唯一一次** header 读取所定位到的 `member`；`parameter_slots` 由描述符 + `ACC_STATIC` 推出（**receiver 计 1、`long`/`double` 计 2**）。
+- **门面 `recovery_facts` 不再固定 `parameters=0`**：改从载荷取 `parameter_slots`/`access_flags`，并把 debug 名一并交给 `RecoveryFacts`。仅当运行没读到成员头时才退回请求身份 + `parameters=0`（唯一保留的诚实「无声明」分支）。
+- **没有第二次解码 Body**：LVT 是在 `raw_facts` **已经读过并计费的那个 `Code` 条目内部**用 `code.attributes()` 走嵌套属性表读出的（按名字跳过 `LineNumberTable`/`StackMapTable`/类型注解），**不调用** `code_nested_attributes`（那会再计一次 `AttributeBytes`）、不新增 charge、不新增 poll。
+- **父级独立核对**：同一 fixture 改前/改后 usage 逐字段相同（`class_headers=1`、`method_bodies=1`、attribute/code/class bytes、`ir_items`、`analysis_steps` 全等，只有墙钟 `elapsed_millis` 变）——「一次运行，一个来源」成立。
+
+### 第 2 部分：R3（分支作用域）
+
+**判据**（`build.rs::declarations`）：从 SSA 收集该槽**全部使用**（`reads()`/`writes()` 里的 `Local(slot)`）→ 求**包含全部使用的最内层 Region** `R`（`region_paths()` 把 Region 树编成路径，嵌套区域先走、`or_insert` 后写，故 block 归属**最内层**）→ 若**首次写入所在 Region 就是 `R`** 则**保持现有行为**（`int x = <value>;`，`declared` 集合照旧）→ 否则在 `R` **开头**写**无初值**的 `int x;`，所有写入改为普通赋值。
+**安全出口**：任一次使用落在 `Region::Fallback`（引用字节码）或 block 未被树认领 → 该槽**不参与**（保持旧行为，不产生正文里没人用的声明）。
+
+**产物**（`tests/fixtures/p3-scope/v8-debug/Scope.class`，真实 javac 23.0.1 `--release 8`）：
+```java
+{
+    int x;
+    if (b != 0) {
+        x = 1;
+    } else {
+        x = 2;
+    }
+    return x;
+}
+```
+
+**父级独立验收**（**不用实现者的 harness**）：
+- 用提交的 fixture 经公开入口打印产物（上面那段，含真实 debug 名 `x`/`b`）；
+- 自行包成 `static int scope(int b)` 并用 `javac --release 8 -g:none` 编译 → **exit 0**（仅「源值 8 已过时」警告）；
+- 自行执行对照：`b=1 generated=1 original=1`、`b=0 generated=2 original=2` —— **同值**。
+- **修前**（实现者用 HEAD 产物复现）报 `找不到符号: 变量 local1` 于 **else 与 return 两处**，与复核记录的位置一致。
+
+**代价说明（如实）**：`Scope.scope` 的参数是 `boolean`，而产物写 `b != 0`——该比较只对 int 型原语成立。**复核自己就排除了这一项**（其 R3 原文写「即便给测试包装提供 `int local0` 以单独排除条件类型问题」），故本片按同一口径验收；根因是 LVT 的 `descriptor` 未用于类型、参数类型来自 frames（四个 int 型原语同形），属**既有边界**，已在 verification 与本片记录中点名。
+
+### 第 3 部分：稳定命名与三类覆盖
+
+- **slot 复用**：选「命名与声明都成立」——本层命名的是**槽**，SSA 给出该槽唯一的定义/使用链，故一个存储位置呈现为一个变量：声明提升到两臂之外的共同区域、两臂各自赋值。**带 debug 时该槽被 LVT 命名两次**（`c` 与 `d`）→ 如实给出**无名字**（落回序号名），不伪造。
+- **category-2**：`after(JI)I` → `{ return arg2; }`（`long` 占两槽，`arg2` 是 `int` 参数）、`receiver(J)J` → `{ return arg1; }`；并断言**参数绝不作为局部声明**（`!text.contains("int ")`）。
+- **无 debug**：确定性序号名，不伪造源码作用域；有 debug 时用真实名。
+- **A16** 未退化：改前/改后 usage 逐字段相同（一次 header + 一次 body）。
+
+### 父级独立证伪（两个方向）
+
+| 变异 | 结果 |
+| --- | --- |
+| `declarations()` 返回空（**无提升** = 修前行为） | **4 红**：`a_slot_written_in_both_arms_is_declared_where_both_can_see_it`（R3）、`an_arms_own_local_is_still_declared_inside_that_arm`、`two_variables_sharing_one_slot_are_declared_once_where_both_are_visible`、`a_table_that_names_a_slot_twice_states_no_name_for_it` |
+| 「就地」分支改为恒假（**一律提升**） | **2 红**：`a_slot_filled_and_read_in_one_region_keeps_its_initial_value`、`an_arms_own_local_is_still_declared_inside_that_arm` |
+
+真值在中间——两个方向各有测试承重。
+
+### 被修正的既有断言（6 处，无一条放宽）
+
+`p3_java_recovery.rs` 的 `an_if_else_…` 与 `a_tableswitch_…`：`find("int local2 = 1;")` → `find("local2 = 1;")` 并**新增**「声明在 `if`/`switch` 之前」的断言（这两个 fixture 的槽在两臂都写 → 按新规则提升，**原本在臂内声明，正是 R3 缺陷**）；`tests/p3_local_rewrite.rs` 5 处 `local0` → `arg0`（参数槽现在由载荷声明命名，**禁止的内容一字未减**）；`tests/p3_recovery_entry.rs` 的 `return local1 + local2;` → `return arg1 + arg2;`（`add(II)I` 是实例方法，slot 0 是 receiver）；fixture 普查计数 `(16, 51, 8, 11, 8)` → `(18, 67, 8, 23, 8)`。另两处是**测试代码**改动（`oracle.rs` 的文本模型新增 `Text::Declare`，读到未赋值局部**仍然 panic**，是加强；`from_parts` 增参数，6 处机械补）。
+
+### 证据
+
+全量 **960 passed / 0 failed / 1 ignored**（953 + 7，全部来自新测试目标 `p3_scope`；**既有目标无状态改变**）；fmt 与 clippy 1.98.1 干净；`openspec validate --all --strict` 12 passed；两个 CI example exit 0；分层三包中 `jarde-java` **0** 次；**未触及依赖边**（另跑 fuzz 两条均 OK）。
+**fixture 可复现性（父级独立复核）**：用提交的 `Scope.java` 自行 `javac --release 8 -g:none` 重编译 → 与提交的 `.class` **逐字节相同**。
+**CI**：`f7f90b7` → 见下。
+
+### 未做（如实，属 3.2 或更后）
+
+`MethodParameters` 未读（方法级属性，不在 `Code` 条目内，读它需为一类新输入新增 `AttributeBytes` 计费——按派单条件不做「顺手改口径」）；LVT 的 `descriptor` 未用于类型；LVT range 未作锚点；`LocalDebugTable::Unstated`（声明了但内容解不出）无 fixture；**`access_flags` 已进载荷并交给 `bridge@1`，但仓库无声明 `ACC_BRIDGE` 的样例**，故「门面 → bridge 规则」无端到端 fixture。
+**另发现一处既有缺口（非本片引入）**：`if` 的 else 臂为空、跳转目标就是 join 的形状会被 `region.rs` 判成 `arms_do_not_meet` + `uncovered_blocks` → 整段引用；fixture 因此改成两臂都非空。记录在此，不在本片范围。
