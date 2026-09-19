@@ -54,7 +54,10 @@
 //! criterion). `petgraph` is reused for the projection's graph algorithms, exactly as the layer below
 //! reuses it for the raw CFG.
 
+pub mod accessor;
 pub mod ast;
+pub mod bridge;
+pub mod concat;
 pub mod facts;
 pub mod lambda;
 pub mod names;
@@ -70,7 +73,11 @@ pub(crate) mod decode;
 pub(crate) mod emit;
 #[cfg(test)]
 mod oracle;
+pub(crate) mod refusal;
 
+pub use accessor::{AccessorField, AccessorRecord, AccessorRefusal, AccessorShape};
+pub use bridge::{BridgeRecord, BridgeRefusal};
+pub use concat::{ConcatAppend, ConcatRecord, ConcatRefusal};
 pub use lambda::{LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal};
 pub use pass::{IrTable, Pass, Precondition, RecoveryProfile, RuleVersion};
 pub use report::{RecoveryOutcome, RecoveryReport, RecoveryRequest, RegionRecord, recover};
@@ -78,8 +85,8 @@ pub use report::{RecoveryOutcome, RecoveryReport, RecoveryRequest, RegionRecord,
 pub use ast::{BinaryOp, Expr, ExprKind, Stmt, StmtKind, Type};
 pub use emit::{comment_text, escape_string};
 pub use facts::{
-    ArithmeticOp, CallTarget, CompareOp, ConstantValue, InvokeKind, MethodFacts, Operation,
-    RecoveryFacts,
+    ACC_BRIDGE, ACC_STATIC, ACC_SYNTHETIC, ArithmeticOp, CallTarget, ClassMembers, CompareOp,
+    ConstantValue, FieldAccess, InvokeKind, MemberBody, MethodFacts, Operation, RecoveryFacts,
 };
 pub use names::{AliasReason, NameTable, RenderedName, alias_for, is_java_identifier};
 pub use normal_flow::{ExcludedEdges, NormalFlowView};

@@ -40,10 +40,14 @@ use jarde_jvm::method_ir::{
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{BootstrapMethodFacts, CpEntryFacts};
 
+use crate::accessor::{self, AccessorRecord, AccessorShape};
 use crate::ast::{BinaryOp, Expr, ExprKind, LambdaParam, Stmt, StmtKind, SwitchArm, Type};
+use crate::bridge;
+use crate::concat;
 use crate::decode::Operations;
 use crate::facts::{
-    ArithmeticOp, CallTarget, CompareOp, ConstantValue, DynamicSite, InvokeKind, Operation,
+    ArithmeticOp, CallTarget, ClassMembers, CompareOp, ConstantValue, DynamicSite, InvokeKind,
+    Operation,
 };
 use crate::lambda::{self, LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal, Reach, Refusal};
 use crate::names::NameTable;
@@ -74,6 +78,10 @@ pub(crate) struct Program {
     /// because "which bootstrap was it, and why was it not a lambda" is the question A04 asks and a
     /// record that only listed the presented ones could not answer it.
     pub(crate) lambdas: Vec<LambdaRecord>,
+    /// Every synthetic accessor call site of this body, in BCI order, with what the rule read about
+    /// its callee and what this build did with it (P3 2.2, A12). As for a lambda, a refusal is part
+    /// of the answer: a call that kept the call it had says which link of the verification failed.
+    pub(crate) accessors: Vec<AccessorRecord>,
 }
 
 /// The facts of one run the build reads beside the regions and the region tree's own inputs.
@@ -94,6 +102,15 @@ pub(crate) struct Inputs<'a> {
     pub(crate) parameters: u16,
     /// The names the presentation decided, in slot order.
     pub(crate) names: &'a NameTable,
+    /// The concatenation chains of this body, with the shape's own declaration of which
+    /// instructions they own (P3 2.2).
+    pub(crate) chains: &'a concat::Plan,
+    /// The class's other members, as the caller read them: the only evidence a synthetic accessor
+    /// call site can be decided from (P3 2.2, A12).
+    pub(crate) members: Option<&'a ClassMembers>,
+    /// The verdict of the `bridge@1` rule for this very body, when the member is declared a bridge
+    /// or its body is the forward a bridge is written as.
+    pub(crate) bridge: Option<&'a bridge::Plan>,
 }
 
 /// Builds the statements of one method from its regions.
@@ -121,6 +138,9 @@ pub(crate) fn build(
         profile: inputs.profile,
         parameters: inputs.parameters,
         names: inputs.names,
+        chains: inputs.chains,
+        members: inputs.members,
+        bridge: inputs.bridge,
         instructions,
         budget,
         declared: BTreeSet::new(),
@@ -129,6 +149,7 @@ pub(crate) fn build(
         ragged: false,
         lambdas: Vec::new(),
         lambda_params: BTreeSet::new(),
+        accessors: Vec::new(),
     };
     for region in regions {
         builder.region(region)?;
@@ -138,6 +159,7 @@ pub(crate) fn build(
         ragged: builder.ragged,
         stmts: builder.stmts,
         lambdas: builder.lambdas,
+        accessors: builder.accessors,
     })
 }
 
@@ -156,6 +178,12 @@ struct Builder<'a> {
     /// counted it: the slots below this one are declared by the signature, not by the body.
     parameters: u16,
     names: &'a NameTable,
+    /// The concatenation chains this body's verified shapes own (P3 2.2).
+    chains: &'a concat::Plan,
+    /// The class's other members, when the caller handed them over (P3 2.2, A12).
+    members: Option<&'a ClassMembers>,
+    /// The `bridge@1` rule's verdict for this body, when it has one (P3 2.2).
+    bridge: Option<&'a bridge::Plan>,
     instructions: BTreeMap<u32, &'a SsaInstruction>,
     budget: &'a mut Budget,
     declared: BTreeSet<u16>,
@@ -167,6 +195,8 @@ struct Builder<'a> {
     /// The parameter names the lambda shapes of this body have already taken, so that no two of
     /// them spell the same identifier.
     lambda_params: BTreeSet<String>,
+    /// Every synthetic accessor call site this build read, in the order it reached them.
+    accessors: Vec<AccessorRecord>,
 }
 
 impl Builder<'_> {
@@ -389,6 +419,12 @@ impl Builder<'_> {
     fn instruction(&mut self, instruction: &SsaInstruction) -> Result<(), StopReason> {
         poll(self.budget, Some(instruction.bci()))?;
         let at = instruction.bci();
+        // An instruction a verified concatenation chain owns produces no statement of its own: the
+        // text it would have written is written *inside* the expression that chain became, and
+        // skipping it here is exactly what keeps an operand from being evaluated twice (P3 2.2).
+        if self.chains.owns(at) {
+            return Ok(());
+        }
         let write = instruction
             .writes()
             .iter()
@@ -447,11 +483,60 @@ impl Builder<'_> {
                 }
             }
             Some(Operation::Invoke(target)) => {
+                // A synthetic accessor's call site is a direct field access, or it is not: the
+                // verdict is `accessor@1`'s, and it is taken here so that a *presented* accessor
+                // becomes the field access the source had — and a refused one keeps the call it had,
+                // with the reason recorded against its BCI (P3 2.2, A12).
+                let verdict = accessor::verify(target, self.members, self.pool);
+                match verdict {
+                    accessor::Verdict::Ordinary => {}
+                    accessor::Verdict::Refused { evidence, refusal } => {
+                        self.accessors.push(AccessorRecord::of(
+                            at,
+                            &evidence,
+                            None,
+                            Some(&refusal),
+                        ));
+                    }
+                    accessor::Verdict::Accessor { evidence, shape } => match shape.kind {
+                        // A read accessor's value is written where the value is *consumed*: the
+                        // store or the call that reads it renders `x.f`. Nothing consumes it here,
+                        // so the invocation the bytecode made has no place in the body — unless
+                        // something does consume it, and then this instruction writes nothing.
+                        AccessorShape::FieldRead => {
+                            if self.call_value_reaches_a_reader(instruction) {
+                                return Ok(());
+                            }
+                            let refusal = Refusal::shape(
+                                "jre_accessor_unconsumed",
+                                "nothing in this method reads the field the accessor returns, so the invocation the call site makes has no place in the body".to_string(),
+                            );
+                            self.accessors.push(AccessorRecord::of(
+                                at,
+                                &evidence,
+                                None,
+                                Some(&refusal),
+                            ));
+                        }
+                        AccessorShape::FieldWrite => {
+                            return self.accessor_write(at, instruction, target, evidence, shape);
+                        }
+                    },
+                }
+                // A call whose value something *reads* is written where that value is read — by the
+                // store, the return, the cast or the condition that renders it. Writing it here as
+                // well would evaluate it twice, which is the invariant this layer keeps. What is
+                // deliberately not a reader here is a **dynamic site**: a site that is refused still
+                // has to leave the invocation that produced a value it captured in the body, and
+                // that instruction is where it is written ([`Self::value_is_consumed`] answers that
+                // question for the site's own arm).
+                if write.is_none() && self.call_value_reaches_a_reader(instruction) {
+                    return Ok(());
+                }
                 let call = match self.call_expr(at, instruction, target) {
                     Ok(call) => call,
                     Err(reason) => return self.fallback(vec![at], &reason, at),
-                };
-                let Some((slot, written)) = write else {
+                };                let Some((slot, written)) = write else {
                     // No local slot takes the result: the call is a statement of its own.
                     return self.push(Stmt::new(
                         StmtKind::Expr(call),
@@ -537,8 +622,7 @@ impl Builder<'_> {
                 | Operation::Comparison { .. }
                 | Operation::Switch { .. }
                 | Operation::Transfer,
-            ) => Ok(()),
-            // A dynamic call site produces the instance it presents, so — like a push or a load —
+            ) => Ok(()),            // A dynamic call site produces the instance it presents, so — like a push or a load —
             // its text lands where the value is consumed. What is *not* the same as a push is what
             // it means to drop it: creating the instance is an invocation the bytecode really makes,
             // so a site whose value nothing reads is quoted instead of being written off as a value
@@ -565,6 +649,24 @@ impl Builder<'_> {
                     Err(reason) => self.fallback(vec![at], &reason, at),
                 }
             }
+            // A cast is presented only where a rule proved it is the erasure of the value it casts
+            // (`bridge@1`, P3 2.2): every other cast is a check that can fail, and it is quoted.
+            Some(Operation::CheckCast { .. }) if self.bridge_owns(at) => Ok(()),
+            // An allocation, a copy, a field access or an unproven cast belongs to no verified shape
+            // of this body: each is a *stated* gap, quoted with its own BCI rather than presented
+            // from half a proof.
+            Some(
+                Operation::Allocate { .. }
+                | Operation::Duplicate
+                | Operation::Field { .. }
+                | Operation::CheckCast { .. },
+            ) => self.fallback(
+                vec![at],
+                &format!(
+                    "the instruction at BCI {at} belongs to no shape this run verified: an allocation, a copy, a field access or a cast is presented only where a rule proved what it builds"
+                ),
+                at,
+            ),
             Some(Operation::Other) | None => self.fallback(
                 vec![at],
                 &format!("the instruction at BCI {at} is not part of the provable subset"),
@@ -666,7 +768,33 @@ impl Builder<'_> {
                         let Some(instruction) = self.instructions.get(&bci).copied() else {
                             return Err(format!("no names record for the call at BCI {bci}"));
                         };
-                        self.call_expr(bci, instruction, target)
+                        // The `toString` a verified concatenation chain ends in *is* the
+                        // concatenation: the expression is written here, where its value is read,
+                        // and every original BCI of the chain stays in the table as an anchor.
+                        if let Some(chain) = self.chains.value_at(bci) {
+                            return self.concat_expr(chain);
+                        }
+                        self.invoke_expr(bci, instruction, target)
+                    }
+                    Operation::CheckCast { .. } => {
+                        let Some(instruction) = self.instructions.get(&bci).copied() else {
+                            return Err(format!("no names record for the cast at BCI {bci}"));
+                        };
+                        if !self.bridge_owns(bci) {
+                            return Err(format!(
+                                "the cast at BCI {bci} is not one this run proved to be the erasure of the value it casts"
+                            ));
+                        }
+                        let Some((_, value)) = stack_operands(instruction).first().copied() else {
+                            return Err(format!(
+                                "the cast at BCI {bci} reads no value this run states"
+                            ));
+                        };
+                        // The cast is dropped *and* kept: the value is written where the forwarded
+                        // invocation wrote it, and the cast's own BCI stays in the segment table as
+                        // a derived anchor of the node that presents it.
+                        let expr = self.render_value(value, bci, depth + 1)?;
+                        Ok(expr.derived_from(bci))
                     }
                     // A dynamic call site is a *value* whose shape this layer decides from the
                     // class's own bootstrap table: a verified `LambdaMetafactory` site becomes a
@@ -725,6 +853,221 @@ impl Builder<'_> {
             },
             bci,
         ))
+    }
+
+    /// Renders one invocation: a verified synthetic accessor's field access, or the call itself.
+    ///
+    /// A read accessor's call site is a field read of the instance the site passed, and the field is
+    /// the one the accessor's own verified body named. The node carries **both** original BCIs: the
+    /// call site's as its own anchor and the field access inside the accessor's body as a derived
+    /// one — which is exactly what A12 asks the segment table to keep (P3 2.2).
+    fn invoke_expr(
+        &mut self,
+        bci: u32,
+        instruction: &SsaInstruction,
+        target: &CallTarget,
+    ) -> Result<Expr, String> {
+        if let accessor::Verdict::Accessor { evidence, shape } =
+            accessor::verify(target, self.members, self.pool)
+            && shape.kind == AccessorShape::FieldRead
+        {
+            let receiver = stack_operands(instruction)
+                .first()
+                .copied()
+                .map(|(_, value)| value);
+            match receiver.map(|receiver| self.render_value(receiver, bci, 0)) {
+                Some(Ok(receiver)) => {
+                    let origin = OriginSet::new(Origin::direct(bci))
+                        .plus_derived(Origin::derived(shape.field_bci));
+                    self.accessors
+                        .push(AccessorRecord::of(bci, &evidence, Some(&shape), None));
+                    return Ok(Expr::new(
+                        ExprKind::Field {
+                            receiver: Box::new(receiver),
+                            name: shape.name.clone(),
+                        },
+                        origin,
+                    ));
+                }
+                other => {
+                    let reason = match other {
+                        Some(Err(reason)) => reason,
+                        _ => "the call reads no instance this run states".to_string(),
+                    };
+                    let refusal = Refusal::shape(
+                        "jre_accessor_arguments",
+                        format!(
+                            "the instance the accessor call at BCI {bci} reads produces no expression this subset writes: {reason}"
+                        ),
+                    );
+                    self.accessors
+                        .push(AccessorRecord::of(bci, &evidence, None, Some(&refusal)));
+                }
+            }
+        }
+        self.call_expr(bci, instruction, target)
+    }
+
+    /// Presents one verified write accessor's call site as the assignment it performs.
+    ///
+    /// The two values the call reads are rendered where the call site is, and a value this subset
+    /// cannot write makes the call site a *refused* one — recorded — rather than a guessed
+    /// assignment: the call it had is written instead.
+    fn accessor_write(
+        &mut self,
+        at: u32,
+        instruction: &SsaInstruction,
+        target: &CallTarget,
+        evidence: accessor::Evidence,
+        shape: accessor::Shape,
+    ) -> Result<(), StopReason> {
+        let rendered = match stack_operands(instruction).as_slice() {
+            [(_, receiver), (_, value)] => Some((*receiver, *value)),
+            _ => None,
+        }
+        .map(|(receiver, value)| {
+            (
+                self.render_value(receiver, at, 0),
+                self.render_value(value, at, 0),
+            )
+        });
+        match rendered {
+            Some((Ok(receiver), Ok(value))) => {
+                let origin = OriginSet::new(Origin::direct(at))
+                    .plus_derived(Origin::derived(shape.field_bci));
+                self.accessors
+                    .push(AccessorRecord::of(at, &evidence, Some(&shape), None));
+                self.push(Stmt::new(
+                    StmtKind::FieldAssign {
+                        receiver,
+                        name: shape.name.clone(),
+                        value,
+                    },
+                    origin,
+                ))
+            }
+            other => {
+                let reason = match other {
+                    Some((Err(reason), _)) | Some((_, Err(reason))) => reason,
+                    _ => "the call does not read exactly the instance and the value it writes"
+                        .to_string(),
+                };
+                let refusal = Refusal::shape(
+                    "jre_accessor_arguments",
+                    format!("the write accessor call at BCI {at} was not presented: {reason}"),
+                );
+                self.accessors
+                    .push(AccessorRecord::of(at, &evidence, None, Some(&refusal)));
+                self.call_statement(at, instruction, target)
+            }
+        }
+    }
+
+    /// The statement an invocation becomes when no rule presented it as a field access.
+    fn call_statement(
+        &mut self,
+        at: u32,
+        instruction: &SsaInstruction,
+        target: &CallTarget,
+    ) -> Result<(), StopReason> {
+        let call = match self.call_expr(at, instruction, target) {
+            Ok(call) => call,
+            Err(reason) => return self.fallback(vec![at], &reason, at),
+        };
+        self.push(Stmt::new(
+            StmtKind::Expr(call),
+            OriginSet::new(Origin::direct(at)),
+        ))
+    }
+
+    /// Whether the `bridge@1` rule proved one instruction to be the erasure of the value it casts.
+    fn bridge_owns(&self, bci: u32) -> bool {
+        self.bridge.is_some_and(|plan| plan.owns(bci))
+    }
+
+    /// Whether the value a call produced is read by an instruction this build renders it for.
+    ///
+    /// This is the question the call arm asks before it writes a statement of its own, and it is
+    /// deliberately narrower than [`Self::value_is_consumed`]: a **dynamic site** is not a reader
+    /// here, because a site that is refused writes the site's own BCIs and not the invocation that
+    /// produced the value it captured — so the instruction that produced that value is the only
+    /// place left where the invocation can be written.
+    fn call_value_reaches_a_reader(&self, instruction: &SsaInstruction) -> bool {
+        instruction
+            .writes()
+            .iter()
+            .filter(|(slot, _)| matches!(slot, Slot::Stack(_)))
+            .any(|(_, value)| {
+                let value = *value;
+                self.ssa.blocks().iter().any(|block| {
+                    block.instructions().iter().any(|reader| {
+                        reader.reads().iter().any(|(_, read)| *read == value)
+                            && matches!(
+                                self.operations.get(reader.bci()),
+                                Some(
+                                    Operation::Store { .. }
+                                        | Operation::Invoke(_)
+                                        | Operation::Return
+                                        | Operation::Comparison { .. }
+                                        | Operation::Switch { .. }
+                                        | Operation::Arithmetic { .. }
+                                        | Operation::Field { .. }
+                                        | Operation::CheckCast { .. }
+                                )
+                            )
+                    })
+                })
+            })
+    }
+
+    /// Renders one verified concatenation chain as the `+` expression it stands for.
+    ///
+    /// The operands are written in the order the chain's `append` calls read them, and each one is
+    /// an expression of its own — anchored where *it* was produced — so an operand that calls
+    /// something calls it once, in the bytecode's order. The `toString` the chain ends in anchors
+    /// the expression, and every BCI the chain owns is kept as a derived anchor of it: one
+    /// concatenation reaches many original instructions, and the table says so rather than keeping
+    /// one of them (P3 2.2, the source-map requirement).
+    fn concat_expr(&mut self, chain: &concat::Chain) -> Result<Expr, String> {
+        let mut pieces: Vec<Expr> = Vec::with_capacity(chain.appends.len());
+        for (append_bci, _) in &chain.appends {
+            let Some(instruction) = self.instructions.get(append_bci).copied() else {
+                return Err(format!(
+                    "no names record for the `append` at BCI {append_bci}"
+                ));
+            };
+            let operands = stack_operands(instruction);
+            let Some((_, value)) = operands.last().copied() else {
+                return Err(format!(
+                    "the `append` at BCI {append_bci} appends no value this run states"
+                ));
+            };
+            pieces.push(self.render_value(value, *append_bci, 0)?);
+        }
+        let mut pieces = pieces.into_iter();
+        let Some(first) = pieces.next() else {
+            return Err("a concatenation chain with no append".to_string());
+        };
+        let mut written = first;
+        for (index, next) in pieces.enumerate() {
+            let (append_bci, _) = chain.appends[index + 1];
+            written = Expr::new(
+                ExprKind::Binary {
+                    op: BinaryOp::Add,
+                    left: Box::new(written),
+                    right: Box::new(next),
+                },
+                OriginSet::new(Origin::direct(append_bci)),
+            );
+        }
+        written.origin = chain
+            .owned
+            .iter()
+            .filter(|bci| **bci != chain.tail)
+            .fold(OriginSet::new(Origin::direct(chain.tail)), |set, bci| {
+                set.plus_derived(Origin::derived(*bci))
+            });
+        Ok(written)
     }
 
     /// Renders one dynamic call site as a lambda or a method reference — or refuses it and records
@@ -1054,6 +1397,8 @@ impl Builder<'_> {
                                 | Operation::Comparison { .. }
                                 | Operation::Switch { .. }
                                 | Operation::Arithmetic { .. }
+                                | Operation::Field { .. }
+                                | Operation::CheckCast { .. }
                         )
                     )
             })
@@ -1123,7 +1468,11 @@ impl Builder<'_> {
 /// the local here would print `x = x` for a store that loads the slot it writes. A statement's
 /// operands are exactly the stack values the instruction consumes, from the bottom of the consumed
 /// region upwards, which is the order a call's receiver and arguments are written in.
-fn stack_operands(instruction: &SsaInstruction) -> Vec<(Slot, ValueId)> {
+///
+/// The pattern rules of P3 2.2 read the same operands (the `append` an operand belongs to, the
+/// instance a bridge must have been given, the receiver and value of an accessor call), so this is
+/// the one reader of them.
+pub(crate) fn stack_operands(instruction: &SsaInstruction) -> Vec<(Slot, ValueId)> {
     let mut reads: Vec<(Slot, ValueId)> = instruction
         .reads()
         .iter()

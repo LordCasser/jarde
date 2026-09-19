@@ -159,6 +159,19 @@ impl<'a> Emitter<'a> {
                 self.expr(expr)?;
                 self.put(";\n", at)
             }
+            StmtKind::FieldAssign {
+                receiver,
+                name,
+                value,
+            } => {
+                self.put(&pad, at)?;
+                self.expr(receiver)?;
+                self.put(".", at)?;
+                self.put(name, at)?;
+                self.put(" = ", at)?;
+                self.expr(value)?;
+                self.put(";\n", at)
+            }
             StmtKind::Return { value } => {
                 self.put(&pad, at)?;
                 self.put("return", at)?;
@@ -322,6 +335,11 @@ impl<'a> Emitter<'a> {
             ExprKind::MethodReference { qualifier, name } => {
                 emitter.expr(qualifier)?;
                 emitter.put("::", at)?;
+                emitter.put(name, at)
+            }
+            ExprKind::Field { receiver, name } => {
+                emitter.expr(receiver)?;
+                emitter.put(".", at)?;
                 emitter.put(name, at)
             }
             ExprKind::Binary { op, left, right } => {

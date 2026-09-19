@@ -91,7 +91,7 @@ use jarde_reader::classfile::{BootstrapMethodFacts, CpEntryFacts, CpEntryKind, c
 
 use crate::ast::Type;
 use crate::facts::DynamicSite;
-use crate::pass::{IrTable, LAMBDA, Pass, Precondition, RecoveryProfile, RuleVersion};
+use crate::pass::{IrTable, LAMBDA, Precondition, RecoveryProfile, RuleVersion};
 
 /// The class that owns the factories this layer verifies.
 const FACTORY_OWNER: &str = "java/lang/invoke/LambdaMetafactory";
@@ -222,64 +222,10 @@ pub(crate) struct Plan {
 }
 
 /// Why one site was not presented.
-pub(crate) struct Refusal {
-    code: &'static str,
-    requirement: Option<Precondition>,
-    message: String,
-}
-
-impl Refusal {
-    /// A refusal of a site that simply is not the verified shape.
-    pub(crate) fn shape(code: &'static str, message: String) -> Self {
-        Self {
-            code,
-            requirement: None,
-            message,
-        }
-    }
-
-    /// A refusal under a **declared** precondition of the `lambda@1` rule.
-    ///
-    /// The debug assertion is the same one [`crate::region`]'s refusals carry: a requirement that is
-    /// checked without being declared — or declared and never checked — fails this build's tests
-    /// instead of drifting away from the declaration a reader consults.
-    pub(crate) fn unmet(pass: &'static Pass, requirement: Precondition, message: String) -> Self {
-        debug_assert!(
-            pass.requires(requirement),
-            "{} states no {requirement:?} precondition",
-            pass.rule()
-        );
-        Self {
-            code: requirement_code(requirement),
-            requirement: Some(requirement),
-            message,
-        }
-    }
-
-    /// The diagnostic code this refusal is reported under.
-    pub(crate) fn code(&self) -> &'static str {
-        self.code
-    }
-
-    /// The declared requirement that fell short, when the refusal is one of those.
-    pub(crate) fn requirement(&self) -> Option<Precondition> {
-        self.requirement
-    }
-
-    /// What the refusal says, in one sentence. The caller states the BCI: the site is the caller's.
-    pub(crate) fn message(&self) -> &str {
-        &self.message
-    }
-}
-
-/// The code a refusal under one declared requirement is reported with.
-fn requirement_code(requirement: Precondition) -> &'static str {
-    match requirement {
-        Precondition::IrTable(IrTable::BootstrapMethods) => "jre_lambda_no_bootstrap",
-        Precondition::Replayable => "jre_lambda_capture_not_replayable",
-        _ => "jre_lambda_unmet_precondition",
-    }
-}
+///
+/// The shape itself is shared with the other pattern rules of this layer ([`crate::refusal`]): what
+/// this module contributes is which codes the `lambda@1` rule's refusals are reported under.
+pub(crate) use crate::refusal::Refusal;
 
 /// The pass answerable for every verdict of this module — the one that presents the shape or
 /// refuses it.
@@ -882,7 +828,11 @@ fn source_name(internal: &str) -> String {
 ///
 /// `None` for the return type is `V`. Only the `(…)…` form is read: a field descriptor reaching here
 /// is one this layer does not state, and `None` says so instead of splitting it wrongly.
-fn parse_method(descriptor: &str) -> Option<(Vec<Type>, Option<Type>)> {
+///
+/// Shared with the pattern rules of P3 2.2, which read the same descriptors for their own purposes
+/// (the `append` overloads a concatenation calls, the erased signature a bridge forwards, the
+/// declaration of an accessor): one reader of the subset's descriptors, not four.
+pub(crate) fn parse_method(descriptor: &str) -> Option<(Vec<Type>, Option<Type>)> {
     let bytes = descriptor.as_bytes();
     if bytes.first() != Some(&b'(') {
         return None;

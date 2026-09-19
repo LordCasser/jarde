@@ -39,14 +39,17 @@ use jarde_reader::classfile::VerificationStatus;
 use jarde_reader::model::{Diagnostic, DiagnosticSeverity, ExecutionReport, TerminationReason};
 use serde::Serialize;
 
+use crate::accessor::AccessorRecord;
+use crate::bridge::{self, BridgeRecord};
 use crate::build;
+use crate::concat::{self, ConcatRecord};
 use crate::decode::Operations;
 use crate::emit::{Emitted, emit};
-use crate::facts::RecoveryFacts;
+use crate::facts::{ClassMembers, RecoveryFacts};
 use crate::lambda::LambdaRecord;
 use crate::names::NameTable;
 use crate::normal_flow::NormalFlowView;
-use crate::pass::{LAMBDA, RecoveryProfile, RuleVersion};
+use crate::pass::{ACCESSOR, BRIDGE, CONCAT, LAMBDA, RecoveryProfile, RuleVersion};
 use crate::region::{FallbackReason, Recovered, Region};
 use crate::source_map::SourceMap;
 use crate::stop::StopReason;
@@ -67,12 +70,29 @@ pub struct RecoveryRequest<'a> {
     /// point hands the environment's profile over — and it is a *policy* input, not evidence: unlike
     /// the three tables above, it says nothing about what the bytes are.
     pub profile: RecoveryProfile,
+    /// The class's **other members**, as the caller read them beside this body: the declaration and
+    /// the decoded body of a member the payload cannot hold, because the payload is one method's
+    /// (P3 2.2). A caller that did not read the class's members states `None`, and the accessor rule
+    /// then records the table it is missing rather than guessing from a call's name.
+    pub members: Option<&'a ClassMembers>,
 }
 
 impl<'a> RecoveryRequest<'a> {
-    /// One request over one payload, one fact set and one profile.
+    /// One request over one payload, one fact set and one profile, with no member table.
     pub fn new(ir: &'a MethodIr, facts: &'a RecoveryFacts, profile: RecoveryProfile) -> Self {
-        Self { ir, facts, profile }
+        Self {
+            ir,
+            facts,
+            profile,
+            members: None,
+        }
+    }
+
+    /// The same request, with the class's other members: the evidence a synthetic accessor call site
+    /// is decided from (P3 2.2, A12).
+    pub fn with_members(mut self, members: &'a ClassMembers) -> Self {
+        self.members = Some(members);
+        self
     }
 }
 
@@ -158,6 +178,18 @@ pub struct RecoveryReport {
     /// whether it was presented as a lambda or refused and left as bytecode: the refusals are part
     /// of the answer, not an absence from it.
     pub lambdas: Vec<LambdaRecord>,
+    /// Every concatenation chain candidate of the body, in BCI order, with the class it built, every
+    /// `append` it called and whether it was presented (P3 2.2). A refused candidate is part of the
+    /// answer too: it names the link of the verification that failed.
+    pub concats: Vec<ConcatRecord>,
+    /// Every synthetic accessor call site of the body, in BCI order, with the member the call named,
+    /// the flags the class declared, the field its body accesses and whether the call site was
+    /// presented as that field (P3 2.2, A12).
+    pub accessors: Vec<AccessorRecord>,
+    /// The `bridge@1` rule's verdict for this very method, when the member is declared a bridge or
+    /// its body is the forward a bridge is written as (P3 2.2). Empty for every other body: an
+    /// ordinary member is not a bridge question.
+    pub bridges: Vec<BridgeRecord>,
     /// Every fallback the run had to keep, with its code.
     pub fallbacks: Vec<&'static str>,
     /// The names the presentation decided, when the run reached the naming step.
@@ -269,6 +301,12 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         slots,
         request.facts.debug_locals(),
     );
+    // The two shapes this run decides *before* a single statement is written, each from this run's
+    // own tables: the concatenation chains the body builds (P3 2.2) and the bridge verdict for the
+    // member itself, when its declaration or its body makes it one. Both are decisions about the
+    // bytes, not about the text, which is why they are taken here and read by the builder.
+    let chains = concat::plan(ssa, &operations);
+    let bridge = bridge::plan(request.facts.method(), ssa, &operations);
     let program = match build::build(
         canonical,
         ssa,
@@ -279,6 +317,9 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             profile: request.profile.clone(),
             parameters: request.facts.method().parameters(),
             names: &names,
+            chains: &chains,
+            members: request.members,
+            bridge: bridge.as_ref(),
         },
         &recovered.regions,
         budget,
@@ -354,6 +395,20 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             rules.push(rule);
         }
     }
+    // The three shapes of P3 2.2 are rules' answers in the same way, and each record says which
+    // rule: a body with none of them names none of the rules.
+    let concats = chains.records().to_vec();
+    let bridges: Vec<BridgeRecord> = bridge.iter().map(|plan| plan.record().clone()).collect();
+    for rule in concats
+        .iter()
+        .map(ConcatRecord::rule)
+        .chain(program.accessors.iter().map(AccessorRecord::rule))
+        .chain(bridges.iter().map(BridgeRecord::rule))
+    {
+        if !rules.contains(&rule) {
+            rules.push(rule);
+        }
+    }
     // The refusals are diagnostics of their own: a site that was not presented says which link of
     // the chain failed, whether it was the class's table, the factory, the SAM's shape or a value
     // this layer may not replay (A04).
@@ -387,6 +442,85 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             ),
         ));
     }
+    // The three shapes of 2.2 report the same way: every refusal is a diagnostic of its own, and a
+    // summary states how many candidates were read and how many were presented. A run that read no
+    // candidate of a shape says nothing about that shape's rule at all.
+    for record in &concats {
+        if let Some(refusal) = &record.refusal {
+            diagnostics.push(diagnostic(
+                refusal.code,
+                DiagnosticSeverity::Warning,
+                &refusal.message,
+            ));
+        }
+    }
+    if !concats.is_empty() {
+        diagnostics.push(diagnostic(
+            "jre_concat_chains",
+            DiagnosticSeverity::Info,
+            &format!(
+                "{} concatenation candidate(s) read under {}: {} presented, {} refused",
+                concats.len(),
+                CONCAT.rule(),
+                concats.iter().filter(|record| record.presented()).count(),
+                concats.iter().filter(|record| !record.presented()).count(),
+            ),
+        ));
+    }
+    for record in &program.accessors {
+        if let Some(refusal) = &record.refusal {
+            diagnostics.push(diagnostic(
+                refusal.code,
+                DiagnosticSeverity::Warning,
+                &refusal.message,
+            ));
+        }
+    }
+    if !program.accessors.is_empty() {
+        diagnostics.push(diagnostic(
+            "jre_accessor_sites",
+            DiagnosticSeverity::Info,
+            &format!(
+                "{} accessor call site(s) read under {}: {} presented as a field access, {} refused",
+                program.accessors.len(),
+                ACCESSOR.rule(),
+                program
+                    .accessors
+                    .iter()
+                    .filter(|record| record.presented())
+                    .count(),
+                program
+                    .accessors
+                    .iter()
+                    .filter(|record| !record.presented())
+                    .count(),
+            ),
+        ));
+    }
+    for record in &bridges {
+        if let Some(refusal) = &record.refusal {
+            diagnostics.push(diagnostic(
+                refusal.code,
+                DiagnosticSeverity::Warning,
+                &refusal.message,
+            ));
+        }
+    }
+    if !bridges.is_empty() {
+        diagnostics.push(diagnostic(
+            "jre_bridge",
+            DiagnosticSeverity::Info,
+            &format!(
+                "the body was read under {}: {}",
+                BRIDGE.rule(),
+                if bridges.iter().any(|record| record.presented()) {
+                    "presented as the forward it is"
+                } else {
+                    "not presented as a forward"
+                }
+            ),
+        ));
+    }
     RecoveryReport {
         profile: request.profile.clone(),
         representation: if structured {
@@ -415,6 +549,9 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         source_map: emitted.source_map,
         regions,
         lambdas: program.lambdas,
+        concats,
+        accessors: program.accessors,
+        bridges,
         fallbacks,
         aliased_names,
         diagnostics,
@@ -525,6 +662,9 @@ fn stopped(
         source_map: SourceMap::default(),
         regions: Vec::new(),
         lambdas: Vec::new(),
+        concats: Vec::new(),
+        accessors: Vec::new(),
+        bridges: Vec::new(),
         fallbacks: Vec::new(),
         aliased_names: Vec::new(),
         diagnostics: vec![diagnostic(code, severity, &message)],

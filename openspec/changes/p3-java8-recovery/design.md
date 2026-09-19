@@ -375,3 +375,41 @@ jarde-java  ①正常流图视图 → ②异常事实 → ③Region → ④AST +
 | `oracle.rs::execute` 的 `Text::Return(None)` | 记为 `Some(0)` | 记为 `None` | 裸 `return` 不返回值；字节码侧模型的同一事实是 `None`，两侧必须一致。既有 fixture 全是 `ireturn`，该分支此前从未被走到 |
 
 **9. 留给后面的（如实）。** 3.1/3.2：段表 `cp` 面的其余填充与 `LambdaRecord` 的 `Deserialize` 面（码字段现为 `&'static str`）；3.3：语料级 lambda 矩阵（多代 javac/ECJ、缺 debug、混淆）与受控重编译，以及「适配」类站点（子类型/装箱/加宽）——本片对它们一律拒绝并已写明；2.2/2.3：concat/accessor/bridge、inner/enum 等其余 Java 8 模式；`altMetafactory` 的非零标志位（markers/bridges/serializable）需要各自的呈现与 bridge 证据，属后续阶段。
+
+#### 2.2 的实际落点：拼接链、bridge 与 synthetic accessor（2026-09-19）
+
+本片把三条 Java 8 模式规则注册进同一张 `PASSES` 表（`straight@1`/`if@1`/`loop@1`/`switch@1`/`lambda@1` 之后新增 `concat@1`/`bridge@1`/`accessor@1`），并沿用 2.1 的 `Precondition`/`RuleVersion`/`Refusal` 机制 —— **没有第二套**：`Refusal` 从 `lambda.rs` 提到共享模块 `refusal.rs`，诊断码按 `(rule, requirement)` 查表（`requirement_code`），规则一侧只声明自己有哪些 requirement。
+
+**1. `concat@1`：接收者类别、重载语义与求值顺序。** 已验证形态是 `new C ─ dup ─ invokespecial C.<init>()V ─ [操作数生产者] append(X)C … ─ toString()Ljava/lang/String;`，全部读自同一次运行的解码与值流：
+
+- **接收者类别是判定的一部分**，且只接受两个名字（`CONCAT_CLASSES`）：`java/lang/StringBuilder`（javac 5 起）与 `java/lang/StringBuffer`（更早的拼写，源里仍可指名）。其它类上的同形调用链不被本规则认领。
+- **`append` 逐重载检查转换语义**（`keeps_its_conversion`）：`int/long/float/double/boolean/String/Object` 这些重载写出的文本与 `+` 相同；`char`（`+` 会按数值相加）、`char[]`（`+` 写数组的 `toString`）、`CharSequence`（`append` 写字符序列而 `+` 走 `toString`）、`StringBuffer`（Java 5 重载）等一律**拒绝整条链**——转换不可丢。
+- **求值顺序是三条可证的守卫**：(a) 链的整段 BCI（从 `new` 到 `toString`）由链**拥有**，`build` 对这些 BCI 不产任何语句，操作数的文本只在表达式里出现一次；(b) 每个操作数的产生 BCI 必须落在「上一条链指令」与「它自己的 `append`」之间，于是写出的表达式从左到右的求值与字节码同序；(c) 段内不得有产出语句的指令，否则按 `Precondition::StatementFree` 拒绝（把语句写进表达式会改变次数或次序）。
+- **拒绝即引用**：链被分支切开（`jre_concat_split`，同类的 `toString` 在另一个 block）、实例被存入局部量（`jre_concat_interleaved_effect`）、单个 `append`（`+` 写不出「一个值就是拼接结果」）、重载转换不可证（`jre_concat_shape`）、`toString` 的结果无人读（`jre_concat_unconsumed`）。`new`/`dup`/`getfield`/`checkcast` 等指令在 `decode` 里建模，但**只有规则认领后才呈现**：未被认领的仍是按 BCI 逐条引用的 fallback。
+- **段表**：一条链是一个节点、多份原始 BCI —— primary 是 `toString` 的 BCI，derived 保留链的**每一个** BCI（`new`/`dup`/`<init>`/每个 `append`/每个操作数生产者），两侧都留在表里。
+
+**2. `bridge@1`：先读声明，再读消去证明。** bridge 身份来自**声明的 `access_flags`**（`MethodFacts::is_bridge`，本片为此给 `MethodFacts` 增加可选 flags，由调用方从同一个类的头读出），不由 body 形状推断。形状要求 body 的每一条指令都是「读数槽 / 一次转发调用 / 对被转发返回值的 `checkcast` / return」：
+
+- **`checkcast` 是消去而不是检查**，其证明只依赖一处池事实：被 cast 的值正是转发调用返回的值，且 cast 的类型正是**该调用描述符声明的返回类型**（`invocation_returns_the_cast`）。Java 的声明类型保证值要么是 null 要么是该类型，因此该 cast 既不会失败也不会改变值，去掉它写的是同一件事。
+- **参数上的 cast 一律拒绝**（`jre_bridge_cast_not_erasure`）：被转发调用的实参是擦除签名给的宽类型，把它 cast 到窄类型是**会失败**的检查。这也覆盖了「cast 出现在 loads 与 invoke 之间」的形态。
+- 其它失败：body 不只转发（`jre_bridge_shape`，例如多一次 `astore`）、类没有把该成员声明为 bridge（`jre_bridge_not_declared`，于是 cast 照旧引用）、运行没有交出 flags（`jre_bridge_flags_missing`，走 `Precondition::Metadata{access_flags}` 的 `unmet` 路径）。**拒绝 bridge 形状不等于拒绝成员**：body 仍按通用结构呈现（多出来的那条语句照样写成语句）。presented 的 bridge 由通用路径写 `return x.m(args)`，本规则只拥有那个被证明是消去的 cast BCI（该 BCI 仍作为 derived 锚点留在段表里）。
+
+**3. `accessor@1`：callee 自己的 body 是唯一证据（A12）。** `access$NNN` 这个名字只决定「这个调用点值不值得留一条 refusal 记录」，绝不决定它是不是访问器（与 `lambda$` 标记同一条纪律）。判定读的是成员表里那个成员的**声明与解码后的 body**：
+
+- 声明必须 `static` 且 `synthetic`（`jre_accessor_declaration` 拒绝源码里能写出来的成员）；
+- body 必须恰好是**一次实例字段访问加它前后的读取与 return**：读形态 `load 0; getfield C.f:D; return`（描述符 `(LC;)D`），写形态 `load 0; load 1; putfield C.f:D; return`（描述符 `(LC;D)V`），字段的类必须是本类（`jre_accessor_field`），字段类型必须与描述符一致；
+- 呈现：读访问器 → `x.f`（`ExprKind::Field`），写访问器 → `x.f = v;`（`StmtKind::FieldAssign`）；调用点自身 BCI 是 primary，**访问器 body 里那条字段指令的 BCI 是 derived** —— 一次派生呈现带两个原始 BCI（`accessor@` 记录的 `field` 同时给出 owner/name/descriptor 证据）；
+- 失败：body 做别的事（`jre_accessor_body`）、结果无人读（`jre_accessor_unconsumed`）、调用点实参渲染不出（`jre_accessor_arguments`）、运行没交成员表（`jre_accessor_members_missing`，`IrTable::Members` 的 `unmet`）。方法转发型 accessor（`invokestatic access$200(x)` 转发到别的方法）**不呈现**：本片只呈现字段访问，转发形态保留原来的调用（如实记录，见 §4）。
+
+**4. 成员表这条缝（如实记录，供后续复核）。** synthetic accessor 是**同一个类的另一个成员**，一次方法的载荷装不下它。所以本片给 `RecoveryRequest` 加了一个可选的 `ClassMembers`（`owner` + 每个成员的声明与 `MethodCodeFacts`），由**读过同一个类头的那一方**交出；含义判断全在 `accessor.rs`，调用方交不出「这是个 getter」这种说法，只能交字节。**这与 1.3b 的载荷纪律不冲突**：body 的事实仍只来自同一次运行（`accessor.rs` 用呈现那次运行的池解引用成员 body）。**根门面本片没有接这条缝**：`Engine::recover_method` 的 `recovery_facts` 明说不做第二次类读，因此经门面的运行给出 `jre_accessor_members_missing` 这一条**被陈述**的拒绝（库层用例覆盖呈现，门面用例覆盖「拒绝不改 X1」）。
+
+**5. A12 的双 origin 边在哪里断言、为什么在那里。** `jarde-java` **不依赖** `jarde-query`，所以 X1 的断言放在**根 crate 的用例** `tests/p3_accessor_edges.rs`：同一个装配 fixture，一次**不走恢复**、一次**走恢复**并逐字段比较两次 `Engine::query` 的输出（递归把 `elapsed_millis` 归零后比较整份序列化文档），再**分别**断言两条边各自存在 —— ①调用方 `method` 的 call site BCI → accessor 符号，②accessor 自己的 `getfield` BCI → 字段符号（两条 item 互不相等，因此不是「总数不变」的弱断言）。同一条用例另断言门面那次恢复**拒绝**呈现（缺成员表）且仍在文本里保留 `access$100(`：呈现是派生的，X1 一行未动。
+
+**6. 独立 oracle 与它的边界。** 拼接与 accessor 的独立对照写在 `crates/jarde-java/tests/p3_patterns.rs`（与 `oracle.rs` 同一做法：自写模型 + `include_str!` 源码守卫），两个 marker 之间的**模型段**自带：自写常量池解析（未知 tag 直接 panic）、自写栈机（`new/dup/<init>/ldc/iload/invokestatic/invokevirtual/checkcast/return`，未建模 opcode 直接 panic）、自写文本解析与求值，比较器要求**调用序列、返回值、访问器调用次数**三项逐条相等（访问器在字节码侧是 1 次调用、在文本侧必须是 1 次字段访问且**0 次调用**）。模型自己声明 fixture 的事实（字段值、被调成员返回值），不读生产侧任何东西。**边界**：模型不知道 `this` 写不写限定、不比较静态调用的 owner 拼写、也不执行别的方法的 body。
+
+**7. 验证与证伪（本片实际执行）。** `cargo test --workspace --all-targets --all-features --locked --no-fail-fast` = **925 passed / 0 failed / 1 ignored**（2.1 基线 894，**+31** = `jarde-java` 单元 43→49（concat 2、bridge 1、accessor 1、refusal 2）+ 新集成文件 `crates/jarde-java/tests/p3_patterns.rs` 24 + 新根用例 `tests/p3_accessor_edges.rs` 1；其余 crate 与既有用例一字未改）；`cargo fmt --all -- --check` 与 `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`（1.98.1）干净；两个 CI example 按 CI 口径（带 `HistoricalControlFlow.class` 参数）exit 0；分层 `cargo tree -p jarde-reader/jarde-query/jarde-jvm` 中 `jarde-java` 出现 **0** 次；`cargo metadata --manifest-path fuzz/Cargo.toml --locked` 通过、`cargo deny --manifest-path fuzz/Cargo.toml --workspace --locked --config deny.toml check` 四类全 ok（**未触及任何依赖边与 workspace 成员，`Cargo.toml` 一字未改**）。**三组证伪**（`/tmp` 副本 + 独立 `CARGO_TARGET_DIR`，`sha256sum -c` 确认仓库侧 22 个源文件逐字节未变，用完删除）：① 让段内语句检查改为「一律接受」→ `a_chain_whose_instance_is_stored_in_a_local_is_refused` 红（实例被存进局部量的链被当成 `+` 写出来）；② 把 `append` 的操作数顺序倒过来 → 顺序用例红且 oracle 正例同时红（产物是 `return f() + 5 + "x";`）；③ 削弱 oracle（比较器不再比调用序列）→ `the_oracle_rejects_a_concatenation_whose_calls_are_written_in_another_order` 红，而同文件**其余 23 条（含全部生产用例）全绿**。
+
+**8. 本片发现、但未在本片修的既有边界（如实）。** `build` 的普通调用臂在「值被消费」时仍会同时写一条调用语句与消费处的表达式（`access$200(self);` 与 `return access$200(self);` 并存）——这是 P2/2.1 既有行为，本片只在自己的两类调用上加了「值有读者就不另写语句」的守卫（lambda 站点刻意不在守卫的读者集合里：被拒绝的站点必须留下那个产生捕获值的调用）。修它需要让「读者会不会真的渲染这个值」成为可判定的，超出本片范围；既有 2.1 用例依赖该行为，因此未动。
+
+**9. 留给后面的（如实）。** 3.1：参数槽/receiver 与 debug 名（本片 fixture 里 `this` 会被名字层别名成 `self_` 一类，因为 `this` 是关键字；门面仍不猜 receiver）；3.2：段表 `cp` 面、`ConcatRecord`/`AccessorRecord`/`BridgeRecord` 的 `Deserialize` 面；3.3：语料级 concat/accessor/bridge 矩阵（多代 javac/ECJ、缺 debug、混淆）与受控重编译（`altMetafactory` 的非零标志位、方法转发型 accessor 的呈现、内联 `checkcast` 之外的转换类站点都在那里重新评估）。门面接成员表（`ClassMembers`）是 3.1 的名字读与成员读一起做，而不是本片临时加第二次类读。
+

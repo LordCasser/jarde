@@ -142,6 +142,14 @@ pub enum ExprKind {
     },
     /// `Qualifier::name` — a method reference, with the qualifier a type or an expression.
     MethodReference { qualifier: Box<Expr>, name: String },
+    /// `receiver.name` — one field of an instance, written where a synthetic accessor's call was.
+    ///
+    /// This node is written for exactly one shape: a call site whose callee's body was verified as
+    /// the pure forwarding of one field access ([`crate::accessor`]). The receiver is the value the
+    /// call site passed to the accessor, and the name is the field the accessor's own decode named.
+    /// A `getfield` instruction of the *presented* body never becomes this node — a field access
+    /// this layer has not verified is quoted as bytecode.
+    Field { receiver: Box<Expr>, name: String },
     /// A binary operation over two expressions.
     Binary {
         op: BinaryOp,
@@ -207,6 +215,15 @@ pub enum StmtKind {
     Assign { name: String, value: Expr },
     /// `<expr>;` — a call whose result is not used.
     Expr(Expr),
+    /// `receiver.name = value;` — the write a synthetic accessor's call performed.
+    ///
+    /// A write accessor returns nothing, so the call site that used to spell it is a statement:
+    /// the receiver is the first argument the site passed, and the value is the second.
+    FieldAssign {
+        receiver: Expr,
+        name: String,
+        value: Expr,
+    },
     /// `return;` or `return <expr>;`
     Return { value: Option<Expr> },
     /// `if (<cond>) { … } else { … }`, with an empty `else_body` when the source had none.

@@ -30,15 +30,32 @@
 //! [`Operation::Other`] and makes the statement it belongs to unrenderable, which is a declared
 //! fallback with a diagnostic and never an invented expression.
 
+/// The access-flag bit a class sets on a member that is `static`.
+pub const ACC_STATIC: u16 = 0x0008;
+
+/// The access-flag bit a class sets on the bridge method a compiler generated.
+pub const ACC_BRIDGE: u16 = 0x0040;
+
+/// The access-flag bit a class sets on a member a compiler generated.
+pub const ACC_SYNTHETIC: u16 = 0x1000;
+
 /// What a class file says about the method whose body is being presented.
 ///
-/// Identity only: the name and descriptor are evidence the presentation quotes, and the parameter
+/// Identity: the name and descriptor are evidence the presentation quotes, and the parameter
 /// count is what tells an ordinal name whether it belongs to a parameter or to a local.
+///
+/// The member's **access flags** are here too, and they are optional because the payload does not
+/// carry them (P3 1.3b publishes the body's own tables, not the member list): a caller that read
+/// the class's declaration states them, and one that did not states nothing. The difference
+/// matters to exactly one rule — a **bridge** is a member the compiler declared as one
+/// ([`ACC_BRIDGE`]), so a run that states no flags has no bridge to present and says so by having
+/// no verdict to record, rather than by guessing from the body's shape.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct MethodFacts {
     name: String,
     descriptor: String,
     parameters: u16,
+    access_flags: Option<u16>,
 }
 
 impl MethodFacts {
@@ -48,7 +65,28 @@ impl MethodFacts {
             name: name.into(),
             descriptor: descriptor.into(),
             parameters,
+            access_flags: None,
         }
+    }
+
+    /// The same facts with the member's access flags, exactly as the class declared them.
+    pub fn with_access_flags(mut self, access_flags: u16) -> Self {
+        self.access_flags = Some(access_flags);
+        self
+    }
+
+    /// The access flags the class declares for this member, when the caller stated them.
+    pub fn access_flags(&self) -> Option<u16> {
+        self.access_flags
+    }
+
+    /// Whether the class declares this member as a bridge a compiler generated.
+    ///
+    /// This is a *declaration* fact, never a guess from the body: a member whose body looks like a
+    /// forward but which the class did not declare as a bridge is an ordinary method, and the
+    /// `bridge@1` rule does not touch it.
+    pub fn is_bridge(&self) -> bool {
+        matches!(self.access_flags, Some(flags) if flags & ACC_BRIDGE != 0)
     }
 
     /// The method's own name as the class file spells it.
@@ -304,6 +342,42 @@ pub enum Operation {
     Transfer,
     /// Invokes the target it names, with the receiver and arguments it reads.
     Invoke(CallTarget),
+    /// Allocates an uninitialized instance of the class the instruction names (`new`).
+    ///
+    /// The name is the internal form the class's own pool states (`java/lang/StringBuilder`), and
+    /// it is the only thing this instruction says: an allocation is not yet an instance, and until
+    /// a constructor has run on it the presentation must not write anything for it.
+    Allocate { ty: String },
+    /// Duplicates the value on top of the stack (`dup`).
+    ///
+    /// It is not a value of its own and not an effect on the program's state: it is the shape a
+    /// chain that builds one instance and then uses it twice is written in, which is why the
+    /// concatenation rule reads it (the instance the `new` produced is the one every `append` and
+    /// the `toString` of the chain are called on).
+    Duplicate,
+    /// Reads or writes one field, with the symbol the class's own pool states.
+    ///
+    /// This is a modelled fact and not a presentation: which field an accessor reads, and whether
+    /// the access is a read or a write on an instance or on a type, is what decides whether a
+    /// synthetic member's body is the pure forwarding the `accessor@1` rule presents. Nothing here
+    /// writes a field access of its own — [`crate::build`] does that, and only for a call site
+    /// whose callee's body this fact set was used to verify.
+    Field {
+        access: FieldAccess,
+        /// Whether the instruction names a field of the class itself rather than of an instance.
+        is_static: bool,
+        /// The owner in internal form, exactly as the class file states it.
+        owner: String,
+        name: String,
+        descriptor: String,
+    },
+    /// Checks that the value it reads is assignable to the class it names (`checkcast`).
+    ///
+    /// A check is not an erasure: dropping one changes what the method does unless the value's own
+    /// type already proves the check can neither fail nor change the value. That proof is the
+    /// `bridge@1` rule's, and a cast no rule has claimed is [`Self::Other`]'s business — quoted,
+    /// never silently dropped.
+    CheckCast { ty: String },
     /// A dynamic call site: it reads the captured values the site's descriptor names and produces
     /// the instance the descriptor returns.
     ///
@@ -342,6 +416,108 @@ impl Operation {
             Self::Switch { cases, default } => Some((cases.as_slice(), *default)),
             _ => None,
         }
+    }
+}
+
+/// Which way one field instruction goes.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum FieldAccess {
+    /// `getfield`/`getstatic`: the instruction reads the field.
+    Read,
+    /// `putfield`/`putstatic`: the instruction writes the field.
+    Write,
+}
+
+/// One member of the class the presented body belongs to, with its declaration and its body.
+///
+/// This is the evidence the `accessor@1` rule needs and the payload cannot hold: a synthetic
+/// accessor is a **different member** of the same class, so the run that presents the caller's body
+/// can only see it if the caller hands it over. What the caller hands over is not a verdict — it
+/// is the same two things the payload holds for the presented body (the member's declaration facts
+/// and its decoded body), and every judgement about that body is made in [`crate::accessor`].
+#[derive(Clone, Debug)]
+pub struct MemberBody {
+    owner: String,
+    name: String,
+    descriptor: String,
+    access_flags: u16,
+    code: jarde_reader::classfile::MethodCodeFacts,
+}
+
+impl MemberBody {
+    /// One member of a class, exactly as the same read of that class stated it.
+    pub fn new(
+        owner: impl Into<String>,
+        name: impl Into<String>,
+        descriptor: impl Into<String>,
+        access_flags: u16,
+        code: jarde_reader::classfile::MethodCodeFacts,
+    ) -> Self {
+        Self {
+            owner: owner.into(),
+            name: name.into(),
+            descriptor: descriptor.into(),
+            access_flags,
+            code,
+        }
+    }
+
+    /// The class the member is declared in, in internal form.
+    pub fn owner(&self) -> &str {
+        &self.owner
+    }
+
+    /// The member's name.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// The member's descriptor.
+    pub fn descriptor(&self) -> &str {
+        &self.descriptor
+    }
+
+    /// The member's access flags, as the class declared them.
+    pub fn access_flags(&self) -> u16 {
+        self.access_flags
+    }
+
+    /// The member's decoded body.
+    pub fn code(&self) -> &jarde_reader::classfile::MethodCodeFacts {
+        &self.code
+    }
+}
+
+/// The members of one class, as the caller read them beside the presented body.
+///
+/// The caller that reads a body's facts has the class's declaration in hand (that is where its own
+/// member name came from); handing the *other* members over is what makes a call to a synthetic
+/// accessor decidable at all. The seam keeps the discipline of the payload: a member arrives as
+/// its declaration and its **decoded body**, never as a claim about what it does, and
+/// [`crate::accessor`] is the only place that reads a meaning into it.
+#[derive(Clone, Debug)]
+pub struct ClassMembers {
+    owner: String,
+    members: Vec<MemberBody>,
+}
+
+impl ClassMembers {
+    /// The declared members of one class.
+    pub fn new(owner: impl Into<String>, members: Vec<MemberBody>) -> Self {
+        Self {
+            owner: owner.into(),
+            members,
+        }
+    }
+
+    /// The class these members are declared in, in internal form.
+    pub fn owner(&self) -> &str {
+        &self.owner
+    }
+
+    /// Every member the caller handed over, in declaration order.
+    pub fn members(&self) -> &[MemberBody] {
+        &self.members
     }
 }
 

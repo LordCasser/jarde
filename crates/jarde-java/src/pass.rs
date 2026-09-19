@@ -84,6 +84,15 @@ pub enum IrTable {
     /// presented. So the requirement is checked where a rule would claim a shape, through
     /// [`crate::region::FallbackReason::unmet`]'s own path, rather than by the run-level gate.
     BootstrapMethods,
+    /// The class's **other members**, with their declarations and their decoded bodies (P3 2.2).
+    ///
+    /// A synthetic accessor is a different member of the same class, so the run that presents a
+    /// caller's body can only decide what a call to one means if the caller hands that member over.
+    /// Like the bootstrap table it is optional for a run and checked where a rule would claim a
+    /// shape — a call site naming a member this table does not hold is a refused *site*
+    /// ([`crate::accessor`]), not a refused run, and a body that calls nothing of the sort never
+    /// consults it at all.
+    Members,
 }
 
 impl IrTable {
@@ -96,6 +105,7 @@ impl IrTable {
             Self::Code => "code",
             Self::ConstantPool => "constant pool",
             Self::BootstrapMethods => "bootstrap methods",
+            Self::Members => "class members",
         }
     }
 }
@@ -125,15 +135,18 @@ pub enum Precondition {
     /// the bytecode ran it. A store, an increment, a call, a return or an operation this subset does
     /// not model is an effect with no place in the shape, and the shape is quoted instead.
     StatementFree,
-    /// **Metadata**: an attribute-derived fact the shape needs (a debug name, a line number) before
-    /// it could be written.
+    /// **Metadata**: an attribute- or declaration-derived fact the shape needs (a debug name, a
+    /// line number, a member's access flags) before it could be written.
     ///
-    /// **No rule in this slice requires metadata**, and that is a decision rather than an omission:
+    /// **No rule of 1.3 requires metadata**, and that is a decision rather than an omission:
     /// a body compiled without debug information is presented with deterministic ordinal names
     /// (A10) instead of being refused, and the emitter never writes a source position beyond the BCI
     /// an origin carries, so no shape's precondition is a name or a line. The variant exists because
     /// the family is one of the three decision 1 names, and a rule that *did* require a
-    /// `LineNumberTable` would have to state it here rather than assume it.
+    /// `LineNumberTable` would have to state it here rather than assume it. P3 2.2 registers the
+    /// first rule that does require one: the *bridge* rule needs the member's `access_flags`, which
+    /// is a declaration fact of the same family — the caller read it with the class's header and the
+    /// payload does not carry it.
     Metadata { attribute: &'static str },
     /// **Effect**: every value the shape *repeats* has to be one whose text can be written where the
     /// shape reads it without running anything again.
@@ -337,8 +350,83 @@ pub const LAMBDA: Pass = Pass::new(
     ],
 );
 
+/// The pass that presents a verified `StringBuilder`/`StringBuffer` chain as a concatenation.
+///
+/// The output of this rule — `a + b + c` — is Java in every release, so the rule is
+/// release-independent ([`Pass::required_release`] is `None`): what changes across releases is the
+/// *input*, and that is a fact the rule states itself rather than a gate it is admitted through.
+/// The classes it accepts as the chain's receiver are exactly the two compilers wrote for string
+/// concatenation, `java/lang/StringBuilder` (javac from release 5 on) and `java/lang/StringBuffer`
+/// (the spelling before that, and one a source may still ask for); a chain on any other class is
+/// not this shape and the rule does not claim it.
+///
+/// It requires the run's **names**, its **decode** and its **pool** — the chain is read out of the
+/// value flow and the instructions, and the class it builds, the `append` overloads it calls and
+/// the field it writes are symbol facts of the pool — plus [`Precondition::StatementFree`]: every
+/// instruction *between* the chain's first and last one has to be part of a value expression. That
+/// is the requirement that keeps the concatenation's own order: a store, a call statement or an
+/// increment sitting between two `append`s would be written after the expression that now holds
+/// them, and an effect is never moved by this rule.
+pub const CONCAT: Pass = Pass::new(
+    RuleVersion::new("concat", "1"),
+    None,
+    &[
+        Precondition::IrTable(IrTable::Ssa),
+        Precondition::IrTable(IrTable::Code),
+        Precondition::IrTable(IrTable::ConstantPool),
+        Precondition::StatementFree,
+    ],
+);
+
+/// The pass that presents a bridge method's verified forward as the call it forwards.
+///
+/// A bridge is a member the class **declares** as one ([`jarde_java::MethodFacts::is_bridge`] over
+/// the access flags the caller states), so this rule reads a declaration fact before it looks at a
+/// body: the shape a body happens to have never makes a bridge. Its output — `return x.m(args)`
+/// with the erased signature's own spelling — is Java in every release, hence `None`; bridges
+/// themselves exist from release 5 on, which is a fact about the input.
+///
+/// It requires the run's names, decode and pool (the forwarded target is a pool symbol), and
+/// [`Precondition::Metadata`] for the member's **access flags**: without them the run has no bridge
+/// to present, and the rule says exactly that instead of inferring one from a body that looks like a
+/// forward.
+pub const BRIDGE: Pass = Pass::new(
+    RuleVersion::new("bridge", "1"),
+    None,
+    &[
+        Precondition::IrTable(IrTable::Ssa),
+        Precondition::IrTable(IrTable::Code),
+        Precondition::IrTable(IrTable::ConstantPool),
+        Precondition::Metadata {
+            attribute: "access_flags",
+        },
+    ],
+);
+
+/// The pass that presents a verified synthetic accessor call as a direct field access.
+///
+/// A synthetic accessor is a **different member** of the same class, so this rule reads the class's
+/// own member list ([`IrTable::Members`]): the callee's declaration says whether it is `static` and
+/// `synthetic`, and the callee's decoded body says whether it reads or writes one field and nothing
+/// else. What the rule writes — `x.f`, or `x.f = v` — is Java in every release, hence `None`;
+/// accessors themselves exist from the first release javac needed them.
+///
+/// A call site that names a member the run does not hold is refused with the *table* named
+/// ([`crate::accessor`]), never presented from the call's own name: a member called `access$100`
+/// that reads a field is not the reason to print a field access, the member's own verified body is.
+pub const ACCESSOR: Pass = Pass::new(
+    RuleVersion::new("accessor", "1"),
+    None,
+    &[
+        Precondition::IrTable(IrTable::Ssa),
+        Precondition::IrTable(IrTable::Code),
+        Precondition::IrTable(IrTable::ConstantPool),
+        Precondition::IrTable(IrTable::Members),
+    ],
+);
+
 /// Every pass this build registers, in the order the design lists them.
-pub const PASSES: [Pass; 5] = [STRAIGHT, IF, LOOP, SWITCH, LAMBDA];
+pub const PASSES: [Pass; 8] = [STRAIGHT, IF, LOOP, SWITCH, LAMBDA, CONCAT, BRIDGE, ACCESSOR];
 
 /// The registered pass with this rule name, when there is one.
 pub fn pass(rule: &str) -> Option<Pass> {
@@ -389,7 +477,7 @@ mod tests {
 
     #[test]
     fn the_registered_table_states_each_rule_and_its_preconditions() {
-        assert_eq!(PASSES.len(), 5);
+        assert_eq!(PASSES.len(), 8);
         assert_eq!(
             PASSES
                 .iter()
@@ -400,7 +488,10 @@ mod tests {
                 "if@1".to_string(),
                 "loop@1".to_string(),
                 "switch@1".to_string(),
-                "lambda@1".to_string()
+                "lambda@1".to_string(),
+                "concat@1".to_string(),
+                "bridge@1".to_string(),
+                "accessor@1".to_string()
             ]
         );
         // Which rules are release-independent and which one is not (P3 2.1). Until then this loop
@@ -413,6 +504,16 @@ mod tests {
                     pass.required_release(),
                     Some(8),
                     "{pass:?} presents `invokedynamic`, which is a Java 8 construct"
+                ),
+                // The three pattern rules of P3 2.2 are release-independent for the reason their
+                // own documentation states: what they *write* (`a + b`, `x.f = v`, `return x.m()`)
+                // is Java in every release, and the shapes they *read* are stated by the rule itself
+                // (the two concatenation classes, the declared bridge flag, the synthetic accessor's
+                // body) rather than through the profile gate.
+                "concat" | "bridge" | "accessor" => assert_eq!(
+                    pass.required_release(),
+                    None,
+                    "{pass:?} writes a construct every release spells the same way"
                 ),
                 _ => assert_eq!(
                     pass.required_release(),
@@ -427,14 +528,19 @@ mod tests {
                 "{pass:?} does not require debug metadata: a body without it is named, not refused"
             );
         }
-        // The effect preconditions: the loop pass states `StatementFree` for its test block and the
-        // lambda rule states `Replayable` for the values it captures; no other rule states either.
+        // The effect preconditions: the loop pass and the concatenation pass state `StatementFree`
+        // (each for its own block-shaped reason), and the lambda rule states `Replayable` for the
+        // values it captures; no other rule states either.
         assert!(LOOP.requires(Precondition::StatementFree));
+        assert!(CONCAT.requires(Precondition::StatementFree));
         assert!(!IF.requires(Precondition::StatementFree));
         assert!(!SWITCH.requires(Precondition::StatementFree));
         assert!(!STRAIGHT.requires(Precondition::StatementFree));
+        assert!(!BRIDGE.requires(Precondition::StatementFree));
+        assert!(!ACCESSOR.requires(Precondition::StatementFree));
         assert!(LAMBDA.requires(Precondition::Replayable));
         assert!(!LOOP.requires(Precondition::Replayable));
+        assert!(!CONCAT.requires(Precondition::Replayable));
         assert!(!LAMBDA.requires(Precondition::StatementFree));
         // The IR preconditions a pass may state name the tables that exist, and the lambda rule is
         // the one that reads the class's bootstrap table beside the decode it reads through. That
@@ -453,6 +559,7 @@ mod tests {
                                 | IrTable::Code
                                 | IrTable::ConstantPool
                                 | IrTable::BootstrapMethods
+                                | IrTable::Members
                         ),
                         "{pass:?} states a table that is not one of this build's"
                     );
@@ -461,11 +568,20 @@ mod tests {
         }
         assert!(LAMBDA.requires(Precondition::IrTable(IrTable::BootstrapMethods)));
         assert!(LAMBDA.requires(Precondition::IrTable(IrTable::ConstantPool)));
-        for pass in [STRAIGHT, IF, LOOP, SWITCH] {
+        assert!(ACCESSOR.requires(Precondition::IrTable(IrTable::Members)));
+        assert!(BRIDGE.requires(Precondition::Metadata {
+            attribute: "access_flags"
+        }));
+        assert_eq!(IrTable::Members.name(), "class members");
+        for pass in [STRAIGHT, IF, LOOP, SWITCH, CONCAT, BRIDGE] {
             assert!(!pass.requires(Precondition::IrTable(IrTable::BootstrapMethods)));
+            assert!(!pass.requires(Precondition::IrTable(IrTable::Members)));
         }
         assert_eq!(pass("loop"), Some(LOOP));
         assert_eq!(pass("lambda"), Some(LAMBDA));
+        assert_eq!(pass("concat"), Some(CONCAT));
+        assert_eq!(pass("bridge"), Some(BRIDGE));
+        assert_eq!(pass("accessor"), Some(ACCESSOR));
     }
 
     #[test]

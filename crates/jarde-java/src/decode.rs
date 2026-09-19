@@ -25,10 +25,17 @@
 //!
 //! Every opcode the provable subset models becomes a variant of [`Operation`], classified on the
 //! operand's **effective** opcode (a `wide iload` *is* an `iload`; `0xc4` is a prefix, not an
-//! instruction). Everything else — a field access, an array operation, a conversion, `athrow`,
-//! `jsr`, a `ret`, an arithmetic opcode this subset has no operator for — is [`Operation::Other`],
-//! which is a *stated* input: the statement it belongs to becomes a fallback with a diagnostic,
-//! never a guess.
+//! instruction). Everything else — an array operation, a conversion this subset has no operator
+//! for, `athrow`, `jsr`, a `ret` — is [`Operation::Other`], which is a *stated* input: the
+//! statement it belongs to becomes a fallback with a diagnostic, never a guess.
+//!
+//! The P3 2.2 slice models four more of them, and each one is a fact a *pattern rule* reads rather
+//! than a presentation this layer writes: the allocation and the duplication a concatenation chain
+//! starts with (`new`/`dup`), the field access a synthetic accessor's body reads or writes
+//! (`getfield`/`putfield`/`getstatic`/`putstatic`, with the member the pool names), and the cast a
+//! bridge applies to the value it forwards (`checkcast`, with the class the pool names). A caller
+//! cannot state any of the four — they are read from the same decode as everything else — and
+//! nothing below [`crate::build`] decides whether any of them is presented.
 //!
 //! `invokedynamic` is one of the modelled ones (P3 2.1), and modelling it means stating the *site*:
 //! its pool index, the bootstrap entry it names and the name and descriptor it presents. It does
@@ -49,7 +56,8 @@ use jarde_reader::classfile::{
 };
 
 use crate::facts::{
-    ArithmeticOp, CallTarget, CompareOp, ConstantValue, DynamicSite, InvokeKind, Operation,
+    ArithmeticOp, CallTarget, CompareOp, ConstantValue, DynamicSite, FieldAccess, InvokeKind,
+    Operation,
 };
 
 /// The operations of one decoded body, keyed by bytecode index.
@@ -125,6 +133,7 @@ fn operation_of(
             Some(op) => Operation::Arithmetic { op },
             None => Operation::Other,
         },
+        0x59 => Operation::Duplicate,
         0x84 => match (
             slot(operands),
             operands.and_then(|operands| operands.increment),
@@ -135,8 +144,11 @@ fn operation_of(
         0x99..=0xa6 | 0xc6 | 0xc7 => comparison(opcode, instruction, operands),
         0xaa | 0xab => switch(instruction, operands),
         0xa7 | 0xc8 => Operation::Transfer,
+        0xbb => allocate(instruction, operands, pool),
+        0xb2..=0xb5 => field(opcode, instruction, operands, pool),
         0xb6..=0xb9 => invoke(opcode, instruction, pool),
         0xba => invokedynamic(instruction, pool),
+        0xc0 => check_cast(instruction, operands, pool),
         0xac..=0xb1 => Operation::Return,
         _ => Operation::Other,
     }
@@ -345,6 +357,86 @@ fn invokedynamic(instruction: &InstructionFact, pool: &[CpEntryFacts]) -> Operat
         // the opcode is a class this layer cannot state an operation for.
         _ => Operation::Other,
     }
+}
+
+/// The instance one `new` allocates, named by the class its own pool entry states.
+///
+/// An allocation is the *start* of a shape, not a presentation: the value it pushes is not even an
+/// instance until a constructor has run on it, so nothing here writes `new …` — the concatenation
+/// rule is what decides that a particular allocation is the one a verified chain builds.
+fn allocate(
+    instruction: &InstructionFact,
+    operands: Option<&InstructionOperands>,
+    pool: &[CpEntryFacts],
+) -> Operation {
+    let Some(index) = pool_index(instruction, operands) else {
+        return Operation::Other;
+    };
+    match cp_entry(pool, index).map(|entry| &entry.kind) {
+        Ok(CpEntryKind::Class { name, .. }) => Operation::Allocate { ty: lossy(name) },
+        // A `new` whose class this run cannot name is an instruction whose target is unknown, and
+        // this layer never invents the symbol an instruction refers to.
+        _ => Operation::Other,
+    }
+}
+
+/// One field access, with the member the class's own pool states.
+fn field(
+    opcode: u8,
+    instruction: &InstructionFact,
+    operands: Option<&InstructionOperands>,
+    pool: &[CpEntryFacts],
+) -> Operation {
+    let access = match opcode {
+        0xb2 | 0xb4 => FieldAccess::Read,
+        0xb3 | 0xb5 => FieldAccess::Write,
+        _ => return Operation::Other,
+    };
+    let is_static = matches!(opcode, 0xb2 | 0xb3);
+    let Some(index) = pool_index(instruction, operands) else {
+        return Operation::Other;
+    };
+    match cp_entry(pool, index).map(|entry| &entry.kind) {
+        Ok(CpEntryKind::FieldRef {
+            owner,
+            name,
+            descriptor,
+            ..
+        }) => Operation::Field {
+            access,
+            is_static,
+            owner: lossy(owner),
+            name: lossy(name),
+            descriptor: lossy(descriptor),
+        },
+        _ => Operation::Other,
+    }
+}
+
+/// The class one `checkcast` requires its value to be an instance of.
+fn check_cast(
+    instruction: &InstructionFact,
+    operands: Option<&InstructionOperands>,
+    pool: &[CpEntryFacts],
+) -> Operation {
+    let Some(index) = pool_index(instruction, operands) else {
+        return Operation::Other;
+    };
+    match cp_entry(pool, index).map(|entry| &entry.kind) {
+        Ok(CpEntryKind::Class { name, .. }) => Operation::CheckCast { ty: lossy(name) },
+        _ => Operation::Other,
+    }
+}
+
+/// The pool index one instruction names: the operand's own index when the decode states one, and
+/// the instruction's when it does not.
+fn pool_index(
+    instruction: &InstructionFact,
+    operands: Option<&InstructionOperands>,
+) -> Option<u16> {
+    operands
+        .and_then(|operands| operands.constant_pool_index)
+        .or(instruction.constant_pool_index)
 }
 
 /// One BCI plus a relative offset, when the sum is a bytecode index at all.
