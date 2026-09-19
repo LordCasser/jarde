@@ -778,3 +778,124 @@ Start  Length  Slot  Name   Signature
 **归属**：属 **3.1 的 `slot 复用` 覆盖项**（任务文本本就点名「覆盖 slot 复用」），应在 **3.4 的「P3 所有出口通过」之前**关闭。
 
 **未擅自实施**：改动会变更既有断言（`two_variables_sharing_one_slot_…` 与 `a_table_that_names_a_slot_twice_…` 的期望值）与 `NameTable` 的「一槽一名」合同，属规格级取舍；父级在此**只记录证据**，等复核裁决（或由父级按规格直接实施，两者都已备好证据）。
+
+## 2026-09-20 父级发现：ECJ v52 `finallyPath` 的 handler 未被交代（**待裁决，代码未动**）
+
+**P3-R7 · 候选：类文件声明的异常 handler 的指令既不属于任何块、也不在 `unreachable` 里，而产物报 `Java/Structured`。**
+
+**证据（父级本机实测，探针已删）**：`tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class` 的 `finallyPath(I)I`。
+
+类文件（`javap`）：
+```
+0: iload_1   1: iconst_1   2: iadd   3: istore_3     // local3 = arg1 + 1
+4: iinc 1,2                                             // 正常路径的 finally tail
+7: iload_3   8: ireturn
+9: astore_2  10: iinc 1,2  13: aload_2  14: athrow      // 异常路径：tail + 重抛
+Exception table: from 0 to 4 target 9 type any
+```
+
+`MethodIr` 的事实（同一探针）：
+```
+decoded_bcis = [0,1,2,3,4,7,8,9,10,13,14]        <- 解码**读到了** handler 的四条指令
+handlers     = [{start_bci: 0, end_bci: 4, handler_bci: 9, catch_type_index: None}]
+canonical    = 单个块 start=0 end=9 blocks=[0]   <- handler 的指令不在任何块里
+unreachable  = []                                <- 也不列为死代码
+```
+
+产物与报告：
+```
+representation=Java quality=Structured
+regions=[{bci:0, structured:true, blocks:[0], rule: straight@1}]
+text:
+    int local3 = arg1 + 1;
+    arg1 = arg1 + 2;
+    return local3;
+BCI 9/10/13/14：既不锚定、也不出现在文本里
+```
+
+**为什么这是问题（不论 handler 是否真会跑）**：
+- `[0,4)` 覆盖的 `iload_1/iconst_1/iadd/istore_3` **都不能同步抛异常**，故按「可达性剪枝」这个 handler 在实践中不会执行——**语义上未必错**；
+- **但**：`any` handler 按 JVMS 也承接**异步异常**，且这个剪枝依赖 P2 的 `may_throw` 模型「不漏」——**一旦某条能抛的指令被模型漏标，同一个机制会静默丢掉一个真会跑的 handler**，而产物仍报 `Java/Structured`；
+- **可核实的事实**是：类文件声明了 handler、解码读到了它的四条指令，而**产物与报告对它们一字不提**——读者无法区分「判为死代码而丢弃」与「根本没看见」。这正是复核在 R2 立下的原则（「降级可以不生成 Java，但**必须保留完整 effect/来源**，不能以 Mixed 掩盖丢失」）在**块级**的同一形态。
+- 对照：**javac** 的同类形状（`fin`/`catchFinally`）已被 2.4 **如实拒绝**（`jre_guard_finally_copy`）。**ECJ 与 javac 两种 `finally` codegen 的口径不一致**，且 ECJ 这一边更宽松。
+
+**归属与两种解法**（父级未擅自实施）：
+- **① 最小、P3 范围内**：恢复层在呈现前核对「**类文件声明的 handler 的指令是否被某个块认领**」；未被认领即**引用 + 诊断**（不产更短的 body、不报 `Java/Structured`）。不动 P2 的 canonical 模型。
+- **② 更彻底、动 P2 模型**：让 canonical **为每条已解码指令记账**——要么在某个块里，要么在 `unreachable` 里（P2 对 v45/`jsr` 的样本正是这么做的：六节点里三个是死的）。代价是改已归档 P2 交付的剪枝语义，需明确这是一次**取代**而非改写档案。
+
+**父级建议 ①**（P3 自己的不变量，不动归档阶段的行为；且与 R2 的既有纪律一致）。**待用户裁决。**
+
+**注**：3.3 的可重放对照 harness **已检测到**该现象（打印 `note: exception handler entry BCI(s) [9] are named by no anchor`），但把它归为 note 而非失败——本片的对照口径在这一点上偏松，裁决后应改为硬断言。
+
+## 2026-09-20 3.3：可重放的实际编译/执行对照与多代语料（提交 `04cf83a`）
+
+### A：R1/R2/R3(+R5) 现在是**可重放**的
+
+**机制**：`tests/p3_execution_comparison.rs`（**两个 `#[ignore]` 用例**），而非 shell 脚本。理由：对照必须走**公开入口** `Engine::recover_method` 取产物；脚本要么在 shell 里重实现入口、要么自己拼请求 JSON。`#[ignore]` 正是仓库既有的「需要 JDK 的检查」口径（既有 `jvm_bytecode_oracle` 的 JDK 25 oracle 同形）。**不带 `--ignored` 的 `cargo test` 永不执行它**，故没有 JDK 的机器仍绿；`javac` 只编译**本文件现场生成的包装**，CI 的 JDK 版本不会改变任何样本字节。
+**CI**：`.github/workflows/ci.yml` **add-only 一处**（在既有 ignored JDK 25 oracle 步骤之后加一步）。这是本片对「改动限于 `crates/**`/`src/**`/`tests/**`」的唯一例外。
+
+**包装由事实派生**（本片新增唯一公开面 `RecoveredMethod::facts()`，`#[serde(skip)]`，CLI 文档逐字段不变）：
+```
+let facts = recovered.facts();                       // 同一次运行的事实
+let stated = facts.method().parameter_types();       // P3-R5 读的那个事实
+for (slot, spelling, primitive) in &described {      // 事实与描述符必须一致
+    if !primitive { continue; }
+    assert_eq!(stated.get(&slot).map(|ty| ty.spell()).as_deref(), Some(spelling.as_str()));
+}
+```
+实跑打印的真实包装：`scope(Z)I` → `public static int scope(boolean b)`（debug 样本）/ `(boolean arg0)`（`-g:none`）；`receiver(J)J` → `public long receiver(long a)`（实例方法无 `static`）；`open(String)LRes;` → `static Res open(java.lang.String arg0)`；`add(II)I`（ECJ）→ `public int add(int arg1, int arg2)`。**修饰符取自 `access_flags()`、类型取自描述符与参数类型事实，无手写类型。**
+
+**对照维度**（一起比，不只比文本形状）：返回值、样本自身打印的事件**顺序**、自身计数器**次数**、异常（含 suppressed）。
+实跑：`cargo test --test p3_execution_comparison --locked -- --ignored --nocapture` = **`2 passed; 0 failed`**（13–18s）。
+摘要（全表在 `tests/fixtures/p3-corpus/README.md`）：
+
+| 成员 | 产物 | 对照 |
+| --- | --- | --- |
+| `bump`/`doubleIt`/`loopAcross`（R1 反面） | Java/Structured | **executed，轨迹一致**（必须仍呈现，已钉） |
+| `post`/`conditional`（R1）、`saved` | Mixed | 不执行（javac 拒绝）；**次数对照**同 |
+| `cast`（R2） | Mixed | 不执行；**次数对照 `calls 1->2` 两侧一致**（R2 实质） |
+| `scope`×2（R3+R5）、`after`/`reassign`/`receiver` | Java/Structured | **executed，轨迹一致** |
+| TWR/monitor 8 个成员 | Java/Structured | **executed，70 行轨迹逐行相同**（含 `close s→close r` 逆序与 `boom | suppressed close-r`） |
+| `fin`/`catchFinally`/`withCatch`/… 7 个 | Mixed（纯引用） | 边界；**每个被拒区域的 BCI 全被引用、每个被引 BCI 都有锚点** |
+| `add`/`finallyPath`（ECJ 4.6.1 v52） | Java/Structured | executed，轨迹一致（`finallyPath` 见 **P3-R7**） |
+| `Flags` 4 组 flag | Java/Structured | executed，轨迹一致 |
+| `MissingDependency.viaAbsentLibrary` | Java/Structured | **javac 拒绝**（缺失类型）；`plain` executed |
+
+### B：多代语料（来源/命令/SHA 在 `tests/fixtures/p3-corpus/README.md`）
+
+- **多代 javac**：本机只有 javac 23.0.1，故覆盖「同编译器不同合法 flag」：`--release 8 -g:none`/`-g`/`-g:lines,source`/`-parameters`/`-source 8 -target 8`（`Flags.class` 325/597/441/395/325 字节，SHA 逐条记录）。
+  **记录到的事实**：`--release 8 -g:none` 与 `-source 8 -target 8 -g:none` 产出**逐字节相同**（`212fde26…`，测试内断言）；同一比对在既有 `p3-local-rewrite` 上也得**逐字节相同**（`f755f062…`）。
+- **ECJ**：纳入既有 `historical/ecj-4.6.1/v52/HistoricalControlFlow.class`（52.0、303 字节、SHA `f9b6566f…b6ad`）。**如实记录**：本机**不能运行 ECJ**（无 jar、无网络），只读其产物。
+- **缺失 debug**：`-g:none` 与 `-g:lines,source` 两组。
+- **缺失依赖**：`MissingDependency.java` 对着未提交的 stub 编译，只提交主类；`absent.Library` 不可解析。
+- **如实记录不可得**：真混淆（无 ProGuard/R8、无网络）、非 Java 编译器（无 `kotlinc`/`scalac`/`groovyc`）、旧版 javac 自身的 codegen（本机只有 23.0.1）。
+
+### C：不能独立成 compilation unit 的边界（逐条）
+
+1. **本层引用了它证不出的读**：`post`/`conditional`/`cast`（javac: missing return statement）、`saved`（cannot find symbol）——这是答案本身（引用报全 BCI + 锚点）。
+2. **只含引用的 Mixed 体**：能编译但**不执行**（否则是拿空体比真体）。
+3. **发现 (i)**：按成员自己的签名编译不过——`open`/`openFailing`。`new@1` 写 `new Res(arg0, 0)`，而 `Res.<init>` 是 `(Ljava/lang/String;Z)V` → `javac: int cannot be converted to boolean`。这是 **P3-R5 的实参侧对偶**（2.4 定型的是被呈现方法的形参），**本片只记录不修**。
+4. **缺失类型**：`MissingDependency.viaAbsentLibrary`（原方法也跑不了）。
+5. **`<init>`/`<clinit>`**：包装类无法重声明样本自己的类名，`super()`/`this` 未建模；**逐样本打印为跳过**，不是静默遗漏。
+6. **R2 的次数对照声明**是本文件给的 `void` 声明（文本不写返回值），只用于**次数**维度。
+
+### 父级独立核对
+
+- 全量 **982 passed / 0 failed / 3 ignored**（982 与 2.4 相同；ignored 1→3 = 两个新 `#[ignore]`）——父级直接跑 `--ignored` 得 **`2 passed`**、独立核出 `ignored` 合计 **3**；
+- fmt 与 clippy 1.98.1 干净；`openspec validate --all --strict` 12 passed；
+- **CI 的 diff 为 add-only**（父级逐行核过：仅新增一个 step 与注释）。
+
+### 被修正的既有断言（1 条，精确相等，无放宽）
+
+`crates/jarde-reader/src/classfile.rs::repository_class_fixtures_validate_without_false_target_rejections`：`(20, 93, 44, 81, 8)` → **`(26, 116, 44, 86, 8)`**（新增 6 个类文件 = 5×`Flags` + `MissingDependency`、23 个体、`choose` 的 5 个分支目标；异常表与 `jsr` 计数未变）。同时把该测试上方**已过时**的文档数字改写成实测口径。
+
+### 证据
+
+**CI**：`04cf83a` → 见下。**未触及依赖边**（无 `Cargo.toml`/`Cargo.lock` 改动）。
+
+### 未完成（如实）
+
+- **两处发现待裁决**：**(i)** `new@1` 把 `boolean` 实参写成 `0/1`（R5 的实参侧对偶）；**(ii) P3-R7**——ECJ v52 `finallyPath` 的 handler 未被交代（见下节）。
+- **3.4**：`RecoveredMethod::facts()` 需文档行；`tests/fixtures/p3-corpus/README.md` 的矩阵应并入 `docs/support-matrix.md`（本片未改用户文件）。
+- **CI-only 未验证**：`--release 8` 在 CI 的 Temurin 25 上仍受支持（本机只有 23）。
+- 本片**未做独立 review**（父级已核 ignored 计数、CI diff 与全量门禁）。
