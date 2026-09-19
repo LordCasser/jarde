@@ -129,6 +129,16 @@ pub enum LayoutNodeKind {
     WarLibrary,
 }
 
+impl LayoutNodeKind {
+    /// Whether this layer publishes class-path roots rather than a nested library.
+    ///
+    /// The distinction is what a layout selection turns on: a class layer's prefix decides which
+    /// entries of its container are on the path, a library layer's container is on the path whole.
+    pub fn is_class_layer(self) -> bool {
+        matches!(self, Self::BootClasses | Self::WarClasses)
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum LayoutNodeSource {

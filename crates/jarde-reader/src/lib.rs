@@ -21,6 +21,7 @@ pub mod model;
 pub mod modern;
 pub mod multi_release;
 pub mod release_registry;
+pub mod runtime_matrix;
 #[cfg(any(test, feature = "test-support"))]
 mod test_fixtures;
 pub mod view;

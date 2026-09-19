@@ -43,7 +43,7 @@ pub use jarde_reader::inspect;
 // `classfile` is deliberately absent: it is re-exported as the names below, not as a module
 // path, so that the reader's `test-support` builder (`classfile::test_class`) and everything
 // else the module holds beyond that list stay unreachable through this crate.
-pub use jarde_reader::{artifact, budget, error, model, multi_release, view};
+pub use jarde_reader::{artifact, budget, error, model, multi_release, runtime_matrix, view};
 
 // The recovery layer (P3 1.3), narrowed deliberately. What crosses is the *request*, the *report*
 // and the read-only vocabulary either one names — never `jarde-java`'s modules, and with them
@@ -115,4 +115,5 @@ pub use jarde_reader::release_registry::{
 pub use model::*;
 pub use multi_release::*;
 pub use resolver::*;
+pub use runtime_matrix::*;
 pub use view::*;

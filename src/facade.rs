@@ -56,6 +56,20 @@ impl Engine {
         crate::multi_release::select(snapshot, view, budget)
     }
 
+    /// Compares several runtime profiles over **one** physical scan of the same snapshot.
+    ///
+    /// The scan, the per-profile selection and the compression all belong to the reader; this is
+    /// the facade's one-line delegation to them, so a caller through `Engine` and a caller through
+    /// `jarde_reader::runtime_matrix` read the same bytes under the same accounting.
+    pub fn runtime_matrix(
+        &self,
+        snapshot: &ArtifactSnapshot,
+        request: &crate::runtime_matrix::RuntimeMatrixRequest,
+        budget: &mut Budget,
+    ) -> Result<crate::runtime_matrix::RuntimeMatrix> {
+        crate::runtime_matrix::build(snapshot, request, budget)
+    }
+
     pub fn query(
         &self,
         snapshot: &ArtifactSnapshot,

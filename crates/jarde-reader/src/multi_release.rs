@@ -12,7 +12,7 @@ use crate::model::{
     Diagnostic, DiagnosticSeverity, ExecutionReport, JvmString, Location, PhysicalEntryId,
     Provenance, TerminationReason,
 };
-use crate::view::{MultiReleasePolicy, PhysicalScope, RuntimeView};
+use crate::view::{MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeView};
 use serde::de::Error as _;
 use serde::{Deserialize, Deserializer, Serialize};
 use std::collections::{BTreeMap, HashMap};
@@ -301,11 +301,48 @@ struct Classified<'a> {
     directory: bool,
 }
 
+/// Reads the physical view and computes the selection of exactly one profile over it.
+///
+/// This is [`physical_evidence`] followed by [`select_over_physical`]: one scan for one view. A
+/// caller that needs several profiles over the same view calls those two directly so the scan is
+/// shared instead of repeated.
 pub fn select(
     snapshot: &ArtifactSnapshot,
     view: &RuntimeView,
     budget: &mut Budget,
 ) -> Result<MultiReleaseViewReport> {
+    let physical = physical_evidence(snapshot, view, budget)?;
+    select_over_physical(snapshot, view, physical, budget)
+}
+
+/// The physical view one selection is computed over, as the evidence itself states it.
+///
+/// A `Snapshot` scope enumerates into a report that carries only the snapshot id, so the scope
+/// half is reconstructed as [`PhysicalScope::SnapshotAll`], which is the only scope the variant
+/// can have been read for.
+impl MultiReleasePhysicalEvidence {
+    pub fn physical_view(&self) -> PhysicalView {
+        match self {
+            Self::Snapshot { report } => PhysicalView {
+                snapshot: report.snapshot.clone(),
+                scope: PhysicalScope::SnapshotAll,
+            },
+            Self::ArtifactTree { report } => report.view.clone(),
+        }
+    }
+}
+
+/// Reads the physical evidence one physical view requires: **one** enumeration, no selection.
+///
+/// `select` performs this scan and consumes its result immediately. A caller that computes
+/// selection for several profiles over the same physical view reads the evidence here **once**
+/// and hands it to [`select_over_physical`] per view (P4 design decision 2), which is what makes
+/// a profile batch a single physical scan instead of one scan per profile.
+pub fn physical_evidence(
+    snapshot: &ArtifactSnapshot,
+    view: &RuntimeView,
+    budget: &mut Budget,
+) -> Result<MultiReleasePhysicalEvidence> {
     if snapshot.kind() != ArtifactKind::Zip {
         return Err(Error::invalid_input(
             "multi_release_not_zip",
@@ -318,7 +355,7 @@ pub fn select(
             "RuntimeView snapshot does not match the artifact snapshot",
         ));
     }
-    let physical = match &view.physical.scope {
+    Ok(match &view.physical.scope {
         PhysicalScope::SnapshotAll => MultiReleasePhysicalEvidence::Snapshot {
             report: snapshot.enumerate(budget)?,
         },
@@ -348,7 +385,25 @@ pub fn select(
             }
             MultiReleasePhysicalEvidence::ArtifactTree { report }
         }
-    };
+    })
+}
+
+/// Computes one view's multi-release selection over evidence that was already read.
+///
+/// `physical` must be the evidence of exactly the physical view the caller passes in; the check
+/// is cheap and keeps a batch from pairing a profile with another snapshot's enumeration.
+pub fn select_over_physical(
+    snapshot: &ArtifactSnapshot,
+    view: &RuntimeView,
+    physical: MultiReleasePhysicalEvidence,
+    budget: &mut Budget,
+) -> Result<MultiReleaseViewReport> {
+    if physical.physical_view() != view.physical {
+        return Err(Error::invalid_input(
+            "multi_release_physical_mismatch",
+            "multi-release evidence was read for a different physical view",
+        ));
+    }
     let mut reports = Vec::new();
     let mut diagnostics = Vec::new();
     let mut runtime_scanned = Vec::new();
@@ -1792,20 +1847,25 @@ fn declare_unprocessed(input: &ContainerInput, out: &mut Vec<CoverageRange>) {
     out.extend(unprocessed_ranges(&input.origin, &input.entries));
     out.extend(input.coverage.artifact_structural.skipped.clone());
 }
-fn root_origin(snapshot: &ArtifactSnapshot) -> ContainerOrigin {
+pub(crate) fn root_origin(snapshot: &ArtifactSnapshot) -> ContainerOrigin {
+    root_origin_of(snapshot.id())
+}
+
+/// The root container origin of one snapshot, for callers that hold the id rather than the handle.
+pub(crate) fn root_origin_of(snapshot: &crate::model::SnapshotId) -> ContainerOrigin {
     ContainerOrigin {
-        snapshot: snapshot.id().clone(),
+        snapshot: snapshot.clone(),
         root_container: crate::model::ContainerId("root".into()),
         steps: Vec::new(),
     }
 }
-fn physical_execution(p: &MultiReleasePhysicalEvidence) -> &ExecutionReport {
+pub(crate) fn physical_execution(p: &MultiReleasePhysicalEvidence) -> &ExecutionReport {
     match p {
         MultiReleasePhysicalEvidence::Snapshot { report } => &report.execution,
         MultiReleasePhysicalEvidence::ArtifactTree { report } => &report.execution,
     }
 }
-fn physical_coverage(p: &MultiReleasePhysicalEvidence) -> &Coverage {
+pub(crate) fn physical_coverage(p: &MultiReleasePhysicalEvidence) -> &Coverage {
     match p {
         MultiReleasePhysicalEvidence::Snapshot { report } => &report.coverage,
         MultiReleasePhysicalEvidence::ArtifactTree { report } => &report.coverage,
@@ -1889,13 +1949,13 @@ fn merge_issue(slot: &mut Option<ExecutionReport>, incoming: ExecutionReport) {
 /// the winning priority is kept, `usage` is refreshed when the report is finalized, a
 /// blocking budget or cancellation error stops later work, and an exhausted result-item
 /// budget stops later non-terminal items (terminal diagnostics stay control metadata).
-struct Issues {
+pub(crate) struct Issues {
     best: Option<ExecutionReport>,
     items_exhausted: bool,
 }
 
 impl Issues {
-    fn new(initial: &ExecutionReport) -> Self {
+    pub(crate) fn new(initial: &ExecutionReport) -> Self {
         Self {
             best: Some(initial.clone()),
             items_exhausted: false,
@@ -1929,7 +1989,7 @@ impl Issues {
 
     /// Merges an issue the caller already fully evaluated. Reporting only: the caller decides
     /// whether this issue stops its own work.
-    fn merge(&mut self, report: &ExecutionReport) {
+    pub(crate) fn merge(&mut self, report: &ExecutionReport) {
         merge_issue(&mut self.best, report.clone());
     }
 
@@ -1942,7 +2002,7 @@ impl Issues {
         }
     }
 
-    fn finish(self, budget: &Budget) -> ExecutionReport {
+    pub(crate) fn finish(self, budget: &Budget) -> ExecutionReport {
         let report = self.best.unwrap_or(ExecutionReport::Complete {
             usage: budget.usage(),
         });
