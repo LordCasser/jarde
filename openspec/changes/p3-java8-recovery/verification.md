@@ -272,3 +272,69 @@ cargo metadata --manifest-path fuzz/Cargo.toml --locked
 
 全量 **877 passed / 0 failed / 1 ignored**；`-p jarde-cli` 24（基线 22）；`jarde-java` 单元 37 + 集成 18；fmt 与 clippy 1.98.1 干净；`openspec validate --all --strict` 12 passed；两个 CI example exit 0；分层 12 配置全 PASS 且 `cargo tree -p jarde` 含 `jarde-java`；**`Cargo.lock` 无新第三方包**（父级核对：`git diff Cargo.lock | grep -c '^+name ='` = 0，只有依赖边）。
 **CI**：`2d156d8` → 35442183621（**两 job 红**，见上）；`a681e4c` → **35442441114 四 job success**。
+
+## 2026-09-19 2.1：lambda / method reference / capture 恢复（提交 `02d5492`）
+
+### 形态判定（九步，全部只读**同一次运行**的载荷）
+
+`invokedynamic` 站点原本落 `Other`；现解成 `Operation::InvokeDynamic(DynamicSite { cp, bootstrap_index, name, descriptor })`（只陈述**站点身份**，不陈述形状）。`MethodIr` 增加 `bootstrap_methods: Vec<BootstrapMethodFacts>`——在 `read_declaration` **同一次 header read** 里读并 move 进载荷（无该属性的类**读零字节、计零费**；无重解码/重跑）；复用 `jarde-reader` 已有的 `classfile::bootstrap_methods`（xref 也在用），**未触及任何依赖边**。
+
+判定链（`lambda.rs`，任一步不满足即**拒绝**并给码）：
+
+| 步 | 判定 | 不满足时的码 |
+| --- | --- | --- |
+| 1 | profile 准入 `lambda@1` | `jre_lambda_rule_not_admitted` |
+| 2 | 类自己的表里**存在**该站点 | `jre_lambda_no_bootstrap`〔`IrTable(BootstrapMethods)`〕 |
+| 3 | 句柄是方法句柄、成员是 **`LambdaMetafactory.{metafactory, altMetafactory}`**、kind 为静态 | `jre_lambda_bootstrap` |
+| 4 | 静态实参按**种类与个数**为 `[MethodType, MethodHandle, MethodType]`；`altMetafactory` 第四参 = **标志字 0** | `jre_lambda_bootstrap_arguments` |
+| 5 | 站点/SAM/实例化方法类型可读、参数个数一致、站点参数个数 == 该指令读到的捕获数 | `jre_lambda_descriptor` / `_sam_descriptor` |
+| 6 | 实现句柄是调用或构造器（kind 5–9）；字段句柄不呈现 | `jre_lambda_implementation` |
+| 7 | **arity 自洽**：`捕获数 + SAM 参数数 == 实现参数数 + receiver`，且**逐位形状相同** | `jre_lambda_sam_arity` / `_sam_types` |
+| 8 | 每个捕获值**可重读**（字面量，或本方法只写一次的局部量） | `jre_lambda_capture_not_replayable`〔`Precondition::Replayable`〕 |
+| 9 | 站点实例**有读者**（否则那条调用在产物里无处安放） | `jre_lambda_unconsumed` |
+
+**`LAMBDA = lambda@1, required_release = Some(8)`** —— 本 build **第一条 Java 8 专属规则**，1.3c 记录的「`admits` 拒绝分支无生产实例」由此**关闭**（Java 7 profile 用例走真实门控）。新增效果族 `Precondition::Replayable`；`Precondition::IrTable` 的文档改为**两种检查点**（整趟必需 vs 规则认领时）——理由是**不含 bootstrap 表的类是普通的类**：站点缺席是被拒绝的**站点**，不是被拒绝的运行。
+
+**明说没做**：适配（子类型/装箱/加宽）不比较引用名字——需要适配的站点一律**拒绝**，不写没人写过的转换。
+
+### 呈现与 evidence
+
+- **写法由事实决定**：实现句柄是本站点自己的 body（`lambda$…` 标记）→ **lambda**；否则当**捕获恰好等于句柄自己要的接收者** → **method reference**（`receiver::name` / `Type::name` / `Type::new`）；其余仍写 lambda。**标记只选写法，绝不决定「是不是 lambda」**——后者只由上面那条链决定。
+- **capture 顺序/个数**取自站点指令的**栈操作数顺序**（SSA 值流），参数取自 SAM 的 `instantiatedMethodType`；参数名经 `names::free_name` 派生并避开局部量与别的 lambda 参数（JLS 6.4）。
+- **evidence 读回**：新增 `RecoveryReport.lambdas: Vec<LambdaRecord>`——**presented 与 refused 都在**：`use_site`、`site_cp`、`bootstrap_index`、`bootstrap`（`owner.name (REF_kind)`）、`bootstrap_arguments`、`sam_name`/`sam_descriptor`、`sam_method_type`/`instantiated_method_type`、`implementation`、`captures`（按站点顺序，**各带来源 BCI**）、`form`、`refusal{code,rule,requirement,message}`。
+- **段表**：lambda 节点 primary = 站点 BCI 且 `cp = Some(site_cp)`，**每个捕获值作为 `Derived` 锚点挂上**，捕获表达式自己仍锚在其产出 BCI——**一个表达式对应多个原始 BCI**；节点内部（接收者类型名、参数）只锚在站点，**不冒领锚点**。
+
+### A04 的核对（父级独立证伪）
+
+**反例形状**：自造 bootstrap `Test.myBootstrap` + **与 metafactory 完全相同**的三元静态实参 + 同样的站点描述符与捕获——**唯一差别是工厂**。
+**父级**把工厂检查改为恒假 → **只有** `an_arbitrary_bootstrap_is_never_presented_as_a_lambda` 转红（其余 28+43 全绿），与实现者自报**一致**。该用例断言：文本**不含** `->`/`::`、含 `// @bytecode`、`Mixed`/`Fallback`；记录 `form == None`、`bootstrap == Some("Test.myBootstrap (REF_invokeStatic)")`、`refusal.code == "jre_lambda_bootstrap"`、`rule == lambda@1`、消息点名 `Test.myBootstrap` 与 `LambdaMetafactory`。
+另有：SAM 不自洽 → `jre_lambda_sam_arity`；`altMetafactory` 标志字 1 → `jre_lambda_bootstrap_arguments`；未消费站点 → `jre_lambda_unconsumed`；Java 7 profile → `jre_lambda_rule_not_admitted`。
+
+### oracle
+
+扩成三段自写：**class 读取**（池 + `BootstrapMethods`，未知 tag 直接 panic，**不调用 reader**）→ **机器执行 fixture 字节**（栈上带**值来源**，故「站点按什么顺序从哪些槽捕获」是它自己读出来的；模型**不执行** lambda 体，只检查创建、调用次数与形状——已写明）→ **文本解析 + 比较器**。要求：写法与「实现名字带不带 body 标记」一致、lambda 参数个数与**类型拼写**等于它自读的 SAM 方法类型、body 调用名 == 实现名、**前 N 个实参就是它自读的那些槽名且顺序一致**；**槽名由 fixture 的 store 顺序与文本赋值顺序配对得出**，不依赖生产的命名规则。
+
+### 证伪三组
+
+| 变异 | 结果 |
+| --- | --- |
+| 放松形态判定（工厂检查恒真） | **只有** A04 反例红，产物正是 `java.lang.Runnable local2 = () -> Test.lambda$method$0(local1);` |
+| 捕获顺序颠倒 | 集成顺序用例红（`() -> Test.lambda$method$0(local2, local1)`）；oracle 正例与其变异同时红 |
+| **削弱 oracle**（顺序比较改成只比个数） | oracle 变异用例红，**生产 29/29 全绿** |
+
+### 被修正的既有断言（8 处，均加强或纠正，无放宽）
+
+`pass.rs` 注册表用例的 `PASSES.len()` 4→5、`required_release` 由「谁都没有」**收紧**为**逐规则 pin**（`lambda = Some(8)`、其余 `None`）、`IrTable` 允许表由 3 增至 5 并**新增**两条断言（`LAMBDA` 确实声明 `BootstrapMethods`+`ConstantPool`、四条结构规则**都不**声明）；`Precondition::IrTable` 文档改为两种检查点；`ast::Type` 文档澄清四族由**描述符**读者产出而帧读者仍不产出（描述符确实写着 `Z`，是事实不是猜测）；**`build::value_type` 的一处真 bug**——引用名只做 `/`→`.` 而未先剥 `L…;` 外框，会产出 `Ljava.lang.Runnable;`（本片首次走到该路径）；`oracle.rs` 的 `Text::Return(None)` 由 `Some(0)` 纠正为 `None`（裸 `return` 不返回值）。
+
+### 证据
+
+全量 **894 passed / 0 failed / 1 ignored**（877 + 17：`jarde-java` 单元 37→43、集成 18→29）；fmt 与 clippy 1.98.1 干净；`openspec validate --all --strict` 12 passed；两个 CI example exit 0；分层三包中 `jarde-java` 出现 **0** 次；**未触及依赖边**，锁文件两条命令均 exit 0（`cargo metadata --locked`、`cargo deny … licenses ok`）。
+**CI**：`02d5492` → run 35444591661，四 job success。
+
+### 一处修正父级指令（如实记录）
+
+父级在纪律里写的锁检查命令 **`cd fuzz && cargo deny --manifest-path fuzz/Cargo.toml --config deny.toml check` 字面形式会失败**（`--manifest-path` 必须指向 Cargo.toml，且 `cd fuzz` 后找不到 `deny.toml`——它在**仓库根**）。实现者按 CI 口径（仓库根、`--manifest-path fuzz/Cargo.toml`、`--config deny.toml`）执行并说明。**父级据此更正纪律**：两条命令**都在仓库根**跑，`fuzz` 只出现在 `--manifest-path` 里。
+
+### 留待判断（实现者提出，父级记为可接受）
+
+`lambda$` 标记**只**用于在两种语义等价写法之间选一个，被写成 `lambda.rs` 的**文档化决定**而非前置条件（标记缺失时仍产出 lambda，只是用 `::` 或带接收者的调用写）。若评审认为应升级为声明式前置条件，改动面是 `pass.rs` 的 `LAMBDA` 声明 + 一处检查点，不影响其余结论。
