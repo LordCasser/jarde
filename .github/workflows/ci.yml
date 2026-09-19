@@ -251,6 +251,18 @@ jobs:
           cargo +nightly-2026-07-20 fuzz run artifact_tree "$RUNNER_TEMP/corpus/artifact_tree" -- \
             -max_total_time=20 -max_len=65536 -rss_limit_mb=512 -timeout=10 -workers=1 -print_final_stats=1
 
+      - name: Run the bounded method-analysis smoke
+        # The newest target, and the only one that reaches the analysis pipeline: its corpus
+        # carries the jsr-era bodies, a shared subroutine, overlapping handler records and the
+        # wide/switch forms, so a change that breaks the frame or the names is caught here
+        # rather than only by the committed regression list.
+        run: |
+          mkdir -p "$RUNNER_TEMP/corpus/method_analysis"
+          cp -r fuzz/corpus/method_analysis/. "$RUNNER_TEMP/corpus/method_analysis/"
+          cd fuzz
+          cargo +nightly-2026-07-20 fuzz run method_analysis "$RUNNER_TEMP/corpus/method_analysis" -- \
+            -max_total_time=20 -max_len=65536 -rss_limit_mb=512 -timeout=10 -workers=1 -print_final_stats=1
+
       - name: Ensure the smoke runs left the tracked tree unchanged
         # Mirrors the `stable` job's `git diff --exit-code`, and also fails on a new
         # *untracked* file outside the ignored fuzz paths (a corpus entry written into

@@ -1,5 +1,5 @@
 # Standalone, test-only fuzz workspace for the P1 bounded query and artifact-tree /
-# multi-release entries (design 3.3).
+# multi-release entries (design 3.3) and the P2 bounded method-analysis entry (design 5.3).
 #
 # The `[workspace]` table below makes this directory its own workspace root. That is the
 # whole point: `libfuzzer-sys`, its `cc` build dependency and the nightly compiler never
@@ -39,6 +39,16 @@ bench = false
 [[bin]]
 name = "artifact_tree"
 path = "fuzz_targets/artifact_tree.rs"
+test = false
+doc = false
+bench = false
+
+# P2 5.3: the method-analysis entry. The request's stage set is fixed per shape, but the
+# method it names is derived from the input, so this target adds a driver of its own instead
+# of reusing the P1 ones.
+[[bin]]
+name = "method_analysis"
+path = "fuzz_targets/method_analysis.rs"
 test = false
 doc = false
 bench = false
