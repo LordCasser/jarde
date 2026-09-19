@@ -1,6 +1,6 @@
 # 当前五维支持矩阵
 
-当前复核边界（2026-09-20，P0/P1/P2 与分层归档见 `492e31e`/`51a5cac`，P3 归档见 `250fe1f`）：P0/P1/P2 与分层均已归档，P2 原 4.2b/4.3b 已关闭；P4 的现代语义（1.1–1.3、2.1–2.3、3.1–3.2）已实现，本轮复核的实际状态见下文[现代（53–71）能力](#现代5371能力与-p4-新增入口2026-09-20)，P4 待办见 [P4 验证记录](../openspec/changes/p4-modern-semantics/verification.md)；P3 已交付并归档（12/12）：方法体恢复、Region、lambda、concat/bridge/accessor、TWR/monitor 与逐项审计/作用域修正均在归档内。当前旧值重读、fallback effect 漏失与作用域反例见 [恢复复核](../openspec/changes/p3-java8-recovery/verification.md#review-2026-09-19-recovery)。verifier、生产重编译和行为验证未执行。
+当前复核边界（2026-09-20，P0/P1/P2 与分层归档见 `492e31e`/`51a5cac`，P3 归档见 `250fe1f`）：P0/P1/P2 与分层均已归档，P2 原 4.2b/4.3b 已关闭；P4 已交付并归档（10/10，`88416ab`），本轮复核的实际状态见下文[现代（53–71）能力](#现代5371能力与-p4-新增入口2026-09-20)，P4 待办见 [P4 验证记录](../openspec/changes/archive/2026-09-20-p4-modern-semantics/verification.md)；P3 已交付并归档（12/12）：方法体恢复、Region、lambda、concat/bridge/accessor、TWR/monitor 与逐项审计/作用域修正均在归档内。当前旧值重读、fallback effect 漏失与作用域反例见 [恢复复核](../openspec/changes/p3-java8-recovery/verification.md#review-2026-09-19-recovery)。verifier、生产重编译和行为验证未执行。
 
 本页是当前用户可见能力状态的单一事实源。P0 的验收要求以[已生效主规格](../openspec/specs/)和[归档 tasks](../openspec/changes/archive/2026-09-17-establish-p0-foundation/tasks.md)为准；P1 的增量以[归档 tasks](../openspec/changes/archive/2026-09-17-p1-query-xref/tasks.md)和[verification](../openspec/changes/archive/2026-09-17-p1-query-xref/verification.md)为准；P2 的解析、方法 IR 与方法分析报告以主规格 `demand-resolver`、`jvm-ir`、`conservative-output` 与 [verification](../openspec/changes/archive/2026-09-19-p2-jvm-ir/verification.md) 为准。这里只描述实际实现，不是未来路线承诺。
 
@@ -52,7 +52,7 @@ P3 当前边界分别验收：方法声明事实（access_flags/descriptor/recei
 
 ### 现代（53–71）能力与 P4 新增入口（2026-09-20）
 
-P4 的现代语义（1.1–1.3、2.1–2.3、3.1–3.2）已实现，命令、数字与证伪见 [P4 验证记录](../openspec/changes/p4-modern-semantics/verification.md)。下表按本页既有的五个平面分开记录；没有列出的能力就是没有，不是待兑现的承诺。
+P4 已交付并归档（**10/10**，归档提交 `88416ab`）；命令、数字与证伪见 [P4 验证记录](../openspec/changes/archive/2026-09-20-p4-modern-semantics/verification.md)。下表按本页既有的五个平面分开记录；没有列出的能力就是没有，不是待兑现的承诺。
 
 | 平面 | 实际状态 | 入口与边界 |
 | --- | --- | --- |

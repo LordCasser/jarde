@@ -14,7 +14,7 @@ P0/P1、P2（29/29）和分层（7/7）均已归档，P2/分层归档提交为 `
 | 分层（7/7，已归档） | [layer-jarde-crates](changes/archive/2026-09-19-layer-jarde-crates/proposal.md) | reader/query/jvm 编译边界、门面与集成门禁已验收 |
 | P2（29/29，已归档） | [p2-jvm-ir](changes/archive/2026-09-19-p2-jvm-ir/proposal.md) | Demand Resolver、raw/canonical CFG、legacy normalization、Frame/SSA 与降级 |
 | P3（12/12，已归档） | [p3-java8-recovery](changes/archive/2026-09-20-p3-java8-recovery/proposal.md) | Java 8 高频恢复、命名、Java 输出和 source maps |
-| P4 | [p4-modern-semantics](changes/p4-modern-semantics/proposal.md) | 现代语义、RuntimeMatrix、X2/X3 深度与框架插件 |
+| P4 | [p4-modern-semantics](changes/archive/2026-09-20-p4-modern-semantics/proposal.md) | 现代语义、RuntimeMatrix、X2/X3 深度与框架插件 |
 | P5 | [p5-measured-optimization](changes/p5-measured-optimization/proposal.md) | 按实测决定的缓存、并行、索引与性能回归 |
 
 本仓库使用 OpenSpec 1.11.0 的 `spec-driven` schema。`changes/*/specs` 是拟议规格；`specs/` 当前包含 P0 归档的 `analysis-contracts`、`artifact-snapshots`、`classfile-inspection` 、P1 的 `artifact-views`、`query-api`、`structural-xref`，以及 P2 的 `demand-resolver`、`jvm-ir`、`conservative-output`，共九份主规格。CLI 的 `isPlanningComplete` 只表示规划工件齐全，不能解释为实现完成；实施状态以 tasks、代码和实际验收记录为准。
