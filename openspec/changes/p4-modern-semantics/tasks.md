@@ -6,7 +6,7 @@
 
 ## 2. Runtime depth
 
-- [ ] 2.1 实现 RuntimeMatrix、模块/loader policy 和 MR/layout 选择函数，验证 A06/A07 的多 profile 物理保留
+- [x] 2.1 实现 RuntimeMatrix、模块/loader policy 和 MR/layout 选择函数，验证 A06/A07 的多 profile 物理保留（2026-09-20 完成，提交 `c2676d4`。**归属 `jarde-reader`**（输入全是 reader 自有事实；放上层要么重扫要么另写 MR 选择，二者皆禁），`Engine::runtime_matrix` 一行委派。**共享扫描**：`multi_release::select` 拆为 `physical_evidence()` + `select_over_physical()`（`select` = 两者，既有 p1 MR/golden/query 用例零改动通过）；父级读码确认唯一枚举**在每 profile 循环之外**，循环内读零 archive 字节。**证据是测得的恒等式**：`matrix == 3×扫描 + Σ每profile == 三个 standalone`；实测平坦 jar 省两次枚举（34 vs 42 条目录记录），WAR 树另省 386 字节；每 profile 的 220 字节是 compliance probe 自身重读、**如实分开呈现**。**不塌缩**：三个 view 各自的答案与**全部物理条目**并列（`unselected().len()==2`）；**父级独立证伪**——把 release 换成常量使矩阵塌缩 → 「三 profile 选不同条目」用例**恰好 1 红**，证明该断言承重。**压缩只在可证时**：签名相等**且**区间之交覆盖所有成员 release 才合并（签名不含规则文本）；`Ambiguous`/`NoSelection`/`Unknown` **无区间**故永不合并；反例（两个 `Custom{id}` 答案相同但无区间）有专测。**module/loader 边界如实**：`ClassPath` 可行动、`ParentFirst`/`ChildFirst` 给显式次序；`ModulePath`/`Hybrid`/`Custom`/`Unknown` 一律 `Unsupported` 且**放弃顺序主张**（与 jvm 的拒绝一致）。**layout**：改前 `LayoutMode` 全仓库无消费者，矩阵首次把它投影为层 + 在路径容器。**A06/A07**：Java 8/11/17 三答案并存 + 4 条物理条目全列；Manifest 未激活与缺 public 前驱各有诊断且**条目仍列出**；A07 的同名类不同 ordinal/origin + `Ambiguous`/`Ordered`/`Undetermined` 三种序，且**换 delegation 声明真的改变答案**。**证据**：1040 passed / 0 failed / 3 ignored；fmt/clippy 1.98.1 干净；openspec strict 14；**既有断言零改动**；锁文件两条 exit 0；CI 见 verification。**未完成**：CLI 出口未扩展；具名模块顺序、兄弟 loader 并存、`WEB-INF/classes/` 下的 MR 目录均**如实未做**；解析态（缺失依赖/default conflict/open-world）属 **2.2**）
 - [ ] 2.2 扩展 X2 declaration/dispatch candidate 查询，覆盖缺失依赖、default conflict 和 open-world 状态
 - [ ] 2.3 实现有界 X3 reflection/ServiceLoader patterns，验证常量目标与动态输入分别返回 inferred/Unknown
 

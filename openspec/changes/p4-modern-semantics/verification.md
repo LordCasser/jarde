@@ -172,3 +172,51 @@
 ### 未完成（应属 2.x/3.x）
 
 **flag 位置主张与完整 flag 词表**（registry 表决定，见发现 2）；`MethodParameters` 的**参数 flag** 与 module/nest/annotation 成员属性的**内容**仍归各自 pass；`method_body_opcodes` **重解析 class 并每 body 计一次 `CodeBytes`**（不发布事实故不计 `ClassBytes`/`ResultItems`）——成本/记账口径可能要在 2.x 的事实接线时重看，且它**容错**（解不出的 body 不陈述 opcode 而非让读取失败）；事实侧 `output_level` 目前只问 `Java8`（`OutputLevel` 现仅一个变体），多档输出问题属 **2.1/3.3**。
+
+## 2026-09-20 2.1：RuntimeMatrix、模块/loader policy 与 MR/layout 选择（提交 `c2676d4`）
+
+### 归属与形状
+
+**归属 `jarde-reader`**（`crates/jarde-reader/src/runtime_matrix.rs`；`src/facade.rs` 加 `Engine::runtime_matrix` 一行委派）。理由：矩阵的全部输入都是 reader 自有事实（一次物理枚举、`multi_release` 选择、`view` 的 profile/LoadDomain）；放到 reader 之上要么每 profile 重扫（违反决策 2），要么另写一份 MR 选择（明确禁止）——`multi_release::select` 的重扫逻辑在 reader 内部，只有这里能真正共享。jvm 的 `ResolutionState` 属 2.2，且 jvm 依赖 reader（分层不允许反向）。
+
+**输入** `RuntimeMatrixRequest { physical, profiles: Vec<RuntimeProfile>（1..=8 且互不相同）, domains, requester }`。
+**每 view**（`RuntimeMatrixProfile`）：`view`、`policies`、`layout`、`loader`、`definitions`、`containers`、`coverage`/`execution`/`diagnostics`/`usage`。`definitions` 按**运行时名**聚合，每 `RuntimeDefinitionOrigin` 含 container、logical path、**选择函数** `rule` 与**每条物理 entry**（decision/compliance/root/on_path）；`candidates()/unselected()/selected()` **由同一份 decision 派生**，不会与选择函数互相矛盾。
+**选择函数**（纯投影）：`HighestReleaseAtOrBelowTarget{release,target}`、`BaseSelected{reason}`、`Ambiguous{entries}`、`NoSelection{reason}`、`Unknown{reason}`——自定义/未知策略保持既有 `unsupported_policy` 语义，**绝不呈现为某个具体选择**。
+
+### 共享扫描（决策 2 的核心）——**父级独立复核**
+
+- **结构**：`multi_release::select` 拆为 `physical_evidence()`（唯一枚举）+ `select_over_physical()`（在既有证据上选择），`select` = 两者，**行为不变**（p1 MR 29 条、golden 6 条、query model 5 条**一字未改即通过**）。父级读码确认：**`physical_evidence` 调用在每 profile 循环之外**，循环内的 `select_over_physical` 读**零** archive 字节。
+- **证据是测得的恒等式**（不是写死的数字）：`matrix 总成本 == 3×扫描 + Σ每profile == 三个 standalone 运行的总和`；`scan_times_three_plus_profiles(&matrix) == baseline`；`rescan_projection().archive_entries == shared.archive_entries * 3`。实测平坦 jar：矩阵 `archive_entries=34` vs 三次独立 `42`（省下**两次未发生的枚举** = 8 条目录记录）；WAR 树：`11/331` vs `27/717`（另省 **386 字节**）。每 profile 的 220 字节是 compliance probe **自己的**重读，报告**如实分开呈现**。
+- 注：`scan.physical_scans == 1` 是结构性事实（一处调用点），**测量的部分是上述恒等式**——父级在此点明，以免后人把它读成计数器结论。
+
+### 选择函数压缩的判据
+
+签名 = 每个 `(binary_name, container)` 的**选中结果**（`Selected`/`Undecided`/`NoSelection`/`Unknown`），**不含规则文本**（否则 target 会让同一答案看起来不同）。可证区间来自同一份扫描：target release 作自变量时，分段点**正好是枚举到的 versioned release**，故 `[r, 下一 release-1]`；`PolicyDisabled`/`ManifestNotActive`/`NoVersionedCandidate` → `[0,∞)`；`TargetBelowNine` → `[0,8]`；`ReleaseAboveTarget{nearest}` → `[9,nearest-1]`；`Ambiguous`/`NoSelection`/`Unknown` → **无区间**。合并 = 签名相等 **且** 各成员区间之交包含所有成员 release；报告区间即该交集。
+实测：8/11/17 → **三组单例**（未塌缩）；11/18/21/25 → 18/21/25 合并；**反例**：两个 `Custom{id}` profile 答案相同但无区间 → 两组 `NotProvable`。
+
+### module/loader policy 的边界（如实）
+
+**能表达**：`ModuleMode::ClassPath`；`ParentFirst`/`ChildFirst` 可产生跨 loader 的显式根次序；`LoadRoot::Snapshot/ArtifactTree` 覆盖判定按 origin 链；`External` 根不覆盖本快照容器。
+**不能表达**：`ModulePath`/`Hybrid`/`Custom`/`Unknown` 一律 `Unsupported{detail}`（与 `jarde-jvm::providers`/`environment` 的拒绝一致，矩阵把它作为**数据**报告并**放弃顺序主张**）；具名模块可读性（`requires/exports` 只被测量以便游标前进）；`Custom`/`Unknown` delegation、父 loader 未提供、`external_override`/`runtime_transformation = Unknown` → 顺序 `Undetermined`、候选 `RootAttribution::Undetermined`（**不给位次**）。**layout**：改前 `LayoutMode` 全仓库**无消费者**；矩阵把树行走器已发布的 `LayoutNode` 按模式投影为层 + 在路径容器 + 运行时名，`Custom`/`Unknown` → `Unsupported`、`on_path = None`。
+
+### A06/A07 用例
+
+- **A06**：Java 8 → `BaseSelected{TargetBelowNine{8}}`；11 与 17 各选自己的版本化条目；**三个答案同时在矩阵里**（断言 answers == [base, v11, v17]）；`physical_entries().len()==4`、每 view 列出全部 4 条、每定义列全部 3 条候选、`unselected().len()==2`。Manifest：未激活 + 有版本条目 → base 规则 `ManifestNotActive` + `RuntimeMatrixVersionedEntriesInactive`（**条目仍列出**）；manifest 激活但缺 public 前驱 → 选中条目 `NonConformant` + `RuntimeMatrixSelectedEntryNonConformant`（Error）+ 转发的 `MultiReleasePublicPredecessorMissing`。
+- **A07**：`p/Dup.class` **两个 origin**（WAR 根容器 vs 嵌套 `WEB-INF/lib/a.jar`），ordinal/origin 不同；`roots=[Snapshot]` → `Ambiguous{position:0, containers:2}`；`roots=[ArtifactTree{嵌套}, Snapshot]` → `Ordered{position:0}`；**parent-first 子 loader + parent Snapshot → 回到 Ambiguous，child-first → Ordered**（声明真的改变答案）；`Custom` delegation → `Undetermined`、`search` 空、候选 `Undetermined`，**选择仍然给出**。
+
+### 父级独立复核与证据
+
+- 全量 **1040 passed / 0 failed / 3 ignored**（1029 + 11，全部为新文件）；`p4_runtime_matrix` 11 passed；fmt/clippy 1.98.1 干净；`openspec validate --all --strict` 14 passed；两个 CI example exit 0；分层三包中 `jarde-java` **0** 次；锁文件两条 exit 0（未触及依赖边）。
+- **既有断言零改动**（父级核：删除行中 `assert` 计数 **0**）。
+- **父级独立证伪**：把每个 view 的 release 换成常量 17（即**塌缩成单一答案**）→ `three_profiles_select_different_entries_and_keep_every_physical_entry` **恰好 1 红**，其余 10 绿——证明「不塌缩」这条断言**承重**。
+- **实现者三组证伪**：① 塌缩 → 红（`left: HighestReleaseAtOrBelowTarget{release:17,target:17}` / `right: BaseSelected{TargetBelowNine{target:8}}`）；② 不列未选择 entries → 4 红；③ 不可证相等却合并 → `agreement_without_a_proven_interval_is_never_merged` 红（`left: 1 / right: 2`）。副本 130 文件清单只报一个差异文件。
+- **CI**：`c2676d4` → 见下。
+
+### fixture
+
+**未新增 fixture 文件**（沿用 `tests/fixtures/README.md` 记录的**内存生成器**约定：`divergent_jar()` 与冻结的 P1 生成器同形——base/v11/v17 的 `p/Join.class`、major 52/55/61、manifest 字节相同、STORE；`war_bytes()` 沿用 `nested_fixture` 的 `p/Dup.class` 置入 `WEB-INF/lib/*.jar`，另加类目录层与一条不在路径上的条目；未激活 manifest 与缺前驱两个 jar）。
+**未产出/未尝试（如实）**：`WEB-INF/classes/` 前缀之下的 MR version 目录（既有 MR 层按 `META-INF/versions/` 识别，矩阵只剥离树行走器发布的层、**不发明**）；具名模块顺序；兄弟 loader 并存请求。
+
+### 未完成（如实）
+
+**2.2**：declaration resolution/dispatch 候选查询（缺失依赖、default conflict、open-world）；`ResolutionState::Ambiguous` 等解析态留在 resolver，矩阵只暴露它需要的物理 origin/候选；兄弟/多请求 loader 的解析序。**2.3**：有界 X3 patterns。**3.x**：plugin、文档、矩阵与最终门禁。**未做**：矩阵的 CLI 出口（`query` 未扩展）。
