@@ -749,6 +749,128 @@ fn two_throw_sites_of_one_block_still_merge_their_own_states() {
     );
 }
 
+/// One body of two records — one range that starts **inside** a block, one that starts on a block
+/// — each covering one throwing instruction, and one handler that consumes the reference it is
+/// entered with.
+///
+/// ```text
+///  0: iconst_1        block A, the entry
+///  1: iconst_0
+///  2: idiv            throws: record 0 covers it, and record 0's range starts at BCI 1
+///  3: pop
+///  4: goto 7          block A ends
+///  7: iconst_1        block B, the `goto` target
+///  8: iconst_0
+///  9: idiv            throws: record 1 covers it, and record 1's range starts with this block
+/// 10: pop
+/// 11: return
+/// 12: pop; return     the handler of record 0
+/// 14: pop; return     the handler of record 1
+/// ```
+///
+/// The raw exception edges come from the **throw sites**: a site's feasible handlers are the
+/// records whose range covers the site's own BCI (3.3), and no block start has to lie in the range
+/// for that. `first` is the range record 0 declares — `(1, 4)` is the mid-block shape, `(0, 4)`
+/// starts on the entry block, which is the shape a range test can see.
+fn mid_block_record_class(first: (u16, u16)) -> Vec<u8> {
+    /// The body above: `idiv` at BCI 2 and at BCI 9, and one handler per site.
+    const CODE: &[u8] = &[
+        0x04, 0x03, 0x6c, 0x57, // 0: iconst_1; 1: iconst_0; 2: idiv; 3: pop
+        0xa7, 0x00, 0x03, // 4: goto 7
+        0x04, 0x03, 0x6c, 0x57, // 7: iconst_1; 8: iconst_0; 9: idiv; 10: pop
+        0xb1, // 11: return
+        0x57, 0xb1, // 12: pop; return (record 0's handler)
+        0x57, 0xb1, // 14: pop; return (record 1's handler)
+    ];
+    class_of(
+        49,
+        0x0009, // ACC_PUBLIC | ACC_STATIC
+        b"method",
+        b"()V",
+        CODE,
+        2,
+        1,
+        &[
+            ExceptionRecord {
+                start_pc: first.0,
+                end_pc: first.1,
+                handler_pc: 12,
+                catch_type: 0,
+            },
+            ExceptionRecord {
+                start_pc: 7,
+                end_pc: 10,
+                handler_pc: 14,
+                catch_type: 0,
+            },
+        ],
+    )
+}
+
+/// The report of one run over the body above, through the public entry, up to the names over the
+/// frames: the whole pipeline this build implements.
+fn mid_block_record_report(first: (u16, u16)) -> MethodAnalysisReport {
+    let class = mid_block_record_class(first);
+    let fixture = fixture_of(&class, b"method", b"()V");
+    let (report, _) = analyze(&fixture, vec![AnalysisStage::Ssa], limits());
+    report
+}
+
+/// A record's BCI range is a fact about the **sites** it covers, not about the block starts it
+/// happens to contain: the canonical graph's handler rows and its exception edges are one fact
+/// read once, so a range that starts in the middle of a block still gives its handler the input
+/// its throw site hands it.
+///
+/// The body below is a method a JVM verifier accepts and runs — the `idiv` divides one by zero, the
+/// handler it enters discards the caught reference, and both blocks return — so the mid-block shape
+/// is legal bytes. What the run used to report about it was a contradiction of those bytes,
+/// `ir_frame_inconsistent`, because the row lookup was keyed on the block's *start* while the edge
+/// was built from the site's own BCI. The assertion with teeth is the first one: every phase this
+/// build implements completes and no diagnostic is raised.
+#[test]
+fn a_range_starting_inside_a_block_still_hands_its_handler_an_input() {
+    let report = mid_block_record_report((1, 4));
+    assert_eq!(
+        stage_states(&report),
+        vec![StageState::Completed; 6],
+        "the body is inside every bound it declares and contradicts nothing: {:?}",
+        report.diagnostics
+    );
+    assert!(
+        diagnostic_codes(&report).is_empty(),
+        "neither the frame phase nor the names over it stopped: {:?}",
+        report.diagnostics
+    );
+    assert_eq!(report.quality, Quality::Conservative);
+    assert_eq!(report.body, MethodBodyState::Present);
+    assert_planes_stay_p1(&report);
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::LocalInvariants
+    );
+}
+
+/// The contrast of the case above, unchanged by the fix: the same body with record 0's range
+/// starting **on** the entry block — the shape a range test has always seen — answers the same
+/// way. Read the two runs together: it is the range that moved, not the record's effect.
+#[test]
+fn a_range_containing_the_block_start_is_still_analyzed() {
+    let report = mid_block_record_report((0, 4));
+    assert_eq!(
+        stage_states(&report),
+        vec![StageState::Completed; 6],
+        "the range that contains the block start is still analyzed: {:?}",
+        report.diagnostics
+    );
+    assert!(diagnostic_codes(&report).is_empty());
+    assert_eq!(report.quality, Quality::Conservative);
+    assert_planes_stay_p1(&report);
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::LocalInvariants
+    );
+}
+
 /// The R10 shape, first half: a throw site **no handler record covers** is not retained, so the
 /// frame pass' bill for this shape is the same however many sites the block holds.
 ///

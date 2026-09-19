@@ -1642,8 +1642,8 @@ mod tests {
         // The record covers the site's own block, and neither the constructor call nor the handler:
         // a record over the call itself would enter the same handler with the *token*, and 4.1
         // merges a token and an initialized reference to `Top` — the pass's honest answer, but not
-        // the state this fixture is about. The record's two ends are both block starts, which is
-        // what the canonical graph maps a protected range onto.
+        // the state this fixture is about. The record's range starts on the block that holds the
+        // site, so the row the canonical graph states for it lists exactly that block.
         assert_eq!(&code[8..11], &[0x04, 0x03, 0x6c]);
         constructor_body(&code, 2, 2, &[(8, 15, 15, 0)])
     }
