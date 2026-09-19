@@ -23,6 +23,11 @@
 - **WHEN** 受支持 fixture 在隔离环境通过重编译和输入输出/异常对照
 - **THEN** 仅该 fixture/profile 记入已验证覆盖，不能把单个样本推广成所有合法 JVM 方法
 
+#### Scenario: Determinism excludes only observed elapsed time
+
+- **WHEN** 同一输入、profile 和 limits 的受控恢复重复完成，且未触发 elapsed 截止或外部取消
+- **THEN** 确定性比较 SHALL 仅剔除观测的 elapsed_millis，保留其余结果、origin、diagnostics、rules、顺序和预算计数字段；0/1 ms 时钟抖动不能成为测试假红，也不能通过缩减比较字段掩盖真实差异
+
 ### Requirement: Published Java 8 support matrix
 
 项目 SHALL 按 parse、X1、resolution、decompile-quality、output-level 发布 Java 8/历史 45–52 的支持矩阵，并明确代表性 javac/ECJ 与缺失依赖、混淆、无 debug、不可约 CFG 的降级。

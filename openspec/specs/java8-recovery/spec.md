@@ -1,8 +1,9 @@
-## Purpose
+# java8-recovery Specification
 
+## Purpose
 在 Java 8 RuntimeProfile 下，将有可靠 IR 证据的历史与 Java 8 字节码恢复为可读 Java 结构，同时保持求值顺序、异常、副作用和原始引用事实。
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Evidence-gated Java 8 recovery
 
@@ -27,6 +28,16 @@
 
 - **WHEN** 可恢复循环的条件或 header 包含调用、读取或可能抛异常的操作
 - **THEN** 输出保持这些操作在每条正常/异常路径上的执行次数与次序；不能把每轮执行的操作移到循环外，证明不足时保留可靠表示与降级原因
+
+#### Scenario: A loaded value survives a later local write
+
+- **WHEN** 一个值经 load 留在 operand stack 上，原 local 随后被 iinc/store 覆盖，旧值之后才被 return、调用或条件消费
+- **THEN** 恢复 SHALL 使用 load 时的 SSA 值，不重新读取已经改变的 slot；例如 `return x++` 必须返回递增前的值，不能因结构可识别而标记语义不同的 Java 为 Structured
+
+#### Scenario: A consumer falls back after reading a call result
+
+- **WHEN** 调用结果的消费者属于未证明的 cast/field/其他形态，消费者最终不能生成表达式
+- **THEN** 生产者调用及其求值顺序 SHALL 保留为可靠语句或完整 fallback 范围与 origin；不能先省略生产者，再仅引用消费者 BCI，不能因 quality=Fallback 就丢失 effect
 
 ### Requirement: Historical and Java 8 compiler patterns
 
@@ -69,3 +80,8 @@
 
 - **WHEN** 请求因预算、取消或环境被拒而停止
 - **THEN** 载荷只含停止前已发布的那部分表（环境被拒时为空载荷），报告保持原有阶段/执行/诊断语义，且两个入口对同一请求的计费与停止一致
+
+#### Scenario: Accessor evidence is demanded through the public entry
+
+- **WHEN** 公开恢复入口决定检查某个 accessor 候选
+- **THEN** callee 声明/Body/CP SHALL 绑定到实际物理定义并由同一请求预算按需读取，报告读取 reason；普通方法不因此预装其他 Body。没有可靠 callee 证据时保留原调用和拒绝原因，低层 API 的独立成功不能替代公开入口的呈现验收

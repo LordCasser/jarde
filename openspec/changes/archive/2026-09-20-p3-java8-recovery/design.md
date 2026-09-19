@@ -1,6 +1,6 @@
 ## Context
 
-以 P2 完成为进入条件。本 change 规划消费 Demand Resolver、CanonicalCFG、Frame/SSA、effects 和 Conservative output；当前尚未实现。恢复是可选呈现层，必须保持 P1 X1 的原始引用与 P2 IR origin；Java 8 是第一套高质量承诺，不代表所有 JVM 字节码都能表达为 Java。 2026-09-19 的 P2 已交付到 5.2，但异常固定点与资源计费修正 4.2b/4.3b 和整体出口尚未关闭，因此本阶段继续保持未开始。
+P0/P1、P2（29/29）和分层（7/7）均已归档，P2/分层归档提交为 `7a5f994`。当前进入 P3：`1.1/1.2/1.3/2.1/2.2` 已有交付记录（代码到 `492e31e`，收尾记录 `51a5cac`）；本轮新增基础值流修正 1.3d 后为 **5/12**。已有 Java 方法体、if/loop/switch、lambda 及部分拼接/bridge/accessor 呈现，仍受公开入口和语义边界约束；P4/P5 未实施。 当前状态见 [本轮复核](verification.md#review-2026-09-19-recovery)。本文下方各片“仍未完成”等描述保留历史时间点；本节与 Migration Plan 是继续实施的入口。
 
 ## Goals / Non-Goals
 
@@ -28,7 +28,7 @@
 
 ### droidsaw 中端设计的吸收边界
 
-版本与源码取舍沿用 [P2 design §6.1](../p2-jvm-ir/design.md)。本次吸收以下边界，在 `jarde-java` 内部用具体模块和函数表达；不为每个算法再拆 crate，实际需要多个实现之前不建通用 backend trait 或动态 pass 注册层。workspace 归属见 [layer-jarde-crates](../layer-jarde-crates/design.md)：P3 1.1 先明确由 `jarde-jvm` 拥有的只读 method/CFG/value/effect/origin 输入契约，1.3 随首个真实闭环创建 `jarde-java`，根 `jarde` 只做入口委托；当前摘要型 report 不被假定为已经具备恢复所需全部输入。 `eac3759` 的 driver 在返回前释放 canonical/frame/ssa 表；1.1 要决定请求内真实载荷的所有权和生命周期，1.3 用同一份产物接通恢复，避免从 report 拼回 IR 或无条件重复 P2。接缝只暴露所需只读访问及阶段有效性，预算、停止和 origin 随请求传递，不为此先造公共可变中端、缓存或通用 backend。
+版本与源码取舍沿用 [P2 design §6.1](../archive/2026-09-19-p2-jvm-ir/design.md)。`jarde-java` 已通过具体模块实现正常流视图、事实输入、Region、AST 与 emitter；没有动态 backend/pass 框架。`MethodIr` 已持有本次运行的 canonical/frame/ssa、解码、CP 与 bootstrap facts，`recover_method` 只调用一次分析，根门面只委托。剩余接缝是同次方法声明（flags/receiver/参数/debug）和按需 callee 证据的绑定，不再把任务写成“开放三张表”或“创建 jarde-java”。
 
 - **图的视图与语义事实分开。** 借鉴 DEX 的 `NormalFlow`，普通 if/loop/switch 的支配关系使用过滤后的正常控制流视图，尽量借用现有图。异常恢复使用完整的 throw-site/context、保护区间、catch 类型与 handler 顺序；处理 handler 自身的普通控制流时明确其入口。不能全局删除异常边，也不能用正常流支配关系推出异常语义。
 - **Region 决定结构，Java 输出负责语法。** 结构恢复消费 CFG/SSA 的条件、终结指令和 effect，构造已有规划中的 RegionIR；AST/formatter 消费 Region 和 origin。边发现、循环识别、异常范围推导不放进 formatter，AST 也不再解码 bytecode。droidsaw 的 `StmtBackend` 展示了这种分工，但 Jarde 首期只有 Java 消费方，使用具体私有函数即可。
@@ -97,9 +97,16 @@
 
 ## Migration Plan
 
-以 P2 的结果契约为输入，再增量加入 recovery profile、Java AST/source map 和独立状态字段；若契约需要改变，必须通过 OpenSpec 明确修订，不作旧接口持续有效的承诺。完成 A09/A10/A12/A13/A16 与 Java 8 语料门槛后，P4 才消费稳定的 recovery result contract。
+P2 与分层已归档，1.1–1.3 与 2.1/2.2 已交付。先完成 **1.3d 值物化与 effect/fallback 修正 → 3.1 方法声明与作用域 → 3.2 跨方法 origin/按需成员交接**，再继续 2.3/2.4 的复杂模式与异常恢复，最后完成 3.3/3.4 的语料、重编译/行为对照和发布门禁。 2.2 已承认的底层 API 限制由 3.1/3.2 闭合；不把成员 Body 读取解释成仅补几个名字。
 
-实施顺序为 **1.1 → 1.2 → 1.3（包含 3.1/3.2 的最小命名与映射子集）→ 2.x 各模式 → 3.x 完整覆盖与发布**。1.3 的退出条件是简单方法从真实库入口到 Java 文本/source map 可用，语法糖规则未命中仍能输出通用表达，复杂异常或资源停止能返回正确 fallback/状态；库/薄 CLI 消费相同结果。该闭环只是 P3 首片交付，不代表 P3 完成或全体 45–52 方法都可表达为 Java。3.1/3.2 在同一实现上扩展作用域、派生跨方法 origin 等覆盖，不另起第二套命名和映射系统。
+当前修正分为四个有独立验收的范围：
+
+1. **1.3d：值与 effect。** `render_value` 必须表达 SSA 值被读取时的值，不能无条件把历史 load 变成当前 slot 名；`iinc`/覆盖后仍在栈上的旧值应物化为正确的已有值/必要临时量，证明不足则保留完整低级表示。普通调用是否省略语句，取决于最终消费者能否实际发射且保持次数/顺序，不能只按消费 opcode 名单推断；cast/field/分支等消费者 fallback 时必须连同其 effect 生产者保留。保留 `return tick()` 单次调用对照，不以重新引入重复调用来修漏失。
+2. **3.1：声明与作用域。** 继续使用同次事实载荷，补方法 flags/receiver/参数槽/debug 范围；声明位置由定义/使用的作用域决定，不能用全方法一个 `declared` 集合决定 then/else 的局部可见性。普通 if/loop 的基本局部声明正确性先于 inner/enum/构造器复杂模式。方法体与完整 compilation unit 是不同交付范围，生产 compile_status 继续 NotAttempted。
+3. **3.2：可定位的跨方法证据与公开入口。** 当前 `source_map::Origin` 只有 bci/cp/provenance，callee 的同数 BCI 不能冒充 caller 位置。复用既有物理方法/定义身份绑定每个 anchor，并保留 Direct/Derived 与 clone 来源。accessor 只读本次实际需要的 callee，由拥有 reader/预算的事实层交出并绑定物理定义/CP；普通方法无额外 Body，accessor 请求允许必要且有 reason 的 callee Body。不能要求调用方预装全类，更不能用同名 owner 代替内容身份。库/CLI 实际呈现后再断言 X1 两条原始边不变。
+4. **3.3/3.4：独立验证。** 将本轮真实 javac 输入的返回值、调用次数、异常与作用域编译作为固定对照；只读文本形状的 oracle 不覆盖这些语义。确定性比较递归排除 elapsed_millis，其他字段不删。已有历史绿色与当前候选门禁分别记录。
+
+这些修正扩展既有 build/names/source_map/MethodIr 接缝，不新建通用中端或并行 IR。2.3/2.4 的模式可以独立调查，但交付须消费已经满足这些条件的基础结构；P3 整体完成后 P4 再消费稳定恢复契约。
 
 ### 1.2 的库评估与 1.3 的最小实现路线（2026-09-19）
 
@@ -409,7 +416,42 @@ jarde-java  ①正常流图视图 → ②异常事实 → ③Region → ④AST +
 
 **7. 验证与证伪（本片实际执行）。** `cargo test --workspace --all-targets --all-features --locked --no-fail-fast` = **925 passed / 0 failed / 1 ignored**（2.1 基线 894，**+31** = `jarde-java` 单元 43→49（concat 2、bridge 1、accessor 1、refusal 2）+ 新集成文件 `crates/jarde-java/tests/p3_patterns.rs` 24 + 新根用例 `tests/p3_accessor_edges.rs` 1；其余 crate 与既有用例一字未改）；`cargo fmt --all -- --check` 与 `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`（1.98.1）干净；两个 CI example 按 CI 口径（带 `HistoricalControlFlow.class` 参数）exit 0；分层 `cargo tree -p jarde-reader/jarde-query/jarde-jvm` 中 `jarde-java` 出现 **0** 次；`cargo metadata --manifest-path fuzz/Cargo.toml --locked` 通过、`cargo deny --manifest-path fuzz/Cargo.toml --workspace --locked --config deny.toml check` 四类全 ok（**未触及任何依赖边与 workspace 成员，`Cargo.toml` 一字未改**）。**三组证伪**（`/tmp` 副本 + 独立 `CARGO_TARGET_DIR`，`sha256sum -c` 确认仓库侧 22 个源文件逐字节未变，用完删除）：① 让段内语句检查改为「一律接受」→ `a_chain_whose_instance_is_stored_in_a_local_is_refused` 红（实例被存进局部量的链被当成 `+` 写出来）；② 把 `append` 的操作数顺序倒过来 → 顺序用例红且 oracle 正例同时红（产物是 `return f() + 5 + "x";`）；③ 削弱 oracle（比较器不再比调用序列）→ `the_oracle_rejects_a_concatenation_whose_calls_are_written_in_another_order` 红，而同文件**其余 23 条（含全部生产用例）全绿**。
 
-**8. 本片发现、但未在本片修的既有边界（如实）。** `build` 的普通调用臂在「值被消费」时仍会同时写一条调用语句与消费处的表达式（`access$200(self);` 与 `return access$200(self);` 并存）——这是 P2/2.1 既有行为，本片只在自己的两类调用上加了「值有读者就不另写语句」的守卫（lambda 站点刻意不在守卫的读者集合里：被拒绝的站点必须留下那个产生捕获值的调用）。修它需要让「读者会不会真的渲染这个值」成为可判定的，超出本片范围；既有 2.1 用例依赖该行为，因此未动。
+**8. 历史判断已被后续测量修正。** `bc283c0` 的普通 `return tick()` 确实会写两次调用，但 `492e31e` 已加入消费者守卫，本轮同一公开入口反例复测只调用一次。原“2.2 仍重复调用”的说法不适用于交付代码。新缺口是跨写入的旧值重读，以及消费者 fallback 时丢失生产者 effect；已按本轮 P3-R1/R2 列入 1.3d，不能以固定重复次数代替求值所有权。
 
 **9. 留给后面的（如实）。** 3.1：参数槽/receiver 与 debug 名（本片 fixture 里 `this` 会被名字层别名成 `self_` 一类，因为 `this` 是关键字；门面仍不猜 receiver）；3.2：段表 `cp` 面、`ConcatRecord`/`AccessorRecord`/`BridgeRecord` 的 `Deserialize` 面；3.3：语料级 concat/accessor/bridge 矩阵（多代 javac/ECJ、缺 debug、混淆）与受控重编译（`altMetafactory` 的非零标志位、方法转发型 accessor 的呈现、内联 `checkcast` 之外的转换类站点都在那里重新评估）。门面接成员表（`ClassMembers`）是 3.1 的名字读与成员读一起做，而不是本片临时加第二次类读。
+
+#### 2.3 的实际落点：构造、字段访问、dispatch 表与成员声明（2026-09-19）
+
+本片有四件事：先判上一条的 §0，再做 inner/local/anonymous 的**使用点**、enum `switch`、interface 的 `default`/`static` 方法、构造器与字段初始化。新增四条规则（`new@1`/`field@1`/`enumswitch@1`/`init@1`）与一条只写进 envelope 的规则（`declaration@1`），`PASSES` 8→13；机制**沿用** 2.1/2.2：`Refusal::unmet` + 声明式 `Precondition` + `RuleVersion` + `presented/refused` 都记录的 `*Record`，**没有第二套**。
+
+**1. §0 的判定：父亲的怀疑为真，已在片内修掉。** 旧实现的 `build::call_value_reaches_a_reader` 把 `CheckCast`/`Field` 也算作读者，于是「值被消费的调用」不写自己的语句，而那个读者若**被引用**（没有规则认领的 cast）就什么都不写：调用从文本与引用里同时消失。两个最小 fixture 的**修前实际文本**（`crates/jarde-java/tests/p3_patterns.rs`）：
+
+- 被拒的 cast 消费者（`invokestatic Test.value()Ljava/lang/Object;` → `checkcast java/lang/String` → `astore_1`）——引用里只有 BCI 3 与 6，**BCI 0 一次都不出现**；
+- 被拒的参数（`checkcast` 的值喂给 `invokestatic Test.take(Ljava/lang/String;)I`）——引用里只有 1 与 7，**BCI 4 不出现**。
+
+修法两条，都在「一条会产出语句的指令不得从产物里消失」这条不变量上：(a) **读者集合按规则收窄**——`renders_the_value_it_reads(bci)` 只把「本 build 会把该值写进自己文本」的指令算作读者（`Store/Invoke/Return/Comparison/Switch/Arithmetic`；`CheckCast` 仅在 `bridge@1` 认领时；`Field`/`ArrayLoad` 仅在各自规则认领时），被引用的读者不再是理由；(b) **被引用的区域/生产者要报全**——`Region::If/Switch/Loop` 的测试读不出来时引用**该区域覆盖的每一个 BCI**（`region_bcis`），语句因值渲染失败而回退时引用**它没能写出的那些调用的 BCI**（`deferred` 记下「为某个读者跳过自己语句」的调用，`deferred_producers` 沿生产者链收集）。修后：探针 1 的文本是 `value();` 加 BCI 3、6 的引用（调用**恰好一次**），探针 2 的引用是 `// @bytecode 7 4`（4 就是那次调用）。这同时覆盖本轮复核列在 1.3d 的 **P3-R2（消费者 fallback 时丢失生产者 effect）**；**P3-R1（跨写入的旧值重读）不在本片**：本片没有 liveness 证明，`new@1` 对参数仍要求「生产者在本站点区间内」，宁拒不猜。
+
+**2. A：inner/local/anonymous 的**使用点**，以及本片不声称的那一半。** 这类类在字节码里是普通类，类名由池原样给出（`p/Outer$1`）。`new@1` 认领的形状是 `new C ─ dup ─ [参数生产者]… ─ invokespecial C.<init>(…):V`，且要求：构造函数调用与 `dup` **同块**、接收者是本站点产出的实例、每个参数的生产者**落在 `dup` 与调用之间**（写进 `new` 表达式即与字节码同序）、区间内无 effect（`StatementFree`）、实例被**本 build 会写的**读者读到（`dup` 不算、被引用的指令不算：否则 `new` 表达式无处可写）。呈现 `new Type(args…)`，**参数按站点读取顺序、各自锚在自己的 BCI**。**不声称**：嵌套关系（`InnerClasses`/`EnclosingMethod`）与「这个参数是外层实例」——`MethodIr` 不携带任何类级事实（见 §4），外层实例就被写成站点真正读到的那个值（`return new p.Outer$1(self);`），不写 `Outer.this`、不写嵌套 `new Inner()`。拒绝即引用：参数顺序不可证（本片只在同块内认领）、实例只被引用的指令读（例如构造完又 `dup` 一次）。
+
+**3. B：enum `switch` 呈现到哪一层为止。** javac 把 `switch (e)` 降成 `getstatic S.$SwitchMap$T [I ─ e.ordinal() ─ iaload ─ tableswitch`。`enumswitch@1` 认领的**是这次读**：静态 `[I` 字段 + 描述符 `()I` 的实例调用作下标；呈现就是这次读（`switch (p.Outer$1.$SwitchMap$p$Order[order.ordinal()])`，字段与调用的 BCI 都作为 derived 锚点进段表）。**不写 `switch (e)` 与 `case T.CONST:`**，理由是证据而不是工作量：常量名是**枚举类自己**的类级事实、表中「第 k 项是哪条常量」写在**合成类的静态初始化**里，两者都不在本次运行（也不在成员表里——那是另一个类）；字段名 `$SwitchMap$…` 只是编译器约定，与 `lambda$`/`access$` 同一条纪律：名字从不决定形状。记录与 `jre_enumswitch` 诊断把这条边界写成产物的一部分。拒绝即引用：下标不是调用（fixture 用局部量）时整只 `switch` 被引用，且引用**列出该区域覆盖的全部 BCI**。
+
+**4. C：interface 的 `default`/`static` 方法——靠一条 caller-stated 的类级事实，而不是猜。** `default` 不是独立标志位：它是「interface 里既非 `static` 也非 `abstract` 的方法」（JVMS 4.6）。载荷里既没有成员的 flags 也没有类的 `ACC_INTERFACE`（`MethodIr` 的字段逐条查过：canonical/frames/ssa/code/constant_pool/bootstrap_methods，**没有任何类级事实**）。P3 2.2 已经为 bridge 开了「调用方从同一个类头读出成员 flags」的先例，本片沿用并补上同一族里的第二个：`MethodFacts::with_declaring_class(DeclaringClass { name, access_flags })`（**可选**，没交就是 `Refusal::unmet(Metadata{attribute:"declaring_class"})`，`jre_declaration_class_not_in_run`）。呈现落点是 **envelope**：`// @declaration an interface's default method of \`p.Shape\`, member flags 0x0001`（`a_constructor`/`a_static_initializer`/`instance method`/`static method`/interface 的三种各一句）。为什么只在注释里：重建方法签名要把描述符解析成类型（泛型、`throws`、注解），那是 3.x 的呈现决定，本层不越界。**载荷一字未动**（`jarde-jvm` 未改）；门面仍不交这条事实，所以经门面的运行给出**被陈述**的拒绝且不写声明行、`declaration@1` 也不进 `rules`（拒绝由记录与诊断点名）。
+
+**5. D：构造器与字段初始化，顺序即语义。** 两条规则：`field@1` 把 `getfield/getstatic/putfield/putstatic` 呈现为 `receiver.f` / `Type.f` / `receiver.f = v` / `Type.f = v`——实例访问要求**帧给出的接收者静态类型恰好等于池写的 owner**（否则 `receiver.f` 可能指到子类自己的同名字段，`B extends A` 的双 `f` 就是反例）；静态访问没有这个问题。`init@1` 把实例初始化器的**序言**写成 `super(…)`/`this(…)`，判定链是：接收者是帧的 `UninitializedThis`（只有构造器自己的 `this` 在它的构造调用前是这个 token）→ JVMS 4.9.2 只允许它调用「声明类自己的」或「其直接父类的」 `<init>`（**帧 pass 自己在转换该 token 时就执行这条规则**，所以「不是声明类」⇒「是父类」是可证的）→ 声明类名由 `DeclaringClass` 交给本片。**不可证就拒不写**：没交类名时 `jre_init_class_not_in_run`，该 BCI 被引用（旧行为会写成 `self = self.<init>();`——`<init>` 不是合法 Java 标识符，且那是把 SSA 对 token 的转换误当成赋值）。**不重排**：语句按 BCI 次序产出，字段写就写在它自己的 BCI 处；内层类的合成引用写**在**序言之前（JVMS 4.10.1.9 允许的唯一 pre-init `putfield`，判定用 `UninitializedThis` + 声明类名 == `Fieldref` 的 owner），JLS 12.5 要求的「实例初始化在 `super(…)` 之后」因此不是被搬过去的，而是本来就那样。`<clinit>` 侧：`putstatic` 写成 `Test.g = 7;`，成员名 `<clinit>` 由 `declaration@1` 声明为「a static initializer」。
+
+**6. 证据怎么读回来。** 报告新增 `news`/`fields`/`enum_switches`/`init`/`declaration`：`NewRecord`（head/dup/constructor/class/**参数的 BCI 序列**）、`FieldRecord`（access/is_static/owner/name/descriptor/presented/refusal）、`EnumSwitchRecord`（`TableRead` + `IndexCall`，各自带 BCI）、`InitRecord`（bci/target/class/declared）、`DeclarationRecord`（member_flags/declaring_class/interface/form）。presented 与 refused **都在**，每条都带 `RuleVersion`；`rules` 收录它们（`declaration@1` 只在真写了 envelope 行时收录，因为拒绝是对「本次运行没交事实」的陈述，不是对这段字节的结论）。诊断：每个拒绝一条 Warning；每一族一条 Info 汇总（`jre_new_sites`/`jre_field_accesses`/`jre_enumswitch`/`jre_constructor_prologue`/`jre_declaration`）。
+
+**7. 独立 oracle 与它的边界。** `crates/jarde-java/tests/p3_patterns.rs` 的模型段（marker 守卫内）扩成：`Cell::Instance{class,text}`（构造的类名是模型自己的 key）、`new/astore/iconst/bipush/putfield/putstatic/iaload/return` 的解码、以及一条**有序 effect 日志**（`new C(args)`、`write 名字 = 值`、`prologue`、普通调用）。文本侧新增 `run_text_effects`（语句级读者，不解析表达式，与既有 `run_text` 并存），比较器新增 `compare_effects` = 既有三项 **+ effect 序列逐条相等**。**边界如实**：模型只覆盖它能执行的那两种 fixture（本片的构造器与实例化），不执行别的方法、不解析 `switch` 语句（B 的对照靠记录与 decode 的独立断言，不靠模型执行）；`compare_effects` 与 `compare` 分开，是因为一个被认领为 `+` 的链在文本里**没有**构造，而那是 `compare` 已经覆盖的形状。
+
+**8. 验证与证伪（本片实际执行）。** `cargo test --workspace --all-targets --all-features --locked --no-fail-fast` = **947 passed / 0 failed / 1 ignored**（2.2 基线 925，**+22** = `jarde-java` 单元 49→55（field/init/enumswitch 各 1、declaration 3）+ `p3_patterns.rs` 24→40；其余 crate 一字未动）；`cargo fmt --all -- --check` 与 `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`（1.98.1）干净；`openspec validate --all --strict --no-interactive`（`npx @fission-ai/openspec@1.11.0`，与 CI 同版本）= **12 passed**；两个 CI example 按 CI 口径 exit 0；分层 `cargo tree -p jarde-reader/jarde-query/jarde-jvm` 中 `jarde-java` 出现 **0** 次；`cargo metadata --manifest-path fuzz/Cargo.toml --locked` 通过、`cargo deny --manifest-path fuzz/Cargo.toml --workspace --locked --config deny.toml check` 四类全 ok（**未触及任何依赖边与 workspace 成员，`Cargo.toml`/`Cargo.lock` 一字未改**）。**三组证伪**（`/tmp` 副本 + 独立 `CARGO_TARGET_DIR`，`shasum -a 256 -c` 确认仓库侧逐字节未变，用完删除）：① 把字段写**提到语句最前**（跨过 `super(…)`）→ `a_constructors_field_initializers_are_written_after_its_constructor_call_and_in_order` 红，输出正是被重排的构造器体；② **放松 dispatch 表形态判定**（下标不是调用也认领）→ `a_table_read_indexed_by_a_local_is_refused_and_the_whole_switch_stays_quoted` 红，记录里出现被伪造的 `IndexCall { name: "", descriptor: "" }` 且 `presented: true`；③ **削弱 oracle**（`compare_effects` 不再比 effect 序列）→ 两条 `the_oracle_rejects_…` 红而同一文件其余 38 条（含全部生产用例）全绿。
+
+**9. 被修正的既有断言（逐条，原→新→原因，无放宽）。**
+
+| 位置 | 原 | 新 | 原因 |
+| --- | --- | --- | --- |
+| `p3_patterns.rs::a_chain_whose_instance_is_stored_in_a_local_is_refused` | `assert!(text.contains("// @bytecode"))` | `!contains(" + ")` + `contains("new java.lang.StringBuilder()")` + `matches("append(") == 2` + `Java/Structured` + `news[0].presented()` | 链仍被拒（该用例的其余断言一字未改），但被拒的链**不再意味产物有引用**：`new@1` 把分配写成 `new`，`append`/`toString` 按调用写出来。改后的断言比原断言更强（钉住两次调用各一次、顺序与平面），不是放宽 |
+| 同上，`an_append_overload_that_plus_would_not_reproduce_is_refused` | 同上 | `!contains(" + ")` + `matches("append(") == 2` + `Java` | 同上：`CharSequence` 重载的转换仍不被写掉（没有 `+`），而链的指令被完整呈现 |
+| `p3_patterns.rs` 既有 oracle 调用点（4 处） | `run_bytecode(&code, &pool, None)` / `Some("self")` | `&[]` / `&["self"]` | 模型的入参从「可选 receiver」变成「入口局部量列表」，本片需要 slot 1（构造器参数）**机械改动，断言本身未改** |
+
+**10. 留给后面的（如实）。** §0 的 **P3-R1（跨写入的旧值重读）**仍是缺口，1.3d 处理；`field@1` 对「接收者静态类型 = owner」的要求会让**阴影字段**与**子类视图**的访问保持引用（宁可引用不猜）；`new@1` 对参数只认「生产者在本站点区间内」，join 出来的值（phi）、被引用指令消费的实例、跨块构造一律拒绝；方法转发型 accessor 与 `switch` 语句级的常量映射仍不做；3.2：新记录的 `Deserialize` 面与段表 `cp`；3.3：语料级 inner/enum/interface/构造器矩阵（多代 javac/ECJ、缺 debug、混淆、`this$0` 之外的合成字段）与受控重编译。
 
