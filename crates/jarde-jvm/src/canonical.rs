@@ -116,7 +116,12 @@ pub(crate) struct CanonicalEdge {
     pub(crate) kind: CanonicalEdgeKind,
 }
 
-/// One canonical block: a set of original blocks that one call path reaches as a unit.
+/// One canonical block: a set of original blocks that one call path runs as a unit.
+///
+/// The normalization creates a node for every region it enters, live or not — the method's entry
+/// *and* the call site of every context the live walk never reached — so a node the entry cannot
+/// get to is a node like any other here: [`CanonicalCfg::unreachable`] names it, and neither its
+/// absence from [`CanonicalCfg::blocks`] nor its merge into another node is what says so.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct CanonicalBlock {
     pub(crate) id: CanonicalBlockId,
@@ -193,7 +198,12 @@ pub(crate) struct CanonicalHandlerRow {
 /// The canonical CFG of one decoded method body.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct CanonicalCfg {
-    /// Blocks: the nodes the entry reaches, in the order the normalization created them.
+    /// Blocks: **every** node the normalization published, in the order it created them, the ones
+    /// the entry reaches and the ones it does not alike. Reachability is [`Self::unreachable`]'s
+    /// truth table, not this list: the dead nodes are created on purpose (the traversal starts at
+    /// the call site of every call context the live walk never entered, so the ECJ `finally` of
+    /// the 4.6.1 v45 fixture publishes six nodes of which three are dead), and a consumer that
+    /// read this list as "what the entry reaches" would state the entry runs code it cannot.
     pub(crate) blocks: Vec<CanonicalBlock>,
     /// Edges by `(from, kind, to)`.
     pub(crate) edges: Vec<CanonicalEdge>,

@@ -29,6 +29,10 @@ mod canonical;
 mod cfg;
 mod dispatch;
 mod frame;
+#[cfg(test)]
+mod frame_oracle;
+#[cfg(test)]
+mod ir_audit;
 mod members;
 mod passes;
 mod providers;

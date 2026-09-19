@@ -57,6 +57,14 @@
 //! left alone: it is a value no path defines, and replacing it would invent one. The replacement
 //! touches neither the control nor the effect facts, and it introduces no optimization framework.
 //!
+//! **A self-reference has one spelling.** An operand that names the value its own phi defines is
+//! `Itself`, never `Value(own)`, and it carries no use record — a self-reference is not a use of a
+//! value. Collection writes it that way already, and a replacement that hands one phi the value
+//! another phi's operand list was naming keeps it that way: the occurrence becomes `Itself` and
+//! its record is dropped instead of moving to the target. That is what keeps "the occurrences
+//! rewritten are the records held" an exact count — the one check [`Assigner::replace`] makes —
+//! rather than a count with an exception for the phi a replacement left holding its own value.
+//!
 //! **The replaced phi's origins are not merged into the target.** The target is still defined
 //! exactly once — by an instruction, by the entry state, by a caught reference or by a phi of its
 //! own — and its `OriginSet` states where that one definition came from; the replaced value stays
@@ -1584,6 +1592,13 @@ impl Assigner {
     /// therefore the occurrences rewritten against the records held, because "every record rewrote
     /// at least one occurrence" is false of a multiset: the first record of one place's two
     /// occurrences would answer for the second record as well and the second would find nothing.
+    ///
+    /// One occurrence is deliberately *not* rewritten: the one that would name its own holder —
+    /// the phi being replaced, or a phi whose own value is `to`. It becomes
+    /// [`PhiInput::Itself`], the one spelling a self-reference has, and its record is dropped with
+    /// it, so the count above stays the exact equality it states and no phi ever publishes its own
+    /// value as a `Value` operand. See the module documentation, "a self-reference has one
+    /// spelling".
     fn replace(&mut self, from: ValueId, to: ValueId, budget: &mut Budget) -> Norm<()> {
         let uses = std::mem::take(&mut self.values[from.index()].uses);
         self.values[from.index()].replaced_by = Some(to);
@@ -1621,15 +1636,28 @@ impl Assigner {
             ));
         }
         // Rewriting the phis is one global, idempotent pass: every operand occurrence of the value
-        // is answered by exactly one record, wherever the phis that hold it are.
+        // is answered by exactly one record, wherever the phis that hold it are. An occurrence
+        // whose answer would name the **holder's own** value — the phi that is being replaced,
+        // whose `replaced_by` now names `to`, and any phi whose own value *is* `to` — is a
+        // self-reference and becomes [`PhiInput::Itself`], the one spelling this table gives to
+        // "this input's copy is the value the merge point already names". A self-reference is not
+        // a use of a value, which is why its record does not move to the target and is dropped
+        // below, exactly like the `Itself` operands [`Assigner::complete`] writes directly.
+        // Without this, a replacement whose target one phi already defines would leave that phi
+        // holding its own value as a *value* operand, and the count below would then find a record
+        // for an occurrence the next replacement has to leave alone.
         let mut operands_rewritten = 0u64;
+        let mut self_named = 0u64;
         for phi in self.phis.iter_mut() {
-            if phi.value == from {
-                continue;
-            }
+            let own = phi.value == from || phi.value == to;
             for input in phi.inputs.iter_mut() {
                 if matches!(input, PhiInput::Value(value) if *value == from) {
-                    *input = PhiInput::Value(to);
+                    if own {
+                        *input = PhiInput::Itself;
+                        self_named += 1;
+                    } else {
+                        *input = PhiInput::Value(to);
+                    }
                     operands_rewritten += 1;
                 }
             }
@@ -1640,7 +1668,15 @@ impl Assigner {
                  it as an operand {operands_rewritten} time(s)"
             ));
         }
+        // Which of the operand records the count above names is not a fact the table states — the
+        // records are the multiset of occurrences — so the ones whose occurrence became a
+        // self-reference are simply the first `self_named` of them, in the order they are held.
+        let mut dropped = 0u64;
         for use_record in uses {
+            if use_record.bci.is_none() && dropped < self_named {
+                dropped += 1;
+                continue;
+            }
             self.record_use(to, &use_record.block, use_record.bci, budget)?;
         }
         for block in self.blocks.iter_mut() {
@@ -2894,6 +2930,49 @@ mod tests {
         );
         assert_eq!(entry_of(&table, &block(8), Slot::Local(0)), target);
         audit("a replaced phi", &table);
+    }
+
+    #[test]
+    fn a_loop_head_that_is_handed_its_own_value_spells_it_as_itself() {
+        // The 27-byte loop `tests/p2_ssa.rs` drives through the public entry: local 0 is written
+        // once, the loop's own paths hand the head's phi that value through two other phis, and
+        // those two phis are replaced by the head's own value. The operand the replacement
+        // rewrites is therefore one the head already names — and the published list has to say so
+        // in the one spelling this table gives a self-reference, `Itself`, with no use record
+        // behind it. A table that kept the rewritten occurrence as `Value(own)` would state the
+        // same thing in the form its records cannot account for, and the next replacement of that
+        // value would have to leave the occurrence alone while still holding a record for it.
+        let code: &[u8] = &[
+            0x04, 0x3b, 0x04, 0x3c, 0x04, 0x3d, 0x04, 0x99, 0x00, 0x03, 0x04, 0x99, 0xff, 0xff,
+            0x04, 0x99, 0xff, 0xfb, 0x1b, 0x04, 0x60, 0x3d, 0x04, 0x99, 0xff, 0xf7, 0xb1,
+        ];
+        let (body, canonical) = body_of_code(code, 3);
+        assert_eq!(
+            canonical
+                .blocks
+                .iter()
+                .map(|b| b.id.bci)
+                .collect::<Vec<_>>(),
+            vec![0, 10, 14, 18, 26],
+            "the loop's blocks are the ones the branches name"
+        );
+        let table = ssa_of(&body).expect("the loop names its values");
+        let head = phi(&table, &block(10), Slot::Local(0));
+        let target = table
+            .value(head.value)
+            .replaced_by
+            .expect("every path hands the head one value, so it stops being a definition");
+        assert_eq!(
+            head.inputs,
+            vec![PhiInput::Value(target), PhiInput::Itself, PhiInput::Itself],
+            "one operand per logical predecessor, and the two the head's own value arrives by are \
+             `Itself`"
+        );
+        assert!(
+            table.value(head.value).uses.is_empty(),
+            "every use of the replaced phi moved to the target"
+        );
+        audit("the loop head of the 27-byte body", &table);
     }
 
     #[test]

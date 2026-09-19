@@ -2637,6 +2637,12 @@ pub(crate) enum FrameOutcome {
 /// that asks "how many values does this slot take here" must count these records and never the
 /// aggregated edges. The source block names the normalization context too, because a clone of a
 /// subroutine is a different node from the original and from another clone.
+///
+/// One edge of a graph is one group of records, and the records of one group are the ones that
+/// edge carried the last time its source ran. Two records of an exception table can name the same
+/// handler for the same source — a named catch and a catch-all over one site is the shape — which
+/// is why the group is not the source alone: the records of the two edges are two groups, and the
+/// merge that built this state saw both of them.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct LogicalInput {
     /// The block the state comes from.
@@ -2655,8 +2661,9 @@ pub(crate) struct BlockFrame {
     pub(crate) locals: Vec<Value>,
     /// The operand stack, bottom first.
     pub(crate) stack: Vec<Value>,
-    /// One record per logical input this state was merged from, ordered by source block and then
-    /// by throw site.
+    /// One record per logical input this state was merged from, ordered by source block, then by
+    /// the edge's exception-table ordinal — a plain transfer, whose ordinal is `None`, before the
+    /// exception edges of that source — and then by throw site.
     pub(crate) inputs: Vec<LogicalInput>,
 }
 
@@ -2869,6 +2876,14 @@ fn replay(
     Ok(instructions)
 }
 
+/// Identity of one canonical edge, as the logical input records are grouped by it.
+///
+/// One source block is **not** one edge: two records of an exception table can name the same
+/// handler for the same source, and the two contributions they hand that handler are two. The
+/// record's own ordinal is what tells the exception edges of one source apart; every edge that is
+/// not an exception transfer carries `None`.
+type EdgeKey = (CanonicalBlockId, Option<u32>);
+
 /// The fixpoint itself, as [`frames`] documents it.
 fn run(
     facts: &MethodCodeFacts,
@@ -2909,10 +2924,17 @@ fn run(
     let first = entry_frame(method, facts)?;
     let mut entries: Vec<Option<Frame>> = vec![None; canonical.blocks.len()];
     let mut exits: Vec<Option<Frame>> = vec![None; canonical.blocks.len()];
-    // The logical inputs of each block, keyed by the block they come from: the inputs of one
-    // source are the block's own transfer plus the canonical facts, so re-processing that source
-    // replaces its records instead of appending a second copy of them.
-    let mut inputs: Vec<BTreeMap<CanonicalBlockId, Vec<LogicalInput>>> =
+    // The logical inputs of each block, keyed by the **edge** they arrive through: the inputs of
+    // one edge are that edge's own contribution — its source's exit, or the throw-site states one
+    // exception record hands over — so re-processing that edge replaces its records instead of
+    // appending a second copy of them. The key is the source block plus the exception-table
+    // ordinal of the edge, `None` for every edge that is not an exception transfer, because one
+    // source and one handler are **not** one edge: two records of the table can name the same
+    // handler for the same source, and a key that stopped at the source would let the second
+    // edge's records overwrite the first's. The merge below has already seen both contributions
+    // by then — it runs per contribution, not per edge — so losing one record here would publish
+    // a state whose own class no input it lists defines.
+    let mut inputs: Vec<BTreeMap<EdgeKey, Vec<LogicalInput>>> =
         vec![BTreeMap::new(); canonical.blocks.len()];
     entries[entry] = Some(first);
     let mut worklist = VecDeque::from([entry]);
@@ -2997,7 +3019,16 @@ fn run(
                     }
                 }
             }
-            inputs[*target].insert(block.id.clone(), records);
+            let key = (
+                block.id.clone(),
+                match kind {
+                    CanonicalEdgeKind::Exception { handler_ordinal } => Some(*handler_ordinal),
+                    CanonicalEdgeKind::Normal
+                    | CanonicalEdgeKind::Call { .. }
+                    | CanonicalEdgeKind::Return { .. } => None,
+                },
+            );
+            inputs[*target].insert(key, records);
         }
     }
 

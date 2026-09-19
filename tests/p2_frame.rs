@@ -749,6 +749,68 @@ fn two_throw_sites_of_one_block_still_merge_their_own_states() {
     );
 }
 
+/// The fuzz corpus seed of **two records naming one handler for one site**: the input
+/// `fuzz/corpus/method_analysis/exception-overlap-mixed.class`, taken byte for byte from where the
+/// fuzzer found it (189 bytes, the size the fuzz workspace's own corpus test pins) instead of
+/// expressed again here as a body, so the regression answers the input that reported the defect.
+///
+/// ```text
+///  0: iload_0
+///  1: ifeq 9
+///  4: aconst_null
+///  5: athrow                 the body's one throw site, in the block that starts at BCI 4
+///  6: nop; 7: nop; 8: nop    unreachable: BCI 9 is a branch target
+///  9: iconst_1
+/// 10: ireturn
+/// 11: pop; iconst_2; ireturn the handler records 0 and 2 both name
+/// 14: pop; iconst_3; ireturn the handler record 1 names
+/// exception_table:
+///   record 0: start_pc=0, end_pc=6, handler_pc=11, catch_type=java/lang/Throwable
+///   record 1: start_pc=4, end_pc=9, handler_pc=14, catch_type=0 (catch-all)
+///   record 2: start_pc=0, end_pc=9, handler_pc=11, catch_type=0 (catch-all)
+/// ```
+const OVERLAP_MIXED: &[u8] =
+    include_bytes!("../fuzz/corpus/method_analysis/exception-overlap-mixed.class");
+
+/// Two records of one exception table naming **one handler for one source block**: two edges
+/// between the same pair of blocks, and the handler's entry state the merge of both records'
+/// states.
+///
+/// Records 0 and 2 both cover the `athrow` at BCI 5 and both name handler BCI 11, so the block at
+/// BCI 4 leaves through two exception edges into one handler; record 0 catches `java/lang/Throwable`
+/// and record 2 catches everything. The two contributions therefore *differ* — the named reference
+/// and the unknown one — and their merge is the unknown reference, which is the class the handler
+/// is entered with. The run this body used to answer with was a contradiction of its own artifacts,
+/// `ir_ssa_inconsistent`, because the table of logical inputs was keyed by the block the inputs come
+/// from: the second edge's records replaced the first's, so the names over the handler saw one input
+/// defining the named reference while the frames stated the unknown one. The assertion with teeth
+/// is the first: every phase this build implements completes and nothing is reported, because the
+/// body is bytes a JVM links and runs.
+#[test]
+fn two_records_naming_one_handler_still_hand_it_both_inputs() {
+    let fixture = fixture_of(OVERLAP_MIXED, b"guarded", b"(I)I");
+    let (report, _) = analyze(&fixture, vec![AnalysisStage::Ssa], limits());
+    assert_eq!(
+        stage_states(&report),
+        vec![StageState::Completed; 6],
+        "both records' states reach the handler and every phase completes: {:?}",
+        report.diagnostics
+    );
+    assert!(
+        diagnostic_codes(&report).is_empty(),
+        "neither the frames nor the names over them stopped: {:?}",
+        report.diagnostics
+    );
+    assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+    assert_eq!(report.quality, Quality::Conservative);
+    assert_eq!(report.body, MethodBodyState::Present);
+    assert_planes_stay_p1(&report);
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::LocalInvariants
+    );
+}
+
 /// One body of two records — one range that starts **inside** a block, one that starts on a block
 /// — each covering one throwing instruction, and one handler that consumes the reference it is
 /// entered with.

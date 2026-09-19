@@ -1,0 +1,451 @@
+{
+  "file": "wide-switch.json",
+  "replays": [
+    {
+      "cancel_before_run": false,
+      "category": "wide and switch",
+      "expect": {
+        "body": {
+          "kind": "present"
+        },
+        "compile_status": "not_attempted",
+        "coverage": {
+          "artifact_structural": {
+            "scanned": [
+              {
+                "end": 85,
+                "label": "method_code_bci",
+                "start": 0
+              },
+              {
+                "end": 0,
+                "label": "exception_handler_ordinal",
+                "start": 0
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          },
+          "dynamic_analysis": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          },
+          "runtime_resolution": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          }
+        },
+        "diagnostic_codes": [],
+        "execution": {
+          "status": "complete"
+        },
+        "published_prefix": [
+          "raw_facts",
+          "raw_cfg",
+          "legacy_normalization",
+          "canonical_cfg",
+          "frame",
+          "ssa"
+        ],
+        "quality": "conservative",
+        "reads": {
+          "count": 1,
+          "reasons": [
+            "driver_method_body"
+          ]
+        },
+        "representation": "bytecode",
+        "requested_stages": [
+          "ssa"
+        ],
+        "semantic_validation": "local_invariants",
+        "stages": [
+          {
+            "stage": "raw_facts",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "raw_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "legacy_normalization",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "canonical_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "frame",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "ssa",
+            "state": {
+              "kind": "completed"
+            }
+          }
+        ],
+        "syntax_status": "not_java",
+        "usage": {
+          "analysis_steps": 158,
+          "archive_entries": 0,
+          "attribute_bytes": 206,
+          "class_bytes": 189,
+          "class_headers": 1,
+          "code_bytes": 85,
+          "dependency_depth": 0,
+          "entry_bytes": 0,
+          "input_bytes": 0,
+          "ir_edges": 34,
+          "ir_items": 11660,
+          "method_bodies": 1,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 189,
+          "read_bytes": 189,
+          "result_items": 0
+        },
+        "verification": "not_performed"
+      },
+      "fixture": {
+        "blake3": "8a28725072b854e9080edeb7a6257608cc0ab4041cca7a1d71fa159677a081df",
+        "bytes": 189,
+        "name": "wide-and-switch",
+        "source": "hand-built in tests/p2_golden.rs::wide_and_switch_class: `wide istore/iload/iinc` on local 300, a `tableswitch` and a `lookupswitch`"
+      },
+      "kind": "method_analysis",
+      "limits": {
+        "analysis_steps": 4194304,
+        "archive_entries": 10000,
+        "attribute_bytes": 16777216,
+        "class_bytes": 16777216,
+        "class_headers": 10,
+        "code_bytes": 16777216,
+        "dependency_depth": 4,
+        "elapsed_millis": 18446744073709551615,
+        "entry_bytes": 16777216,
+        "input_bytes": 16777216,
+        "ir_edges": 16777216,
+        "ir_items": 16777216,
+        "method_bodies": 10,
+        "nested_depth": 8,
+        "normalization_clones": 16,
+        "output_bytes": 16777216,
+        "read_bytes": 16777216,
+        "result_items": 1048576
+      },
+      "name": "wide-forms-and-both-switches",
+      "note": "`wide istore/iload/iinc` on local 300, a `tableswitch` and a `lookupswitch` in one body: the wide forms take part in the block structure and the frames, and the switch targets become blocks",
+      "report": {
+        "body": {
+          "kind": "present"
+        },
+        "compile_status": "not_attempted",
+        "coverage": {
+          "artifact_structural": {
+            "scanned": [
+              {
+                "end": 85,
+                "label": "method_code_bci",
+                "start": 0
+              },
+              {
+                "end": 0,
+                "label": "exception_handler_ordinal",
+                "start": 0
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          },
+          "dynamic_analysis": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          },
+          "runtime_resolution": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          }
+        },
+        "diagnostics": [],
+        "environment_identity": {
+          "content": [
+            "8a28725072b854e9080edeb7a6257608cc0ab4041cca7a1d71fa159677a081df"
+          ],
+          "domain_loaders": [
+            "app"
+          ],
+          "providers": [],
+          "runtime": {
+            "load_domain": {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "8a28725072b854e9080edeb7a6257608cc0ab4041cca7a1d71fa159677a081df"
+                }
+              ],
+              "runtime_transformation": "none"
+            },
+            "physical": {
+              "scope": {
+                "kind": "snapshot_all"
+              },
+              "snapshot": "8a28725072b854e9080edeb7a6257608cc0ab4041cca7a1d71fa159677a081df"
+            },
+            "profile": {
+              "java_release": 8,
+              "layout": {
+                "kind": "generic"
+              },
+              "multi_release": {
+                "kind": "disabled"
+              }
+            }
+          }
+        },
+        "environment_problems": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 158,
+            "archive_entries": 0,
+            "attribute_bytes": 206,
+            "class_bytes": 189,
+            "class_headers": 1,
+            "code_bytes": 85,
+            "dependency_depth": 0,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "ir_edges": 34,
+            "ir_items": 11660,
+            "method_bodies": 1,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 189,
+            "read_bytes": 189,
+            "result_items": 0
+          }
+        },
+        "loader": "app",
+        "method": {
+          "descriptor": [
+            40,
+            41,
+            86
+          ],
+          "name": [
+            109,
+            101,
+            116,
+            104,
+            111,
+            100
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "8a28725072b854e9080edeb7a6257608cc0ab4041cca7a1d71fa159677a081df",
+              "length": 189
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "8a28725072b854e9080edeb7a6257608cc0ab4041cca7a1d71fa159677a081df"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "origin": {
+          "members": []
+        },
+        "quality": "conservative",
+        "reads": [
+          {
+            "definition": {
+              "class_bytes": {
+                "digest": "8a28725072b854e9080edeb7a6257608cc0ab4041cca7a1d71fa159677a081df",
+                "length": 189
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "8a28725072b854e9080edeb7a6257608cc0ab4041cca7a1d71fa159677a081df"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            },
+            "loader": "app",
+            "reason": "driver_method_body"
+          }
+        ],
+        "representation": "bytecode",
+        "requested_stages": [
+          "ssa"
+        ],
+        "semantic_validation": "local_invariants",
+        "stages": [
+          {
+            "stage": "raw_facts",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "raw_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "legacy_normalization",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "canonical_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "frame",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "ssa",
+            "state": {
+              "kind": "completed"
+            }
+          }
+        ],
+        "syntax_status": "not_java",
+        "verification": "not_performed"
+      },
+      "request": {
+        "environment": {
+          "domains": [
+            {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "8a28725072b854e9080edeb7a6257608cc0ab4041cca7a1d71fa159677a081df"
+                }
+              ],
+              "runtime_transformation": "none"
+            }
+          ],
+          "providers": [],
+          "runtime": {
+            "load_domain": {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "8a28725072b854e9080edeb7a6257608cc0ab4041cca7a1d71fa159677a081df"
+                }
+              ],
+              "runtime_transformation": "none"
+            },
+            "physical": {
+              "scope": {
+                "kind": "snapshot_all"
+              },
+              "snapshot": "8a28725072b854e9080edeb7a6257608cc0ab4041cca7a1d71fa159677a081df"
+            },
+            "profile": {
+              "java_release": 8,
+              "layout": {
+                "kind": "generic"
+              },
+              "multi_release": {
+                "kind": "disabled"
+              }
+            }
+          }
+        },
+        "method": {
+          "descriptor": [
+            40,
+            41,
+            86
+          ],
+          "name": [
+            109,
+            101,
+            116,
+            104,
+            111,
+            100
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "8a28725072b854e9080edeb7a6257608cc0ab4041cca7a1d71fa159677a081df",
+              "length": 189
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "8a28725072b854e9080edeb7a6257608cc0ab4041cca7a1d71fa159677a081df"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "stages": [
+          "ssa"
+        ]
+      }
+    }
+  ]
+}

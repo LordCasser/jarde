@@ -1,0 +1,2445 @@
+{
+  "file": "exception-overlap.json",
+  "replays": [
+    {
+      "cancel_before_run": false,
+      "category": "exception overlap (nested handler)",
+      "expect": {
+        "body": {
+          "kind": "present"
+        },
+        "compile_status": "not_attempted",
+        "coverage": {
+          "artifact_structural": {
+            "scanned": [
+              {
+                "end": 20,
+                "label": "method_code_bci",
+                "start": 0
+              },
+              {
+                "end": 3,
+                "label": "exception_handler_ordinal",
+                "start": 0
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          },
+          "dynamic_analysis": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          },
+          "runtime_resolution": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          }
+        },
+        "diagnostic_codes": [],
+        "execution": {
+          "status": "complete"
+        },
+        "published_prefix": [
+          "raw_facts",
+          "raw_cfg",
+          "legacy_normalization",
+          "canonical_cfg",
+          "frame",
+          "ssa"
+        ],
+        "quality": "conservative",
+        "reads": {
+          "count": 1,
+          "reasons": [
+            "driver_method_body"
+          ]
+        },
+        "representation": "bytecode",
+        "requested_stages": [
+          "ssa"
+        ],
+        "semantic_validation": "local_invariants",
+        "stages": [
+          {
+            "stage": "raw_facts",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "raw_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "legacy_normalization",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "canonical_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "frame",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "ssa",
+            "state": {
+              "kind": "completed"
+            }
+          }
+        ],
+        "syntax_status": "not_java",
+        "usage": {
+          "analysis_steps": 126,
+          "archive_entries": 0,
+          "attribute_bytes": 124,
+          "class_bytes": 148,
+          "class_headers": 1,
+          "code_bytes": 20,
+          "dependency_depth": 0,
+          "entry_bytes": 0,
+          "input_bytes": 0,
+          "ir_edges": 27,
+          "ir_items": 240,
+          "method_bodies": 1,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 148,
+          "read_bytes": 148,
+          "result_items": 0
+        },
+        "verification": "not_performed"
+      },
+      "fixture": {
+        "blake3": "b70b42f6966182f93c49af8c81ebf42f0f198dcac80ab633b1ad954676f6fbc8",
+        "bytes": 148,
+        "name": "exception-overlap-nested",
+        "source": "hand-built in tests/p2_golden.rs::exception_overlap_nested_class: two overlapping catch-all records over the same sites, and a handler whose own throw is covered by a third record"
+      },
+      "kind": "method_analysis",
+      "limits": {
+        "analysis_steps": 4194304,
+        "archive_entries": 10000,
+        "attribute_bytes": 16777216,
+        "class_bytes": 16777216,
+        "class_headers": 10,
+        "code_bytes": 16777216,
+        "dependency_depth": 4,
+        "elapsed_millis": 18446744073709551615,
+        "entry_bytes": 16777216,
+        "input_bytes": 16777216,
+        "ir_edges": 16777216,
+        "ir_items": 16777216,
+        "method_bodies": 10,
+        "nested_depth": 8,
+        "normalization_clones": 16,
+        "output_bytes": 16777216,
+        "read_bytes": 16777216,
+        "result_items": 1048576
+      },
+      "name": "overlapping-records-and-nested-handler",
+      "note": "two overlapping catch-all records over the same two throw sites, plus a third record over the throw of the first record's handler: every phase completes",
+      "report": {
+        "body": {
+          "kind": "present"
+        },
+        "compile_status": "not_attempted",
+        "coverage": {
+          "artifact_structural": {
+            "scanned": [
+              {
+                "end": 20,
+                "label": "method_code_bci",
+                "start": 0
+              },
+              {
+                "end": 3,
+                "label": "exception_handler_ordinal",
+                "start": 0
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          },
+          "dynamic_analysis": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          },
+          "runtime_resolution": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          }
+        },
+        "diagnostics": [],
+        "environment_identity": {
+          "content": [
+            "b70b42f6966182f93c49af8c81ebf42f0f198dcac80ab633b1ad954676f6fbc8"
+          ],
+          "domain_loaders": [
+            "app"
+          ],
+          "providers": [],
+          "runtime": {
+            "load_domain": {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "b70b42f6966182f93c49af8c81ebf42f0f198dcac80ab633b1ad954676f6fbc8"
+                }
+              ],
+              "runtime_transformation": "none"
+            },
+            "physical": {
+              "scope": {
+                "kind": "snapshot_all"
+              },
+              "snapshot": "b70b42f6966182f93c49af8c81ebf42f0f198dcac80ab633b1ad954676f6fbc8"
+            },
+            "profile": {
+              "java_release": 8,
+              "layout": {
+                "kind": "generic"
+              },
+              "multi_release": {
+                "kind": "disabled"
+              }
+            }
+          }
+        },
+        "environment_problems": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 126,
+            "archive_entries": 0,
+            "attribute_bytes": 124,
+            "class_bytes": 148,
+            "class_headers": 1,
+            "code_bytes": 20,
+            "dependency_depth": 0,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "ir_edges": 27,
+            "ir_items": 240,
+            "method_bodies": 1,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 148,
+            "read_bytes": 148,
+            "result_items": 0
+          }
+        },
+        "loader": "app",
+        "method": {
+          "descriptor": [
+            40,
+            41,
+            86
+          ],
+          "name": [
+            109,
+            101,
+            116,
+            104,
+            111,
+            100
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "b70b42f6966182f93c49af8c81ebf42f0f198dcac80ab633b1ad954676f6fbc8",
+              "length": 148
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "b70b42f6966182f93c49af8c81ebf42f0f198dcac80ab633b1ad954676f6fbc8"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "origin": {
+          "members": []
+        },
+        "quality": "conservative",
+        "reads": [
+          {
+            "definition": {
+              "class_bytes": {
+                "digest": "b70b42f6966182f93c49af8c81ebf42f0f198dcac80ab633b1ad954676f6fbc8",
+                "length": 148
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "b70b42f6966182f93c49af8c81ebf42f0f198dcac80ab633b1ad954676f6fbc8"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            },
+            "loader": "app",
+            "reason": "driver_method_body"
+          }
+        ],
+        "representation": "bytecode",
+        "requested_stages": [
+          "ssa"
+        ],
+        "semantic_validation": "local_invariants",
+        "stages": [
+          {
+            "stage": "raw_facts",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "raw_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "legacy_normalization",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "canonical_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "frame",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "ssa",
+            "state": {
+              "kind": "completed"
+            }
+          }
+        ],
+        "syntax_status": "not_java",
+        "verification": "not_performed"
+      },
+      "request": {
+        "environment": {
+          "domains": [
+            {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "b70b42f6966182f93c49af8c81ebf42f0f198dcac80ab633b1ad954676f6fbc8"
+                }
+              ],
+              "runtime_transformation": "none"
+            }
+          ],
+          "providers": [],
+          "runtime": {
+            "load_domain": {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "b70b42f6966182f93c49af8c81ebf42f0f198dcac80ab633b1ad954676f6fbc8"
+                }
+              ],
+              "runtime_transformation": "none"
+            },
+            "physical": {
+              "scope": {
+                "kind": "snapshot_all"
+              },
+              "snapshot": "b70b42f6966182f93c49af8c81ebf42f0f198dcac80ab633b1ad954676f6fbc8"
+            },
+            "profile": {
+              "java_release": 8,
+              "layout": {
+                "kind": "generic"
+              },
+              "multi_release": {
+                "kind": "disabled"
+              }
+            }
+          }
+        },
+        "method": {
+          "descriptor": [
+            40,
+            41,
+            86
+          ],
+          "name": [
+            109,
+            101,
+            116,
+            104,
+            111,
+            100
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "b70b42f6966182f93c49af8c81ebf42f0f198dcac80ab633b1ad954676f6fbc8",
+              "length": 148
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "b70b42f6966182f93c49af8c81ebf42f0f198dcac80ab633b1ad954676f6fbc8"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "stages": [
+          "ssa"
+        ]
+      }
+    },
+    {
+      "cancel_before_run": false,
+      "category": "exception overlap (mid-block range)",
+      "expect": {
+        "body": {
+          "kind": "present"
+        },
+        "compile_status": "not_attempted",
+        "coverage": {
+          "artifact_structural": {
+            "scanned": [
+              {
+                "end": 16,
+                "label": "method_code_bci",
+                "start": 0
+              },
+              {
+                "end": 2,
+                "label": "exception_handler_ordinal",
+                "start": 0
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          },
+          "dynamic_analysis": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          },
+          "runtime_resolution": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          }
+        },
+        "diagnostic_codes": [],
+        "execution": {
+          "status": "complete"
+        },
+        "published_prefix": [
+          "raw_facts",
+          "raw_cfg",
+          "legacy_normalization",
+          "canonical_cfg",
+          "frame",
+          "ssa"
+        ],
+        "quality": "conservative",
+        "reads": {
+          "count": 1,
+          "reasons": [
+            "driver_method_body"
+          ]
+        },
+        "representation": "bytecode",
+        "requested_stages": [
+          "ssa"
+        ],
+        "semantic_validation": "local_invariants",
+        "stages": [
+          {
+            "stage": "raw_facts",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "raw_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "legacy_normalization",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "canonical_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "frame",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "ssa",
+            "state": {
+              "kind": "completed"
+            }
+          }
+        ],
+        "syntax_status": "not_java",
+        "usage": {
+          "analysis_steps": 102,
+          "archive_entries": 0,
+          "attribute_bytes": 100,
+          "class_bytes": 136,
+          "class_headers": 1,
+          "code_bytes": 16,
+          "dependency_depth": 0,
+          "entry_bytes": 0,
+          "input_bytes": 0,
+          "ir_edges": 17,
+          "ir_items": 183,
+          "method_bodies": 1,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 136,
+          "read_bytes": 136,
+          "result_items": 0
+        },
+        "verification": "not_performed"
+      },
+      "fixture": {
+        "blake3": "42ae33b067c7fb13b0481c29c15d2c53035974b90d94b0b2089ad10e35783607",
+        "bytes": 136,
+        "name": "exception-mid-block-range",
+        "source": "hand-built in tests/p2_golden.rs::exception_mid_block_range_class: one record whose range starts inside a block ([1,4)), one that starts on a block ([7,10))"
+      },
+      "kind": "method_analysis",
+      "limits": {
+        "analysis_steps": 4194304,
+        "archive_entries": 10000,
+        "attribute_bytes": 16777216,
+        "class_bytes": 16777216,
+        "class_headers": 10,
+        "code_bytes": 16777216,
+        "dependency_depth": 4,
+        "elapsed_millis": 18446744073709551615,
+        "entry_bytes": 16777216,
+        "input_bytes": 16777216,
+        "ir_edges": 16777216,
+        "ir_items": 16777216,
+        "method_bodies": 10,
+        "nested_depth": 8,
+        "normalization_clones": 16,
+        "output_bytes": 16777216,
+        "read_bytes": 16777216,
+        "result_items": 1048576
+      },
+      "name": "range-starting-inside-a-block",
+      "note": "a record whose range starts inside a block: the handler row is stated for the throw site the range covers, and the body is not refused as self-contradictory",
+      "report": {
+        "body": {
+          "kind": "present"
+        },
+        "compile_status": "not_attempted",
+        "coverage": {
+          "artifact_structural": {
+            "scanned": [
+              {
+                "end": 16,
+                "label": "method_code_bci",
+                "start": 0
+              },
+              {
+                "end": 2,
+                "label": "exception_handler_ordinal",
+                "start": 0
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          },
+          "dynamic_analysis": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          },
+          "runtime_resolution": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          }
+        },
+        "diagnostics": [],
+        "environment_identity": {
+          "content": [
+            "42ae33b067c7fb13b0481c29c15d2c53035974b90d94b0b2089ad10e35783607"
+          ],
+          "domain_loaders": [
+            "app"
+          ],
+          "providers": [],
+          "runtime": {
+            "load_domain": {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "42ae33b067c7fb13b0481c29c15d2c53035974b90d94b0b2089ad10e35783607"
+                }
+              ],
+              "runtime_transformation": "none"
+            },
+            "physical": {
+              "scope": {
+                "kind": "snapshot_all"
+              },
+              "snapshot": "42ae33b067c7fb13b0481c29c15d2c53035974b90d94b0b2089ad10e35783607"
+            },
+            "profile": {
+              "java_release": 8,
+              "layout": {
+                "kind": "generic"
+              },
+              "multi_release": {
+                "kind": "disabled"
+              }
+            }
+          }
+        },
+        "environment_problems": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 102,
+            "archive_entries": 0,
+            "attribute_bytes": 100,
+            "class_bytes": 136,
+            "class_headers": 1,
+            "code_bytes": 16,
+            "dependency_depth": 0,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "ir_edges": 17,
+            "ir_items": 183,
+            "method_bodies": 1,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 136,
+            "read_bytes": 136,
+            "result_items": 0
+          }
+        },
+        "loader": "app",
+        "method": {
+          "descriptor": [
+            40,
+            41,
+            86
+          ],
+          "name": [
+            109,
+            101,
+            116,
+            104,
+            111,
+            100
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "42ae33b067c7fb13b0481c29c15d2c53035974b90d94b0b2089ad10e35783607",
+              "length": 136
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "42ae33b067c7fb13b0481c29c15d2c53035974b90d94b0b2089ad10e35783607"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "origin": {
+          "members": []
+        },
+        "quality": "conservative",
+        "reads": [
+          {
+            "definition": {
+              "class_bytes": {
+                "digest": "42ae33b067c7fb13b0481c29c15d2c53035974b90d94b0b2089ad10e35783607",
+                "length": 136
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "42ae33b067c7fb13b0481c29c15d2c53035974b90d94b0b2089ad10e35783607"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            },
+            "loader": "app",
+            "reason": "driver_method_body"
+          }
+        ],
+        "representation": "bytecode",
+        "requested_stages": [
+          "ssa"
+        ],
+        "semantic_validation": "local_invariants",
+        "stages": [
+          {
+            "stage": "raw_facts",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "raw_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "legacy_normalization",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "canonical_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "frame",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "ssa",
+            "state": {
+              "kind": "completed"
+            }
+          }
+        ],
+        "syntax_status": "not_java",
+        "verification": "not_performed"
+      },
+      "request": {
+        "environment": {
+          "domains": [
+            {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "42ae33b067c7fb13b0481c29c15d2c53035974b90d94b0b2089ad10e35783607"
+                }
+              ],
+              "runtime_transformation": "none"
+            }
+          ],
+          "providers": [],
+          "runtime": {
+            "load_domain": {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "42ae33b067c7fb13b0481c29c15d2c53035974b90d94b0b2089ad10e35783607"
+                }
+              ],
+              "runtime_transformation": "none"
+            },
+            "physical": {
+              "scope": {
+                "kind": "snapshot_all"
+              },
+              "snapshot": "42ae33b067c7fb13b0481c29c15d2c53035974b90d94b0b2089ad10e35783607"
+            },
+            "profile": {
+              "java_release": 8,
+              "layout": {
+                "kind": "generic"
+              },
+              "multi_release": {
+                "kind": "disabled"
+              }
+            }
+          }
+        },
+        "method": {
+          "descriptor": [
+            40,
+            41,
+            86
+          ],
+          "name": [
+            109,
+            101,
+            116,
+            104,
+            111,
+            100
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "42ae33b067c7fb13b0481c29c15d2c53035974b90d94b0b2089ad10e35783607",
+              "length": 136
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "42ae33b067c7fb13b0481c29c15d2c53035974b90d94b0b2089ad10e35783607"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "stages": [
+          "ssa"
+        ]
+      }
+    },
+    {
+      "cancel_before_run": false,
+      "category": "exception overlap (exception back edge)",
+      "expect": {
+        "body": {
+          "kind": "present"
+        },
+        "compile_status": "not_attempted",
+        "coverage": {
+          "artifact_structural": {
+            "scanned": [
+              {
+                "end": 18,
+                "label": "method_code_bci",
+                "start": 0
+              },
+              {
+                "end": 1,
+                "label": "exception_handler_ordinal",
+                "start": 0
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          },
+          "dynamic_analysis": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          },
+          "runtime_resolution": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          }
+        },
+        "diagnostic_codes": [],
+        "execution": {
+          "status": "complete"
+        },
+        "published_prefix": [
+          "raw_facts",
+          "raw_cfg",
+          "legacy_normalization",
+          "canonical_cfg",
+          "frame",
+          "ssa"
+        ],
+        "quality": "conservative",
+        "reads": {
+          "count": 1,
+          "reasons": [
+            "driver_method_body"
+          ]
+        },
+        "representation": "bytecode",
+        "requested_stages": [
+          "ssa"
+        ],
+        "semantic_validation": "local_invariants",
+        "stages": [
+          {
+            "stage": "raw_facts",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "raw_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "legacy_normalization",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "canonical_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "frame",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "ssa",
+            "state": {
+              "kind": "completed"
+            }
+          }
+        ],
+        "syntax_status": "not_java",
+        "usage": {
+          "analysis_steps": 123,
+          "archive_entries": 0,
+          "attribute_bytes": 88,
+          "class_bytes": 165,
+          "class_headers": 1,
+          "code_bytes": 18,
+          "dependency_depth": 0,
+          "entry_bytes": 0,
+          "input_bytes": 0,
+          "ir_edges": 31,
+          "ir_items": 319,
+          "method_bodies": 1,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 165,
+          "read_bytes": 165,
+          "result_items": 0
+        },
+        "verification": "not_performed"
+      },
+      "fixture": {
+        "blake3": "527f179d710f715285acc4b265e1c7f5409a6903ecdb23e77884c225d71e839e",
+        "bytes": 165,
+        "name": "exception-back-edge",
+        "source": "hand-built in tests/p2_golden.rs::exception_back_edge_class: the exception edge runs back into an already-processed loop head (4.2b's back-edge contrast)"
+      },
+      "kind": "method_analysis",
+      "limits": {
+        "analysis_steps": 4194304,
+        "archive_entries": 10000,
+        "attribute_bytes": 16777216,
+        "class_bytes": 16777216,
+        "class_headers": 10,
+        "code_bytes": 16777216,
+        "dependency_depth": 4,
+        "elapsed_millis": 18446744073709551615,
+        "entry_bytes": 16777216,
+        "input_bytes": 16777216,
+        "ir_edges": 16777216,
+        "ir_items": 16777216,
+        "method_bodies": 10,
+        "nested_depth": 8,
+        "normalization_clones": 16,
+        "output_bytes": 16777216,
+        "read_bytes": 16777216,
+        "result_items": 1048576
+      },
+      "name": "exception-back-edge",
+      "note": "the exception edge runs back into a block that was already processed, so the handler's input has to settle with the loop: R9's back-edge contrast",
+      "report": {
+        "body": {
+          "kind": "present"
+        },
+        "compile_status": "not_attempted",
+        "coverage": {
+          "artifact_structural": {
+            "scanned": [
+              {
+                "end": 18,
+                "label": "method_code_bci",
+                "start": 0
+              },
+              {
+                "end": 1,
+                "label": "exception_handler_ordinal",
+                "start": 0
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          },
+          "dynamic_analysis": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          },
+          "runtime_resolution": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          }
+        },
+        "diagnostics": [],
+        "environment_identity": {
+          "content": [
+            "527f179d710f715285acc4b265e1c7f5409a6903ecdb23e77884c225d71e839e"
+          ],
+          "domain_loaders": [
+            "app"
+          ],
+          "providers": [],
+          "runtime": {
+            "load_domain": {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "527f179d710f715285acc4b265e1c7f5409a6903ecdb23e77884c225d71e839e"
+                }
+              ],
+              "runtime_transformation": "none"
+            },
+            "physical": {
+              "scope": {
+                "kind": "snapshot_all"
+              },
+              "snapshot": "527f179d710f715285acc4b265e1c7f5409a6903ecdb23e77884c225d71e839e"
+            },
+            "profile": {
+              "java_release": 8,
+              "layout": {
+                "kind": "generic"
+              },
+              "multi_release": {
+                "kind": "disabled"
+              }
+            }
+          }
+        },
+        "environment_problems": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 123,
+            "archive_entries": 0,
+            "attribute_bytes": 88,
+            "class_bytes": 165,
+            "class_headers": 1,
+            "code_bytes": 18,
+            "dependency_depth": 0,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "ir_edges": 31,
+            "ir_items": 319,
+            "method_bodies": 1,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 165,
+            "read_bytes": 165,
+            "result_items": 0
+          }
+        },
+        "loader": "app",
+        "method": {
+          "descriptor": [
+            40,
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116,
+            59,
+            41,
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116,
+            59
+          ],
+          "name": [
+            109,
+            101,
+            116,
+            104,
+            111,
+            100
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "527f179d710f715285acc4b265e1c7f5409a6903ecdb23e77884c225d71e839e",
+              "length": 165
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "527f179d710f715285acc4b265e1c7f5409a6903ecdb23e77884c225d71e839e"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "origin": {
+          "members": []
+        },
+        "quality": "conservative",
+        "reads": [
+          {
+            "definition": {
+              "class_bytes": {
+                "digest": "527f179d710f715285acc4b265e1c7f5409a6903ecdb23e77884c225d71e839e",
+                "length": 165
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "527f179d710f715285acc4b265e1c7f5409a6903ecdb23e77884c225d71e839e"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            },
+            "loader": "app",
+            "reason": "driver_method_body"
+          }
+        ],
+        "representation": "bytecode",
+        "requested_stages": [
+          "ssa"
+        ],
+        "semantic_validation": "local_invariants",
+        "stages": [
+          {
+            "stage": "raw_facts",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "raw_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "legacy_normalization",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "canonical_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "frame",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "ssa",
+            "state": {
+              "kind": "completed"
+            }
+          }
+        ],
+        "syntax_status": "not_java",
+        "verification": "not_performed"
+      },
+      "request": {
+        "environment": {
+          "domains": [
+            {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "527f179d710f715285acc4b265e1c7f5409a6903ecdb23e77884c225d71e839e"
+                }
+              ],
+              "runtime_transformation": "none"
+            }
+          ],
+          "providers": [],
+          "runtime": {
+            "load_domain": {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "527f179d710f715285acc4b265e1c7f5409a6903ecdb23e77884c225d71e839e"
+                }
+              ],
+              "runtime_transformation": "none"
+            },
+            "physical": {
+              "scope": {
+                "kind": "snapshot_all"
+              },
+              "snapshot": "527f179d710f715285acc4b265e1c7f5409a6903ecdb23e77884c225d71e839e"
+            },
+            "profile": {
+              "java_release": 8,
+              "layout": {
+                "kind": "generic"
+              },
+              "multi_release": {
+                "kind": "disabled"
+              }
+            }
+          }
+        },
+        "method": {
+          "descriptor": [
+            40,
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116,
+            59,
+            41,
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116,
+            59
+          ],
+          "name": [
+            109,
+            101,
+            116,
+            104,
+            111,
+            100
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "527f179d710f715285acc4b265e1c7f5409a6903ecdb23e77884c225d71e839e",
+              "length": 165
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "527f179d710f715285acc4b265e1c7f5409a6903ecdb23e77884c225d71e839e"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "stages": [
+          "ssa"
+        ]
+      }
+    },
+    {
+      "cancel_before_run": false,
+      "category": "exception overlap (same block, several throw sites)",
+      "expect": {
+        "body": {
+          "kind": "present"
+        },
+        "compile_status": "not_attempted",
+        "coverage": {
+          "artifact_structural": {
+            "scanned": [
+              {
+                "end": 23,
+                "label": "method_code_bci",
+                "start": 0
+              },
+              {
+                "end": 1,
+                "label": "exception_handler_ordinal",
+                "start": 0
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          },
+          "dynamic_analysis": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          },
+          "runtime_resolution": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          }
+        },
+        "diagnostic_codes": [],
+        "execution": {
+          "status": "complete"
+        },
+        "published_prefix": [
+          "raw_facts",
+          "raw_cfg",
+          "legacy_normalization",
+          "canonical_cfg",
+          "frame",
+          "ssa"
+        ],
+        "quality": "conservative",
+        "reads": {
+          "count": 1,
+          "reasons": [
+            "driver_method_body"
+          ]
+        },
+        "representation": "bytecode",
+        "requested_stages": [
+          "ssa"
+        ],
+        "semantic_validation": "local_invariants",
+        "stages": [
+          {
+            "stage": "raw_facts",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "raw_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "legacy_normalization",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "canonical_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "frame",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "ssa",
+            "state": {
+              "kind": "completed"
+            }
+          }
+        ],
+        "syntax_status": "not_java",
+        "usage": {
+          "analysis_steps": 155,
+          "archive_entries": 0,
+          "attribute_bytes": 98,
+          "class_bytes": 170,
+          "class_headers": 1,
+          "code_bytes": 23,
+          "dependency_depth": 0,
+          "entry_bytes": 0,
+          "input_bytes": 0,
+          "ir_edges": 44,
+          "ir_items": 489,
+          "method_bodies": 1,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 170,
+          "read_bytes": 170,
+          "result_items": 0
+        },
+        "verification": "not_performed"
+      },
+      "fixture": {
+        "blake3": "c1580bd2942c508053dc9a0a4343927c0d7f9d5a0b9fdb0dcb220f45610beb9b",
+        "bytes": 170,
+        "name": "exception-two-sites",
+        "source": "hand-built in tests/p2_golden.rs::exception_two_sites_class: two throw sites of one block under one record (4.2b's multi-site contrast)"
+      },
+      "kind": "method_analysis",
+      "limits": {
+        "analysis_steps": 4194304,
+        "archive_entries": 10000,
+        "attribute_bytes": 16777216,
+        "class_bytes": 16777216,
+        "class_headers": 10,
+        "code_bytes": 16777216,
+        "dependency_depth": 4,
+        "elapsed_millis": 18446744073709551615,
+        "entry_bytes": 16777216,
+        "input_bytes": 16777216,
+        "ir_edges": 16777216,
+        "ir_items": 16777216,
+        "method_bodies": 10,
+        "nested_depth": 8,
+        "normalization_clones": 16,
+        "output_bytes": 16777216,
+        "read_bytes": 16777216,
+        "result_items": 1048576
+      },
+      "name": "two-throw-sites-one-block",
+      "note": "two throw sites of one block under one record: one raw edge, two logical inputs, and the handler's entry state is their merge",
+      "report": {
+        "body": {
+          "kind": "present"
+        },
+        "compile_status": "not_attempted",
+        "coverage": {
+          "artifact_structural": {
+            "scanned": [
+              {
+                "end": 23,
+                "label": "method_code_bci",
+                "start": 0
+              },
+              {
+                "end": 1,
+                "label": "exception_handler_ordinal",
+                "start": 0
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          },
+          "dynamic_analysis": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          },
+          "runtime_resolution": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          }
+        },
+        "diagnostics": [],
+        "environment_identity": {
+          "content": [
+            "c1580bd2942c508053dc9a0a4343927c0d7f9d5a0b9fdb0dcb220f45610beb9b"
+          ],
+          "domain_loaders": [
+            "app"
+          ],
+          "providers": [],
+          "runtime": {
+            "load_domain": {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "c1580bd2942c508053dc9a0a4343927c0d7f9d5a0b9fdb0dcb220f45610beb9b"
+                }
+              ],
+              "runtime_transformation": "none"
+            },
+            "physical": {
+              "scope": {
+                "kind": "snapshot_all"
+              },
+              "snapshot": "c1580bd2942c508053dc9a0a4343927c0d7f9d5a0b9fdb0dcb220f45610beb9b"
+            },
+            "profile": {
+              "java_release": 8,
+              "layout": {
+                "kind": "generic"
+              },
+              "multi_release": {
+                "kind": "disabled"
+              }
+            }
+          }
+        },
+        "environment_problems": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 155,
+            "archive_entries": 0,
+            "attribute_bytes": 98,
+            "class_bytes": 170,
+            "class_headers": 1,
+            "code_bytes": 23,
+            "dependency_depth": 0,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "ir_edges": 44,
+            "ir_items": 489,
+            "method_bodies": 1,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 170,
+            "read_bytes": 170,
+            "result_items": 0
+          }
+        },
+        "loader": "app",
+        "method": {
+          "descriptor": [
+            40,
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116,
+            59,
+            41,
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116,
+            59
+          ],
+          "name": [
+            109,
+            101,
+            116,
+            104,
+            111,
+            100
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "c1580bd2942c508053dc9a0a4343927c0d7f9d5a0b9fdb0dcb220f45610beb9b",
+              "length": 170
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "c1580bd2942c508053dc9a0a4343927c0d7f9d5a0b9fdb0dcb220f45610beb9b"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "origin": {
+          "members": []
+        },
+        "quality": "conservative",
+        "reads": [
+          {
+            "definition": {
+              "class_bytes": {
+                "digest": "c1580bd2942c508053dc9a0a4343927c0d7f9d5a0b9fdb0dcb220f45610beb9b",
+                "length": 170
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "c1580bd2942c508053dc9a0a4343927c0d7f9d5a0b9fdb0dcb220f45610beb9b"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            },
+            "loader": "app",
+            "reason": "driver_method_body"
+          }
+        ],
+        "representation": "bytecode",
+        "requested_stages": [
+          "ssa"
+        ],
+        "semantic_validation": "local_invariants",
+        "stages": [
+          {
+            "stage": "raw_facts",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "raw_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "legacy_normalization",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "canonical_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "frame",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "ssa",
+            "state": {
+              "kind": "completed"
+            }
+          }
+        ],
+        "syntax_status": "not_java",
+        "verification": "not_performed"
+      },
+      "request": {
+        "environment": {
+          "domains": [
+            {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "c1580bd2942c508053dc9a0a4343927c0d7f9d5a0b9fdb0dcb220f45610beb9b"
+                }
+              ],
+              "runtime_transformation": "none"
+            }
+          ],
+          "providers": [],
+          "runtime": {
+            "load_domain": {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "c1580bd2942c508053dc9a0a4343927c0d7f9d5a0b9fdb0dcb220f45610beb9b"
+                }
+              ],
+              "runtime_transformation": "none"
+            },
+            "physical": {
+              "scope": {
+                "kind": "snapshot_all"
+              },
+              "snapshot": "c1580bd2942c508053dc9a0a4343927c0d7f9d5a0b9fdb0dcb220f45610beb9b"
+            },
+            "profile": {
+              "java_release": 8,
+              "layout": {
+                "kind": "generic"
+              },
+              "multi_release": {
+                "kind": "disabled"
+              }
+            }
+          }
+        },
+        "method": {
+          "descriptor": [
+            40,
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116,
+            59,
+            41,
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116,
+            59
+          ],
+          "name": [
+            109,
+            101,
+            116,
+            104,
+            111,
+            100
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "c1580bd2942c508053dc9a0a4343927c0d7f9d5a0b9fdb0dcb220f45610beb9b",
+              "length": 170
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "c1580bd2942c508053dc9a0a4343927c0d7f9d5a0b9fdb0dcb220f45610beb9b"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "stages": [
+          "ssa"
+        ]
+      }
+    },
+    {
+      "cancel_before_run": false,
+      "category": "R9 regression",
+      "expect": {
+        "body": {
+          "kind": "present"
+        },
+        "compile_status": "not_attempted",
+        "coverage": {
+          "artifact_structural": {
+            "scanned": [
+              {
+                "end": 17,
+                "label": "method_code_bci",
+                "start": 0
+              },
+              {
+                "end": 1,
+                "label": "exception_handler_ordinal",
+                "start": 0
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          },
+          "dynamic_analysis": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          },
+          "runtime_resolution": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          }
+        },
+        "diagnostic_codes": [],
+        "execution": {
+          "status": "complete"
+        },
+        "published_prefix": [
+          "raw_facts",
+          "raw_cfg",
+          "legacy_normalization",
+          "canonical_cfg",
+          "frame",
+          "ssa"
+        ],
+        "quality": "conservative",
+        "reads": {
+          "count": 1,
+          "reasons": [
+            "driver_method_body"
+          ]
+        },
+        "representation": "bytecode",
+        "requested_stages": [
+          "ssa"
+        ],
+        "semantic_validation": "local_invariants",
+        "stages": [
+          {
+            "stage": "raw_facts",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "raw_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "legacy_normalization",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "canonical_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "frame",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "ssa",
+            "state": {
+              "kind": "completed"
+            }
+          }
+        ],
+        "syntax_status": "not_java",
+        "usage": {
+          "analysis_steps": 123,
+          "archive_entries": 0,
+          "attribute_bytes": 86,
+          "class_bytes": 164,
+          "class_headers": 1,
+          "code_bytes": 17,
+          "dependency_depth": 0,
+          "entry_bytes": 0,
+          "input_bytes": 0,
+          "ir_edges": 28,
+          "ir_items": 319,
+          "method_bodies": 1,
+          "nested_depth": 0,
+          "normalization_clones": 0,
+          "output_bytes": 164,
+          "read_bytes": 164,
+          "result_items": 0
+        },
+        "verification": "not_performed"
+      },
+      "fixture": {
+        "blake3": "c5b14d3e6adbd8c21284230aca909e687cb12f34f9253c7502b14ee049de18ad",
+        "bytes": 164,
+        "name": "r9-exception-input",
+        "source": "hand-built in tests/p2_golden.rs::r9_class: the 17 bytes of the R9 counterexample"
+      },
+      "kind": "method_analysis",
+      "limits": {
+        "analysis_steps": 4194304,
+        "archive_entries": 10000,
+        "attribute_bytes": 16777216,
+        "class_bytes": 16777216,
+        "class_headers": 10,
+        "code_bytes": 16777216,
+        "dependency_depth": 4,
+        "elapsed_millis": 18446744073709551615,
+        "entry_bytes": 16777216,
+        "input_bytes": 16777216,
+        "ir_edges": 16777216,
+        "ir_items": 16777216,
+        "method_bodies": 10,
+        "nested_depth": 8,
+        "normalization_clones": 16,
+        "output_bytes": 16777216,
+        "read_bytes": 16777216,
+        "result_items": 1048576
+      },
+      "name": "r9-exception-input-follows-its-throw-site",
+      "note": "the 17 bytes R9 was reported in: the block's exit is stable across the loop while the throw site's locals are not, and the handler's input follows the throw site",
+      "report": {
+        "body": {
+          "kind": "present"
+        },
+        "compile_status": "not_attempted",
+        "coverage": {
+          "artifact_structural": {
+            "scanned": [
+              {
+                "end": 17,
+                "label": "method_code_bci",
+                "start": 0
+              },
+              {
+                "end": 1,
+                "label": "exception_handler_ordinal",
+                "start": 0
+              }
+            ],
+            "skipped": [],
+            "state": "complete_within_schema",
+            "uninterpreted_extensions": []
+          },
+          "dynamic_analysis": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          },
+          "runtime_resolution": {
+            "scanned": [],
+            "skipped": [],
+            "state": "not_requested",
+            "uninterpreted_extensions": []
+          }
+        },
+        "diagnostics": [],
+        "environment_identity": {
+          "content": [
+            "c5b14d3e6adbd8c21284230aca909e687cb12f34f9253c7502b14ee049de18ad"
+          ],
+          "domain_loaders": [
+            "app"
+          ],
+          "providers": [],
+          "runtime": {
+            "load_domain": {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "c5b14d3e6adbd8c21284230aca909e687cb12f34f9253c7502b14ee049de18ad"
+                }
+              ],
+              "runtime_transformation": "none"
+            },
+            "physical": {
+              "scope": {
+                "kind": "snapshot_all"
+              },
+              "snapshot": "c5b14d3e6adbd8c21284230aca909e687cb12f34f9253c7502b14ee049de18ad"
+            },
+            "profile": {
+              "java_release": 8,
+              "layout": {
+                "kind": "generic"
+              },
+              "multi_release": {
+                "kind": "disabled"
+              }
+            }
+          }
+        },
+        "environment_problems": [],
+        "execution": {
+          "status": "complete",
+          "usage": {
+            "analysis_steps": 123,
+            "archive_entries": 0,
+            "attribute_bytes": 86,
+            "class_bytes": 164,
+            "class_headers": 1,
+            "code_bytes": 17,
+            "dependency_depth": 0,
+            "entry_bytes": 0,
+            "input_bytes": 0,
+            "ir_edges": 28,
+            "ir_items": 319,
+            "method_bodies": 1,
+            "nested_depth": 0,
+            "normalization_clones": 0,
+            "output_bytes": 164,
+            "read_bytes": 164,
+            "result_items": 0
+          }
+        },
+        "loader": "app",
+        "method": {
+          "descriptor": [
+            40,
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116,
+            59,
+            41,
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116,
+            59
+          ],
+          "name": [
+            109,
+            101,
+            116,
+            104,
+            111,
+            100
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "c5b14d3e6adbd8c21284230aca909e687cb12f34f9253c7502b14ee049de18ad",
+              "length": 164
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "c5b14d3e6adbd8c21284230aca909e687cb12f34f9253c7502b14ee049de18ad"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "origin": {
+          "members": []
+        },
+        "quality": "conservative",
+        "reads": [
+          {
+            "definition": {
+              "class_bytes": {
+                "digest": "c5b14d3e6adbd8c21284230aca909e687cb12f34f9253c7502b14ee049de18ad",
+                "length": 164
+              },
+              "location": {
+                "kind": "standalone_root",
+                "snapshot": "c5b14d3e6adbd8c21284230aca909e687cb12f34f9253c7502b14ee049de18ad"
+              },
+              "variant": {
+                "kind": "base"
+              }
+            },
+            "loader": "app",
+            "reason": "driver_method_body"
+          }
+        ],
+        "representation": "bytecode",
+        "requested_stages": [
+          "ssa"
+        ],
+        "semantic_validation": "local_invariants",
+        "stages": [
+          {
+            "stage": "raw_facts",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "raw_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "legacy_normalization",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "canonical_cfg",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "frame",
+            "state": {
+              "kind": "completed"
+            }
+          },
+          {
+            "stage": "ssa",
+            "state": {
+              "kind": "completed"
+            }
+          }
+        ],
+        "syntax_status": "not_java",
+        "verification": "not_performed"
+      },
+      "request": {
+        "environment": {
+          "domains": [
+            {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "c5b14d3e6adbd8c21284230aca909e687cb12f34f9253c7502b14ee049de18ad"
+                }
+              ],
+              "runtime_transformation": "none"
+            }
+          ],
+          "providers": [],
+          "runtime": {
+            "load_domain": {
+              "delegation": {
+                "kind": "parent_first"
+              },
+              "external_override": "none",
+              "loader": "app",
+              "module_mode": {
+                "kind": "class_path"
+              },
+              "parent_loader": null,
+              "roots": [
+                {
+                  "kind": "snapshot",
+                  "snapshot": "c5b14d3e6adbd8c21284230aca909e687cb12f34f9253c7502b14ee049de18ad"
+                }
+              ],
+              "runtime_transformation": "none"
+            },
+            "physical": {
+              "scope": {
+                "kind": "snapshot_all"
+              },
+              "snapshot": "c5b14d3e6adbd8c21284230aca909e687cb12f34f9253c7502b14ee049de18ad"
+            },
+            "profile": {
+              "java_release": 8,
+              "layout": {
+                "kind": "generic"
+              },
+              "multi_release": {
+                "kind": "disabled"
+              }
+            }
+          }
+        },
+        "method": {
+          "descriptor": [
+            40,
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116,
+            59,
+            41,
+            76,
+            106,
+            97,
+            118,
+            97,
+            47,
+            108,
+            97,
+            110,
+            103,
+            47,
+            79,
+            98,
+            106,
+            101,
+            99,
+            116,
+            59
+          ],
+          "name": [
+            109,
+            101,
+            116,
+            104,
+            111,
+            100
+          ],
+          "owner": {
+            "class_bytes": {
+              "digest": "c5b14d3e6adbd8c21284230aca909e687cb12f34f9253c7502b14ee049de18ad",
+              "length": 164
+            },
+            "location": {
+              "kind": "standalone_root",
+              "snapshot": "c5b14d3e6adbd8c21284230aca909e687cb12f34f9253c7502b14ee049de18ad"
+            },
+            "variant": {
+              "kind": "base"
+            }
+          }
+        },
+        "stages": [
+          "ssa"
+        ]
+      }
+    }
+  ]
+}

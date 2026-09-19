@@ -61,17 +61,23 @@ struct Fixture {
 
 /// Opens the fixture and derives the physical identity of one of its methods.
 fn fixture(name: &[u8], descriptor: &[u8]) -> Fixture {
+    fixture_of(V52, name, descriptor)
+}
+
+/// The same for any class file: the identity of the definition is the digest of the bytes the
+/// request is answered from, so a class assembled beside a committed one is not a special case.
+fn fixture_of(class: &[u8], name: &[u8], descriptor: &[u8]) -> Fixture {
     let mut budget = Budget::new(limits());
     let snapshot = Engine::new()
-        .open(ArtifactInput::bytes(V52.to_vec()), &mut budget)
+        .open(ArtifactInput::bytes(class.to_vec()), &mut budget)
         .expect("the fixture opens as a standalone CLASS");
     let definition = PhysicalDefinitionId {
         location: PhysicalClassLocation::StandaloneRoot {
             snapshot: snapshot.id().clone(),
         },
         class_bytes: ClassBytesId {
-            digest: Digest(blake3::hash(V52).to_hex().to_string()),
-            length: u64::try_from(V52.len()).expect("the fixture length fits u64"),
+            digest: Digest(blake3::hash(class).to_hex().to_string()),
+            length: u64::try_from(class.len()).expect("a class file length fits u64"),
         },
         variant: PhysicalVariant::Base,
     };
@@ -81,6 +87,87 @@ fn fixture(name: &[u8], descriptor: &[u8]) -> Fixture {
         descriptor: bytes(descriptor),
     };
     Fixture { snapshot, method }
+}
+
+/// A `u2` in the class-file byte order.
+fn u16b(bytes: &mut Vec<u8>, value: u16) {
+    bytes.extend_from_slice(&value.to_be_bytes());
+}
+
+/// One real class file of `Test` with the single `public static` method `method`, whose body is
+/// `code`, at class-file version `major` and with no exception table.
+///
+/// The pool is the smallest one a `Code` attribute needs — the class, its superclass, the member's
+/// name and descriptor, and the attribute's own name — so a body assembled here is the body and
+/// nothing else: no constant, no field, no debug attribute of any kind.
+fn class_of(
+    major: u16,
+    descriptor: &[u8],
+    code: &[u8],
+    max_stack: u16,
+    max_locals: u16,
+) -> Vec<u8> {
+    fn utf8(pool: &mut Vec<u8>, text: &[u8]) {
+        pool.push(1);
+        u16b(
+            pool,
+            u16::try_from(text.len()).expect("a fixture name fits u16"),
+        );
+        pool.extend_from_slice(text);
+    }
+    fn class(pool: &mut Vec<u8>, name: u16) {
+        pool.push(7);
+        u16b(pool, name);
+    }
+
+    let mut pool = Vec::new();
+    utf8(&mut pool, b"Test"); // 1
+    class(&mut pool, 1); // 2
+    utf8(&mut pool, b"java/lang/Object"); // 3
+    class(&mut pool, 3); // 4
+    utf8(&mut pool, b"method"); // 5
+    utf8(&mut pool, descriptor); // 6
+    utf8(&mut pool, b"Code"); // 7
+
+    let mut content = Vec::new();
+    u16b(&mut content, max_stack);
+    u16b(&mut content, max_locals);
+    content.extend_from_slice(
+        &u32::try_from(code.len())
+            .expect("a fixture body fits u32")
+            .to_be_bytes(),
+    );
+    content.extend_from_slice(code);
+    u16b(&mut content, 0); // no exception table
+    u16b(&mut content, 0); // no `Code` attribute
+
+    let mut method = Vec::new();
+    u16b(&mut method, 0x0009); // ACC_PUBLIC | ACC_STATIC
+    u16b(&mut method, 5);
+    u16b(&mut method, 6);
+    u16b(&mut method, 1);
+    u16b(&mut method, 7);
+    method.extend_from_slice(
+        &u32::try_from(content.len())
+            .expect("a fixture Code content fits u32")
+            .to_be_bytes(),
+    );
+    method.extend_from_slice(&content);
+
+    let mut bytes = 0xcafebabe_u32.to_be_bytes().to_vec();
+    u16b(&mut bytes, 0); // minor
+    u16b(&mut bytes, major);
+    u16b(&mut bytes, 8); // the pool holds entries 1..7
+    bytes.extend_from_slice(&pool);
+    u16b(&mut bytes, 0x0021); // ACC_PUBLIC | ACC_SUPER
+    u16b(&mut bytes, 2); // this
+    u16b(&mut bytes, 4); // super
+    u16b(&mut bytes, 0); // interfaces
+    u16b(&mut bytes, 0); // fields
+    u16b(&mut bytes, 1); // methods
+    bytes.extend_from_slice(&method);
+    u16b(&mut bytes, 0); // class attributes
+    bytes
 }
 
 /// One caller domain rooted at the fixture, and nothing else.
@@ -201,6 +288,91 @@ fn the_ssa_phase_names_a_real_body_and_completes_the_pipeline() {
     // item and edge dimensions it charges.
     assert!(budget.usage().ir_items > 0);
     assert!(budget.usage().ir_edges > 0);
+}
+
+/// A loop whose head phi takes **its own value** as an operand, and the run that used to refuse it.
+///
+/// The 27 code bytes are the minimal reproducer of the second defect the P2 property corpus found
+/// (`tests/p2_properties.rs` suspended three of its generated legal bodies for it, and the fuzz
+/// side never had to: the shape is a loop, not an exception). A JVM verifies and links the body —
+/// it was checked with Corretto 1.8.0_432 through `defineClass` plus `Class.forName(name, true,
+/// loader)` — so the contradiction this build reported about it was about its own artifacts.
+///
+/// ```text
+///  0: iconst_1          locals 0, 1 and 2 are one
+///  1: istore_0
+///  2: iconst_1
+///  3: istore_1
+///  4: iconst_1
+///  5: istore_2
+///  6: iconst_1
+///  7: ifeq 10           the entry block, whose two branches both land on BCI 10
+/// 10: iconst_1          the loop head: 11 branches to itself
+/// 11: ifeq 10
+/// 14: iconst_1
+/// 15: ifeq 10
+/// 18: iload_1; iconst_1; iadd; istore_2    local 2 becomes 2
+/// 22: iconst_1
+/// 23: ifeq 14
+/// 26: return
+/// ```
+///
+/// Local 0 at BCI 10 is the merge of three logical inputs — the entry's value, the branch the head
+/// takes back to itself, and the path through BCI 14 — and nothing writes that local inside the
+/// loop, so BCI 14's own phi for it is folded into the head's value. The head's phi therefore ends
+/// up taking **its own value** as one of its operands, and once every path hands it one value it is
+/// replaced by it. What the run used to report was `ir_ssa_inconsistent` — "one value is named as
+/// a phi operand 2 time(s) while the phis hold it as an operand 1 time(s)" — a count of this
+/// build's own records and not a contradiction of the body, because the operand the fold rewrote
+/// named the value its own phi defines.
+#[test]
+fn a_phi_that_takes_its_own_value_as_an_operand_is_still_legal() {
+    /// The body, byte for byte, as the suspended corpus entries state it.
+    const CODE: &[u8] = &[
+        0x04, 0x3b, 0x04, 0x3c, 0x04, 0x3d, 0x04, 0x99, 0x00, 0x03, 0x04, 0x99, 0xff, 0xff, 0x04,
+        0x99, 0xff, 0xfb, 0x1b, 0x04, 0x60, 0x3d, 0x04, 0x99, 0xff, 0xf7, 0xb1,
+    ];
+    // The branch operands really land where the listing above says: 7 + 3 = 10, 11 - 1 = 10,
+    // 15 - 5 = 10 and 23 - 9 = 14.
+    for (operand, expected) in [(8, 10_i32), (12, 10), (16, 10), (24, 14)] {
+        assert_eq!(
+            i32::from(i16::from_be_bytes([CODE[operand], CODE[operand + 1]])),
+            expected - i32::try_from(operand - 1).expect("a fixture body fits i32"),
+            "the branch at BCI {} names its target",
+            operand - 1
+        );
+    }
+    // The five other bytes of its `Code`: major 49 is the dialect of the reported reproducer, and
+    // the declared maxima are the ones its discoverer recorded.
+    let class = class_of(49, b"()V", CODE, 4, 3);
+    let fixture = fixture_of(&class, b"method", b"()V");
+    let (report, _) = analyze(&fixture, vec![AnalysisStage::Ssa], limits());
+    assert_eq!(
+        stage_states(&report),
+        vec![
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Completed,
+        ],
+        "the whole pipeline completes over the loop: {:?}",
+        report.diagnostics
+    );
+    assert!(
+        diagnostic_codes(&report).is_empty(),
+        "a legal body reports no contradiction: {:?}",
+        report.diagnostics
+    );
+    assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+    assert_eq!(report.quality, Quality::Conservative);
+    assert_eq!(report.body, MethodBodyState::Present);
+    assert_planes_stay_p1(&report);
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::LocalInvariants
+    );
 }
 
 #[test]
