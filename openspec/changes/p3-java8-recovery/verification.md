@@ -739,3 +739,42 @@ walker 遇到**异常边**时先于既有 fallback 检查。逐条证明（全�
 - **既有平面缺口（非本片引入，已点名）**：builder **内部**的引用（如以类字面量为锁值的 `syncBody`）使产物 `Mixed/Fallback`，但其原因只写在**产物文本**里、不进 `report.diagnostics`（诊断平面目前只收 region 级 fallback）。该形状被保留为边界用例。
 - **已知边界**：守卫语句必须**起始于其所在节点首指令**（否则更早的语句会被 claim 后丢弃，由 `explained()` 拒绝）；带 `catch` 的 TWR、分支体、`return` 值跨 close 的形状均拒绝，不做部分呈现。
 - 本片**未做独立 review**（父级已做两组独立证伪）。
+
+## 2026-09-20 父级发现：slot 复用与既有 spec 的冲突（**待裁决，代码未动**）
+
+**P3-R6 · 候选：`specs/source-maps/spec.md` 的 `Slot reuse across ranges` 场景与 3.1 的实现相反。**
+
+**规格原文**（`specs/source-maps/spec.md`，**该场景是该 delta 的既有内容，不在本轮用户新增之列**——父级用 `git diff` 核过，用户新增的是 `A local is defined in both arms and used after the join` 与 `BCI-to-source evidence` 的物理身份句）：
+
+> **WHEN** 同一个 local slot 在不同 BCI 区间承载不同变量
+> **THEN** source map 和 Java AST **建立不同作用域/名称**，**不把整个 slot 合并成一个变量**
+
+**实现的实际行为**（3.1 `f7f90b7`，由 `tests/p3_scope.rs::a_table_that_names_a_slot_twice_states_no_name_for_it` 的注释与断言固定）：
+
+> 「a slot the table names **twice** … takes **no** name, because **one storage location has one name** and neither record's name is the truth about the whole of it」
+
+即：**把整个 slot 当作一个变量**，带 debug 时因 LVT 给出两个名字而**放弃命名**（落回 `local3`）。
+
+**证据（父级本机实测）**：`tests/fixtures/p3-scope/Scope.java:57` 的 `reuse(ZI)I`，其 `-g` 样本的 LVT 为
+
+```
+Start  Length  Slot  Name   Signature
+    8       2     3     c   I      <- then 臂
+   10       3     2     a   I
+   17       2     3     d   I      <- else 臂
+    0      21     0     b   Z
+```
+
+**slot 3 在两个不相交区间 [8,10) 与 [17,19) 上分别叫 `c` 与 `d`**——这正是规格场景说的「不同 BCI 区间承载不同变量」，证据**就在同一个 `Code` 属性里**（3.1 已从它读出名字，只是没把 range 用于作用域）。
+
+**影响**：规格句是 **MUST 级**（「建立不同作用域/名称」「不把整个 slot 合并成一个变量」），当前实现**两处都不满足**；而 3.1 已按此行为勾选。按用户「只有实际完成并验证的任务才能勾选」的规则，**3.1 的勾选在该点上不成立**。
+
+**根因（父级自己的派单失误）**：父级给 3.1 的派单写的是「**slot 复用**：…**判断并说明**你选哪种」——**在该点上授权了自由选择，而规格早已明确要求**。实现者的推理只权衡了「一个变量」与「拒绝整具身体」两种，**没有考虑规格的第三种（按 range 分成两个作用域变量）**，因为派单没让它去读那条场景。
+
+**可能的解法（两点都有证据支撑）**：
+- ① 有 LVT 且 range **不相交**、名字**不同**时：按 range 切分该槽的使用，**在各自 range 的合法作用域内**声明两个变量（`int c = …;` / `int d = …;`），source map 的位置仍绑同一物理方法的 BCI；
+- ② 无该证据（`-g:none`、range 相交、名字相同或只有一条记录）：**保持现状**（一个槽一个变量）——这与 `Deterministic names and scopes` 的「缺失证据时 MUST 使用稳定 `argN`/`localN`」一致。
+
+**归属**：属 **3.1 的 `slot 复用` 覆盖项**（任务文本本就点名「覆盖 slot 复用」），应在 **3.4 的「P3 所有出口通过」之前**关闭。
+
+**未擅自实施**：改动会变更既有断言（`two_variables_sharing_one_slot_…` 与 `a_table_that_names_a_slot_twice_…` 的期望值）与 `NameTable` 的「一槽一名」合同，属规格级取舍；父级在此**只记录证据**，等复核裁决（或由父级按规格直接实施，两者都已备好证据）。
