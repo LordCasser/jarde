@@ -286,6 +286,38 @@ impl<'a> Emitter<'a> {
                 self.expr(cond)?;
                 self.put(");\n", at)
             }
+            StmtKind::Try { resources, body } => {
+                self.put(&pad, at)?;
+                self.put("try (", at)?;
+                for (index, resource) in resources.iter().enumerate() {
+                    if index > 0 {
+                        self.put("; ", at)?;
+                    }
+                    // The declaration's own text is anchored where the value it stores is produced:
+                    // the header is the only place that initialisation runs, and the segment says
+                    // which instruction it came from.
+                    self.node(&resource.value.origin, |emitter| {
+                        emitter.put(resource.ty.spell(), at)?;
+                        emitter.put(" ", at)?;
+                        emitter.put(&resource.name, at)?;
+                        emitter.put(" = ", at)?;
+                        emitter.expr(&resource.value)
+                    })?;
+                }
+                self.put(") {\n", at)?;
+                self.stmts(body, indent + 1)?;
+                self.put(&pad, at)?;
+                self.put("}\n", at)
+            }
+            StmtKind::Synchronized { lock, body } => {
+                self.put(&pad, at)?;
+                self.put("synchronized (", at)?;
+                self.expr(lock)?;
+                self.put(") {\n", at)?;
+                self.stmts(body, indent + 1)?;
+                self.put(&pad, at)?;
+                self.put("}\n", at)
+            }
             StmtKind::Switch { value, arms } => {
                 self.put(&pad, at)?;
                 self.put("switch (", at)?;
@@ -418,6 +450,10 @@ impl<'a> Emitter<'a> {
                 emitter.expr(left)?;
                 emitter.put(&format!(" {} ", op.spell()), at)?;
                 emitter.expr(right)
+            }
+            ExprKind::Not { value } => {
+                emitter.put("!", at)?;
+                emitter.expr(value)
             }
         })
     }

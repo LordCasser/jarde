@@ -9369,7 +9369,7 @@ mod tests {
                 branch_targets,
                 subroutines
             ),
-            (18, 67, 8, 23, 8),
+            (20, 93, 44, 81, 8),
             "fixture population changed: re-measure these counts"
         );
     }

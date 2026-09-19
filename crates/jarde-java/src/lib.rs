@@ -62,6 +62,7 @@ pub mod declaration;
 pub mod enumswitch;
 pub mod facts;
 pub mod field;
+pub mod guard;
 pub mod init;
 pub mod lambda;
 pub mod names;
@@ -99,6 +100,7 @@ pub use facts::{
     CompareOp, ConstantValue, DeclaringClass, FieldAccess, InvokeKind, MemberBody, MethodFacts,
     Operation, RecoveryFacts,
 };
+pub use guard::{Plan as GuardPlan, Resource as GuardResource, Shape as GuardShape};
 pub use names::{AliasReason, NameTable, RenderedName, alias_for, is_java_identifier};
 pub use normal_flow::{ExcludedEdges, NormalFlowView};
 pub use region::{FallbackReason, Recovered, Region};

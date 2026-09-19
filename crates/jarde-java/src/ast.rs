@@ -166,6 +166,14 @@ pub enum ExprKind {
         left: Box<Expr>,
         right: Box<Expr>,
     },
+    /// `!value` — the negation of a **boolean** value.
+    ///
+    /// This node exists for one fact the frames cannot state: a `boolean` parameter and an `int`
+    /// parameter share one slot shape, so `ifeq` on slot 1 is `b != 0` for an `int` and it is `!b`
+    /// for a `boolean` — and only the method's own descriptor says which. [`crate::facts`] reads that
+    /// descriptor, and a zero test on a `boolean`-typed slot is written with this node rather than as
+    /// a comparison the method's signature would refuse to compile (P3-R5).
+    Not { value: Box<Expr> },
 }
 
 /// Which constructor one instance initializer calls first.
@@ -290,6 +298,19 @@ pub enum StmtKind {
     DoWhile { cond: Expr, body: Vec<Stmt> },
     /// `switch (<value>) { … }`, with one arm per distinct target of the decoded `switch`.
     Switch { value: Expr, arms: Vec<SwitchArm> },
+    /// `try (T n = expr; …) { … }` — the guarded statement the `twr@1` rule proved.
+    ///
+    /// The resources are written in **declaration** order, which is the order the rule read their
+    /// initialisations in, and the compiler closes them in the reverse order — the order the bytecode
+    /// really closed them in, because that is the order the rule matched the normal path's close
+    /// chain against before it may write this node ([`crate::guard`]).
+    Try {
+        resources: Vec<ResourceDecl>,
+        body: Vec<Stmt>,
+    },
+    /// `synchronized (<lock>) { … }` — the guarded statement the `monitor@1` rule proved, with every
+    /// path out of the body leaving the monitor it entered.
+    Synchronized { lock: Expr, body: Vec<Stmt> },
     /// Text this slice could not present as Java, quoting what it could not present.
     ///
     /// This is the declared fallback of the recoverable-subset boundary: the bytecode is quoted
@@ -298,6 +319,20 @@ pub enum StmtKind {
     /// It is never an empty body: a region that cannot be presented produces this node or the run
     /// stops and produces no text at all.
     Fallback { reason: String, bcis: Vec<u32> },
+}
+
+/// One resource of a `try` header.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ResourceDecl {
+    /// The resource's declared type, as the frames state the value's own type. A value the frames
+    /// name as no reference type at all is refused by the rule that would write the header, never
+    /// spelled `Object`.
+    pub ty: Type,
+    /// The name the presentation gave the slot the resource lives in.
+    pub name: String,
+    /// The initialisation expression: the value the header's declaration is filled with. Its text is
+    /// the one the initialisation's own instructions produce, written where the statement runs them.
+    pub value: Expr,
 }
 
 /// One arm of a `switch` statement.

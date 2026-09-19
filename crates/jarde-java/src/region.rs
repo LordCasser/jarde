@@ -117,6 +117,27 @@ pub enum FallbackReason {
     /// The decoded keys and targets of a `switch` do not line up with the successors the graph
     /// holds for it.
     SwitchShape { block_bci: u32 },
+    /// A guarded region — a `try`-with-resources, a `synchronized` statement or the `finally` shape
+    /// javac copies — that a rule of P3 2.4 examined and did **not** present.
+    ///
+    /// This is the one reason a guarded shape is refused through: the rule that examined it says
+    /// which link of its proof fell short ([`crate::guard::Unproven`]), and the code and the message
+    /// are that rule's own, exactly like a site's refusal ([`crate::refusal::Refusal`]). A handler
+    /// that is not a guarded region at all keeps this walk's own [`Self::ExceptionEdge`]: "no rule
+    /// examined this" and "a rule examined this and refused it" are different facts, and a reader of
+    /// the artifact needs to tell them apart.
+    Guard {
+        /// The declared rule that examined the shape, when one did. The `finally` copy is examined
+        /// by *no* rule — this build refuses it rather than presenting it — so a reader that asked
+        /// "which rule refused this" gets no name instead of a borrowed one.
+        pass: Option<&'static crate::pass::Pass>,
+        /// The refusal's diagnostic code.
+        code: &'static str,
+        /// The instruction the refusal is about.
+        at: u32,
+        /// What the rule states about it, in one sentence.
+        message: String,
+    },
     /// Live blocks the walk did not claim, reachable only through edges the projection leaves out.
     UncoveredBlocks { blocks: Vec<u32> },
     /// The block's own evidence is incomplete: it branches but the names table states no last
@@ -142,6 +163,7 @@ impl FallbackReason {
             Self::UnmetPrecondition { .. } => "jre_region_unmet_precondition",
             Self::SwitchArmsOverlap { .. } => "jre_region_switch_arms_overlap",
             Self::SwitchShape { .. } => "jre_region_switch_shape",
+            Self::Guard { code, .. } => code,
             Self::UncoveredBlocks { .. } => "jre_region_uncovered_blocks",
             Self::MissingEvidence { .. } => "jre_region_missing_evidence",
         }
@@ -180,6 +202,7 @@ impl FallbackReason {
     pub fn pass(&self) -> Option<&'static crate::pass::Pass> {
         match self {
             Self::UnmetPrecondition { pass, .. } => Some(pass),
+            Self::Guard { pass, .. } => *pass,
             _ => None,
         }
     }
@@ -261,6 +284,7 @@ impl FallbackReason {
             Self::MissingEvidence { block_bci } => format!(
                 "block at BCI {block_bci} has no last instruction the names table states, so its branch cannot be named"
             ),
+            Self::Guard { message, .. } => message.clone(),
         }
     }
 }
@@ -350,6 +374,21 @@ pub enum Region {
         blocks: Vec<CanonicalBlockId>,
         reason: FallbackReason,
     },
+    /// A guarded statement a rule of P3 2.4 proved: a `try`-with-resources or a `synchronized`
+    /// block, with the region it guards inside it.
+    ///
+    /// The region owns **every** block of the statement — the resources' own initialisations, the
+    /// body, the closes the normal path performs and the handlers — because none of the others may
+    /// be written as statements of its own: the closes would run twice, and the header's text is
+    /// where a resource's initialisation belongs. `prefix` is what the walk had already claimed
+    /// before the statement's own header block, which is written first, exactly like an `if`'s
+    /// prefix.
+    Guard {
+        /// The blocks written before the statement, in order.
+        prefix: Vec<CanonicalBlockId>,
+        /// What the rule proved: the shape, the guarded body and every block the statement owns.
+        plan: crate::guard::Plan,
+    },
 }
 
 impl Region {
@@ -394,6 +433,11 @@ impl Region {
                 blocks
             }
             Self::Fallback { blocks, .. } => blocks.iter().collect(),
+            Self::Guard { prefix, plan } => {
+                let mut blocks: Vec<&CanonicalBlockId> = prefix.iter().collect();
+                blocks.extend(plan.owned());
+                blocks
+            }
         }
     }
 
@@ -406,6 +450,10 @@ impl Region {
             } => then_arm.is_structured() && else_arm.is_structured(),
             Self::Switch { groups, .. } => groups.iter().all(|group| group.arm.is_structured()),
             Self::Loop { body, .. } => body.is_structured(),
+            // A guarded statement is presented when its rule proved it, and every link of that
+            // proof is stated by the rule itself: there is no *nested* region inside it that could
+            // have been quoted instead, because a body this rule cannot present is refused whole.
+            Self::Guard { .. } => true,
             Self::Fallback { .. } => false,
         }
     }
@@ -426,6 +474,7 @@ impl Region {
                 .flat_map(|group| group.arm.fallbacks())
                 .collect(),
             Self::Loop { body, .. } => body.fallbacks(),
+            Self::Guard { .. } => Vec::new(),
             Self::Fallback { reason, .. } => vec![reason.clone()],
         }
     }
@@ -442,6 +491,7 @@ impl Region {
             Self::If { .. } => Some(crate::pass::IF.rule()),
             Self::Switch { .. } => Some(crate::pass::SWITCH.rule()),
             Self::Loop { .. } => Some(crate::pass::LOOP.rule()),
+            Self::Guard { plan, .. } => Some(plan.pass().rule()),
             Self::Fallback { reason, .. } => reason.pass().map(|pass| pass.rule()),
         }
     }
@@ -495,6 +545,7 @@ pub(crate) fn recover(
     ssa: &SsaTable,
     operations: &Operations,
     handlers: &[ExceptionHandlerFact],
+    profile: &crate::pass::RecoveryProfile,
     budget: &mut Budget,
 ) -> Result<Recovered, StopReason> {
     let live: Vec<CanonicalBlockId> = canonical
@@ -541,6 +592,8 @@ pub(crate) fn recover(
         view,
         ssa,
         operations,
+        handlers,
+        profile,
         budget,
         visited: BTreeSet::new(),
     };
@@ -688,6 +741,12 @@ struct Walker<'a> {
     view: &'a NormalFlowView,
     ssa: &'a SsaTable,
     operations: &'a Operations,
+    /// The exception table the same decode stated: the guarded rules of P3 2.4 read the ranges and
+    /// the catch types from it, and the walk reads it for the crossing-range refusal.
+    handlers: &'a [ExceptionHandlerFact],
+    /// The profile the run is presented under: `twr@1`'s output is Java 7 syntax, so a profile that
+    /// presents the artifact as an older release does not admit it ([`crate::pass::Pass::admits`]).
+    profile: &'a crate::pass::RecoveryProfile,
     budget: &'a mut Budget,
     visited: BTreeSet<usize>,
 }
@@ -748,6 +807,46 @@ impl Walker<'_> {
                 ));
             }
             if let Some(reason) = self.leaving_edge(&current) {
+                // P3 2.4: the two edges this walk has always refused — an exception edge and a
+                // subroutine entry — are where the guarded regions live. A rule that proves one
+                // claims every block the statement owns, and the walk continues after it.
+                match crate::guard::examine(
+                    self.canonical,
+                    self.view,
+                    self.ssa,
+                    self.operations,
+                    self.handlers,
+                    self.profile,
+                    &current,
+                    self.budget,
+                )? {
+                    crate::guard::Verdict::Claimed(plan) => {
+                        for block in plan.owned() {
+                            if let Some(node) = self.view.index_of(block) {
+                                self.visited.insert(node);
+                            }
+                        }
+                        let join = plan.join().cloned();
+                        return Ok((Region::Guard { prefix, plan }, join));
+                    }
+                    crate::guard::Verdict::Refused { pass, refusal, at } => {
+                        let mut blocks = prefix;
+                        blocks.push(current);
+                        return Ok((
+                            Region::Fallback {
+                                blocks,
+                                reason: FallbackReason::Guard {
+                                    pass,
+                                    code: refusal.code(),
+                                    at,
+                                    message: refusal.message().to_string(),
+                                },
+                            },
+                            None,
+                        ));
+                    }
+                    crate::guard::Verdict::NotGuarded => {}
+                }
                 let mut blocks = prefix;
                 blocks.push(current);
                 return Ok((Region::Fallback { blocks, reason }, None));

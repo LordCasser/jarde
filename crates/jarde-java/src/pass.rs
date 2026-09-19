@@ -430,7 +430,7 @@ pub const ACCESSOR: Pass = Pass::new(
 );
 
 /// Every pass this build registers, in the order the design lists them.
-pub const PASSES: [Pass; 13] = [
+pub const PASSES: [Pass; 15] = [
     STRAIGHT,
     IF,
     LOOP,
@@ -444,7 +444,52 @@ pub const PASSES: [Pass; 13] = [
     ENUMSWITCH,
     INIT,
     DECLARATION,
+    TWR,
+    MONITOR,
 ];
+
+/// The pass that presents a verified `try`-with-resources as one guarded statement.
+///
+/// This is the second rule of this build whose *output* needs a release: `try (T n = …) { … }` is
+/// Java 7 syntax, and a profile that presents the artifact as an older release does not admit it
+/// ([`Pass::admits`]). What the rule proves before it writes that header is stated in
+/// [`crate::guard`]; what it requires is the run's own tables — the canonical graph (whose handler
+/// rows are how the protected region is named), the SSA names (the resource a `close` is called on
+/// is the value the slot holds) and the decode (the exception table and the instructions
+/// themselves). What it produces — the resource declarations and the guarded body — is every
+/// release's Java from 7 on.
+pub const TWR: Pass = Pass::new(
+    RuleVersion::new("twr", "1"),
+    Some(7),
+    &[
+        Precondition::IrTable(IrTable::Canonical),
+        Precondition::IrTable(IrTable::Ssa),
+        Precondition::IrTable(IrTable::Code),
+    ],
+);
+
+/// The pass that presents a verified monitor region as one `synchronized` statement.
+///
+/// `synchronized` is Java in every release, so this rule is release-independent: what changes
+/// across releases is nothing at all about the shape, and a profile gate for it would be a gate
+/// over no fact. It requires the same three tables as [`TWR`] — the pairing it proves is a
+/// statement about the graph, the monitor's own value comes from the names, and the instructions
+/// (including the exception table that says which ranges the handler covers) come from the decode.
+///
+/// What it refuses is the other half of the rule: a `monitorenter` whose `monitorexit`s are not
+/// paired on **every** path — an exit missing from the exception path, a handler shared by two
+/// entries, a monitor left held when the body throws — is quoted rather than written as a
+/// `synchronized` block, because the statement would drop exactly the exit that keeps the lock
+/// balanced.
+pub const MONITOR: Pass = Pass::new(
+    RuleVersion::new("monitor", "1"),
+    None,
+    &[
+        Precondition::IrTable(IrTable::Canonical),
+        Precondition::IrTable(IrTable::Ssa),
+        Precondition::IrTable(IrTable::Code),
+    ],
+);
 
 /// The pass that presents a verified allocation, its copy and its constructor call as `new T(…)`.
 ///
@@ -609,7 +654,7 @@ mod tests {
 
     #[test]
     fn the_registered_table_states_each_rule_and_its_preconditions() {
-        assert_eq!(PASSES.len(), 13);
+        assert_eq!(PASSES.len(), 15);
         assert_eq!(
             PASSES
                 .iter()
@@ -628,7 +673,9 @@ mod tests {
                 "field@1".to_string(),
                 "enumswitch@1".to_string(),
                 "init@1".to_string(),
-                "declaration@1".to_string()
+                "declaration@1".to_string(),
+                "twr@1".to_string(),
+                "monitor@1".to_string()
             ]
         );
         // Which rules are release-independent and which one is not (P3 2.1). Until then this loop
@@ -660,6 +707,21 @@ mod tests {
                     pass.required_release(),
                     None,
                     "{pass:?} writes a construct every release spells the same way"
+                ),
+                // P3 2.4's two rules, and the one of them whose *output* needs a release: a
+                // `try (T n = …)` header is Java 7 syntax, so a run that presents the artifact as
+                // an older release does not admit `twr@1` — the gate's second production instance.
+                // `synchronized` is Java in every release, and the pairing `monitor@1` proves is a
+                // fact about the graph rather than about the release.
+                "twr" => assert_eq!(
+                    pass.required_release(),
+                    Some(7),
+                    "{pass:?} writes a `try`-with-resources header"
+                ),
+                "monitor" => assert_eq!(
+                    pass.required_release(),
+                    None,
+                    "{pass:?} writes `synchronized`, which every release spells the same way"
                 ),
                 _ => assert_eq!(
                     pass.required_release(),
@@ -714,7 +776,8 @@ mod tests {
             attribute: "declaring_class"
         }));
         for pass in [
-            STRAIGHT, IF, LOOP, SWITCH, LAMBDA, CONCAT, BRIDGE, ACCESSOR, NEW, ENUMSWITCH,
+            STRAIGHT, IF, LOOP, SWITCH, LAMBDA, CONCAT, BRIDGE, ACCESSOR, NEW, ENUMSWITCH, TWR,
+            MONITOR,
         ] {
             assert!(
                 !pass.requires(Precondition::Metadata {
@@ -770,6 +833,20 @@ mod tests {
             assert!(!pass.requires(Precondition::IrTable(IrTable::BootstrapMethods)));
             assert!(!pass.requires(Precondition::IrTable(IrTable::Members)));
         }
+        // P3 2.4's rules read the same three tables as the structure rules, and nothing else: a
+        // guarded region is a shape the graph, the names and the decode state together.
+        assert!(TWR.requires(Precondition::IrTable(IrTable::Canonical)));
+        assert!(TWR.requires(Precondition::IrTable(IrTable::Ssa)));
+        assert!(TWR.requires(Precondition::IrTable(IrTable::Code)));
+        assert!(MONITOR.requires(Precondition::IrTable(IrTable::Canonical)));
+        assert!(MONITOR.requires(Precondition::IrTable(IrTable::Ssa)));
+        assert!(MONITOR.requires(Precondition::IrTable(IrTable::Code)));
+        assert!(!TWR.requires(Precondition::StatementFree));
+        assert!(!MONITOR.requires(Precondition::StatementFree));
+        assert!(!TWR.requires(Precondition::Replayable));
+        assert!(!MONITOR.requires(Precondition::Replayable));
+        assert_eq!(pass("twr"), Some(TWR));
+        assert_eq!(pass("monitor"), Some(MONITOR));
         assert_eq!(pass("loop"), Some(LOOP));
         assert_eq!(pass("lambda"), Some(LAMBDA));
         assert_eq!(pass("concat"), Some(CONCAT));

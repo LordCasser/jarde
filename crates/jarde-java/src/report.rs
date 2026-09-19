@@ -317,6 +317,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         ssa,
         &operations,
         &code.exception_handlers,
+        &request.profile,
         budget,
     ) {
         Ok(recovered) => recovered,
@@ -348,6 +349,9 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     // envelope; it never decides a statement, and it is the only shape of this slice that is read
     // without an instruction to read it from.
     let declaration = declaration::plan(request.facts.method());
+    // The type each parameter slot holds, as the member's own **descriptor** states it (P3-R5): the
+    // frames cannot tell a `boolean` parameter from an `int` one, and the descriptor can.
+    let parameter_types = request.facts.method().parameter_types();
     let program = match build::build(
         canonical,
         ssa,
@@ -357,6 +361,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             bootstrap: request.ir.bootstrap_methods(),
             profile: request.profile.clone(),
             parameters: request.facts.method().parameters(),
+            parameter_types: &parameter_types,
             names: &names,
             chains: &chains,
             members: request.members,

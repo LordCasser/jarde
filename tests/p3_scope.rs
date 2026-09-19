@@ -207,6 +207,39 @@ fn body(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -> S
 }
 
 #[test]
+fn a_boolean_parameter_is_typed_by_the_members_own_descriptor() {
+    // P3-R5: `scope(Z)I` was presented as `if (b != 0)`, and `javac --release 8` refuses that text
+    // under the member's own signature (`boolean` and `int` are not comparable). The frames state one
+    // slot shape for all four int-sized primitives, so the fact that decides the condition is the
+    // member's **descriptor** — the same run's declaration — and the text now writes `if (b)`.
+    let engine = Engine::new();
+    let no_debug = fixture(&engine, NO_DEBUG);
+    let text = body(&engine, &no_debug, b"scope", b"(Z)I");
+    assert!(text.contains("if (arg0) {"), "{text}");
+    assert!(!text.contains("!= 0"), "{text}");
+
+    let debug = fixture(&engine, DEBUG);
+    let text = body(&engine, &debug, b"scope", b"(Z)I");
+    assert!(text.contains("if (b) {"), "{text}");
+
+    // The control in the other direction: an `int` parameter keeps its comparison, and a `long` one
+    // is untouched — the fact comes from each parameter's own descriptor rather than from a blanket
+    // rewrite of every zero test.
+    let arm = body(&engine, &no_debug, b"armOnly", b"(I)I");
+    assert!(arm.contains("if (arg0 > 0) {"), "{arm}");
+    let receiver = body(&engine, &no_debug, b"receiver", b"(J)J");
+    assert!(!receiver.contains('!'), "{receiver}");
+
+    // And the run claims no compilability it did not test: the text was not recompiled, so
+    // `compile_status` stays `NotAttempted` and the syntax is not claimed checked.
+    let report = recover(&engine, &no_debug, b"scope", b"(Z)I")
+        .recovery()
+        .clone();
+    assert_eq!(report.syntax_status, SyntaxStatus::Unchecked);
+    assert_eq!(report.compile_status, CompileStatus::NotAttempted);
+}
+
+#[test]
 fn a_slot_written_in_both_arms_is_declared_where_both_can_see_it() {
     // P3-R3's own member: the review's counterexample, compiled by the same compiler generation.
     let engine = Engine::new();
@@ -411,7 +444,7 @@ fn a_table_that_names_a_slot_twice_states_no_name_for_it() {
         "the table's name for the slot is used:\n{scope}"
     );
     assert!(
-        scope.contains("if (b != 0) {") && scope.contains("x = 1;") && scope.contains("x = 2;"),
+        scope.contains("if (b) {") && scope.contains("x = 1;") && scope.contains("x = 2;"),
         "the parameter and the local are named, and both writes assign:\n{scope}"
     );
     assert!(

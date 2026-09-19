@@ -42,7 +42,8 @@ use jarde_reader::classfile::{BootstrapMethodFacts, CpEntryFacts};
 
 use crate::accessor::{self, AccessorRecord, AccessorShape};
 use crate::ast::{
-    BinaryOp, ConstructorTarget, Expr, ExprKind, LambdaParam, Stmt, StmtKind, SwitchArm, Type,
+    BinaryOp, ConstructorTarget, Expr, ExprKind, LambdaParam, ResourceDecl, Stmt, StmtKind,
+    SwitchArm, Type,
 };
 use crate::bridge;
 use crate::concat;
@@ -53,6 +54,7 @@ use crate::facts::{
     Operation,
 };
 use crate::field;
+use crate::guard;
 use crate::init;
 use crate::lambda::{self, LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal, Reach, Refusal};
 use crate::names::NameTable;
@@ -105,6 +107,9 @@ pub(crate) struct Inputs<'a> {
     /// How many local slots the method's parameters occupy, `this` included when the caller
     /// counted it: the slots below this one are declared by the signature, not by the body.
     pub(crate) parameters: u16,
+    /// The type each parameter slot holds, as the member's own descriptor states it (P3-R5): a
+    /// `boolean` parameter and an `int` one share a slot shape, and only this fact tells them apart.
+    pub(crate) parameter_types: &'a BTreeMap<u16, Type>,
     /// The names the presentation decided, in slot order.
     pub(crate) names: &'a NameTable,
     /// The concatenation chains of this body, with the shape's own declaration of which
@@ -180,8 +185,10 @@ struct HoistedDeclaration {
 fn declarations(
     regions: &[Region],
     ssa: &SsaTable,
+    operations: &Operations,
     names: &NameTable,
     parameters: u16,
+    parameter_types: &BTreeMap<u16, Type>,
 ) -> Declarations {
     let paths = region_paths(regions);
     let mut uses: BTreeMap<u16, Vec<SlotUse>> = BTreeMap::new();
@@ -208,11 +215,15 @@ fn declarations(
             }
         }
     }
+    // The slots a guarded statement declares **in its own header** (P3 2.4): a `try (T n = …)`
+    // header is the declaration, no statement of the body writes one, and hoisting a second
+    // declaration above the statement would declare the same name twice.
+    let resources = resource_slots(regions);
     let mut plan = Declarations::default();
     for (slot, slot_uses) in &uses {
         // A parameter's declaration is the signature, not the body, and a slot this layer has no
         // name for is one whose writes are already reported as a fallback of their own.
-        if *slot < parameters || names.text(*slot).is_none() {
+        if *slot < parameters || names.text(*slot).is_none() || resources.contains(slot) {
             continue;
         }
         let Some(region) = declaration_region(slot_uses, &paths) else {
@@ -234,9 +245,13 @@ fn declarations(
             continue;
         }
         let Some(value) = first.written else { continue };
-        // The same evidence the in-place declaration reads: the type the frame states for the value
-        // being written. A slot the frames do not type keeps the write's own fallback.
-        let Some(ty) = value_type(ssa.value(value).ty()) else {
+        // The same evidence the in-place declaration reads: the member's descriptor where the value
+        // is a `boolean` parameter's (P3-R5), and the type the frame states otherwise. A slot
+        // neither fact types keeps the write's own fallback.
+        let Some(ty) = parameter_boolean(ssa, operations, parameter_types, value)
+            .then_some(Type::Boolean)
+            .or_else(|| value_type(ssa.value(value).ty()))
+        else {
             continue;
         };
         plan.at_region
@@ -249,6 +264,44 @@ fn declarations(
             });
     }
     plan
+}
+
+/// Every slot a guarded statement's header declares.
+fn resource_slots(regions: &[Region]) -> BTreeSet<u16> {
+    let mut slots: BTreeSet<u16> = BTreeSet::new();
+    let mut walk = |region: &Region| {
+        if let Region::Guard { plan, .. } = region
+            && let guard::Shape::Resources(resources) = plan.shape()
+        {
+            for resource in resources {
+                slots.insert(resource.slot());
+            }
+        }
+    };
+    for region in regions {
+        collect_guards(region, &mut walk);
+    }
+    slots
+}
+
+/// Calls one visitor on every guarded region of a tree.
+fn collect_guards(region: &Region, visit: &mut impl FnMut(&Region)) {
+    visit(region);
+    match region {
+        Region::If {
+            then_arm, else_arm, ..
+        } => {
+            collect_guards(then_arm, visit);
+            collect_guards(else_arm, visit);
+        }
+        Region::Switch { groups, .. } => {
+            for group in groups {
+                collect_guards(&group.arm, visit);
+            }
+        }
+        Region::Loop { body, .. } => collect_guards(body, visit),
+        Region::Guard { .. } | Region::Straight { .. } | Region::Fallback { .. } => {}
+    }
 }
 
 /// One local access of one instruction, with the region the instruction's block stands in.
@@ -349,7 +402,7 @@ fn collect_paths(region: &Region, path: &RegionPath, out: &mut RegionPaths) {
             }
         }
         Region::Loop { body, .. } => collect_paths(body, &child(path, 0), out),
-        Region::Straight { .. } | Region::Fallback { .. } => {}
+        Region::Straight { .. } | Region::Fallback { .. } | Region::Guard { .. } => {}
     }
     if matches!(region, Region::Fallback { .. }) {
         out.fallbacks.insert(path.clone());
@@ -377,6 +430,14 @@ fn own_blocks(region: &Region) -> Vec<CanonicalBlockId> {
         // to the body when the body claims it (`collect_paths` walks the body first).
         Region::Loop { header, test, .. } => vec![header.clone(), test.clone()],
         Region::Fallback { blocks, .. } => blocks.clone(),
+        // A guarded statement writes its own header and the blocks of its body; every other block it
+        // claims — the closes, the handlers, the later resources' initialisations — produces no
+        // statement of its own, which is exactly what keeps a close from running twice.
+        Region::Guard { prefix, plan } => {
+            let mut blocks = prefix.clone();
+            blocks.extend(plan.owned().iter().cloned());
+            blocks
+        }
     }
 }
 
@@ -398,7 +459,14 @@ pub(crate) fn build(
             block_of.insert(instruction.bci(), block.block().clone());
         }
     }
-    let declarations = declarations(regions, ssa, inputs.names, inputs.parameters);
+    let declarations = declarations(
+        regions,
+        ssa,
+        operations,
+        inputs.names,
+        inputs.parameters,
+        inputs.parameter_types,
+    );
     let mut builder = Builder {
         canonical,
         ssa,
@@ -407,6 +475,7 @@ pub(crate) fn build(
         bootstrap: inputs.bootstrap,
         profile: inputs.profile,
         parameters: inputs.parameters,
+        parameter_types: inputs.parameter_types,
         names: inputs.names,
         chains: inputs.chains,
         members: inputs.members,
@@ -458,6 +527,8 @@ struct Builder<'a> {
     /// How many local slots the method's parameters occupy, `this` included when the caller
     /// counted it: the slots below this one are declared by the signature, not by the body.
     parameters: u16,
+    /// The type each parameter slot holds, as the member's own descriptor states it (P3-R5).
+    parameter_types: &'a BTreeMap<u16, Type>,
     names: &'a NameTable,
     /// The concatenation chains this body's verified shapes own (P3 2.2).
     chains: &'a concat::Plan,
@@ -641,6 +712,69 @@ impl Builder<'_> {
                 };
                 self.push(Stmt::new(kind, OriginSet::new(Origin::direct(*test_bci))))
             }
+            Region::Guard { prefix, plan } => {
+                // The walk wrote nothing of the statement's own header: the first resource's
+                // initialisation (or the monitor's entry) is the last block it reached, and the
+                // region owns it now.
+                for block in prefix {
+                    self.block(block)?;
+                }
+                self.range(plan.lead())?;
+                match plan.shape() {
+                    guard::Shape::Resources(resources) => {
+                        let mut declarations = Vec::with_capacity(resources.len());
+                        for resource in resources {
+                            match self.resource_declaration(resource) {
+                                Ok(declaration) => declarations.push(declaration),
+                                Err(reason) => {
+                                    let at = resource.close_bci();
+                                    let bcis = self.region_quote(region, at);
+                                    return self.fallback(bcis, &reason, at);
+                                }
+                            }
+                        }
+                        // The body's statements are written between the braces, in the order the
+                        // instructions run: the closes the normal path performs are *not* written
+                        // here — the compiler writes them for the resource the header declares,
+                        // which is what makes each close run exactly once per path.
+                        let body = self.body_range(plan.body())?;
+                        let mut origin = OriginSet::new(Origin::direct(
+                            resources
+                                .first()
+                                .map(|resource| resource.init().0)
+                                .unwrap_or(0),
+                        ));
+                        for bci in plan.facts() {
+                            // Every instruction the proof read — the closes, the suppressions, the
+                            // rethrows — is an anchor of the text that took its place, so the
+                            // relationship the statement preserves is answerable from the artifact.
+                            origin = origin.plus_derived(Origin::derived(*bci));
+                        }
+                        self.push(Stmt::new(
+                            StmtKind::Try {
+                                resources: declarations,
+                                body,
+                            },
+                            origin,
+                        ))
+                    }
+                    guard::Shape::Monitor { enter_bci } => {
+                        let lock = match self.lock_expr(*enter_bci) {
+                            Ok(lock) => lock,
+                            Err(reason) => {
+                                let bcis = self.region_quote(region, *enter_bci);
+                                return self.fallback(bcis, &reason, *enter_bci);
+                            }
+                        };
+                        let body = self.body_range(plan.body())?;
+                        let mut origin = OriginSet::new(Origin::direct(*enter_bci));
+                        for bci in plan.facts() {
+                            origin = origin.plus_derived(Origin::derived(*bci));
+                        }
+                        self.push(Stmt::new(StmtKind::Synchronized { lock, body }, origin))
+                    }
+                }
+            }
             Region::Fallback { blocks, reason } => {
                 let bcis: Vec<u32> = blocks
                     .iter()
@@ -650,6 +784,129 @@ impl Builder<'_> {
                 self.fallback(bcis, &reason.message(), at)
             }
         }
+    }
+
+    /// The header declaration one proved resource becomes.
+    ///
+    /// The type is the **value's own**: the value stored into the resource's slot is what the frames
+    /// type it as, and a value they name as no reference type (or as a bare `Object`) is refused —
+    /// the header would have to declare a resource the text cannot name, and `Object` is not a
+    /// resource a `try` header can hold.
+    fn resource_declaration(&mut self, resource: &guard::Resource) -> Result<ResourceDecl, String> {
+        let (from, to) = resource.init();
+        // The initialisation is an instruction range, not a block: the canonical graph fuses
+        // straight-line code, and the store that lands the resource is the range's last instruction.
+        let Some(store) = self
+            .instructions
+            .range(from..to)
+            .next_back()
+            .map(|(_, instruction)| *instruction)
+        else {
+            return Err(format!(
+                "the resource's initialisation at BCI {from} holds no instruction this run decoded"
+            ));
+        };
+        let Some((_, value)) = store
+            .writes()
+            .iter()
+            .find(|(slot, _)| matches!(slot, Slot::Local(_)))
+        else {
+            return Err(format!(
+                "the initialisation at BCI {} stores no local this run names",
+                store.bci()
+            ));
+        };
+        let value = *value;
+        // The type comes from the value the store **wrote** — the slot's own type — and the text
+        // from the value it **read**: the store itself is not an expression, and rendering its own
+        // write would ask the store to produce one.
+        let ty = match value_type(self.ssa.value(value).ty()) {
+            Some(Type::Reference(name)) if name != "Object" => Type::Reference(name),
+            _ => {
+                return Err(format!(
+                    "the resource at BCI {} holds a value the frames name as no reference type, so the header cannot declare it",
+                    store.bci()
+                ));
+            }
+        };
+        let Some(name) = self.names.text(resource.slot()).map(str::to_owned) else {
+            return Err(format!(
+                "the resource at BCI {} lives in slot {}, which has no name",
+                store.bci(),
+                resource.slot()
+            ));
+        };
+        let at = store.bci();
+        let Some((_, stored)) = stack_operands(store).first().copied() else {
+            return Err(format!(
+                "the resource's initialisation at BCI {at} stores no value this run names"
+            ));
+        };
+        let value = self.render_value(stored, at, 0)?;
+        // The header declares the slot: a body that wrote it again would otherwise declare it a
+        // second time, and the close the compiler writes reads the name the header gives it.
+        self.declared.insert(resource.slot());
+        Ok(ResourceDecl { ty, name, value })
+    }
+
+    /// Writes the statements of one instruction range, in order.
+    ///
+    /// This is how a guarded statement writes the region it guards: the body's instructions and the
+    /// block that holds them are not the same thing, because the canonical graph fuses the resource's
+    /// initialisation, the body and the first close of the normal path into one node.
+    fn range(&mut self, span: (u32, u32)) -> Result<(), StopReason> {
+        let instructions: Vec<SsaInstruction> = self
+            .instructions
+            .range(span.0..span.1)
+            .map(|(_, instruction)| (*instruction).clone())
+            .collect();
+        for instruction in &instructions {
+            self.instruction(instruction)?;
+        }
+        Ok(())
+    }
+
+    /// The guarded body's statements, as the list the statement node holds.
+    fn body_range(&mut self, span: (u32, u32)) -> Result<Vec<Stmt>, StopReason> {
+        let mark = self.stmts.len();
+        self.range(span)?;
+        Ok(self.stmts.split_off(mark))
+    }
+
+    /// The lock expression one verified `synchronized` header reads.
+    ///
+    /// The value is the `monitorenter`'s own operand — the object the bytecode entered — read
+    /// through the duplications javac's idiom puts in front of it (`dup; astore slot; monitorenter`):
+    /// a `dup` is not an expression, and the value it duplicated is the one the header writes. It is
+    /// rendered where it is produced, so the header runs exactly what the entry block ran.
+    fn lock_expr(&mut self, enter_bci: u32) -> Result<Expr, String> {
+        let Some(instruction) = self.instructions.get(&enter_bci).copied() else {
+            return Err(format!(
+                "the monitor at BCI {enter_bci} has no record in this run's names"
+            ));
+        };
+        let Some((_, value)) = stack_operands(instruction).first().copied() else {
+            return Err(format!(
+                "the monitor at BCI {enter_bci} reads no value to lock"
+            ));
+        };
+        let mut value = value;
+        for _ in 0..8 {
+            let Definition::Instruction { bci, .. } = self.ssa.value(value).def() else {
+                break;
+            };
+            if !matches!(self.operations.get(*bci), Some(Operation::Duplicate)) {
+                break;
+            }
+            let Some(producer) = self.instructions.get(bci).copied() else {
+                break;
+            };
+            let Some((_, duplicated)) = stack_operands(producer).first().copied() else {
+                break;
+            };
+            value = duplicated;
+        }
+        self.render_value(value, enter_bci, 0)
     }
 
     /// Writes what a test block does before the test itself, in the order it does it.
@@ -1087,12 +1344,40 @@ impl Builder<'_> {
                 ),
                 at,
             ),
+            // The monitor instructions and the bare `throw` of P3 2.4 are *shape* facts: a
+            // `synchronized` block is the monitor's enter and its exits, and a handler's rethrow is
+            // an `athrow` of the exception it stored. Where a rule of [`crate::guard`] proved that
+            // shape, these instructions are written by the statement and never reach here; an
+            // instruction of either kind that no rule claimed has no statement of its own, exactly
+            // like every other unclaimed operation.
+            Some(Operation::Monitor { .. }) | Some(Operation::Throw) => self.fallback(
+                vec![at],
+                &format!(
+                    "the instruction at BCI {at} belongs to no guarded shape this run proved: a monitor or a bare `throw` is written only where a rule claimed the statement around it"
+                ),
+                at,
+            ),
             Some(Operation::Other) | None => self.fallback(
                 vec![at],
                 &format!("the instruction at BCI {at} is not part of the provable subset"),
                 at,
             ),
         }
+    }
+
+    /// Whether one value is read from a parameter slot the member's descriptor declares `boolean`.
+    ///
+    /// The value has to be the result of a single `load` of that slot: a value a branch or a phi
+    /// merged is not what the descriptor states, and this layer does not carry the parameter's type
+    /// through one.
+    fn boolean_parameter(&self, value: ValueId) -> bool {
+        let Definition::Instruction { bci, .. } = self.ssa.value(value).def() else {
+            return false;
+        };
+        let Some(Operation::Load { slot }) = self.operations.get(*bci) else {
+            return false;
+        };
+        matches!(self.parameter_types.get(slot), Some(Type::Boolean))
     }
 
     /// Whether a local slot has to be declared at this write, and with which type.
@@ -1118,7 +1403,15 @@ impl Builder<'_> {
             // reported as a fallback of its own.
             return Ok(None);
         }
-        let Some(ty) = value_type(self.ssa.value(written).ty()) else {
+        // A local filled from a `boolean` parameter is declared `boolean`: the frames state one
+        // `int` shape for the four int-sized primitives, and the member's own descriptor is the fact
+        // that says which of them the value really is (P3-R5). Everything else keeps the frame's
+        // evidence.
+        let boolean = self.boolean_parameter(written);
+        let Some(ty) = boolean
+            .then_some(Type::Boolean)
+            .or_else(|| value_type(self.ssa.value(written).ty()))
+        else {
             self.fallback(
                 vec![at],
                 &format!("local {slot} has no frame entry stating its type"),
@@ -2385,6 +2678,28 @@ fn condition(
         ),
     };
     let test = if taken { positive } else { negative };
+    // P3-R5: a zero test on a parameter whose **descriptor** says `boolean` is not a comparison.
+    // The frames state one slot shape for the four int-shaped primitives, so the fact that decides
+    // the text here is the member's own signature: `ifeq` on a `boolean` parameter is `!b`, `ifne`
+    // is `b`, and any other zero test on it (`iflt`, `ifgt`, …) has no Java spelling at all — the
+    // signature would refuse it — so the region is refused rather than written as an int comparison.
+    if let Test::Zero(op) = test
+        && builder.boolean_parameter(operands[0].1)
+    {
+        return match op {
+            BinaryOp::NotEqual => Ok(left),
+            BinaryOp::Equal => Ok(Expr::new(
+                ExprKind::Not {
+                    value: Box::new(left),
+                },
+                OriginSet::new(crate::source_map::Origin::direct(anchor)),
+            )),
+            other => Err(format!(
+                "the branch at BCI {branch_bci} tests a `boolean` parameter with `{}`, which no Java source spells",
+                other.spell()
+            )),
+        };
+    }
     match test {
         // The second operand is rendered only where it is written, so a zero or null test does not
         // ask the value flow for a value the instruction never read.
@@ -2427,6 +2742,25 @@ fn binary(op: BinaryOp, left: Expr, right: Expr, bci: u32) -> Expr {
 /// The `0` a zero test compares against, anchored where the test is.
 fn zero(bci: u32) -> Expr {
     Expr::direct(ExprKind::Integer(0), bci)
+}
+
+/// Whether one value is read from a parameter slot the member's descriptor declares `boolean`.
+///
+/// The free functions of this module read the same fact the builder's own method reads: the value has
+/// to be the result of a single `load` of that slot (P3-R5).
+fn parameter_boolean(
+    ssa: &SsaTable,
+    operations: &Operations,
+    parameter_types: &BTreeMap<u16, Type>,
+    value: ValueId,
+) -> bool {
+    let Definition::Instruction { bci, .. } = ssa.value(value).def() else {
+        return false;
+    };
+    let Some(Operation::Load { slot }) = operations.get(*bci) else {
+        return false;
+    };
+    matches!(parameter_types.get(slot), Some(Type::Boolean))
 }
 
 /// The declared type of a local, when the frames state one.

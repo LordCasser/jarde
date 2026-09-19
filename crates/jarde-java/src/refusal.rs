@@ -15,7 +15,7 @@
 use crate::pass::{IrTable, Pass, Precondition};
 
 /// Why one shape was not presented.
-#[derive(Clone)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct Refusal {
     code: &'static str,
     requirement: Option<Precondition>,
@@ -97,6 +97,13 @@ pub(crate) fn requirement_code(rule: &str, requirement: Precondition) -> &'stati
         ) => "jre_declaration_flags_missing",
         ("declaration", Precondition::Metadata { .. }) => "jre_declaration_class_not_in_run",
         ("declaration", _) => "jre_declaration_unmet_precondition",
+        // P3 2.4's two rules. Neither states a requirement of its own: a guarded region either is
+        // the shape its rule proves or it is not, and every link that fell short is stated by the
+        // refusal's own code ([`crate::guard::Unproven`]) rather than as an unmet declaration.
+        ("twr", Precondition::IrTable(IrTable::Code)) => "jre_twr_no_code",
+        ("twr", _) => "jre_twr_unmet_precondition",
+        ("monitor", Precondition::IrTable(IrTable::Code)) => "jre_monitor_no_code",
+        ("monitor", _) => "jre_monitor_unmet_precondition",
         _ => "jre_unmet_precondition",
     }
 }

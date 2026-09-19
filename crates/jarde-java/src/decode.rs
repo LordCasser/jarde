@@ -26,8 +26,8 @@
 //! Every opcode the provable subset models becomes a variant of [`Operation`], classified on the
 //! operand's **effective** opcode (a `wide iload` *is* an `iload`; `0xc4` is a prefix, not an
 //! instruction). Everything else — an array operation, a conversion this subset has no operator
-//! for, `athrow`, `jsr`, a `ret` — is [`Operation::Other`], which is a *stated* input: the
-//! statement it belongs to becomes a fallback with a diagnostic, never a guess.
+//! for, `jsr`, a `ret` — is [`Operation::Other`], which is a *stated* input: the statement it
+//! belongs to becomes a fallback with a diagnostic, never a guess.
 //!
 //! The P3 2.2 slice models four more of them, and each one is a fact a *pattern rule* reads rather
 //! than a presentation this layer writes: the allocation and the duplication a concatenation chain
@@ -36,6 +36,13 @@
 //! bridge applies to the value it forwards (`checkcast`, with the class the pool names). A caller
 //! cannot state any of the four — they are read from the same decode as everything else — and
 //! nothing below [`crate::build`] decides whether any of them is presented.
+//!
+//! P3 2.4 adds three more of the same kind: the two monitor instructions and `athrow`. The guarded
+//! regions that slice presents are made of exactly these — a `synchronized` statement is one
+//! `monitorenter` and the `monitorexit`s that pair with it, and a handler that rethrows its stored
+//! exception is an `athrow` of that value — so the rules of [`crate::guard`] have to be able to
+//! name them. What they are *not* is a presentation: no statement this layer writes is a monitor
+//! instruction or a bare `throw`, and an unclaimed one is quoted like anything else.
 //!
 //! `invokedynamic` is one of the modelled ones (P3 2.1), and modelling it means stating the *site*:
 //! its pool index, the bootstrap entry it names and the name and descriptor it presents. It does
@@ -153,6 +160,12 @@ fn operation_of(
         0x2e => Operation::ArrayLoad,
         0xc0 => check_cast(instruction, operands, pool),
         0xac..=0xb1 => Operation::Return,
+        0xbf => Operation::Throw,
+        // The two monitor instructions of P3 2.4: the enter and the exit a `synchronized` statement
+        // is made of. They are modelled as *shape* facts (`monitor@1` reads them to prove the
+        // pairing), not as a presentation — nothing below this module writes either of them.
+        0xc2 => Operation::Monitor { enter: true },
+        0xc3 => Operation::Monitor { enter: false },
         _ => Operation::Other,
     }
 }

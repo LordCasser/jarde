@@ -30,7 +30,11 @@
 //! [`Operation::Other`] and makes the statement it belongs to unrenderable, which is a declared
 //! fallback with a diagnostic and never an invented expression.
 
+use std::collections::BTreeMap;
+
 use jarde_reader::model::PhysicalMethodId;
+
+use crate::ast::Type;
 
 /// The access-flag bit a class or a member sets when it is `public`.
 pub const ACC_PUBLIC: u16 = 0x0001;
@@ -102,6 +106,83 @@ impl MethodFacts {
     pub fn with_declaring_class(mut self, declaring_class: DeclaringClass) -> Self {
         self.declaring_class = Some(declaring_class);
         self
+    }
+
+    /// The type each **parameter slot** holds, as this method's own descriptor states it.
+    ///
+    /// This is the fact the frames cannot state (P3-R5): a `boolean`, a `byte`, a `char` and a
+    /// `short` are one slot shape, so a body read on its own writes `b != 0` for a `boolean`
+    /// parameter — text the member's own signature refuses to compile. The descriptor names the
+    /// primitive outright, so a run that reads it can write `!b`/`b` where the value is tested and
+    /// declare a local filled from it as `boolean`.
+    ///
+    /// The map is keyed by the slot the parameter occupies, which is the same numbering
+    /// [`Self::parameters`] counts: an instance method's receiver holds slot 0, and whether this
+    /// method has one is a declaration fact the caller states. A run that states **neither** the
+    /// flags nor a count that places the parameters (a descriptor whose slots could start at 0 or at
+    /// 1 and a count that agrees with both) states no type at all rather than guessing one.
+    pub fn parameter_types(&self) -> BTreeMap<u16, Type> {
+        let Some((arguments, _)) = self
+            .descriptor
+            .strip_prefix('(')
+            .and_then(|rest| rest.split_once(')'))
+        else {
+            return BTreeMap::new();
+        };
+        let mut types = BTreeMap::new();
+        let mut slot = 0u16;
+        let mut characters = arguments.chars().peekable();
+        while let Some(character) = characters.next() {
+            let ty = match character {
+                'Z' => Type::Boolean,
+                'B' => Type::Byte,
+                'C' => Type::Char,
+                'S' => Type::Short,
+                'I' => Type::Int,
+                'J' => Type::Long,
+                'F' => Type::Float,
+                'D' => Type::Double,
+                'L' | '[' => {
+                    while matches!(characters.peek(), Some('[')) {
+                        characters.next();
+                    }
+                    if character == 'L' || characters.peek() == Some(&'L') {
+                        for next in characters.by_ref() {
+                            if next == ';' {
+                                break;
+                            }
+                        }
+                    }
+                    Type::Reference("Object".to_string())
+                }
+                _ => return BTreeMap::new(),
+            };
+            let wide = matches!(ty, Type::Long | Type::Double);
+            types.insert(slot, ty);
+            slot = slot.saturating_add(if wide { 2 } else { 1 });
+        }
+        let described = slot;
+        let receiver = match self.access_flags {
+            Some(flags) => flags & ACC_STATIC == 0,
+            None => {
+                // The caller stated no flags: the count it did state places the parameters when it
+                // agrees with exactly one of the two layouts.
+                if self.parameters == described {
+                    false
+                } else if self.parameters == described.saturating_add(1) {
+                    true
+                } else {
+                    return BTreeMap::new();
+                }
+            }
+        };
+        if !receiver {
+            return types;
+        }
+        types
+            .into_iter()
+            .map(|(slot, ty)| (slot.saturating_add(1), ty))
+            .collect()
     }
 
     /// The class the member is declared in, when the caller stated it.
@@ -428,6 +509,25 @@ pub enum Operation {
     /// instruction. The other array reads (`laload`, `aaload`, …) and the array stores stay
     /// [`Self::Other`]: this slice models the one opcode the shape it presents reads.
     ArrayLoad,
+    /// Enters or leaves the monitor of the object it reads (`monitorenter`/`monitorexit`).
+    ///
+    /// Modelled because the `monitor@1` rule reads it (P3 2.4): a `synchronized` statement *is* one
+    /// enter and the exits that pair with it, and which of the two an instruction is decides the
+    /// pairing the rule has to prove before it may write the statement. It is not a presentation of
+    /// its own — a monitor instruction no rule claimed is quoted ([`Self::Other`]'s fate), never
+    /// written as a lock this layer would have to invent.
+    Monitor {
+        /// Whether the instruction enters the monitor (`monitorenter`) or leaves it.
+        enter: bool,
+    },
+    /// Throws the object it reads (`athrow`).
+    ///
+    /// Modelled for the same reason, and it is the fact the whole exceptional-path half of 2.4
+    /// turns on: a guarded region's handler rethrows the exception it stored, and the `finally`
+    /// shape javac emits ends each of its copies with one. Reading *which* object an `athrow`
+    /// rethrows is what proves a handler preserves the primary rather than dropping it. A `throw`
+    /// statement is not part of this subset: an `athrow` no rule claimed is quoted.
+    Throw,
     /// Leaves the method.
     Return,
     /// Anything else: legal to read, not part of the provable subset.
