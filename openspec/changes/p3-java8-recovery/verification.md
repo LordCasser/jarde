@@ -970,3 +970,52 @@ b=false seed=5  generated=7  original=7
 
 - **`docs/support-matrix.md` 第 51 行仍写「门面只有 ordinal local 名称」**——P3-R5/R6 之前的口径，属用户正在编辑的文件，本片只报告不改（3.4 应同步）。
 - **P3-R7（ECJ v52 handler 未被交代）与发现 (i)（`new@1` 把 boolean 实参写成 `0/1`）仍未修**，两者都是「已记录、证据齐备、待排期」。
+
+## 2026-09-20 P3-R7 与发现 (i) 已关闭（提交 `0b5eeb0`）
+
+### P3-R7：每条已解码指令都必须被交代
+
+**落点**：`region.rs`（恢复层内、**呈现前**），判据 `unaccounted_instructions(code, canonical)`——对每条**已解码指令起点**，覆盖集 = 所有 canonical 块的 `[blocks()[0], end_bci)` ∪ `unreachable` 里每个 id 的 bci 及其节点跨度；不在其中即「未被交代」。用的是 `ir.code()` 的 `instructions` + `ir.canonical()` 的 `blocks()/unreachable()`，**不依赖 `Operation` 模型**。
+
+**违反时两档，都引用全部未被交代的 BCI + `Mixed`/`Fallback` + 诊断 `jre_region_unaccounted_instruction`**：走查原本会整具结构化 → **整具引用**；走查本来就已拒绝某些区域 → 保留那些**更具体**的理由并**追加**一个只引用未被交代 BCI 的区域。第二档必要，否则会把 `jre_guard_handler` 这类更具体的理由顶掉（2.4 的 patch 样本正是这种情形）。
+
+**父级独立复现**（公开入口，`tests/fixtures/historical/ecj-4.6.1/v52/` 的 `finallyPath(I)I`）：
+
+修前 `Java/Structured`，文本只有 `int local3 = arg1 + 1; arg1 = arg1 + 2; return local3;`，BCI 9/10/13/14 **既无文本也无锚点**。修后：
+```java
+{
+    // @bytecode 0 9 10 13 14
+    // the decoded body states 4 instruction(s) at BCI [9, 10, 13, 14] that no canonical block covers and that the graph does not list as unreachable: the graph is not an account of these bytes, so no region of it may be presented as the body
+}
+```
+未被交代的 BCI = **[9, 10, 13, 14]**。`add(II)I` 不受影响（文本逐字不变）。
+
+**canonical 侧的根因（实现者核实，父级记录，只报不改）**：`cfg.rs` 的异常边**只从 `may_throw` 表承认的指令发出**，且只在走查已建的块内；**声明的 `Exception table` 本身不是走查根**。`finallyPath` 的受保护区间 `[0,4)` 是 `iload_1/iconst_1/iadd/istore_3`——`may_throw` 全为 false → 无 throw site → **`throw_sites()` 与 `handler_rows()` 都为空**、handler 入口 9 落在任何块之外。v45 同形身体之所以有六节点（三死），是 `jsr` 的 call context 使每个上下文入口都成为根。
+**若改在 canonical**（让每条已声明 handler 入口成为走查根、未达者进 `unreachable`）：牵动 frames/SSA 公布面、计费（`IrItems`/`normalization_clones`）、块数计数与已归档的 `p2_canonical`/`p2_golden`/`p2_contracts` 期望值——**属 P2 归档交付的取舍，需另行裁决**。恢复层的核对已消除「静默丢失」，且**不预设 `may_throw` 模型永不漏标**。
+
+**3.3 harness 已硬化**：note 改为两条硬断言（新增 `Ledger`/`ledger_of`，用同一 request 独立再分析一次按同一判据算账）——① 未被交代的 BCI 存在即失败，**除非全被引用**（即已如实拒绝）；② handler 入口若既无锚点又无引用且产物为 `Java` 即失败。
+
+### 发现 (i)：`boolean` 实参
+
+**落点**：共享实参渲染路径（新增 `typed_arguments(descriptor, arguments)` + `parameter_descriptors`），在 `call_expr`（invokevirtual/special/static/interface 全走它）、`new_expr`、`constructor_call`（`super()`/`this()`）三处调用。参数为 `Z` 且实参是字面量 `0/1` → `ExprKind::Boolean`（新增变体，发射 `true`/`false`）；`int`/`long`/`float`/`double`/`String`/引用不动；`byte`/`char`/`short` 收 int 常量在 Java 里合法故不动；描述符无法解析或**参数个数与实参不符则不猜**（保持既有行为）。
+
+**父级独立复现**：`open(Ljava/lang/String;)LRes;` → `return new Res(arg0, false);`；`openFailing(…)` → `return new Res(arg0, true);`。
+**父级独立验收（不用实现者的 harness）**：自行包装 + 提交的 `Res.class` → `javac --release 8` **exit 0**（修前同包装报 `int cannot be converted to boolean`）；自行执行：
+```
+generated open        -> no throw
+generated openFailing -> java.lang.IllegalStateException: close-r
+```
+即 `true` 那个布尔**确实生效**（`close()` 抛出），`false` 那个不抛。
+
+### 被修正的既有断言（5 处，均加强，无放宽）
+
+① harness 的 ECJ `finallyPath`：`Expect::Executed` → **`Expect::Quoted(Some("jre_region_unaccounted_instruction"))`**——旧期望断言的正是**一段静默丢掉 4 条指令的「完整呈现」**；② harness 的 `open`/`openFailing`：`NotACompilationUnit` → **`Executed`**（现在要执行并逐行比轨迹，比「javac 拒绝」更强）；③ `p3_guard` 的 `a_close_the_exception_path_lacks_is_refused` 保留原有 `jre_guard_handler` 断言并**新增**两条（新码存在 + BCI 32/33/34/35 被引用）；④ harness 的两条 note → 硬断言；⑤ 轨迹标签经 `trace_label()` 转义（此前无已执行成员的实参含引号，故无既有行变化）。
+
+### 证据
+
+全量 **988 passed / 0 failed / 3 ignored**（986 + 2 新用例）；fmt 与 clippy 1.98.1 干净；`openspec validate --all --strict` 12 passed；两个 CI example exit 0；分层三包中 `jarde-java` **0** 次；锁文件两条 均 exit 0；`p3_execution_comparison -- --ignored` = **2 passed**。
+**父级独立证伪**（与实现者自报一致）：判据恒空 → ECJ 用例与 harness 红；判据恒真（一律拒绝）→ 4 条 `presented` 用例与 harness 红；`typed_arguments` 原样返回 → `open` 的编译断言红。
+
+### 残留（如实，非本片范围）
+
+TWR 已被 `twr@1` 证明的 handler 入口**并非每条都有 segment 锚点**（`one()V` 的 BCI 20 有、BCI 32 无，但两者都被该区域的 block 记录认领）——这是 2.4 guard origin 的 **provenance 缺口**，不是「未被交代」；harness 的两条断言按「锚点/引用/被块覆盖」三选一判定，已在 `tests/fixtures/p3-corpus/README.md` 写明它**不属于** P3-R7 那一类。
