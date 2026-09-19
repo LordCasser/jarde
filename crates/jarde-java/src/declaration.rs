@@ -7,14 +7,23 @@
 //! method of an interface? a constructor? — is therefore written into that envelope, and it cannot
 //! be read from the payload: one run's payload publishes that body's graph, frames, names, decode and
 //! pool, and **no class-level fact at all** (P3 2.3 §3 measured this against `MethodIr`'s own
-//! fields: no access flags, no `this_class`, no `InnerClasses`). The member's own flags are not in
-//! the payload either, and P3 2.2 already let the caller state those for the bridge rule.
+//! fields: no `this_class`, no `InnerClasses`). The **class's** flags are therefore still the
+//! caller's to state, and P3 2.2 already let the caller state a member's flags for the bridge rule.
 //!
-//! So this rule reads exactly two declaration facts, both of them things the caller read off the
-//! header it took the member out of, and both optional:
+//! The **member's** own flags have since stopped being one of them: P3 3.1 put the driver method's
+//! declaration — its `access_flags`, descriptor, parameter slots and identity — into the payload,
+//! read in the same header pass that read the body, and the entry point fills
+//! [`crate::facts::MethodFacts`] from there. So the flag on the left below now reaches this rule
+//! from the run rather than from a second reading, and the field stays on the facts type because the
+//! library's callers may still be the ones that read it.
 //!
-//! * the member's own `access_flags` ([`crate::facts::MethodFacts::access_flags`]);
-//! * the class that declares it, with that class's own flags ([`crate::facts::DeclaringClass`]).
+//! So this rule reads exactly two declaration facts, both optional:
+//!
+//! * the member's own `access_flags` ([`crate::facts::MethodFacts::access_flags`]) — stated by the
+//!   caller, and by the entry point from the run's own declaration;
+//! * the class that declares it, with that class's own flags ([`crate::facts::DeclaringClass`]) —
+//!   stated by the caller, because the payload carries the declaring class's identity but not its
+//!   flags.
 //!
 //! # What each combination means, and what a refusal means
 //!
