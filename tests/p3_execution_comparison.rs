@@ -615,6 +615,26 @@ fn is_java_identifier(name: &str) -> bool {
             .all(|character| character.is_alphanumeric() || character == '_' || character == '$')
 }
 
+/// The one name the run's debug records state for a slot, when they state exactly one.
+///
+/// A slot the table names over two ranges with two names carried two source variables (P3 3.4), and
+/// neither of them is the name of the whole slot: the wrapper this comparison builds declares such a
+/// slot the way it declares a slot no record covers.
+fn stated_name(facts: &RecoveryFacts, slot: u16) -> Option<String> {
+    let mut names: Vec<&str> = facts
+        .debug_locals()
+        .iter()
+        .filter(|record| record.slot() == slot)
+        .map(|record| record.name())
+        .collect();
+    names.sort_unstable();
+    names.dedup();
+    match names[..] {
+        [only] => Some(only.to_owned()),
+        _ => None,
+    }
+}
+
 fn sanitize(name: &str) -> String {
     name.chars()
         .map(|character| {
@@ -1203,12 +1223,8 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
                 Parameter {
                     slot: absolute,
                     spelling: spelling.clone(),
-                    name: facts
-                        .debug_locals()
-                        .get(usize::from(absolute))
-                        .and_then(|name| name.as_deref())
+                    name: stated_name(facts, absolute)
                         .filter(|name| is_java_identifier(name))
-                        .map(str::to_owned)
                         .unwrap_or_else(|| format!("arg{absolute}")),
                 }
             })

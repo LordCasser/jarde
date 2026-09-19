@@ -35,6 +35,7 @@ use std::collections::BTreeMap;
 use jarde_reader::model::PhysicalMethodId;
 
 use crate::ast::Type;
+use crate::names::DebugLocal;
 
 /// The access-flag bit a class or a member sets when it is `public`.
 pub const ACC_PUBLIC: u16 = 0x0001;
@@ -782,7 +783,7 @@ impl ClassMembers {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RecoveryFacts {
     method: MethodFacts,
-    debug_locals: Vec<Option<String>>,
+    debug_locals: Vec<DebugLocal>,
 }
 
 impl RecoveryFacts {
@@ -794,11 +795,15 @@ impl RecoveryFacts {
         }
     }
 
-    /// The same facts with one raw debug name per local slot, in slot order.
+    /// The same facts with the debug records the body's `Code` attribute states, in declaration
+    /// order.
     ///
-    /// A slot the body has no name for is `None`, and a body compiled without debug metadata passes
-    /// an empty list: both mean "no evidence", and [`crate::names`] then derives the ordinal name.
-    pub fn with_debug_locals(mut self, debug_locals: Vec<Option<String>>) -> Self {
+    /// The records are **evidence**, one name over one range of bytecode each: a body compiled
+    /// without debug metadata passes an empty list, which means "no evidence" and leaves every name
+    /// to [`crate::names`]'s ordinal rule. What those records mean for the produced text — and in
+    /// particular whether two records for one slot make it two variables (P3 3.4) — is decided by
+    /// [`crate::reuse`] from the body's own uses, not by the caller that read them.
+    pub fn with_debug_locals(mut self, debug_locals: Vec<DebugLocal>) -> Self {
         self.debug_locals = debug_locals;
         self
     }
@@ -808,8 +813,8 @@ impl RecoveryFacts {
         &self.method
     }
 
-    /// The raw name of each local slot, in slot order; empty when the body carries none.
-    pub fn debug_locals(&self) -> &[Option<String>] {
+    /// The debug records the body states, in declaration order; empty when it states none.
+    pub fn debug_locals(&self) -> &[DebugLocal] {
         &self.debug_locals
     }
 }
@@ -823,13 +828,17 @@ mod tests {
         // The seam this test states: a caller can build these facts, and there is no way to state
         // an operation in them — no method to call, no field to set. Polarity, slot numbers and
         // constant values come from the payload's own decode ([`crate::decode`]) or from nowhere.
-        let facts = RecoveryFacts::new(MethodFacts::new("add", "(II)I", 3))
-            .with_debug_locals(vec![Some("this".into()), Some("left".into())]);
+        let facts =
+            RecoveryFacts::new(MethodFacts::new("add", "(II)I", 3)).with_debug_locals(vec![
+                DebugLocal::over(0, "this", 0, 4),
+                DebugLocal::over(1, "left", 0, 4),
+            ]);
         assert_eq!(facts.method().name(), "add");
         assert_eq!(facts.method().descriptor(), "(II)I");
         assert_eq!(facts.method().parameters(), 3);
         assert_eq!(facts.debug_locals().len(), 2);
-        assert_eq!(facts.debug_locals()[1].as_deref(), Some("left"));
+        assert_eq!(facts.debug_locals()[1].name(), "left");
+        assert_eq!(facts.debug_locals()[1].range(), Some((0, 4)));
         assert_eq!(
             RecoveryFacts::new(MethodFacts::new("run", "()V", 1))
                 .debug_locals()

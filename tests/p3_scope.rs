@@ -32,9 +32,9 @@
 //! `armOnly(I)I` declares its arm-local `z` **inside** the `then` arm where it is used and nowhere
 //! else. `reuse(ZI)I` is the slot-reuse shape (two variables in disjoint scopes on one slot), `after`
 //! / `reassign` / `receiver` are the category-2 shapes (`long` takes two slots, so the `int`
-//! parameter sits at slot 2), and the `-g` sample checks that a name the class file states is used
-//! where it exists — and that a slot the table names twice falls back to an ordinal instead of
-//! picking one of the two names.
+//! parameter sits at slot 2), and the `-g` sample decides both of that shape's outcomes: the table's
+//! ranges split the reused slot into **two** variables with their own names and their own
+//! declarations (P3 3.4), and a slot the table states **one** name for keeps that name.
 //!
 //! What the entry reads to decide all of that is the **same run**'s own facts: one header read, one
 //! body attempt (the numbers are asserted below, and for the `-g` sample too — a second read of the
@@ -343,13 +343,12 @@ fn an_arms_own_local_is_still_declared_inside_that_arm() {
 }
 
 #[test]
-fn two_variables_sharing_one_slot_are_declared_once_where_both_are_visible() {
-    // `reuse(ZI)I` is the slot-reuse shape: the compiler gives the `then` arm's `c` and the `else`
-    // arm's `d` **one** slot (3), because their scopes are disjoint. This layer names *slots*, not
-    // source variables, so the honest presentation is one variable for that one storage location: its
-    // declaration is hoisted above the branch — every use of the slot is in one of the two arms — and
-    // both writes assign it. The alternative (refusing the body) would lose a shape Java represents
-    // faithfully; the one thing that must not happen is two declarations of one slot in two arms.
+fn without_debug_evidence_a_reused_slot_stays_one_variable() {
+    // The `-g:none` sample: no `LocalVariableTable`, so nothing states that slot 3 carried two
+    // variables — the only honest reading of "one storage location, one variable" is the one this
+    // layer had before the table was read at all. Both of the slot's uses are in an arm, so its
+    // declaration is hoisted above the branch and both writes assign it; the ordinal names are the
+    // deterministic fallback `Deterministic names and scopes` requires when evidence is missing.
     let engine = Engine::new();
     let fixture = fixture(&engine, NO_DEBUG);
     let text = body(&engine, &fixture, b"reuse", b"(ZI)I");
@@ -429,12 +428,10 @@ fn a_category_two_parameter_leaves_its_second_slot_to_the_signature() {
 }
 
 #[test]
-fn a_table_that_names_a_slot_twice_states_no_name_for_it() {
-    // The `-g` sample: the same shapes, with a `LocalVariableTable`. Three things are checked at once:
-    // a name the class file states is used; a slot the table names **twice** (the reused slot 3 of
-    // `reuse`, named `c` over one arm and `d` over the other) takes **no** name, because one storage
-    // location has one name and neither record's name is the truth about the whole of it; and the
-    // ordinal it falls back to is the one the parameter slots imply.
+fn a_name_the_table_states_is_used_where_it_exists() {
+    // The `-g` sample: the same shapes, with a `LocalVariableTable`. The names the table states are
+    // the names the text carries, and the declaration of a slot written in both arms is still
+    // hoisted above them — the split of a *reused* slot (P3 3.4) does not move this one.
     let engine = Engine::new();
     let fixture = fixture(&engine, DEBUG);
 
@@ -451,19 +448,68 @@ fn a_table_that_names_a_slot_twice_states_no_name_for_it() {
         scope.contains("return x;"),
         "the join reads the name the table states:\n{scope}"
     );
+}
 
-    let reuse = body(&engine, &fixture, b"reuse", b"(ZI)I");
+#[test]
+fn a_slot_the_table_names_over_two_ranges_carries_two_variables() {
+    // P3-R6, and the `source-maps` scenario it comes from (`Slot reuse across ranges`): the `-g`
+    // sample's table names slot 3 `c` over `[8, 10)` and `d` over `[17, 19)` — the `then` arm's `c`
+    // and the `else` arm's `d`, two source variables in disjoint scopes on one storage location. The
+    // requirement is that the source map and the Java AST **establish different scopes and names**
+    // for them instead of merging the whole slot into one variable, so the recovered text is the
+    // source's own shape:
+    //
+    // ```java
+    // int a;
+    // if (b) { int c = seed + 1; a = c; } else { int d = seed + 2; a = d; } return a;
+    // ```
+    //
+    // Two things about that text are *not* read off the table, and both are the reason this file
+    // checks the whole block rather than the presence of two names. The store that fills `c` is at
+    // BCI 7 and `c`'s range starts at 8, while `a`'s stores (9 and 18) and its load (19) are outside
+    // the ranges the table states for `a`: the record gives a variable its **name and its
+    // visibility**, and which instructions belong to it is decided from the body's own value chains
+    // (P3 3.4). And `a` stays **one** variable across its two records — they state the same name —
+    // declared where both arms and the join can see it, which is the P3-R3 rule this test also
+    // guards against the new split.
+    let engine = Engine::new();
+    let fixture = fixture(&engine, DEBUG);
+    let text = body(&engine, &fixture, b"reuse", b"(ZI)I");
+
     assert!(
-        reuse.contains("int local3;"),
-        "a slot the table names twice keeps the ordinal name instead of one of the two:\n{reuse}"
+        text.trim_end().ends_with(
+            "{\n    int a;\n    if (b) {\n        int c = seed + 1;\n        a = c;\n    } else {\n        int d = seed + 2;\n        a = d;\n    }\n    return a;\n}"
+        ),
+        "the reused slot is two variables, each declared where its own uses are:\n{text}"
     );
     assert!(
-        !reuse.contains("local3 = c;") && !reuse.contains("local3 = d;"),
-        "neither of the two names is written for the shared slot:\n{reuse}"
+        !text.contains("local3") && !text.contains("local2"),
+        "the slot the table names is never written by its ordinal:\n{text}"
+    );
+    // The declaration of `c` is the write that fills it, inside the arm that uses it — not one
+    // declaration hoisted for the whole slot, and not two declarations of one variable.
+    assert_eq!(
+        text.matches("int c").count(),
+        1,
+        "one declaration for `c`:\n{text}"
+    );
+    assert_eq!(
+        text.matches("int d").count(),
+        1,
+        "one declaration for `d`:\n{text}"
     );
     assert!(
-        reuse.contains("int a;") && reuse.contains("a = local3;"),
-        "the slot the table names once (`a`, over two ranges) keeps its name:\n{reuse}"
+        text.find("int c").unwrap_or(usize::MAX) < text.find("} else {").unwrap_or(0)
+            && text.find("} else {").unwrap_or(0) < text.find("int d").unwrap_or(usize::MAX),
+        "each variable is declared in its own arm:\n{text}"
+    );
+    // And `a` — one name over two records — keeps the P3-R3 declaration, above the branch.
+    let shared = text
+        .find("int a;")
+        .unwrap_or_else(|| panic!("`a` is declared where every use sees it:\n{text}"));
+    assert!(
+        shared < text.find("if (").unwrap_or(0),
+        "the declaration of the variable both arms write precedes them:\n{text}"
     );
 }
 

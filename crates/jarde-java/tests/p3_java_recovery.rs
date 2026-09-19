@@ -56,6 +56,14 @@ use jarde_reader::view::{
 const HISTORICAL_V45: &[u8] =
     include_bytes!("../../../tests/fixtures/historical/ecj-4.6.1/v45/HistoricalControlFlow.class");
 
+/// The `p3-scope` sample's body, compiled by javac 23.0.1 `--release 8 -g`: `reuse(ZI)I` reuses slot
+/// 3 for the `then` arm's `c` and the `else` arm's `d`, and its `LocalVariableTable` is the evidence
+/// P3 3.4 splits the slot from. This file states that evidence itself (see
+/// `a_slot_the_records_cannot_place_is_one_variable_with_the_ordinal_name`), so the bytes are here
+/// for the *body*, and the table javac really wrote is asserted where the whole run is driven
+/// (`tests/p3_scope.rs`, which reads the LVT through the entry point).
+const SCOPE_DEBUG: &[u8] = include_bytes!("../../../tests/fixtures/p3-scope/v8-debug/Scope.class");
+
 /// One usage snapshot with the wall clock removed: the comparison form of two reads of one budget.
 ///
 /// `elapsed_millis` is a measurement, not a charge: `Budget::usage` takes it again on every read,
@@ -225,7 +233,21 @@ fn facts_of(
         String::from_utf8_lossy(&member.descriptor.raw().0),
         parameters,
     ))
-    .with_debug_locals(debug)
+    .with_debug_locals(stated_names(debug))
+}
+
+/// The debug records of a test that states **one name per slot**: each name covers its slot with no
+/// range stated, so no slot is ever split for them (P3 3.4).
+fn stated_names(debug: Vec<Option<String>>) -> Vec<jarde_java::DebugLocal> {
+    debug
+        .into_iter()
+        .enumerate()
+        .filter_map(|(slot, name)| {
+            name.map(|name| {
+                jarde_java::DebugLocal::named(u16::try_from(slot).unwrap_or(u16::MAX), name)
+            })
+        })
+        .collect()
 }
 
 fn recover_body(
@@ -1365,6 +1387,52 @@ fn a_payload_without_the_tables_the_recovery_needs_states_that_instead_of_an_emp
         report.outcome,
         RecoveryOutcome::Stopped(StopReason::IrTableMissing { .. })
     ));
+}
+
+#[test]
+fn a_slot_the_records_cannot_place_is_one_variable_with_the_ordinal_name() {
+    // P3 3.4's other half, and the reason the split needs more than two records: a slot the debug
+    // table names twice is split **only** when the body's own uses say which variable each use
+    // belongs to. Two records whose ranges overlap state no such thing — there is no bytecode range
+    // in which the slot carried one and then the other — so neither name is written, and the slot
+    // stays the one variable P3 3.1 wrote, declared where every use of it can see it.
+    //
+    // The body is the committed `reuse(ZI)I`; the evidence is stated **here** rather than read from
+    // the class, because the shapes that decline the split are exactly the ones a compiler does not
+    // emit: javac's own table is asserted where the whole run is driven (`tests/p3_scope.rs`). Both
+    // declining shapes are in the evidence below:
+    //
+    // * slot 3 carries `c` and `d`, and their ranges `[0, 12)` and `[8, 21)` **overlap**;
+    // * slot 2 carries `a` twice with the **same** name over `[10, 13)` and `[19, 21)`, which is one
+    //   variable and keeps its name — the P3-R3 shape, not a reuse.
+    let payload = analyze(SCOPE_DEBUG, b"reuse", b"(ZI)I");
+    let facts = RecoveryFacts::new(MethodFacts::new("reuse", "(ZI)I", 2)).with_debug_locals(vec![
+        jarde_java::DebugLocal::over(0, "b", 0, 21),
+        jarde_java::DebugLocal::over(1, "seed", 0, 21),
+        jarde_java::DebugLocal::over(2, "a", 10, 13),
+        jarde_java::DebugLocal::over(2, "a", 19, 21),
+        jarde_java::DebugLocal::over(3, "c", 0, 12),
+        jarde_java::DebugLocal::over(3, "d", 8, 21),
+    ]);
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, &mut budget);
+
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert_eq!(report.representation, Representation::Java, "{report:?}");
+    assert_eq!(report.quality, Quality::Structured);
+    assert!(
+        report.text.trim_end().ends_with(
+            "{\n    int a;\n    int local3;\n    if (b) {\n        local3 = seed + 1;\n        a = local3;\n    } else {\n        local3 = seed + 2;\n        a = local3;\n    }\n    return a;\n}"
+        ),
+        "the unplaceable slot is one variable with its ordinal name, and `a` — one name over two \
+         records — keeps the declaration both arms and the join see:\n{}",
+        report.text
+    );
+    assert!(
+        !report.text.contains("int c") && !report.text.contains("int d"),
+        "neither unplaceable record's name is written:\n{}",
+        report.text
+    );
 }
 
 #[test]

@@ -118,9 +118,13 @@ reuse(boolean,int): 8   2  slot 3  c  I          after(long,int): 0  2  slot 0  
 `scope`'s slot 1 carries **two records of one name** (`x`, over `[6,9)` and `[11,13)` — the two arms'
 assignments of one source variable), so the slot has one name. `reuse`'s slot 3 carries **two records
 of two names** (`c` and `d`), because two variables in disjoint scopes share one storage location:
-one slot has one name in the produced text, and neither record's name is the truth about the whole of
-it, so the presentation states none and falls back to the ordinal (`local3`). `armOnly`'s slot 2
-(`z`) is named and used inside one arm, which is why its declaration stays there.
+the ranges are disjoint and the names differ, and every use of the slot falls inside one of them, so
+the presentation writes **two variables** with the names the records state — `int c = seed + 1;`
+inside the `then` arm and `int d = seed + 2;` inside the `else` arm (P3 3.4's `Slot reuse across
+ranges`). `armOnly`'s slot 2 (`z`) is named and used inside one arm, which is why its declaration
+stays there. A slot the records cannot place — ranges that overlap, names that repeat, or one record
+alone — stays one variable with the ordinal name, which is what the `-g:none` sample's `reuse` writes
+(`int local3;`, hoisted above the branch).
 
 ## The compiler control (the property the fixture exists for)
 
@@ -130,9 +134,9 @@ rather than about the text. The shape of the control, over the artifact of `scop
 
 ```java
 public final class Scope {
-    public static int scope(int arg0) {
+    public static int scope(boolean b) {
         int local1;              // hoisted above the branch: every use of the slot is inside it
-        if (arg0 != 0) {
+        if (b) {
             local1 = 1;
         } else {
             local1 = 2;
@@ -142,13 +146,12 @@ public final class Scope {
 }
 ```
 
-The parameter is spelled `int` because the frames state one slot shape for the four int-sized
-primitives: `boolean` vs `int` is not a distinction any statement of this body carries
-(`crate::ast::Type`'s own boundary), and `javac` refuses `arg0 != 0` for a `boolean` parameter for
-that reason — the *scope* property is what this control is about. Before the fix the same artifact
-had the declaration inside the `then` arm (`int local1 = 1;`) and `javac --release 8` refused the
-`else` arm's `local1 = 2;` and the join's `return local1;` with `找不到符号` / `cannot find symbol`,
-which is what P3-R3 reported.
+The parameter is spelled `boolean` because the member's own descriptor says so (P3-R5: the frames
+state one slot shape for the four int-sized primitives, so `boolean` vs `int` is not a distinction
+any statement of this body carries on its own), and the wrapper is named `b` because the `-g` sample's
+table states that name. Before the fix the same artifact had the declaration inside the `then` arm
+(`int local1 = 1;`) and `javac --release 8` refused the `else` arm's `local1 = 2;` and the join's
+`return local1;` with `找不到符号` / `cannot find symbol`, which is what P3-R3 reported.
 
 ## Reproducing
 

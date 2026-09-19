@@ -419,41 +419,37 @@ fn recovery_facts(
     .with_debug_locals(debug)
 }
 
-/// One name per local slot, from the `LocalVariableTable` the body's own `Code` attribute states.
+/// The debug records the body's own `Code` attribute states, as the recovery layer's own evidence
+/// type (P3 3.1, 3.4).
 ///
 /// The table is the same read's (see [`jarde_reader::classfile::MethodCodeFacts::debug`]), so this is
-/// not a second reading of the class: the names are the ones the run that decoded the body already
-/// had.
+/// not a second reading of the class: the names, and the bytecode range each one covers, are the ones
+/// the run that decoded the body already had.
 ///
-/// A slot the table names **once** takes that name. A slot the table names **more than once** takes
-/// **none**: a compiler that reuses one slot for two variables in disjoint scopes states two records
-/// for it, and one slot has one name in the produced text — choosing either record's name would state
-/// something the bytecode does not, namely that the whole storage location is one of the two source
-/// variables. Such a slot keeps the deterministic ordinal name, which claims nothing about the source
-/// (A10). A slot no record covers states no name for the same reason: no evidence is not a failure.
-fn debug_locals(code: Option<&jarde_reader::classfile::MethodCodeFacts>) -> Vec<Option<String>> {
-    use std::collections::{BTreeMap, BTreeSet};
-
+/// Nothing is decided here. A slot the table names **twice** over disjoint ranges is exactly what a
+/// compiler that reuses a storage location states, and the recovered text is *two* variables in that
+/// case (P3 3.4): the decision belongs to the recovery layer, which reads the body's own uses, and a
+/// reader that dropped the second record would take the evidence away before it could be used. A
+/// body the table states nothing for passes no record, which the recovery layer names by ordinal
+/// (A10).
+fn debug_locals(
+    code: Option<&jarde_reader::classfile::MethodCodeFacts>,
+) -> Vec<jarde_java::DebugLocal> {
     let Some(code) = code else {
         return Vec::new();
     };
     let jarde_reader::classfile::LocalDebugTable::Read(records) = code.debug() else {
         return Vec::new();
     };
-    let mut per_slot: BTreeMap<u16, BTreeSet<String>> = BTreeMap::new();
-    for record in records {
-        per_slot
-            .entry(record.slot)
-            .or_default()
-            .insert(record.name_lossy());
-    }
-    let Some(last) = per_slot.keys().next_back() else {
-        return Vec::new();
-    };
-    (0..=*last)
-        .map(|slot| match per_slot.get(&slot) {
-            Some(names) if names.len() == 1 => names.iter().next().cloned(),
-            _ => None,
+    records
+        .iter()
+        .map(|record| {
+            jarde_java::DebugLocal::over(
+                record.slot,
+                record.name_lossy(),
+                record.start_bci,
+                record.end_bci,
+            )
         })
         .collect()
 }

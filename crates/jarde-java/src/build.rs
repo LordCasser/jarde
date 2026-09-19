@@ -57,9 +57,10 @@ use crate::field;
 use crate::guard;
 use crate::init;
 use crate::lambda::{self, LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal, Reach, Refusal};
-use crate::names::NameTable;
+use crate::names::{LocalVariable, NameTable, RenderedName};
 use crate::pass::{LAMBDA, Precondition, RecoveryProfile};
 use crate::region::{Continuation, LoopForm, Region};
+use crate::reuse;
 use crate::source_map::{Origin, OriginSet};
 use crate::stop::{StopReason, charge, poll};
 
@@ -112,6 +113,9 @@ pub(crate) struct Inputs<'a> {
     pub(crate) parameter_types: &'a BTreeMap<u16, Type>,
     /// The names the presentation decided, in slot order.
     pub(crate) names: &'a NameTable,
+    /// The variables each local slot holds (P3 3.4): one per slot unless the debug records name the
+    /// slot over two ranges, in which case the uses are grouped into two variables with two names.
+    pub(crate) reuse: &'a reuse::Plan,
     /// The concatenation chains of this body, with the shape's own declaration of which
     /// instructions they own (P3 2.2).
     pub(crate) chains: &'a concat::Plan,
@@ -139,20 +143,20 @@ pub(crate) struct Inputs<'a> {
 /// declaration written there is in scope for the whole body.
 type RegionPath = Vec<u32>;
 
-/// Where each local slot's declaration is written (P3 3.1).
+/// Where each local variable's declaration is written (P3 3.1).
 ///
-/// The invariant this plan keeps: a slot's declaration is written at the start of a region that
-/// contains **every** use of the slot — every read and every write — so the declaration is in scope
-/// at each of them. A Java local is in scope from its declaration to the end of the block that
+/// The invariant this plan keeps: a variable's declaration is written at the start of a region that
+/// contains **every** use of that variable — every read and every write — so the declaration is in
+/// scope at each of them. A Java local is in scope from its declaration to the end of the block that
 /// declares it, and that is not the same thing as "the whole method knows this slot": a slot filled
 /// in a `then` arm and read in the `else` arm or after the join is declared in a place where most of
 /// its uses cannot see it, and the text does not compile.
 ///
 /// Two cases, and the evidence for each:
 ///
-/// * **the write that first fills the slot is in the innermost region that contains all uses** —
-///   then that write's own statement declares the slot with the value it writes, which is the text a
-///   source would have (`int x = 1;`) and the text this layer has always written;
+/// * **the write that first fills the variable is in the innermost region that contains all uses** —
+///   then that write's own statement declares the variable with the value it writes, which is the
+///   text a source would have (`int x = 1;`) and the text this layer has always written;
 /// * **otherwise** the declaration moves to the start of that innermost region and **every** write
 ///   becomes a plain assignment: the declaration is no longer any write's, so no write may carry it.
 ///
@@ -160,44 +164,54 @@ type RegionPath = Vec<u32>;
 /// belongs to exactly one region (the innermost one that claims it), and the region that contains
 /// all uses is the longest common prefix of their region paths.
 ///
-/// A slot whose uses are all inside one **quoted** region is left exactly as it was: a
+/// Which variable a use belongs to is [`crate::reuse`]'s decision, and it is what makes P3 3.4's
+/// slot reuse come out right: the two variables one reused slot holds have **disjoint** uses, so
+/// each is planned on its own — the arm's own variable is declared at the write that fills it, in
+/// the arm, while a variable written in both arms and read after the join is hoisted above the
+/// branch. Both rules are the same rule; only the use sets differ.
+///
+/// A variable whose uses are all inside one **quoted** region is left exactly as it was: a
 /// [`Region::Fallback`] writes no Java statements this layer could declare a local in, so there is
 /// nothing to hoist into, and that run is already `Mixed`/`Fallback`. The same holds for a use whose
-/// block the region tree does not claim: with no region to name, the slot keeps the declaration it
-/// has today instead of a guess.
+/// block the region tree does not claim: with no region to name, the variable keeps the declaration
+/// it has today instead of a guess.
 #[derive(Default)]
 struct Declarations {
-    /// The slots declared at the start of one region, by that region's path, in slot order.
+    /// The variables declared at the start of one region, by that region's path, in slot and
+    /// variable order.
     at_region: BTreeMap<RegionPath, Vec<HoistedDeclaration>>,
 }
 
-/// One declaration written at the start of a region instead of at the write that fills the slot.
+/// One declaration written at the start of a region instead of at the write that fills the variable.
 #[derive(Clone)]
 struct HoistedDeclaration {
-    slot: u16,
+    variable: LocalVariable,
     ty: Type,
-    /// The write whose value states the type and whose frame entry states the slot's type: the
+    /// The write whose value states the type and whose frame entry states the variable's type: the
     /// anchor the declaration is written under, exactly like the in-place declaration it replaces.
     at: u32,
 }
 
-/// Plans where each local slot's declaration is written.
+/// Plans where each local variable's declaration is written.
 fn declarations(
     regions: &[Region],
     ssa: &SsaTable,
     operations: &Operations,
     names: &NameTable,
+    reuse: &reuse::Plan,
     parameters: u16,
     parameter_types: &BTreeMap<u16, Type>,
 ) -> Declarations {
     let paths = region_paths(regions);
-    let mut uses: BTreeMap<u16, Vec<SlotUse>> = BTreeMap::new();
+    let mut uses: BTreeMap<LocalVariable, Vec<SlotUse>> = BTreeMap::new();
     for block in ssa.blocks() {
         let path = paths.paths.get(block.block());
         for instruction in block.instructions() {
             for (slot, _) in instruction.reads() {
-                if let Slot::Local(slot) = slot {
-                    uses.entry(*slot).or_default().push(SlotUse {
+                if let Slot::Local(slot) = slot
+                    && let Some(variable) = reuse.variable_at(*slot, instruction.bci())
+                {
+                    uses.entry(variable).or_default().push(SlotUse {
                         path: path.cloned(),
                         bci: instruction.bci(),
                         written: None,
@@ -205,8 +219,10 @@ fn declarations(
                 }
             }
             for (slot, value) in instruction.writes() {
-                if let Slot::Local(slot) = slot {
-                    uses.entry(*slot).or_default().push(SlotUse {
+                if let Slot::Local(slot) = slot
+                    && let Some(variable) = reuse.variable_at(*slot, instruction.bci())
+                {
+                    uses.entry(variable).or_default().push(SlotUse {
                         path: path.cloned(),
                         bci: instruction.bci(),
                         written: Some(*value),
@@ -220,19 +236,22 @@ fn declarations(
     // declaration above the statement would declare the same name twice.
     let resources = resource_slots(regions);
     let mut plan = Declarations::default();
-    for (slot, slot_uses) in &uses {
-        // A parameter's declaration is the signature, not the body, and a slot this layer has no
+    for (variable, variable_uses) in &uses {
+        // A parameter's declaration is the signature, not the body, and a variable this layer has no
         // name for is one whose writes are already reported as a fallback of their own.
-        if *slot < parameters || names.text(*slot).is_none() || resources.contains(slot) {
+        if variable.slot() < parameters
+            || names.text(*variable).is_none()
+            || resources.contains(&variable.slot())
+        {
             continue;
         }
-        let Some(region) = declaration_region(slot_uses, &paths) else {
+        let Some(region) = declaration_region(variable_uses, &paths) else {
             continue;
         };
-        // The write that fills the slot first, in method order: the region path a block stands in
-        // is the order the regions are written in, and the bytecode index orders the blocks of one
-        // region.
-        let Some(first) = slot_uses
+        // The write that fills the variable first, in method order: the region path a block stands
+        // in is the order the regions are written in, and the bytecode index orders the blocks of
+        // one region.
+        let Some(first) = variable_uses
             .iter()
             .filter(|use_| use_.written.is_some())
             .min_by_key(|use_| (use_.path.clone(), use_.bci))
@@ -246,7 +265,7 @@ fn declarations(
         }
         let Some(value) = first.written else { continue };
         // The same evidence the in-place declaration reads: the member's descriptor where the value
-        // is a `boolean` parameter's (P3-R5), and the type the frame states otherwise. A slot
+        // is a `boolean` parameter's (P3-R5), and the type the frame states otherwise. A variable
         // neither fact types keeps the write's own fallback.
         let Some(ty) = parameter_boolean(ssa, operations, parameter_types, value)
             .then_some(Type::Boolean)
@@ -258,7 +277,7 @@ fn declarations(
             .entry(region)
             .or_default()
             .push(HoistedDeclaration {
-                slot: *slot,
+                variable: *variable,
                 ty,
                 at: first.bci,
             });
@@ -267,7 +286,7 @@ fn declarations(
 }
 
 /// Every slot a guarded statement's header declares.
-fn resource_slots(regions: &[Region]) -> BTreeSet<u16> {
+pub(crate) fn resource_slots(regions: &[Region]) -> BTreeSet<u16> {
     let mut slots: BTreeSet<u16> = BTreeSet::new();
     let mut walk = |region: &Region| {
         if let Region::Guard { plan, .. } = region
@@ -464,6 +483,7 @@ pub(crate) fn build(
         ssa,
         operations,
         inputs.names,
+        inputs.reuse,
         inputs.parameters,
         inputs.parameter_types,
     );
@@ -477,6 +497,7 @@ pub(crate) fn build(
         parameters: inputs.parameters,
         parameter_types: inputs.parameter_types,
         names: inputs.names,
+        reuse: inputs.reuse,
         chains: inputs.chains,
         members: inputs.members,
         bridge: inputs.bridge,
@@ -530,6 +551,9 @@ struct Builder<'a> {
     /// The type each parameter slot holds, as the member's own descriptor states it (P3-R5).
     parameter_types: &'a BTreeMap<u16, Type>,
     names: &'a NameTable,
+    /// The variables each local slot holds (P3 3.4): which of a slot's two variables a use point
+    /// belongs to, and therefore which name that use is written with.
+    reuse: &'a reuse::Plan,
     /// The concatenation chains this body's verified shapes own (P3 2.2).
     chains: &'a concat::Plan,
     /// The class's other members, when the caller handed them over (P3 2.2, A12).
@@ -549,7 +573,9 @@ struct Builder<'a> {
     /// local slot holds where that instruction runs (P3 1.3d).
     block_of: BTreeMap<u32, CanonicalBlockId>,
     budget: &'a mut Budget,
-    declared: BTreeSet<u16>,
+    /// The variables declared so far: a write of a variable whose declaration is already written
+    /// becomes an assignment, and every variable's declaration is written once.
+    declared: BTreeSet<LocalVariable>,
     stmts: Vec<Stmt>,
     statements: usize,
     ragged: bool,
@@ -829,13 +855,17 @@ impl Builder<'_> {
                 ));
             }
         };
-        let Some(name) = self.names.text(resource.slot()).map(str::to_owned) else {
+        // The slot of a guarded statement's header is never split (P3 3.4): the header writes the
+        // declaration, so the slot it takes stays one variable, and a run that somehow split it
+        // states no name here rather than writing one of its two variables' names for both.
+        let Some(name) = self.names.whole(resource.slot()).map(RenderedName::text) else {
             return Err(format!(
                 "the resource at BCI {} lives in slot {}, which has no name",
                 store.bci(),
                 resource.slot()
             ));
         };
+        let name = name.to_owned();
         let at = store.bci();
         let Some((_, stored)) = stack_operands(store).first().copied() else {
             return Err(format!(
@@ -845,7 +875,7 @@ impl Builder<'_> {
         let value = self.render_value(stored, at, 0)?;
         // The header declares the slot: a body that wrote it again would otherwise declare it a
         // second time, and the close the compiler writes reads the name the header gives it.
-        self.declared.insert(resource.slot());
+        self.declared.insert(LocalVariable::whole(resource.slot()));
         Ok(ResourceDecl { ty, name, value })
     }
 
@@ -972,23 +1002,23 @@ impl Builder<'_> {
 
     /// Writes the declarations a region holds at its own start (P3 3.1).
     ///
-    /// A slot is here when the write that first fills it is *not* in the innermost region that
+    /// A variable is here when the write that first fills it is *not* in the innermost region that
     /// contains all of its uses: declaring it at that write would put it out of scope at the uses
     /// outside that write's region. The declaration written here carries no value — the writes that
-    /// fill the slot are the assignments that follow — and every write of the slot then writes a
-    /// plain assignment, because the declaration is not any write's any more.
+    /// fill the variable are the assignments that follow — and every write of the variable then
+    /// writes a plain assignment, because the declaration is not any write's any more.
     ///
-    /// The statement is anchored at the write whose value states the slot's type, the same anchor
+    /// The statement is anchored at the write whose value states the variable's type, the same anchor
     /// the in-place declaration carried: the declaration's evidence is that instruction.
     fn declare_at(&mut self, path: &[u32]) -> Result<(), StopReason> {
         let Some(declared) = self.declarations.at_region.get(path).cloned() else {
             return Ok(());
         };
         for declaration in declared {
-            let Some(name) = self.names.text(declaration.slot).map(str::to_owned) else {
+            let Some(name) = self.names.text(declaration.variable).map(str::to_owned) else {
                 continue;
             };
-            self.declared.insert(declaration.slot);
+            self.declared.insert(declaration.variable);
             self.push(Stmt::new(
                 StmtKind::Declare {
                     ty: declaration.ty,
@@ -1046,16 +1076,10 @@ impl Builder<'_> {
                         at,
                     );
                 };
-                let target = match self.names.text(slot) {
-                    Some(name) => name.to_string(),
-                    None => {
-                        return self.fallback(
-                            vec![at],
-                            &format!(
-                                "the store at BCI {at} writes local {slot}, which has no name"
-                            ),
-                            at,
-                        );
+                let (variable, target) = match self.write_target(slot, at, "store") {
+                    Ok(target) => target,
+                    Err(reason) => {
+                        return self.fallback(vec![at], &reason, at);
                     }
                 };
                 let Some((_, value)) = stack_operands(instruction).last().copied() else {
@@ -1072,7 +1096,7 @@ impl Builder<'_> {
                         return self.fallback(bcis, &reason, at);
                     }
                 };
-                match self.declare(slot, written, at)? {
+                match self.declare(variable, written, at)? {
                     Some(ty) => self.push(Stmt::new(
                         StmtKind::Declare {
                             ty,
@@ -1182,14 +1206,13 @@ impl Builder<'_> {
                         OriginSet::new(Origin::direct(at)),
                     ));
                 };
-                let Some(target_name) = self.names.text(slot).map(str::to_owned) else {
-                    return self.fallback(
-                        vec![at],
-                        &format!("the call at BCI {at} writes local {slot}, which has no name"),
-                        at,
-                    );
+                let (variable, target_name) = match self.write_target(slot, at, "call") {
+                    Ok(target) => target,
+                    Err(reason) => {
+                        return self.fallback(vec![at], &reason, at);
+                    }
                 };
-                match self.declare(slot, written, at)? {
+                match self.declare(variable, written, at)? {
                     Some(ty) => self.push(Stmt::new(
                         StmtKind::Declare {
                             ty,
@@ -1224,14 +1247,14 @@ impl Builder<'_> {
                 ))
             }
             Some(Operation::Increment { slot, amount }) => {
-                let Some(target_name) = self.names.text(*slot).map(str::to_owned) else {
-                    return self.fallback(
-                        vec![at],
-                        &format!(
-                            "the increment at BCI {at} writes local {slot}, which has no name"
-                        ),
-                        at,
-                    );
+                // The increment writes an assignment and never a declaration: an `iinc` reads the
+                // slot as well as writing it, so its text is the same whether the variable was
+                // declared here or earlier.
+                let (_, target_name) = match self.write_target(*slot, at, "increment") {
+                    Ok(target) => target,
+                    Err(reason) => {
+                        return self.fallback(vec![at], &reason, at);
+                    }
                 };
                 let (op, magnitude) = if *amount < 0 {
                     (BinaryOp::Subtract, -i64::from(*amount))
@@ -1380,25 +1403,25 @@ impl Builder<'_> {
         matches!(self.parameter_types.get(slot), Some(Type::Boolean))
     }
 
-    /// Whether a local slot has to be declared at this write, and with which type.
+    /// Whether a local variable has to be declared at this write, and with which type.
     ///
     /// The type comes from the value being written, not from the frame's entry state for the slot: at
     /// the block where a local is first written the frame still says `Top` for it — nothing has
     /// written it yet — so the frame cannot state a type here, while the value that is about to fill
     /// the slot can, and is the same evidence the source's declaration was read from.
     ///
-    /// `Ok(None)` means "no declaration is due": the slot is a parameter (its declaration is the
+    /// `Ok(None)` means "no declaration is due": the variable is a parameter's (its declaration is the
     /// method's signature) or it was declared at an earlier write in this run.
     fn declare(
         &mut self,
-        slot: u16,
+        variable: LocalVariable,
         written: ValueId,
         at: u32,
     ) -> Result<Option<Type>, StopReason> {
-        if self.declared.contains(&slot) || slot < self.parameters {
+        if self.declared.contains(&variable) || variable.slot() < self.parameters {
             return Ok(None);
         }
-        if self.names.text(slot).is_none() {
+        if self.names.text(variable).is_none() {
             // No name to declare: the assignment that follows states the same thing and is already
             // reported as a fallback of its own.
             return Ok(None);
@@ -1414,13 +1437,42 @@ impl Builder<'_> {
         else {
             self.fallback(
                 vec![at],
-                &format!("local {slot} has no frame entry stating its type"),
+                &format!(
+                    "local {} has no frame entry stating its type",
+                    variable.slot()
+                ),
                 at,
             )?;
             return Ok(None);
         };
-        self.declared.insert(slot);
+        self.declared.insert(variable);
         Ok(Some(ty))
+    }
+
+    /// The variable one write of local `slot` at BCI `at` fills, with the text its name is written
+    /// as.
+    ///
+    /// `what` names the shape doing the writing, so that a refusal reads as the shape the caller
+    /// refused. Two things stop it, and neither is a name to guess: a slot this run has no name for,
+    /// and — P3 3.4 — a slot whose two variables this run cannot place the write in, which happens
+    /// only where the evidence itself did not support splitting the slot in the first place.
+    fn write_target(
+        &self,
+        slot: u16,
+        at: u32,
+        what: &str,
+    ) -> Result<(LocalVariable, String), String> {
+        let Some(variable) = self.reuse.variable_at(slot, at) else {
+            return Err(format!(
+                "the {what} at BCI {at} writes local {slot}, and the two variables the debug table states over that slot do not place this write in either"
+            ));
+        };
+        match self.names.text(variable) {
+            Some(name) => Ok((variable, name.to_string())),
+            None => Err(format!(
+                "the {what} at BCI {at} writes local {slot}, which has no name"
+            )),
+        }
     }
 
     /// Whether writing the **name** of local `slot` at the use BCI `at` denotes the value `denotes`.
@@ -1485,9 +1537,17 @@ impl Builder<'_> {
                             block.bci()
                         ));
                     }
-                    match self.names.text(*slot) {
-                        Some(name) => Ok(Expr::direct(ExprKind::Local(name.to_string()), at)),
-                        None => Err(format!("local {slot} has no name to write")),
+                    // Which of the slot's variables that name is (P3 3.4): a reused slot holds one
+                    // variable in one arm and another in the other, and the name written here is the
+                    // name of the variable whose range covers this use.
+                    match self.reuse.variable_at(*slot, at) {
+                        Some(variable) => match self.names.text(variable) {
+                            Some(name) => Ok(Expr::direct(ExprKind::Local(name.to_string()), at)),
+                            None => Err(format!("local {slot} has no name to write")),
+                        },
+                        None => Err(format!(
+                            "the value at BCI {at} is what local {slot} holds, and the two variables the debug table states over that slot do not place this use in either"
+                        )),
                     }
                 }
                 Slot::Stack(stack) => Err(format!(
@@ -1528,9 +1588,18 @@ impl Builder<'_> {
                                 "the value at BCI {at} is the value local {slot} held at BCI {bci}, and the slot does not hold it at BCI {at}: the slot's name would read the value the body wrote in between"
                             ));
                         }
-                        match self.names.text(*slot) {
-                            Some(name) => Ok(Expr::direct(ExprKind::Local(name.to_string()), bci)),
-                            None => Err(format!("local {slot} has no name to write")),
+                        // The load is a read of the slot, so the variable it names is the one whose
+                        // record covers the load's own BCI (P3 3.4).
+                        match self.reuse.variable_at(*slot, bci) {
+                            Some(variable) => match self.names.text(variable) {
+                                Some(name) => {
+                                    Ok(Expr::direct(ExprKind::Local(name.to_string()), bci))
+                                }
+                                None => Err(format!("local {slot} has no name to write")),
+                            },
+                            None => Err(format!(
+                                "the load at BCI {bci} reads local {slot}, and the two variables the debug table states over that slot do not place this read in either"
+                            )),
                         }
                     }
                     Operation::Arithmetic { op } => {

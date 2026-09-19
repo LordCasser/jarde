@@ -58,6 +58,7 @@ use crate::pass::{
     RuleVersion,
 };
 use crate::region::{FallbackReason, Recovered, Region};
+use crate::reuse;
 use crate::source_map::SourceMap;
 use crate::stop::StopReason;
 
@@ -326,11 +327,17 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     // The slots the names are decided for are the body's own local slots: the frames table states
     // how many there are, and a local the debug metadata never named still needs a name.
     let slots = u16::try_from(frames.locals_slots()).unwrap_or(u16::MAX);
-    let names = NameTable::build(
-        request.facts.method().parameters(),
+    // Which *variable* each slot holds, before any name is decided (P3 3.4): a slot the debug table
+    // names over two disjoint ranges is two variables, and the naming below states a name for each.
+    // The slot a guarded statement declares in its own header is never split, so the guard's own
+    // naming rule is untouched.
+    let reuse = reuse::plan(
+        ssa,
         slots,
         request.facts.debug_locals(),
+        &build::resource_slots(&recovered.regions),
     );
+    let names = NameTable::build(request.facts.method().parameters(), slots, reuse.evidence());
     // The two shapes this run decides *before* a single statement is written, each from this run's
     // own tables: the concatenation chains the body builds (P3 2.2) and the bridge verdict for the
     // member itself, when its declaration or its body makes it one. Both are decisions about the
@@ -363,6 +370,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             parameters: request.facts.method().parameters(),
             parameter_types: &parameter_types,
             names: &names,
+            reuse: &reuse,
             chains: &chains,
             members: request.members,
             bridge: bridge.as_ref(),

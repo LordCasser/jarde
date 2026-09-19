@@ -79,6 +79,7 @@ pub(crate) mod emit;
 #[cfg(test)]
 mod oracle;
 pub(crate) mod refusal;
+pub(crate) mod reuse;
 
 pub use accessor::{
     AccessorCandidate, AccessorField, AccessorRecord, AccessorRefusal, AccessorShape,
@@ -101,7 +102,10 @@ pub use facts::{
     Operation, RecoveryFacts,
 };
 pub use guard::{Plan as GuardPlan, Resource as GuardResource, Shape as GuardShape};
-pub use names::{AliasReason, NameTable, RenderedName, alias_for, is_java_identifier};
+pub use names::{
+    AliasReason, DebugLocal, LocalVariable, NameTable, RenderedName, SlotEvidence, alias_for,
+    is_java_identifier,
+};
 pub use normal_flow::{ExcludedEdges, NormalFlowView};
 pub use region::{FallbackReason, Recovered, Region};
 pub use source_map::{Origin, OriginSet, Provenance, Segment, SourceMap};

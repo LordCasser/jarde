@@ -162,7 +162,21 @@ fn facts_of(
         )
         .with_access_flags(member.access_flags),
     )
-    .with_debug_locals(debug)
+    .with_debug_locals(stated_names(debug))
+}
+
+/// The debug records of a test that states **one name per slot**: each name covers its slot with no
+/// range stated, so no slot is ever split for them (P3 3.4).
+fn stated_names(debug: Vec<Option<String>>) -> Vec<jarde_java::DebugLocal> {
+    debug
+        .into_iter()
+        .enumerate()
+        .filter_map(|(slot, name)| {
+            name.map(|name| {
+                jarde_java::DebugLocal::named(u16::try_from(slot).unwrap_or(u16::MAX), name)
+            })
+        })
+        .collect()
 }
 
 /// The same facts with **no** declaration flags: the run cannot tell a bridge from an ordinary
@@ -3001,7 +3015,7 @@ fn facts_of_in(
             header.access_flags,
         )),
     )
-    .with_debug_locals(debug)
+    .with_debug_locals(stated_names(debug))
 }
 
 /// Presents one fixture body with the class that declares it stated.
