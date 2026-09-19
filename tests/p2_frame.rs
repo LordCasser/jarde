@@ -24,7 +24,20 @@
 //!    — deriving frames is not verifying a method — while `semantic_validation` is the run's own
 //!    evidence and each test states it for the run it really performed: a request that reaches
 //!    `ssa` and completes it reports the local invariants that phase checked, and the request
-//!    that stops at the frame boundary reports `Unproven`.
+//!    that stops at the frame boundary reports `Unproven`;
+//! 6. a handler's entry state is the merge of the states its throw sites **settle** on, not of
+//!    the ones they were entered with the first time: the fixpoint re-takes an exception input
+//!    whenever the source block runs again, even when that block's own exit state never changes
+//!    (R9). The three assembled bodies of this section state that through the public entry as
+//!    well — a single-site body whose handler went stale, the same cycle with the exception edge
+//!    feeding a block that has already been processed, and a block with two throw sites whose
+//!    handler entry is the merge of both;
+//! 7. and it bills what it holds (R10): a block with a catch-all record really does keep one
+//!    snapshot and one exception input per throw site, so its `IrItems` grows with the product of
+//!    sites and local slots — while a block whose sites no handler record covers keeps none of
+//!    them and bills the same for eight sites and for sixty-four. A request that runs out of items
+//!    inside the frame phase or inside the one behind it stops with a diagnostic and publishes
+//!    neither a table nor a name, exactly like a cancelled one.
 
 use jarde::*;
 use std::slice;
@@ -58,6 +71,13 @@ fn limits() -> Limits {
 
 fn bytes(value: &[u8]) -> JvmBytes {
     JvmBytes(value.to_vec())
+}
+
+/// The same limits with one field replaced, for the budget cases below.
+fn limits_with(change: impl FnOnce(&mut Limits)) -> Limits {
+    let mut limits = limits();
+    change(&mut limits);
+    limits
 }
 
 struct Fixture {
@@ -390,6 +410,621 @@ fn a_pre_initialization_putfield_of_the_own_name_is_accepted_without_any_declare
     );
 }
 
+/// One record of a `Code` attribute's `exception_table` (JVMS 4.7.3).
+///
+/// The fixtures below use `catch_type = 0` only — the catch-all record, which names no class and
+/// therefore needs no constant-pool entry — so the class builder of this file holds the pool both
+/// written fixtures already share.
+#[derive(Clone, Copy)]
+struct ExceptionRecord {
+    start_pc: u16,
+    end_pc: u16,
+    handler_pc: u16,
+    catch_type: u16,
+}
+
+/// A real class file of one class `Test` whose single method declares `flags`, `name` and
+/// `descriptor` and carries the caller's body, at class-file version `major`.
+///
+/// The pool is the one `illegal_class` writes — `Test`, its superclass, the member's name and
+/// descriptor, and `Code` — so a body assembled here differs from that one only in what the caller
+/// writes. `major` is a parameter because the version is a fact the reader keeps: a 49 class file
+/// is the dialect the R9 counterexample below comes from, and it is not the 52 one the committed
+/// fixtures are compiled at.
+#[allow(clippy::too_many_arguments)]
+fn class_of(
+    major: u16,
+    flags: u16,
+    name: &[u8],
+    descriptor: &[u8],
+    code: &[u8],
+    max_stack: u16,
+    max_locals: u16,
+    handlers: &[ExceptionRecord],
+) -> Vec<u8> {
+    assert!(
+        handlers.iter().all(|record| record.catch_type == 0),
+        "the pool of this builder holds no exception class entry: only catch-all records"
+    );
+    let mut pool = Vec::new();
+    utf8(&mut pool, b"Test"); // 1
+    class(&mut pool, 1); // 2
+    utf8(&mut pool, b"java/lang/Object"); // 3
+    class(&mut pool, 3); // 4
+    utf8(&mut pool, name); // 5
+    utf8(&mut pool, descriptor); // 6
+    utf8(&mut pool, b"Code"); // 7
+
+    let mut content = code_attribute_with(code, max_stack, max_locals, handlers);
+    let mut method = method(flags, 5, 6, &mut content);
+
+    let mut bytes = header_at(8, major);
+    bytes.extend_from_slice(&pool);
+    class_tail(&mut bytes, 2, 4, &mut method);
+    bytes
+}
+
+/// The descriptor of the three exception fixtures below: one argument the handler bodies can return
+/// either directly or through a slot, so the class file states a reference the frames can carry.
+const EXCEPTION_METHOD: &[u8] = b"(Ljava/lang/Object;)Ljava/lang/Object;";
+
+/// The class file of the R10 shape: `sites` throwing instructions in **one** block, `locals` local
+/// slots, and — when `handler` — a catch-all record covering every one of those sites.
+///
+/// `04 04 6c 57` is `iconst_1; iconst_1; idiv; pop`: the `idiv` divides one by zero, so each
+/// repetition holds one canonical throw site, and the block holds `sites` of them. The record's
+/// protected range is `[0, 4 * sites)` and it catches everything, so the handler of the second
+/// shape is entered with one input per site. `max_locals` is the caller's: it is what makes the
+/// product of sites and locals the thing the budget has to bound.
+fn throw_sites_class(sites: usize, locals: u16, handler: bool) -> Vec<u8> {
+    /// One `iconst_1; iconst_1; idiv; pop`.
+    const REPEAT: &[u8] = &[0x04, 0x04, 0x6c, 0x57];
+    let mut code = Vec::new();
+    for _ in 0..sites {
+        code.extend_from_slice(REPEAT);
+    }
+    let end = u16::try_from(code.len()).expect("a fixture body fits u16");
+    let handlers = if handler {
+        // `return`, then the handler at the next byte: `pop; return`, which discards the caught
+        // reference. The record's range stops at the `return` of the body, so the handler is only
+        // ever entered through the exception edge.
+        code.push(0xb1);
+        let handler_pc = u16::try_from(code.len()).expect("a fixture body fits u16");
+        code.extend_from_slice(&[0x57, 0xb1]);
+        vec![ExceptionRecord {
+            start_pc: 0,
+            end_pc: end,
+            handler_pc,
+            catch_type: 0,
+        }]
+    } else {
+        code.push(0xb1); // return
+        Vec::new()
+    };
+    class_of(
+        49, 0x0009, // ACC_PUBLIC | ACC_STATIC
+        b"method", b"()V", &code, 2, locals, &handlers,
+    )
+}
+
+/// The `IrItems` one request for `stages` over the R10 shape spends, and the request's report.
+fn items_of(
+    class: &[u8],
+    stages: Vec<AnalysisStage>,
+    limits: Limits,
+) -> (u64, MethodAnalysisReport) {
+    let fixture = fixture_of(class, b"method", b"()V");
+    let (report, budget) = analyze(&fixture, stages, limits);
+    (budget.usage().ir_items, report)
+}
+
+/// The class file of the R9 counterexample.
+fn r9_class() -> Vec<u8> {
+    /// The 17 bytes of the body the test documents.
+    const CODE: &[u8] = &[
+        0x01, 0x4c, // 0: aconst_null; 1: astore_1
+        0x04, 0x03, 0x6c, 0x57, // 2: iconst_1; 3: iconst_0; 4: idiv; 5: pop
+        0x2a, 0x4c, 0x03, 0x99, 0xff, 0xf9, // 6: aload_0; 7: astore_1; 8: iconst_0; 9: ifeq 2
+        0x2b, 0xb0, // 12: aload_1; 13: areturn
+        0x57, 0x2b, 0xb0, // 14: pop; 15: aload_1; 16: areturn
+    ];
+    // The branch really lands on BCI 2: `9 + (-7)`.
+    assert_eq!(i32::from(i16::from_be_bytes([CODE[10], CODE[11]])), -7);
+    class_of(
+        49,
+        0x0009, // ACC_PUBLIC | ACC_STATIC
+        b"method",
+        EXCEPTION_METHOD,
+        CODE,
+        2,
+        2,
+        &[ExceptionRecord {
+            start_pc: 2,
+            end_pc: 12,
+            handler_pc: 14,
+            catch_type: 0,
+        }],
+    )
+}
+
+/// The class file of the exception-back-edge contrast.
+fn exception_back_edge_class() -> Vec<u8> {
+    const CODE: &[u8] = &[
+        0x01, 0x4c, // 0: aconst_null; 1: astore_1
+        0x04, 0x03, 0x6c, 0x57, // 2: iconst_1; 3: iconst_0; 4: idiv; 5: pop
+        0x2a, 0x4c, 0x2a, 0xc7, 0xff,
+        0xf9, // 6: aload_0; 7: astore_1; 8: aload_0; 9: ifnonnull 2
+        0x2b, 0xb0, // 12: aload_1; 13: areturn
+        0x57, 0xa7, 0xff, 0xf3, // 14: pop; 15: goto 2
+    ];
+    // `ifnonnull` at 9 lands on BCI 2 and the `goto` at 15 does too.
+    assert_eq!(i32::from(i16::from_be_bytes([CODE[10], CODE[11]])), -7);
+    assert_eq!(i32::from(i16::from_be_bytes([CODE[16], CODE[17]])), -13);
+    class_of(
+        49,
+        0x0009,
+        b"method",
+        EXCEPTION_METHOD,
+        CODE,
+        2,
+        2,
+        &[ExceptionRecord {
+            start_pc: 2,
+            end_pc: 12,
+            handler_pc: 14,
+            catch_type: 0,
+        }],
+    )
+}
+
+/// The class file of the two-throw-sites contrast.
+fn two_throw_sites_class() -> Vec<u8> {
+    const CODE: &[u8] = &[
+        0x01, 0x4c, // 0: aconst_null; 1: astore_1
+        0x04, 0x03, 0x6c, 0x57, // 2: iconst_1; 3: iconst_0; 4: idiv; 5: pop
+        0x2a, 0x4c, 0x2a, 0x4d, // 6: aload_0; 7: astore_1; 8: aload_0; 9: astore_2
+        0x04, 0x03, 0x6c, 0x57, // 10: iconst_1; 11: iconst_0; 12: idiv; 13: pop
+        0x2a, 0xc7, 0xff, 0xf3, // 14: aload_0; 15: ifnonnull 2
+        0x2b, 0xb0, // 18: aload_1; 19: areturn
+        0x57, 0x2b, 0xb0, // 20: pop; 21: aload_1; 22: areturn
+    ];
+    // `ifnonnull` at 15 lands on BCI 2.
+    assert_eq!(i32::from(i16::from_be_bytes([CODE[16], CODE[17]])), -13);
+    class_of(
+        49,
+        0x0009,
+        b"method",
+        EXCEPTION_METHOD,
+        CODE,
+        2,
+        3,
+        &[ExceptionRecord {
+            start_pc: 2,
+            end_pc: 18,
+            handler_pc: 20,
+            catch_type: 0,
+        }],
+    )
+}
+
+/// The R9 counterexample, through the public entry point: an exception input follows the state its
+/// throw site **settles** on, even when the block's own exit state never changes.
+///
+/// `Test.method(Ljava/lang/Object;)Ljava/lang/Object;` — static, `max_stack` 2, `max_locals` 2, a
+/// 49 class file with no `StackMapTable` and no local-variable table:
+///
+/// ```text
+///  0: aconst_null; 1: astore_1
+///  2: iconst_1; 3: iconst_0; 4: idiv; 5: pop
+///  6: aload_0; 7: astore_1; 8: iconst_0; 9: ifeq 2
+/// 12: aload_1; 13: areturn
+/// 14: pop; 15: aload_1; 16: areturn
+/// exception_table: [start_pc=2, end_pc=12, handler_pc=14, catch_type=0]
+/// ```
+///
+/// Slot 1 is `null` when BCI 2 is entered the first time and the argument reference after the back
+/// edge settles; the block's exit is the argument reference on **both** visits, because BCI 7
+/// overwrites the slot either way. A skip keyed on the exit alone therefore keeps the exception
+/// input BCI 4 hands its handler at `null` while the handler's own input counts as one
+/// definition of the reference, and `ssa` refuses the contradiction with `ir_ssa_inconsistent`.
+/// The bytes are a body an OpenJDK runs and returns `null` for; what the fix has to restore is the
+/// handler's entry state, not a check.
+#[test]
+fn an_exception_input_follows_the_state_its_throw_site_settles_on() {
+    let class = r9_class();
+    let fixture = fixture_of(&class, b"method", EXCEPTION_METHOD);
+    // A request for the frames alone names the same body and completes — before the fix as well,
+    // which is the honest boundary of this case: the stale state is a state the frame phase
+    // *derives*, and nothing in that phase reads it back. What refuses it is the phase behind,
+    // which is where the assertion with teeth is; the frame request is here so that the two are
+    // stated about the same bytes.
+    let (frames_only, _) = analyze(&fixture, vec![AnalysisStage::Frame], limits());
+    assert_eq!(stage_states(&frames_only), vec![StageState::Completed; 5]);
+    assert!(diagnostic_codes(&frames_only).is_empty());
+
+    let (report, _) = analyze(&fixture, vec![AnalysisStage::Ssa], limits());
+
+    assert_eq!(
+        stage_states(&report),
+        vec![StageState::Completed; 6],
+        "every phase names the IR of this body, the handler's entry state included: {:?}",
+        report.diagnostics
+    );
+    assert!(diagnostic_codes(&report).is_empty());
+    assert_planes_stay_p1(&report);
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::LocalInvariants
+    );
+}
+
+/// The first contrast of the case above: an exception edge whose handler feeds a block that has
+/// already been processed — a cycle the exception path runs back into the loop's own head.
+///
+/// `Test.method(Ljava/lang/Object;)Ljava/lang/Object;`, static, `max_stack` 2, `max_locals` 2, the
+/// same 49 class file:
+///
+/// ```text
+///  0: aconst_null; 1: astore_1
+///  2: iconst_1; 3: iconst_0; 4: idiv; 5: pop
+///  6: aload_0; 7: astore_1; 8: aload_0; 9: ifnonnull 2
+/// 12: aload_1; 13: areturn
+/// 14: pop; 15: goto 2
+/// exception_table: [start_pc=2, end_pc=12, handler_pc=14, catch_type=0]
+/// ```
+///
+/// The handler is *inside* the cycle: BCI 2 is entered from the entry block, from its own branch
+/// and from BCI 15, and the exception edge BCI 4 → BCI 14 is the only input BCI 14 has. Its entry
+/// state therefore has to move when the loop head settles, and the block it feeds back into has
+/// already been processed when that happens — the shape the fix must still converge on, and the
+/// one that catches a fix that re-propagates exception inputs without the merges being idempotent.
+/// The body is the one above with a handler that resumes the loop, and slot 1 settles on the
+/// argument reference for the same reason.
+#[test]
+fn an_exception_input_into_an_already_processed_block_settles_with_it() {
+    let class = exception_back_edge_class();
+    let fixture = fixture_of(&class, b"method", EXCEPTION_METHOD);
+    let (report, budget) = analyze(&fixture, vec![AnalysisStage::Ssa], limits());
+
+    assert_eq!(
+        stage_states(&report),
+        vec![StageState::Completed; 6],
+        "the cycle through the handler converges: {:?}",
+        report.diagnostics
+    );
+    assert!(diagnostic_codes(&report).is_empty());
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::LocalInvariants
+    );
+    assert!(
+        budget.usage().analysis_steps < limits().analysis_steps,
+        "the cycle through the handler converges instead of spending the budget: {} steps",
+        budget.usage().analysis_steps
+    );
+}
+
+/// The second contrast: **two throw sites of one block**, both feeding the same handler, with the
+/// loop's exit stable across its visits.
+///
+/// ```text
+///  0: aconst_null; 1: astore_1
+///  2: iconst_1; 3: iconst_0; 4: idiv; 5: pop              the first site, slot 1 null
+///  6: aload_0; 7: astore_1; 8: aload_0; 9: astore_2       slot 1 and slot 2, the argument
+/// 10: iconst_1; 11: iconst_0; 12: idiv; 13: pop           the second site, both slots the argument
+/// 14: aload_0; 15: ifnonnull 2
+/// 18: aload_1; 19: areturn
+/// 20: pop; 21: aload_1; 22: areturn
+/// exception_table: [start_pc=2, end_pc=18, handler_pc=20, catch_type=0]
+/// ```
+///
+/// One canonical exception edge aggregates both sites, and the handler's entry state is the merge
+/// of the two states they hand it — not the block's exit, which is the same on both visits, and
+/// not one of the two sites. The fix re-takes that merge on every visit of the source block, so
+/// this is the shape that says the re-taken inputs stay the *per-site* ones: a fix that handed the
+/// handler the block's exit, or only the last site's state, would name a slot no site states.
+#[test]
+fn two_throw_sites_of_one_block_still_merge_their_own_states() {
+    let class = two_throw_sites_class();
+    let fixture = fixture_of(&class, b"method", EXCEPTION_METHOD);
+    let (report, budget) = analyze(&fixture, vec![AnalysisStage::Ssa], limits());
+
+    assert_eq!(
+        stage_states(&report),
+        vec![StageState::Completed; 6],
+        "both sites' states reach the handler and the walk terminates: {:?}",
+        report.diagnostics
+    );
+    assert!(diagnostic_codes(&report).is_empty());
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::LocalInvariants
+    );
+    // The re-taken inputs must not turn the walk into a loop of its own: a run that re-merged a
+    // handler on every visit without the merge being idempotent would spend the step budget here.
+    assert!(
+        budget.usage().analysis_steps < limits().analysis_steps,
+        "the walk converges instead of spending the budget: {} steps",
+        budget.usage().analysis_steps
+    );
+}
+
+/// The R10 shape, first half: a throw site **no handler record covers** is not retained, so the
+/// frame pass' bill for this shape is the same however many sites the block holds.
+///
+/// The body is `T` copies of `iconst_1; iconst_1; idiv; pop` and one `return`, with `max_locals`
+/// 10000 and **no** exception table. Every `idiv` is a canonical throw site, so a pass that
+/// snapshotted every site would hold `T * max_locals` slots at once while the exit state never
+/// changes — the product R10 measured as growing with `T` while the bill did not. Nothing reads
+/// those snapshots here: the exception inputs of a block are taken per covered site, and no record
+/// covers any of them.
+#[test]
+fn an_uncovered_throw_site_is_not_retained() {
+    const LOCALS: u16 = 10_000;
+    let generous = limits_with(|limits| limits.ir_items = 1 << 24);
+    let small = throw_sites_class(8, LOCALS, false);
+    let large = throw_sites_class(64, LOCALS, false);
+    let (frame_small, report_small) =
+        items_of(&small, vec![AnalysisStage::Frame], generous.clone());
+    let (canonical_small, _) =
+        items_of(&small, vec![AnalysisStage::CanonicalCfg], generous.clone());
+    let (frame_large, report_large) =
+        items_of(&large, vec![AnalysisStage::Frame], generous.clone());
+    let (canonical_large, _) = items_of(&large, vec![AnalysisStage::CanonicalCfg], generous);
+    let delta_small = frame_small - canonical_small;
+    let delta_large = frame_large - canonical_large;
+
+    assert_eq!(
+        stage_states(&report_small),
+        vec![StageState::Completed; 5],
+        "the frames of the 8-site body are derived: {:?}",
+        report_small.diagnostics
+    );
+    assert_eq!(
+        stage_states(&report_large),
+        vec![StageState::Completed; 5],
+        "and so are the frames of the 64-site one: {:?}",
+        report_large.diagnostics
+    );
+    // One block, entered once: the entry state, the working copy that transfer derives its exit
+    // in, the exit state the run keeps, one published block record and the table. Nothing per
+    // throw site, and above all nothing per (site, local) pair.
+    assert_eq!(delta_small, 3 * u64::from(LOCALS) + 2);
+    assert_eq!(
+        delta_large, delta_small,
+        "the bill is the same for 8 sites and for 64: the snapshots no handler reads are not \
+         retained, so there is no product for the budget to bound"
+    );
+    // The probe R10 was measured with: a request allowed the canonical price plus the 10001 items
+    // that shape used to cost finishes no more. Both blocks of that bill — the working copy the
+    // transfer derives its exit in and the exit state the run keeps — are charged now, so the stop
+    // lands inside the frame phase. This is *not* the bounded product: there is no product left to
+    // bound here, which is what the two deltas above say.
+    let fixture = fixture_of(&small, b"method", b"()V");
+    let (report, _) = analyze(
+        &fixture,
+        vec![AnalysisStage::Ssa],
+        limits_with(|limits| limits.ir_items = canonical_small + 10_001),
+    );
+    assert_eq!(
+        stage_states(&report),
+        vec![
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Partial,
+            StageState::NotPerformed,
+        ],
+        "the old allowance is not enough for the state that block really holds"
+    );
+    assert_eq!(diagnostic_codes(&report), vec!["budget_exceeded_ir_items"]);
+}
+
+/// The R10 shape, second half: when a handler **does** cover the sites, the block really does hold
+/// one snapshot and one exception input per site, and the bill grows with that product.
+#[test]
+fn a_covered_throw_site_product_is_billed_with_its_size() {
+    const LOCALS: u16 = 10_000;
+    const SMALL: usize = 8;
+    const LARGE: usize = 64;
+    let generous = limits_with(|limits| limits.ir_items = 1 << 24);
+    let small = throw_sites_class(SMALL, LOCALS, true);
+    let large = throw_sites_class(LARGE, LOCALS, true);
+    let (frame_small, report_small) =
+        items_of(&small, vec![AnalysisStage::Frame], generous.clone());
+    let (canonical_small, _) =
+        items_of(&small, vec![AnalysisStage::CanonicalCfg], generous.clone());
+    let (frame_large, report_large) =
+        items_of(&large, vec![AnalysisStage::Frame], generous.clone());
+    let (canonical_large, _) = items_of(&large, vec![AnalysisStage::CanonicalCfg], generous);
+    let delta_small = frame_small - canonical_small;
+    let delta_large = frame_large - canonical_large;
+
+    assert_eq!(
+        stage_states(&report_small),
+        vec![StageState::Completed; 5],
+        "the body the catch-all handler is entered from is analyzed: {:?}",
+        report_small.diagnostics
+    );
+    assert_eq!(stage_states(&report_large), vec![StageState::Completed; 5]);
+    // What one covered site costs, by the storage it really makes this block hold: the snapshot the
+    // transfer keeps (one item per local slot), the frame the exception edge carries — that many
+    // slots plus the one caught reference — one logical input record, and the state that input is
+    // merged into, which has the handler's shape and is charged on every input but the first.
+    let locals = u64::from(LOCALS);
+    let snapshot = locals;
+    let input = locals + 1;
+    let record = 1;
+    let merge = locals + 1;
+    // Everything that does not grow with the sites: the entry state, the two working copies the two
+    // blocks derive their exits in, the two exit states the run keeps, the two published block
+    // records and the table.
+    let fixed = 50_004;
+    assert_eq!(
+        delta_small,
+        fixed
+            + u64::try_from(SMALL).expect("a small fixture") * (snapshot + input + record)
+            + u64::try_from(SMALL - 1).expect("a small fixture") * merge
+    );
+    // The assertion with the teeth: 56 more covered sites cost 56 more of exactly those four
+    // things. A bill that drops any one of them — the snapshot, the input, its record or the merge
+    // — cannot produce this number.
+    assert_eq!(
+        delta_large - delta_small,
+        u64::try_from(LARGE - SMALL).expect("a small fixture")
+            * (snapshot + input + record + merge),
+        "56 more sites of {LOCALS} locals are billed as 56 more products"
+    );
+}
+
+/// The R10 shape, a stop: a request whose item budget runs out in the middle of the transfer
+/// publishes **no** frame table, and the phases before it keep everything they published.
+#[test]
+fn an_exhausted_item_budget_publishes_no_frame_table() {
+    const LOCALS: u16 = 10_000;
+    let class = throw_sites_class(8, LOCALS, true);
+    let generous = limits_with(|limits| limits.ir_items = 1 << 24);
+    let (canonical, _) = items_of(&class, vec![AnalysisStage::CanonicalCfg], generous.clone());
+    // The entry state (10000) and the working copy (10000) are charged, and then four of the eight
+    // snapshots (40000): the limit is one item past that, so the stop lands in the middle of the
+    // transfer, with eight snapshots' worth of state still to build.
+    let limit = canonical + 60_001;
+    let fixture = fixture_of(&class, b"method", b"()V");
+    let (report, budget) = analyze(
+        &fixture,
+        vec![AnalysisStage::Ssa],
+        limits_with(|limits| limits.ir_items = limit),
+    );
+
+    assert_eq!(
+        stage_states(&report),
+        vec![
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Partial,
+            StageState::NotPerformed,
+        ],
+        "the frame phase stopped, so the phase behind it never ran over a half-built table"
+    );
+    assert_eq!(diagnostic_codes(&report), vec!["budget_exceeded_ir_items"]);
+    assert!(matches!(
+        report.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::IrItems
+            },
+            ..
+        }
+    ));
+    // The artifact the earlier phases published is still the run's artifact, and the stop is not
+    // evidence about the body: no frame table, no names, and nothing the run proved.
+    assert_eq!(report.quality, Quality::Conservative);
+    assert_eq!(report.semantic_validation, SemanticValidation::Unproven);
+    // The charges that fit are the entry state, the working copy, and four of the eight snapshots;
+    // the fifth does not fit, which is what the budget reports, and the usage stays where the
+    // accepted charges left it rather than jumping to the limit.
+    assert_eq!(budget.usage().ir_items, canonical + 60_000);
+    assert!(limit - budget.usage().ir_items < u64::from(LOCALS));
+}
+
+/// The same shape, cancelled: a cancellation is not a bound and must not publish a table either.
+#[test]
+fn a_cancelled_request_publishes_no_frame_table() {
+    let class = throw_sites_class(8, 10_000, true);
+    let fixture = fixture_of(&class, b"method", b"()V");
+    let token = CancellationToken::new();
+    token.cancel();
+    let mut budget =
+        Budget::with_cancellation_token(limits_with(|limits| limits.ir_items = 1 << 24), token);
+    let request = MethodAnalysisRequest {
+        environment: environment(&fixture),
+        method: fixture.method.clone(),
+        stages: vec![AnalysisStage::Ssa],
+    };
+    let report = Engine::new()
+        .analyze_method(slice::from_ref(&fixture.snapshot), &request, &mut budget)
+        .expect("a cancelled request is answered, not raised");
+
+    assert!(matches!(
+        report.execution,
+        ExecutionReport::Cancelled { .. }
+    ));
+    assert_eq!(report.quality, Quality::Fallback);
+    assert_eq!(
+        stage_states(&report)
+            .iter()
+            .filter(|state| **state == StageState::Completed)
+            .count(),
+        0,
+        "a cancelled run publishes nothing"
+    );
+    assert_eq!(report.semantic_validation, SemanticValidation::Unproven);
+    assert_eq!(
+        budget.usage().ir_items,
+        0,
+        "a cancelled run retained no slot of any frame state"
+    );
+}
+
+/// The same shape, stopped inside the phase that names the frames: the frames stay the last valid
+/// phase, and the names are not published half-built either.
+#[test]
+fn an_exhausted_item_budget_inside_the_names_phase_publishes_no_names() {
+    const LOCALS: u16 = 10_000;
+    let class = throw_sites_class(8, LOCALS, true);
+    let generous = limits_with(|limits| limits.ir_items = 1 << 24);
+    let (frames, _) = items_of(&class, vec![AnalysisStage::Frame], generous.clone());
+    let (names, _) = items_of(&class, vec![AnalysisStage::Ssa], generous.clone());
+    assert!(
+        names > frames,
+        "the names phase bills the frames it reads plus its own items: {names} vs {frames}"
+    );
+    let limit = frames + (names - frames) / 2;
+    let fixture = fixture_of(&class, b"method", b"()V");
+    let (report, budget) = analyze(
+        &fixture,
+        vec![AnalysisStage::Ssa],
+        limits_with(|limits| limits.ir_items = limit),
+    );
+
+    assert_eq!(
+        stage_states(&report),
+        vec![
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Completed,
+            StageState::Partial,
+        ],
+        "the frames stay the last valid phase when the names stop"
+    );
+    assert_eq!(diagnostic_codes(&report), vec!["budget_exceeded_ir_items"]);
+    assert!(matches!(
+        report.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::IrItems
+            },
+            ..
+        }
+    ));
+    assert_eq!(report.quality, Quality::Conservative);
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::Unproven,
+        "a stop inside the names phase is not a completed check of the local invariants"
+    );
+    assert!(
+        budget.usage().ir_items < limit + u64::from(LOCALS),
+        "the run stopped where the next charge would not fit: {} of {limit}",
+        budget.usage().ir_items
+    );
+}
+
 /// A real class file with one `Test.method()V` whose body the caller writes, and the constant pool
 /// entry `2` the `new` of those bodies names.
 ///
@@ -484,6 +1119,16 @@ fn field_ref(bytes: &mut Vec<u8>, owner: u16, name_and_type: u16) {
 
 /// The `Code` content of the one method: the caller's bytes and nothing else.
 fn code_attribute(code: &[u8], max_stack: u16, max_locals: u16) -> Vec<u8> {
+    code_attribute_with(code, max_stack, max_locals, &[])
+}
+
+/// The same `Code` content with a caller-written `exception_table`.
+fn code_attribute_with(
+    code: &[u8],
+    max_stack: u16,
+    max_locals: u16,
+    handlers: &[ExceptionRecord],
+) -> Vec<u8> {
     let mut content = Vec::new();
     u16_be(&mut content, max_stack);
     u16_be(&mut content, max_locals);
@@ -493,7 +1138,16 @@ fn code_attribute(code: &[u8], max_stack: u16, max_locals: u16) -> Vec<u8> {
             .to_be_bytes(),
     );
     content.extend_from_slice(code);
-    u16_be(&mut content, 0); // exception table
+    u16_be(
+        &mut content,
+        u16::try_from(handlers.len()).expect("fixture handler count fits u16"),
+    );
+    for record in handlers {
+        u16_be(&mut content, record.start_pc);
+        u16_be(&mut content, record.end_pc);
+        u16_be(&mut content, record.handler_pc);
+        u16_be(&mut content, record.catch_type);
+    }
     u16_be(&mut content, 0); // Code attributes
     content
 }
@@ -517,9 +1171,14 @@ fn method(flags: u16, name: u16, descriptor: u16, content: &mut Vec<u8>) -> Vec<
 
 /// The class-file header up to the constant pool, with `constant_pool_count` = `entries`.
 fn header(entries: u16) -> Vec<u8> {
+    header_at(entries, 52)
+}
+
+/// The same header at the class-file version the caller names.
+fn header_at(entries: u16, major: u16) -> Vec<u8> {
     let mut bytes = 0xcafebabe_u32.to_be_bytes().to_vec();
     u16_be(&mut bytes, 0); // minor
-    u16_be(&mut bytes, 52); // major: the fixture era of this slice
+    u16_be(&mut bytes, major);
     u16_be(&mut bytes, entries);
     bytes
 }

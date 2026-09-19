@@ -1388,8 +1388,19 @@ fn merge_stack(left: &[Value], right: &[Value], block: &CanonicalBlockId) -> Nor
 }
 
 /// The merge of two frames entering one block: the locals under the local rule, the stack under
-/// the stack rule.
-fn merge_frame(current: &Frame, incoming: &Frame, block: &CanonicalBlockId) -> Norm<Frame> {
+/// the stack rule, charged before the merged state is allocated.
+///
+/// The merged state has exactly the shape of `current`: one slot per local, and a stack of the
+/// same depth, because a disagreement in either is a contradiction of the body and not a merge.
+/// So its slots are charged before the vectors that hold them are built — including when the merge
+/// turns out to be `current` itself, because that attempt allocated a state too.
+fn merge_frame(
+    budget: &mut Budget,
+    current: &Frame,
+    incoming: &Frame,
+    block: &CanonicalBlockId,
+) -> Norm<Frame> {
+    charge_frame(budget, current)?;
     if current.locals.len() != incoming.locals.len() {
         return inconsistent(format!(
             "block {block:?} is entered with frames of {} and {} local slots",
@@ -2426,14 +2437,25 @@ fn transfer_block(
         budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
         let row = TABLE[usize::from(operands.effective_opcode)];
         if let Some(site) = sites.get(&instruction.bci) {
-            // The snapshot is taken *before* the instruction is applied: this is the state the
-            // site's own exception successor is entered with, and the state the alias conversion
-            // of a constructor call must not be able to reach.
-            throw_points.push(ThrowPoint {
-                bci: instruction.bci,
-                handlers: site.handlers.clone(),
-                locals: frame.locals.clone(),
-            });
+            // A site no handler record covers has no reader at all: the exception inputs of this
+            // block are taken per *covered* site, so a site whose own record list is empty feeds
+            // no exception edge of any block. Its snapshot would be slot storage nobody reads, so
+            // nothing is retained for it and nothing is charged — the product of sites and locals
+            // this transfer holds is the product of the sites that really have a consumer.
+            if !site.handlers.is_empty() {
+                // Charged **before** the clone: one item per local slot the snapshot holds. A
+                // block with many throw sites holds every one of these at once, so this is the
+                // charge that makes the budget bound that product.
+                charge_slots(budget, frame.locals.len())?;
+                // The snapshot is taken *before* the instruction is applied: this is the state
+                // the site's own exception successor is entered with, and the state the alias
+                // conversion of a constructor call must not be able to reach.
+                throw_points.push(ThrowPoint {
+                    bci: instruction.bci,
+                    handlers: site.handlers.clone(),
+                    locals: frame.locals.clone(),
+                });
+            }
         }
         apply(
             method,
@@ -2468,12 +2490,15 @@ struct ExceptionInput {
 /// which is the shape a handler is entered with (JVMS 4.10.1.6). The reference is the record's
 /// catch type when the class file names one, and a conservative unknown reference for a catch-all
 /// record, whose type no fact of this request establishes.
+///
+/// Charges one `IrItems` per slot of every input it builds, before that input's locals are copied.
 fn exception_inputs(
     method: &FrameMethod<'_>,
     canonical: &CanonicalCfg,
     block: &CanonicalBlock,
     throw_points: &[ThrowPoint],
     handler_ordinal: u32,
+    budget: &mut Budget,
 ) -> Norm<Vec<ExceptionInput>> {
     let Some(row) = canonical
         .handler_rows
@@ -2492,6 +2517,10 @@ fn exception_inputs(
         if !point.handlers.contains(&handler_ordinal) {
             continue;
         }
+        // The input is a second copy of the site's locals — plus the one slot its stack holds —
+        // and every input of one edge is live at the same time as the snapshots they are taken
+        // from: charged before the copy is made, not after it is handed over.
+        charge_slots(budget, point.locals.len().saturating_add(1))?;
         inputs.push(ExceptionInput {
             bci: point.bci,
             frame: Frame {
@@ -2770,8 +2799,9 @@ pub(crate) fn entry_slots(
 /// therefore about this build's own artifact and not about the bytes: the frames of the block and
 /// its replay disagree.
 ///
-/// Charges: one `AnalysisSteps` per instruction examined, like the transfer it replays, and one
-/// `IrItems` per recorded access before it is stored.
+/// Charges: one `AnalysisSteps` per instruction examined, like the transfer it replays, one
+/// `IrItems` per slot of the entry-state copy it replays over, and one `IrItems` per recorded
+/// access before it is stored.
 pub(crate) fn block_touches(
     facts: &MethodCodeFacts,
     block: &CanonicalBlock,
@@ -2795,6 +2825,9 @@ fn replay(
     method: &FrameMethod<'_>,
     budget: &mut Budget,
 ) -> Norm<Vec<InstructionTouches>> {
+    // The replay mutates its own copy of the published entry state: slot storage like any other,
+    // charged before the copy is made and not when the accesses it records are billed.
+    charge_slots(budget, entry.locals.len().saturating_add(entry.stack.len()))?;
     let mut frame = Frame {
         locals: entry.locals.clone(),
         stack: entry.stack.clone(),
@@ -2870,8 +2903,10 @@ fn run(
     };
 
     checkpoint(Phase::Entry, budget)?;
+    // The entry state is charged **before** it is allocated: the declared `max_locals` is exactly
+    // what [`entry_frame`] allocates, because its operand stack starts empty.
+    charge_slots(budget, usize::from(facts.max_locals))?;
     let first = entry_frame(method, facts)?;
-    charge_frame(budget, &first)?;
     let mut entries: Vec<Option<Frame>> = vec![None; canonical.blocks.len()];
     let mut exits: Vec<Option<Frame>> = vec![None; canonical.blocks.len()];
     // The logical inputs of each block, keyed by the block they come from: the inputs of one
@@ -2885,20 +2920,40 @@ fn run(
         budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
         checkpoint(Phase::Transfer, budget)?;
         let block = canonical.blocks[position].clone();
-        let entry_state = entries[position]
-            .clone()
-            .expect("a block is queued only after it has an entry state");
+        // The transfer mutates its own copy of the entry state, and that copy is a frame's worth
+        // of slots of its own: it is what the exit state is derived in, so it is charged before
+        // the clone like any other state this pass holds.
+        let entry_state = {
+            let before = entries[position]
+                .as_ref()
+                .expect("a block is queued only after it has an entry state");
+            charge_frame(budget, before)?;
+            before.clone()
+        };
         let transfer = transfer_block(method, canonical, &block, facts, entry_state, budget)?;
-        if exits[position].as_ref() == Some(&transfer.exit) {
-            // The transfer is a function of the entry state, so an unchanged exit state cannot
-            // change any successor's — and the records below are a function of the block and the
-            // graph alone, which is why the first transfer of this block already left them.
+        // The throw sites are as much a function of the entry state as the exit is, and the exit
+        // is the weaker observation of the two: a block that overwrites every slot a throwing
+        // instruction reads leaves the same exit on two different entries while the state its
+        // handler is entered with has changed. An unchanged exit therefore only settles the
+        // successors that read it — and those are exactly the successors this block's throw sites
+        // do not feed. A block with no exception edge hands its sites to nobody, so nothing here
+        // is left for a later visit to correct and the first transfer of it already did the work.
+        let feeds_exception_edge = successors[position]
+            .iter()
+            .any(|(_, kind)| matches!(kind, CanonicalEdgeKind::Exception { .. }));
+        if exits[position].as_ref() == Some(&transfer.exit) && !feeds_exception_edge {
             continue;
         }
+        // The exit state is kept until this block runs again, to tell a second transfer of the
+        // same entry state from a changed one: charged before the copy is made.
+        charge_frame(budget, &transfer.exit)?;
         exits[position] = Some(transfer.exit.clone());
         for (target, kind) in &successors[position] {
             // One exception edge carries one input per throw site it aggregates; every other edge
-            // carries the source's own exit state.
+            // carries the source's own exit state. Either way the states an edge hands over are
+            // charged when they are allocated — here for the copy of the exit state, inside
+            // [`exception_inputs`] for the per-site inputs — and not when a later merge happens
+            // to keep them.
             let contributions: Vec<(Frame, Option<u32>)> = match kind {
                 CanonicalEdgeKind::Exception { handler_ordinal } => exception_inputs(
                     method,
@@ -2906,13 +2961,17 @@ fn run(
                     &block,
                     &transfer.throw_points,
                     *handler_ordinal,
+                    budget,
                 )?
                 .into_iter()
                 .map(|input| (input.frame, Some(input.bci)))
                 .collect(),
                 CanonicalEdgeKind::Normal
                 | CanonicalEdgeKind::Call { .. }
-                | CanonicalEdgeKind::Return { .. } => vec![(transfer.exit.clone(), None)],
+                | CanonicalEdgeKind::Return { .. } => {
+                    charge_frame(budget, &transfer.exit)?;
+                    vec![(transfer.exit.clone(), None)]
+                }
             };
             let target_id = &canonical.blocks[*target].id;
             let mut records = Vec::with_capacity(contributions.len());
@@ -2924,14 +2983,14 @@ fn run(
                 });
                 match entries[*target].as_mut() {
                     None => {
-                        charge_frame(budget, &incoming)?;
+                        // The contribution was charged where it was allocated, and here its slots
+                        // move into the table: the same slots are not billed a second time.
                         entries[*target] = Some(incoming);
                         worklist.push_back(*target);
                     }
                     Some(current) => {
-                        let merged = merge_frame(current, &incoming, target_id)?;
+                        let merged = merge_frame(budget, current, &incoming, target_id)?;
                         if merged != *current {
-                            charge_frame(budget, &merged)?;
                             *current = merged;
                             worklist.push_back(*target);
                         }
@@ -2969,6 +3028,10 @@ fn run(
         let Some(frame) = state else {
             continue;
         };
+        // The block's own record and the block id it names. The entry state itself **moves** out
+        // of the table here — its slots were charged where they were derived — and so do the
+        // logical inputs, which were charged when they were recorded.
+        budget.charge(CountedBudgetDimension::IrItems, 1)?;
         blocks.push(BlockFrame {
             block: canonical.blocks[position].id.clone(),
             locals: frame.locals,
@@ -2984,14 +3047,30 @@ fn run(
     })
 }
 
-/// Charges one derived frame state, per slot, before it is stored.
-fn charge_frame(budget: &mut Budget, frame: &Frame) -> Norm<()> {
-    let slots = frame.locals.len().saturating_add(frame.stack.len());
+/// Charges a run of derived frame slots, **before** the storage they count is allocated.
+///
+/// The budget's own contract for [`CountedBudgetDimension::IrItems`] is one item per frame or
+/// local slot, charged before the allocation. This pipeline holds more of those at once than the
+/// table it finally publishes: the worklist's working copy of an entry state, the exit state kept
+/// to tell a second transfer from a changed one, the per-site snapshots a transfer holds, and the
+/// states one edge hands to its successors. Every one of them is slot storage that exists while
+/// the run is bounded by a limit, so every one of them is charged here in the statement before it
+/// is allocated, and nothing in this module is exempt for being short-lived.
+fn charge_slots(budget: &mut Budget, slots: usize) -> Norm<()> {
     budget.charge(
         CountedBudgetDimension::IrItems,
         u64::try_from(slots).unwrap_or(u64::MAX),
     )?;
     Ok(())
+}
+
+/// Charges one derived frame state the slots it holds, before it is allocated.
+///
+/// The state the charge is taken for is the one the caller is about to allocate, which is why this
+/// takes the *shape* to charge for and not a state that already exists: a merged frame has exactly
+/// the shape of the state it merges into, and a copy has exactly the shape of its source.
+fn charge_frame(budget: &mut Budget, frame: &Frame) -> Norm<()> {
+    charge_slots(budget, frame.locals.len().saturating_add(frame.stack.len()))
 }
 
 #[cfg(test)]
@@ -5066,8 +5145,10 @@ mod tests {
     }
 
     /// The pass bills the two dimensions its row declares and no other, and what it stores is what
-    /// the item charge counts: one frame slot per entered block, one per merge that changed a state,
-    /// one per logical input record, and one for the published table itself.
+    /// the item charge counts: every run of derived frame slots it allocates — the entry state, the
+    /// working copy of each visit, the exit state a transfer keeps, the state an edge hands over,
+    /// the state a merge builds — plus one item per logical input record, per published block and
+    /// for the table itself.
     #[test]
     fn the_pass_bills_exactly_its_declared_dimensions() {
         let (mut code, _) = diamond(&[], &[0x03, 0x3c], &[0x01, 0x4b]);
@@ -5092,7 +5173,25 @@ mod tests {
         assert_eq!(entered, 4);
         assert_eq!(locals, 4);
         assert_eq!(records, 4);
-        assert_eq!(usage.ir_items, entered * locals + locals + 1 + records);
+        // The run visits five blocks: the entry block, both arms, the join, and the join a second
+        // time, because the second arm's state changed the join's entry and queued it again. One of
+        // those five transfers finds the exit it already had and stops there, so four of them keep
+        // an exit state. Every one of these is an allocation of `locals` slots and every one is
+        // billed, which is what this assertion is about.
+        let visits = 5;
+        let transfers = 4;
+        let merges = 1;
+        assert_eq!(
+            usage.ir_items,
+            locals                      // the entry state
+                + visits * locals       // the working copy each visit derives its exit in
+                + transfers * locals    // the exit state each of those transfers keeps
+                + records * locals      // the state each edge hands to its successor
+                + records               // one item per logical input record
+                + merges * locals       // the state the one changing merge built
+                + entered               // one item per published block record
+                + 1 // the published table itself
+        );
         assert_eq!(usage.ir_edges, 0, "this pass builds no edge of its own");
         assert!(usage.analysis_steps > 0, "the worklist ran");
         assert_eq!(

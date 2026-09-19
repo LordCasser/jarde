@@ -653,6 +653,10 @@ fn entry_classes(state: &BlockFrame, budget: &mut Budget) -> Norm<BTreeMap<Slot,
 }
 
 /// The throw site of one replayed instruction, with the local slots its handlers read.
+///
+/// Charges one `IrItems` per slot the record keeps, **before** the set holds it, and only for a
+/// slot it does not hold yet: the entry value of a slot reached along two handlers is one slot of
+/// this record, and counting it twice would charge for storage that does not exist.
 fn site_flow(
     canonical: &CanonicalCfg,
     entry_values: &BTreeMap<CanonicalBlockId, BTreeMap<Slot, Value>>,
@@ -677,17 +681,15 @@ fn site_flow(
                 continue;
             }
             if let Some(values) = entry_values.get(&edge.to) {
-                slots.extend(
-                    values
-                        .keys()
-                        .filter(|slot| matches!(slot, Slot::Local(_)))
-                        .copied(),
-                );
+                for slot in values.keys().filter(|slot| matches!(slot, Slot::Local(_))) {
+                    if slots.contains(slot) {
+                        continue;
+                    }
+                    budget.charge(CountedBudgetDimension::IrItems, 1)?;
+                    slots.insert(*slot);
+                }
             }
         }
-    }
-    for _ in &slots {
-        budget.charge(CountedBudgetDimension::IrItems, 1)?;
     }
     Ok(Some(SiteFlow {
         handler_ordinals: site.handlers.clone(),
@@ -1680,10 +1682,24 @@ impl Assigner {
     }
 
     /// Assembles the published table.
+    ///
+    /// Charges, per block and before the storage is allocated: one item for the block record, one
+    /// per slot the entry state starts a value in, one per slot of the exit state, and one per
+    /// element of the instruction copies — the record itself and each of its read and write
+    /// records — and one per phi record and per operand of it. The shadow state of the walk and
+    /// the published table are both alive while the copies are built, so the copies are storage of
+    /// their own and are charged like the records they are copied from. What *moves* — the values
+    /// and the canonical effect facts — is not charged again.
     fn publish(self, budget: &mut Budget) -> Norm<SsaTable> {
         let mut blocks = Vec::with_capacity(self.blocks.len());
         for state in &self.blocks {
             budget.charge(CountedBudgetDimension::IrItems, 1)?;
+            // One published entry record per slot resolution, charged before the vector that
+            // holds them is collected.
+            budget.charge(
+                CountedBudgetDimension::IrItems,
+                u64::try_from(state.slots.len()).unwrap_or(u64::MAX),
+            )?;
             let entry: Vec<(Slot, ValueId)> = state
                 .slots
                 .iter()
@@ -1695,6 +1711,11 @@ impl Assigner {
                     (*slot, self.target(value))
                 })
                 .collect();
+            // The exit copy's slots are charged before it is cloned, not after it is sorted.
+            budget.charge(
+                CountedBudgetDimension::IrItems,
+                u64::try_from(state.exit.as_ref().map_or(0, BTreeMap::len)).unwrap_or(u64::MAX),
+            )?;
             let mut exit: Vec<(Slot, ValueId)> = state
                 .exit
                 .clone()
@@ -1703,10 +1724,19 @@ impl Assigner {
                 .map(|(slot, value)| (slot, self.target(value)))
                 .collect();
             exit.sort();
-            budget.charge(
-                CountedBudgetDimension::IrItems,
-                u64::try_from(exit.len()).unwrap_or(u64::MAX),
-            )?;
+            // One item per published instruction record and per read and write record it holds,
+            // charged before the copies are made.
+            for instruction in &state.instructions {
+                let held = instruction
+                    .reads
+                    .len()
+                    .saturating_add(instruction.writes.len())
+                    .saturating_add(1);
+                budget.charge(
+                    CountedBudgetDimension::IrItems,
+                    u64::try_from(held).unwrap_or(u64::MAX),
+                )?;
+            }
             let instructions = state
                 .instructions
                 .iter()
@@ -1727,6 +1757,13 @@ impl Assigner {
                 exit,
                 instructions,
             });
+        }
+        // One item per published phi record and per operand it carries, charged before the copies.
+        for phi in &self.phis {
+            budget.charge(
+                CountedBudgetDimension::IrItems,
+                u64::try_from(phi.inputs.len().saturating_add(1)).unwrap_or(u64::MAX),
+            )?;
         }
         let phis = self
             .phis
@@ -1816,7 +1853,7 @@ mod tests {
     use crate::canonical::{CanonicalOutcome, canonical_cfg};
     use crate::cfg::{CfgCompleteness, raw_cfg};
     use crate::frame::{FrameOutcome, RefType, frames};
-    use jarde_reader::budget::Limits;
+    use jarde_reader::budget::{BudgetDimension, Limits};
     use jarde_reader::classfile::{
         CpEntryFacts, class_facts, method_code_facts, test_class::single_method,
     };
@@ -1854,6 +1891,13 @@ mod tests {
 
     fn budget() -> Budget {
         Budget::new(limits())
+    }
+
+    /// The same limits with the item dimension replaced, for the accounting cases below.
+    fn budget_with_items(items: u64) -> Budget {
+        let mut limits = limits();
+        limits.ir_items = items;
+        Budget::new(limits)
     }
 
     fn method_id() -> PhysicalMethodId {
@@ -2112,6 +2156,101 @@ mod tests {
             table.blocks().len(),
             body.frames.blocks().len(),
             "every block the frames hold is named"
+        );
+    }
+
+    /// The published table is a copy of the shadow state, and the item charge counts it: one run
+    /// bills the walk **and** what it publishes.
+    ///
+    /// The two prices are told apart without a second implementation of the walk: one run publishes
+    /// and one stops just before the publication, and the difference between their bills is
+    /// compared with the price of the copies computed from the table the first one published — one
+    /// item per block record, per entry and exit record, per instruction record together with its
+    /// read and write records, and per phi record together with its operands. A copy made without
+    /// charging for it shortens that difference. The same claim is then stated as the observable
+    /// stop: a request allowed exactly the walk's price must not publish.
+    #[test]
+    fn the_published_table_is_billed_by_the_copies_it_makes() {
+        // 0 iconst_0, 1 ifeq -> 8, 4 iconst_1, 5 goto -> 9, 8 iconst_2, 9 istore_0, 10 return.
+        let code = [
+            0x03, // 0: iconst_0
+            0x99, 0x00, 0x07, // 1: ifeq 8
+            0x04, // 4: iconst_1
+            0xa7, 0x00, 0x04, // 5: goto 9
+            0x05, // 8: iconst_2
+            0x3b, // 9: istore_0
+            0xb1, // 10: return
+        ];
+        let (body, _) = body_of_code(&code, 1);
+        let loader = LoaderId("app".to_string());
+        let method = method_view(&body.pool, &loader);
+        let mut ample = budget();
+        let table = match ssa(
+            &body.facts,
+            &body.canonical,
+            &body.frames,
+            &method,
+            &mut ample,
+        )
+        .expect("the budget is ample")
+        {
+            SsaOutcome::Ssa(table) => *table,
+            SsaOutcome::Inconsistent { message } => panic!("a diamond names: {message}"),
+        };
+        let total = ample.usage().ir_items;
+        let copies = std::iter::once(u64::try_from(table.blocks().len()).expect("a small fixture"))
+            .chain(table.blocks().iter().map(|block| {
+                let mut items =
+                    u64::try_from(block.entry.len() + block.exit.len()).expect("a small fixture");
+                for instruction in &block.instructions {
+                    items += u64::try_from(1 + instruction.reads.len() + instruction.writes.len())
+                        .expect("a small fixture");
+                }
+                items
+            }))
+            .chain(
+                table
+                    .phis()
+                    .iter()
+                    .map(|phi| u64::try_from(1 + phi.inputs.len()).expect("a small fixture")),
+            )
+            .sum::<u64>();
+        assert!(
+            copies > 0 && copies < total,
+            "this fixture really publishes something the walk is billed apart from: {copies} of \
+             {total}"
+        );
+
+        // The walk alone fits exactly under this limit; the first published record does not.
+        let walk = total - copies;
+        let mut stopped = budget_with_items(walk);
+        let outcome = ssa(
+            &body.facts,
+            &body.canonical,
+            &body.frames,
+            &method,
+            &mut stopped,
+        );
+        match outcome {
+            Err(error) => assert!(
+                matches!(
+                    error,
+                    Error::BudgetExceeded {
+                        dimension: BudgetDimension::IrItems,
+                        ..
+                    }
+                ),
+                "the copy is what ran into the limit: {error:?}"
+            ),
+            Ok(_) => panic!(
+                "a run that cannot afford its own publication must not publish: the walk costs \
+                 {walk} and the run was allowed exactly that"
+            ),
+        }
+        assert_eq!(
+            stopped.usage().ir_items,
+            walk,
+            "the charges that fit are the walk's own"
         );
     }
 
