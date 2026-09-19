@@ -110,6 +110,14 @@ impl Plan {
         self.owned.contains(&bci)
     }
 
+    /// Every BCI the verified chains own.
+    ///
+    /// A shape decided after this one reserves these: the allocation a verified chain builds is
+    /// written inside the `+` expression, and one instruction is never two shapes (P3 2.3).
+    pub(crate) fn owned(&self) -> &BTreeSet<u32> {
+        &self.owned
+    }
+
     /// The chain whose value the instruction at one BCI produces, when one does.
     pub(crate) fn value_at(&self, bci: u32) -> Option<&Chain> {
         self.chains.get(&bci)

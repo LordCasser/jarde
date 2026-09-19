@@ -41,14 +41,19 @@ use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{BootstrapMethodFacts, CpEntryFacts};
 
 use crate::accessor::{self, AccessorRecord, AccessorShape};
-use crate::ast::{BinaryOp, Expr, ExprKind, LambdaParam, Stmt, StmtKind, SwitchArm, Type};
+use crate::ast::{
+    BinaryOp, ConstructorTarget, Expr, ExprKind, LambdaParam, Stmt, StmtKind, SwitchArm, Type,
+};
 use crate::bridge;
 use crate::concat;
 use crate::decode::Operations;
+use crate::enumswitch;
 use crate::facts::{
     ArithmeticOp, CallTarget, ClassMembers, CompareOp, ConstantValue, DynamicSite, InvokeKind,
     Operation,
 };
+use crate::field;
+use crate::init;
 use crate::lambda::{self, LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal, Reach, Refusal};
 use crate::names::NameTable;
 use crate::pass::{LAMBDA, Precondition, RecoveryProfile};
@@ -111,6 +116,15 @@ pub(crate) struct Inputs<'a> {
     /// The verdict of the `bridge@1` rule for this very body, when the member is declared a bridge
     /// or its body is the forward a bridge is written as.
     pub(crate) bridge: Option<&'a bridge::Plan>,
+    /// The construction sites of this body, with the shape's own declaration of which instructions
+    /// they own (P3 2.3, `new@1`).
+    pub(crate) sites: &'a init::Sites,
+    /// The constructor prologue of this body, when it is an instance initializer (P3 2.3, `init@1`).
+    pub(crate) prologues: &'a init::Prologues,
+    /// The field accesses this body's instructions were verified to be (P3 2.3, `field@1`).
+    pub(crate) fields: &'a field::Plan,
+    /// The dispatch-table reads this body performs (P3 2.3, `enumswitch@1`).
+    pub(crate) enums: &'a enumswitch::Plan,
 }
 
 /// Builds the statements of one method from its regions.
@@ -141,6 +155,10 @@ pub(crate) fn build(
         chains: inputs.chains,
         members: inputs.members,
         bridge: inputs.bridge,
+        sites: inputs.sites,
+        prologues: inputs.prologues,
+        fields: inputs.fields,
+        enums: inputs.enums,
         instructions,
         budget,
         declared: BTreeSet::new(),
@@ -150,6 +168,7 @@ pub(crate) fn build(
         lambdas: Vec::new(),
         lambda_params: BTreeSet::new(),
         accessors: Vec::new(),
+        deferred: Vec::new(),
     };
     for region in regions {
         builder.region(region)?;
@@ -184,6 +203,14 @@ struct Builder<'a> {
     members: Option<&'a ClassMembers>,
     /// The `bridge@1` rule's verdict for this body, when it has one (P3 2.2).
     bridge: Option<&'a bridge::Plan>,
+    /// The construction sites this body builds (P3 2.3).
+    sites: &'a init::Sites,
+    /// The prologue of this body, when the body is an instance initializer (P3 2.3).
+    prologues: &'a init::Prologues,
+    /// The field accesses this body's instructions were verified to be (P3 2.3).
+    fields: &'a field::Plan,
+    /// The dispatch-table reads this body performs (P3 2.3).
+    enums: &'a enumswitch::Plan,
     instructions: BTreeMap<u32, &'a SsaInstruction>,
     budget: &'a mut Budget,
     declared: BTreeSet<u16>,
@@ -197,6 +224,10 @@ struct Builder<'a> {
     lambda_params: BTreeSet<String>,
     /// Every synthetic accessor call site this build read, in the order it reached them.
     accessors: Vec<AccessorRecord>,
+    /// The values one instruction's statement was deferred to a reader for, with the BCI of the
+    /// instruction that produced them: what a quote has to name when the reader turns out not to
+    /// write them after all (P3 2.3 §0).
+    deferred: Vec<(ValueId, u32)>,
 }
 
 impl Builder<'_> {
@@ -228,7 +259,8 @@ impl Builder<'_> {
                 let cond = match self.test_expr(*branch_bci, false) {
                     Ok(cond) => cond,
                     Err(reason) => {
-                        return self.fallback(vec![*branch_bci], &reason, *branch_bci);
+                        let bcis = self.region_quote(region, *branch_bci);
+                        return self.fallback(bcis, &reason, *branch_bci);
                     }
                 };
                 // The condition's text is tested *by* the branch: the `if` statement is the branch,
@@ -262,15 +294,17 @@ impl Builder<'_> {
                 // before the switch in the bytecode too.
                 self.test_effects(branch, *branch_bci)?;
                 let Some(instruction) = self.instructions.get(branch_bci).copied() else {
+                    let bcis = self.region_quote(region, *branch_bci);
                     return self.fallback(
-                        vec![*branch_bci],
+                        bcis,
                         &format!("no names record for the switch at BCI {branch_bci}"),
                         *branch_bci,
                     );
                 };
                 let Some((_, value)) = stack_operands(instruction).last().copied() else {
+                    let bcis = self.region_quote(region, *branch_bci);
                     return self.fallback(
-                        vec![*branch_bci],
+                        bcis,
                         &format!("the switch at BCI {branch_bci} reads no value to select on"),
                         *branch_bci,
                     );
@@ -280,7 +314,10 @@ impl Builder<'_> {
                 // presented anchor, exactly like a branch's condition.
                 let value = match self.render_value(value, *branch_bci, 0) {
                     Ok(value) => value.derived_from(*branch_bci),
-                    Err(reason) => return self.fallback(vec![*branch_bci], &reason, *branch_bci),
+                    Err(reason) => {
+                        let bcis = self.region_quote(region, *branch_bci);
+                        return self.fallback(bcis, &reason, *branch_bci);
+                    }
                 };
                 let mut arms = Vec::with_capacity(groups.len());
                 for group in groups {
@@ -312,7 +349,8 @@ impl Builder<'_> {
                 let cond = match self.test_expr(*test_bci, taken) {
                     Ok(cond) => cond,
                     Err(reason) => {
-                        return self.fallback(vec![*test_bci], &reason, *test_bci);
+                        let bcis = self.region_quote(region, *test_bci);
+                        return self.fallback(bcis, &reason, *test_bci);
                     }
                 };
                 let cond = cond.derived_from(*test_bci);
@@ -419,10 +457,11 @@ impl Builder<'_> {
     fn instruction(&mut self, instruction: &SsaInstruction) -> Result<(), StopReason> {
         poll(self.budget, Some(instruction.bci()))?;
         let at = instruction.bci();
-        // An instruction a verified concatenation chain owns produces no statement of its own: the
-        // text it would have written is written *inside* the expression that chain became, and
-        // skipping it here is exactly what keeps an operand from being evaluated twice (P3 2.2).
-        if self.chains.owns(at) {
+        // An instruction a verified concatenation chain or a verified construction site owns
+        // produces no statement of its own: the text it would have written is written *inside* the
+        // expression that shape became, and skipping it here is exactly what keeps an operand from
+        // being evaluated twice (P3 2.2/2.3).
+        if self.chains.owns(at) || self.sites.owns(at) {
             return Ok(());
         }
         let write = instruction
@@ -462,7 +501,10 @@ impl Builder<'_> {
                 };
                 let value = match self.render_value(value, at, 0) {
                     Ok(value) => value,
-                    Err(reason) => return self.fallback(vec![at], &reason, at),
+                    Err(reason) => {
+                        let bcis = self.quoted_bcis(at);
+                        return self.fallback(bcis, &reason, at);
+                    }
                 };
                 match self.declare(slot, written, at)? {
                     Some(ty) => self.push(Stmt::new(
@@ -483,6 +525,25 @@ impl Builder<'_> {
                 }
             }
             Some(Operation::Invoke(target)) => {
+                // The call an instance initializer makes on its own uninitialized `this` is the
+                // first thing a constructor does and is written as `super(…)` or `this(…)` — which
+                // of the two is `init@1`'s verdict, read from the frames' token and the class the
+                // caller stated (P3 2.3).
+                if let Some(target_kind) = self.prologues.at(at).map(|prologue| prologue.target) {
+                    return self.constructor_call(at, instruction, target_kind);
+                }
+                // A prologue the rule could not spell is quoted — the instruction itself, with the
+                // requirement it fell short of. Writing it as an ordinary call would put a member
+                // named `<init>` into the text and, worse, an assignment to the receiver the SSA
+                // says the call converted: neither is a program.
+                if let Some(reason) = self
+                    .prologues
+                    .refused_at(at)
+                    .map(|refusal| refusal.message().to_string())
+                {
+                    let bcis = self.quoted_bcis(at);
+                    return self.fallback(bcis, &reason, at);
+                }
                 // A synthetic accessor's call site is a direct field access, or it is not: the
                 // verdict is `accessor@1`'s, and it is taken here so that a *presented* accessor
                 // becomes the field access the source had — and a refused one keeps the call it had,
@@ -531,11 +592,23 @@ impl Builder<'_> {
                 // that instruction is where it is written ([`Self::value_is_consumed`] answers that
                 // question for the site's own arm).
                 if write.is_none() && self.call_value_reaches_a_reader(instruction) {
+                    // The statement is deferred to the reader that will write the value. Which
+                    // invocation was deferred is remembered with the value it produced, so that a
+                    // reader that cannot write after all still has the invocation quoted rather
+                    // than lost (P3 2.3 §0).
+                    for (slot, value) in instruction.writes() {
+                        if matches!(slot, Slot::Stack(_)) {
+                            self.deferred.push((*value, at));
+                        }
+                    }
                     return Ok(());
                 }
                 let call = match self.call_expr(at, instruction, target) {
                     Ok(call) => call,
-                    Err(reason) => return self.fallback(vec![at], &reason, at),
+                    Err(reason) => {
+                        let bcis = self.quoted_bcis(at);
+                        return self.fallback(bcis, &reason, at);
+                    }
                 };                let Some((slot, written)) = write else {
                     // No local slot takes the result: the call is a statement of its own.
                     return self.push(Stmt::new(
@@ -572,7 +645,10 @@ impl Builder<'_> {
                 let value = match stack_operands(instruction).last().copied() {
                     Some((_, value)) => match self.render_value(value, at, 0) {
                         Ok(value) => Some(value),
-                        Err(reason) => return self.fallback(vec![at], &reason, at),
+                        Err(reason) => {
+                            let bcis = self.quoted_bcis(at);
+                            return self.fallback(bcis, &reason, at);
+                        }
                     },
                     None => None,
                 };
@@ -652,18 +728,53 @@ impl Builder<'_> {
             // A cast is presented only where a rule proved it is the erasure of the value it casts
             // (`bridge@1`, P3 2.2): every other cast is a check that can fail, and it is quoted.
             Some(Operation::CheckCast { .. }) if self.bridge_owns(at) => Ok(()),
-            // An allocation, a copy, a field access or an unproven cast belongs to no verified shape
-            // of this body: each is a *stated* gap, quoted with its own BCI rather than presented
-            // from half a proof.
+            // A field instruction is a field access exactly where `field@1` proved which member it
+            // names (P3 2.3). A claimed **write** is a statement of its own — `receiver.f = value`,
+            // written where the instruction runs, which is what keeps a constructor's initializer
+            // sequence in the order its bytes have it. A claimed **read** is a value: its text lands
+            // where the value is consumed, so nothing is written here.
+            Some(Operation::Field { .. }) => {
+                let fields = self.fields;
+                let Some((evidence, shape)) = fields.claim(at) else {
+                    return self.fallback(
+                        self.quoted_bcis(at),
+                        &format!(
+                            "the field access at BCI {at} is not one this run proved names the member its own receiver's type declares, and a field instruction is presented only where the member it names is proven"
+                        ),
+                        at,
+                    );
+                };
+                if shape.writes() {
+                    return self.field_write(at, evidence, shape);
+                }
+                Ok(())
+            }
+            // The dispatch-table read of an enum `switch` (P3 2.3): `enumswitch@1` claims the read,
+            // and its text is written where the switch's selector is written.
+            Some(Operation::ArrayLoad) => {
+                if self.enums.owns(at) {
+                    Ok(())
+                } else {
+                    self.fallback(
+                        self.quoted_bcis(at),
+                        &format!(
+                            "the array read at BCI {at} is not the dispatch-table shape this run verified: an `int[]` read is presented only where a rule proved which table and which index it reads"
+                        ),
+                        at,
+                    )
+                }
+            }
+            // An allocation, a copy or an unproven cast belongs to no verified shape of this body:
+            // each is a *stated* gap, quoted with its own BCI rather than presented from half a
+            // proof.
             Some(
                 Operation::Allocate { .. }
                 | Operation::Duplicate
-                | Operation::Field { .. }
                 | Operation::CheckCast { .. },
             ) => self.fallback(
-                vec![at],
+                self.quoted_bcis(at),
                 &format!(
-                    "the instruction at BCI {at} belongs to no shape this run verified: an allocation, a copy, a field access or a cast is presented only where a rule proved what it builds"
+                    "the instruction at BCI {at} belongs to no shape this run verified: an allocation, a copy or a cast is presented only where a rule proved what it builds"
                 ),
                 at,
             ),
@@ -729,6 +840,12 @@ impl Builder<'_> {
             },
             Definition::Instruction { bci, .. } => {
                 let bci = *bci;
+                // The instance a verified construction site builds: the value a store, a call or a
+                // `return` reads *is* the `new` expression, written here and nowhere else (P3 2.3).
+                let sites = self.sites;
+                if let Some(site) = sites.site_of(bci) {
+                    return self.new_expr(site, at, depth);
+                }
                 let Some(operation) = self.operations.get(bci) else {
                     return Err(format!(
                         "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
@@ -809,6 +926,63 @@ impl Builder<'_> {
                         };
                         // A value is being rendered *because* something consumes it.
                         self.lambda_expr(bci, instruction, site, true)
+                    }
+                    // A field read `field@1` proved is `receiver.f` — or `Type.f` for a static field,
+                    // whose receiver is the owner type itself. The member's owner and name are the
+                    // instruction's own pool facts; nothing is spelled from a guess (P3 2.3).
+                    Operation::Field { .. } => {
+                        let fields = self.fields;
+                        let Some((evidence, shape)) = fields.claim(bci) else {
+                            return Err(format!(
+                                "the value at BCI {at} comes from the field access at BCI {bci}, which this run did not prove names the member its receiver's type declares"
+                            ));
+                        };
+                        let receiver = match shape.receiver {
+                            Some(value) => self.render_value(value, bci, depth + 1)?,
+                            None => {
+                                Expr::direct(ExprKind::Path(spell_reference(&evidence.owner)), bci)
+                            }
+                        };
+                        Ok(Expr::new(
+                            ExprKind::Field {
+                                receiver: Box::new(receiver),
+                                name: evidence.name.clone(),
+                            },
+                            OriginSet::new(Origin::direct(bci)),
+                        ))
+                    }
+                    // The dispatch-table read of an enum `switch`: the table, indexed by the call
+                    // the switch reads its case index out of (P3 2.3). Both operands keep their own
+                    // anchors, and the read carries the table's and the call's BCIs as derived ones.
+                    Operation::ArrayLoad => {
+                        let enums = self.enums;
+                        let Some((table, index)) = enums.claim(bci) else {
+                            return Err(format!(
+                                "the value at BCI {at} comes from the array read at BCI {bci}, which this run did not prove is a dispatch-table read"
+                            ));
+                        };
+                        let Some(instruction) = self.instructions.get(&bci).copied() else {
+                            return Err(format!("no names record for the array read at BCI {bci}"));
+                        };
+                        let operands = stack_operands(instruction);
+                        if operands.len() != 2 {
+                            return Err(format!(
+                                "the array read at BCI {bci} reads {} value(s), not the table and the index",
+                                operands.len()
+                            ));
+                        }
+                        let array = self.render_value(operands[0].1, bci, depth + 1)?;
+                        let selector = self.render_value(operands[1].1, bci, depth + 1)?;
+                        let origin = OriginSet::new(Origin::direct(bci))
+                            .plus_derived(Origin::derived(table.bci))
+                            .plus_derived(Origin::derived(index.bci));
+                        Ok(Expr::new(
+                            ExprKind::Index {
+                                array: Box::new(array),
+                                index: Box::new(selector),
+                            },
+                            origin,
+                        ))
                     }
                     other => Err(format!(
                         "the value at BCI {at} comes from an {other:?} at BCI {bci}, which produces no expression this subset writes"
@@ -985,13 +1159,127 @@ impl Builder<'_> {
         self.bridge.is_some_and(|plan| plan.owns(bci))
     }
 
-    /// Whether the value a call produced is read by an instruction this build renders it for.
+    /// Renders one verified construction site as the `new` expression it stands for (P3 2.3).
+    ///
+    /// The arguments are written in the order the constructor call reads them — each an expression of
+    /// its own, anchored where *it* was produced — and every BCI the site owns stays in the segment
+    /// table as an anchor: one construction reaches several original instructions, and the table says
+    /// so rather than keeping one of them.
+    fn new_expr(&mut self, site: &init::Site, at: u32, depth: usize) -> Result<Expr, String> {
+        let Some(instruction) = self.instructions.get(&site.constructor).copied() else {
+            return Err(format!(
+                "no names record for the constructor call at BCI {} of the construction the value at BCI {at} comes from",
+                site.constructor
+            ));
+        };
+        let mut args = Vec::new();
+        for (_, value) in stack_operands(instruction).iter().skip(1) {
+            args.push(self.render_value(*value, site.constructor, depth + 1)?);
+        }
+        let origin = site
+            .owned
+            .iter()
+            .filter(|bci| **bci != site.constructor)
+            .fold(
+                OriginSet::new(Origin::direct(site.constructor)),
+                |set, bci| set.plus_derived(Origin::derived(*bci)),
+            );
+        Ok(Expr::new(
+            ExprKind::New {
+                ty: spell_reference(&site.class),
+                args,
+            },
+            origin,
+        ))
+    }
+
+    /// Writes the call an instance initializer makes on its own uninitialized `this` (P3 2.3).
+    ///
+    /// The receiver is deliberately not rendered: it *is* what `super` and `this` name, and the value
+    /// it holds is the frames' own `UninitializedThis` token rather than any expression. The arguments
+    /// are written where the call is, in the order it reads them.
+    fn constructor_call(
+        &mut self,
+        at: u32,
+        instruction: &SsaInstruction,
+        target: ConstructorTarget,
+    ) -> Result<(), StopReason> {
+        let mut args = Vec::new();
+        for (_, value) in stack_operands(instruction).iter().skip(1) {
+            match self.render_value(*value, at, 0) {
+                Ok(arg) => args.push(arg),
+                Err(reason) => {
+                    let bcis = self.quoted_bcis(at);
+                    return self.fallback(bcis, &reason, at);
+                }
+            }
+        }
+        self.push(Stmt::new(
+            StmtKind::ConstructorCall { target, args },
+            OriginSet::new(Origin::direct(at)),
+        ))
+    }
+
+    /// Writes one verified field write as the assignment it performs (P3 2.3).
+    ///
+    /// The receiver is the instance the instruction read — or, for a static field, the owner type,
+    /// which is how a static write is spelled. Nothing is moved: the statement is written where the
+    /// instruction runs, which is what keeps a constructor's initializer sequence in the order its
+    /// own bytes have it.
+    fn field_write(
+        &mut self,
+        at: u32,
+        evidence: &field::Evidence,
+        shape: &field::Shape,
+    ) -> Result<(), StopReason> {
+        let receiver = match shape.receiver {
+            Some(value) => match self.render_value(value, at, 0) {
+                Ok(receiver) => receiver,
+                Err(reason) => {
+                    let bcis = self.quoted_bcis(at);
+                    return self.fallback(bcis, &reason, at);
+                }
+            },
+            None => Expr::direct(ExprKind::Path(spell_reference(&evidence.owner)), at),
+        };
+        let Some(value) = shape.value else {
+            return self.fallback(
+                self.quoted_bcis(at),
+                &format!("the field write at BCI {at} reads no value to store"),
+                at,
+            );
+        };
+        let value = match self.render_value(value, at, 0) {
+            Ok(value) => value,
+            Err(reason) => {
+                let bcis = self.quoted_bcis(at);
+                return self.fallback(bcis, &reason, at);
+            }
+        };
+        self.push(Stmt::new(
+            StmtKind::FieldAssign {
+                receiver,
+                name: evidence.name.clone(),
+                value,
+            },
+            OriginSet::new(Origin::direct(at)),
+        ))
+    }
+
+    /// Whether the value a call produced is read by an instruction this build **writes it into**.
     ///
     /// This is the question the call arm asks before it writes a statement of its own, and it is
     /// deliberately narrower than [`Self::value_is_consumed`]: a **dynamic site** is not a reader
     /// here, because a site that is refused writes the site's own BCIs and not the invocation that
     /// produced the value it captured — so the instruction that produced that value is the only
     /// place left where the invocation can be written.
+    ///
+    /// The reader must be one this build **writes the value into**, which is what
+    /// [`Self::renders_the_value_it_reads`] decides. Treating an instruction that is quoted instead
+    /// of presented as a reader loses the invocation altogether — the call writes nothing because
+    /// "something reads it", and the reader writes nothing because it is quoted bytecode. That is
+    /// the shape P3 2.3 §0 measured before this guard existed: an effect silently dropped, which is
+    /// worse than one written twice, because nothing in the artifact says it happened.
     fn call_value_reaches_a_reader(&self, instruction: &SsaInstruction) -> bool {
         instruction
             .writes()
@@ -1002,22 +1290,120 @@ impl Builder<'_> {
                 self.ssa.blocks().iter().any(|block| {
                     block.instructions().iter().any(|reader| {
                         reader.reads().iter().any(|(_, read)| *read == value)
-                            && matches!(
-                                self.operations.get(reader.bci()),
-                                Some(
-                                    Operation::Store { .. }
-                                        | Operation::Invoke(_)
-                                        | Operation::Return
-                                        | Operation::Comparison { .. }
-                                        | Operation::Switch { .. }
-                                        | Operation::Arithmetic { .. }
-                                        | Operation::Field { .. }
-                                        | Operation::CheckCast { .. }
-                                )
-                            )
+                            && self.renders_the_value_it_reads(reader.bci())
                     })
                 })
             })
+    }
+
+    /// Whether the instruction at one BCI writes the values it reads into the text this build
+    /// produces.
+    ///
+    /// Every operation that is *presented* renders its operands as part of what it becomes — a
+    /// store's initialiser, a call's receiver and arguments, a `return`'s value, a condition, a
+    /// switch's selector, an arithmetic — and every operation that is *quoted* writes no value at
+    /// all. Which of the two an instruction is, is a fact about what the rules of this build claim:
+    /// a `checkcast` is rendered only where `bridge@1` proved it is an erasure, a field access only
+    /// where the `field@1` rule claimed it, an array read only where `enumswitch@1` claimed it.
+    /// Everything else is a stated gap, and a value whose only reader is a stated gap has no place
+    /// in the body: the instruction that produced it must write it itself.
+    fn renders_the_value_it_reads(&self, bci: u32) -> bool {
+        match self.operations.get(bci) {
+            Some(
+                Operation::Store { .. }
+                | Operation::Invoke(_)
+                | Operation::Return
+                | Operation::Comparison { .. }
+                | Operation::Switch { .. }
+                | Operation::Arithmetic { .. },
+            ) => true,
+            Some(Operation::CheckCast { .. }) => self.bridge_owns(bci),
+            // A field access and an array read are readers exactly where their own rules claimed
+            // them (P3 2.3): a claimed access renders the value it reads into its text, and one no
+            // rule claimed is quoted and writes nothing.
+            Some(Operation::Field { .. }) => self.fields.owns(bci),
+            Some(Operation::ArrayLoad) => self.enums.owns(bci),
+            _ => false,
+        }
+    }
+
+    /// The BCIs to quote for one instruction this build could not write: the instruction itself, and
+    /// every invocation whose own statement was deferred to a reader that did not end up writing the
+    /// value it read (P3 2.3 §0).
+    fn quoted_bcis(&self, at: u32) -> Vec<u32> {
+        let mut bcis = vec![at];
+        if let Some(instruction) = self.instructions.get(&at).copied() {
+            for (_, value) in stack_operands(instruction) {
+                self.deferred_producers(value, &mut bcis, 0);
+            }
+        }
+        bcis
+    }
+
+    /// The BCIs of the invocations behind one value that no statement wrote.
+    ///
+    /// A call whose value reaches a reader writes no statement of its own
+    /// ([`Self::call_value_reaches_a_reader`]), and the reader *usually* writes the value: that is
+    /// the whole reason for deferring. When the reader turns out not to be able to — its own
+    /// operands may still be bytecode this layer cannot present — the invocation has no place in the
+    /// artifact unless a quote names it, which is what this walk collects: through producers this
+    /// build did present, the deferred producers of the values they read. A producer that is a
+    /// deferred invocation is quoted and the walk stops there: the invocation itself is the effect,
+    /// and its operands' statements are their own instructions' business.
+    fn deferred_producers(&self, value: ValueId, into: &mut Vec<u32>, depth: usize) {
+        if depth > MAX_VALUE_DEPTH {
+            return;
+        }
+        let Definition::Instruction { bci, .. } = self.ssa.value(value).def() else {
+            return;
+        };
+        let bci = *bci;
+        if let Some((_, deferred)) = self
+            .deferred
+            .iter()
+            .find(|(deferred_value, _)| *deferred_value == value)
+        {
+            if !into.contains(deferred) {
+                into.push(*deferred);
+            }
+            return;
+        }
+        if let Some(instruction) = self.instructions.get(&bci).copied() {
+            for (_, operand) in stack_operands(instruction) {
+                self.deferred_producers(operand, into, depth + 1);
+            }
+        }
+    }
+
+    /// Every BCI one region covers, in method order: the bytecode a quote for that region has to
+    /// name.
+    ///
+    /// A region the walk refuses *after* its condition could not be read still covers its arms'
+    /// blocks, and those instructions produce no statements of their own — so a quote that named only
+    /// the branch would lose them exactly as a refused reader loses a call (P3 2.3 §0). The quote
+    /// names every instruction the region would have presented.
+    fn region_bcis(&self, region: &Region) -> Vec<u32> {
+        let mut bcis: Vec<u32> = Vec::new();
+        for block in region.blocks() {
+            for bci in self.covered_bcis(block) {
+                if !bcis.contains(&bci) {
+                    bcis.push(bci);
+                }
+            }
+        }
+        bcis
+    }
+
+    /// The quote for one region whose test this build could not read: every BCI the region covers,
+    /// and the invocations deferred to a reader inside it that did not end up writing them.
+    fn region_quote(&self, region: &Region, test_bci: u32) -> Vec<u32> {
+        let mut bcis = self.region_bcis(region);
+        for extra in self.quoted_bcis(test_bci) {
+            if !bcis.contains(&extra) {
+                bcis.push(extra);
+            }
+        }
+        bcis
     }
 
     /// Renders one verified concatenation chain as the `+` expression it stands for.
@@ -1387,20 +1773,15 @@ impl Builder<'_> {
         self.ssa.blocks().iter().any(|block| {
             block.instructions().iter().any(|instruction| {
                 instruction.reads().iter().any(|(_, read)| *read == value)
-                    && matches!(
-                        self.operations.get(instruction.bci()),
-                        Some(
-                            Operation::Store { .. }
-                                | Operation::Invoke(_)
-                                | Operation::InvokeDynamic(_)
-                                | Operation::Return
-                                | Operation::Comparison { .. }
-                                | Operation::Switch { .. }
-                                | Operation::Arithmetic { .. }
-                                | Operation::Field { .. }
-                                | Operation::CheckCast { .. }
-                        )
-                    )
+                    && (self.renders_the_value_it_reads(instruction.bci())
+                        // A dynamic site reads its captured values, but it writes the site's own
+                        // BCIs rather than a rendering of the instruction that produced one of them
+                        // — which is why it is not a reader in [`Self::call_value_reaches_a_reader`]
+                        // and is one here, where the question is about the *site's* value.
+                        || matches!(
+                            self.operations.get(instruction.bci()),
+                            Some(Operation::InvokeDynamic(_))
+                        ))
             })
         })
     }
@@ -1644,7 +2025,11 @@ fn value_type(value: &Value) -> Option<Type> {
 }
 
 /// One reference type as the frames state it, spelled as Java source.
-fn spell_reference(descriptor: &str) -> String {
+///
+/// Published to the crate because three rules write a type name from a pool fact — a construction's
+/// class, a static field's owner, a declaration's class — and a second spelling of "internal form to
+/// source form" is exactly the kind of duplicate that drifts.
+pub(crate) fn spell_reference(descriptor: &str) -> String {
     let internal = descriptor
         .strip_prefix('L')
         .and_then(|rest| rest.strip_suffix(';'))

@@ -23,6 +23,8 @@
 //! its own text came from. Keeping the anchors on the node also means a consumer never has to pair
 //! a tree walk with a parallel table by position — the association cannot go out of step.
 
+use serde::Serialize;
+
 use crate::source_map::OriginSet;
 
 /// A Java type, as this subset writes it: the primitives whose frames the IR can state, plus a
@@ -142,20 +144,54 @@ pub enum ExprKind {
     },
     /// `Qualifier::name` — a method reference, with the qualifier a type or an expression.
     MethodReference { qualifier: Box<Expr>, name: String },
-    /// `receiver.name` — one field of an instance, written where a synthetic accessor's call was.
+    /// `receiver.name` — one field of an instance, or `Type.name` for a static field with the type
+    /// as the receiver — written where a rule proved which member the instruction names.
     ///
-    /// This node is written for exactly one shape: a call site whose callee's body was verified as
-    /// the pure forwarding of one field access ([`crate::accessor`]). The receiver is the value the
-    /// call site passed to the accessor, and the name is the field the accessor's own decode named.
-    /// A `getfield` instruction of the *presented* body never becomes this node — a field access
-    /// this layer has not verified is quoted as bytecode.
+    /// Two shapes reach this node: a call site whose callee's body was verified as the pure
+    /// forwarding of one field access ([`crate::accessor`], where the receiver is the value the call
+    /// site passed), and a `getfield`/`getstatic` of the presented body itself where the `field@1`
+    /// rule proved the member it reads ([`crate::field`], where the receiver is the value the
+    /// instruction read). A field access **no** rule claimed never becomes this node: it is quoted
+    /// as bytecode.
     Field { receiver: Box<Expr>, name: String },
+    /// `array[index]` — one element of an array, written where the value is consumed.
+    ///
+    /// This node is written for one shape: the `int`-shaped dispatch table a compiler's `switch`
+    /// over an enum reads its case index out of ([`crate::enumswitch`]). An array read no rule
+    /// claimed stays quoted.
+    Index { array: Box<Expr>, index: Box<Expr> },
     /// A binary operation over two expressions.
     Binary {
         op: BinaryOp,
         left: Box<Expr>,
         right: Box<Expr>,
     },
+}
+
+/// Which constructor one instance initializer calls first.
+///
+/// The two are different programs, so this is a verdict of a rule and never a convention: a call on
+/// the frames' `UninitializedThis` whose class the caller stated to be the declaring class is
+/// [`Self::This`], and one whose class is not is [`Self::Super`] — JVMS 4.9.2 leaves an instance
+/// initializer no third option, and the run that cannot state the declaring class refuses to spell
+/// either.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ConstructorTarget {
+    /// Another constructor of the same class: `this(…)`.
+    This,
+    /// The direct superclass's constructor: `super(…)`.
+    Super,
+}
+
+impl ConstructorTarget {
+    /// The Java keyword this target is written with.
+    pub fn spell(self) -> &'static str {
+        match self {
+            Self::This => "this",
+            Self::Super => "super",
+        }
+    }
 }
 
 /// One parameter of a lambda: the type its SAM states and the name this layer gave it.
@@ -215,14 +251,30 @@ pub enum StmtKind {
     Assign { name: String, value: Expr },
     /// `<expr>;` — a call whose result is not used.
     Expr(Expr),
-    /// `receiver.name = value;` — the write a synthetic accessor's call performed.
+    /// `receiver.name = value;` — the write a synthetic accessor's call performed, or one a
+    /// `putfield`/`putstatic` of the presented body performed where `field@1` proved the member it
+    /// writes.
     ///
     /// A write accessor returns nothing, so the call site that used to spell it is a statement:
-    /// the receiver is the first argument the site passed, and the value is the second.
+    /// the receiver is the first argument the site passed, and the value is the second. A `putfield`
+    /// reaches the same node with the value and the receiver the instruction itself read, and a
+    /// `putstatic` with the owner type as the receiver.
     FieldAssign {
         receiver: Expr,
         name: String,
         value: Expr,
+    },
+    /// `super(args);` or `this(args);` — the constructor call an instance initializer starts with.
+    ///
+    /// Which of the two it is, is read and not guessed ([`crate::init`]): the call's receiver is the
+    /// frames' `UninitializedThis`, which only a constructor's own `this` before its constructor
+    /// call can be, and what decides between the two spellings is whether the class the call names
+    /// is the class that declares the body (JVMS 4.9.2 lets an instance initializer call exactly its
+    /// own class's constructor or its superclass's). Writing `super` for a `this` call — or the
+    /// reverse — would run another constructor, so an unproven prologue is quoted instead.
+    ConstructorCall {
+        target: ConstructorTarget,
+        args: Vec<Expr>,
     },
     /// `return;` or `return <expr>;`
     Return { value: Option<Expr> },

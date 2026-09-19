@@ -43,13 +43,20 @@ use crate::accessor::AccessorRecord;
 use crate::bridge::{self, BridgeRecord};
 use crate::build;
 use crate::concat::{self, ConcatRecord};
+use crate::declaration::{self, DeclarationRecord};
 use crate::decode::Operations;
 use crate::emit::{Emitted, emit};
+use crate::enumswitch::{self, EnumSwitchRecord};
 use crate::facts::{ClassMembers, RecoveryFacts};
+use crate::field::{self, FieldRecord};
+use crate::init::{self, InitRecord, NewRecord};
 use crate::lambda::LambdaRecord;
 use crate::names::NameTable;
 use crate::normal_flow::NormalFlowView;
-use crate::pass::{ACCESSOR, BRIDGE, CONCAT, LAMBDA, RecoveryProfile, RuleVersion};
+use crate::pass::{
+    ACCESSOR, BRIDGE, CONCAT, DECLARATION, ENUMSWITCH, FIELD, INIT, LAMBDA, NEW, RecoveryProfile,
+    RuleVersion,
+};
 use crate::region::{FallbackReason, Recovered, Region};
 use crate::source_map::SourceMap;
 use crate::stop::StopReason;
@@ -190,6 +197,28 @@ pub struct RecoveryReport {
     /// its body is the forward a bridge is written as (P3 2.2). Empty for every other body: an
     /// ordinary member is not a bridge question.
     pub bridges: Vec<BridgeRecord>,
+    /// Every construction site of the body, in BCI order, with the class it allocates, the
+    /// constructor it calls and the BCIs of its arguments (P3 2.3, `new@1`). A refused candidate is
+    /// part of the answer: it names the link of the verification that failed. This is also the rule
+    /// that presents a local, anonymous or inner class's **use** — the class's own name is the one
+    /// the pool spells — while the nesting relation itself is a class-level fact this run does not
+    /// hold and never claims.
+    pub news: Vec<NewRecord>,
+    /// Every field instruction of the body, in BCI order, with the member each names and whether it
+    /// was presented as a field access (P3 2.3, `field@1`).
+    pub fields: Vec<FieldRecord>,
+    /// Every dispatch-table read of the body, in BCI order (P3 2.3, `enumswitch@1`). What the record
+    /// deliberately does not state is a mapping to enum constants: that is the enum class's own
+    /// declaration, which this run never read.
+    pub enum_switches: Vec<EnumSwitchRecord>,
+    /// The body's constructor prologue, when the body is an instance initializer (P3 2.3, `init@1`).
+    /// `None` for every body that is not one.
+    pub init: Option<InitRecord>,
+    /// What the run read of the member's declaration, and therefore what the artifact's envelope
+    /// states (P3 2.3, `declaration@1`). Present for every produced artifact: every body has a
+    /// declaration, and a run that cannot read one records the fact it was missing. `None` only when
+    /// the run stopped before it read anything.
+    pub declaration: Option<DeclarationRecord>,
     /// Every fallback the run had to keep, with its code.
     pub fallbacks: Vec<&'static str>,
     /// The names the presentation decided, when the run reached the naming step.
@@ -307,6 +336,18 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     // bytes, not about the text, which is why they are taken here and read by the builder.
     let chains = concat::plan(ssa, &operations);
     let bridge = bridge::plan(request.facts.method(), ssa, &operations);
+    // The four shapes P3 2.3 reads — each decided before a statement is written, each from this run's
+    // own tables. The construction sites reserve the concatenation chains' instructions, because one
+    // instruction is never two shapes: the allocation a verified chain builds is written inside the
+    // `+` expression and not a second time as a `new`.
+    let sites = init::sites(ssa, &operations, chains.owned());
+    let prologues = init::prologue(ssa, &operations, request.facts.method());
+    let fields = field::plan(ssa, &operations, request.facts.method().declaring_class());
+    let enums = enumswitch::plan(ssa, &operations);
+    // The declaration is read from the two facts the caller stated and decides the artifact's
+    // envelope; it never decides a statement, and it is the only shape of this slice that is read
+    // without an instruction to read it from.
+    let declaration = declaration::plan(request.facts.method());
     let program = match build::build(
         canonical,
         ssa,
@@ -320,6 +361,10 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             chains: &chains,
             members: request.members,
             bridge: bridge.as_ref(),
+            sites: &sites,
+            prologues: &prologues,
+            fields: &fields,
+            enums: &enums,
         },
         &recovered.regions,
         budget,
@@ -327,7 +372,12 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         Ok(program) => program,
         Err(stop) => return stopped(method, profile.clone(), stop, budget),
     };
-    let emitted: Emitted = match emit(&program.stmts, request.facts, budget) {
+    let emitted: Emitted = match emit(
+        &program.stmts,
+        request.facts,
+        declaration.declaration(),
+        budget,
+    ) {
         Ok(emitted) => emitted,
         Err(stop) => return stopped(method, profile.clone(), stop, budget),
     };
@@ -404,6 +454,20 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         .map(ConcatRecord::rule)
         .chain(program.accessors.iter().map(AccessorRecord::rule))
         .chain(bridges.iter().map(BridgeRecord::rule))
+        .chain(sites.records().iter().map(NewRecord::rule))
+        .chain(fields.records().iter().map(FieldRecord::rule))
+        .chain(enums.records().iter().map(EnumSwitchRecord::rule))
+        .chain(prologues.record().map(InitRecord::rule))
+        // The declaration rule is listed when it *wrote* something: its output is the envelope line,
+        // and a run that was not told the declaration facts wrote none. The refusal is not invisible
+        // for that — the record and its diagnostic name the rule — but a rule that concluded nothing
+        // about these bytes is not a rule that produced this artifact.
+        .chain(
+            declaration
+                .record()
+                .presented()
+                .then(|| declaration.record().rule()),
+        )
     {
         if !rules.contains(&rule) {
             rules.push(rule);
@@ -521,6 +585,143 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             ),
         ));
     }
+    // P3 2.3's four shapes report the same way the three of 2.2 do: every refusal is a diagnostic of
+    // its own, and a summary states how many candidates were read and how many were presented. A body
+    // that read none of a shape says nothing about that shape's rule at all — except for the
+    // declaration, which every body has and which therefore always states what it read.
+    for record in sites.records() {
+        if let Some(refusal) = &record.refusal {
+            diagnostics.push(diagnostic(
+                refusal.code,
+                DiagnosticSeverity::Warning,
+                &refusal.message,
+            ));
+        }
+    }
+    if !sites.records().is_empty() {
+        diagnostics.push(diagnostic(
+            "jre_new_sites",
+            DiagnosticSeverity::Info,
+            &format!(
+                "{} construction candidate(s) read under {}: {} presented as `new`, {} refused",
+                sites.records().len(),
+                NEW.rule(),
+                sites
+                    .records()
+                    .iter()
+                    .filter(|record| record.presented())
+                    .count(),
+                sites
+                    .records()
+                    .iter()
+                    .filter(|record| !record.presented())
+                    .count(),
+            ),
+        ));
+    }
+    for record in fields.records() {
+        if let Some(refusal) = &record.refusal {
+            diagnostics.push(diagnostic(
+                refusal.code,
+                DiagnosticSeverity::Warning,
+                &refusal.message,
+            ));
+        }
+    }
+    if !fields.records().is_empty() {
+        diagnostics.push(diagnostic(
+            "jre_field_accesses",
+            DiagnosticSeverity::Info,
+            &format!(
+                "{} field instruction(s) read under {}: {} presented, {} refused",
+                fields.records().len(),
+                FIELD.rule(),
+                fields
+                    .records()
+                    .iter()
+                    .filter(|record| record.presented())
+                    .count(),
+                fields
+                    .records()
+                    .iter()
+                    .filter(|record| !record.presented())
+                    .count(),
+            ),
+        ));
+    }
+    for record in enums.records() {
+        if let Some(refusal) = &record.refusal {
+            diagnostics.push(diagnostic(
+                refusal.code,
+                DiagnosticSeverity::Warning,
+                &refusal.message,
+            ));
+        }
+    }
+    if !enums.records().is_empty() {
+        // The boundary is stated where the shape is: the read is the bytecode's own dispatch, and the
+        // mapping from its entries to enum constants is a class-level fact of *another* class this
+        // run never read (P3 2.3).
+        diagnostics.push(diagnostic(
+            "jre_enumswitch",
+            DiagnosticSeverity::Info,
+            &format!(
+                "{} dispatch-table read(s) read under {}: {} presented as the table read the bytecode performs, {} refused; the constants those entries stand for are the enum class's own declaration, which this run does not hold, so no `case T.CONST:` label is written",
+                enums.records().len(),
+                ENUMSWITCH.rule(),
+                enums
+                    .records()
+                    .iter()
+                    .filter(|record| record.presented())
+                    .count(),
+                enums
+                    .records()
+                    .iter()
+                    .filter(|record| !record.presented())
+                    .count(),
+            ),
+        ));
+    }
+    if let Some(record) = prologues.record() {
+        if let Some(refusal) = &record.refusal {
+            diagnostics.push(diagnostic(
+                refusal.code,
+                DiagnosticSeverity::Warning,
+                &refusal.message,
+            ));
+        } else {
+            diagnostics.push(diagnostic(
+                "jre_constructor_prologue",
+                DiagnosticSeverity::Info,
+                &format!(
+                    "the body is an instance initializer and its prologue is written under {} as `{}`: the call at BCI {} names `{}`, and the class that declares this constructor is `{}`",
+                    INIT.rule(),
+                    record.target.map_or("?", |target| target.spell()),
+                    record.bci.unwrap_or(0),
+                    record.class.as_deref().unwrap_or("?"),
+                    record.declared.as_deref().unwrap_or("?"),
+                ),
+            ));
+        }
+    }
+    let declaration_record = declaration.record().clone();
+    if let Some(refusal) = &declaration_record.refusal {
+        diagnostics.push(diagnostic(
+            refusal.code,
+            DiagnosticSeverity::Warning,
+            &refusal.message,
+        ));
+    } else {
+        diagnostics.push(diagnostic(
+            "jre_declaration",
+            DiagnosticSeverity::Info,
+            &format!(
+                "the artifact's envelope states the member's declaration under {}: {}",
+                DECLARATION.rule(),
+                declaration_record.form.map_or("?", |form| form.spell())
+            ),
+        ));
+    }
     RecoveryReport {
         profile: request.profile.clone(),
         representation: if structured {
@@ -552,6 +753,11 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         concats,
         accessors: program.accessors,
         bridges,
+        news: sites.records().to_vec(),
+        fields: fields.records().to_vec(),
+        enum_switches: enums.records().to_vec(),
+        init: prologues.record().cloned(),
+        declaration: Some(declaration_record),
         fallbacks,
         aliased_names,
         diagnostics,
@@ -665,6 +871,11 @@ fn stopped(
         concats: Vec::new(),
         accessors: Vec::new(),
         bridges: Vec::new(),
+        news: Vec::new(),
+        fields: Vec::new(),
+        enum_switches: Vec::new(),
+        init: None,
+        declaration: None,
         fallbacks: Vec::new(),
         aliased_names: Vec::new(),
         diagnostics: vec![diagnostic(code, severity, &message)],

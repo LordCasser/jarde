@@ -30,6 +30,9 @@
 //! [`Operation::Other`] and makes the statement it belongs to unrenderable, which is a declared
 //! fallback with a diagnostic and never an invented expression.
 
+/// The access-flag bit a class or a member sets when it is `public`.
+pub const ACC_PUBLIC: u16 = 0x0001;
+
 /// The access-flag bit a class sets on a member that is `static`.
 pub const ACC_STATIC: u16 = 0x0008;
 
@@ -38,6 +41,16 @@ pub const ACC_BRIDGE: u16 = 0x0040;
 
 /// The access-flag bit a class sets on a member a compiler generated.
 pub const ACC_SYNTHETIC: u16 = 0x1000;
+
+/// The access-flag bit a **class** sets on itself when it is an interface (JVMS 4.1).
+pub const ACC_INTERFACE: u16 = 0x0200;
+
+/// The access-flag bit a class sets on itself when it is an annotation type, which JVMS 4.1 defines
+/// as an interface with one extra constraint.
+pub const ACC_ANNOTATION: u16 = 0x2000;
+
+/// The access-flag bit a class or a member sets when it is `abstract`.
+pub const ACC_ABSTRACT: u16 = 0x0400;
 
 /// What a class file says about the method whose body is being presented.
 ///
@@ -56,6 +69,7 @@ pub struct MethodFacts {
     descriptor: String,
     parameters: u16,
     access_flags: Option<u16>,
+    declaring_class: Option<DeclaringClass>,
 }
 
 impl MethodFacts {
@@ -66,6 +80,7 @@ impl MethodFacts {
             descriptor: descriptor.into(),
             parameters,
             access_flags: None,
+            declaring_class: None,
         }
     }
 
@@ -73,6 +88,23 @@ impl MethodFacts {
     pub fn with_access_flags(mut self, access_flags: u16) -> Self {
         self.access_flags = Some(access_flags);
         self
+    }
+
+    /// The same facts with the class that declares the member, as the caller read that class's own
+    /// declaration (P3 2.3).
+    ///
+    /// Like the member's flags this is a **caller-stated declaration fact**: one body's payload
+    /// holds no class-level fact at all (it publishes that body's graph, frames, names and decode),
+    /// so the two rules that read one — `declaration@1` and `init@1` — state it as a declared
+    /// precondition and refuse with the missing fact named when it is absent.
+    pub fn with_declaring_class(mut self, declaring_class: DeclaringClass) -> Self {
+        self.declaring_class = Some(declaring_class);
+        self
+    }
+
+    /// The class the member is declared in, when the caller stated it.
+    pub fn declaring_class(&self) -> Option<&DeclaringClass> {
+        self.declaring_class.as_ref()
     }
 
     /// The access flags the class declares for this member, when the caller stated them.
@@ -386,6 +418,14 @@ pub enum Operation {
     /// handle and the implementation handle ([`crate::lambda`], rule `lambda@1`), because a site
     /// with an arbitrary bootstrap must never be presented as one of them (A04).
     InvokeDynamic(DynamicSite),
+    /// Reads one element of an `int`-shaped array (`iaload`).
+    ///
+    /// It is modelled because the `switch` a compiler builds for an enum reads its dispatch table
+    /// with it ([`crate::enumswitch`]): the *shape* that makes one read a switch's dispatch is that
+    /// module's reading, and a read no rule claimed is quoted like every other unclaimed
+    /// instruction. The other array reads (`laload`, `aaload`, …) and the array stores stay
+    /// [`Self::Other`]: this slice models the one opcode the shape it presents reads.
+    ArrayLoad,
     /// Leaves the method.
     Return,
     /// Anything else: legal to read, not part of the provable subset.
@@ -426,6 +466,70 @@ pub enum FieldAccess {
     Read,
     /// `putfield`/`putstatic`: the instruction writes the field.
     Write,
+}
+
+/// The class that declares the presented member, as the caller read it off that class's header.
+///
+/// One recovery run presents **one body**, and its payload holds that body's graph, frames, names,
+/// decode and pool — no class-level fact at all: not the class's name, not its access flags, not its
+/// superclass, not its `InnerClasses` attribute (P3 2.3 §3 measured this against `MethodIr`'s own
+/// fields). The caller, however, read the member out of a header, and that header states the class's
+/// own name and flags exactly as it states the member's. This is where the caller hands those two
+/// over: as **declaration** facts, never as a verdict about what the class means.
+///
+/// What the two rules that read it do with them:
+///
+/// * `declaration@1` states the member's declaration in the artifact's envelope, and that is where
+///   "this is a `default` method of an interface" or "this is a static method of an interface" is
+///   decided — from `ACC_INTERFACE` on the class plus the member's own flags;
+/// * `init@1` compares the class's name with the owner of the constructor call a body makes on its
+///   own `this`, which is the only thing that tells `super(…)` from `this(…)` (JVMS 4.9.2 allows an
+///   instance initializer to call exactly those two).
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DeclaringClass {
+    name: String,
+    access_flags: u16,
+}
+
+impl DeclaringClass {
+    /// One class's declaration: its name in the class file's own internal form (`p/Outer`) and its
+    /// access flags, exactly as the header states them.
+    pub fn new(name: impl Into<String>, access_flags: u16) -> Self {
+        Self {
+            name: name.into(),
+            access_flags,
+        }
+    }
+
+    /// The class's name in internal form, as `this_class` spells it.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// The class's own access flags.
+    pub fn access_flags(&self) -> u16 {
+        self.access_flags
+    }
+
+    /// Whether the class declares itself an interface (or an annotation type, which JVMS 4.1 makes
+    /// one kind of interface).
+    pub fn is_interface(&self) -> bool {
+        self.access_flags & (ACC_INTERFACE | ACC_ANNOTATION) != 0
+    }
+}
+
+/// One reference type name as a frame or a pool states it, in the class file's internal form
+/// (`java/lang/String`).
+///
+/// A frame keeps a reference type in whichever spelling its source had — a descriptor
+/// (`Ljava/lang/String;`) when it came from one, an internal name when it came from a `Class` entry
+/// — so two names are the same type only after this normalisation. Comparing the raw spellings
+/// instead would refuse shapes that are in fact proven, which is the failure mode this helper
+/// exists to keep out of [`crate::field`] and [`crate::init`].
+pub fn internal_form(name: &str) -> &str {
+    name.strip_prefix('L')
+        .and_then(|rest| rest.strip_suffix(';'))
+        .unwrap_or(name)
 }
 
 /// One member of the class the presented body belongs to, with its declaration and its body.

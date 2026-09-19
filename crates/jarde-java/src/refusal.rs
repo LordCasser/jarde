@@ -15,6 +15,7 @@
 use crate::pass::{IrTable, Pass, Precondition};
 
 /// Why one shape was not presented.
+#[derive(Clone)]
 pub(crate) struct Refusal {
     code: &'static str,
     requirement: Option<Precondition>,
@@ -77,6 +78,25 @@ pub(crate) fn requirement_code(rule: &str, requirement: Precondition) -> &'stati
         ("accessor", _) => "jre_accessor_unmet_precondition",
         ("bridge", Precondition::Metadata { .. }) => "jre_bridge_flags_missing",
         ("bridge", _) => "jre_bridge_unmet_precondition",
+        // P3 2.3's four rules. `new@1` states the effect requirement the concatenation states (its
+        // arguments are written inside the `new` expression); `field@1` and `init@1` state the one
+        // declaration fact they compare a class name against; `enumswitch@1` states no requirement of
+        // its own — a read either is the dispatch-table shape or it is not.
+        ("new", Precondition::StatementFree) => "jre_new_interleaved_effect",
+        ("new", _) => "jre_new_unmet_precondition",
+        ("field", Precondition::Metadata { .. }) => "jre_field_declaring_class_missing",
+        ("field", _) => "jre_field_unmet_precondition",
+        ("enumswitch", _) => "jre_enumswitch_unmet_precondition",
+        ("init", Precondition::Metadata { .. }) => "jre_init_class_not_in_run",
+        ("init", _) => "jre_init_unmet_precondition",
+        (
+            "declaration",
+            Precondition::Metadata {
+                attribute: "access_flags",
+            },
+        ) => "jre_declaration_flags_missing",
+        ("declaration", Precondition::Metadata { .. }) => "jre_declaration_class_not_in_run",
+        ("declaration", _) => "jre_declaration_unmet_precondition",
         _ => "jre_unmet_precondition",
     }
 }

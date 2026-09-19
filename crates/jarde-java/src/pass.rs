@@ -146,7 +146,11 @@ pub enum Precondition {
     /// `LineNumberTable` would have to state it here rather than assume it. P3 2.2 registers the
     /// first rule that does require one: the *bridge* rule needs the member's `access_flags`, which
     /// is a declaration fact of the same family — the caller read it with the class's header and the
-    /// payload does not carry it.
+    /// payload does not carry it. P3 2.3 adds three more of the same family, and they are why this
+    /// variant is now the busiest one: `field@1` and `init@1` need the **declaring class** (the
+    /// `Fieldref` JVMS 4.10.1.9 allows before a constructor call, and the class JVMS 4.9.2 compares
+    /// the prologue's owner against), and `declaration@1` needs both facts to tell an interface's
+    /// `default` method from a class's ordinary one.
     Metadata { attribute: &'static str },
     /// **Effect**: every value the shape *repeats* has to be one whose text can be written where the
     /// shape reads it without running anything again.
@@ -426,7 +430,135 @@ pub const ACCESSOR: Pass = Pass::new(
 );
 
 /// Every pass this build registers, in the order the design lists them.
-pub const PASSES: [Pass; 8] = [STRAIGHT, IF, LOOP, SWITCH, LAMBDA, CONCAT, BRIDGE, ACCESSOR];
+pub const PASSES: [Pass; 13] = [
+    STRAIGHT,
+    IF,
+    LOOP,
+    SWITCH,
+    LAMBDA,
+    CONCAT,
+    BRIDGE,
+    ACCESSOR,
+    NEW,
+    FIELD,
+    ENUMSWITCH,
+    INIT,
+    DECLARATION,
+];
+
+/// The pass that presents a verified allocation, its copy and its constructor call as `new T(…)`.
+///
+/// This is the rule that makes a **local, anonymous or inner class's use** presentable: such a class
+/// is an ordinary class whose name the pool spells the way the compiler minted it (`p/Outer$1`), and
+/// its instantiation is exactly this shape. What the rule does *not* read is the nesting relation —
+/// `InnerClasses`, `EnclosingMethod` and the meaning of an enclosing-instance argument are
+/// class-level facts, and one body's payload holds none of them (§3 of the slice notes) — so no
+/// `Outer.this`, no nested `new Inner()` spelling and no synthetic field is invented. What the
+/// source wrote as the enclosing instance is written as the value the site really read.
+///
+/// Its output — `new T(…)` — is Java in every release, hence `None`; allocations and inner classes
+/// are not release questions.
+///
+/// It requires the run's names and decode (the instance's value flow and the instruction that
+/// constructs it) and [`Precondition::StatementFree`]: nothing between the copy and the constructor
+/// call may be an effect, because the arguments are written inside the `new` expression and an
+/// effect written there would run at a different time.
+pub const NEW: Pass = Pass::new(
+    RuleVersion::new("new", "1"),
+    None,
+    &[
+        Precondition::IrTable(IrTable::Ssa),
+        Precondition::IrTable(IrTable::Code),
+        Precondition::StatementFree,
+    ],
+);
+
+/// The pass that presents a field instruction of the body itself as the field access it is.
+///
+/// A `getfield`/`getstatic`/`putfield`/`putstatic` becomes `receiver.f`, `Type.f`, `receiver.f = v`
+/// or `Type.f = v`, and what makes that text mean the same member is the receiver's **stated type**:
+/// for an instance access the frames must type the receiver exactly as the pool names the member's
+/// owner, or `receiver.f` could name a field the instruction did not read (`B extends A` may declare
+/// its own `f`). A static access has no receiver and no such question.
+///
+/// It requires the run's names and decode, plus [`Precondition::Metadata`] for the **declaring
+/// class**: the one write whose receiver is not a typed value is the store an instance initializer
+/// makes on its own uninitialized `this` before its constructor call — JVMS 4.10.1.9 allows exactly
+/// the `Fieldref` that names the class being constructed, and a run that was not told which class
+/// that is refuses those writes with this requirement named.
+pub const FIELD: Pass = Pass::new(
+    RuleVersion::new("field", "1"),
+    None,
+    &[
+        Precondition::IrTable(IrTable::Ssa),
+        Precondition::IrTable(IrTable::Code),
+        Precondition::Metadata {
+            attribute: "declaring_class",
+        },
+    ],
+);
+
+/// The pass that presents the dispatch-table read a compiler's enum `switch` performs.
+///
+/// The shape is a `getstatic` of a static `int[]` field indexed by the result of an `int`-valued
+/// instance call: the read is written where it is consumed, which for this shape is the selector of
+/// the `switch`. The rule states what it does **not** claim in its own module: the mapping from the
+/// table's entries to enum constants is another class's declaration and the table's contents are
+/// another class's initializer, so `switch (e)` with `case T.CONST:` labels is never written from
+/// this run's facts — the table read the bytecode performs is ([`crate::enumswitch`]).
+pub const ENUMSWITCH: Pass = Pass::new(
+    RuleVersion::new("enumswitch", "1"),
+    None,
+    &[
+        Precondition::IrTable(IrTable::Ssa),
+        Precondition::IrTable(IrTable::Code),
+    ],
+);
+
+/// The pass that presents a constructor's prologue as `super(…)` or `this(…)`.
+///
+/// The receiver is the frames' `UninitializedThis` — a token only a constructor's own `this` carries
+/// before its constructor call — and JVMS 4.9.2 lets such a call name exactly the class that
+/// declares the constructor or that class's direct superclass. Which of the two spellings it is
+/// therefore comes down to one comparison, and the class it compares against is stated by the
+/// caller: [`Precondition::Metadata`] for the **declaring class**. A run that was not told it
+/// refuses the prologue with that requirement named rather than writing `super` for a `this` call,
+/// which would run a different constructor.
+///
+/// It requires the run's names and decode as well: the receiver's type is what proves the call is a
+/// prologue at all.
+pub const INIT: Pass = Pass::new(
+    RuleVersion::new("init", "1"),
+    None,
+    &[
+        Precondition::IrTable(IrTable::Ssa),
+        Precondition::IrTable(IrTable::Code),
+        Precondition::Metadata {
+            attribute: "declaring_class",
+        },
+    ],
+);
+
+/// The pass that states the presented member's declaration in the artifact's envelope.
+///
+/// A `default` method is not a flag of its own (JVMS 4.6): it is an interface's method that is
+/// neither `static` nor `abstract`, so reading it takes both the member's own flags and the class's
+/// own `ACC_INTERFACE` — and one body's payload holds neither. Both are caller-stated declaration
+/// facts, and the rule refuses, with the missing one named, instead of guessing one from the other:
+/// a `public` method that is not abstract is a `default` method in an interface and an ordinary
+/// method in a class.
+pub const DECLARATION: Pass = Pass::new(
+    RuleVersion::new("declaration", "1"),
+    None,
+    &[
+        Precondition::Metadata {
+            attribute: "access_flags",
+        },
+        Precondition::Metadata {
+            attribute: "declaring_class",
+        },
+    ],
+);
 
 /// The registered pass with this rule name, when there is one.
 pub fn pass(rule: &str) -> Option<Pass> {
@@ -477,7 +609,7 @@ mod tests {
 
     #[test]
     fn the_registered_table_states_each_rule_and_its_preconditions() {
-        assert_eq!(PASSES.len(), 8);
+        assert_eq!(PASSES.len(), 13);
         assert_eq!(
             PASSES
                 .iter()
@@ -491,7 +623,12 @@ mod tests {
                 "lambda@1".to_string(),
                 "concat@1".to_string(),
                 "bridge@1".to_string(),
-                "accessor@1".to_string()
+                "accessor@1".to_string(),
+                "new@1".to_string(),
+                "field@1".to_string(),
+                "enumswitch@1".to_string(),
+                "init@1".to_string(),
+                "declaration@1".to_string()
             ]
         );
         // Which rules are release-independent and which one is not (P3 2.1). Until then this loop
@@ -511,6 +648,15 @@ mod tests {
                 // (the two concatenation classes, the declared bridge flag, the synthetic accessor's
                 // body) rather than through the profile gate.
                 "concat" | "bridge" | "accessor" => assert_eq!(
+                    pass.required_release(),
+                    None,
+                    "{pass:?} writes a construct every release spells the same way"
+                ),
+                // P3 2.3's rules are release-independent for the same reason: `new T(…)`, `x.f`,
+                // `x.f = v`, `super(…)`, a dispatch-table read and a declaration line are Java in
+                // every release. What they *read* is an input fact — an allocation, a field
+                // instruction, a declared interface — and each rule states its own shape.
+                "new" | "field" | "enumswitch" | "init" | "declaration" => assert_eq!(
                     pass.required_release(),
                     None,
                     "{pass:?} writes a construct every release spells the same way"
@@ -538,10 +684,45 @@ mod tests {
         assert!(!STRAIGHT.requires(Precondition::StatementFree));
         assert!(!BRIDGE.requires(Precondition::StatementFree));
         assert!(!ACCESSOR.requires(Precondition::StatementFree));
+        // The construction site of P3 2.3 states it too, and for the same reason the concatenation
+        // does: its arguments are written *inside* the `new` expression, so an effect between the
+        // copy and the constructor call would have to move.
+        assert!(NEW.requires(Precondition::StatementFree));
+        assert!(!FIELD.requires(Precondition::StatementFree));
+        assert!(!ENUMSWITCH.requires(Precondition::StatementFree));
+        assert!(!INIT.requires(Precondition::StatementFree));
+        assert!(!DECLARATION.requires(Precondition::StatementFree));
         assert!(LAMBDA.requires(Precondition::Replayable));
         assert!(!LOOP.requires(Precondition::Replayable));
         assert!(!CONCAT.requires(Precondition::Replayable));
         assert!(!LAMBDA.requires(Precondition::StatementFree));
+        // The declaration facts P3 2.3 reads: the class that declares the body — which two rules
+        // need to compare a class name against one the bytes state (`field@1` for the write JVMS
+        // 4.10.1.9 allows before a constructor call, `init@1` for the call JVMS 4.9.2 lets an
+        // instance initializer make) — and the member's own flags, which only the declaration rule
+        // reads.
+        assert!(FIELD.requires(Precondition::Metadata {
+            attribute: "declaring_class"
+        }));
+        assert!(INIT.requires(Precondition::Metadata {
+            attribute: "declaring_class"
+        }));
+        assert!(DECLARATION.requires(Precondition::Metadata {
+            attribute: "access_flags"
+        }));
+        assert!(DECLARATION.requires(Precondition::Metadata {
+            attribute: "declaring_class"
+        }));
+        for pass in [
+            STRAIGHT, IF, LOOP, SWITCH, LAMBDA, CONCAT, BRIDGE, ACCESSOR, NEW, ENUMSWITCH,
+        ] {
+            assert!(
+                !pass.requires(Precondition::Metadata {
+                    attribute: "declaring_class"
+                }),
+                "{pass:?} compares no class name"
+            );
+        }
         // The IR preconditions a pass may state name the tables that exist, and the lambda rule is
         // the one that reads the class's bootstrap table beside the decode it reads through. That
         // table is checked where a site is claimed rather than by the run-level gate — a class with
@@ -573,7 +754,19 @@ mod tests {
             attribute: "access_flags"
         }));
         assert_eq!(IrTable::Members.name(), "class members");
-        for pass in [STRAIGHT, IF, LOOP, SWITCH, CONCAT, BRIDGE] {
+        for pass in [
+            STRAIGHT,
+            IF,
+            LOOP,
+            SWITCH,
+            CONCAT,
+            BRIDGE,
+            NEW,
+            FIELD,
+            ENUMSWITCH,
+            INIT,
+            DECLARATION,
+        ] {
             assert!(!pass.requires(Precondition::IrTable(IrTable::BootstrapMethods)));
             assert!(!pass.requires(Precondition::IrTable(IrTable::Members)));
         }
@@ -582,6 +775,11 @@ mod tests {
         assert_eq!(pass("concat"), Some(CONCAT));
         assert_eq!(pass("bridge"), Some(BRIDGE));
         assert_eq!(pass("accessor"), Some(ACCESSOR));
+        assert_eq!(pass("new"), Some(NEW));
+        assert_eq!(pass("field"), Some(FIELD));
+        assert_eq!(pass("enumswitch"), Some(ENUMSWITCH));
+        assert_eq!(pass("init"), Some(INIT));
+        assert_eq!(pass("declaration"), Some(DECLARATION));
     }
 
     #[test]

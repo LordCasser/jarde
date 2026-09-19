@@ -43,6 +43,7 @@
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 
 use crate::ast::{Expr, ExprKind, Stmt, StmtKind};
+use crate::declaration::Declaration;
 use crate::facts::RecoveryFacts;
 use crate::source_map::{OriginSet, Segment, SourceMap};
 use crate::stop::{StopReason, poll};
@@ -57,13 +58,19 @@ pub(crate) struct Emitted {
 }
 
 /// Emits one method body.
+///
+/// `declaration` is what [`crate::declaration`] read of the member's declaration, when the run could
+/// read one: it is written into the envelope, because that comment is the only place in this
+/// artifact that can state what the member *is* without claiming a signature this layer cannot prove
+/// (the descriptor is not parsed into types here — that is 3.x's presentation question).
 pub(crate) fn emit(
     stmts: &[Stmt],
     facts: &RecoveryFacts,
+    declaration: Option<&Declaration>,
     budget: &mut Budget,
 ) -> Result<Emitted, StopReason> {
     let mut emitter = Emitter::new(budget);
-    emitter.envelope(facts)?;
+    emitter.envelope(facts, declaration)?;
     emitter.stmts(stmts, 1)?;
     emitter.put("}\n", None)?;
     Ok(emitter.finish())
@@ -91,7 +98,11 @@ impl<'a> Emitter<'a> {
     }
 
     /// The comment envelope and the body's opening brace; anchored at no node, so mapped to none.
-    fn envelope(&mut self, facts: &RecoveryFacts) -> Result<(), StopReason> {
+    fn envelope(
+        &mut self,
+        facts: &RecoveryFacts,
+        declaration: Option<&Declaration>,
+    ) -> Result<(), StopReason> {
         let method = facts.method();
         self.put(
             &format!(
@@ -101,6 +112,28 @@ impl<'a> Emitter<'a> {
             ),
             None,
         )?;
+        // What the class file declares the member to be, when the run could read it (P3 2.3): the
+        // one fact that tells an interface's `default` method from a class's ordinary one, stated
+        // where a reader of the artifact meets it first.
+        if let Some(declaration) = declaration {
+            let class = declaration
+                .declaring_class
+                .as_deref()
+                .map(|class| comment_text(&class.replace('/', ".")));
+            let line = match class {
+                Some(class) => format!(
+                    "// @declaration {} of `{class}`, member flags {:#06x}\n",
+                    declaration.form.spell(),
+                    declaration.member_flags
+                ),
+                None => format!(
+                    "// @declaration {}, member flags {:#06x}\n",
+                    declaration.form.spell(),
+                    declaration.member_flags
+                ),
+            };
+            self.put(&line, None)?;
+        }
         self.put(
             "// recovered from bytecode; presentation is not claimed to compile\n",
             None,
@@ -180,6 +213,21 @@ impl<'a> Emitter<'a> {
                     self.expr(value)?;
                 }
                 self.put(";\n", at)
+            }
+            StmtKind::ConstructorCall { target, args } => {
+                // `super(…)` or `this(…)`, decided by `init@1` and never by a convention: the
+                // receiver is the frames' own uninitialized `this`, and the spellings are two
+                // different programs.
+                self.put(&pad, at)?;
+                self.put(target.spell(), at)?;
+                self.put("(", at)?;
+                for (index, arg) in args.iter().enumerate() {
+                    if index > 0 {
+                        self.put(", ", at)?;
+                    }
+                    self.expr(arg)?;
+                }
+                self.put(");\n", at)
             }
             StmtKind::If {
                 cond,
@@ -341,6 +389,12 @@ impl<'a> Emitter<'a> {
                 emitter.expr(receiver)?;
                 emitter.put(".", at)?;
                 emitter.put(name, at)
+            }
+            ExprKind::Index { array, index } => {
+                emitter.expr(array)?;
+                emitter.put("[", at)?;
+                emitter.expr(index)?;
+                emitter.put("]", at)
             }
             ExprKind::Binary { op, left, right } => {
                 emitter.expr(left)?;
@@ -550,12 +604,13 @@ mod tests {
         let stmts = body();
         let exact = {
             let mut budget = budget_with(1 << 20);
-            emit(&stmts, &facts(), &mut budget)
+            emit(&stmts, &facts(), None, &mut budget)
                 .expect("an ample budget writes")
                 .written
         };
         let mut budget = budget_with(exact);
-        let emitted = emit(&stmts, &facts(), &mut budget).expect("the exact bound is allowed");
+        let emitted =
+            emit(&stmts, &facts(), None, &mut budget).expect("the exact bound is allowed");
         assert_eq!(emitted.written, exact);
         assert!(
             emitted.text.contains("run();"),
@@ -564,7 +619,7 @@ mod tests {
         );
 
         let mut budget = budget_with(exact - 1);
-        let stop = emit(&stmts, &facts(), &mut budget).expect_err("one byte short");
+        let stop = emit(&stmts, &facts(), None, &mut budget).expect_err("one byte short");
         match stop {
             StopReason::Budget {
                 dimension,
@@ -598,7 +653,9 @@ mod tests {
         )];
         let whole = {
             let mut budget = budget_with(1 << 20);
-            emit(&stmts, &facts(), &mut budget).expect("ample").written
+            emit(&stmts, &facts(), None, &mut budget)
+                .expect("ample")
+                .written
         };
         // Every bound below the artifact's own size refuses somewhere, and at least one of them
         // refuses while the assignment's *expression* is being written: the emitter stops inside a
@@ -607,7 +664,7 @@ mod tests {
         let mut inside_a_node = 0usize;
         for bound in 1..whole {
             let mut budget = budget_with(bound);
-            match emit(&stmts, &facts(), &mut budget) {
+            match emit(&stmts, &facts(), None, &mut budget) {
                 Ok(emitted) => panic!("a {bound}-byte bound produced {} bytes", emitted.written),
                 Err(StopReason::Budget { written, at, .. }) => {
                     assert!(
@@ -631,7 +688,7 @@ mod tests {
     fn the_segment_table_covers_the_nodes_in_writing_order() {
         let stmts = body();
         let mut budget = budget_with(1 << 20);
-        let emitted = emit(&stmts, &facts(), &mut budget).expect("ample");
+        let emitted = emit(&stmts, &facts(), None, &mut budget).expect("ample");
         // Two nodes, because a statement contains its expression, and the table is in completion
         // order: the expression's span is recorded when its own writes finish, the statement's when
         // the indentation and the terminator around it are written too.

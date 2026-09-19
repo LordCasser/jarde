@@ -27,8 +27,8 @@
 //! reads a field, whatever the fixture's names suggest.
 
 use jarde_java::{
-    AccessorField, AccessorShape, ClassMembers, MemberBody, MethodFacts, Provenance, RecoveryFacts,
-    RecoveryRequest, StopReason, recover,
+    AccessorField, AccessorShape, ClassMembers, ConstructorTarget, DeclarationForm, DeclaringClass,
+    MemberBody, MethodFacts, Provenance, RecoveryFacts, RecoveryRequest, StopReason, recover,
 };
 use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
@@ -368,8 +368,24 @@ impl Code {
     }
 }
 
+/// The class flags every fixture of the earlier slices writes: a plain `public` class.
+const CLASS_FLAGS: u16 = 0x0021;
+
 fn class_bytes(
     pool: &Pool,
+    this_class: u16,
+    super_class: u16,
+    fields: &[FieldDef],
+    methods: &[MemberDef],
+) -> Vec<u8> {
+    class_bytes_with(pool, CLASS_FLAGS, this_class, super_class, fields, methods)
+}
+
+/// The same class builder with the class's **own** flags stated: a fixture that is an interface (P3
+/// 2.3's `declaration@1` reads `ACC_INTERFACE`) says so here, and nothing else about it changes.
+fn class_bytes_with(
+    pool: &Pool,
+    class_flags: u16,
     this_class: u16,
     super_class: u16,
     fields: &[FieldDef],
@@ -387,7 +403,7 @@ fn class_bytes(
     for entry in &pool.entries {
         out.extend_from_slice(entry);
     }
-    out.extend_from_slice(&0x0021_u16.to_be_bytes());
+    out.extend_from_slice(&class_flags.to_be_bytes());
     out.extend_from_slice(&this_class.to_be_bytes());
     out.extend_from_slice(&super_class.to_be_bytes());
     out.extend_from_slice(&0_u16.to_be_bytes());
@@ -986,8 +1002,28 @@ fn a_chain_whose_instance_is_stored_in_a_local_is_refused() {
         "the store that aliases the instance is the instruction the refusal names: {}",
         refusal.message
     );
-    assert!(!report.text.contains("\"a\" + "), "{}", report.text);
-    assert!(report.text.contains("// @bytecode"), "{}", report.text);
+    // **Changed by P3 2.3 (was: the text contains `// @bytecode`).** The chain is still refused, and
+    // the bytes it was built from are still presented: `new@1` writes the allocation and the calls
+    // are written as the calls they are. What the refusal costs is the `+` spelling, not the
+    // artifact — so the fact this test has to state is that no `+` exists and that both `append`s
+    // appear exactly once, in the bytecode's order.
+    assert!(!report.text.contains(" + "), "{}", report.text);
+    assert!(
+        report.text.contains("new java.lang.StringBuilder()"),
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches("append(").count(),
+        2,
+        "each `append` is written once:\n{}",
+        report.text
+    );
+    assert_eq!(report.representation, Representation::Java);
+    assert_eq!(report.quality, Quality::Structured);
+    assert_eq!(report.news.len(), 1);
+    assert!(report.news[0].presented(), "{:?}", report.news);
+    assert_eq!(report.news[0].class, STRING_BUILDER);
 }
 
 #[test]
@@ -1004,7 +1040,17 @@ fn an_append_overload_that_plus_would_not_reproduce_is_refused() {
         "the refusal names the overload it cannot prove: {}",
         refusal.message
     );
-    assert!(report.text.contains("// @bytecode"), "{}", report.text);
+    // **Changed by P3 2.3 (was: the text contains `// @bytecode`).** The overload's conversion is
+    // still not written away — no `+` appears anywhere — and the chain's own instructions are
+    // presented as the calls they are, each once.
+    assert!(!report.text.contains(" + "), "{}", report.text);
+    assert_eq!(
+        report.text.matches("append(").count(),
+        2,
+        "each `append` is written once:\n{}",
+        report.text
+    );
+    assert_eq!(report.representation, Representation::Java);
 }
 
 #[test]
@@ -1766,7 +1812,13 @@ fn called(name: &str) -> &'static str {
 enum Cell {
     Int(i64),
     Text(String),
-    Builder(String),
+    /// An instance a `new` allocated: the class it is an instance of, and the text it has
+    /// accumulated (a chain that appends into one keeps it here). The class is part of the cell
+    /// because a construction's class and its argument values are what P3 2.3's comparison checks.
+    Instance {
+        class: String,
+        text: String,
+    },
 }
 
 impl Cell {
@@ -1774,7 +1826,7 @@ impl Cell {
     fn written(&self) -> String {
         match self {
             Self::Int(value) => value.to_string(),
-            Self::Text(text) | Self::Builder(text) => text.clone(),
+            Self::Text(text) | Self::Instance { text, .. } => text.clone(),
         }
     }
 }
@@ -1790,6 +1842,15 @@ struct Observed {
     accessor_calls: usize,
     /// Every field the side reads instead of one, by name.
     accessor_reads: Vec<String>,
+    /// Every effect the side performs, in the order it performs it: a construction with the class and
+    /// the argument values it is given, an ordinary call, a field write with the value written, and
+    /// the constructor prologue. P3 2.3's patterns are about **order** — where a field initializer
+    /// sits relative to the constructor call, which write comes first, how often a call happens — so
+    /// the model keeps an ordered log of them and [`compare_effects`] requires the two logs to be
+    /// equal. It is a separate comparison from [`compare`] because a fixture whose chain the run
+    /// presents as one `+` expression has no construction in its text at all, and that is a shape
+    /// [`compare`] already checks.
+    effects: Vec<String>,
 }
 
 /// The constant pool of one fixture, read by the model's own parser.
@@ -1879,26 +1940,74 @@ impl OraclePool {
             other => panic!("the model does not push a constant of the tag {other}"),
         }
     }
+
+    /// The member's own name, without its owner: what a field write is compared by.
+    fn field_name(&self, index: u16) -> String {
+        let index = usize::from(index);
+        let name_and_type = usize::from(self.second[index]);
+        self.text(self.first[name_and_type]).to_string()
+    }
+
+    /// How many parameter values the descriptor of one member reference takes.
+    ///
+    /// The model reads the descriptor's own shape — `L…;` and one `[` per array dimension are one
+    /// parameter each — so the argument count it checks is the class file's, not a fixture's comment.
+    fn argument_count(&self, index: u16) -> usize {
+        let index = usize::from(index);
+        let name_and_type = usize::from(self.second[index]);
+        let descriptor = self.text(self.second[name_and_type]);
+        let mut characters = descriptor
+            .strip_prefix('(')
+            .expect("a method descriptor opens its parameters")
+            .chars()
+            .peekable();
+        let mut count = 0usize;
+        while let Some(character) = characters.next() {
+            match character {
+                ')' => break,
+                '[' => {}
+                'L' => {
+                    for inner in characters.by_ref() {
+                        if inner == ';' {
+                            break;
+                        }
+                    }
+                    count += 1;
+                }
+                _ => count += 1,
+            }
+        }
+        count
+    }
 }
 
 /// Runs one fixture body: the model's own decoder and stack machine.
-fn run_bytecode(code: &[u8], pool: &OraclePool, receiver: Option<&str>) -> Observed {
+///
+/// `parameters` are the entry locals of the body, slot 0 first: a fixture that reads a parameter
+/// states it here, and the model reads nothing about names from anywhere else.
+fn run_bytecode(code: &[u8], pool: &OraclePool, parameters: &[&str]) -> Observed {
     let mut stack: Vec<Cell> = Vec::new();
-    let locals: Vec<Cell> = receiver
-        .map(|name| vec![Cell::Text(name.to_string())])
-        .unwrap_or_default();
+    let mut locals: Vec<Cell> = vec![Cell::Text(String::new()); 4];
+    for (slot, name) in parameters.iter().enumerate() {
+        locals[slot] = Cell::Text((*name).to_string());
+    }
     let mut observed = Observed {
         calls: Vec::new(),
         returned: None,
         accessor_calls: 0,
         accessor_reads: Vec::new(),
+        effects: Vec::new(),
     };
     let mut at = 0;
     while at < code.len() {
         let opcode = code[at];
         match opcode {
             0xbb => {
-                stack.push(Cell::Builder(String::new()));
+                let index = u16::from_be_bytes([code[at + 1], code[at + 2]]);
+                stack.push(Cell::Instance {
+                    class: pool.class_name(index).to_string(),
+                    text: String::new(),
+                });
                 at += 3;
             }
             0x59 => {
@@ -1909,9 +2018,56 @@ fn run_bytecode(code: &[u8], pool: &OraclePool, receiver: Option<&str>) -> Obser
                 stack.push(top);
                 at += 1;
             }
-            // The constructor consumes the copy the allocation pushed; the instance is the same one.
+            // A constructor completes the instance it was given, or starts the body that declares it:
+            // the model says which, with the argument values the constructor was handed, so that the
+            // text side can be required to spell the same thing in the same position.
             0xb7 => {
-                stack.pop();
+                let index = u16::from_be_bytes([code[at + 1], code[at + 2]]);
+                let member = pool.member(index);
+                let mut arguments: Vec<String> = Vec::new();
+                for _ in 0..pool.argument_count(index) {
+                    arguments.push(stack.pop().expect("an argument").written());
+                }
+                arguments.reverse();
+                let receiver = stack.pop().expect("a constructor reads its receiver");
+                match receiver {
+                    // The class is written the way Java source spells a type: the text side reads the
+                    // artifact, which spells `p.Outer$1`, and the model's own key has to be the same
+                    // name or the comparison would be about the pool's spelling rather than about the
+                    // class.
+                    Cell::Instance { class, .. } => observed.effects.push(format!(
+                        "new {}({})",
+                        class.replace('/', "."),
+                        arguments.join(", ")
+                    )),
+                    Cell::Text(_) => observed.effects.push("prologue".to_string()),
+                    other => panic!("the model does not construct {other:?} from `{member}`"),
+                }
+                at += 3;
+            }
+            // A field write: the member's own name and the value written, in the order the body does
+            // it. The owner is not part of the model's key: the text names the receiver where the
+            // bytecode names the owner, and which member that is is what the fixture's own
+            // assertions check.
+            0xb3 => {
+                let index = u16::from_be_bytes([code[at + 1], code[at + 2]]);
+                let value = stack.pop().expect("a field write reads a value");
+                observed.effects.push(format!(
+                    "write {} = {}",
+                    pool.field_name(index),
+                    value.written()
+                ));
+                at += 3;
+            }
+            0xb5 => {
+                let index = u16::from_be_bytes([code[at + 1], code[at + 2]]);
+                let value = stack.pop().expect("a field write reads a value");
+                stack.pop().expect("an instance write reads its receiver");
+                observed.effects.push(format!(
+                    "write {} = {}",
+                    pool.field_name(index),
+                    value.written()
+                ));
                 at += 3;
             }
             0x12 => {
@@ -1919,12 +2075,25 @@ fn run_bytecode(code: &[u8], pool: &OraclePool, receiver: Option<&str>) -> Obser
                 stack.push(pool.constant(index));
                 at += 2;
             }
+            0x02..=0x08 => {
+                stack.push(Cell::Int(i64::from(opcode) - 3));
+                at += 1;
+            }
             0x10 => {
                 stack.push(Cell::Int(i64::from(code[at + 1] as i8)));
                 at += 2;
             }
-            0x2a | 0x1a => {
+            0x1a | 0x2a => {
                 stack.push(locals[0].clone());
+                at += 1;
+            }
+            0x1b | 0x2b => {
+                stack.push(locals[1].clone());
+                at += 1;
+            }
+            0x4c..=0x4e => {
+                let slot = usize::from(opcode - 0x4b);
+                locals[slot] = stack.pop().expect("a store reads a value");
                 at += 1;
             }
             0xb6 | 0xb8 => {
@@ -1940,7 +2109,7 @@ fn run_bytecode(code: &[u8], pool: &OraclePool, receiver: Option<&str>) -> Obser
                         let value = stack.pop().expect("`append` reads a value");
                         let mut receiver = stack.pop().expect("`append` reads its receiver");
                         match &mut receiver {
-                            Cell::Builder(text) => text.push_str(&value.written()),
+                            Cell::Instance { text, .. } => text.push_str(&value.written()),
                             _ => panic!("`append` was called on a value that is not a builder"),
                         }
                         stack.push(receiver);
@@ -1959,6 +2128,7 @@ fn run_bytecode(code: &[u8], pool: &OraclePool, receiver: Option<&str>) -> Obser
                         // is qualified in the text is a presentation decision this model does not
                         // check, and the question it does check is which call happens when.
                         observed.calls.push(name.clone());
+                        observed.effects.push(format!("call {name}"));
                         stack.push(Cell::Text(called(&member).to_string()));
                     }
                 }
@@ -1966,8 +2136,16 @@ fn run_bytecode(code: &[u8], pool: &OraclePool, receiver: Option<&str>) -> Obser
             }
             // The cast keeps the value it is given.
             0xc0 => at += 3,
+            // A bare `return` leaves no value; `ireturn`/`areturn` leave the one on top. Which of the
+            // two a text's `return` is has to agree, which is why the model keeps the difference
+            // instead of collapsing it.
+            0xb1 => at += 1,
             0xb0 | 0xac => {
-                observed.returned = Some(stack.pop().expect("a return needs a value").written());
+                let value = stack.pop().expect("a return needs a value");
+                observed.returned = Some(match &value {
+                    Cell::Instance { class, .. } => format!("instance:{}", class.replace('/', ".")),
+                    other => other.written(),
+                });
                 at += 1;
             }
             other => panic!("the model does not decode the opcode {other:#04x}"),
@@ -1990,6 +2168,7 @@ fn run_text(artifact: &str) -> Observed {
         returned: None,
         accessor_calls: 0,
         accessor_reads: Vec::new(),
+        effects: Vec::new(),
     };
     let mut pieces: Vec<String> = Vec::new();
     for term in expression.split(" + ") {
@@ -2056,6 +2235,85 @@ fn compare(from_bytes: &Observed, from_text: &Observed) -> Result<(), String> {
     {
         return Err(format!(
             "the text reads the field `{field}`, and the accessor the model states reaches `{FIELD_NAME}`"
+        ));
+    }
+    Ok(())
+}
+/// One `new Class(arguments)` term, split into the class and the arguments as written.
+fn construction(term: &str) -> Option<(String, String)> {
+    let rest = term.strip_prefix("new ")?;
+    let (class, arguments) = rest
+        .split_once('(')
+        .expect("a construction spells an argument list");
+    let arguments = arguments
+        .strip_suffix(')')
+        .expect("a construction's argument list closes");
+    Some((class.to_string(), arguments.to_string()))
+}
+
+/// Reads one produced artifact's **statements**: the constructions, the constructor call, the field
+/// writes and the calls, each in the order the artifact writes them.
+///
+/// This is the text side of P3 2.3's comparison, and it is a different reader from [`run_text`] on
+/// purpose: a shape whose artifact is a list of statements has no single `return` expression to
+/// evaluate, and what those shapes raise is not a value but an order — which is what
+/// [`compare_effects`] checks.
+fn run_text_effects(artifact: &str) -> Observed {
+    let mut observed = Observed {
+        calls: Vec::new(),
+        returned: None,
+        accessor_calls: 0,
+        accessor_reads: Vec::new(),
+        effects: Vec::new(),
+    };
+    for line in artifact.lines() {
+        let statement = line.trim();
+        if statement.is_empty()
+            || statement.starts_with("//")
+            || statement == "{"
+            || statement == "}"
+        {
+            continue;
+        }
+        let statement = statement.trim_end_matches(';');
+        if statement == "super()" || statement == "this()" {
+            observed.effects.push("prologue".to_string());
+            continue;
+        }
+        if statement == "return" {
+            continue;
+        }
+        if let Some(value) = statement.strip_prefix("return ") {
+            if let Some((class, arguments)) = construction(value) {
+                observed.effects.push(format!("new {class}({arguments})"));
+                observed.returned = Some(format!("instance:{class}"));
+                continue;
+            }
+            panic!("the model does not read the returned term `{value}`");
+        }
+        if let Some((target, value)) = statement.split_once(" = ") {
+            if let Some((class, arguments)) = construction(value) {
+                observed.effects.push(format!("new {class}({arguments})"));
+                continue;
+            }
+            let member = target.rsplit('.').next().expect("a member name");
+            observed.effects.push(format!("write {member} = {value}"));
+            continue;
+        }
+        panic!("the model does not read the statement `{statement}`");
+    }
+    observed
+}
+
+/// The comparison for the shapes whose meaning is an order: the same calls, the same value, and the
+/// same effect sequence — every construction with the class and the argument values it was given,
+/// every field write with the value it wrote, and the constructor prologue, in the same positions.
+fn compare_effects(from_bytes: &Observed, from_text: &Observed) -> Result<(), String> {
+    compare(from_bytes, from_text)?;
+    if from_bytes.effects != from_text.effects {
+        return Err(format!(
+            "the effects differ: the bytecode does {:?} and the text {:?}",
+            from_bytes.effects, from_text.effects
         ));
     }
     Ok(())
@@ -2223,7 +2481,7 @@ fn the_oracle_agrees_with_the_run_on_a_concatenation_and_on_a_field_access() {
     let report = present(&class, b"method", b"()Ljava/lang/String;", 0, Vec::new());
     assert!(report.produced(), "{:?}", report.stop());
     let pool = read_pool(&class);
-    let from_bytes = run_bytecode(&code, &pool, None);
+    let from_bytes = run_bytecode(&code, &pool, &[]);
     let from_text = run_text(&report.text);
     assert_eq!(
         from_bytes.calls,
@@ -2248,7 +2506,7 @@ fn the_oracle_agrees_with_the_run_on_a_concatenation_and_on_a_field_access() {
     );
     assert!(report.accessors[0].presented(), "{:?}", report.accessors);
     let pool = read_pool(&class);
-    let from_bytes = run_bytecode(&code, &pool, Some("self"));
+    let from_bytes = run_bytecode(&code, &pool, &["self"]);
     let from_text = run_text(&report.text);
     assert_eq!(from_bytes.accessor_calls, 1);
     assert_eq!(from_text.accessor_reads, vec![FIELD_NAME.to_string()]);
@@ -2264,7 +2522,7 @@ fn the_oracle_rejects_a_concatenation_whose_calls_are_written_in_another_order()
     let (class, code) = oracle_concat_class();
     let report = present(&class, b"method", b"()Ljava/lang/String;", 0, Vec::new());
     let pool = read_pool(&class);
-    let from_bytes = run_bytecode(&code, &pool, None);
+    let from_bytes = run_bytecode(&code, &pool, &[]);
     // The same artifact with the two calls swapped: the model must see that the bytecode called `f`
     // before `g` and the text calls `g` before `f`, however equal the values end up being.
     let swapped = report
@@ -2286,7 +2544,7 @@ fn the_oracle_rejects_a_concatenation_that_calls_an_operand_twice() {
     let (class, code) = oracle_concat_class();
     let report = present(&class, b"method", b"()Ljava/lang/String;", 0, Vec::new());
     let pool = read_pool(&class);
-    let from_bytes = run_bytecode(&code, &pool, None);
+    let from_bytes = run_bytecode(&code, &pool, &[]);
     let doubled = report.text.replace("f() + ", "f() + f() + ");
     assert!(doubled.contains("f() + f()"), "{doubled}");
     let from_text = run_text(&doubled);
@@ -2370,5 +2628,1094 @@ fn a_budget_that_refuses_the_emission_of_a_new_shape_hands_out_nothing() {
             .any(|diagnostic| diagnostic.code == "jre_output_budget"),
         "{:?}",
         report.diagnostics
+    );
+}
+
+// ---------------------------------------------------------------------------
+// P3 2.3 章§0：一个被拒绝的读者会不会吞掉产生它的那次调用（探针）
+// ---------------------------------------------------------------------------
+
+/// `Test.value()Ljava/lang/Object;` called, cast by a `checkcast` **no rule claims**, and stored.
+///
+/// The call's value reaches exactly one instruction — that cast — and the cast is quoted as
+/// bytecode. Whether the invocation survives in the artifact at all is the question the probe asks.
+fn refused_cast_consumer_class() -> Vec<u8> {
+    let (mut pool, _code, test, object) = base_pool();
+    let string_name = pool.utf8("java/lang/String");
+    let string = pool.class(string_name);
+    let value = member_ref(&mut pool, test, "value", "()Ljava/lang/Object;");
+    let method = pool.utf8("method");
+    let method_descriptor = pool.utf8("()V");
+    let value_name = pool.utf8("value");
+    let value_descriptor = pool.utf8("()Ljava/lang/Object;");
+    let code = Code::default()
+        .op(0xb8)
+        .index(value) // 0: invokestatic Test.value()Ljava/lang/Object;
+        .op(0xc0)
+        .index(string) // 3: checkcast java/lang/String
+        .op(0x4c) // 6: astore_1
+        .op(0xb1) // 7: return
+        .done();
+    let value_code = Code::default().op(0x01).op(0xb0).done();
+    class_bytes(
+        &pool,
+        test,
+        object,
+        &[],
+        &[
+            MemberDef {
+                flags: 0x0009,
+                name: method,
+                descriptor: method_descriptor,
+                max_stack: 1,
+                max_locals: 2,
+                code,
+            },
+            MemberDef {
+                flags: 0x0009,
+                name: value_name,
+                descriptor: value_descriptor,
+                max_stack: 1,
+                max_locals: 0,
+                code: value_code,
+            },
+        ],
+    )
+}
+
+/// A call whose **argument** is the value of a cast no rule claims, stored in a local: the store is
+/// a reader of the call's value, so the call writes no statement of its own — and the store cannot
+/// write the call, because the argument it would read has no text either.
+fn refused_argument_class() -> Vec<u8> {
+    let (mut pool, _code, test, object) = base_pool();
+    let string_name = pool.utf8("java/lang/String");
+    let string = pool.class(string_name);
+    let take = member_ref(&mut pool, test, "take", "(Ljava/lang/String;)I");
+    let method = pool.utf8("method");
+    let method_descriptor = pool.utf8("(Ljava/lang/Object;)V");
+    let take_name = pool.utf8("take");
+    let take_descriptor = pool.utf8("(Ljava/lang/String;)I");
+    let code = Code::default()
+        .op(0x2a) // 0: aload_0
+        .op(0xc0)
+        .index(string) // 1: checkcast java/lang/String
+        .op(0xb8)
+        .index(take) // 4: invokestatic Test.take(Ljava/lang/String;)I
+        .op(0x3c) // 7: istore_1
+        .op(0xb1) // 8: return
+        .done();
+    let take_code = Code::default().op(0x03).op(0xac).done();
+    class_bytes(
+        &pool,
+        test,
+        object,
+        &[],
+        &[
+            MemberDef {
+                flags: 0x0009,
+                name: method,
+                descriptor: method_descriptor,
+                max_stack: 1,
+                max_locals: 2,
+                code,
+            },
+            MemberDef {
+                flags: 0x0009,
+                name: take_name,
+                descriptor: take_descriptor,
+                max_stack: 1,
+                max_locals: 1,
+                code: take_code,
+            },
+        ],
+    )
+}
+
+#[test]
+fn an_invocation_whose_only_reader_is_quoted_is_written_rather_than_lost() {
+    // P3 2.3 §0, measured before the guard existed: this artifact named BCI 3 (the cast) and BCI 6
+    // (the store) and **neither** BCI 0 — the invocation `Test.value()` was in no segment and in no
+    // quote, so its effect had silently left the artifact. The reader set now excludes an instruction
+    // this build quotes, and the invocation is written where it runs.
+    let class = refused_cast_consumer_class();
+    let report = present(&class, b"method", b"()V", 0, Vec::new());
+    assert!(report.produced(), "{:?}", report.stop());
+    assert_eq!(
+        report.text.matches("value()").count(),
+        1,
+        "the invocation is written exactly once:\n{}",
+        report.text
+    );
+    assert!(report.text.contains("    value();\n"), "{}", report.text);
+    // The cast no rule claimed is still quoted, with its own BCI and the store's.
+    assert!(report.text.contains("// @bytecode 3"), "{}", report.text);
+    assert!(report.text.contains("// @bytecode 6"), "{}", report.text);
+    assert_eq!(
+        unaccounted_instructions(&report, &[0, 3, 6, 7]),
+        Vec::<u32>::new(),
+        "{}",
+        report.text
+    );
+    assert!(
+        !report.text_of_bci(0).is_empty(),
+        "the invocation's own BCI reaches a segment: {:?}",
+        report.text_of_bci(0)
+    );
+    assert_eq!(report.representation, Representation::Mixed);
+}
+
+#[test]
+fn an_invocation_a_quoted_reader_cannot_write_is_named_by_the_quote() {
+    // The other half of the same invariant: the reader here *is* one this build presents (a store),
+    // and it cannot write the value after all because its own operand is bytecode no rule claimed. The
+    // invocation is then named by the quote rather than dropped.
+    let class = refused_argument_class();
+    let report = present(&class, b"method", b"(Ljava/lang/Object;)V", 0, Vec::new());
+    assert!(report.produced(), "{:?}", report.stop());
+    assert!(!report.text.contains("take("), "{}", report.text);
+    // BCI 7 is the store that could not write; BCI 4 is the invocation it could not write with it.
+    assert!(report.text.contains("// @bytecode 7 4"), "{}", report.text);
+    assert_eq!(
+        unaccounted_instructions(&report, &[1, 4, 7, 8]),
+        Vec::<u32>::new(),
+        "{}",
+        report.text
+    );
+}
+
+// ---------------------------------------------------------------------------
+// P3 2.3: the class-level facts a caller states, and the harness that reads them
+// ---------------------------------------------------------------------------
+
+/// The facts of one method **with the class that declares it**: its member flags, its debug names,
+/// and the class's own name and flags as the same header read states them.
+///
+/// This is what `declaration@1`, `field@1` and `init@1` read (P3 2.3). The facts are read out of the
+/// real class file rather than written into this file, so a fixture whose flags say "interface" is
+/// one because the bytes say so.
+fn facts_of_in(
+    class: &[u8],
+    name: &[u8],
+    parameters: u16,
+    debug: Vec<Option<String>>,
+) -> RecoveryFacts {
+    let mut budget = Budget::new(limits());
+    let header = class_facts(class, &mut budget).expect("the fixture is a class file");
+    let member = header
+        .methods
+        .iter()
+        .find(|member| member.name.raw().0 == name)
+        .expect("the fixture declares the method");
+    RecoveryFacts::new(
+        MethodFacts::new(
+            String::from_utf8_lossy(name),
+            String::from_utf8_lossy(&member.descriptor.raw().0),
+            parameters,
+        )
+        .with_access_flags(member.access_flags)
+        .with_declaring_class(DeclaringClass::new(
+            String::from_utf8_lossy(&header.this_class.raw().0).into_owned(),
+            header.access_flags,
+        )),
+    )
+    .with_debug_locals(debug)
+}
+
+/// Presents one fixture body with the class that declares it stated.
+fn present_in(
+    class: &[u8],
+    name: &[u8],
+    descriptor: &[u8],
+    parameters: u16,
+    debug: Vec<Option<String>>,
+) -> jarde_java::RecoveryReport {
+    let payload = analyze(class, name, descriptor);
+    let facts = facts_of_in(class, name, parameters, debug);
+    let members = members_of(class);
+    let mut budget = Budget::new(limits());
+    recover_body(&payload, &facts, Some(&members), &mut budget)
+}
+
+/// Every BCI the artifact names in a quoted bytecode line, in the order it names them.
+fn quoted_bcis(report: &jarde_java::RecoveryReport) -> Vec<u32> {
+    report
+        .text
+        .lines()
+        .filter_map(|line| line.trim().strip_prefix("// @bytecode "))
+        .flat_map(|list| list.split_whitespace())
+        .map(|bci| bci.parse().expect("a BCI in a quote"))
+        .collect()
+}
+
+/// Every instruction of a body the artifact does **not** account for: one that no segment reaches and
+/// no quoted bytecode line names.
+///
+/// This is the invariant P3 2.3 §0 restored. Before it, an invocation whose only reader was an
+/// instruction this run quotes wrote no statement of its own (because "something reads it") and the
+/// reader wrote nothing (because it is quoted), so the invocation was in neither the text nor the
+/// quote: its effect had silently left the artifact.
+fn unaccounted_instructions(report: &jarde_java::RecoveryReport, bcis: &[u32]) -> Vec<u32> {
+    let quoted = quoted_bcis(report);
+    bcis.iter()
+        .copied()
+        .filter(|bci| !quoted.contains(bci) && report.text_of_bci(*bci).is_empty())
+        .collect()
+}
+
+/// The line of an artifact that contains one piece of text, or a panic naming the artifact.
+fn line_with(report: &jarde_java::RecoveryReport, needle: &str) -> usize {
+    report
+        .text
+        .lines()
+        .position(|line| line.contains(needle))
+        .unwrap_or_else(|| panic!("no line contains `{needle}`:\n{}", report.text))
+}
+
+// ---------------------------------------------------------------------------
+// A: an anonymous class's use site, and the nesting this slice does not claim
+// ---------------------------------------------------------------------------
+
+/// `p/Outer$1.method()Lp/Outer$1;` — an instance method that creates the class the compiler minted for
+/// an anonymous class, handing the synthetic constructor the enclosing instance the source captured.
+/// The body's bytes come back with the class, for the oracle's own decoder.
+fn anonymous_use_class() -> (Vec<u8>, Vec<u8>) {
+    let mut pool = Pool::default();
+    let _code = code_attribute(&mut pool);
+    let outer_name = pool.utf8("p/Outer");
+    let _outer = pool.class(outer_name);
+    let anonymous_name = pool.utf8("p/Outer$1");
+    let anonymous = pool.class(anonymous_name);
+    let object_name = pool.utf8("java/lang/Object");
+    let object = pool.class(object_name);
+    let init = member_ref(&mut pool, anonymous, "<init>", "(Lp/Outer;)V");
+    let method = pool.utf8("method");
+    let method_descriptor = pool.utf8("()Lp/Outer$1;");
+    let code = Code::default()
+        .op(0xbb)
+        .index(anonymous) // 0: new p/Outer$1
+        .op(0x59) // 3: dup
+        .op(0x2a) // 4: aload_0  (the enclosing instance, pushed after the copy)
+        .op(0xb7)
+        .index(init) // 5: invokespecial p/Outer$1.<init>(Lp/Outer;)V
+        .op(0xb0) // 8: areturn
+        .done();
+    let class = class_bytes(
+        &pool,
+        anonymous,
+        object,
+        &[],
+        &[MemberDef {
+            flags: 0x0001,
+            name: method,
+            descriptor: method_descriptor,
+            max_stack: 2,
+            max_locals: 1,
+            code: code.clone(),
+        }],
+    );
+    (class, code)
+}
+
+/// The same use site with a **copy** of the instance stored twice: the value left after the
+/// constructor is copied again, and the only instructions that read it are ones this build quotes —
+/// so the construction has no statement to be written in.
+fn anonymous_use_twice_class() -> Vec<u8> {
+    let mut pool = Pool::default();
+    let _code = code_attribute(&mut pool);
+    let outer_name = pool.utf8("p/Outer");
+    let _outer = pool.class(outer_name);
+    let anonymous_name = pool.utf8("p/Outer$1");
+    let anonymous = pool.class(anonymous_name);
+    let object_name = pool.utf8("java/lang/Object");
+    let object = pool.class(object_name);
+    let init = member_ref(&mut pool, anonymous, "<init>", "(Lp/Outer;)V");
+    let method = pool.utf8("method");
+    let method_descriptor = pool.utf8("()Lp/Outer$1;");
+    let code = Code::default()
+        .op(0xbb)
+        .index(anonymous) // 0: new p/Outer$1
+        .op(0x59) // 3: dup
+        .op(0x2a) // 4: aload_0
+        .op(0xb7)
+        .index(init) // 5: invokespecial p/Outer$1.<init>(Lp/Outer;)V
+        .op(0x59) // 8: dup  ← a second copy, which this build quotes
+        .op(0x4c) // 9: astore_1
+        .op(0x4d) // 10: astore_2
+        .op(0x2b) // 11: aload_1
+        .op(0xb0) // 12: areturn
+        .done();
+    class_bytes(
+        &pool,
+        anonymous,
+        object,
+        &[],
+        &[MemberDef {
+            flags: 0x0001,
+            name: method,
+            descriptor: method_descriptor,
+            max_stack: 2,
+            max_locals: 3,
+            code,
+        }],
+    )
+}
+
+#[test]
+fn an_anonymous_classs_use_is_presented_with_the_enclosing_instance_it_really_read() {
+    let (class, _code) = anonymous_use_class();
+    let report = present_in(
+        &class,
+        b"method",
+        b"()Lp/Outer$1;",
+        1,
+        vec![Some("self".into())],
+    );
+    assert!(report.produced(), "{:?}", report.stop());
+    // The construction is one expression: the class the pool names (`p/Outer$1`, the name the
+    // compiler minted) and the value the site really read as its argument.
+    assert!(
+        report.text.contains("return new p.Outer$1(self);"),
+        "{}",
+        report.text
+    );
+    assert_eq!(report.news.len(), 1);
+    let site = &report.news[0];
+    assert!(site.presented(), "{:?}", site);
+    assert_eq!(site.class, "p/Outer$1");
+    assert_eq!(site.head, 0);
+    assert_eq!(site.dup, Some(3));
+    assert_eq!(site.constructor, Some(5));
+    assert_eq!(site.arguments, vec![4], "the argument's own BCI is kept");
+    assert_eq!(site.rule().citation(), "new@1");
+    // The nesting relation is *not* claimed: nothing in the artifact says the class is anonymous,
+    // that it belongs to `p/Outer`, or that the argument is an enclosing instance.
+    assert!(!report.text.contains("Outer.this"), "{}", report.text);
+    assert_eq!(report.representation, Representation::Java);
+    assert_eq!(report.quality, Quality::Structured);
+}
+
+#[test]
+fn a_construction_only_quoted_instructions_read_is_refused_and_quoted_whole() {
+    let class = anonymous_use_twice_class();
+    let report = present_in(
+        &class,
+        b"method",
+        b"()Lp/Outer$1;",
+        1,
+        vec![Some("self".into())],
+    );
+    assert!(report.produced(), "{:?}", report.stop());
+    assert_eq!(report.news.len(), 1);
+    let site = &report.news[0];
+    assert!(!site.presented(), "{:?}", site);
+    let refusal = site.refusal.as_ref().expect("the refusal is recorded");
+    assert_eq!(refusal.code, "jre_new_shape");
+    assert!(
+        refusal.message.contains("no place in the body"),
+        "the refusal states why the construction cannot be written: {}",
+        refusal.message
+    );
+    assert!(
+        refusal.message.contains("8"),
+        "and names the reader that is quoted instead: {}",
+        refusal.message
+    );
+    assert!(
+        !report.text.contains("new p.Outer$1(self)"),
+        "{}",
+        report.text
+    );
+    // Every instruction of the refused site is still accounted for: quoted, with its own BCI.
+    assert_eq!(
+        unaccounted_instructions(&report, &[0, 3, 5, 8, 9, 10, 12]),
+        Vec::<u32>::new(),
+        "{}",
+        report.text
+    );
+    assert_eq!(report.representation, Representation::Mixed);
+}
+
+// ---------------------------------------------------------------------------
+// B: the dispatch table a compiler's `switch` over an enum reads
+// ---------------------------------------------------------------------------
+
+/// `p/Outer.method(…)I` — `switch (order)` on an enum, as a compiler lowers it: a static `int[]`
+/// table read at the constant's ordinal, then a `tableswitch` on the element.
+///
+/// The switch's own layout is computed here rather than written out, because the padding of a
+/// `tableswitch` depends on the BCI it sits at — and the two variants of this fixture put it at two
+/// different addresses. The BCIs of the instructions that produce statements come back with the
+/// class, so a test can require every one of them to be accounted for.
+fn enum_switch_class(index_is_a_call: bool) -> (Vec<u8>, Vec<u8>, Vec<u32>) {
+    let mut pool = Pool::default();
+    let _code = code_attribute(&mut pool);
+    let outer_name = pool.utf8("p/Outer");
+    let outer = pool.class(outer_name);
+    let object_name = pool.utf8("java/lang/Object");
+    let object = pool.class(object_name);
+    let holder_name = pool.utf8("p/Outer$1");
+    let holder = pool.class(holder_name);
+    let order_name = pool.utf8("p/Order");
+    let order = pool.class(order_name);
+    let table = field_ref(&mut pool, holder, "$SwitchMap$p$Order", "[I");
+    let ordinal = member_ref(&mut pool, order, "ordinal", "()I");
+    let method = pool.utf8("method");
+    let method_descriptor = if index_is_a_call {
+        pool.utf8("(Lp/Order;)I")
+    } else {
+        pool.utf8("(I)I")
+    };
+    let mut code = Code::default()
+        .op(0xb2)
+        .index(table) // 0: getstatic p/Outer$1.$SwitchMap$p$Order [I
+        .done();
+    if index_is_a_call {
+        code.extend_from_slice(&[0x2a]); // 3: aload_0
+        code.extend_from_slice(&[0xb6, (ordinal >> 8) as u8, ordinal as u8]); // 4: invokevirtual ordinal()I
+    } else {
+        code.extend_from_slice(&[0x1a]); // 3: iload_0 — a local, not a call
+    }
+    let iaload = u32::try_from(code.len()).expect("a fixture body fits u32");
+    code.push(0x2e);
+    let switch_at = u32::try_from(code.len()).expect("a fixture body fits u32");
+    // The operands of a `tableswitch` start at the next four-byte boundary after its opcode.
+    let padding = (4 - ((switch_at as usize + 1) % 4)) % 4;
+    let operands_at = switch_at as usize + 1 + padding;
+    let arms_at = operands_at + 4 + 4 + 4 + 2 * 4;
+    let (arm_one, arm_two, default) = (arms_at as u32, arms_at as u32 + 2, arms_at as u32 + 4);
+    code.push(0xaa);
+    code.extend(std::iter::repeat_n(0_u8, padding));
+    for value in [
+        i32::try_from(default - switch_at).expect("an offset fits"),
+        1,
+        2,
+        i32::try_from(arm_one - switch_at).expect("an offset fits"),
+        i32::try_from(arm_two - switch_at).expect("an offset fits"),
+    ] {
+        code.extend_from_slice(&value.to_be_bytes());
+    }
+    // Each arm is one `return` of its own constant, and the default is the third.
+    let returns = arms_at as u32;
+    code.extend_from_slice(&[0x04, 0xac]); // arm one: iconst_1; ireturn
+    code.extend_from_slice(&[0x05, 0xac]); // arm two: iconst_2; ireturn
+    code.extend_from_slice(&[0x03, 0xac]); // default: iconst_0; ireturn
+    let statements = vec![0, iaload, switch_at, returns, returns + 2, returns + 4];
+    let class = class_bytes(
+        &pool,
+        outer,
+        object,
+        &[],
+        &[MemberDef {
+            // A **static** method: slot 0 is the enum value the switch reads, not `this`.
+            flags: 0x0008,
+            name: method,
+            descriptor: method_descriptor,
+            max_stack: 2,
+            max_locals: 1,
+            code: code.clone(),
+        }],
+    );
+    (class, code, statements)
+}
+
+#[test]
+fn an_enum_switch_is_presented_as_the_table_read_the_bytecode_performs() {
+    let (class, _code, _statements) = enum_switch_class(true);
+    let report = present_in(
+        &class,
+        b"method",
+        b"(Lp/Order;)I",
+        1,
+        vec![Some("order".into())],
+    );
+    assert!(report.produced(), "{:?}", report.stop());
+    assert_eq!(report.enum_switches.len(), 1);
+    let read = &report.enum_switches[0];
+    assert!(read.presented(), "{:?}", read);
+    let table = read.table.as_ref().expect("the table is recorded");
+    assert_eq!(table.owner, "p/Outer$1");
+    assert_eq!(table.name, "$SwitchMap$p$Order");
+    assert_eq!(table.descriptor, "[I");
+    let index = read.index.as_ref().expect("the index call is recorded");
+    assert_eq!(index.owner, "p/Order");
+    assert_eq!(index.name, "ordinal");
+    assert_eq!(index.descriptor, "()I");
+    assert_eq!(read.rule().citation(), "enumswitch@1");
+    // The table read is written where the switch's selector is written, and it is read once.
+    assert!(
+        report
+            .text
+            .contains("switch (p.Outer$1.$SwitchMap$p$Order[order.ordinal()])"),
+        "{}",
+        report.text
+    );
+    assert_eq!(
+        report.text.matches("ordinal()").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert!(report.text.contains("case 1:"), "{}", report.text);
+    assert!(report.text.contains("default:"), "{}", report.text);
+    // The constant mapping is *not* claimed: the enum class's own constants were never read, so no
+    // `case p.Order.…` label can be written, and the run says so.
+    assert!(!report.text.contains("p.Order."), "{}", report.text);
+    assert!(
+        report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "jre_enumswitch"
+                && diagnostic.message.contains("enum class's own declaration")),
+        "{:?}",
+        report.diagnostics
+    );
+}
+
+#[test]
+fn a_table_read_indexed_by_a_local_is_refused_and_the_whole_switch_stays_quoted() {
+    let (class, _code, statements) = enum_switch_class(false);
+    let report = present_in(&class, b"method", b"(I)I", 1, Vec::new());
+    assert_eq!(report.enum_switches.len(), 1);
+    let read = &report.enum_switches[0];
+    assert!(!read.presented(), "{:?}", read);
+    let refusal = read.refusal.as_ref().expect("the refusal is recorded");
+    assert_eq!(refusal.code, "jre_enumswitch_shape");
+    assert!(
+        refusal.message.contains("which is not a call"),
+        "{}",
+        refusal.message
+    );
+    assert!(!report.text.contains("switch ("), "{}", report.text);
+    // The refused region names **every** instruction it covers — the selector's, the arms' and the
+    // returns' — not just the `tableswitch`: P3 2.3 §0's other half.
+    assert_eq!(
+        unaccounted_instructions(&report, &statements),
+        Vec::<u32>::new(),
+        "{}",
+        report.text
+    );
+    assert_eq!(report.representation, Representation::Mixed);
+}
+
+// ---------------------------------------------------------------------------
+// C: what the class file declares the member to be
+// ---------------------------------------------------------------------------
+
+/// One interface (or class) whose single method is declared with the flags given.
+fn one_method_class(class_flags: u16, member_flags: u16) -> Vec<u8> {
+    let mut pool = Pool::default();
+    let _code = code_attribute(&mut pool);
+    let shape_name = pool.utf8("p/Shape");
+    let shape = pool.class(shape_name);
+    let object_name = pool.utf8("java/lang/Object");
+    let object = pool.class(object_name);
+    let run = pool.utf8("run");
+    let descriptor = pool.utf8("()V");
+    class_bytes_with(
+        &pool,
+        class_flags,
+        shape,
+        object,
+        &[],
+        &[MemberDef {
+            flags: member_flags,
+            name: run,
+            descriptor,
+            max_stack: 0,
+            max_locals: 1,
+            code: Code::default().op(0xb1).done(),
+        }],
+    )
+}
+
+#[test]
+fn an_interfaces_non_abstract_method_is_stated_as_a_default_method() {
+    // `ACC_INTERFACE | ACC_ABSTRACT` is what JVMS 4.1 requires of an interface's own flags; the
+    // member's `public` without `abstract` is what makes it a `default` method.
+    let class = one_method_class(0x0601, 0x0001);
+    let report = present_in(&class, b"run", b"()V", 1, vec![Some("self".into())]);
+    assert!(report.produced(), "{:?}", report.stop());
+    let declaration = report
+        .declaration
+        .as_ref()
+        .expect("the declaration is read");
+    assert_eq!(declaration.form, Some(DeclarationForm::DefaultMethod));
+    assert_eq!(declaration.interface, Some(true));
+    assert_eq!(declaration.declaring_class.as_deref(), Some("p/Shape"));
+    assert!(declaration.presented());
+    assert!(
+        report.text.contains(
+            "// @declaration an interface's default method of `p.Shape`, member flags 0x0001"
+        ),
+        "{}",
+        report.text
+    );
+    assert!(
+        report.rules.contains(&declaration.rule()),
+        "{:?}",
+        report.rules
+    );
+}
+
+#[test]
+fn the_same_member_in_a_class_is_an_ordinary_method_and_a_static_one_is_stated_as_such() {
+    // The same member flags in a class — which is exactly why the class's own fact has to be stated
+    // instead of guessed from the member: a `public` method that is not abstract is a `default`
+    // method in an interface and an ordinary method in a class.
+    let class = one_method_class(CLASS_FLAGS, 0x0001);
+    let report = present_in(&class, b"run", b"()V", 1, vec![Some("self".into())]);
+    let declaration = report
+        .declaration
+        .as_ref()
+        .expect("the declaration is read");
+    assert_eq!(declaration.form, Some(DeclarationForm::InstanceMethod));
+    assert_eq!(declaration.interface, Some(false));
+    assert!(
+        report
+            .text
+            .contains("// @declaration an instance method of `p.Shape`"),
+        "{}",
+        report.text
+    );
+
+    // And an interface's `static` method is the other Java 8 addition.
+    let class = one_method_class(0x0601, 0x0009);
+    let report = present_in(&class, b"run", b"()V", 0, Vec::new());
+    let declaration = report
+        .declaration
+        .as_ref()
+        .expect("the declaration is read");
+    assert_eq!(
+        declaration.form,
+        Some(DeclarationForm::StaticInterfaceMethod)
+    );
+    assert!(
+        report.text.contains("an interface's static method"),
+        "{}",
+        report.text
+    );
+}
+
+#[test]
+fn a_run_that_was_not_told_the_declaring_class_states_no_declaration() {
+    // The root entry states no class-level fact (`MethodIr` carries none), so this is the shape a
+    // facade-level run has: the refusal names the fact it was missing, the envelope carries no
+    // declaration line, and the rule is not listed as one that produced this artifact.
+    let class = one_method_class(0x0601, 0x0001);
+    let report = present(&class, b"run", b"()V", 1, vec![Some("self".into())]);
+    let declaration = report.declaration.as_ref().expect("the record is written");
+    assert!(!declaration.presented());
+    assert_eq!(declaration.form, None);
+    let refusal = declaration
+        .refusal
+        .as_ref()
+        .expect("the refusal is recorded");
+    assert_eq!(refusal.code, "jre_declaration_class_not_in_run");
+    assert_eq!(
+        refusal.requirement.as_deref(),
+        Some("the `declaring_class` attribute")
+    );
+    assert!(!report.text.contains("@declaration"), "{}", report.text);
+    assert!(
+        !report.rules.contains(&declaration.rule()),
+        "{:?}",
+        report.rules
+    );
+    assert!(
+        report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "jre_declaration_class_not_in_run"),
+        "{:?}",
+        report.diagnostics
+    );
+}
+
+// ---------------------------------------------------------------------------
+// D: a constructor's field initializers, the static initializer, and the prologue
+// ---------------------------------------------------------------------------
+
+/// `Test.<init>()V` with a field initializer and a static one, exactly as a compiler writes them:
+/// the constructor call first, then the writes in source order. The body's bytes come back with the
+/// class so that the oracle's own decoder runs the very instructions the run was handed.
+fn constructor_class() -> (Vec<u8>, Vec<u8>) {
+    let (mut pool, _code, test, object) = base_pool();
+    let f_name = pool.utf8("f");
+    let f_descriptor = pool.utf8("I");
+    let g_name = pool.utf8("g");
+    let g_descriptor = pool.utf8("I");
+    let f = field_ref(&mut pool, test, "f", "I");
+    let g = field_ref(&mut pool, test, "g", "I");
+    let super_init = member_ref(&mut pool, object, "<init>", "()V");
+    let method = pool.utf8("<init>");
+    let descriptor = pool.utf8("()V");
+    let code = Code::default()
+        .op(0x2a) // 0: aload_0
+        .op(0xb7)
+        .index(super_init) // 1: invokespecial java/lang/Object.<init>()V
+        .op(0x2a) // 4: aload_0
+        .op(0x08) // 5: iconst_5
+        .op(0xb5)
+        .index(f) // 6: putfield Test.f:I
+        .op(0x10)
+        .byte(7) // 9: bipush 7
+        .op(0xb3)
+        .index(g) // 11: putstatic Test.g:I
+        .op(0xb1) // 14: return
+        .done();
+    let class = class_bytes(
+        &pool,
+        test,
+        object,
+        &[
+            FieldDef {
+                flags: 0x0002,
+                name: f_name,
+                descriptor: f_descriptor,
+            },
+            FieldDef {
+                flags: 0x0008,
+                name: g_name,
+                descriptor: g_descriptor,
+            },
+        ],
+        &[MemberDef {
+            flags: 0x0001,
+            name: method,
+            descriptor,
+            max_stack: 1,
+            max_locals: 1,
+            code: code.clone(),
+        }],
+    );
+    (class, code)
+}
+
+/// `Test.<clinit>()V`: the class initializer a compiler fills with the static initializers.
+fn static_initializer_class() -> Vec<u8> {
+    let (mut pool, _code, test, object) = base_pool();
+    let g_name = pool.utf8("g");
+    let g_descriptor = pool.utf8("I");
+    let g = field_ref(&mut pool, test, "g", "I");
+    let method = pool.utf8("<clinit>");
+    let descriptor = pool.utf8("()V");
+    let code = Code::default()
+        .op(0x10)
+        .byte(7) // 0: bipush 7
+        .op(0xb3)
+        .index(g) // 2: putstatic Test.g:I
+        .op(0xb1) // 5: return
+        .done();
+    class_bytes(
+        &pool,
+        test,
+        object,
+        &[FieldDef {
+            flags: 0x0008,
+            name: g_name,
+            descriptor: g_descriptor,
+        }],
+        &[MemberDef {
+            flags: 0x0008,
+            name: method,
+            descriptor,
+            max_stack: 1,
+            max_locals: 0,
+            code,
+        }],
+    )
+}
+
+/// An inner class's constructor: the synthetic reference to the enclosing instance is written
+/// **before** the constructor call, which JVMS 4.10.1.9 allows and which is the one write whose
+/// receiver is not a typed value.
+fn inner_constructor_class() -> Vec<u8> {
+    let mut pool = Pool::default();
+    let _code = code_attribute(&mut pool);
+    let inner_name = pool.utf8("p/Outer$1");
+    let inner = pool.class(inner_name);
+    let outer_name = pool.utf8("p/Outer");
+    let outer = pool.class(outer_name);
+    let field = field_ref(&mut pool, inner, "this$0", "Lp/Outer;");
+    let super_init = member_ref(&mut pool, outer, "<init>", "()V");
+    let method = pool.utf8("<init>");
+    let descriptor = pool.utf8("(Lp/Outer;)V");
+    let code = Code::default()
+        .op(0x2a) // 0: aload_0
+        .op(0x2b) // 1: aload_1  (the enclosing instance)
+        .op(0xb5)
+        .index(field) // 2: putfield p/Outer$1.this$0:Lp/Outer;  ← before the constructor call
+        .op(0x2a) // 5: aload_0
+        .op(0xb7)
+        .index(super_init) // 6: invokespecial p/Outer.<init>()V
+        .op(0xb1) // 9: return
+        .done();
+    let field_name = pool.utf8("this$0");
+    let field_descriptor = pool.utf8("Lp/Outer;");
+    class_bytes_with(
+        &pool,
+        CLASS_FLAGS,
+        inner,
+        outer,
+        &[FieldDef {
+            flags: 0x0002,
+            name: field_name,
+            descriptor: field_descriptor,
+        }],
+        &[MemberDef {
+            flags: 0x0001,
+            name: method,
+            descriptor,
+            max_stack: 2,
+            max_locals: 2,
+            code,
+        }],
+    )
+}
+
+#[test]
+fn a_constructors_field_initializers_are_written_after_its_constructor_call_and_in_order() {
+    let (class, _code) = constructor_class();
+    let report = present_in(&class, b"<init>", b"()V", 1, vec![Some("self".into())]);
+    assert!(report.produced(), "{:?}", report.stop());
+    let prologue = report.init.as_ref().expect("the prologue is read");
+    assert!(prologue.presented(), "{:?}", prologue);
+    assert_eq!(prologue.target, Some(ConstructorTarget::Super));
+    assert_eq!(prologue.class.as_deref(), Some("java/lang/Object"));
+    assert_eq!(prologue.declared.as_deref(), Some("Test"));
+    assert_eq!(prologue.bci, Some(1));
+    assert_eq!(prologue.rule().citation(), "init@1");
+
+    // The instance initializer and the static one are the writes the body really performs.
+    assert_eq!(report.fields.len(), 2, "{:?}", report.fields);
+    assert!(report.fields.iter().all(|record| record.presented()));
+    assert_eq!(
+        report
+            .fields
+            .iter()
+            .map(|record| (record.access, record.is_static, record.name.as_str()))
+            .collect::<Vec<_>>(),
+        vec![("write", false, "f"), ("write", true, "g")]
+    );
+
+    // **The order is the invariant**: the constructor call first, then the instance initializer,
+    // then the static one — never reordered, never moved out of the constructor.
+    let super_line = line_with(&report, "super();");
+    let field_line = line_with(&report, "self.f = 5;");
+    let static_line = line_with(&report, "Test.g = 7;");
+    let return_line = line_with(&report, "return;");
+    assert!(
+        super_line < field_line && field_line < static_line && static_line < return_line,
+        "the writes keep the order the bytecode has:\n{}",
+        report.text
+    );
+    assert_eq!(report.text.matches("super()").count(), 1, "{}", report.text);
+    // The declaration of an instance initializer is read from its name, without the class's flags.
+    assert_eq!(
+        report
+            .declaration
+            .as_ref()
+            .and_then(|declaration| declaration.form),
+        Some(DeclarationForm::Constructor)
+    );
+}
+
+#[test]
+fn a_static_initializer_is_written_as_the_writes_it_performs_and_declared_as_one() {
+    let class = static_initializer_class();
+    let report = present_in(&class, b"<clinit>", b"()V", 0, Vec::new());
+    assert!(report.produced(), "{:?}", report.stop());
+    assert!(report.text.contains("Test.g = 7;"), "{}", report.text);
+    assert_eq!(report.fields.len(), 1);
+    assert!(report.fields[0].presented());
+    assert_eq!(report.fields[0].name, "g");
+    assert!(report.fields[0].is_static);
+    assert_eq!(
+        report
+            .declaration
+            .as_ref()
+            .and_then(|declaration| declaration.form),
+        Some(DeclarationForm::StaticInitializer)
+    );
+    assert!(
+        report
+            .text
+            .contains("// @declaration a static initializer of `Test`"),
+        "{}",
+        report.text
+    );
+    // There is no constructor prologue to present: the body is not an instance initializer.
+    assert!(report.init.is_none(), "{:?}", report.init);
+}
+
+#[test]
+fn a_write_made_before_the_constructor_call_stays_where_the_bytecode_made_it() {
+    let class = inner_constructor_class();
+    let report = present_in(
+        &class,
+        b"<init>",
+        b"(Lp/Outer;)V",
+        2,
+        vec![Some("self".into()), Some("outer".into())],
+    );
+    assert!(report.produced(), "{:?}", report.stop());
+    // The `UninitializedThis` write is presented under JVMS 4.10.1.9's own rule — the `Fieldref`
+    // names the class being constructed — and it stays **before** the constructor call, which is
+    // where the bytes put it (JLS 12.5 runs the instance initializers after `super(…)`, and this one
+    // is the compiler's own pre-call write).
+    let write_line = line_with(&report, "self.this$0 = outer;");
+    let super_line = line_with(&report, "super();");
+    assert!(
+        write_line < super_line,
+        "the write is not moved past the constructor call:\n{}",
+        report.text
+    );
+    assert_eq!(report.fields.len(), 1);
+    assert!(report.fields[0].presented(), "{:?}", report.fields);
+    assert_eq!(report.fields[0].name, "this$0");
+    assert_eq!(report.fields[0].access, "write");
+    assert_eq!(
+        report.init.as_ref().and_then(|prologue| prologue.target),
+        Some(ConstructorTarget::Super)
+    );
+    assert_eq!(
+        report
+            .init
+            .as_ref()
+            .and_then(|prologue| prologue.class.as_deref()),
+        Some("p/Outer")
+    );
+}
+
+#[test]
+fn a_run_that_was_not_told_the_class_refuses_the_pre_call_write_and_the_prologue() {
+    // The same body with no class-level fact: neither the write on the uninitialized `this` nor the
+    // prologue can be decided, and both are *stated* refusals with the missing fact named — not a
+    // dropped assignment, not a guessed `super`/`this`.
+    let class = inner_constructor_class();
+    let report = present(
+        &class,
+        b"<init>",
+        b"(Lp/Outer;)V",
+        2,
+        vec![Some("self".into()), Some("outer".into())],
+    );
+    let write = &report.fields[0];
+    assert!(!write.presented(), "{:?}", write);
+    assert_eq!(
+        write.refusal.as_ref().map(|refusal| refusal.code),
+        Some("jre_field_declaring_class_missing")
+    );
+    let prologue = report.init.as_ref().expect("the refusal is recorded");
+    assert!(!prologue.presented());
+    assert_eq!(
+        prologue.refusal.as_ref().map(|refusal| refusal.code),
+        Some("jre_init_class_not_in_run")
+    );
+    assert!(!report.text.contains("super()"), "{}", report.text);
+    assert!(!report.text.contains("this()"), "{}", report.text);
+    assert!(!report.text.contains("this$0 = outer"), "{}", report.text);
+    // Nothing vanishes: every instruction of the body is written or quoted.
+    assert_eq!(
+        unaccounted_instructions(&report, &[2, 6, 9]),
+        Vec::<u32>::new(),
+        "{}",
+        report.text
+    );
+}
+
+// ---------------------------------------------------------------------------
+// The oracle on the two 2.3 shapes whose meaning is an order
+// ---------------------------------------------------------------------------
+
+#[test]
+fn the_oracle_agrees_with_the_run_on_a_constructor_and_on_a_construction() {
+    // The constructor: the model runs the fixture's own bytes and reads the artifact's statements,
+    // and requires the two to perform the same effects in the same order — the constructor call, the
+    // instance initializer, the static one.
+    let (class, code) = constructor_class();
+    let report = present_in(&class, b"<init>", b"()V", 1, vec![Some("self".into())]);
+    assert!(report.produced(), "{:?}", report.stop());
+    let pool = read_pool(&class);
+    let from_bytes = run_bytecode(&code, &pool, &["self"]);
+    let from_text = run_text_effects(&report.text);
+    assert_eq!(
+        from_bytes.effects,
+        vec![
+            "prologue".to_string(),
+            "write f = 5".to_string(),
+            "write g = 7".to_string()
+        ],
+        "the model read the fixture's own order"
+    );
+    assert!(
+        compare_effects(&from_bytes, &from_text).is_ok(),
+        "{from_bytes:?} against {from_text:?}\n{}",
+        report.text
+    );
+
+    // The construction: one instance of the class the pool itself names, handed the value the site
+    // really read.
+    let (class, code) = anonymous_use_class();
+    let report = present_in(
+        &class,
+        b"method",
+        b"()Lp/Outer$1;",
+        1,
+        vec![Some("self".into())],
+    );
+    let from_bytes = run_bytecode(&code, &read_pool(&class), &["self"]);
+    let from_text = run_text_effects(&report.text);
+    assert_eq!(from_bytes.effects, vec!["new p.Outer$1(self)".to_string()]);
+    assert!(
+        compare_effects(&from_bytes, &from_text).is_ok(),
+        "{from_bytes:?} against {from_text:?}\n{}",
+        report.text
+    );
+}
+
+#[test]
+fn the_oracle_rejects_a_constructor_whose_field_writes_are_in_another_order() {
+    let (class, code) = constructor_class();
+    let report = present_in(&class, b"<init>", b"()V", 1, vec![Some("self".into())]);
+    let from_bytes = run_bytecode(&code, &read_pool(&class), &["self"]);
+    // The same artifact with the two writes swapped: the bytecode wrote `f` before `g`, and the model
+    // is required to see the swap however equal the two numbers happen to look.
+    let swapped = report
+        .text
+        .replace("self.f = 5;", "\u{0}")
+        .replace("Test.g = 7;", "self.f = 5;")
+        .replace('\u{0}', "Test.g = 7;");
+    assert!(swapped.contains("Test.g = 7;"), "{swapped}");
+    let from_text = run_text_effects(&swapped);
+    let rejected = compare_effects(&from_bytes, &from_text);
+    assert!(
+        rejected.is_err(),
+        "two initializers written in another order are not the same body: {from_text:?}"
+    );
+}
+
+#[test]
+fn the_oracle_rejects_a_constructor_call_written_after_its_field_initializers() {
+    let (class, code) = constructor_class();
+    let report = present_in(&class, b"<init>", b"()V", 1, vec![Some("self".into())]);
+    let from_bytes = run_bytecode(&code, &read_pool(&class), &["self"]);
+    // JLS 12.5: the instance initializers run **after** the constructor call. An artifact that writes
+    // them before it is a different program — the initializers would run on an object whose
+    // superclass constructor has not run — and the model has to see that.
+    let moved = report
+        .text
+        .replace("    super();\n", "")
+        .replace("    return;\n", "    super();\n    return;\n");
+    assert!(moved.contains("super();"), "{moved}");
+    assert!(
+        moved.find("super();").expect("the call") > moved.find("self.f = 5;").expect("the write"),
+        "{moved}"
+    );
+    let from_text = run_text_effects(&moved);
+    let rejected = compare_effects(&from_bytes, &from_text);
+    assert!(
+        rejected.is_err(),
+        "a constructor call written after the initializers is not the same body: {from_text:?}"
     );
 }

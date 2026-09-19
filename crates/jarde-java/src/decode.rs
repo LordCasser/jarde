@@ -148,6 +148,9 @@ fn operation_of(
         0xb2..=0xb5 => field(opcode, instruction, operands, pool),
         0xb6..=0xb9 => invoke(opcode, instruction, pool),
         0xba => invokedynamic(instruction, pool),
+        // The one array read this slice models: the dispatch table a compiler's enum `switch` reads
+        // (P3 2.3, `enumswitch@1`). Every other array access is `Other` and stays quoted.
+        0x2e => Operation::ArrayLoad,
         0xc0 => check_cast(instruction, operands, pool),
         0xac..=0xb1 => Operation::Return,
         _ => Operation::Other,
