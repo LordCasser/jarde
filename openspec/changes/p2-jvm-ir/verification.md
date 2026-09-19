@@ -1,6 +1,6 @@
 # P2 实施验证记录
 
-以下各片记录保留实施时点。当前状态以文末 [拆包后复核](#review-2026-09-18-layers) 为准。此前的「当前工作区复核」、未勾选/待复审说明均是原时点快照；保留其证据，不作为今天的状态。
+以下各片记录保留实施时点。当前状态为 25/29（含 5.2 的 `823173b` 增量），以文末 [2026-09-19 IR 复核](#review-2026-09-19-ir) 为准；此前待实施/待复核与 2026-09-18 快照保留为历史证据，不作为今天的状态。
 
 1.1 历史记录日期：2026-09-17。规划与契约基线 `35fdf6d`。本轮只实现 **1.1**；1.2/1.3 与 2.x–5.x 均未开始，解析、闭包、CFG、SSA 与预算维度扩展都没有实现。所有命令按单作业执行（`CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 RUST_TEST_THREADS=1`）。
 
@@ -1126,3 +1126,154 @@ M2 **实测印证了契约那句「普通图测试通过不能替代异常测试
 2. `QueryReport` **没有 `reads` 平面**，故「没有 `DriverMethodBody`」无法直接断言；等价证据是 `class_headers == 0` + `method_bodies == 0`。
 3. `analyze_method` **至多一条 `reads`**，所以「`reads` 顺序」变异不可观测；顺序牙齿由 `diagnostics` 与 `stages` 两个变异证明。
 4. 历史 fixture 的 X1 请求未新增 golden 条目；「输出逐字段不变」以 `p1_xref_golden` 的 5 个重放 + `p2_contracts` 的 P1 身份用例**引用**为证。
+
+
+<a id="review-2026-09-19-ir"></a>
+## 2026-09-19 IR 与实现路线复核
+
+算法反例基线：`eac37592a92f35fedbf98bed66fc2d04e53ae347`，通过 `git archive` 建立独立副本测试。收尾时已纳入 `955d7f3`/`823173b` 的 5.2 验收增量，见本节末尾；其测试另作增量复跑，不混入原基线数字。本轮只修改规划/规格/说明；下面的探针仅写在隔离副本，没有改主工作区的生产代码或测试。
+
+### 当前交付与新增缺口
+
+- layer 7/7 已完成，`78077e9`/`eb1adb8`/`62d76bc` 关闭全 feature、shell 失败传播与依赖方向门禁；`3aa328d` 留存完成记录，尚未归档。
+- 当前 P2 **25/29**：3.4b、3.5、4.1、4.2、4.3、5.1、5.2 已交付；**4.2b、4.3b、5.3、5.4** 未完成。算法基线 `eac3759` 当时为 24/27，随后纳入 5.2 完成记录及本轮两个新增项；历史勾选不撤销。
+- 5.1 实际协议为 `analyze_method` → `method_analysis`，沿用库报告；Ssa Completed 才给 LocalInvariants，其余 Unproven，verification 恒 NotPerformed。质量取决于是否产出 CanonicalCFG，不代表后续阶段成功。已据此修正 spec/design 的旧 operation 名称与含混 fallback 条款。
+
+### R9 · P1：正常出口相同会漏掉变化的异常输入 → 4.2b
+
+位置：`crates/jarde-jvm/src/frame.rs` 的 `run`，固定基线约 2890–2895 行。重复访问块时仅比较 `transfer.exit`，相同即 `continue`，因此未检查本次 `throw_points`。正常出口覆盖槽位后可能保持相同值，早于覆盖的抛出点却已经改变。
+
+公开入口最小反例是一份 classfile 49、`Test.method(Ljava/lang/Object;)Ljava/lang/Object;`、static、max_stack=2、max_locals=2，无 debug/StackMap 的 class。方法体 17 字节：
+
+```text
+01 4c 04 03 6c 57 2a 4c 03 99 ff f9 2b b0 57 2b b0
+0: aconst_null; 1: astore_1
+2: iconst_1; 3: iconst_0; 4: idiv; 5: pop
+6: aload_0; 7: astore_1; 8: iconst_0; 9: ifeq 2
+12: aload_1; 13: areturn
+14: pop; 15: aload_1; 16: areturn
+exception_table: [start_pc=2, end_pc=12, handler_pc=14, catch_type=0]
+```
+
+首次进入 BCI 2 时 local 1 为 Null，出口被覆盖成参数引用；回边把入口合流成引用，出口仍是同一个引用类型。BCI 4 的异常输入需要更新，实际 handler 却继续保留 Null。`Engine::analyze_method(..., stages=[Ssa])` 返回前五阶段 Completed、Ssa Partial、`ir_ssa_inconsistent`，诊断为 `slot Local(1) of block ... bci: 14 ... is entered with Null while its only input defines Ref(...)`；semantic_validation 为 Unproven。同一字节在本机 OpenJDK 23.0.1 通过 `java -Xverify:all` 的 defineClass/反射调用，返回 null；此项只证明该 fixture 被该 JVM 接受，不能替代规定的 JDK 25 reader oracle。
+
+验收：先修 Frame 的异常固定点，handler 输入与稳定后的逐 throw-site 状态一致；Frame/SSA 的公开和内部回归均通过。不能删除 SSA 类型检查掩盖陈旧 Frame。异常回边、同块多抛出点和初始化异常前状态另加对照。
+
+### R10 · P1：Frame 乘积临时存储漏计，部分发布先分配后计费 → 4.3b
+
+位置：`frame.rs::transfer_block` 约 2428–2440 行，每个 throw-site 的 `ThrowPoint` 克隆 `frame.locals`，所有快照保留到该 block transfer 结束；`exception_inputs` 继续复制。`run` 约 2873 先 `entry_frame` 分配再 charge；`ssa.rs::publish` 约 1683–1754 对 entry/exit/instructions/phis collect/clone，部分在复制后才计费。后两类由源码路径确认，不声称已逐一动态证伪。
+
+公开入口对照：classfile 49、static `Test.method()V`、max_stack=2、max_locals=10000，无 handler；Code 为 `(04 04 6c 57)` 重复 T 次后接 `b1`，即 T 个 `iconst_1; iconst_1; idiv; pop`。相同输入分别请求 CanonicalCfg 与 Frame，比较整个请求的 IrItems 差值：
+
+| T | Frame 新保留的 throw-site locals 槽（源码） | Frame 相对 CanonicalCfg 的 IrItems（实测） |
+| --- | --- | --- |
+| 8 | 80000 | 10001 |
+| 64 | 640000 | 10001 |
+
+将请求 IrItems limit 设为该输入的 CanonicalCfg usage + 10001，Frame 仍 Completed。增长前按槽收费的断言在固定基线上失败；观察测试确认上述数值。已有“开启 Frame 后 usage 增大”只能证明某处收费，不能证明这些乘积状态受预算约束。此处未测 RSS，也不声称发生 OOM。
+
+修复可删除无 handler 的无用快照，或在实际保留前计费；有 handler 时仍需覆盖 T × locals 的上界。所有保留的 entry/exit、快照、SSA seed/phi/origin、队列与发布副本一并核对，保证超限和取消不发布半成品，避免凭“临时”一词豁免计费。不增通用资源框架，不混入缓存优化。
+
+### P3 交接及验证盲点
+
+`engine::run_method_analysis` 持有 canonical/frame/ssa 表但只返回阶段/报告摘要，结束时释放载荷；当前全部表及访问器仍 crate-private。P3 1.1 必须明确最小只读 IR 接口、所有权和请求生命周期，1.3 用真实产物接通 Java 闭环；不从摘要重建 IR，不为开放全部中端而创建通用框架。
+
+已有 SSA oracle 主要独立检查名字分配，语义访问仍来自 Frame 重放，不能独立发现 R9 的全部传播问题。5.3 要保留 R9/R10 并补 legacy clone、嵌套 handler、wide/switch、独立 Frame 预期；4.3 已登记 D1–D5 不另开大范围重构。`ssa.rs` 模块注释的“Null 与引用合流不满足结合律”没有对应源码反例，不能据此免除确定性验证；本轮读取的 merge 规则中 Unknown 为引用合流上界，该注释随 5.3 对照澄清。
+
+### 本轮实测与后续门槛
+
+- 固定 `eac3759` 原始副本：`cargo test --workspace --all-targets --all-features --locked` = **749 passed / 0 failed / 1 ignored**。该结果在加入审计探针前独立运行；不含其他 agent 未提交的入口计数。
+- 审计反例：R9 的“全部阶段 Completed”断言失败；R10 的逐槽计费断言失败，再以观察测试确认 8/64 个 throw-site 的相同差值与限额内 Completed。它们是新发现，不混入上述 749 既有回归结果。
+- 本轮未重跑全套 MSRV、supply-chain、规定时长 fuzz 和 JDK 25 oracle；5.1 的 CI run 35420190516 是历史交付证据，不能代表新修复后的最终候选。
+- 下一步：4.2b → 4.3b → 5.3 → 5.4。5.2 已验收，保留其回归与证据边界；P2 整体出口通过才进入 P3，layer 只待归档，不重做拆分。
+
+
+### 收尾期间的 5.2 增量（`955d7f3` → `823173b`）
+
+本轮最终核对期间，其他 agent 已提交 `tests/p2_entry_counts.rs` 与 5.2 完成记录。增量只含该测试和 tasks/verification，生产源码没有变化，因此 R9/R10 的固定反例仍适用于该提交。保留该 agent 的勾选与原验证记录，当前进度更新为 **25/29**；4.2b、4.3b、5.3、5.4 未完成。
+
+已读取 5 条新测试的实际断言，并将 `955d7f3` 的测试文件复制到同一隔离副本独立运行，结果 **5 passed / 0 failed**。新记录的全量 **754 passed / 0 failed / 1 ignored** 与 CI run 35421240509 属该增量的交付证据；本轮独立证据为原基线 749 条及新增套件 5 条，不另声称重跑了整个最新候选。
+
+5.2 的证据是实际入口的 Body/Header/Code 读取计数、IR 预算维度、coverage、A17 与 Cargo 依赖隔离及完整报告确定性；没有单独的 resolver/CFG/SSA/Region/AST 构造计数器，Region/AST 当前根本没有生产构造路径。这个边界已在 tasks 与新测试中写明；不为补一个名词新增计数框架，P3 增加真实恢复路径时再验证其隔离。最终路线为 **4.2b → 4.3b → 5.3 → 5.4 → P3**，5.2 保留回归，不重复实施。
+
+本轮文档验证：`openspec validate --all --strict --no-interactive` **11 passed / 0 failed**；21 份修改文档的 84 个本地文件/锚点链接有效；`git diff --check` 干净。`openspec list --json` 与当前任务清单一致：P2 **25/29**、layer **7/7**，P3–P5 未开始。
+
+## 2026-09-19 4.2b 与 4.3b：修复复核发现的 R9/R10（提交 `ddb15e8`）
+
+用户复核的两项发现（本节上文 R9/R10）均已修复。**父级独立复现并证伪**，未采信实现者自报。
+
+### 4.2b（R9）：异常入口状态随入口变化重算
+
+**修法**（`frame.rs::run`）：跳过判据由「`exits[position] == transfer.exit`」改为**再要求该块没有异常出边**：
+```rust
+let feeds_exception_edge = successors[position].iter()
+    .any(|(_, kind)| matches!(kind, CanonicalEdgeKind::Exception { .. }));
+if exits[position].as_ref() == Some(&transfer.exit) && !feeds_exception_edge { continue; }
+```
+理由（写进注释）：`Transfer` 的两半都是入口状态的函数，**exit 是较弱的那一半观察**——一个块把它抛点读过的槽全部覆写后，两次入口状态不同却给出同一 exit，而 `throw_points` 已变；`throw_points` 的唯一消费者是 `exception_inputs`，后者只对**该块出边的异常边**调用，故「exit 未变」只对**无异常后继**的块构成完整判据。被删掉的错误前提注释（「records 是块与图的函数」）已替换为逐句说明。
+
+**父级独立证伪**：把旧判据（只比较 exit）还原 → `an_exception_input_follows_the_state_its_throw_site_settles_on` 与 `an_exception_input_into_an_already_processed_block_settles_with_it` 转红，且**打印出用户报告的那条诊断逐字相同**：
+`slot Local(1) of block CanonicalBlockId { bci: 14, path: [] } is entered with Null while its only input defines Ref(Named { name: "Ljava/lang/Object;", loader: "app" }) there`（`sha256sum -c` 还原）。即用户的发现与修复**双向确认**。
+**SSA 的类型检查未被删除**（父级 grep 确认仍在；变异下仍会触发）——修的是 Frame，不是把拒绝放宽。
+
+### 4.3b（R10）：保留即计费
+
+**修法**：统一规则（写进 `charge_slots` 文档）「**本模块每一处 frame 槽存储在分配语句之前按槽计费；不因寿命短而豁免**」，覆盖：`entry_frame` 之前、每访工作副本、保留的 exit、**有 handler 覆盖的每个抛点快照**、每条异常输入帧、普通边贡献副本、`merge_frame`（按 `current` 形状，含等值合流的尝试，因为它确实被分配）、`replay` 的入口副本、`ssa` 的 `entry_classes`/`site_flow`/`publish`（entry/exit/instruction/phi 副本改为 clone 前计费）。**没有 handler record 覆盖的抛点不再快照**（`site.handlers.is_empty()` → 无读者、不保留、不收费）。
+
+**修复前后的同一形状实测（`max_locals=10000`，Code = `(04 04 6c 57)^T + b1`，比较 `Frame` 与 `CanonicalCfg` 两个请求的 `IrItems` 差值）**：
+
+| 形状 | 修复前（用户实测） | 修复后（实现者实测） |
+| --- | --- | --- |
+| 无 handler，T=8 | 10001（保留 80000 槽） | **30002**（保留 0 槽） |
+| 无 handler，T=64 | 10001（保留 640000 槽） | **30002**（与 T=8 逐位相等） |
+| 有 catch-all handler，T=8 | — | **280027** |
+| 有 catch-all handler，T=64 | — | **1960195**（增量 = 56 × 30003） |
+
+用户原先的探针（limit = CanonicalCfg + 10001）**现在会停**（`Frame` `Partial` + `budget_exceeded_ir_items`）——已写成用例断言。**R10 表中「修复前 10001」的数字按其原义仍然正确**（那是对缺陷的实测），修复后的同一形状为 30002。
+
+**父级独立证伪**：去掉每抛点快照的那笔 `charge_slots` → `a_covered_throw_site_product_is_billed_with_its_size` 与 `an_exhausted_item_budget_publishes_no_frame_table` 转红（`sha256sum -c` 还原）。
+
+**实现者自曝一处假牙齿并已修正**：其最初的 publish 用例用「测量总价 − 由表算出的复制价」当 limit，变异下测量值随之缩小 → 断言恒真；改为「**发布 / 不发布两次运行之差** vs 由表算出的复制价」，M4 复跑确认转红后保留。
+
+### 独立复核（Approve，附一项阻塞级既存缺陷）
+
+复核者（只读 + 自造 3 个形状 + **grep 全部 `clone`/`collect`/`with_capacity`**）结论：
+
+- **R9 对新形状成立**：自造的**两跳异常环**（块 2 →异常→ 块 14（唯一后继也是异常边）→异常→ 块 17 →普通回边→ 块 2）6 阶段全 `Completed`（`steps=174, items=462`）。
+- **终止性成立**：核了「重取贡献幂等、`merge` 相等不落盘不入队」——`merge_frame` 产出的 `Frame` 中 `touches` 恒为 `None`，故 `PartialEq` 不含遍历时钟；访问次数 ≲ Σ(格高+1)，不会指数爆炸。
+- **R10 计费完整、无重复计费、无阈值被越过**：逐处核对 20 处 `charge`；未计费的分配**都是图规模而非 frame 槽规模**（`successors`、`vec![None; n]`、每访整块 clone、`throw_points` capacity 等），**不随 `max_locals` 增长**，故 R10 的乘积已被界住——**记为债务**。既有断言**未被放宽**：`the_pass_bills_exactly_its_declared_dimensions` 仍是**精确等式**（按新的分配类别逐项列出）。
+- **公开入口证据分工可接受**：公开侧能断言的正是 R9 的全部可观测症状（阶段 + 诊断 + 平面）；值级契约（抛点在 `apply` 之前快照）只能由 crate 内用例覆盖（frame 表是 crate-private）。复核者建议的补强不是加断言而是**加形状**（见下条）。
+
+**复核者发现的阻塞级既存缺陷（已路由修复）**：`canonical.rs::handler_rows` 用「**块起始**落在保护区间内」当判据，而 raw 异常边是按**抛点**的 feasible handlers 造的；一条**起于块中部、覆盖抛点但不含块起始**的保护区间会让 raw 图有该 ordinal 的异常边、而 `handler_rows` 没有那一行 → `exception_inputs` 报 **Error `ir_frame_inconsistent`**（合法 body 被说成矛盾）。**这不是 `ddb15e8` 引入的**（老代码在首次 transfer 就走到同一分支）。复核者另有一条 8-site 环上的 `ir_frame_inconsistent`（`block {bci:3}` 栈深 1 vs 0）**未在时限内定位**，不归因于本次提交，记为待查。
+
+**CI**：`ddb15e8` → run 35423623123，四 job success。
+
+### 第三处同类缺陷：handler 行的覆盖判据（提交 `535e696`）
+
+**独立复核在复审 4.2b/4.3b 时发现**（**不是** `ddb15e8` 引入的既存缺陷，但落在本片「合法方法不得假报矛盾」的承诺上，故同轮修复）。
+
+**位置与机理**：`canonical.rs::handler_rows` 的判据是「**块起始**落在保护区间 `[start,end)` 内」，而 **raw 异常边是按每个抛点自己的 feasible handlers 造的**（`cfg.rs`）。两者在「区间起于块中部」时不一致：raw 图会为该 ordinal 造边、`handler_rows` 却没有那一行 → `frame.rs::exception_inputs` 报 **Error `ir_frame_inconsistent`**——**把合法字节报成矛盾**。
+
+**复现**（实现者构造，父级核对）：两条 catch-all 记录，记录 0 的区间 `[1,4)` **起于块中部**（块 A 从 BCI 0 开始），其抛点 BCI 2 的 `idiv` 被它覆盖。修复前公开入口输出：
+```
+[Diagnostic { code: "ir_frame_inconsistent", severity: Error,
+  message: "block CanonicalBlockId { bci: 0, path: [] } leaves through the exception edge of
+            handler record 0, which no handler row of the graph states" }]
+left:  [C, C, C, C, Partial, NotPerformed]   right: [C, C, C, C, C, C]
+```
+该 body 合法：`javap` 读出异常表正是 `1 4 → 12 any` 与 `7 10 → 14 any`，本机 OpenJDK 23 加载（通过验证器）并调用成功。
+
+**修法**：`handler_rows` 改为**从 canonical throw sites 派生**（与异常边**同源**）——判据由「块起始落在区间内」改为「**该块里有抛点被这条记录覆盖**」（判据来自每个站点自己的 feasible handlers，不再二次读记录的 BCI 区间）。文档同步：`protected` 语义改为「该行 call path 下、持有该记录覆盖的抛点的块」，并写明「**行存在 ⟺ 图会为该 (record, path) 造异常边**」。`postcondition` 的 `protected.is_empty()` 保留（措辞改为 `covers no throw site of a canonical block`）。因判据改变而变成死代码的 `labels_of`/`path_of`/`HandlerFact` 与一处导入一并清除。
+
+**新增护栏（超出照抄的修法方向，父级认可）**：`postcondition` 增加「**每条 `Exception` 边都必须有同 ordinal 的行把边的源块列在 `protected` 下**」。理由：这正是本次缺陷的形状（行与边不同源），有了它同类缺陷会在 4.2 之前**以 `ir_legacy_normalization_unbounded`（Warning，本 build 证不出）被拒**，而不是被报成字节矛盾。它**只可能拒图、不会放行**。**父级实测确认了这一点**：把我复现的旧判据装回去后，新回归用例的失败消息是
+`the exception edge … is stated by no handler row: no row names record 0 under the throw sites of { bci: 0, path: [] }`，码为 **Warning**（不再是 Error）——失败模式确实从「说字节矛盾」变成「说本 build 证不出」。
+
+**被修正的既有断言的核对（父级逐条核过，**不是放宽**）**：`canonical.rs::the_historical_finally_clones_its_shared_subroutine_per_call_site` 原先断言 ECJ `finallyPath` 的 `handler_rows.len() == 1`、`protected == [{bci:0}]`（**旧判据**钉的行为）；现改为断言 `handler_rows.is_empty()` 且图中**没有** `Exception` 边。父级用**自己先前 dump 的该 fixture 指令表**独立核对了理由：记录 0 的区间 `[0,8)` 覆盖 BCI 0/1/2/3/5 = `iload_1; iconst_1; iadd; istore 4; jsr`，**其中没有可抛指令**；全方法唯一的抛点是 BCI 16 的 `athrow`，**不在区间内**。故该记录覆盖不到任何抛点、raw 图不为它造边，**新断言才是正确的**。旧断言携带的信息（handler 入口节点 `{bci:11}`）**未丢失**——同一用例里**未改动**的 `graph.unreachable` 断言仍列出 `CanonicalBlockId { bci: 11, path: [] }`，且 throw site（BCI 16，指令级）仍被断言。
+
+**父级独立证伪**：把「区间 vs 块起始」的旧判据装回 → 新回归 `a_range_starting_inside_a_block_still_hands_its_handler_an_input` 转红（`sha256sum -c` 还原）。**实验过程中的一次不忠实变异（字段名写错导致编译失败）已如实修正后重跑**，未据失败版本下结论。
+
+**证据**：全量 **767 passed / 0 failed / 1 ignored**（763 + 2 条公开入口回归 + 2 条 crate 内单测）；`p2_frame` 12 → **14**；`-p jarde-jvm` 195 → **197**；其余 target 与基线一致；fmt 与 clippy 1.98.1 干净；两个 CI example exit 0。R10 的精确账单断言（`3*LOCALS+2`、`50_004`、56 站点增量）**原样通过**——说明行的计费口径未变。
+
+**遗留待查（复核者提出，未归因于本次提交）**：复核者在一条 8-site 环形异常图上得到 `ir_frame_inconsistent`（`block {bci:3}` 栈深 1 vs 0），时限内未定位是 fixture 非法还是另一处既存缺陷。**记为待查**（5.3 的构造覆盖面应能顺带覆盖到）。
+
+**CI**：`535e696` → run 35424903198，四 job success。

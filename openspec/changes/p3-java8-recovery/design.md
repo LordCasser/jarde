@@ -1,6 +1,6 @@
 ## Context
 
-以 P2 完成为进入条件。本 change 规划消费 Demand Resolver、CanonicalCFG、Frame/SSA、effects 和 Conservative output；当前尚未实现。恢复是可选呈现层，必须保持 P1 X1 的原始引用与 P2 IR origin；Java 8 是第一套高质量承诺，不代表所有 JVM 字节码都能表达为 Java。
+以 P2 完成为进入条件。本 change 规划消费 Demand Resolver、CanonicalCFG、Frame/SSA、effects 和 Conservative output；当前尚未实现。恢复是可选呈现层，必须保持 P1 X1 的原始引用与 P2 IR origin；Java 8 是第一套高质量承诺，不代表所有 JVM 字节码都能表达为 Java。 2026-09-19 的 P2 已交付到 5.2，但异常固定点与资源计费修正 4.2b/4.3b 和整体出口尚未关闭，因此本阶段继续保持未开始。
 
 ## Goals / Non-Goals
 
@@ -28,7 +28,7 @@
 
 ### droidsaw 中端设计的吸收边界
 
-版本与源码取舍沿用 [P2 design §6.1](../p2-jvm-ir/design.md)。本次吸收以下边界，在 `jarde-java` 内部用具体模块和函数表达；不为每个算法再拆 crate，实际需要多个实现之前不建通用 backend trait 或动态 pass 注册层。workspace 归属见 [layer-jarde-crates](../layer-jarde-crates/design.md)：P3 1.1 先明确由 `jarde-jvm` 拥有的只读 method/CFG/value/effect/origin 输入契约，1.3 随首个真实闭环创建 `jarde-java`，根 `jarde` 只做入口委托；当前摘要型 report 不被假定为已经具备恢复所需全部输入。
+版本与源码取舍沿用 [P2 design §6.1](../p2-jvm-ir/design.md)。本次吸收以下边界，在 `jarde-java` 内部用具体模块和函数表达；不为每个算法再拆 crate，实际需要多个实现之前不建通用 backend trait 或动态 pass 注册层。workspace 归属见 [layer-jarde-crates](../layer-jarde-crates/design.md)：P3 1.1 先明确由 `jarde-jvm` 拥有的只读 method/CFG/value/effect/origin 输入契约，1.3 随首个真实闭环创建 `jarde-java`，根 `jarde` 只做入口委托；当前摘要型 report 不被假定为已经具备恢复所需全部输入。 `eac3759` 的 driver 在返回前释放 canonical/frame/ssa 表；1.1 要决定请求内真实载荷的所有权和生命周期，1.3 用同一份产物接通恢复，避免从 report 拼回 IR 或无条件重复 P2。接缝只暴露所需只读访问及阶段有效性，预算、停止和 origin 随请求传递，不为此先造公共可变中端、缓存或通用 backend。
 
 - **图的视图与语义事实分开。** 借鉴 DEX 的 `NormalFlow`，普通 if/loop/switch 的支配关系使用过滤后的正常控制流视图，尽量借用现有图。异常恢复使用完整的 throw-site/context、保护区间、catch 类型与 handler 顺序；处理 handler 自身的普通控制流时明确其入口。不能全局删除异常边，也不能用正常流支配关系推出异常语义。
 - **Region 决定结构，Java 输出负责语法。** 结构恢复消费 CFG/SSA 的条件、终结指令和 effect，构造已有规划中的 RegionIR；AST/formatter 消费 Region 和 origin。边发现、循环识别、异常范围推导不放进 formatter，AST 也不再解码 bytecode。droidsaw 的 `StmtBackend` 展示了这种分工，但 Jarde 首期只有 Java 消费方，使用具体私有函数即可。

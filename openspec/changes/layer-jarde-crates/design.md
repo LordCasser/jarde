@@ -1,6 +1,6 @@
 ## Context
 
-动机和前置条件见 [proposal](proposal.md)。截至复核基线 `35a779d`，reader/query/jvm 已实际抽出，根包只剩 `lib.rs`/`facade.rs`，共五个 workspace 包。1.1/1.2/2.1/2.2 有交付记录；3.1–3.3 集成与门禁仍需收尾；后续 `724bf1b` 已补 normal 闭包 CI 和 classfile 门面收窄，`3646a97` 已补 dev/build，仍须覆盖全 feature。下述依赖图已基本实现，不能再当成尚未开始的搬迁计划。
+动机和前置条件见 [proposal](proposal.md)。截至 2026-09-19 复核，reader/query/jvm、根门面与 CLI 五包已落地，1.1–3.3 共 7/7 已验收；`78077e9` 补全 feature 闭包、`eb1adb8` 固定 shell 失败传播、`62d76bc` 补恢复层方向守卫。依赖图是当前架构，验证记录保留历史中间态；本 change 尚未归档。
 
 源码依赖支持拆分，但不支持按每个术语各造一个 crate：
 

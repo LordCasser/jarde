@@ -1,6 +1,6 @@
 ## Why
 
-P1 及其验证维护已归档。P2 的 0.x、1.x、2.x 和 3.1–3.4 有交付记录，reader/query/jvm 已分层，根包成为门面。2026-09-18 在 `35a779d` 的复核确认：调用上下文的唯一 astore 写入者/支配规则仍会把普通引用或被内层覆盖的槽判成 returnAddress。新增 3.4b 在规范化前关闭该缺口；不能推迟到已经消去 legacy 指令后的 Frame。规范化、Frame/SSA 和方法 CLI 尚未完成，当前状态见 tasks 与 verification 的最新复核。
+P0/P1 及 P1 验证维护已归档。本轮算法复核固定在 `eac3759`，并纳入随后 `955d7f3`/`823173b` 的 5.2 验收增量（2026-09-19）。`layer-jarde-crates` 已完成 7/7，尚未归档；P2 已完成至 5.2，共 25 项。3.4b 返回地址证明、3.5 规范化、Frame、初始化、SSA 与 `analyze_method` CLI 均已交付。本轮新增异常状态传播修正 4.2b 和派生存储计费修正 4.3b 后为 **25/29**；5.3/5.4 仍未完成。P3–P5 未实施。当前工作是关闭复核反例并完成阶段验收，见 [最新复核](verification.md#review-2026-09-19-ir)。
 
 ## What Changes
 
@@ -10,6 +10,7 @@ P1 及其验证维护已归档。P2 的 0.x、1.x、2.x 和 3.1–3.4 有交付�
 - 在已有 raw CFG 上补齐 wide/数组操作数、returnAddress 值流和异常上下文的可靠性，再交付有界规范化、CanonicalCFG、Frame、stack/local SSA 与指令级异常模型；Frame 区分 Top、初始化别名和每个 throw-site 输入。
 - SSA 在私有实现中分开 JVM 语义驱动和名字分配，借鉴 droidsaw 的职责边界与独立小图对照；前驱尚未就绪不能被当成无定义，内部块存储顺序不能改变值来源。当前不引入 droidsaw-common 或跨项目共享 crate，具体取舍见 design 的 6.1。
 - 增加固定 Phase/Pass 契约、origin/diagnostic 传播及 Bytecode 输出，分别报告 quality、syntax_status、compile_status、semantic_validation、verification、coverage 和 execution。
+- 修正 Frame 的异常状态固定点与 Frame/SSA 派生存储计费缺口，再完成入口计数、golden/fuzz 和整体出口门禁；不把历史测试通过当成新反例已关闭。
 - 保持结构 XRef 可独立运行；P2 不承诺 Java 8 高阶源码恢复。
 
 ## Capabilities

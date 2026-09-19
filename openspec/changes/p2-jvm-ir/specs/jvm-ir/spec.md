@@ -42,6 +42,11 @@ IR SHALL 消费共享 reader 提供的类型化 immediate、local、CP、branch 
 - **WHEN** returnAddress 分析需要创建 context、状态槽、worklist、local/token/handler 关系或装配结果，而剩余 IrItems 不足
 - **THEN** 在增长前停止，保持相应预算原因且不发布 CallContexts；crate-private 载荷、临时状态和乘积数量不因输入已计费而豁免，IrItems 为零时不能成功创建非空上下文
 
+#### Scenario: Throw-site snapshots multiply local storage
+
+- **WHEN** 一个 block 在多个 throw-site 同时保留 max_locals 槽的快照，或 Frame/SSA 发布阶段复制 entry/exit/phi/origin 集合
+- **THEN** 所有实际新增并保留的槽与成员 SHALL 在分配前计费；移动已计费载荷可以复用其计费，不以“阶段内临时量”豁免乘积存储，也不能在 collect/clone 后才发现限额不足
+
 ### Requirement: Phase-ordered JVM IR
 
 系统 SHALL 按 raw facts、raw CFG/returnAddress、dialect normalization、CanonicalCFG、Frame、stack/local SSA 与 type/effect 前置关系创建 IR。每个 Pass MUST 声明 phase、required/produced facts、失效分析和实际可能计费的 budget 类别集合；dialect/capability 与 scope 由请求和固定阶段契约约束。Region/Java AST 不属于本阶段输出。
@@ -142,3 +147,8 @@ Frame/SSA SHALL 处理 category-1/category-2、双槽、dup/swap、uninitialized
 
 - **WHEN** 缺少 LVT、LineNumberTable 或 StackMapTable
 - **THEN** 从 descriptor 和数据流分析 Frame，按版本诊断必要约束；推导成功不等于输入通过 verifier，也不能把缺少 debug 当作无法分析的理由（验收 A10）
+
+#### Scenario: Normal exit is unchanged while exception input changes
+
+- **WHEN** 回边或另一前驱改变了 block 入口的 local，较早 throw-site 消费该值，而该块在正常出口前又把槽覆盖成与上一轮相同的值
+- **THEN** Frame SHALL 继续传播已变化的逐 throw-site 输入直到固定点，handler entry 与 SSA 输入必须一致；正常出口相等不得跳过异常更新，也不得通过放宽 SSA 一致性检查接受陈旧 Frame

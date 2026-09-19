@@ -10,8 +10,13 @@
 
 #### Scenario: Complete bytecode with unsupported normalization
 
-- **WHEN** 原始方法范围完整读取，但 legacy normalization 或更高 IR 阶段不支持
+- **WHEN** 原始方法范围完整读取，但 legacy normalization 无法产出 CanonicalCFG
 - **THEN** Bytecode 可按其声明 schema 返回 CompleteWithinSchema，quality=Fallback 且语法为 NotJava；未完成 IR 阶段和原因单独报告，不把 bytecode 覆盖当作 SSA 完成（验收 A09、A13）
+
+#### Scenario: A later phase stops after canonicalization
+
+- **WHEN** 已产出 CanonicalCFG，但 Frame 或 SSA 停止
+- **THEN** quality=Conservative 只表示已保留规范化事实，execution 与对应阶段仍报告实际停止，semantic_validation=Unproven；不能将该质量等级解释为 Frame/SSA 成功
 
 #### Scenario: Budget stop cannot be hidden by fallback
 
@@ -32,10 +37,15 @@
 
 系统 SHALL 独立报告 LocalInvariants、FixtureDifferential 或 Unproven 的语义证据及适用范围；未完整运行 verifier 时 MUST 返回 verification=NotPerformed。测试 oracle 的成功 MUST NOT 被推广到未经该验证的普通输入。
 
-#### Scenario: Frames pass local invariants
+#### Scenario: SSA completes its local invariants
 
-- **WHEN** Frame/SSA 构建及本地不变量通过，但未执行完整 verifier 或差分验证
-- **THEN** 可报告 LocalInvariants，verification 仍为 NotPerformed，compile_status 仍为 NotAttempted
+- **WHEN** 本次请求的 Ssa 阶段为 Completed，但未执行完整 verifier 或差分验证
+- **THEN** 报告 LocalInvariants，verification 仍为 NotPerformed，compile_status 仍为 NotAttempted
+
+#### Scenario: SSA has not completed
+
+- **WHEN** 只请求 Frame、Ssa 停止或未调度，或 abstract/native 方法没有 Body
+- **THEN** semantic_validation=Unproven，不因其他阶段完成或测试 oracle 成功升级普通请求
 
 #### Scenario: Fixture oracle succeeds
 
@@ -58,5 +68,5 @@
 
 #### Scenario: CLI uses the library result
 
-- **WHEN** 相同 snapshot、运行环境、方法与 budget 通过库及 JSON CLI 请求
-- **THEN** 身份、已完成阶段、质量、coverage、execution 和 diagnostics 一致，不由 CLI 补造成功或重新解释 fallback
+- **WHEN** 相同 snapshot、运行环境、方法与 budget 通过库及 JSON CLI 的 analyze_method 请求
+- **THEN** CLI 返回 method_analysis，报告逐字段等同库结果（仅 elapsed_millis 可不同）；适配层不改写环境和方法身份，报告内 Partial/Cancelled 保留在成功 transport 中，不补造成功或重新解释 fallback

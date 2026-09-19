@@ -1,6 +1,6 @@
 # OpenSpec 规划入口
 
-P0/P1 及 P1 验证维护已归档。P2 的 0.x、1.x、2.x、3.1–3.4 有交付记录；本轮新增未完成的 3.4b 后为 **18/27**。reader/query/jvm 与根门面已落地，`layer-jarde-crates` 仍需集成与门禁收尾。P3–P5 未实施。当前阻塞是 returnAddress 证明：唯一 astore 写入者和支配关系不能排除普通引用或嵌套覆盖。先完成拆包收尾，再执行 3.4b → 3.5 → Frame/SSA → 产品验收；不得等待 Frame 再验证已被规范化消去的 legacy 值。证据见 [当前复核](changes/p2-jvm-ir/verification.md#review-2026-09-18-layers)。
+P0/P1 及 P1 验证维护已归档。本轮算法复核固定在 `eac3759`，并纳入随后 `955d7f3`/`823173b` 的 5.2 验收增量（2026-09-19）。`layer-jarde-crates` 已完成 7/7，尚未归档；P2 已完成至 5.2，共 25 项。3.4b 返回地址证明、3.5 规范化、Frame、初始化、SSA 与 `analyze_method` CLI 均已交付。本轮新增异常状态传播修正 4.2b 和派生存储计费修正 4.3b 后为 **25/29**；5.3/5.4 仍未完成。P3–P5 未实施。详见 [当前复核](changes/p2-jvm-ir/verification.md#review-2026-09-19-ir)；规划完整或历史 CI 通过不代表当前出口已满足。
 
 - [架构基线](../JVM_Rust_Engine_Final_Architecture.md)：产品目标、I1–I12、模型与管线。
 - [阶段路线](roadmap.md)：阶段依赖、范围与进入/出口门槛。
@@ -11,7 +11,7 @@ P0/P1 及 P1 验证维护已归档。P2 的 0.x、1.x、2.x、3.1–3.4 有交�
 | --- | --- | --- |
 | P0（已归档） | [2026-09-17-establish-p0-foundation](changes/archive/2026-09-17-establish-p0-foundation/proposal.md) | 有界快照、物理 locator、Header、共享指令解码和结果契约 |
 | P1（已归档） | [2026-09-17-p1-query-xref](changes/archive/2026-09-17-p1-query-xref/proposal.md) | 独立 X0/X1、metadata/resource/bootstrap、nested/MR/Boot 和分页 |
-| 分层（主体已迁移） | [layer-jarde-crates](changes/layer-jarde-crates/proposal.md) | reader/query/jvm 编译边界、门面与集成门禁收尾 |
+| 分层（7/7，待归档） | [layer-jarde-crates](changes/layer-jarde-crates/proposal.md) | reader/query/jvm 编译边界、门面与集成门禁已验收 |
 | P2 | [p2-jvm-ir](changes/p2-jvm-ir/proposal.md) | Demand Resolver、raw/canonical CFG、legacy normalization、Frame/SSA 与降级 |
 | P3 | [p3-java8-recovery](changes/p3-java8-recovery/proposal.md) | Java 8 高频恢复、命名、Java 输出和 source maps |
 | P4 | [p4-modern-semantics](changes/p4-modern-semantics/proposal.md) | 现代语义、RuntimeMatrix、X2/X3 深度与框架插件 |

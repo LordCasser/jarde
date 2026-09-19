@@ -4,7 +4,7 @@
 
 ## 技术栈边界
 
-生产核心使用 Rust 2024，MSRV 1.88。当前 workspace 已有 `jarde-reader`、`jarde-query`、`jarde-jvm`、`jarde`、`jarde-cli` 五包，分层主体在 `35a779d` 已落地；[layer-jarde-crates](changes/layer-jarde-crates/tasks.md) 的集成门禁尚待收口。`jarde-java` 留到 P3 首个真实恢复闭环，暂不创建空壳或 common/core。
+生产核心使用 Rust 2024，MSRV 1.88。当前 workspace 有 `jarde-reader`、`jarde-query`、`jarde-jvm`、`jarde`、`jarde-cli` 五包；[layer-jarde-crates](changes/layer-jarde-crates/tasks.md) 7/7 已验收，尚未归档。`jarde-java` 留到 P3 首个真实恢复闭环，不创建空壳或 common/core。此次复核不改第三方版本、features 或已准入的依赖取舍。
 
 生产依赖为 query→reader、jvm→reader+query、facade→三包、CLI→facade；query 不依赖 jvm 或 petgraph，reader 无上层依赖。noak/rawzip/flate2 归 reader，petgraph 归 jvm；blake3 仍由 reader/query/jvm 各按直接使用声明同一已准入版本与 pure feature。共享 Digest 类型归 reader，query 拥有游标请求的语义编码，providers 拥有定义字节核验；多个直接库依赖不等于多套身份模型，本轮不为汇聚依赖新增通用散列接口。详见 layer design §3.5 的修订决定。
 

@@ -1,4 +1,4 @@
-当前状态（2026-09-18）：**1.1–3.3 全部完成并勾选**（基线 `0f3134b` → 收口 `62d76bc`）。三次抽取（reader/query/jvm）与根门面已落地；集成与门禁经独立复核 **Approve**。复核期间发现并修掉的两处门禁缺口各自有证伪：可选 feature 绕过（旧配置 exit 0 → 新配置 exit 1 并指名 `jarde-query-normal-all-features`）、以及「红」曾隐式依赖 runner 的 `bash -e`（去掉显式 `set -euo pipefail` 后普通 bash 对早期违规仍 exit 0）。历史验收只证明拆分前后行为保持，**不证明语义正确**：新发现的 returnAddress 值证明缺口（R7）由 P2 3.4b 修正，不混入本 change。
+当前状态（2026-09-18）：**1.1–3.3 全部完成并勾选**（基线 `0f3134b` → 收口 `62d76bc`）。三次抽取（reader/query/jvm）与根门面已落地；集成与门禁经独立复核 **Approve**。复核期间发现并修掉的两处门禁缺口各自有证伪：可选 feature 绕过（旧配置 exit 0 → 新配置 exit 1 并指名 `jarde-query-normal-all-features`）、以及「红」曾隐式依赖 runner 的 `bash -e`（去掉显式 `set -euo pipefail` 后普通 bash 对早期违规仍 exit 0）。历史验收只证明拆分前后行为保持，**不证明语义正确**：当时发现的 returnAddress 值证明缺口（R7）已由后续 P2 3.4b 独立修正，不混入本 change。
 
 ## 1. Baseline and reader
 

@@ -1,6 +1,6 @@
 # layer-jarde-crates 验证记录
 
-当前状态以本文末尾「拆包后复核」及 tasks 为准；下列待搬迁、尚不存在、待复核等叙述保留各自历史时点。
+当前状态：1.1–3.3 共 7/7 已完成，收口代码 `62d76bc`、完成记录 `3aa328d`，尚未归档。下文 3.1–3.3 的最终 Approve 与 tasks 是收口证据；末尾「2026-09-18 拆包后复核」记录的是此前 `35a779d`→`3646a97` 的历史快照，其未验收/可选 feature 漏检已被后续修正覆盖。
 
 约束：本 change 是**结构重组**，不兼带语义修复。每条记录携带**精确 commit** 与当时的全量数字；未绿不搬迁。
 
@@ -416,6 +416,8 @@ CI 步骤 `Check layered crate dependency closure`：对 reader/query/jvm 三层
 **未做**：文件搬迁（2.1 起——抽 `jarde-query`）。cross-check 待办：`ci.yml:81` 的 `jvm` 边界正则需在真实 `cargo tree` 输出上实测不误命中 `jarde-jvm`。
 
 ## 2026-09-18 拆包后复核
+
+本节为历史快照；当前 7/7 状态见本文开头与 3.1–3.3 最终验收，不按它重新打开已关闭的门禁任务。
 
 固定代码基线 `35a779d` 已包含 reader/query/jvm 三次抽取和根 facade，1.1/1.2/2.1/2.2 保留完成；本文此前「jarde-jvm 尚不存在」「文件搬迁未做」「待独立复核」都是中间态，后续 Approve 记录仍有效。当前 `test-support` 属于 reader，jvm 转发用于测试；根门面没有自己的同名 feature。
 

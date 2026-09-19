@@ -1,8 +1,8 @@
 ## Context
 
-复核代码基线为 `35a779dc31c606f9c138a780a0b9f1f99d0a0e33`（2026-09-18）。P2 0.x、1.x、2.x、3.1–3.4 已有交付记录；reader/query/jvm 与根门面已经分层。新增 3.4b 后为 **18/27**：既有 `astore` 唯一写入者 + 支配检查仍会接受普通引用与内层覆盖，不能据此进入克隆规范化。四个非法字节串及两个合法对照已在固定提交的隔离副本经真实 reader 和公开方法入口复现，见 [当前复核](verification.md#review-2026-09-18-layers)。
+P0/P1 及 P1 验证维护已归档。本轮算法复核固定在 `eac3759`，并纳入随后 `955d7f3`/`823173b` 的 5.2 验收增量（2026-09-19）。`layer-jarde-crates` 已完成 7/7，尚未归档；P2 已完成至 5.2，共 25 项。3.4b 返回地址证明、3.5 规范化、Frame、初始化、SSA 与 `analyze_method` CLI 均已交付。本轮新增异常状态传播修正 4.2b 和派生存储计费修正 4.3b 后为 **25/29**；5.3/5.4 仍未完成。P3–P5 未实施。新增项依据 [当前复核](verification.md#review-2026-09-19-ir) 的实际反例；已有交付过程保留历史时点。
 
-现在先完成 [layer-jarde-crates](../layer-jarde-crates/tasks.md) 的集成/门禁收尾，再执行 3.4b → 3.5 → Frame/SSA → 产品验收。3.5、4.x、5.x 尚未完成，P3–P5 未实施。本文修正规划，不修改生产实现；任务勾选保留历史交付，不能代表新反例已关闭。
+4.2b 异常状态传播 → 4.3b Frame/SSA 存储计费 → 5.3 回归与有预算 fuzz → 5.4 完整门禁/规格同步/归档；5.2 入口计数已验收，保留其预算代理与源码/依赖守卫的证据边界。P2 出口通过后，P3 从只读 IR 交接和首个 Java 方法闭环开始。
 
 当前源码归属：`crates/jarde-reader/src/` 拥有 reader/facts/model/budget/view，`crates/jarde-query/src/` 拥有 query/xref，`crates/jarde-jvm/src/` 拥有环境/resolver/CFG/pass/driver。根 `src/lib.rs` 与 `src/facade.rs` 只聚合、委托。下文 1.x–3.3 的交付过程与旧 `src/` 路径保留历史时点，继续实现应使用上述所有者路径。
 
@@ -804,7 +804,7 @@ pub(crate) struct PassDescriptor {
 
 ### 3.4 raw returnAddress 与调用上下文
 
-**交付状态**：3.4 已完成原有错槽、覆盖、异常写集、可达性与预算修正；其算法是收集写入后检查「唯一 `astore` 写入且支配 `ret`」。这只证明存储位置，未证明存入的值。历史 review 的“比 must-analysis 更保守、只多拒不错收”结论撤回：普通 null 与内层覆盖已构成反例。3.4b 补齐下面的证明边界，随后才允许 3.5 消费。
+**交付状态（2026-09-19）**：3.4b 已通过 `ee1a723`/`56dbbfa` 的来源值分析与回归关闭上一轮四个反例，3.5 已消费真实 CallContexts。下面是继续生效的值证明要求，不是待实施状态；旧唯一写入者/支配规则只作历史反例。
 
 - **值来源**：`jsr/jsr_w` 产生 call-site/return-BCI token；在支持的指令子集内跟踪 token 经 operand stack 与 locals 的保存、丢弃、覆盖和合流。`ret n` 只能消费 local n 中已证明属于当前调用上下文的 token，不能把任意 `astore`、支配关系或 may-write 集当成来源证据。无法证明的形态返回 unresolved，不发布完整 CallContexts。
 - **类型边界**：returnAddress 与普通 reference 不同。`astore` 可以保存两者，`aload/aload_n` 不能加载 returnAddress；`astore_1; aload_1; astore_1; ret 1` 不能用作“合法中转被保守拒绝”的正例。依据 [JVMS 8 §2.3.3](https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-2.html#jvms-2.3.3)、[aload/astore/ret](https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-6.html#jvms-6.5.aload)。这不要求实现完整 verifier，但已知违规不能成为规范化的证明输入。
@@ -822,7 +822,7 @@ pub(crate) struct PassDescriptor {
 
 ### 3.5 有界 jsr/ret 规范化与 CanonicalCFG
 
-进入条件：拆包收尾与 3.4b 均验收。driver 保留 3.4b 的实际 CallContexts，CanonicalCFG 消费同一份载荷，不重新推测返回点；截断/未证明上下文不得被提升为完整规范化输入。规范化同步维护每个 throw-site 的 handler/context/origin。raw 图按 (block, handler ordinal) 聚合的异常边只作结构表示，不能取代值流输入。
+进入条件已满足：拆包与 3.4b 均已验收，3.5 已完成。driver 保留真实 CallContexts，CanonicalCFG 消费同一份载荷；raw 事实保持不变，克隆使用 `(bci, path)` 身份，origin 保留原 BCI。每个 throw-site 的 handler/context/origin 随规范化维护；聚合的 raw 异常边不能取代 Frame/SSA 的逻辑输入。
 
 - **克隆语义**：一个子程序被 N 个调用上下文共享时，为每个上下文克隆其块集合（`NormalizationClones` 按克隆节点计费）；克隆块保留 **一对多 origin**：`OriginMember::MethodPoint { method, bci }` 指向原始 BCI，且 `OriginSet` 保留全部原始 BCI（不得只留一个）。
 - **超级块/边**：`ret` 在规范化后按其上下文确定后继；异常边按原始 handler 序重建；保护区间按上下文映射到克隆后的块范围。
@@ -877,20 +877,32 @@ pub(crate) struct PassDescriptor {
 - **独立对照**：吸收 droidsaw 的小图 oracle 方法，在测试侧用独立的朴素 reaching-definition/数据流实现核对小规模 CFG 的实际 use 来源与 phi 输入；比较时消除 SSA 编号差异和允许的 trivial phi，不要求两算法生成相同 phi 数量。oracle 不调用生产名字分配或合流助手。普通边随机图与 JVM 异常输入 fixtures 分开声明覆盖，尤其覆盖同 raw edge 下的两个 throw-sites；参考库的普通图测试通过不能替代这些异常测试。不把 oracle 或 droidsaw 加入生产依赖。
 ## 5.1–5.4 契约：库/CLI 接通、入口计数、golden/fuzz 与归档
 
+### 4.2b 异常状态必须独立参与固定点
+
+R9 已从公开入口复现：正常出口 locals/stack 相同，不代表较早的 throw-site locals 相同。`frame::run` 不能只用 `transfer.exit` 的相等性决定跳过全部后继。传播应比较各逻辑异常输入，或在入口变化后重新传播该块的异常贡献；普通后继可以按正常出口去重。先修传播，再检验 SSA，不删除 `check_class` 来吸收 Frame 的陈旧状态。
+
+验收使用 verification 中的 17 字节 class：handler local 1 必须与回边稳定后的 throw-site 一致；仅请求 Frame 与继续请求 SSA 都有断言。再覆盖多 throw-site、异常回边和构造调用异常前状态，保持 handler 顺序、origin 与预算停止语义。
+
+### 4.3b Frame/SSA 的派生存储计费
+
+R10 的 `max_locals=10000` 方法在 8 与 64 个 `idiv` throw-site 下，Frame 相对 CanonicalCFG 均只增加 10001 个 `IrItems`；源码却为每个 site 克隆并同时保留整个 locals 数组。该乘积存储不因活在一个 transfer 内而免费。当前 `entry_frame` 先分配后 `charge_frame`、SSA `publish` 先 collect/clone 后 charge 也不满足现有契约。
+
+只修改这些增长点和相关回归：能删除的中间副本直接删除，其余在增长前按槽/成员预扣，移动已计费载荷无需再造副本。索引、队列和装配过程同样核对；取消检查应覆盖长装配循环。先列明实际保留量与计费单位，再验证零、恰好、超限与乘积输入。不能用只比较“启用阶段后 usage 变大”的测试替代上界证明，也不增加进程 RSS 承诺或通用 allocator 框架。
+
 ### 5.1 方法分析库与薄 JSON CLI
 
-当前库已执行 RawFacts/RawCfg/调用上下文，CLI 仍只有 enumerate、inspect_header、inspect_method_bytecode、query；本片补真实后续阶段与 method 适配，不重复搭建库入口。
+**5.1 已交付**：库按请求调度到 SSA，CLI 已有 `analyze_method`，返回 `method_analysis`。下述条款记录当前行为。报告公开阶段、结果平面、诊断、coverage 和读取记录；canonical/frame/ssa/effect 表仍为私有请求内载荷，driver 返回时释放，不能把报告摘要当作 P3 可直接消费的 IR。
 
 - **库入口**：`Engine::analyze_method` 从 1.1 的诚实不可用变为真分析，按顺序执行 3.2 的 pass 表（到请求阶段为止）：`RawFacts → RawCfg → (LegacyNormalization → CanonicalCfg) → Frame → Ssa`。
-- **结果各维度独立**（不变量 7）：`representation`（始终 `Bytecode`；CanonicalCFG 是内部 IR 阶段，不新增 `Canonical` 输出表示）、`quality`（`Conservative`/`Fallback`）、`syntax_status`（`NotJava`：P2 不恢复 Java）、`compile_status`（`NotAttempted`）、`semantic_validation`（无证据时 `Unproven`，有本地不变量证据时 `LocalInvariants`，差分证据归 5.3）、`verification`（**恒 `NotPerformed`**；5.3 的 fixture 差分证据不能升级普通生产请求的 verifier 状态）。
+- **结果各维度独立**（不变量 7）：`representation`（始终 `Bytecode`；CanonicalCFG 是内部 IR 阶段，不新增 `Canonical` 输出表示）、`quality`（已产出 CanonicalCFG 为 `Conservative`，否则 `Fallback`）、`syntax_status`（`NotJava`：P2 不恢复 Java）、`compile_status`（`NotAttempted`）、`semantic_validation`（本次请求的 `Ssa` 为 `Completed` 时 `LocalInvariants`，其余为 `Unproven`；5.3 的固定样本差分只进入对应验证记录）、`verification`（**恒 `NotPerformed`**；5.3 的 fixture 差分证据不能升级普通生产请求的 verifier 状态）。
 - **body 状态**：`MethodBodyState::{NotInspected, Present, DeclaredWithoutBody { no_body_kind }}`；`abstract`/`native` 方法没有 Body 是**事实**而非失败（`stages` 全 `NotPerformed`、`representation = Bytecode`、`execution = Complete`），诊断说明原因。
 - **失败隔离**：同一类里正常方法与失败方法并存时，各方法报告互不影响（一个方法的 `Failed`/`Partial` 不改另一个的 `Complete`）；类级 Header 失败不伪造任何方法结果。
-- **CLI**：`jarde-cli` 增 `method` operation（薄转发，JSON 形状与库报告逐字段一致），沿用既有的单请求/单响应与错误码约定；协议错误仍是 transport 级 `error`，报告内的停止仍在成功响应内的 `Partial`/`Cancelled`。
+- **CLI**：`jarde-cli` 使用 `analyze_method` operation，结果 kind 为 `method_analysis`（薄转发，JSON 形状与库报告逐字段一致），沿用既有的单请求/单响应与错误码约定；协议错误仍是 transport 级 `error`，报告内的停止仍在成功响应内的 `Partial`/`Cancelled`。
 - **验收**：库/CLI 对同一请求的报告**逐字段一致**（可序列化对比，除 `elapsed_millis`）；`Bytecode`/`Conservative`/`Fallback`、`NotJava`、`NotAttempted`、abstract/native、阶段 coverage/execution、成员失败隔离各至少一条端到端用例。
 
 ### 5.2 入口计数：只读需要的字节（A14/A16/A17）
 
-- **计数口径**：在**真实入口**（`analyze_method`）上记录每个阶段的读取与构造次数：Header 读取（`ClassHeaders`）、Body 读取（`MethodBodies`，此片起成为真实计费维度）、以及解析/CFG/SSA/Region/AST 构造计数。
+- **计数口径**：在**真实入口**（`analyze_method`）上记录每个阶段的读取与构造次数：Header 读取（`ClassHeaders`）、Body 读取（`MethodBodies`，自 3.3 已计费，本片补实际构造证据）、以及解析/CFG/SSA/Region/AST 构造计数。
 - **必须证明为零的项**：单个方法分析不得加载无关 Body（`method_bodies` 只计目标方法）；P1 的 X0/X1 路径不得启动 resolver/CFG/SSA/Region/Java AST（构造计数为零，且 `Engine::query` 的输出与重放名单逐字段不变）。
 - **A17 守卫必须覆盖图算法依赖**：3.1 已证实「在受守卫文件里 `use petgraph::…` 并构图」能编译且不被现有 token 表捕获（守卫位于 `tests/p2_contracts.rs` 的 `p2_tokens_in`，其外部 crate 面的清单是 `A17_IMPORT_TOKENS`）。3.3 首个消费者落地时，把 `petgraph::`、`petgraph as`、`extern crate petgraph` 三个 token 加入 `A17_IMPORT_TOKENS`（`petgraph::` 同时覆盖 `use petgraph::algo::…` 与全限定路径 `petgraph::graph::Graph`），并用「注入 `use petgraph::…` → 守卫测试转红」证伪；5.2 的构造计数是这条性质的行为侧证据，两者都要有。
 - **确定性**：同一输入重复运行两次，报告的**身份与顺序逐字段一致**（除 `elapsed_millis`）——这同时是 3.1 那条「所有输出按 (物理定义, BCI) 自排序」的可证伪点。
@@ -899,13 +911,14 @@ pub(crate) struct PassDescriptor {
 ### 5.3 P2 golden、性质与有预算 fuzz
 
 - **固定 replay 名单**（golden）：`tests/fixtures/` 下的 45–52 历史 class（含 ECJ 语料的 `jsr`/`ret` finally）、缺失依赖/debug 的样本、非法版本样本、共享子程序样本、异常重叠样本，以及资源边界样本（超预算、深链、高扇出）。每条记录**执行状态与阶段不变量**，不只记录形状：`stages` 的 `Completed`/`Partial`/`Failed`、`quality`、`representation`、`verification`、`coverage`、以及 origin 映射（克隆块的一对多）都必须可核对。
-- **性质测试**：对生成的合法/非法方法体断言阶段不变量——blocks/edges 覆盖可达集、SSA 的 def-use 双向一致、phi 输入数 = predecessor 数、origin 可回溯到原始 BCI，以及停止可解释（每个 `Partial`/`Cancelled`/`Failed` 都有对应诊断与已发布前缀）。
+- **性质测试**：对生成的合法/非法方法体断言阶段不变量——blocks/edges 覆盖可达集、SSA 的 def-use 双向一致、phi 输入数 = 逻辑 predecessor 数（throw-site/context 独立，含方法入口 seed）、origin 可回溯到原始 BCI，以及停止可解释（每个 `Partial`/`Cancelled`/`Failed` 都有对应诊断与已发布前缀）。
+- **复核回归**：R9 的出口不变/异常输入变化与 R10 的槽位乘积成为固定 replay；补 SSA oracle 的 legacy clone、嵌套 handler、wide/switch，并用独立预期 Frame 状态覆盖共享语义表的盲点。
 - **有预算 fuzz**：复用维护后的 harness（P1 的 `exercise_query` 模式与 `observe` 钩子），对方法分析入口断言**状态与阶段不变量**，而不只是不 panic；语料包含 3.4/3.5 的 `jsr`/`ret` 与异常重叠形态。
 - **验收**：golden 名单可复现、性质测试有变异证伪、fuzz 在固定时长内对不同输入断言不变量且不 panic；新增 harness 与 P1 的既有门禁共存（不替换 P1 的 fuzz target）。
 
 ### 5.4 文档、门禁与归档
 
-- 同步五维支持矩阵（resolution 从 Partial 到完成、decompilation-quality 从 NotImplemented 到 P2 的实际能力、output-level 增加方法分析报告）、README、`openspec/acceptance.md` 的 A09/A10/A11/A13/A14/A16/A17 行与 `docs/` 既有文档；**不得宣称 Java 恢复、Region 分析或 verifier 通过**。
+- 同步五维支持矩阵（resolution/decompile-quality 按已验证范围更新，不机械地改成全部支持、output-level 增加方法分析报告）、README、`openspec/acceptance.md` 的 A09/A10/A11/A13/A14/A16/A17 行与 `docs/` 既有文档；**不得宣称 Java 恢复、Region 分析或 verifier 通过**。
 - 运行并记录：`cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings`、`cargo test --workspace --all-targets --all-features --locked`、oracle（JDK 25，ignored 用例）、MSRV 1.88、两个 workspace 的 supply-chain、**规定时长 fuzz**（既有 smoke 与新增 target 各跑满规定秒数）、`openspec validate --all --strict`、`git diff --exit-code`。
 - 归档前置：把本 change 的 spec deltas 同步进 `openspec/specs/`（`analysis-contracts` 的 Purpose 修改、`demand-resolver`/`jvm-ir`/`conservative-output` 的新增能力），记录精确 commit 与 CI run、以及各片的只读复核结论；确认验收映射表里 A09–A11、A13、A14、A16、A17 全部从「部分」变为「通过」且各有指向验证记录的证据链接。
 
@@ -923,15 +936,16 @@ pub(crate) struct PassDescriptor {
 
 ## Migration Plan
 
-本轮仅修订文档。0.x 与 3.4 的历史交付保留，以下是当前尚需执行的路线：
+当前已有完整的 P2 方法管线与薄 CLI，继续实施只处理尚未关闭的项：
 
-1. **layer-jarde-crates 3.1–3.3**：核对已搬迁的 reader/query/jvm、门面、CLI/examples、fuzz 与 A17，完成独立消费、依赖闭包和发布前全门禁。已有实现只补证据缺口，不重复抽包；此片不修 returnAddress。
-2. **3.4b 返回地址证明**：在新 jvm 包内关闭四个非法字节串，证明合法历史/共享/嵌套对照、资源停止及异常输入，独立复核后才能进入克隆。
-3. **3.5 规范化**：从 driver 传递真实 CallContexts，在同一预算中克隆、维护异常/origin 并建立 CanonicalCFG；先有无 legacy 的直通对照，再有共享/嵌套与 clone 边界。
-4. **4.1 → 4.2 → 4.3**：Frame 槽与 Top → 全别名初始化/逐 throw-site 状态 → JVM 驱动与 SSA 名字分配/phi。参考 §6.1 的算法和独立小图对照，不新增共享 crate。
-5. **5.1–5.4**：现有库入口接通剩余阶段，增加薄 CLI、读取/构造计数、golden/fuzz、支持矩阵和全门禁；只有 P2 整体出口通过才进入 P3 首个 Java 输出闭环。
+1. **4.2b**：修正异常固定点，永久保留 R9，复核 Frame 与 SSA 的边界。
+2. **4.3b**：修正 Frame/SSA 的派生存储增长前计费，永久保留 R10；语义修复与资源修复分别验证。
+3. **5.2 已验收**：实际入口读取/预算代理计数和确定性、源码/依赖守卫共同证明边界；Region/AST 当前没有生产构造路径，不宣称已有独立计数器。后续 P3 增加构造路径时补真实隔离证据。
+4. **5.3**：在修正后的候选上完成 replay、独立性质/oracle 与方法分析 fuzz，保留既有 P1 harness。
+5. **5.4**：同步支持矩阵与主规格的过时承诺，运行完整门禁，记录精确提交/CI，再同步 delta 并归档。
+6. **P3 1.1 → 1.2 → 1.3**：P2 整体出口通过后，用最小只读接口交接请求内真实 IR，随后创建真实 `jarde-java` 方法闭环，不从摘要报告重建语义或重复执行整个 P2。
 
-每片记录真实代码基线和测试范围；工作区测试、历史 CI 与新候选 CI 分开。普通质量/范围改进与独立债务不混入本轮正确性修复。
+每片记录实际代码基线和测试范围；历史 CI、固定快照测试和正在变动的工作区分开。拆包 7/7 只待归档，不再次搬迁。
 
 ### 保持拆分的既有债务
 
