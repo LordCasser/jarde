@@ -24,8 +24,10 @@
 //!   override) and the class itself declares a member of the declaration's kind, name and
 //!   descriptor;
 //! * a class whose closure could not be read completely (a missing supertype, an ambiguous
-//!   position, a cyclic hierarchy) leaves an unread branch, and the candidate itself carries the
-//!   `missing` gap as [`DispatchEvidence::MissingDependency`];
+//!   position, a cyclic hierarchy) leaves an unread branch, the candidate itself carries the
+//!   `missing` gap as [`DispatchEvidence::MissingDependency`], and the name that could not be read
+//!   is published with the demand that reached it (2.2) — a class nothing resolved is unsearched
+//!   range, never an exclusion;
 //! * `open_world` is true as soon as one candidate stands under any open-world fact, as soon as
 //!   the range holds a position this request could not decide, and as soon as the plane stopped:
 //!   a budget stop or a cancellation ends the range where its content becomes unknown.
@@ -40,7 +42,10 @@
 
 use crate::environment::ResolutionEnvironment;
 use crate::members::MemberKind;
-use crate::providers::{HeaderClosure, HeaderDemand, HeaderLookupState, NodeIdentity};
+use crate::providers::{
+    HeaderClosure, HeaderDemand, HeaderLookupState, HierarchyGap, HierarchyGapKind, NodeIdentity,
+    WalkGaps,
+};
 use jarde_reader::artifact::{ArtifactKind, ArtifactSnapshot, NestedArchiveState, PhysicalEntry};
 use jarde_reader::budget::{Budget, BudgetDimension, CountedBudgetDimension};
 use jarde_reader::classfile::ClassFacts;
@@ -153,9 +158,12 @@ pub(crate) struct DispatchOutcome {
     /// supertype branch that could not be read. Such a position is unsearched range, which is
     /// why it also makes the plane's coverage partial.
     pub(crate) undecided_positions: bool,
-    /// Some class of the range has an unread supertype branch, so the subtype test never saw
-    /// the whole hierarchy of that class.
-    pub(crate) unread_branches: bool,
+    /// The names this range needed and the order did not resolve, each with the demand that
+    /// reached them: a class of the range the order provides no definition for (or whose
+    /// definitions cannot be told apart), and a supertype branch of a class of the range that
+    /// stayed unread. Such a name is unsearched range and never an exclusion, and publishing it by
+    /// name is what keeps "this class could not be read" apart from "this class is not there".
+    pub(crate) unread: WalkGaps,
     /// The stop that ended the plane, if any; publishing it as `execution` is the caller's job.
     pub(crate) stop: Option<DispatchStop>,
     /// Diagnostics the range enumeration itself produced (its own listing facts).
@@ -168,7 +176,7 @@ impl DispatchOutcome {
             candidates: Vec::new(),
             open_world: true,
             undecided_positions: true,
-            unread_branches: false,
+            unread: WalkGaps::default(),
             stop: Some(DispatchStop::Refused(error)),
             diagnostics: Vec::new(),
         }
@@ -211,7 +219,7 @@ pub(crate) fn dispatch_candidates(
         candidates: Vec::new(),
         open_world: false,
         undecided_positions: false,
-        unread_branches: false,
+        unread: WalkGaps::default(),
         // The listing runs first, so its own truncation is the first stop this plane knows: a
         // later refusal is a consequence of the same exhausted budget and must not replace it.
         stop: range.truncation.clone().map(DispatchStop::Truncated),
@@ -239,8 +247,10 @@ pub(crate) fn dispatch_candidates(
         };
         outcome.open_world |= step.undecided;
         outcome.undecided_positions |= step.undecided;
-        outcome.open_world |= step.gap;
-        outcome.unread_branches |= step.gap;
+        // A branch the plane could not read is one more open-world fact of this range, and its
+        // record is published by name: the class it names is range this request never searched.
+        outcome.open_world |= !step.gaps.is_empty();
+        outcome.unread.absorb(&step.gaps);
         let Some(candidate) = step.candidate else {
             continue;
         };
@@ -452,17 +462,51 @@ struct ClassStep {
     candidate: Option<DispatchCandidate>,
     /// The range's position for this name could not be decided.
     undecided: bool,
-    /// The class's supertype closure could not be read completely.
-    gap: bool,
+    /// The branches this step could not read, with the demand that reached them: the class's own
+    /// unread supertype branch, or the class's own name when the order resolved no definition for
+    /// it. A position the environment resolved *outside* the range is undecided too and records no
+    /// name here — the name did resolve, so no dependency of this request is unread for it.
+    gaps: WalkGaps,
 }
 
 impl ClassStep {
-    fn undecided() -> Self {
+    /// A range position the order could not resolve, named by the kind of gap it stated.
+    fn unread(kind: HierarchyGapKind, name: &JvmBytes, loader: &LoaderId) -> Self {
+        let mut gaps = WalkGaps::default();
+        gaps.record(
+            kind,
+            HierarchyGap {
+                name: name.clone(),
+                loader: loader.clone(),
+                // The demand of this read is the range's own enumeration: the class is asked for
+                // because it is one class of the requested range, and no hierarchy edge reached it.
+                demand: HeaderDemand::DispatchScope,
+                declared_by: None,
+            },
+        );
         Self {
             candidate: None,
             undecided: true,
-            gap: false,
+            gaps,
         }
+    }
+
+    /// A range position the environment resolved to a definition outside the requested range.
+    fn outside_range() -> Self {
+        Self {
+            candidate: None,
+            undecided: true,
+            gaps: WalkGaps::default(),
+        }
+    }
+}
+
+/// The gap one lookup state states for the name that was demanded, or `None` when it found one.
+fn unread_kind(state: HeaderLookupState) -> Option<HierarchyGapKind> {
+    match state {
+        HeaderLookupState::Found => None,
+        HeaderLookupState::Missing => Some(HierarchyGapKind::Missing),
+        HeaderLookupState::Ambiguous => Some(HierarchyGapKind::Ambiguous),
     }
 }
 
@@ -482,10 +526,12 @@ fn class_step(
         .demand_from_caller(&name.0, HeaderDemand::DispatchScope, budget)
         .decision?;
     let resolution = closure.resolution(handle);
-    if resolution.lookup.state != HeaderLookupState::Found {
+    if let Some(kind) = unread_kind(resolution.lookup.state) {
         // No position of the order provides this name, or several positions cannot be told
-        // apart: the range holds a class this request could not read, so nothing is claimed.
-        return Ok(ClassStep::undecided());
+        // apart: the range holds a class this request could not read, so nothing is claimed —
+        // and the name that could not be read is published, never turned into an exclusion.
+        let loader = closure.caller_loader().clone();
+        return Ok(ClassStep::unread(kind, name, &loader));
     }
     let location = resolution
         .lookup
@@ -495,7 +541,7 @@ fn class_step(
     if !covered_by_scope(snapshot.id(), scope, &location.definition) {
         // The environment's order selects a definition outside the requested range; the class of
         // the range is shadowed for this request, and an unread position is not an answer.
-        return Ok(ClassStep::undecided());
+        return Ok(ClassStep::outside_range());
     }
     let header = resolution
         .lookup
@@ -524,18 +570,22 @@ fn class_step(
             .identity(layer)
             .is_some_and(|node| node != self_node && node == declaration.declaring);
     }
-    let gaps = walk.gaps();
-    let gap = !gaps.missing.is_empty() || !gaps.ambiguous.is_empty() || !gaps.cycles.is_empty();
+    let mut gaps = WalkGaps::default();
+    gaps.absorb(walk.gaps());
     let candidate = (declares && owner_above).then(|| DispatchCandidate {
         loader,
         definition,
         member: member_of(&this_class, declaration),
-        evidence: candidate_evidence(declared, gaps.missing.is_empty(), root_index),
+        evidence: candidate_evidence(
+            declared,
+            !gaps.any_of(HierarchyGapKind::Missing),
+            root_index,
+        ),
     });
     Ok(ClassStep {
         candidate,
         undecided: false,
-        gap,
+        gaps,
     })
 }
 

@@ -53,7 +53,9 @@
 //!   fabricated `Object` declaration;
 //! * a supertype that cannot be read (missing, indistinguishable, cyclic) ends its own branch
 //!   and is reported as an unread branch: the decision is published with a warning and partial
-//!   coverage instead of being presented as a complete search.
+//!   coverage instead of being presented as a complete search, and a search that reached *no*
+//!   declaration that way is not the negation `Missing` — the report states the classes it could
+//!   not read (2.2, A11).
 //!
 //! All of them are the approximations the design fixes as this slice's semantic boundary: they
 //! are recorded facts, not claims that JVMS 5.4.3 is fully implemented here.
@@ -61,7 +63,7 @@
 use crate::environment::CallerContext;
 use crate::providers::{
     AncestorPath, ClassHandle, HIERARCHY_CYCLE, HeaderClosure, HeaderDemand, HeaderLookupState,
-    NodeIdentity, escaped,
+    HierarchyGap, HierarchyGapKind, NodeIdentity, WalkGaps, escaped,
 };
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{ClassFacts, MemberHeader};
@@ -211,9 +213,12 @@ pub(crate) struct MemberOutcome {
     /// The warnings and notes the decision carries, in the order they were produced: the unread
     /// branches of the hierarchy first, then the rules the selected declaration was held to.
     pub(crate) diagnostics: Vec<Diagnostic>,
-    /// False when a branch of the hierarchy could not be read, so the resolution plane is
-    /// partial even though a decision was reached.
-    pub(crate) hierarchy_complete: bool,
+    /// The branches of the hierarchy the search could not read, each with the demand that reached
+    /// it. Empty when every branch the search entered was read, which is exactly the case where a
+    /// `Missing` decision is the negation it states: with a branch left unread the search cannot
+    /// say that nothing declares the member, and the resolution plane publishes what it could not
+    /// read instead of the negation (A11).
+    pub(crate) unread: WalkGaps,
 }
 
 impl MemberOutcome {
@@ -221,8 +226,13 @@ impl MemberOutcome {
         Self {
             decision,
             diagnostics: Vec::new(),
-            hierarchy_complete: true,
+            unread: WalkGaps::default(),
         }
+    }
+
+    /// Whether every branch of the hierarchy this search entered was read.
+    pub(crate) fn hierarchy_complete(&self) -> bool {
+        self.unread.is_empty()
     }
 }
 
@@ -244,7 +254,7 @@ pub(crate) fn resolve_member(
         return Ok(MemberOutcome {
             decision: MemberDecision::ArrayOwner,
             diagnostics: vec![array_owner_diagnostic(owner)],
-            hierarchy_complete: true,
+            unread: WalkGaps::default(),
         });
     }
     // JVMS 2.9: `MethodHandle.invoke`/`invokeExact` are matched by name, because the call
@@ -327,13 +337,13 @@ pub(crate) fn resolve_member(
             }
         }
     };
-    let hierarchy_complete = !search.incomplete();
+    let unread = std::mem::take(&mut search.gaps);
     let mut diagnostics = std::mem::take(&mut search.diagnostics);
     diagnostics.extend(rules);
     Ok(MemberOutcome {
         decision,
         diagnostics,
-        hierarchy_complete,
+        unread,
     })
 }
 
@@ -565,17 +575,36 @@ enum Selection {
 
 /// What the searches of one request found out about the hierarchy itself.
 #[derive(Default)]
+/// The branches the searches could not read, with the diagnostics that name them.
 struct Search {
-    /// Branches the searches could not read, with the diagnostics that name them.
     diagnostics: Vec<Diagnostic>,
-    /// Branches the searches could not read: a supertype that is missing, indistinguishable or
-    /// cyclic. A refusal (budget, cancellation, damage) is not one of them — it ends the request.
-    unread: u64,
+    /// The branches the searches could not read: a supertype that is missing, indistinguishable or
+    /// cyclic, each with the demand that reached it. A refusal (budget, cancellation, damage) is
+    /// not one of them — it ends the request. The records are what lets a caller publish *which*
+    /// dependency was unread instead of turning the missing read into `Missing`, the statement
+    /// that nothing declares the member (A11).
+    gaps: WalkGaps,
 }
 
 impl Search {
-    fn incomplete(&self) -> bool {
-        self.unread > 0
+    /// Records one branch the searches could not read, as the demand that reached it.
+    fn record_unread(
+        &mut self,
+        kind: HierarchyGapKind,
+        name: &JvmBytes,
+        loader: &LoaderId,
+        demand: HeaderDemand,
+        declared_by: Option<&JvmBytes>,
+    ) {
+        self.gaps.record(
+            kind,
+            HierarchyGap {
+                name: name.clone(),
+                loader: loader.clone(),
+                demand,
+                declared_by: declared_by.cloned(),
+            },
+        );
     }
 }
 
@@ -681,7 +710,13 @@ impl Layers {
         if let Some(known) = &known
             && successor.path.repeats(known)
         {
-            search.unread += 1;
+            search.record_unread(
+                HierarchyGapKind::Cyclic,
+                &successor.name,
+                &successor.initiating_loader,
+                successor.demand,
+                successor.path.names().last(),
+            );
             search.diagnostics.push(cycle_warning(
                 &known.defining_loader,
                 &successor.path,
@@ -696,15 +731,7 @@ impl Layers {
         {
             return Ok(None);
         }
-        let handle = demand_layer(
-            closure,
-            &successor.initiating_loader,
-            &successor.name,
-            successor.demand,
-            successor.depth(),
-            budget,
-            search,
-        )?;
+        let handle = demand_layer(closure, successor, budget, search)?;
         let Some(handle) = handle else {
             // The layer published its own gap (missing or indistinguishable), which is the whole
             // fact a second expansion of the same key could add.
@@ -722,7 +749,13 @@ impl Layers {
         // The node can also repeat the path without the request having searched *this* key before:
         // one definition reached through two loaders whose orders both delegate to it.
         if successor.path.repeats(&identity) {
-            search.unread += 1;
+            search.record_unread(
+                HierarchyGapKind::Cyclic,
+                &successor.name,
+                &successor.initiating_loader,
+                successor.demand,
+                successor.path.names().last(),
+            );
             search
                 .diagnostics
                 .push(cycle_warning(&site.loader, &successor.path, &site.name));
@@ -751,31 +784,36 @@ fn demand_owner(
 
 /// Demands one supertype layer, one dependency step above the class that declares it.
 ///
-/// `initiating_loader` is the loader that has to search for this name, and it is the **defining
-/// loader of the class that declares the edge** — never the loader the request started at. A
-/// caller that delegated its class to a parent therefore resolves that class's supertypes in the
-/// parent's own order, which is what JVMS 5.4.3.1 requires and what a same-named class of the
-/// child must not be allowed to answer with.
+/// The successor carries everything the layer is: `initiating_loader` is the loader that has to
+/// search for its name, and it is the **defining loader of the class that declares the edge** —
+/// never the loader the request started at. A caller that delegated its class to a parent
+/// therefore resolves that class's supertypes in the parent's own order, which is what JVMS
+/// 5.4.3.1 requires and what a same-named class of the child must not be allowed to answer with.
 ///
-/// `demand` is the demand of the edge that reached this layer: a `super_class` step is
+/// Its `demand` is the demand of the edge that reached this layer: a `super_class` step is
 /// [`HeaderDemand::ParentChain`] and a superinterface step is
 /// [`HeaderDemand::HierarchyClosure`], so the report's reasons follow the hierarchy edges
 /// instead of labelling every step of the search the same way. A layer that is already read is
 /// answered from the request memo and keeps the reason of the read that really happened.
 ///
 /// A layer no position holds, or one that cannot be told apart, ends its own branch: it is
-/// recorded as an unread branch and the search continues with the branches it can read. A
-/// budget stop, a cancellation and a damaged candidate are refusals, not unread branches.
+/// recorded as an unread branch — the name, the loader whose order searched it, the edge that
+/// reached it and the class whose own header declares that edge — and the search continues with
+/// the branches it can read. A budget stop, a cancellation and a damaged candidate are refusals,
+/// not unread branches.
 fn demand_layer(
     closure: &mut HeaderClosure<'_>,
-    initiating_loader: &LoaderId,
-    name: &JvmBytes,
-    demand: HeaderDemand,
-    depth: u64,
+    successor: &Successor,
     budget: &mut Budget,
     search: &mut Search,
 ) -> Result<Option<ClassHandle>> {
-    budget.observe_dependency_depth(depth)?;
+    let name = &successor.name;
+    let initiating_loader = &successor.initiating_loader;
+    let demand = successor.demand;
+    // The path that reached this successor ends with the class that declares the edge, so that
+    // class is the one that needed the name an unread branch states.
+    let declared_by = successor.path.names().last();
+    budget.observe_dependency_depth(successor.depth())?;
     budget.charge(CountedBudgetDimension::AnalysisSteps, 1)?;
     let handle = closure
         .demand(initiating_loader, &name.0, demand, budget)
@@ -793,7 +831,13 @@ fn demand_layer(
     match state {
         HeaderLookupState::Found => Ok(Some(handle)),
         HeaderLookupState::Missing => {
-            search.unread += 1;
+            search.record_unread(
+                HierarchyGapKind::Missing,
+                name,
+                initiating_loader,
+                demand,
+                declared_by,
+            );
             search.diagnostics.push(hierarchy_warning(
                 HIERARCHY_MISSING,
                 &loader,
@@ -803,7 +847,13 @@ fn demand_layer(
             Ok(None)
         }
         HeaderLookupState::Ambiguous => {
-            search.unread += 1;
+            search.record_unread(
+                HierarchyGapKind::Ambiguous,
+                name,
+                initiating_loader,
+                demand,
+                declared_by,
+            );
             search.diagnostics.push(hierarchy_warning(
                 HIERARCHY_AMBIGUOUS,
                 &loader,
@@ -1387,7 +1437,7 @@ fn access_decision(
         // Package private outside its own run-time package and no other rule left.
         return Ok(Access::Denied { caller_class });
     }
-    let unread_before = search.unread;
+    let unread_before = search.gaps.len();
     let declaring = location.identity();
     let caller_site = ClassSite {
         loader: caller.loader.clone(),
@@ -1413,7 +1463,7 @@ fn access_decision(
     if is_subtype {
         return Ok(Access::Allowed);
     }
-    if search.unread > unread_before {
+    if search.gaps.len() > unread_before {
         // The caller's own hierarchy could not be read completely, so "not a subclass" is not
         // decided: the resolution says its access rules were not applied rather than denying
         // access on a guess.

@@ -123,6 +123,11 @@ impl Engine {
     /// resolved (2.5) — never a unique runtime target. A request whose environment the validator
     /// rejected keeps the honest unavailable state, because a rejected environment never yields
     /// a definition.
+    ///
+    /// A member whose hierarchy needs a class this snapshot's order does not provide is
+    /// `UnresolvedDependency` rather than `Missing`, and the classes it could not read are
+    /// published by name in `unresolved_dependencies`: reading nothing for a name is not the
+    /// statement that the name does not exist (2.2, A11).
     pub fn resolve_symbol(
         &self,
         content: &[ArtifactSnapshot],

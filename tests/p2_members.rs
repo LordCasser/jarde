@@ -1217,7 +1217,23 @@ fn a_missing_supertype_leaves_its_branch_unread() {
         world.caller(b"p/Orphan"),
     );
 
-    assert_eq!(report.state, Some(ResolutionState::Missing));
+    assert_eq!(
+        report.state,
+        Some(ResolutionState::UnresolvedDependency),
+        "`p/Absent` is not in this snapshot, so the search never read the branch that could \
+         declare `f`: the negation `Missing` is not claimed (A11, 2.2)"
+    );
+    assert_eq!(
+        report.unresolved_dependencies,
+        vec![UnresolvedDependency {
+            name: JvmBytes(b"p/Absent".to_vec()),
+            loader: loader("app"),
+            reason: ReadReason::ParentChain,
+            declared_by: Some(JvmBytes(b"p/Orphan".to_vec())),
+            gap: DependencyGap::Missing,
+        }],
+        "the unread class is named, with the `super_class` edge of `p/Orphan` that needed it"
+    );
     assert_eq!(
         diagnostic_codes(&report),
         vec!["resolution_hierarchy_missing"]
@@ -1278,8 +1294,24 @@ fn a_supertype_that_cannot_be_told_apart_leaves_its_branch_unread() {
         world.abstract_caller(),
     );
 
-    assert_eq!(report.state, Some(ResolutionState::Missing));
+    assert_eq!(
+        report.state,
+        Some(ResolutionState::UnresolvedDependency),
+        "the superclass position of `p/AmbSub` cannot be told apart, so the search never entered \
+         it: no declaration is claimed and `Missing` is not the answer either (A11, 2.2)"
+    );
     assert!(report.resolved.is_none());
+    assert_eq!(
+        report.unresolved_dependencies,
+        vec![UnresolvedDependency {
+            name: JvmBytes(b"p/AmbBase".to_vec()),
+            loader: loader("app"),
+            reason: ReadReason::ParentChain,
+            declared_by: Some(JvmBytes(b"p/AmbSub".to_vec())),
+            gap: DependencyGap::Ambiguous,
+        }],
+        "the gap names the position that could not be resolved and the class that needed it"
+    );
     assert_eq!(
         diagnostic_codes(&report),
         vec!["resolution_hierarchy_ambiguous"]
@@ -1341,7 +1373,24 @@ fn a_cyclic_superclass_chain_stops_with_a_warning() {
         ReferenceUse::FieldRead,
         world.caller(b"p/CycA"),
     );
-    assert_eq!(field_report.state, Some(ResolutionState::Missing));
+    assert_eq!(
+        field_report.state,
+        Some(ResolutionState::UnresolvedDependency),
+        "the superclass chain repeats, so the search never read the whole hierarchy: the \
+         declaration is undecided, not absent (A11, 2.2)"
+    );
+    assert_eq!(
+        field_report.unresolved_dependencies,
+        vec![UnresolvedDependency {
+            name: JvmBytes(b"p/CycA".to_vec()),
+            loader: loader("app"),
+            reason: ReadReason::ParentChain,
+            declared_by: Some(JvmBytes(b"p/CycB".to_vec())),
+            gap: DependencyGap::Cyclic,
+        }],
+        "the refused edge names the class that repeats on its own path and the class that \
+         declares that edge"
+    );
     assert_eq!(
         diagnostic_codes(&field_report),
         vec!["resolution_hierarchy_cycle"]
@@ -1373,7 +1422,16 @@ fn a_cyclic_superclass_chain_stops_with_a_warning() {
         ReferenceUse::InvokeVirtual,
         world.caller(b"p/CycA"),
     );
-    assert_eq!(method_report.state, Some(ResolutionState::Missing));
+    assert_eq!(
+        method_report.state,
+        Some(ResolutionState::UnresolvedDependency),
+        "the method's own superclass walk refuses the same repeating edge, so it is undecided \
+         the same way rather than negated"
+    );
+    assert_eq!(
+        method_report.unresolved_dependencies, field_report.unresolved_dependencies,
+        "both walks state the one refused edge"
+    );
     assert_eq!(
         diagnostic_codes(&method_report),
         vec!["resolution_hierarchy_cycle"]
@@ -3336,8 +3394,25 @@ fn a_delegated_root_that_declares_itself_as_its_supertype_is_a_cycle() {
         world.abstract_caller(),
     );
 
-    assert_eq!(report.state, Some(ResolutionState::Missing));
+    assert_eq!(
+        report.state,
+        Some(ResolutionState::UnresolvedDependency),
+        "the root's own repeating edge leaves the hierarchy unread, so the search states what it \
+         could not read instead of negating it (A11, 2.2)"
+    );
     assert!(report.resolved.is_none());
+    assert_eq!(
+        report.unresolved_dependencies,
+        vec![UnresolvedDependency {
+            name: JvmBytes(b"p/Self".to_vec()),
+            loader: loader("parent"),
+            reason: ReadReason::ParentChain,
+            declared_by: Some(JvmBytes(b"p/Self".to_vec())),
+            gap: DependencyGap::Cyclic,
+        }],
+        "the edge is the delegated root's own, so both the searched loader and the declaring \
+         class are the parent's"
+    );
     assert_eq!(
         diagnostic_codes(&report),
         vec!["resolution_hierarchy_cycle"]

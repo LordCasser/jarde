@@ -1071,6 +1071,9 @@ fn resolution_state_code(state: ResolutionState) -> &'static str {
         ResolutionState::IncompatibleClassChange => "incompatible_class_change",
         ResolutionState::UnsupportedPolicy => "unsupported_policy",
         ResolutionState::BudgetExceeded => "budget_exceeded",
+        // 2.2's own state: the declaration search needed a class this snapshot's order does not
+        // provide, so no declaration is claimed. It is not `Missing`, which is the negation.
+        ResolutionState::UnresolvedDependency => "unresolved_dependency",
     }
 }
 

@@ -614,9 +614,24 @@ fn a_member_symbol_is_searchable_and_reads_only_the_classes_it_needs() {
     assert_eq!(report.analysis, ResolutionAnalysis::Performed);
     assert_eq!(
         report.state,
-        Some(ResolutionState::Missing),
-        "the fixture class declares no `m`, so the member search decides Missing"
+        Some(ResolutionState::UnresolvedDependency),
+        "the fixture class declares no `m`, but its parent `java/lang/Object` is not in this \
+         snapshot either: the search never read the whole hierarchy, so it cannot state the \
+         negation `Missing` (A11, 2.2)"
     );
+    assert_eq!(
+        report.unresolved_dependencies,
+        vec![UnresolvedDependency {
+            name: JvmBytes(b"java/lang/Object".to_vec()),
+            loader: loader("app"),
+            reason: ReadReason::ParentChain,
+            declared_by: Some(JvmBytes(b"p/S".to_vec())),
+            gap: DependencyGap::Missing,
+        }],
+        "the class the search needed is published by name, with the edge that reached it and the \
+         class that declares that edge — not as a negation"
+    );
+    assert!(report.resolved.is_none());
     assert!(
         report.target == request.target,
         "the raw symbol is preserved when nothing is found"

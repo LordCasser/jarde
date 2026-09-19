@@ -29,7 +29,9 @@ use crate::environment::{
     environment_diagnostics, require_content_snapshot, unavailable_diagnostic,
     validate_environment, validate_environment_with_caller,
 };
-use crate::providers::{HeaderClosure, HeaderDemand, HeaderLookupState, escaped};
+use crate::providers::{
+    HeaderClosure, HeaderDemand, HeaderLookupState, HierarchyGapKind, WalkGaps, escaped,
+};
 use jarde_query::query::{ConsumerKind, ConsumerSchema, XrefItem, XrefOperation, XrefTarget};
 use jarde_reader::accounting::with_usage;
 use jarde_reader::artifact::{ArtifactSnapshot, budget_dimension_code};
@@ -135,6 +137,19 @@ pub enum ResolutionAnalysis {
 /// not run is `analysis = NotPerformed` with `state = None`, and cancellation is
 /// `execution = Cancelled` with `state = None`. A budget stop is `BudgetExceeded` here and
 /// in `execution` at the same time.
+///
+/// The states answer different questions about the requested symbol and are never each other's
+/// approximation (A11). `Resolved` names the declaration the order selected, `Missing` is the
+/// negation — no readable position of the order provides it — and it is claimed **only** when the
+/// search read every branch it entered. `UnresolvedDependency` is what a member search reports
+/// instead of that negation when a class its hierarchy needed could not be read: the missing
+/// dependency is not evidence that the name does not exist, so the report states what it could
+/// not read (see [`ResolutionReport::unresolved_dependencies`]) rather than answering the
+/// question it never got to ask. `Inaccessible` and `IncompatibleClassChange` are decided facts
+/// about a selected declaration (the access rules denied it, the invocation kind or the inherited
+/// interface defaults contradict it), `Ambiguous` is several declarations of the member that
+/// cannot be told apart at one selection position, and `UnsupportedPolicy` is an owner kind this
+/// slice does not resolve.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ResolutionState {
@@ -145,6 +160,51 @@ pub enum ResolutionState {
     IncompatibleClassChange,
     UnsupportedPolicy,
     BudgetExceeded,
+    /// A class the search needed is not in this snapshot's order, so no declaration is claimed:
+    /// neither the negation `Missing` nor the selection `Resolved`. The classes that could not be
+    /// read are published in [`ResolutionReport::unresolved_dependencies`].
+    UnresolvedDependency,
+}
+
+/// One class a request's closure needed and the order did not resolve.
+///
+/// The record is evidence, never a verdict about the class it names: it says which name the
+/// closure was asked for, which loader's own order searched it, which hierarchy edge demanded it
+/// and which class declares that edge. It is what A11's "a missing dependency is not a negative"
+/// means concretely — reading nothing for a name is not the statement that the name does not
+/// exist, and the report publishes the name instead of turning it into [`ResolutionState::Missing`].
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct UnresolvedDependency {
+    /// The class name the closure demanded and could not resolve.
+    pub name: JvmBytes,
+    /// The loader whose own order searched for the name (JVMS 5.4.3.1).
+    pub loader: LoaderId,
+    /// The edge that demanded the name, in the read vocabulary: a `super_class` step is
+    /// [`ReadReason::ParentChain`], an `interfaces` step is [`ReadReason::HierarchyClosure`], and a
+    /// dispatch range's own enumeration is [`ReadReason::DispatchScope`].
+    pub reason: ReadReason,
+    /// The class that declares that edge: the last ancestor of the path that reached the name, or
+    /// the class of a range whose own name the order could not resolve. `None` only for a walk's
+    /// root layer, which no edge reached.
+    pub declared_by: Option<JvmBytes>,
+    /// What the order stated about the name.
+    pub gap: DependencyGap,
+}
+
+/// Why one class of a hierarchy could not be read.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DependencyGap {
+    /// No position of the order provides the name: the class the closure needed is not in this
+    /// snapshot, which is the missing dependency of A11 and not the statement that the name does
+    /// not exist.
+    Missing,
+    /// One position holds the name with definitions that cannot be told apart, so this request
+    /// cannot say which of them the search had to continue through.
+    Ambiguous,
+    /// The name's own supertype edge repeats: an illegal hierarchy the walk refuses to follow.
+    Cyclic,
 }
 
 /// One resolved member: loader, physical definition and the raw member symbol.
@@ -273,6 +333,17 @@ pub struct ResolutionReport {
     /// Only definitions that are indistinguishable at one selection position.
     pub candidates: Vec<ResolvedMemberRef>,
     pub dispatch: Option<DispatchReport>,
+    /// Every class a closure this request ran needed and the order did not resolve, in the order
+    /// the searches found them, each stated once: the declaration search's own hierarchy and,
+    /// when the request asked for a range, the range's classes and their hierarchies.
+    ///
+    /// The plane is what makes the two facts a caller must not confuse separable. A name read
+    /// through this list may well exist outside the snapshot the request was given, so the report
+    /// never publishes [`ResolutionState::Missing`] for a member whose hierarchy this list leaves
+    /// incomplete — and a `Resolved` declaration found in a branch the order did read stays a
+    /// resolved declaration, with the unread branches that sit above it published beside it. Like
+    /// `reads`, this is evidence of the search and not a result entry: it is published uncharged.
+    pub unresolved_dependencies: Vec<UnresolvedDependency>,
     /// Every class header this request read, in read order, at most once per
     /// `(definition, loader)`; empty when the request performed nothing.
     pub reads: Vec<HeaderRead>,
@@ -427,8 +498,10 @@ pub(crate) fn validate_declaration_reference_query(
 /// decisions; for a member symbol the 2.3 rule table adds `Inaccessible` (the access rules
 /// denied the reference) and `IncompatibleClassChange` (the invocation kind contradicts the
 /// declaration or the hierarchy, or two defaults conflict) and `UnsupportedPolicy` (an owner
-/// kind this slice does not resolve). In both paths a budget stop is the fourth decision
-/// (`BudgetExceeded`, with the same stop in `execution`). A cancellation is
+/// kind this slice does not resolve), and a member search that could not read a class of its
+/// hierarchy reports `UnresolvedDependency` with the classes it needed in
+/// `unresolved_dependencies` (2.2) instead of the negation `Missing`. In both paths a budget stop
+/// is the fourth decision (`BudgetExceeded`, with the same stop in `execution`). A cancellation is
 /// `execution = Cancelled` with `state = None`; a damaged candidate or a stopped listing is
 /// `execution = Failed { Error { code } }` with `state = None` and a diagnostic that names the
 /// origin — a read failure never occupies a semantic state.
@@ -465,7 +538,8 @@ pub(crate) fn resolution_report(
             resolved: None,
             candidates: Vec::new(),
             dispatch: None,
-            // Nothing was demanded, so nothing was read.
+            // Nothing was demanded, so nothing was read and no dependency was searched for.
+            unresolved_dependencies: Vec::new(),
             reads: Vec::new(),
             coverage: Coverage::not_requested(),
             execution: ExecutionReport::Failed {
@@ -484,6 +558,9 @@ pub(crate) fn resolution_report(
     // the phase that refused (2.3's rule diagnostics or the closure's own diagnostics), so the
     // earliest stop keeps governing `execution`.
     let mut rule_stop: Option<ExecutionReport> = None;
+    // The classes this request's closures needed and could not read, as the report publishes
+    // them: the declaration search's own hierarchy first, then the dispatch range's classes.
+    let mut unresolved: Vec<UnresolvedDependency> = Vec::new();
     let (analysis, state, resolved, candidates, concluded, covered, execution) = match performable {
         Performable::Class(name) => {
             // The request's own target is the one symbol demand the *caller* initiates; every
@@ -555,7 +632,12 @@ pub(crate) fn resolution_report(
             match outcome {
                 Ok(outcome) => {
                     let (state, resolved, candidates) =
-                        member_planes(&outcome.decision, &request.target);
+                        member_planes(&outcome.decision, &request.target, &outcome.unread);
+                    let complete = outcome.hierarchy_complete();
+                    // The branches the search could not read are published before the rule
+                    // diagnostics: they are the evidence the state above is read with, and the
+                    // request cannot afford them any less than the records of the reads it made.
+                    publish_dependencies(&outcome.unread, &mut unresolved);
                     // Every rule diagnostic 2.3 produced is a resolution result like any other
                     // entry of the report, so it costs one `ResultItems` before it is published
                     // (the same discipline the declaration-reference query applies to its own
@@ -575,7 +657,7 @@ pub(crate) fn resolution_report(
                     // An owner kind this slice does not resolve covers no range of the requested
                     // resolution, so the plane is partial even though the decision itself is
                     // complete: the request asked for a range that was never searched.
-                    let covered = outcome.hierarchy_complete
+                    let covered = complete
                         && !matches!(outcome.decision, crate::members::MemberDecision::ArrayOwner);
                     (
                         ResolutionAnalysis::Performed,
@@ -637,13 +719,17 @@ pub(crate) fn resolution_report(
                     // plane's rule and not a second copy of it in this layer.
                     dispatch_execution =
                         publish_dispatch(&outcome, &mut diagnostics, budget.usage());
+                    // The range's own unread names are evidence of the same kind as the
+                    // declaration search's: a class the order could not resolve is unsearched
+                    // range, and it is published by name instead of being left as a flag.
+                    publish_dependencies(&outcome.unread, &mut unresolved);
                     dispatch_search_stopped = outcome
                         .stop
                         .as_ref()
                         .is_some_and(DispatchStop::ended_a_search);
                     dispatch_incomplete = outcome.stop.is_some()
                         || outcome.undecided_positions
-                        || outcome.unread_branches;
+                        || !outcome.unread.is_empty();
                     dispatch = Some(DispatchReport {
                         scope: scope.scope.clone(),
                         candidates: outcome.candidates.iter().map(dispatch_candidate).collect(),
@@ -700,6 +786,7 @@ pub(crate) fn resolution_report(
         resolved,
         candidates,
         dispatch,
+        unresolved_dependencies: unresolved,
         reads: published_reads(&closure),
         coverage,
         // The usage snapshot of the whole request: the dispatch range's own reads and published
@@ -821,17 +908,53 @@ pub(crate) fn published_reads(closure: &HeaderClosure<'_>) -> Vec<HeaderRead> {
         .map(|read| HeaderRead {
             loader: read.loader.clone(),
             definition: read.definition.clone(),
-            reason: match read.demand {
-                HeaderDemand::RequestedDefinition => ReadReason::RequestedDefinition,
-                HeaderDemand::ParentChain => ReadReason::ParentChain,
-                HeaderDemand::HierarchyClosure => ReadReason::HierarchyClosure,
-                HeaderDemand::MemberOwner => ReadReason::MemberOwner,
-                HeaderDemand::DispatchScope => ReadReason::DispatchScope,
-                HeaderDemand::DriverMethodBody => ReadReason::DriverMethodBody,
-                HeaderDemand::CalleeMemberBody => ReadReason::CalleeMemberBody,
-            },
+            reason: read_reason(read.demand),
         })
         .collect()
+}
+
+/// The public reason of one crate-private demand.
+///
+/// The mapping lives at the boundary that owns the public vocabulary and is exhaustive: a demand
+/// added later fails to compile until it is named here. The read records and the unread-branch
+/// records therefore state one and the same demand the same way — an edge is a `ParentChain` edge
+/// in both, whatever it turned out to reach.
+fn read_reason(demand: HeaderDemand) -> ReadReason {
+    match demand {
+        HeaderDemand::RequestedDefinition => ReadReason::RequestedDefinition,
+        HeaderDemand::ParentChain => ReadReason::ParentChain,
+        HeaderDemand::HierarchyClosure => ReadReason::HierarchyClosure,
+        HeaderDemand::MemberOwner => ReadReason::MemberOwner,
+        HeaderDemand::DispatchScope => ReadReason::DispatchScope,
+        HeaderDemand::DriverMethodBody => ReadReason::DriverMethodBody,
+        HeaderDemand::CalleeMemberBody => ReadReason::CalleeMemberBody,
+    }
+}
+
+/// Publishes the branches a closure could not read, stating each fact once.
+///
+/// The crate-private gap vocabulary is mapped here, at the boundary that owns the public one, and
+/// the mapping is exhaustive: a gap kind added later fails to compile until the report can state
+/// it. Two records are the same fact when every field agrees — the same name demanded by the same
+/// loader through the same edge of the same class — and one fact is published once however many
+/// paths of the search reached it.
+fn publish_dependencies(gaps: &WalkGaps, dependencies: &mut Vec<UnresolvedDependency>) {
+    for (kind, gap) in gaps.iter() {
+        let dependency = UnresolvedDependency {
+            name: gap.name.clone(),
+            loader: gap.loader.clone(),
+            reason: read_reason(gap.demand),
+            declared_by: gap.declared_by.clone(),
+            gap: match kind {
+                HierarchyGapKind::Missing => DependencyGap::Missing,
+                HierarchyGapKind::Ambiguous => DependencyGap::Ambiguous,
+                HierarchyGapKind::Cyclic => DependencyGap::Cyclic,
+            },
+        };
+        if !dependencies.contains(&dependency) {
+            dependencies.push(dependency);
+        }
+    }
 }
 
 /// The class symbol this slice performs a lookup for, if any.
@@ -892,9 +1015,18 @@ fn member_use(use_kind: ReferenceUse) -> Option<crate::members::MemberUse> {
 /// member, and publishing a selected declaration next to a non-`Resolved` state would read as a
 /// resolution — while an ambiguous position publishes its candidates and no `resolved` at all.
 /// The declaration a rejection refused is still named in the diagnostic that refused it.
+///
+/// The one state the decision alone does not decide is the negation. `Missing` says no readable
+/// position declares the member, and that is a statement the search may make only when it read
+/// every branch it entered: with a branch left unread (`unread`) the member was never searched
+/// there, so the report publishes `UnresolvedDependency` and the names of the classes it could
+/// not read instead of answering a question it could not ask (A11). A selection the search did
+/// reach stays `Resolved`, because the declaration it names was really read — the unread branches
+/// above it are published beside the answer.
 fn member_planes(
     decision: &crate::members::MemberDecision,
     target: &SymbolRef,
+    unread: &WalkGaps,
 ) -> (
     ResolutionState,
     Option<ResolvedMemberRef>,
@@ -907,7 +1039,10 @@ fn member_planes(
             Some(resolved_member(location)),
             Vec::new(),
         ),
-        MemberDecision::Missing => (ResolutionState::Missing, None, Vec::new()),
+        MemberDecision::Missing if unread.is_empty() => {
+            (ResolutionState::Missing, None, Vec::new())
+        }
+        MemberDecision::Missing => (ResolutionState::UnresolvedDependency, None, Vec::new()),
         MemberDecision::OwnerAmbiguous(owners) => (
             ResolutionState::Ambiguous,
             None,
@@ -1239,7 +1374,9 @@ pub(crate) fn declaration_reference_report(
             // The budget or cancellation already refused a resolution. It is a property of the
             // request, not of one candidate, so the candidates after it were not decided either
             // — the reliable prefix stays and nothing here counts as excluded.
-            Some(Contribution::Undecided(STOPPED_BEFORE_THIS_CANDIDATE))
+            Some(Contribution::Undecided(
+                STOPPED_BEFORE_THIS_CANDIDATE.to_string(),
+            ))
         } else if let Some(use_kind) = member_use_of(item.operation, referenced) {
             let origin = origin_of(item);
             match crate::members::resolve_member(
@@ -1250,7 +1387,7 @@ pub(crate) fn declaration_reference_report(
                 budget,
             ) {
                 Ok(outcome) => {
-                    hierarchies_complete &= outcome.hierarchy_complete;
+                    hierarchies_complete &= outcome.hierarchy_complete();
                     rules = outcome.diagnostics;
                     match &outcome.decision {
                         crate::members::MemberDecision::Resolved(location) => {
@@ -1270,18 +1407,29 @@ pub(crate) fn declaration_reference_report(
                                 None
                             }
                         }
-                        decision => Some(Contribution::Undecided(undecided_reason(decision))),
+                        // The reason names the unread branches too: a candidate left undecided
+                        // because a class of its hierarchy could not be read is not the same fact
+                        // as one whose readable hierarchy declares no such member, and calling it
+                        // the latter would be the negation A11 forbids (2.4's own plane).
+                        decision => Some(Contribution::Undecided(undecided_reason(
+                            decision,
+                            &outcome.unread,
+                        ))),
                     }
                 }
                 Err(error) => {
                     let (execution, diagnostic) = terminal(&error, budget.usage());
                     resolution_stop = Some(at_candidate(diagnostic, item));
                     stopped = Some(execution);
-                    Some(Contribution::Undecided(STOPPED_AT_THIS_CANDIDATE))
+                    Some(Contribution::Undecided(
+                        STOPPED_AT_THIS_CANDIDATE.to_string(),
+                    ))
                 }
             }
         } else {
-            Some(Contribution::Undecided(NO_INSTRUCTION_KIND_IN_EVIDENCE))
+            Some(Contribution::Undecided(
+                NO_INSTRUCTION_KIND_IN_EVIDENCE.to_string(),
+            ))
         };
         let Some(contribution) = contribution else {
             continue;
@@ -1320,7 +1468,7 @@ pub(crate) fn declaration_reference_report(
                     }
                 },
                 Contribution::Undecided(reason) => {
-                    let diagnostic = unresolved_candidate_diagnostic(item, referenced, reason);
+                    let diagnostic = unresolved_candidate_diagnostic(item, referenced, &reason);
                     match charge_and_publish(diagnostic, &mut diagnostics, budget) {
                         None => unresolved_candidates += 1,
                         Some(stop) => {
@@ -1419,8 +1567,9 @@ enum Contribution {
     /// handed around as one value, exactly like [`crate::members::MemberDecision`] boxes its
     /// location.
     Reference(Box<DeclarationRefItem>),
-    /// The query could not decide whether the candidate is a reference, and says why.
-    Undecided(&'static str),
+    /// The query could not decide whether the candidate is a reference, and says why. The reason
+    /// is owned rather than static because it names the classes a member search could not read.
+    Undecided(String),
 }
 
 /// Why a candidate found after a resolution stop stays undecided.
@@ -1536,9 +1685,14 @@ fn unresolved_candidate_diagnostic(
 /// Every non-`Resolved` decision says the search reached no declaration it could compare with
 /// the query's own; a candidate that resolved to a *different* declaration is not undecided
 /// and never reaches this mapping.
-fn undecided_reason(decision: &crate::members::MemberDecision) -> &'static str {
+///
+/// The unread branches are part of the answer, and they are the reason this mapping owns its
+/// text: a search that could not read a class of its hierarchy did not establish that nothing
+/// declares the member, and the diagnostic that counts the candidate as undecided names the
+/// classes it could not read instead of stating that negation (A11).
+fn undecided_reason(decision: &crate::members::MemberDecision, unread: &WalkGaps) -> String {
     use crate::members::MemberDecision;
-    match decision {
+    let reason = match decision {
         MemberDecision::Resolved(_) => "the declaration this candidate resolves to",
         MemberDecision::Missing => "no class of the searched hierarchy declares this member",
         MemberDecision::OwnerAmbiguous(_) => {
@@ -1551,7 +1705,19 @@ fn undecided_reason(decision: &crate::members::MemberDecision) -> &'static str {
         MemberDecision::DefaultConflict => "two or more interface defaults are maximally specific",
         MemberDecision::AccessDenied => "the member is not accessible to a known caller",
         MemberDecision::ArrayOwner => "the owner is an array type",
+    };
+    if unread.is_empty() {
+        return reason.to_string();
     }
+    let names = unread
+        .iter()
+        .map(|(_, gap)| escaped(&gap.name.0))
+        .collect::<Vec<_>>()
+        .join(", ");
+    format!(
+        "{reason}, and a class of its hierarchy could not be read ({names}), so this candidate is \
+         undecided rather than excluded"
+    )
 }
 
 /// The raw name and descriptor of a member declaration, or `None` for a class symbol.

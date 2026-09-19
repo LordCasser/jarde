@@ -1029,19 +1029,93 @@ struct PendingLayer {
     ancestors: AncestorPath,
 }
 
+/// Why one branch of a class graph could not be read.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum HierarchyGapKind {
+    /// No position of the order provides the name: the dependency this request needed is not in
+    /// this snapshot, which is the fact A11 keeps apart from the statement that the name does not
+    /// exist.
+    Missing,
+    /// One position holds the name with definitions that cannot be told apart.
+    Ambiguous,
+    /// The name's own supertype edge repeats: a cyclic hierarchy, refused unexpanded.
+    Cyclic,
+}
+
+/// One branch of a class graph a walk could not read, with the demand that reached it.
+///
+/// The record names the fact and its cause, and it is deliberately not a verdict about the class
+/// it names: a name no position of the order holds is a dependency this request could not read, a
+/// position that cannot tell its definitions apart is one it could not decide, and a supertype
+/// that repeats on its own path is an illegal hierarchy the walk refuses to follow. A caller
+/// publishes them as the unfinished part of the closure's coverage — never as `Missing`, which is
+/// the statement that no readable position declares what was asked for.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct HierarchyGap {
+    /// The class name the walk demanded and could not read.
+    pub(crate) name: JvmBytes,
+    /// The loader whose own order searched for the name (JVMS 5.4.3.1).
+    pub(crate) loader: LoaderId,
+    /// The edge that demanded the name: a `super_class` step is [`HeaderDemand::ParentChain`], an
+    /// `interfaces` step is [`HeaderDemand::HierarchyClosure`], and a walk root carries the demand
+    /// its caller reached it under.
+    pub(crate) demand: HeaderDemand,
+    /// The class that declares that edge: the last ancestor of the path that reached the name.
+    /// `None` only for a walk's root layer, which no edge reached.
+    pub(crate) declared_by: Option<JvmBytes>,
+}
+
 /// What one walk could not expand, and why.
 ///
 /// A caller reports these as the unfinished part of the closure's coverage: a missing or
 /// ambiguous supertype is an open-world fact that ends its own branch, and a class that repeats
 /// on one supertype path is an illegal hierarchy the walk refuses to follow.
+///
+/// One fact is recorded once: a diamond- or cycle-shaped graph that reaches the same unread name
+/// through several branches reports it once per distinct demand (name, loader, edge and declaring
+/// class), so the list grows with the graph's distinct gaps and not with its paths.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub(crate) struct WalkGaps {
-    /// Names no position of the order holds.
-    pub(crate) missing: Vec<JvmBytes>,
-    /// Names one position holds but cannot tell apart.
-    pub(crate) ambiguous: Vec<JvmBytes>,
-    /// Nodes that reached themselves: cyclic supertypes, refused instead of expanded.
-    pub(crate) cycles: Vec<JvmBytes>,
+    gaps: Vec<(HierarchyGapKind, HierarchyGap)>,
+}
+
+impl WalkGaps {
+    /// Records one unread branch, keeping the first record of a fact already stated.
+    pub(crate) fn record(&mut self, kind: HierarchyGapKind, gap: HierarchyGap) {
+        if self
+            .gaps
+            .iter()
+            .any(|(known, recorded)| *known == kind && recorded == &gap)
+        {
+            return;
+        }
+        self.gaps.push((kind, gap));
+    }
+
+    /// Takes every fact of another walk's set, in its order and without repeating a record.
+    pub(crate) fn absorb(&mut self, other: &WalkGaps) {
+        for (kind, gap) in other.iter() {
+            self.record(kind, gap.clone());
+        }
+    }
+
+    /// The unread branches, in the order the walk found them.
+    pub(crate) fn iter(&self) -> impl Iterator<Item = (HierarchyGapKind, &HierarchyGap)> {
+        self.gaps.iter().map(|(kind, gap)| (*kind, gap))
+    }
+
+    /// Whether this walk left a branch of this kind unread.
+    pub(crate) fn any_of(&self, kind: HierarchyGapKind) -> bool {
+        self.gaps.iter().any(|(known, _)| *known == kind)
+    }
+
+    pub(crate) fn len(&self) -> usize {
+        self.gaps.len()
+    }
+
+    pub(crate) fn is_empty(&self) -> bool {
+        self.gaps.is_empty()
+    }
 }
 
 /// One class-graph walk over one request's closure, resumed one layer at a time.
@@ -1176,7 +1250,7 @@ impl HierarchyWalk {
                 if layer.ancestors.repeats(node) {
                     // The resolved node repeats its own supertype path: an illegal hierarchy,
                     // refused as a cycle rather than expanded further.
-                    self.gaps.cycles.push(layer.name.clone());
+                    self.record_gap(HierarchyGapKind::Cyclic, &layer);
                     closure.record_diagnostic(cycle_diagnostic(
                         &layer.initiating_loader,
                         &layer.ancestors,
@@ -1198,10 +1272,23 @@ impl HierarchyWalk {
         }
         match closure.resolution(handle).lookup.state {
             HeaderLookupState::Found => self.queue_supertypes(closure, handle, &layer, &identity),
-            HeaderLookupState::Missing => self.gaps.missing.push(layer.name.clone()),
-            HeaderLookupState::Ambiguous => self.gaps.ambiguous.push(layer.name.clone()),
+            HeaderLookupState::Missing => self.record_gap(HierarchyGapKind::Missing, &layer),
+            HeaderLookupState::Ambiguous => self.record_gap(HierarchyGapKind::Ambiguous, &layer),
         }
         Ok(Some(handle))
+    }
+
+    /// Records one branch this walk could not read, as the demand that reached it.
+    fn record_gap(&mut self, kind: HierarchyGapKind, layer: &PendingLayer) {
+        self.gaps.record(
+            kind,
+            HierarchyGap {
+                name: layer.name.clone(),
+                loader: layer.initiating_loader.clone(),
+                demand: layer.demand,
+                declared_by: layer.ancestors.names().last().cloned(),
+            },
+        );
     }
 
     /// Queues the supertypes one found class declares, one dependency step deeper, each searched
@@ -1227,7 +1314,17 @@ impl HierarchyWalk {
                             // The node this edge names is already on the path that reached it, and
                             // this request decided that key already, so the cycle is refused here
                             // — without a further read.
-                            self.gaps.cycles.push(child.clone());
+                            self.gaps.record(
+                                HierarchyGapKind::Cyclic,
+                                HierarchyGap {
+                                    name: child.clone(),
+                                    loader: initiating_loader.clone(),
+                                    demand,
+                                    // The path ends with the class whose own header declares this
+                                    // edge, so that class is the one that needed the name.
+                                    declared_by: path.names().last().cloned(),
+                                },
+                            );
                             closure.record_diagnostic(cycle_diagnostic(
                                 &initiating_loader,
                                 &path,
@@ -2701,6 +2798,14 @@ mod tests {
         names.iter().map(|name| JvmBytes(name.to_vec())).collect()
     }
 
+    /// The names one walk recorded as unread branches of one kind, in the order it found them.
+    fn gap_names(gaps: &WalkGaps, kind: HierarchyGapKind) -> Vec<JvmBytes> {
+        gaps.iter()
+            .filter(|(recorded, _)| *recorded == kind)
+            .map(|(_, gap)| gap.name.clone())
+            .collect()
+    }
+
     fn layers(closure: &HeaderClosure<'_>, handles: &[ClassHandle]) -> Vec<JvmBytes> {
         handles
             .iter()
@@ -3033,7 +3138,7 @@ mod tests {
             "the walk still visits every branch it was declared"
         );
         assert_eq!(
-            walk.gaps().missing,
+            gap_names(walk.gaps(), HierarchyGapKind::Missing),
             names(&[b"p/Base", b"p/Gone", b"java/lang/Object"]),
             "every name no position holds is published as a gap — the unfinished part of the \
              closure a report has to mark as skipped"
@@ -3079,7 +3184,10 @@ mod tests {
             names(&[b"p/A", b"p/B"]),
             "the walk terminates: each class is expanded once"
         );
-        assert_eq!(walk.gaps().cycles, names(&[b"p/A"]));
+        assert_eq!(
+            gap_names(walk.gaps(), HierarchyGapKind::Cyclic),
+            names(&[b"p/A"])
+        );
         assert_eq!(
             budget.usage().class_headers,
             2,
@@ -3389,9 +3497,13 @@ mod tests {
         walk_handles(&mut closure, &mut walk, &mut budget, &mut expanded)
             .expect("an ambiguous name ends its branch without failing the request");
 
-        assert_eq!(walk.gaps().ambiguous, names(&[b"p/Base"]));
+        assert_eq!(
+            gap_names(walk.gaps(), HierarchyGapKind::Ambiguous),
+            names(&[b"p/Base"])
+        );
         assert!(
-            walk.gaps().missing.is_empty() && walk.gaps().cycles.is_empty(),
+            !walk.gaps().any_of(HierarchyGapKind::Missing)
+                && !walk.gaps().any_of(HierarchyGapKind::Cyclic),
             "an ambiguous name is not a missing or a cyclic one: {:?}",
             walk.gaps()
         );
@@ -3444,7 +3556,10 @@ mod tests {
             names(&[b"p/A"]),
             "the walk terminates at the class that extends itself"
         );
-        assert_eq!(walk.gaps().cycles, names(&[b"p/A"]));
+        assert_eq!(
+            gap_names(walk.gaps(), HierarchyGapKind::Cyclic),
+            names(&[b"p/A"])
+        );
         assert_eq!(
             budget.usage().class_headers,
             1,
