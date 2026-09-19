@@ -624,3 +624,65 @@ V1 uses = [bci 4]（返回的正是加载的旧值）；V2 无人使用
 - **但它是什么**：产物在方法**自己的签名**下无法编译，而报告此时仍写 `representation=Java` / `syntax_status=Checked`（若 `Checked` 由本层断言）——即**声称了比证据更强的可编译性**。`boolean`/`byte`/`char`/`short` 四个 int 型原语在 frames 里同形，故类型信息只能来自**描述符或 LVT 的 descriptor**，而两者当前都未用于参数类型（3.1 的如实边界）。
 - **建议归属**：**3.2 之后、3.3 之前**（3.3 要求「把 P3-R1/R2/R3 纳入可重放的实际 Java 8 编译/执行对照」，本项天然属于同一对照组）。两条可行方向：①用**同次运行的声明事实**（3.1 已把 `descriptor` 放进载荷）给参数定型，`boolean` 参数写 `if (b)`；②无法定型时**拒绝**（`syntax_status` 不得声称 `Checked`）。
 - **未擅自实施**：用户的 tasks 未列本项，且 3.1 的边界是用户复核时明确排除的；父级在此**只记录证据**，不改 tasks，等复核裁决。
+
+## 2026-09-19 3.2：物理身份锚点与按需 callee 证据（提交 `4488170`）
+
+用户要求的四条逐条落地：**锚点带物理身份**、**JVM 事实层按需提供 callee 证据**、**接通门面/CLI 的成功呈现与拒绝**、**A12 用同一次公开入口验收 + Mixed 映射/诊断**。
+
+### 锚点的形状（第 1 步）
+
+`source_map::Origin` 扩为 `{ bci, method: Option<Box<PhysicalMethodId>>, cp, provenance }`——**复用既有身份类型**（`Origin::member()` 直接给出 reader 的 `OriginMember::MethodPoint{method, bci}`），**未新立同义体系**；`Direct`/`Derived` 的语义与取值**一字未改**。
+身份由两处写入：build 在 accessor 的 derived 锚点上写 **callee** 的身份；emitter 在记录 segment 的那一次写入里给未声明成员的锚点补上**被呈现方法**的（来自 payload 的 `declaration().identity()`）。
+实现中发现 `clippy::large_enum_variant`（按值内联让每个 AST 节点涨约 200B），按 lint 建议改为 `Box` 并写明理由——节点尺寸回到原状。
+
+**四类区分用例**：caller/callee **同号 BCI** 与「两个 callee 同字段 BCI、不同成员」（`access$200`→`g`、`access$300`→`h`，两者 `getfield` 都在 BCI 1，而调用点在 `both` 里是 BCI 1 与 5）；**canonical clone**（自造 v45 `jsr`/`ret` 体，`normalization_clones >= 1`，引文把 BCI 14 按两个入口写两次而锚点只持一个坐标——**锚点集合 == 引文坐标集合**）；**CP/attribute**（lambda 站点锚点的 `cp()` == 站点 CP 项，`method()` 指明该索引所属成员体）。
+
+### callee 证据（第 2、3 步）
+
+新 `crates/jarde-jvm/src/callee.rs`（`pub mod callee`，入口 `read_callees`）产出 **jvm 自己的**只读类型（`CalleeCandidate`/`CalleeMember`/`CalleeBody`/`CalleeRefusal`/`CalleeReadReport`），字段全私有、只给只读访问器。
+- **分层**：`ClassMembers` 定义在 `jarde-java`，**jvm 造不出来**——由**门面**（同时依赖两者）用 `member_table()` 逐成员适配；语义判定仍只在 `jarde-java::accessor`。`cargo tree` 的 12 个配置全 PASS，`jarde-reader`/`jarde-query`/`jarde-jvm` 闭包中 `jarde-java` 出现 **0** 次（父级复跑确认）。
+- **候选来源**：被呈现体**自己的 decode** 里的 `invokestatic` 调用点，过滤谓词**就是** `accessor@1` 的 `names_an_accessor`（`verify` 与 `accessor::candidates` **共用同一函数**）。
+- **计费与 reason**：1 次 `ClassHeaders`（同一物理定义的第二次头读——payload 只带该体的表、不带字节）+ 每个**真正声明且带体**的候选 1 次**先扣费** `MethodBodies` + 该体自身的 attribute/code 字节；无体成员**不扣费**。新 `HeaderDemand::CalleeMemberBody` → `ReadReason::CalleeMemberBody`。
+- **绑定同一物理定义/CP**：定义取自 payload 的 `declaration().identity().owner`，按 identity（digest+length 校验、`this_class` 在声明 loader 下绑定）读取；调用点 owner 与 `this_class` 不同即 `callee_not_this_class`；每个成员的 `identity` 都写该定义。
+- **接线位置**：`Engine::recover_method` 内、**分析与呈现之间**；`analyze_method_ir` 仍**只跑一次**，无候选时连头都不读；恢复层**没有**反向依赖 jvm 的读取入口。
+
+### A12 同次公开入口验收（父级独立核对）
+
+同一次 `recover_method` 的产物：
+```java
+{
+    return arg0.g + arg0.h;
+}
+```
+- 文本**含直接字段表达式**、**不含** `access$200(`/`access$300(`；
+- 锚点：`arg0.g` = (BCI 1, `both`)+(BCI 1, `access$200`)；`arg0.h` = (BCI 5, `both`)+(BCI 1, `access$300`)——**同号 BCI 由成员身份区分**；
+- **按需（A16）**：`method_bodies == 3`（1 个被呈现体 + 2 个被调用点点名的成员），而 fixture **声明 6 个带体成员**——`access$400` 一个体都没读；`analysis.reads.len() == 1` 不变；
+- **X1 两条边逐项不变**：`method`@3→`access$100`、`access$100`@1→`f`，`elapsed_millis` 归零后逐字段相等，且两 item **互不相等**；
+- **拒绝半边**：`foreign_call_class`（`Test` 自己也有同名同描述符 `access$100`，调用点却指向 `Other.access$100`）→ `callee_not_this_class`、`members` 空、`method_bodies=1`，规则以 `jre_accessor_not_a_member` 拒绝，文本保留 `access$100(arg0)` 且无 `.f`；
+- **CLI**：`callees` 字段与库序列化逐字段相等（文本 + 成员 + reason + usage）。
+
+### Mixed 映射与诊断（第 4 步）
+
+`Builder::fallback` 现在把引文写出的**每一个** BCI 都作为锚点（primary = 区域自身，其余为 presented）。
+用例断言：`Mixed`+`Fallback` 同时成立；`analysis.coverage.artifact_structural.state == CompleteWithinSchema` 且 `skipped` 为空（**扫描完整，Fallback 未被改写成 Partial**）；每个被引用的 BCI 都有锚点且**引文锚点集合 == 引文 BCI 集合**；每个 fallback 区域都有 `code`+`message` 且 diagnostics 里存在同 code（A12/A13/A16）。
+
+### 父级独立证伪
+
+| 变异 | 结果 |
+| --- | --- |
+| 放松**物理定义绑定**（`owner != class` 恒假） | **恰好 1 红**：`a_call_to_another_classs_same_named_member_is_not_read_from_this_class`——放松后 `Test` 自己的 `access$100` 被读成 `Other.access$100` 的 callee，**正是复核点名的风险**，证明绑定承重 |
+
+（实现者另跑两组：预装全类成员 → 3 红且 `method_bodies` 涨到 8；锚点丢掉身份 → 3 红，其失败输出正是两个 `method: None` 的锚点相等——即 3.2 要修掉的「无法自证」形态。）
+
+### 被修正的既有断言（4 处，无放宽）
+
+`tests/p3_accessor_edges.rs`：由「site 被拒（`jre_accessor_members_missing`）+ 文本含 `access$100(`」改为「site **被呈现** + 文本含 `return arg0.f;` + `callees.members()==[access$100]`」——门面现在会读调用点点名的成员，**成功呈现正是本片目标**；**X1 的断言一条未动**。另三处是机械适配（`MemberBody::new` 增身份参数、`emit(...)` 增参、CLI 测试助手拆分）。
+
+### 证据
+
+全量 **968 passed / 0 failed / 1 ignored**（960 + 8：`p3_accessor_edges` 1→4、`p3_patterns` 40→42、`p3_local_rewrite` 6→7、`json_cli` 13→14、`jarde-java` 单测 55→56；其余每个 binary 与基线**逐项相同**）；fmt 与 clippy 1.98.1 干净；`openspec validate --all --strict` 12 passed；两个 CI example exit 0；**未触及依赖边**。
+**CI**：`4488170` → 见下。
+
+### 未完成项（如实）
+
+`CalleeBody` 的线上摘要是**新 schema**（`instructions`/`code_bytes`），尚无文档行；新公开面（CLI `callees` 字段、`ReadReason::CalleeMemberBody`、`AccessorRecord.callee`、`MemberBody` 的身份/无体、`Origin::method`/`member()`、`into_parts` 三元组）需要文档同步（属 3.4）。本片**未做独立 review**。
