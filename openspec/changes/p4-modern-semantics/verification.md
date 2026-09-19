@@ -300,3 +300,58 @@
 `DeclarationRefReport` **没有**新增 `unresolved_dependencies` 平面（它既有 `unresolved_candidates` 计数器 + 逐候选诊断本就**不把**缺依赖的候选当排除；本片改了 `undecided_reason` 使诊断文字点名读不到的类）——若要结构化列表，那是对 **2.4** 自身契约的加法。
 **留给复核的契约选择**：歧义分支与环分支目前与「名字不存在」**共用同一状态** `UnresolvedDependency`，区分由 `gap: Ambiguous|Cyclic` 承载（理由：`Ambiguous` 在本仓库已专指「同一选择位上多条成员声明不可区分」，而分支未读意味着成员**根本没被搜到**，合并会丢事实）。若要拆成多个状态，属公开契约决定。
 **2.3**：X3 有界常量传播/`pattern_inferred_target`/动态 `Unknown` 本片一行未动；2.2 只处理 X2 事实，**不写 X1 原始边**。
+
+## 2026-09-20 2.3：有界 X3 reflection/ServiceLoader（提交 `886f814`）
+
+### 登记的模式（`crates/jarde-jvm/src/reflection.rs` 的 `PATTERNS` 表）
+
+照 `release_registry.rs` 的「登记 + `not_claimed`（测试强制非空）+ `source`」风格，每条记**五要素**（API overload / 常量输入 / 传播范围 / loader 假设 / rule version）+ `support`；`RuleVersion` 是 jvm **自有**类型（jvm 不许依赖 `jarde-java`）。
+
+**登记并可推断**：`class-for-name`（`forName(String)`，`Argument(0)`，loader = CallerDefiningLoader，**可查**）；`class-for-name-loader`（`forName(String,Z,ClassLoader)`，ExplicitLoaderArgument，**不查任何 order**）；`class-get-method`/`-declared-method`/`-field`/`-declared-field`（成员名 = `Argument(0)`、类 = `Receiver` 类字面量，**两个输入都必须可证**）；`methodhandles-find-static/-virtual/-special/-getter/-setter`；`service-loader-load`（`load(Class)`，loader = **ThreadContextLoader**）与 `service-loader-load-loader`。
+
+**如实登记为做不到的 4 条**（`PatternSupport::Unsupported` + reason）：`methodhandles-find-constructor`（成员名由 API 固定为 `<init>`，`MethodType` 不传播，名字级推断只会复述类参数且不校验）、`class-get-declared-methods`、`class-get-constructors`、`class-get-declared-fields`（枚举型 overload 无名字常量可读）。
+**未登记的 overload 不是「不支持」而是「不主张」**——不产站点记录（`getSuperclass` 有专测）。
+
+### 落点与理由
+
+**`jarde-jvm` 的新模块 `reflection.rs`**，出口 `Engine::reflection_patterns`（与 `resolver`/`ir`/`environment` 同一交叉方式）。理由：传播必须是**本方法 SSA**（SSA/frames/canonical 全在 jvm），loader 假设需要 jvm 私有的 `ResolutionEnvironment`/`HeaderClosure`，而「名字解析到哪个定义」只能走 2.2 的 closure；放进 xref 扫描既拿不到值流也拿不到 loader，且 `jarde-query`/`jarde-jvm` 不许反向依赖。
+**照 2.2 的纪律**：**不加 `QueryRelation`**（会造出 jvm→query 的语义倒置）、证据平面**不计费**、**复用 2.2 的记录类型**（`UnresolvedDependency`/`ReadReason::{PatternScan,PatternTarget}`/`DependencyGap`）与 2.5 的 `enumerate_range`/`covered_by_scope`（改成 `pub(crate)`，diff 只有可见性）。
+
+### 有界传播（**复用而非重写**）
+
+每个含已登记 overload 的**方法体**跑**一次既有 `analyze_method_ir`**（`AnalysisStage::ALL`）——站点、指令、pool、SSA **全部来自那一次 run 自己的 decode**，**没有第二次解码**。类级先用 header pool 预筛（`names_a_pattern`），不命中的类**一个 body 都不读**。
+**常量源**：`ldc/ldc_w`（String/Class）与 `getstatic`（**本类**声明、`ConstantValue` 为 `Ljava/lang/String;`，经 `attribute_facts` 从同一次读的字节解出）。
+**有界**：`replaced_by` 链 ≤8、别名链（store→load）≤8 步，**不跨方法**、不追 callee 返回值；**预算 = run 自己的既有维度**（`MethodBodies`/`ClassBytes`/`CodeBytes`/`AttributeBytes`/`IrItems`/`IrEdges`/`AnalysisSteps`），站点 code 用 `budget_exceeded_<dimension>`。
+**假设如实标注**：`ldc` 源 `assumption = None`（方法自身字节的常量不会变）；`getstatic` 源带文本假设「`ConstantValue` 是初始值，而静态字段是进程状态——**本快照不持有的写者未被排除**」；loader 假设逐条带 `statement`（caller → 可查；thread-context/explicit → **明说不查 order**）。
+
+### 五要素如何被断言 / `Unknown` 判据
+
+`PatternInference { rule, rule_version, constant_input, target, propagation, loader, resolution }` 与 `ReflectionSite` 都是 `#[serde(deny_unknown_fields)]` 且被测试**穷尽解构**（**加字段即编译不过**）——「不能缺要素」是**编译期**性质。JSON 拼写钉在 **`pattern_inferred_target`**（规格原词）。
+`Unknown` 判据：目标名或 owner 的值**不是本片可证的常量** → 按 SSA 定义给 `DynamicInput{input, origin}`（`Entry` 参数/`this`、`Merge`、`Caught`、`Instruction{bci,opcode}` 其它形状、`NoDefinition`、`ChainBeyondBound`）；body 解码存在但 run 停了 → `AnalysisStopped`；登记为 unsupported → `PatternNotSupported`。**不产任意 confidence 数字**。
+
+### 边界情形的判据（各带理由与测试）
+
+- **常量名但类不在快照** → **inferred** + `resolution = NotInSnapshot{loader}` + `unresolved_dependencies` 一条（`ReadReason::PatternTarget`、`gap = Missing`）。判据：**推断是「调用点要什么」，快照只能给「它有什么」**——两者分开发布；**读不到名字不是「类不存在」**。对照：类在场时同一站点 `Resolved` 且依赖列表为空。
+- **通配 `p/*`** → inferred + `NotInSnapshot`（`*` 是合法 identifier 字节，JVMS 4.2.1，只是没人声明）；**非法名 `p/.Hidden`** → **inferred 但 `NotDemanded`**，字节原样发布，**不搜索 order、也不记缺依赖**——把畸形串当「缺失的类」是错的。
+- **`ServiceLoader.load` 的接口类不在快照** → inferred + **`NotDemanded`**，**连缺依赖都不记**（规则声明的 loader 是 thread context，本请求没有可走的顺序）。
+
+### 「不执行」的证据
+
+`coverage.dynamic_analysis == NotRequested`（有断言）；代码路径只有 reader facts + 本方法 SSA——无 bootstrap/反射调用/launcher/JNI/网络；`getDeclaredMethod("foo")` 在目标类**不声明** `foo` 时**仍给名字级推断**（不求值、不解码目标）；同一 fixture **去掉目标类**后 Member/ServiceLoader 站点的 `target`/`constant_input` **逐字段相同**；类不在快照**不 panic**；`Class.forName` 的目标**从不被 decode 或 member-resolve**。
+
+### 与 X1/X2 的可区分性
+
+`ReflectionSite` 是**独立类型**（穷尽解构钉住，加 X1 字段即测试编译失败），状态名与 X1 的 `derivation/certainty` 不共用；**未改 `QueryRelation`、未改 `XrefDerivation`、未向 X1 边流写入任何东西**。X2 的字段一个未改，只**新增**两个只读证据/读取语义词（`ReadReason::{PatternScan,PatternTarget}` 与 `HeaderDemand` 同名变体），X2 既有测试 233/233 全绿。
+
+### 父级独立复核与证据
+
+- 全量 **1065 passed / 0 failed / 3 ignored**（1048 + 17）；`p4_x3_patterns` 10 passed；fmt/clippy 1.98.1 干净；`openspec validate --all --strict` 14 passed；两个 CI example exit 0；分层三包中 `jarde-java` **0** 次；锁文件两条 exit 0（未触及依赖边）。
+- **既有断言零改动**（父级核：`tests/` 与 `crates/` 的删除行中 `assert` 计数 **0**；8 行删除全是可见性/`pub use` 换行）。
+- **父级独立证伪**：让**不可证的输入变成猜测**（把 `Entry`/`Phi` 一律当常量返回）→ **恰好 1 红**：`a_dynamic_input_is_unknown_and_never_a_guess`，其余 9 绿——证明规格「**不把 Unknown 变成猜测**」这条**承重**。
+- **实现者三组证伪**：① 同上（另 5 条也红）；② 传播无界 + 停止不记前缀 → **恰好 1 红**（`a_budget_stop_is_reported_and_never_guessed`）；③ inferred 不带假设（`statement: ""` + 空 `RuleVersion`）→ **恰好 1 红**（五要素用例）。副本校验：编辑前 214 OK，编辑后 213 OK/1 FAILED，仓库事后 214 OK。
+- **CI**：`886f814` → 见下。
+
+### 未完成（如实）
+
+`PatternTargetState::Ambiguous`、`DynamicOrigin::{Caught, ChainBeyondBound, NoDefinition}`、环境被拒 → `Analysis = NotPerformed` 的 X3 路径、「listing 截断」诊断路径、`resolution_pattern_body_not_analysable` 分支**均无 fixture**；`ServiceLoader.stream`、`Class.getConstructor` 等 overload **未登记（=不主张）**。
+**属 3.x**：把 `PATTERNS` 暴露为版本化 descriptor（3.1）、只读 plugin fixture（3.2）、现代支持矩阵与 A04–A07/A12（3.3）、X3 的 CLI/JSON 出口（本片只有 facade 入口）。
