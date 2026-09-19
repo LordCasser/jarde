@@ -220,3 +220,83 @@
 ### 未完成（如实）
 
 **2.2**：declaration resolution/dispatch 候选查询（缺失依赖、default conflict、open-world）；`ResolutionState::Ambiguous` 等解析态留在 resolver，矩阵只暴露它需要的物理 origin/候选；兄弟/多请求 loader 的解析序。**2.3**：有界 X3 patterns。**3.x**：plugin、文档、矩阵与最终门禁。**未做**：矩阵的 CLI 出口（`query` 未扩展）。
+
+## 2026-09-20 2.2：X2 三态、缺失依赖与 default conflict（提交 `2472887`）
+
+### 本片修掉了 A11 的一个**真实违反**
+
+**规格句**（A11）：`Base.foo 声明、Sub CP owner | P2，P4 深度扩展 | symbolic 原 owner；宽候选/继承扩展后 resolves_to；**缺失依赖不能变否定**。`
+**实际缺陷**：层级行走**读不到**某个父类时，解析仍发布 `ResolutionState::Missing`——而 `Missing` 的含义是「**搜索覆盖了全部、什么都没找到**」，由一个**没有覆盖全部**的搜索给出。**7 条既有断言**（`p2_closure` 1 + `p2_members` 5 + `p2_resolution` 1）把同一主张编码下来，这正是它能存活的原因。
+
+### 扩展而非平行模型
+
+**既有**（未动语义）：`ResolutionState` 七态、`DispatchReport{candidates, open_world}`、`OpenWorldEvidence`、`ReadReason`。
+**本片补的**（全是既有实体的扩展）：
+- `ResolutionState` **加一个变体** `UnresolvedDependency`；
+- `ResolutionReport` **加一个平面** `unresolved_dependencies: Vec<UnresolvedDependency>`，`UnresolvedDependency { name, loader, reason: ReadReason, declared_by: Option<JvmBytes>, gap: DependencyGap }`，`DependencyGap { Missing, Ambiguous, Cyclic }`；
+- `WalkGaps` 由**三个名字数组**改为**记录表**（`HierarchyGap { name, loader, demand, declared_by }`）；`Search.unread: u64` → `Search.gaps`；`MemberOutcome.hierarchy_complete: bool` → `MemberOutcome.unread: WalkGaps` + `hierarchy_complete()`；`DispatchOutcome.unread_branches: bool` → `unread: WalkGaps`；
+- 抽出 `read_reason(HeaderDemand)`，使 `reads` 与 `unresolved_dependencies` 对同一条边用**同一个公开词汇**（消除双份映射）。
+
+**关键**：名字因此**第一次以结构化形式**发布（此前只出现在诊断**文字**里）。
+
+### 三态在类型上分开
+
+| 面 | 类型 | 语义 |
+| --- | --- | --- |
+| declaration resolution | `state: Option<ResolutionState>` | **仅当每个进入的分支都被读过**才允许 `Missing`（`member_planes` 以 `unread.is_empty()` 守卫） |
+| possible dispatch | `dispatch: Option<DispatchReport>` | `candidates` 是**已知候选**，**无「唯一目标」字段** |
+| open-world / unknown | `Option<OpenWorldEvidence>` + `open_world: bool` + `unresolved_dependencies` | 事实与名字并列，**不是 confidence 数字** |
+
+### A11 的核心断言与**对照**（父级独立复核）
+
+`tests/p4_x2_states.rs::a_missing_dependency_is_stated_by_name_and_never_as_the_negative_answer`：
+- 缺陷面：`p/Orphan extends p/Absent` 且 `p/Absent` 不在快照 → `UnresolvedDependency`，**并 `assert_ne!(state, Some(Missing))`**，且**整结构体钉住** `{name: p/Absent, loader: app, reason: ParentChain, declared_by: p/Orphan, gap: Missing}`，`resolved.is_none()`；
+- **对照（这是关键）**：同形状但父类**在场** → `Some(Missing)` **且 `unresolved_dependencies.is_empty()`**。即「每个分支都读过时，否定正是答案」——**证明修法不是「一律不说 Missing」**。
+
+### default conflict
+
+**沿用既有语义，不新增概念**：声明解析面 `IncompatibleClassChange` + 诊断 `resolution_default_conflict`，由 `maximally_specific`（JVMS 5.4.3.3 两步）在解析期判定。**理由**（既有文档的理由，本片复核并写进断言）：JVMS 8 把该失败放在 invocation selection，本片**刻意提前一步**，好过让调用方看到一次「沉默任选」；链接错误既不是 open-world 事实、也不是候选集合，故**不进 dispatch 面**。
+**避免过度报告**（各一条，均断言**不含** `resolution_default_conflict`）：① 子接口的 default **覆写**父接口的 → `Resolved` 到子接口；② 类自带 `m` → `Resolved` 到类（类链先命中）。冲突侧：两条**不相交**接口 + 类未覆写 → ICCE、`resolved` 空、`dispatch` 空。
+
+### open-world（`OpenWorld dispatch` scenario）
+
+- 候选逐条带事实；范围**命名它读不到的类**（1 候选 + `MissingDependency` + `open_world` + `i/Gone`/`HierarchyClosure`/`declared_by p/Sub2`）；
+- **链外 loader** → `UnknownLoader`、`open_world=true`、无缺口名；
+- **范围位置解析到范围外** → 0 候选、`open_world=true`、`CoverageState::Partial`（**是「未搜」而不是「排除」**）；
+- 「**不声称唯一目标**」在**编译期**钉住：测试对 `DispatchReport`（3 字段）/`DispatchCandidate`（2 字段）**穷尽解构**——**加一个运行时目标字段就编译失败**。
+
+### 查询出口与分层
+
+**不加 relationship**：状态经既有 `Engine::resolve_symbol`（X2 公开入口）读取。`crates/jarde-query/**` **一字未改**，`QueryRelation` 集合不变。
+**schema 变化**：新增键 `unresolved_dependencies` + 新增 `state` 取值 `unresolved_dependency` → **JSON 层加字段**（向后兼容读取），**Rust 层破坏性**（穷尽 match 需补臂，`tests/p2_resolution.rs::resolution_state_code` 正是这样把它抓出来）。新平面像 `reads` 一样是**证据、不计费**（`ResultItems` 未变，既有预算断言零改动）。
+**分层**：改动只在 `crates/jarde-jvm` + facade 文档；12 条 `cargo tree` closure 检查全绿。
+
+### 与 2.1 RuntimeMatrix 的关系：**独立，不接矩阵**
+
+一个 `ResolutionRequest` 只命名**恰好一个** `RuntimeView`，报告用 `environment_identity.runtime` 声明它属于哪个 view；2.2 的状态是**单个 view 的属性**。故多 profile 的正确接法是「矩阵选出 view → 每个 view 跑一次请求」；**反向依赖（resolution 去问矩阵）才是分层倒置**。用例 `the_states_of_one_request_belong_to_the_one_view_it_names` 在 8/17 两个 release 下断言「答案命名它自己的 view」。
+
+### 既有断言的修正（7 处，**全部加强、无一处放宽**）
+
+| 位置 | 原 | 新 |
+| --- | --- | --- |
+| `p2_closure.rs:617` | `Some(Missing)` | `UnresolvedDependency` + **整条依赖钉住** + `resolved.is_none()` |
+| `p2_members.rs:1220` | `Some(Missing)` | `UnresolvedDependency` + `{p/Absent, ParentChain, declared_by p/Orphan, Missing}` |
+| `p2_members.rs:1281` | `Some(Missing)` | `UnresolvedDependency` + `gap: Ambiguous` |
+| `p2_members.rs:1344`（field） | `Some(Missing)` | `UnresolvedDependency` + `gap: Cyclic` |
+| `p2_members.rs:1376`（method） | `Some(Missing)` | 同上，且与 field 报告**相同**的依赖列表 |
+| `p2_members.rs:3339` | `Some(Missing)` | `UnresolvedDependency` + `{p/Self, parent, ParentChain, Self, Cyclic}` |
+| `p2_resolution.rs::resolution_state_code` | 7 臂 | +1 臂（**编译期强制**） |
+
+**父级独立复核**：`tests/` 的 diff 为 **+100/−7**（净增）；5 条被删的 `assert_eq!` **全部**被更长的整结构体断言取代，且每处都**新增**了「不得是否定」或「依赖必须被点名」的断言。其余 1035 条既有断言一字未改。
+
+### 父级独立复核与证据
+
+- 全量 **1048 passed / 0 failed / 3 ignored**（1040 + 8，全部为 `tests/p4_x2_states.rs`）；该文件 8 passed；fmt/clippy 1.98.1 干净；`openspec validate --all --strict` 14 passed；两个 CI example exit 0；分层 12 条 closure 全绿；锁文件两条 exit 0（未触及依赖边）。
+- **实现者三组证伪**：① `member_planes` 恢复无条件 `Missing` → A11 核心用例红（`left: Some(Missing) / right: Some(UnresolvedDependency)`）；② dispatch 去掉证据与 open-world → 2 红；③ `Members::extends` 恒 false（去 maximally-specific 规则 2）→ 不冲突用例红（`left: Some(IncompatibleClassChange) / right: Some(Resolved)`）。副本三个源文件校验 OK。
+- **CI**：`2472887` → 见下。
+
+### 未完成（如实）
+
+`DeclarationRefReport` **没有**新增 `unresolved_dependencies` 平面（它既有 `unresolved_candidates` 计数器 + 逐候选诊断本就**不把**缺依赖的候选当排除；本片改了 `undecided_reason` 使诊断文字点名读不到的类）——若要结构化列表，那是对 **2.4** 自身契约的加法。
+**留给复核的契约选择**：歧义分支与环分支目前与「名字不存在」**共用同一状态** `UnresolvedDependency`，区分由 `gap: Ambiguous|Cyclic` 承载（理由：`Ambiguous` 在本仓库已专指「同一选择位上多条成员声明不可区分」，而分支未读意味着成员**根本没被搜到**，合并会丢事实）。若要拆成多个状态，属公开契约决定。
+**2.3**：X3 有界常量传播/`pattern_inferred_target`/动态 `Unknown` 本片一行未动；2.2 只处理 X2 事实，**不写 X1 原始边**。
