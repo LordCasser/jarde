@@ -1533,3 +1533,1305 @@ fn execution_quality_and_representation_each_state_their_own_thing() {
         produced.diagnostics
     );
 }
+
+// ---------------------------------------------------------------------------
+// P3 2.1: the verified `LambdaMetafactory` shape (acceptance A04)
+// ---------------------------------------------------------------------------
+
+/// One class-file assembler for the lambda fixtures.
+///
+/// What it writes is the shape javac writes for a lambda site: a member whose body holds the
+/// `invokedynamic`, the desugared body method beside it **as a real member**, and a
+/// `BootstrapMethods` class attribute whose entry names the factory and its three static arguments.
+/// Assembling the bytes here rather than committing a jar keeps every field of the fixture visible
+/// in the test that depends on it — and the bytes are still a real class file, decoded by the real
+/// reader and driven through the real engine.
+///
+/// The member names and indexes 1..8 are the fixture's own preamble (`Test`, its superclass,
+/// `method`, `()V`, `Code`, `BootstrapMethods`); everything a site needs is added after them.
+struct Fixture {
+    pool: Vec<u8>,
+    entries: u16,
+    bootstraps: Vec<(u16, Vec<u16>)>,
+    bodies: Vec<FixtureBody>,
+}
+
+/// One member the fixture declares beside `method` — the desugared body method a compiler generates
+/// for the site, so the fixture's implementation handle names something the class really holds.
+struct FixtureBody {
+    flags: u16,
+    name: u16,
+    descriptor: u16,
+    max_stack: u16,
+    max_locals: u16,
+    code: Vec<u8>,
+}
+
+impl Fixture {
+    fn new() -> Self {
+        let mut fixture = Self {
+            pool: Vec::new(),
+            entries: 0,
+            bootstraps: Vec::new(),
+            bodies: Vec::new(),
+        };
+        let test = fixture.utf8("Test"); // 1
+        fixture.class(test); // 2
+        let object = fixture.utf8("java/lang/Object"); // 3
+        fixture.class(object); // 4
+        fixture.utf8("method"); // 5
+        fixture.utf8("()V"); // 6
+        fixture.utf8("Code"); // 7
+        fixture.utf8("BootstrapMethods"); // 8
+        fixture
+    }
+
+    fn entry(&mut self, tag: u8, body: &[u8]) -> u16 {
+        self.pool.push(tag);
+        self.pool.extend_from_slice(body);
+        self.entries += 1;
+        self.entries
+    }
+
+    fn utf8(&mut self, text: &str) -> u16 {
+        let bytes = text.as_bytes();
+        let mut body = Vec::new();
+        body.extend_from_slice(
+            &u16::try_from(bytes.len())
+                .expect("a fixture name fits u16")
+                .to_be_bytes(),
+        );
+        body.extend_from_slice(bytes);
+        self.entry(1, &body)
+    }
+
+    fn class(&mut self, name: u16) -> u16 {
+        self.entry(7, &name.to_be_bytes())
+    }
+
+    fn integer(&mut self, value: i32) -> u16 {
+        self.entry(3, &value.to_be_bytes())
+    }
+
+    fn name_and_type(&mut self, name: u16, descriptor: u16) -> u16 {
+        let mut body = Vec::new();
+        body.extend_from_slice(&name.to_be_bytes());
+        body.extend_from_slice(&descriptor.to_be_bytes());
+        self.entry(12, &body)
+    }
+
+    fn method_ref(&mut self, class: u16, name_and_type: u16) -> u16 {
+        let mut body = Vec::new();
+        body.extend_from_slice(&class.to_be_bytes());
+        body.extend_from_slice(&name_and_type.to_be_bytes());
+        self.entry(10, &body)
+    }
+
+    fn interface_method_ref(&mut self, class: u16, name_and_type: u16) -> u16 {
+        let mut body = Vec::new();
+        body.extend_from_slice(&class.to_be_bytes());
+        body.extend_from_slice(&name_and_type.to_be_bytes());
+        self.entry(11, &body)
+    }
+
+    fn method_handle(&mut self, kind: u8, reference: u16) -> u16 {
+        let mut body = vec![kind];
+        body.extend_from_slice(&reference.to_be_bytes());
+        self.entry(15, &body)
+    }
+
+    fn method_type(&mut self, descriptor: u16) -> u16 {
+        self.entry(16, &descriptor.to_be_bytes())
+    }
+
+    fn invoke_dynamic(&mut self, bootstrap: u16, name_and_type: u16) -> u16 {
+        let mut body = Vec::new();
+        body.extend_from_slice(&bootstrap.to_be_bytes());
+        body.extend_from_slice(&name_and_type.to_be_bytes());
+        self.entry(18, &body)
+    }
+
+    /// One `BootstrapMethods` entry, returning its index in the attribute.
+    fn bootstrap(&mut self, handle: u16, arguments: Vec<u16>) -> u16 {
+        self.bootstraps.push((handle, arguments));
+        u16::try_from(self.bootstraps.len() - 1).expect("a fixture has few bootstraps")
+    }
+
+    /// Declares one member of the fixture class, with a body that satisfies its descriptor.
+    fn body(&mut self, name: &str, descriptor: &str) {
+        let name = self.utf8(name);
+        let descriptor_index = self.utf8(descriptor);
+        let (code, max_stack) = match descriptor.rsplit_once(')').map(|(_, returns)| returns) {
+            Some("V") => (vec![0xb1], 0),
+            Some("I") => (vec![0x03, 0xac], 1),
+            _ => (vec![0x01, 0xb0], 1),
+        };
+        self.bodies.push(FixtureBody {
+            flags: 0x000a, // private static
+            name,
+            descriptor: descriptor_index,
+            max_stack,
+            max_locals: parameter_slots(descriptor) + 1,
+            code,
+        });
+    }
+
+    /// The class file: `method()V` with `code`, every declared member, and the bootstrap attribute.
+    ///
+    /// `site_index` is the pool index of the site's own `InvokeDynamic` entry, which is written into
+    /// the four bytes of the `invokedynamic` the caller placed at `site_bci` — the one place the
+    /// fixture needs an index it cannot know while it is describing the site.
+    fn finish(
+        self,
+        mut code: Vec<u8>,
+        site_bci: usize,
+        site_index: u16,
+        max_stack: u16,
+        max_locals: u16,
+    ) -> Vec<u8> {
+        assert_eq!(
+            code[site_bci], 0xba,
+            "the fixture's site must be at the BCI the caller names"
+        );
+        code[site_bci + 1..site_bci + 3].copy_from_slice(&site_index.to_be_bytes());
+        let mut out = Vec::new();
+        out.extend_from_slice(&0xcafebabe_u32.to_be_bytes());
+        out.extend_from_slice(&0_u16.to_be_bytes()); // minor
+        out.extend_from_slice(&52_u16.to_be_bytes()); // major: Java 8
+        out.extend_from_slice(&(self.entries + 1).to_be_bytes());
+        out.extend_from_slice(&self.pool);
+        out.extend_from_slice(&0x0021_u16.to_be_bytes()); // public super
+        out.extend_from_slice(&2_u16.to_be_bytes()); // this_class → Test
+        out.extend_from_slice(&4_u16.to_be_bytes()); // super_class → java/lang/Object
+        out.extend_from_slice(&0_u16.to_be_bytes()); // interfaces
+        out.extend_from_slice(&0_u16.to_be_bytes()); // fields
+        out.extend_from_slice(
+            &u16::try_from(self.bodies.len() + 1)
+                .expect("a fixture has few methods")
+                .to_be_bytes(),
+        );
+        out.extend_from_slice(&0x0009_u16.to_be_bytes()); // public static
+        out.extend_from_slice(&5_u16.to_be_bytes()); // name → "method"
+        out.extend_from_slice(&6_u16.to_be_bytes()); // descriptor → "()V"
+        out.extend_from_slice(&1_u16.to_be_bytes()); // one attribute
+        out.extend_from_slice(&7_u16.to_be_bytes()); // "Code"
+        let mut attribute = Vec::new();
+        attribute.extend_from_slice(&max_stack.to_be_bytes());
+        attribute.extend_from_slice(&max_locals.to_be_bytes());
+        attribute.extend_from_slice(
+            &u32::try_from(code.len())
+                .expect("a fixture body fits u32")
+                .to_be_bytes(),
+        );
+        attribute.extend_from_slice(&code);
+        attribute.extend_from_slice(&0_u16.to_be_bytes()); // exception table
+        attribute.extend_from_slice(&0_u16.to_be_bytes()); // Code attributes
+        out.extend_from_slice(
+            &u32::try_from(attribute.len())
+                .expect("a fixture attribute fits u32")
+                .to_be_bytes(),
+        );
+        out.extend_from_slice(&attribute);
+        for body in &self.bodies {
+            out.extend_from_slice(&body.flags.to_be_bytes());
+            out.extend_from_slice(&body.name.to_be_bytes());
+            out.extend_from_slice(&body.descriptor.to_be_bytes());
+            out.extend_from_slice(&1_u16.to_be_bytes());
+            out.extend_from_slice(&7_u16.to_be_bytes()); // "Code"
+            let mut attribute = Vec::new();
+            attribute.extend_from_slice(&body.max_stack.to_be_bytes());
+            attribute.extend_from_slice(&body.max_locals.to_be_bytes());
+            attribute.extend_from_slice(
+                &u32::try_from(body.code.len())
+                    .expect("a fixture body fits u32")
+                    .to_be_bytes(),
+            );
+            attribute.extend_from_slice(&body.code);
+            attribute.extend_from_slice(&0_u16.to_be_bytes());
+            attribute.extend_from_slice(&0_u16.to_be_bytes());
+            out.extend_from_slice(
+                &u32::try_from(attribute.len())
+                    .expect("a fixture attribute fits u32")
+                    .to_be_bytes(),
+            );
+            out.extend_from_slice(&attribute);
+        }
+        // The class attributes: `BootstrapMethods` alone, and only when a site named one.
+        if self.bootstraps.is_empty() {
+            out.extend_from_slice(&0_u16.to_be_bytes());
+            return out;
+        }
+        out.extend_from_slice(&1_u16.to_be_bytes());
+        out.extend_from_slice(&8_u16.to_be_bytes()); // "BootstrapMethods"
+        let mut content = Vec::new();
+        content.extend_from_slice(
+            &u16::try_from(self.bootstraps.len())
+                .expect("a fixture has few bootstraps")
+                .to_be_bytes(),
+        );
+        for (handle, arguments) in &self.bootstraps {
+            content.extend_from_slice(&handle.to_be_bytes());
+            content.extend_from_slice(
+                &u16::try_from(arguments.len())
+                    .expect("a bootstrap has few arguments")
+                    .to_be_bytes(),
+            );
+            for argument in arguments {
+                content.extend_from_slice(&argument.to_be_bytes());
+            }
+        }
+        out.extend_from_slice(
+            &u32::try_from(content.len())
+                .expect("the bootstrap attribute fits u32")
+                .to_be_bytes(),
+        );
+        out.extend_from_slice(&content);
+        out
+    }
+}
+
+/// How many local slots one method descriptor's parameters occupy.
+fn parameter_slots(descriptor: &str) -> u16 {
+    let mut slots = 0u16;
+    let mut chars = descriptor.trim_start_matches('(').chars();
+    while let Some(character) = chars.next() {
+        match character {
+            ')' => break,
+            '[' => continue,
+            'J' | 'D' => slots += 2,
+            _ => slots += 1,
+        }
+        if character == 'L' {
+            for character in chars.by_ref() {
+                if character == ';' {
+                    break;
+                }
+            }
+        }
+    }
+    slots
+}
+
+/// One lambda site, as the fixtures vary it.
+struct Site<'a> {
+    /// The site's own name and descriptor: for a lambda site, the SAM's name and the
+    /// captures-then-interface descriptor.
+    name: &'a str,
+    descriptor: &'a str,
+    /// The factory: `java/lang/invoke/LambdaMetafactory` for a verified site, anything else for the
+    /// A04 counter-examples.
+    factory_class: &'a str,
+    factory_name: &'a str,
+    /// The bootstrap's first static argument: the SAM method type.
+    sam: &'a str,
+    /// The implementation handle: owner, name, descriptor and method-handle kind.
+    implementation: (&'a str, &'a str, &'a str, u8),
+    /// The bootstrap's third static argument: the instantiated method type.
+    instantiated: &'a str,
+    /// The `altMetafactory` flag word, when the fixture states one.
+    flags: Option<i32>,
+}
+
+/// Assembles one fixture class with one site and one body.
+///
+/// `code` holds the body with a `0xba 0x00 0x00` placeholder where the site is, and `site_bci` names
+/// it; the pool index of the site's own entry is written into those two bytes.
+fn assemble(
+    site: &Site<'_>,
+    code: Vec<u8>,
+    site_bci: usize,
+    max_stack: u16,
+    max_locals: u16,
+) -> Vec<u8> {
+    let mut fixture = Fixture::new();
+    let factory = fixture.utf8(site.factory_class);
+    let factory_class = fixture.class(factory);
+    let factory_name = fixture.utf8(site.factory_name);
+    let factory_descriptor = fixture.utf8(
+        "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;",
+    );
+    let factory_name_and_type = fixture.name_and_type(factory_name, factory_descriptor);
+    let factory_ref = fixture.method_ref(factory_class, factory_name_and_type);
+    let factory_handle = fixture.method_handle(6, factory_ref);
+    let sam = fixture.utf8(site.sam);
+    let sam_type = fixture.method_type(sam);
+    let (owner, name, descriptor, kind) = site.implementation;
+    let owner_text = fixture.utf8(owner);
+    let owner_class = fixture.class(owner_text);
+    let implementation_name = fixture.utf8(name);
+    let implementation_descriptor = fixture.utf8(descriptor);
+    let implementation_name_and_type =
+        fixture.name_and_type(implementation_name, implementation_descriptor);
+    let implementation_ref = if kind == 9 {
+        fixture.interface_method_ref(owner_class, implementation_name_and_type)
+    } else {
+        fixture.method_ref(owner_class, implementation_name_and_type)
+    };
+    let implementation_handle = fixture.method_handle(kind, implementation_ref);
+    let instantiated = fixture.utf8(site.instantiated);
+    let instantiated_type = fixture.method_type(instantiated);
+    let mut arguments = vec![sam_type, implementation_handle, instantiated_type];
+    if let Some(value) = site.flags {
+        arguments.push(fixture.integer(value));
+    }
+    let bootstrap = fixture.bootstrap(factory_handle, arguments);
+    let site_name = fixture.utf8(site.name);
+    let site_descriptor = fixture.utf8(site.descriptor);
+    let site_name_and_type = fixture.name_and_type(site_name, site_descriptor);
+    let site_index = fixture.invoke_dynamic(bootstrap, site_name_and_type);
+    // The desugared body method the implementation handle names, when it is one of this class's own
+    // members: the fixture then holds the member the handle refers to, exactly like a compiler's
+    // output does.
+    if owner == "Test" && name != "<init>" {
+        fixture.body(name, descriptor);
+    }
+    fixture.finish(code, site_bci, site_index, max_stack, max_locals)
+}
+
+/// The verified `LambdaMetafactory` factory every positive fixture names.
+const METAFACTORY: &str = "java/lang/invoke/LambdaMetafactory";
+
+/// `()` → `Runnable`, with one `int` captured: `r = () -> Test.lambda$method$0(base);`
+///
+/// The shape javac writes for a lambda whose body only reads a captured value: the site's descriptor
+/// is `(I)Ljava/lang/Runnable;` (one captured `int`, the interface it returns), the SAM method type
+/// is `()V` (`Runnable.run`), and the implementation is the **static** body method javac generated
+/// beside it, which the fixture declares like any other member.
+fn capture_lambda_class() -> Vec<u8> {
+    assemble(
+        &Site {
+            name: "run",
+            descriptor: "(I)Ljava/lang/Runnable;",
+            factory_class: METAFACTORY,
+            factory_name: "metafactory",
+            sam: "()V",
+            implementation: ("Test", "lambda$method$0", "(I)V", 6),
+            instantiated: "()V",
+            flags: None,
+        },
+        vec![
+            0x08, // 0: iconst_5
+            0x3c, // 1: istore_1        local1 = 5
+            0x1b, // 2: iload_1         the captured value
+            0xba, 0x00, 0x00, 0x00, 0x00, // 3: invokedynamic
+            0x4d, // 8: astore_2        local2 = the lambda
+            0xb1, // 9: return
+        ],
+        3,
+        1,
+        3,
+    )
+}
+
+/// The same shape with a SAM parameter as well: `op = x -> Test.lambda$method$0(base, x);`
+///
+/// `IntUnaryOperator.applyAsInt(int)int`: the site's descriptor is
+/// `(I)Ljava/util/function/IntUnaryOperator;`, the SAM method type and the instantiated method type
+/// are both `(I)I`, and the implementation is `Test.lambda$method$0(II)I` — the captured value first,
+/// then the SAM's parameter, which is the order the presentation has to write.
+fn capture_and_parameter_lambda_class() -> Vec<u8> {
+    assemble(
+        &Site {
+            name: "applyAsInt",
+            descriptor: "(I)Ljava/util/function/IntUnaryOperator;",
+            factory_class: METAFACTORY,
+            factory_name: "metafactory",
+            sam: "(I)I",
+            implementation: ("Test", "lambda$method$0", "(II)I", 6),
+            instantiated: "(I)I",
+            flags: None,
+        },
+        vec![
+            0x08, // 0: iconst_5
+            0x3c, // 1: istore_1        local1 = 5
+            0x1b, // 2: iload_1         the captured value
+            0xba, 0x00, 0x00, 0x00, 0x00, // 3: invokedynamic
+            0x4d, // 8: astore_2
+            0xb1, // 9: return
+        ],
+        3,
+        1,
+        3,
+    )
+}
+
+/// Two captured locals, in the site's own order: `r = () -> Test.lambda$method$0(a, b);`
+///
+/// The shape javac writes for `Runnable r = () -> use(a, b);`: the site's descriptor names two
+/// captured `int`s and the SAM takes none, so the presentation's argument list is the captures
+/// alone — which is the one list whose *order* a mistake would silently reverse.
+fn two_capture_lambda_class() -> Vec<u8> {
+    assemble(
+        &Site {
+            name: "run",
+            descriptor: "(II)Ljava/lang/Runnable;",
+            factory_class: METAFACTORY,
+            factory_name: "metafactory",
+            sam: "()V",
+            implementation: ("Test", "lambda$method$0", "(II)V", 6),
+            instantiated: "()V",
+            flags: None,
+        },
+        vec![
+            0x08, // 0: iconst_5
+            0x3c, // 1: istore_1        local1 = 5
+            0x06, // 2: iconst_3
+            0x3d, // 3: istore_2        local2 = 3
+            0x1b, // 4: iload_1         the first capture
+            0x1c, // 5: iload_2         the second capture
+            0xba, 0x00, 0x00, 0x00, 0x00, // 6: invokedynamic
+            0x4e, // 11: astore_3       local3 = the lambda
+            0xb1, // 12: return
+        ],
+        6,
+        2,
+        4,
+    )
+}
+
+/// A bound method reference: `r = local1::run;`
+///
+/// The implementation is `java/lang/Runnable.run()V` reached through an `invokeinterface` handle, and
+/// the site captures exactly the receiver that handle's invocation needs — so the site *is* a
+/// reference to the member and is written as one. (javac writes this shape for `local1::run`.)
+fn bound_reference_class() -> Vec<u8> {
+    assemble(
+        &Site {
+            name: "run",
+            // The captured receiver is one of the *site's* parameters: `local1::run` captures the
+            // receiver, so the descriptor a compiler writes names it.
+            descriptor: "(Ljava/lang/Runnable;)Ljava/lang/Runnable;",
+            factory_class: METAFACTORY,
+            factory_name: "metafactory",
+            sam: "()V",
+            implementation: ("java/lang/Runnable", "run", "()V", 9),
+            instantiated: "()V",
+            flags: None,
+        },
+        vec![
+            0x01, // 0: aconst_null
+            0x4c, // 1: astore_1        local1 = null
+            0x2b, // 2: aload_1         the receiver the site captures
+            0xba, 0x00, 0x00, 0x00, 0x00, // 3: invokedynamic
+            0x4d, // 8: astore_2
+            0xb1, // 9: return
+        ],
+        3,
+        1,
+        3,
+    )
+}
+
+/// An **unbound** method reference to a static member: `f = java.lang.String::valueOf;`
+///
+/// Nothing is captured, and the implementation is a static member of another class — the shape
+/// javac writes for `Function<String,String> f = String::valueOf;`, whose SAM method type is the
+/// erased `(Ljava/lang/Object;)Ljava/lang/Object;` and whose instantiated type is
+/// `(Ljava/lang/String;)Ljava/lang/String;`.
+fn static_reference_class() -> Vec<u8> {
+    assemble(
+        &Site {
+            name: "apply",
+            descriptor: "()Ljava/util/function/Function;",
+            factory_class: METAFACTORY,
+            factory_name: "metafactory",
+            sam: "(Ljava/lang/Object;)Ljava/lang/Object;",
+            implementation: (
+                "java/lang/String",
+                "valueOf",
+                "(Ljava/lang/Object;)Ljava/lang/String;",
+                6,
+            ),
+            instantiated: "(Ljava/lang/String;)Ljava/lang/String;",
+            flags: None,
+        },
+        vec![
+            0xba, 0x00, 0x00, 0x00, 0x00, // 0: invokedynamic
+            0x4c, // 5: astore_1
+            0xb1, // 6: return
+        ],
+        0,
+        1,
+        2,
+    )
+}
+
+/// A constructor reference: `s = java.lang.Object::new;`
+///
+/// The implementation handle is a `REF_newInvokeSpecial` one, which the contract states for `Type::new`
+/// sites: nothing is captured, the SAM takes no parameters, and the site is a reference to the
+/// constructor itself.
+fn constructor_reference_class() -> Vec<u8> {
+    assemble(
+        &Site {
+            name: "get",
+            descriptor: "()Ljava/util/function/Supplier;",
+            factory_class: METAFACTORY,
+            factory_name: "metafactory",
+            sam: "()Ljava/lang/Object;",
+            implementation: ("java/lang/Object", "<init>", "()V", 8),
+            instantiated: "()Ljava/lang/Object;",
+            flags: None,
+        },
+        vec![
+            0xba, 0x00, 0x00, 0x00, 0x00, // 0: invokedynamic
+            0x4c, // 5: astore_1
+            0xb1, // 6: return
+        ],
+        0,
+        1,
+        2,
+    )
+}
+
+/// A constructor handle reached **with a capture**: `s = () -> new Test(base);`
+///
+/// javac writes `Test::new` (the method-reference case below) when nothing is captured and generates
+/// a body method when something is; a class file is free to name the constructor directly instead,
+/// and this is that site: the same verified shape, written as a lambda whose body constructs the
+/// member — the one writing that reaches the `new` node.
+fn constructor_lambda_class() -> Vec<u8> {
+    assemble(
+        &Site {
+            name: "get",
+            descriptor: "(I)Ljava/util/function/Supplier;",
+            factory_class: METAFACTORY,
+            factory_name: "metafactory",
+            sam: "()Ljava/lang/Object;",
+            implementation: ("Test", "<init>", "(I)V", 8),
+            instantiated: "()Ljava/lang/Object;",
+            flags: None,
+        },
+        vec![
+            0x08, // 0: iconst_5
+            0x3c, // 1: istore_1        local1 = 5
+            0x1b, // 2: iload_1         the captured value
+            0xba, 0x00, 0x00, 0x00, 0x00, // 3: invokedynamic
+            0x4d, // 8: astore_2
+            0xb1, // 9: return
+        ],
+        3,
+        1,
+        3,
+    )
+}
+
+/// **A04's counter-example**: the same three static arguments, a different factory.
+///
+/// `Test.myBootstrap` is a hand-written bootstrap of the shape a class file is free to have, and its
+/// arguments are *exactly* the ones `metafactory` takes — so the only thing that makes this site not
+/// a lambda is the factory itself. A presentation that matched on the argument shapes, on the site's
+/// descriptor, or on the presence of a `MethodHandle` in the pool would print a lambda here; this
+/// layer does not.
+fn arbitrary_bootstrap_class() -> Vec<u8> {
+    assemble(
+        &Site {
+            name: "run",
+            descriptor: "(I)Ljava/lang/Runnable;",
+            factory_class: "Test",
+            factory_name: "myBootstrap",
+            sam: "()V",
+            implementation: ("Test", "lambda$method$0", "(I)V", 6),
+            instantiated: "()V",
+            flags: None,
+        },
+        vec![
+            0x08, // 0: iconst_5
+            0x3c, // 1: istore_1
+            0x1b, // 2: iload_1
+            0xba, 0x00, 0x00, 0x00, 0x00, // 3: invokedynamic
+            0x4d, // 8: astore_2
+            0xb1, // 9: return
+        ],
+        3,
+        1,
+        3,
+    )
+}
+
+/// A verified factory whose implementation does **not** line up with its SAM: `(III)I` where the
+/// site binds one capture and the SAM takes one parameter.
+fn arity_mismatch_class() -> Vec<u8> {
+    assemble(
+        &Site {
+            name: "applyAsInt",
+            descriptor: "(I)Ljava/util/function/IntUnaryOperator;",
+            factory_class: METAFACTORY,
+            factory_name: "metafactory",
+            sam: "(I)I",
+            implementation: ("Test", "lambda$method$0", "(III)I", 6),
+            instantiated: "(I)I",
+            flags: None,
+        },
+        vec![
+            0x08, // 0: iconst_5
+            0x3c, // 1: istore_1
+            0x1b, // 2: iload_1
+            0xba, 0x00, 0x00, 0x00, 0x00, // 3: invokedynamic
+            0x4d, // 8: astore_2
+            0xb1, // 9: return
+        ],
+        3,
+        1,
+        3,
+    )
+}
+
+/// A verified site whose captured value is a **call's result**: `Test.produce()`.
+///
+/// The value is on the stack when the site runs, and the call that produced it is a statement of its
+/// own in the artifact — so writing it again inside the lambda body would run it a second time, and
+/// again at a different moment. The declared `Replayable` precondition refuses the site instead.
+fn unreplayable_capture_class() -> Vec<u8> {
+    let mut fixture = Fixture::new();
+    let produce = fixture.utf8("produce");
+    let produce_descriptor = fixture.utf8("()I");
+    let produce_name_and_type = fixture.name_and_type(produce, produce_descriptor);
+    let produce_ref = fixture.method_ref(2, produce_name_and_type);
+    fixture.body("produce", "()I");
+    let factory = fixture.utf8(METAFACTORY);
+    let factory_class = fixture.class(factory);
+    let factory_name = fixture.utf8("metafactory");
+    let factory_descriptor = fixture.utf8("()Ljava/lang/invoke/CallSite;");
+    let factory_name_and_type = fixture.name_and_type(factory_name, factory_descriptor);
+    let factory_ref = fixture.method_ref(factory_class, factory_name_and_type);
+    let factory_handle = fixture.method_handle(6, factory_ref);
+    let sam = fixture.utf8("(I)I");
+    let sam_type = fixture.method_type(sam);
+    let owner = fixture.utf8("Test");
+    let owner_class = fixture.class(owner);
+    let implementation = fixture.utf8("lambda$method$0");
+    let implementation_descriptor = fixture.utf8("(II)I");
+    let implementation_name_and_type =
+        fixture.name_and_type(implementation, implementation_descriptor);
+    let implementation_ref = fixture.method_ref(owner_class, implementation_name_and_type);
+    let implementation_handle = fixture.method_handle(6, implementation_ref);
+    let instantiated = fixture.utf8("(I)I");
+    let instantiated_type = fixture.method_type(instantiated);
+    fixture.body("lambda$method$0", "(II)I");
+    let bootstrap = fixture.bootstrap(
+        factory_handle,
+        vec![sam_type, implementation_handle, instantiated_type],
+    );
+    let site_name = fixture.utf8("applyAsInt");
+    let site_descriptor = fixture.utf8("(I)Ljava/util/function/IntUnaryOperator;");
+    let site_name_and_type = fixture.name_and_type(site_name, site_descriptor);
+    let site_index = fixture.invoke_dynamic(bootstrap, site_name_and_type);
+    let code = vec![
+        0xb8,
+        (produce_ref >> 8) as u8,
+        produce_ref as u8, // 0: invokestatic Test.produce:()I
+        0xba,
+        0x00,
+        0x00,
+        0x00,
+        0x00, // 3: invokedynamic
+        0x4d, // 8: astore_2
+        0xb1, // 9: return
+    ];
+    fixture.finish(code, 3, site_index, 1, 3)
+}
+
+/// A verified factory with `altMetafactory`'s flag word set: markers/bridges/serializable.
+fn alt_metafactory_flags_class() -> Vec<u8> {
+    assemble(
+        &Site {
+            name: "run",
+            descriptor: "(Ljava/lang/Runnable;)Ljava/lang/Runnable;",
+            factory_class: METAFACTORY,
+            factory_name: "altMetafactory",
+            sam: "()V",
+            implementation: ("java/lang/Runnable", "run", "()V", 9),
+            instantiated: "()V",
+            flags: Some(1),
+        },
+        vec![
+            0x01, // 0: aconst_null
+            0x4c, // 1: astore_1
+            0x2b, // 2: aload_1
+            0xba, 0x00, 0x00, 0x00, 0x00, // 3: invokedynamic
+            0x4d, // 8: astore_2
+            0xb1, // 9: return
+        ],
+        3,
+        1,
+        3,
+    )
+}
+
+/// A verified site whose instance **nothing reads**: `invokedynamic; pop; return`.
+///
+/// The site's shape is the verified one — the capture, the SAM and the implementation all line up —
+/// so nothing but the missing reader can be the reason it is quoted.
+fn unconsumed_site_class() -> Vec<u8> {
+    assemble(
+        &Site {
+            name: "run",
+            descriptor: "(I)Ljava/lang/Runnable;",
+            factory_class: METAFACTORY,
+            factory_name: "metafactory",
+            sam: "()V",
+            implementation: ("Test", "lambda$method$0", "(I)V", 6),
+            instantiated: "()V",
+            flags: None,
+        },
+        vec![
+            0x08, // 0: iconst_5
+            0x3c, // 1: istore_1
+            0x1b, // 2: iload_1
+            0xba, 0x00, 0x00, 0x00, 0x00, // 3: invokedynamic
+            0x57, // 8: pop
+            0xb1, // 9: return
+        ],
+        3,
+        1,
+        2,
+    )
+}
+
+/// The recovery report of one assembled class's `method()V`.
+fn recover_class(class: &[u8]) -> jarde_java::RecoveryReport {
+    recover_class_under(class, jarde_java::pass::JAVA_8)
+}
+
+/// The same, under one named profile.
+fn recover_class_under(
+    class: &[u8],
+    profile: jarde_java::RecoveryProfile,
+) -> jarde_java::RecoveryReport {
+    let payload = analyze(class, b"method", b"()V");
+    let facts = facts_of(class, b"method", 0, Vec::new());
+    let mut budget = Budget::new(limits());
+    recover(
+        &RecoveryRequest::new(payload.analysis.ir(), &facts, profile),
+        &mut budget,
+    )
+}
+
+/// The one site's record, with the fixture's own use site.
+fn site_of(report: &jarde_java::RecoveryReport, bci: u32) -> &jarde_java::LambdaRecord {
+    assert_eq!(report.lambdas.len(), 1, "{:?}", report.lambdas);
+    let site = &report.lambdas[0];
+    assert_eq!(site.use_site, bci, "{site:?}");
+    site
+}
+
+#[test]
+fn a_captured_lambda_is_written_with_its_capture_in_order_before_the_sam_parameters() {
+    let class = capture_and_parameter_lambda_class();
+    let report = recover_class(&class);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert_eq!(
+        report.representation,
+        Representation::Java,
+        "{}\nregions: {:?}\nfallbacks: {:?}",
+        report.text,
+        report.regions,
+        report.fallbacks
+    );
+    assert_eq!(report.quality, Quality::Structured, "{}", report.text);
+    assert!(
+        report
+            .text
+            .contains("java.util.function.IntUnaryOperator local2 = (int p0) -> Test.lambda$method$0(local1, p0);"),
+        "the capture comes first, then the SAM's parameter, in the descriptor's order:\n{}",
+        report.text
+    );
+    // The parameters are the SAM's own, in the SAM's order and count — written with the types the
+    // *instantiated* method type states, which is the type the implementation is given there.
+    assert_eq!(
+        report.text.matches("Test.lambda$method$0(").count(),
+        1,
+        "{}",
+        report.text
+    );
+    assert!(
+        !report.text.contains("lambda$method$0(p0, local1)"),
+        "{}",
+        report.text
+    );
+    assert!(report.fallbacks.is_empty(), "{:?}", report.fallbacks);
+}
+
+#[test]
+fn two_captures_are_written_in_the_order_the_site_reads_them() {
+    // The order of the captured arguments is the one thing a lambda presentation can silently get
+    // wrong: a swapped pair still reads like a lambda, and the value flow is the only thing that
+    // says which is which. Both the text and the record are pinned here.
+    let class = two_capture_lambda_class();
+    let report = recover_class(&class);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(
+        report
+            .text
+            .contains("() -> Test.lambda$method$0(local1, local2)"),
+        "the site reads local1 before local2:\n{}",
+        report.text
+    );
+    assert!(
+        !report.text.contains("lambda$method$0(local2, local1)"),
+        "and nothing writes them the other way round:\n{}",
+        report.text
+    );
+    let site = site_of(&report, 6);
+    assert_eq!(
+        site.captures,
+        vec![
+            jarde_java::LambdaCapture { bci: Some(4) },
+            jarde_java::LambdaCapture { bci: Some(5) },
+        ],
+        "the record states the captures in the order the site reads them"
+    );
+    assert_eq!(site.sam_method_type.as_deref(), Some("()V"));
+    assert_eq!(
+        report.representation,
+        Representation::Java,
+        "{}",
+        report.text
+    );
+}
+
+#[test]
+fn a_verified_site_is_recorded_with_its_bootstrap_use_site_and_captures() {
+    let class = capture_lambda_class();
+    let report = recover_class(&class);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(
+        report
+            .text
+            .contains("java.lang.Runnable local2 = () -> Test.lambda$method$0(local1);"),
+        "{}",
+        report.text
+    );
+    let site = site_of(&report, 3);
+    assert_eq!(site.form, Some(jarde_java::LambdaForm::Lambda));
+    assert_eq!(site.refusal, None, "{site:?}");
+    // The bootstrap, as the class states it: the factory handle with its method-handle kind, the
+    // number of static arguments, and the two method types beside the implementation handle.
+    assert_eq!(
+        site.bootstrap.as_deref(),
+        Some("java.lang.invoke.LambdaMetafactory.metafactory (REF_invokeStatic)")
+    );
+    assert_eq!(site.bootstrap_arguments, 3);
+    assert_eq!(site.bootstrap_index, 0);
+    assert_eq!(site.sam_method_type.as_deref(), Some("()V"));
+    assert_eq!(site.instantiated_method_type.as_deref(), Some("()V"));
+    assert_eq!(
+        site.implementation.as_deref(),
+        Some("Test.lambda$method$0(I)V (REF_invokeStatic)")
+    );
+    // The use site's own reference, and the SAM the site presents.
+    assert_eq!(site.sam_name, "run");
+    assert_eq!(site.sam_descriptor, "(I)Ljava/lang/Runnable;");
+    assert!(
+        site.site_cp > 0,
+        "the site's pool entry is stated, not re-derived from the BCI"
+    );
+    // The captured value, in the order the site reads it.
+    assert_eq!(
+        site.captures,
+        vec![jarde_java::LambdaCapture { bci: Some(2) }],
+        "the capture is the load at BCI 2"
+    );
+    assert!(
+        report.rules.contains(&jarde_java::pass::LAMBDA.rule()),
+        "which rule produced the shape is in the report: {:?}",
+        report.rules
+    );
+    assert!(
+        report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "jre_lambda_sites"),
+        "{:?}",
+        report.diagnostics
+    );
+
+    // The origin: the lambda node is the site (its own pool entry named), and the captured value's
+    // BCI reaches it as *derived* evidence — one expression, more than one original BCI.
+    let at_site = report.source_map.direct_of_bci(3);
+    let lambda_node = at_site
+        .iter()
+        .find(|segment| segment.text(&report.text).contains("->"))
+        .expect("the lambda node is anchored at the site");
+    assert_eq!(
+        lambda_node.origin().primary().cp(),
+        Some(site.site_cp),
+        "the node's own anchor names the site's pool entry"
+    );
+    let derived = report.source_map.derived_of_bci(2);
+    assert_eq!(
+        derived.len(),
+        2,
+        "the captured value's BCI reaches the two nodes whose text reproduces it: {derived:?}"
+    );
+    let texts: Vec<&str> = derived
+        .iter()
+        .map(|segment| segment.text(&report.text))
+        .collect();
+    assert!(
+        texts.contains(&"() -> Test.lambda$method$0(local1)"),
+        "the lambda node presents the capture it reads: {texts:?}"
+    );
+    assert!(
+        texts.contains(&"Test.lambda$method$0(local1)"),
+        "and so does the call whose argument list holds it: {texts:?}"
+    );
+    assert!(
+        report.source_map.direct_of_bci(2).len() == 1,
+        "the capture's own text is anchored where it was produced: {:?}",
+        report.source_map.direct_of_bci(2)
+    );
+}
+
+#[test]
+fn a_bound_receiver_becomes_a_method_reference_and_a_static_member_a_type_reference() {
+    // The bound case: the site's captures are exactly what the handle's receiver needs.
+    let report = recover_class(&bound_reference_class());
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(
+        report
+            .text
+            .contains("java.lang.Runnable local2 = local1::run;"),
+        "{}",
+        report.text
+    );
+    let site = site_of(&report, 3);
+    assert_eq!(site.form, Some(jarde_java::LambdaForm::MethodReference));
+    assert_eq!(
+        site.implementation.as_deref(),
+        Some("java.lang.Runnable.run()V (REF_invokeInterface)")
+    );
+    assert_eq!(
+        site.captures,
+        vec![jarde_java::LambdaCapture { bci: Some(2) }]
+    );
+    assert_eq!(
+        report.representation,
+        Representation::Java,
+        "{}",
+        report.text
+    );
+
+    // The static case: nothing is captured, and the member is another class's.
+    let report = recover_class(&static_reference_class());
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(
+        report
+            .text
+            .contains("java.util.function.Function local1 = java.lang.String::valueOf;"),
+        "{}",
+        report.text
+    );
+    let site = site_of(&report, 0);
+    assert_eq!(site.form, Some(jarde_java::LambdaForm::MethodReference));
+    assert!(site.captures.is_empty(), "{site:?}");
+    assert_eq!(site.sam_name, "apply");
+
+    // The constructor case: a `REF_newInvokeSpecial` handle is a reference to the constructor.
+    let report = recover_class(&constructor_reference_class());
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(
+        report
+            .text
+            .contains("java.util.function.Supplier local1 = java.lang.Object::new;"),
+        "{}",
+        report.text
+    );
+    let site = site_of(&report, 0);
+    assert_eq!(site.form, Some(jarde_java::LambdaForm::MethodReference));
+    assert_eq!(
+        site.implementation.as_deref(),
+        Some("java.lang.Object.<init>()V (REF_newInvokeSpecial)")
+    );
+
+    // The same handle reached with a captured value: the reference writing cannot carry it, so the
+    // site is written as a lambda whose body constructs the member.
+    let report = recover_class(&constructor_lambda_class());
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(
+        report
+            .text
+            .contains("java.util.function.Supplier local2 = () -> new Test(local1);"),
+        "{}",
+        report.text
+    );
+    let site = site_of(&report, 3);
+    assert_eq!(site.form, Some(jarde_java::LambdaForm::Lambda));
+    assert_eq!(
+        site.implementation.as_deref(),
+        Some("Test.<init>(I)V (REF_newInvokeSpecial)")
+    );
+    assert_eq!(
+        site.captures,
+        vec![jarde_java::LambdaCapture { bci: Some(2) }]
+    );
+}
+
+#[test]
+fn an_arbitrary_bootstrap_is_never_presented_as_a_lambda() {
+    // A04: the site's descriptor, its capture and the *shapes* of its static arguments are exactly
+    // the ones a lambda site has — the factory is the only difference. Nothing here may become a
+    // lambda, and the refusal has to say which bootstrap the class really named.
+    let class = arbitrary_bootstrap_class();
+    let report = recover_class(&class);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(
+        !report.text.contains("->"),
+        "no lambda is written for an arbitrary bootstrap:\n{}",
+        report.text
+    );
+    assert!(
+        !report.text.contains("::"),
+        "and no method reference either:\n{}",
+        report.text
+    );
+    assert!(report.text.contains("// @bytecode"), "{}", report.text);
+    assert_eq!(report.representation, Representation::Mixed);
+    assert_eq!(report.quality, Quality::Fallback);
+
+    let site = site_of(&report, 3);
+    assert_eq!(site.form, None, "{site:?}");
+    assert_eq!(
+        site.bootstrap.as_deref(),
+        Some("Test.myBootstrap (REF_invokeStatic)"),
+        "the record states the bootstrap the class really named"
+    );
+    assert_eq!(site.bootstrap_arguments, 3);
+    let refusal = site.refusal.as_ref().expect("the refusal is recorded");
+    assert_eq!(refusal.code, "jre_lambda_bootstrap");
+    assert_eq!(
+        refusal.rule,
+        jarde_java::pass::LAMBDA.rule(),
+        "the record names the rule that refused the site"
+    );
+    assert_eq!(
+        refusal.requirement, None,
+        "this is a shape that is not a lambda, not a declared precondition that fell short"
+    );
+    assert!(
+        refusal.message.contains("Test.myBootstrap"),
+        "the diagnosis names the bootstrap: {}",
+        refusal.message
+    );
+    assert!(
+        refusal.message.contains("LambdaMetafactory"),
+        "and the factory the contract states: {}",
+        refusal.message
+    );
+    assert!(
+        report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "jre_lambda_bootstrap"
+                && diagnostic.message.contains("myBootstrap")),
+        "{:?}",
+        report.diagnostics
+    );
+    assert!(
+        report.fallbacks.is_empty(),
+        "the site is refused as a *statement*, not as a region: {:?}",
+        report.fallbacks
+    );
+}
+
+#[test]
+fn a_sam_that_the_implementation_does_not_line_up_with_is_refused() {
+    // The site binds two values (one capture and the SAM's one parameter) and the implementation
+    // takes three: printing a lambda here would write a call that does not mean what the bytecode
+    // did, so the site keeps its bytecode with the counts in the diagnosis.
+    let class = arity_mismatch_class();
+    let report = recover_class(&class);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(!report.text.contains("->"), "{}", report.text);
+    let site = site_of(&report, 3);
+    assert_eq!(
+        site.bootstrap.as_deref(),
+        Some("java.lang.invoke.LambdaMetafactory.metafactory (REF_invokeStatic)"),
+        "the factory *is* verified: what fell short is the shape behind it"
+    );
+    assert_eq!(site.form, None, "{site:?}");
+    let refusal = site.refusal.as_ref().expect("the refusal is recorded");
+    assert_eq!(refusal.code, "jre_lambda_sam_arity");
+    assert!(
+        refusal.message.contains("(III)I") && refusal.message.contains("3 parameter"),
+        "the diagnosis states the implementation's own arity: {}",
+        refusal.message
+    );
+    assert!(
+        refusal.message.contains("1 captured value"),
+        "and the values the site would bind: {}",
+        refusal.message
+    );
+    assert_eq!(report.representation, Representation::Mixed);
+}
+
+#[test]
+fn a_capture_the_shape_may_not_replay_is_refused_under_the_declared_precondition() {
+    // The captured value is a call's result: the call is already a statement of the artifact, so
+    // writing it again inside the lambda body would run it twice. The `lambda@1` rule states the
+    // `Replayable` requirement, and this is the check point that consults it.
+    let class = unreplayable_capture_class();
+    let report = recover_class(&class);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(!report.text.contains("->"), "{}", report.text);
+    let site = site_of(&report, 3);
+    let refusal = site.refusal.as_ref().expect("the refusal is recorded");
+    assert_eq!(refusal.code, "jre_lambda_capture_not_replayable");
+    assert_eq!(
+        refusal.requirement.as_deref(),
+        Some("a captured value whose text can be read again where the shape writes it"),
+        "the refusal names the requirement it consulted: {refusal:?}"
+    );
+    assert!(
+        refusal.message.contains("BCI 0"),
+        "and the instruction that fell short: {}",
+        refusal.message
+    );
+    assert!(
+        report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "jre_lambda_capture_not_replayable"),
+        "{:?}",
+        report.diagnostics
+    );
+    // The call the capture came from is still written: refusing the site does not drop the effect.
+    assert!(report.text.contains("produce();"), "{}", report.text);
+    assert_eq!(report.representation, Representation::Mixed);
+}
+
+#[test]
+fn an_alt_metafactory_flag_word_and_an_unread_instance_are_both_refused() {
+    // `altMetafactory` with a flag word: markers, bridges or a serializable site need a presentation
+    // this layer does not have, so only the flagless form is one it writes.
+    let report = recover_class(&alt_metafactory_flags_class());
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(
+        !report.text.contains("->") && !report.text.contains("::"),
+        "{}",
+        report.text
+    );
+    let site = site_of(&report, 3);
+    assert_eq!(
+        site.bootstrap.as_deref(),
+        Some("java.lang.invoke.LambdaMetafactory.altMetafactory (REF_invokeStatic)")
+    );
+    assert_eq!(site.bootstrap_arguments, 4);
+    let refusal = site.refusal.as_ref().expect("the refusal is recorded");
+    assert_eq!(refusal.code, "jre_lambda_bootstrap_arguments");
+    assert!(
+        refusal.message.contains("flag word 1"),
+        "{}",
+        refusal.message
+    );
+
+    // A verified site whose instance nothing reads: the call it makes has no place in the body, so
+    // the site is quoted rather than written off as a value with no effect.
+    let report = recover_class(&unconsumed_site_class());
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(
+        !report.text.contains("->") && !report.text.contains("::"),
+        "{}",
+        report.text
+    );
+    let site = site_of(&report, 3);
+    assert_eq!(
+        site.bootstrap.as_deref(),
+        Some("java.lang.invoke.LambdaMetafactory.metafactory (REF_invokeStatic)")
+    );
+    let refusal = site.refusal.as_ref().expect("the refusal is recorded");
+    assert_eq!(refusal.code, "jre_lambda_unconsumed");
+    assert!(report.text.contains("// @bytecode"), "{}", report.text);
+}
+
+#[test]
+fn a_profile_that_does_not_present_java_8_is_refused_the_lambda_rule() {
+    // The gate `Pass::admits` reads, with its first production instance: an `invokedynamic` call
+    // site is a Java 8 construct, and a run whose profile presents the artifact as Java 7 is not
+    // admitted the rule. The body is still presented — the site is refused, the run is not stopped.
+    let class = capture_lambda_class();
+    let report = recover_class_under(
+        &class,
+        jarde_java::RecoveryProfile {
+            java_release: 7,
+            ..jarde_java::pass::JAVA_8
+        },
+    );
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert!(!report.text.contains("->"), "{}", report.text);
+    let site = site_of(&report, 3);
+    let refusal = site.refusal.as_ref().expect("the refusal is recorded");
+    assert_eq!(refusal.code, "jre_lambda_rule_not_admitted");
+    assert!(
+        refusal.message.contains("lambda@1") && refusal.message.contains("Java 7"),
+        "{}",
+        refusal.message
+    );
+    assert_eq!(
+        site.bootstrap, None,
+        "the profile gate runs before the table is read: nothing beyond the site's own descriptor is stated"
+    );
+}
+
+#[test]
+fn a_lambda_body_without_debug_metadata_is_named_deterministically() {
+    // No `LocalVariableTable`, no `MethodParameters`: the fixture's slots are named by ordinal, and
+    // a lambda's parameters get names of their own that cannot collide with them (JLS 6.4 forbids a
+    // lambda parameter that shadows an enclosing local).
+    let class = capture_and_parameter_lambda_class();
+    let report = recover_class(&class);
+    let again = recover_class(&class);
+    assert_eq!(
+        report.text, again.text,
+        "the same bytes produce the same names"
+    );
+    assert!(report.text.contains("int local1 = 5;"), "{}", report.text);
+    assert!(report.text.contains("(int p0) ->"), "{}", report.text);
+    assert!(
+        !report.text.contains("(int local1) ->"),
+        "the lambda's parameter does not take the local's name:\n{}",
+        report.text
+    );
+    assert!(
+        report.aliased_names.is_empty(),
+        "an invented name hides nothing: {:?}",
+        report.aliased_names
+    );
+    assert_eq!(report.syntax_status, SyntaxStatus::Unchecked);
+}
+
+#[test]
+fn a_budget_that_refuses_the_emission_of_a_lambda_body_hands_out_nothing() {
+    // The existing stop semantics, on a body whose statements are built around a lambda: a refusal
+    // is a *stop* — no text, no segments, no success — and never an empty body.
+    let class = capture_and_parameter_lambda_class();
+    let payload = analyze(&class, b"method", b"()V");
+    let facts = facts_of(&class, b"method", 0, Vec::new());
+    let whole = {
+        let mut budget = Budget::new(limits());
+        recover(
+            &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8),
+            &mut budget,
+        )
+        .text
+        .len()
+    };
+    let mut budget = Budget::new(Limits {
+        output_bytes: u64::try_from(whole - 1).expect("the artifact is small"),
+        ..limits()
+    });
+    let stopped = recover(
+        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8),
+        &mut budget,
+    );
+    assert!(!stopped.produced(), "{:?}", stopped.outcome);
+    assert!(stopped.text.is_empty(), "{:?}", stopped.text);
+    assert!(stopped.source_map.is_empty(), "{:?}", stopped.source_map);
+    assert!(
+        matches!(stopped.outcome, RecoveryOutcome::Stopped(_)),
+        "{:?}",
+        stopped.outcome
+    );
+    assert_eq!(stopped.representation, Representation::Bytecode);
+}

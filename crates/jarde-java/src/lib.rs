@@ -56,6 +56,7 @@
 
 pub mod ast;
 pub mod facts;
+pub mod lambda;
 pub mod names;
 pub mod normal_flow;
 pub mod pass;
@@ -70,6 +71,7 @@ pub(crate) mod emit;
 #[cfg(test)]
 mod oracle;
 
+pub use lambda::{LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal};
 pub use pass::{IrTable, Pass, Precondition, RecoveryProfile, RuleVersion};
 pub use report::{RecoveryOutcome, RecoveryReport, RecoveryRequest, RegionRecord, recover};
 

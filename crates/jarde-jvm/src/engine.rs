@@ -13,8 +13,8 @@
 use jarde_reader::artifact::ArtifactSnapshot;
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{
-    BytecodeStop, CpEntryFacts, MemberHeader, MethodCodeFacts, VersionCapability,
-    version_rule_diagnostic,
+    BootstrapMethodFacts, BytecodeStop, CpEntryFacts, MemberHeader, MethodCodeFacts,
+    VersionCapability, version_rule_diagnostic,
 };
 use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
@@ -156,7 +156,7 @@ fn run_request(
                 crate::ir::METHOD_ANALYSIS_NOT_IMPLEMENTED,
                 budget,
             ),
-            MethodIr::new(None, None, None, None, Vec::new()),
+            MethodIr::new(None, None, None, None, Vec::new(), Vec::new()),
         )
     };
     Ok(Analyzed {
@@ -776,13 +776,20 @@ fn run_method_analysis(
     // class's constant pool are the one source of the symbolic vocabulary a presentation needs,
     // and moving them in is a move — no pass is re-run, nothing is re-read and nothing is
     // charged twice for it. The block that owns the pool is the same header read that filled every
-    // pass above, so the pool handed over is the pool those passes read.
+    // pass above, so the pool handed over is the pool those passes read. The class's
+    // `BootstrapMethods` table travels the same way (P3 2.1): it is the one fact an
+    // `invokedynamic`'s bootstrap index resolves against, and it was read by that same header read.
+    let (constant_pool, bootstrap_methods) = match declaration {
+        Some(declaration) => (declaration.pool, declaration.bootstrap_methods),
+        None => (Vec::new(), Vec::new()),
+    };
     let ir = MethodIr::new(
         canonical_cfg,
         frame_table,
         ssa_table,
         facts.map(Box::new),
-        declaration.map_or_else(Vec::new, |declaration| declaration.pool),
+        constant_pool,
+        bootstrap_methods,
     );
     (run, ir)
 }
@@ -830,6 +837,12 @@ struct FrameDeclaration {
     super_class: Option<Vec<u8>>,
     /// The class file's constant pool, in index order.
     pool: Vec<CpEntryFacts>,
+    /// The class's `BootstrapMethods` table, in attribute order; empty when it declares none.
+    ///
+    /// The one fact an `invokedynamic`'s `bootstrap_method_attr_index` resolves against, read from
+    /// the same attribute enumeration the member was located in (P3 2.1). A class without the
+    /// attribute reads nothing for it.
+    bootstrap_methods: Vec<BootstrapMethodFacts>,
 }
 
 /// The declaration facts one IR pass reads beside the body and the graph, as the frame-family
@@ -956,16 +969,44 @@ fn read_driver_method(
         // The same read carries the declaration facts the `frame` pass needs. The constant pool
         // is *moved* out of the header facts: this request keeps one copy of it, and the pool of
         // no other class is read for it.
-        declaration: FrameDeclaration {
-            access_flags: member.access_flags,
-            this_class: read.header.facts.this_class.raw().0.clone(),
-            super_class: read
+        //
+        // The class's `BootstrapMethods` table is read here too (P3 2.1): the attribute's shell was
+        // already enumerated by this header read, the bytes are the ones this read holds, and the
+        // pool it resolves against is the very pool this request keeps. A class that declares no
+        // such attribute reads nothing and charges nothing — a class *with* one pays its own
+        // attribute bytes, which is what every other attribute read in this pipeline does.
+        //
+        // A read that fails is propagated rather than swallowed: the reader validates that the
+        // bootstrap handle and every argument are loadable constants (JVMS 4.7.23), so a class that
+        // fails it is one whose structure contradicts the format, and this pass already treats a
+        // body read that fails the same way. An empty table therefore means "this class declares
+        // no bootstrap table", never "the table could not be read".
+        declaration: {
+            let pool = std::mem::take(&mut read.header.facts.constant_pool);
+            let bootstrap_methods = match read
                 .header
                 .facts
-                .super_class
-                .as_ref()
-                .map(|name| name.raw().0.clone()),
-            pool: std::mem::take(&mut read.header.facts.constant_pool),
+                .attributes
+                .iter()
+                .find(|shell| shell.name.raw().0.as_slice() == b"BootstrapMethods")
+            {
+                Some(shell) => {
+                    jarde_reader::classfile::bootstrap_methods(&read.bytes, shell, &pool, budget)?
+                }
+                None => Vec::new(),
+            };
+            FrameDeclaration {
+                access_flags: member.access_flags,
+                this_class: read.header.facts.this_class.raw().0.clone(),
+                super_class: read
+                    .header
+                    .facts
+                    .super_class
+                    .as_ref()
+                    .map(|name| name.raw().0.clone()),
+                pool,
+                bootstrap_methods,
+            }
         },
     })
 }

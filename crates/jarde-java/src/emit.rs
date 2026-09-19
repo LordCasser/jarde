@@ -291,6 +291,39 @@ impl<'a> Emitter<'a> {
                 }
                 emitter.put(")", at)
             }
+            ExprKind::New { ty, args } => {
+                emitter.put("new ", at)?;
+                emitter.put(ty, at)?;
+                emitter.put("(", at)?;
+                for (index, arg) in args.iter().enumerate() {
+                    if index > 0 {
+                        emitter.put(", ", at)?;
+                    }
+                    emitter.expr(arg)?;
+                }
+                emitter.put(")", at)
+            }
+            ExprKind::Lambda { params, body } => {
+                // The parameter list is written with its types: the target type of a recovered
+                // lambda is not always declared, and the descriptor that states these types is the
+                // same evidence the record reads back.
+                emitter.put("(", at)?;
+                for (index, param) in params.iter().enumerate() {
+                    if index > 0 {
+                        emitter.put(", ", at)?;
+                    }
+                    emitter.put(param.ty.spell(), at)?;
+                    emitter.put(" ", at)?;
+                    emitter.put(&param.name, at)?;
+                }
+                emitter.put(") -> ", at)?;
+                emitter.expr(body)
+            }
+            ExprKind::MethodReference { qualifier, name } => {
+                emitter.expr(qualifier)?;
+                emitter.put("::", at)?;
+                emitter.put(name, at)
+            }
             ExprKind::Binary { op, left, right } => {
                 emitter.expr(left)?;
                 emitter.put(&format!(" {} ", op.spell()), at)?;

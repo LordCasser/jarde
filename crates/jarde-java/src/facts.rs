@@ -206,6 +206,63 @@ impl CallTarget {
     }
 }
 
+/// One `invokedynamic` call site, as the class's own pool states it.
+///
+/// This is the site's **identity**, and nothing about its shape: the entry names the
+/// `BootstrapMethods` entry the site resolves against and the name and descriptor the site
+/// presents. For a lambda site that name is the SAM's method name and that descriptor is the
+/// captured variables' types followed by the functional interface — but *that a site is a lambda at
+/// all* is not decided here, and not decided by this type: it is decided against the class's
+/// bootstrap table and the implementation handle ([`crate::lambda`]), and a site whose bootstrap is
+/// anything else keeps this identity and no lambda presentation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DynamicSite {
+    cp: u16,
+    bootstrap_index: u16,
+    name: String,
+    descriptor: String,
+}
+
+impl DynamicSite {
+    /// One dynamic site from the pool entry that states it.
+    pub fn new(
+        cp: u16,
+        bootstrap_index: u16,
+        name: impl Into<String>,
+        descriptor: impl Into<String>,
+    ) -> Self {
+        Self {
+            cp,
+            bootstrap_index,
+            name: name.into(),
+            descriptor: descriptor.into(),
+        }
+    }
+
+    /// The constant-pool index of the site's own `InvokeDynamic` entry — the use site's own
+    /// reference, which a report reads back rather than re-deriving from the BCI.
+    pub fn cp(&self) -> u16 {
+        self.cp
+    }
+
+    /// The `BootstrapMethods` entry this site names, or `None`-like when the class states a table
+    /// that does not reach it (the caller checks the table; this is the index alone).
+    pub fn bootstrap_index(&self) -> u16 {
+        self.bootstrap_index
+    }
+
+    /// The name the site presents; for a lambda site, the SAM method's name.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// The descriptor the site presents; for a lambda site, the captured variables' types and the
+    /// functional interface the site instantiates.
+    pub fn descriptor(&self) -> &str {
+        &self.descriptor
+    }
+}
+
 /// What one bytecode instruction does, as far as the presentation needs to know.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Operation {
@@ -247,6 +304,14 @@ pub enum Operation {
     Transfer,
     /// Invokes the target it names, with the receiver and arguments it reads.
     Invoke(CallTarget),
+    /// A dynamic call site: it reads the captured values the site's descriptor names and produces
+    /// the instance the descriptor returns.
+    ///
+    /// The **shape** is not here. Whether this site is a lambda, a method reference or something
+    /// this layer must not touch is decided from the class's bootstrap table, the factory method
+    /// handle and the implementation handle ([`crate::lambda`], rule `lambda@1`), because a site
+    /// with an arbitrary bootstrap must never be presented as one of them (A04).
+    InvokeDynamic(DynamicSite),
     /// Leaves the method.
     Return,
     /// Anything else: legal to read, not part of the provable subset.

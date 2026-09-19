@@ -29,9 +29,16 @@ use crate::source_map::OriginSet;
 /// reference type named by the resolution the frames carry.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Type {
-    /// `boolean` is absent on purpose: the bytecode spells a `boolean` as an `int`, so claiming
-    /// which of the two the source had would be a guess. 3.3's corpus work is where a decision like
-    /// that gets its evidence.
+    /// `boolean`, `byte`, `char` and `short`: a **descriptor** states which of the int-shaped
+    /// primitives a position has (a `MethodType` bootstrap argument says `Z` outright), while the
+    /// *frames* cannot — a `boolean` and an `int` share one slot and one value shape — so
+    /// [`crate::build`]'s frame reading never produces these four and only the descriptor reader of
+    /// a lambda's SAM ([`crate::lambda`]) does. That is the difference between a fact a descriptor
+    /// states and a guess this layer would be making.
+    Boolean,
+    Byte,
+    Char,
+    Short,
     Int,
     Long,
     Float,
@@ -45,6 +52,10 @@ impl Type {
     /// The Java spelling of this type.
     pub fn spell(&self) -> &str {
         match self {
+            Self::Boolean => "boolean",
+            Self::Byte => "byte",
+            Self::Char => "char",
+            Self::Short => "short",
             Self::Int => "int",
             Self::Long => "long",
             Self::Float => "float",
@@ -117,12 +128,37 @@ pub enum ExprKind {
         name: String,
         args: Vec<Expr>,
     },
+    /// `new Type(args…)` — the body of a lambda whose implementation handle is a constructor.
+    New { ty: String, args: Vec<Expr> },
+    /// `(params) -> body` — a lambda expression, with the parameters the SAM states.
+    ///
+    /// The parameters are written with their types ([`LambdaParam`]) rather than left to inference:
+    /// the target type may not be declared at all in a recovered body (the store's type is only
+    /// known when the frames state one), and a typed parameter list states exactly what the SAM's
+    /// descriptor said — the same evidence the record reads back.
+    Lambda {
+        params: Vec<LambdaParam>,
+        body: Box<Expr>,
+    },
+    /// `Qualifier::name` — a method reference, with the qualifier a type or an expression.
+    MethodReference { qualifier: Box<Expr>, name: String },
     /// A binary operation over two expressions.
     Binary {
         op: BinaryOp,
         left: Box<Expr>,
         right: Box<Expr>,
     },
+}
+
+/// One parameter of a lambda: the type its SAM states and the name this layer gave it.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LambdaParam {
+    /// The parameter's type, as the implementation handle's own descriptor states it.
+    pub ty: Type,
+    /// The name the presentation gave it ([`crate::names::NameTable::free_name`]): the class file
+    /// does not name a lambda's parameters, so the name is derived and guaranteed not to collide
+    /// with any name the body's own locals carry.
+    pub name: String,
 }
 
 /// One expression and the anchors behind its text.

@@ -38,11 +38,16 @@ use jarde_jvm::method_ir::{
     ValueId,
 };
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
+use jarde_reader::classfile::{BootstrapMethodFacts, CpEntryFacts};
 
-use crate::ast::{BinaryOp, Expr, ExprKind, Stmt, StmtKind, SwitchArm, Type};
+use crate::ast::{BinaryOp, Expr, ExprKind, LambdaParam, Stmt, StmtKind, SwitchArm, Type};
 use crate::decode::Operations;
-use crate::facts::{ArithmeticOp, CallTarget, CompareOp, ConstantValue, InvokeKind, Operation};
+use crate::facts::{
+    ArithmeticOp, CallTarget, CompareOp, ConstantValue, DynamicSite, InvokeKind, Operation,
+};
+use crate::lambda::{self, LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal, Reach, Refusal};
 use crate::names::NameTable;
+use crate::pass::{LAMBDA, Precondition, RecoveryProfile};
 use crate::region::{Continuation, LoopForm, Region};
 use crate::source_map::{Origin, OriginSet};
 use crate::stop::{StopReason, charge, poll};
@@ -64,15 +69,40 @@ pub(crate) struct Program {
     pub(crate) statements: usize,
     /// Whether any statement is a fallback: the run's representation and quality read this.
     pub(crate) ragged: bool,
+    /// Every `invokedynamic` site of this body, in BCI order, with what the class states about it
+    /// and what this build did with it (P3 2.1). A site is here whether it was presented or refused,
+    /// because "which bootstrap was it, and why was it not a lambda" is the question A04 asks and a
+    /// record that only listed the presented ones could not answer it.
+    pub(crate) lambdas: Vec<LambdaRecord>,
+}
+
+/// The facts of one run the build reads beside the regions and the region tree's own inputs.
+///
+/// These are the payload's own decode facts (the class's pool and its bootstrap table, the profile
+/// whose rule set the run admits) plus the names table the statements are written with. They travel
+/// as one value because every one of them is *the same run's*, and a builder that took them one by
+/// one could be handed two of something.
+pub(crate) struct Inputs<'a> {
+    /// The class's constant pool, as the same header read decoded it.
+    pub(crate) pool: &'a [CpEntryFacts],
+    /// The class's `BootstrapMethods` table, as the same read decoded it.
+    pub(crate) bootstrap: &'a [BootstrapMethodFacts],
+    /// The profile this run presents under: the gate the `lambda@1` rule is admitted through.
+    pub(crate) profile: RecoveryProfile,
+    /// How many local slots the method's parameters occupy, `this` included when the caller
+    /// counted it: the slots below this one are declared by the signature, not by the body.
+    pub(crate) parameters: u16,
+    /// The names the presentation decided, in slot order.
+    pub(crate) names: &'a NameTable,
 }
 
 /// Builds the statements of one method from its regions.
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn build(
     canonical: &CanonicalCfg,
     ssa: &SsaTable,
     operations: &Operations,
-    parameters: u16,
-    names: &NameTable,
+    inputs: Inputs<'_>,
     regions: &[Region],
     budget: &mut Budget,
 ) -> Result<Program, StopReason> {
@@ -86,14 +116,19 @@ pub(crate) fn build(
         canonical,
         ssa,
         operations,
-        parameters,
-        names,
+        pool: inputs.pool,
+        bootstrap: inputs.bootstrap,
+        profile: inputs.profile,
+        parameters: inputs.parameters,
+        names: inputs.names,
         instructions,
         budget,
         declared: BTreeSet::new(),
         stmts: Vec::new(),
         statements: 0,
         ragged: false,
+        lambdas: Vec::new(),
+        lambda_params: BTreeSet::new(),
     };
     for region in regions {
         builder.region(region)?;
@@ -102,6 +137,7 @@ pub(crate) fn build(
         statements: builder.statements,
         ragged: builder.ragged,
         stmts: builder.stmts,
+        lambdas: builder.lambdas,
     })
 }
 
@@ -109,6 +145,13 @@ struct Builder<'a> {
     canonical: &'a CanonicalCfg,
     ssa: &'a SsaTable,
     operations: &'a Operations,
+    /// The class's pool: where a dynamic site's own entry, the bootstrap handles and the method
+    /// types are named (P3 2.1).
+    pool: &'a [CpEntryFacts],
+    /// The class's bootstrap table: the only fact that says whether a site is a lambda.
+    bootstrap: &'a [BootstrapMethodFacts],
+    /// The profile whose rule set this build admits.
+    profile: RecoveryProfile,
     /// How many local slots the method's parameters occupy, `this` included when the caller
     /// counted it: the slots below this one are declared by the signature, not by the body.
     parameters: u16,
@@ -119,6 +162,11 @@ struct Builder<'a> {
     stmts: Vec<Stmt>,
     statements: usize,
     ragged: bool,
+    /// Every dynamic site this build read, in the order it reached them.
+    lambdas: Vec<LambdaRecord>,
+    /// The parameter names the lambda shapes of this body have already taken, so that no two of
+    /// them spell the same identifier.
+    lambda_params: BTreeSet<String>,
 }
 
 impl Builder<'_> {
@@ -292,7 +340,7 @@ impl Builder<'_> {
     /// `taken` says which sense of the branch the structure continues on: an `if` always writes the
     /// fall-through condition (the branch *leaves* the `if` when its sense holds), a loop writes the
     /// sense that iterates. Both are the same decode fact read two ways.
-    fn test_expr(&self, branch_bci: u32, taken: bool) -> Result<Expr, String> {
+    fn test_expr(&mut self, branch_bci: u32, taken: bool) -> Result<Expr, String> {
         let Some((op, _)) = self
             .operations
             .get(branch_bci)
@@ -490,6 +538,33 @@ impl Builder<'_> {
                 | Operation::Switch { .. }
                 | Operation::Transfer,
             ) => Ok(()),
+            // A dynamic call site produces the instance it presents, so — like a push or a load —
+            // its text lands where the value is consumed. What is *not* the same as a push is what
+            // it means to drop it: creating the instance is an invocation the bytecode really makes,
+            // so a site whose value nothing reads is quoted instead of being written off as a value
+            // with no effect.
+            Some(Operation::InvokeDynamic(site)) => {
+                let value = instruction
+                    .writes()
+                    .iter()
+                    .find_map(|(slot, value)| match slot {
+                        Slot::Stack(_) => Some(*value),
+                        Slot::Local(_) => None,
+                    });
+                // The instance this site produces is a value whose text lands where the value is
+                // consumed — the store or the call that reads it renders it, and *that* rendering is
+                // where the site is read, presented and recorded. So the only case this instruction
+                // has anything of its own to say about is the one where nothing consumes it: the
+                // invocation the site makes has no place in the body, and the site is quoted.
+                let consumed = value.is_some_and(|value| self.value_is_consumed(value));
+                if consumed {
+                    return Ok(());
+                }
+                match self.lambda_expr(at, instruction, site, false) {
+                    Ok(_) => Ok(()),
+                    Err(reason) => self.fallback(vec![at], &reason, at),
+                }
+            }
             Some(Operation::Other) | None => self.fallback(
                 vec![at],
                 &format!("the instruction at BCI {at} is not part of the provable subset"),
@@ -534,7 +609,7 @@ impl Builder<'_> {
     }
 
     /// Renders one SSA value as an expression.
-    fn render_value(&self, value: ValueId, at: u32, depth: usize) -> Result<Expr, String> {
+    fn render_value(&mut self, value: ValueId, at: u32, depth: usize) -> Result<Expr, String> {
         if depth > MAX_VALUE_DEPTH {
             return Err(format!(
                 "the value at BCI {at} nests deeper than this layer renders"
@@ -593,6 +668,20 @@ impl Builder<'_> {
                         };
                         self.call_expr(bci, instruction, target)
                     }
+                    // A dynamic call site is a *value* whose shape this layer decides from the
+                    // class's own bootstrap table: a verified `LambdaMetafactory` site becomes a
+                    // lambda or a method reference, and every other site is refused with the reason
+                    // recorded against it (A04). Nothing here falls back to "it looks like a
+                    // lambda": the shape comes from the bootstrap, never from the opcode.
+                    Operation::InvokeDynamic(site) => {
+                        let Some(instruction) = self.instructions.get(&bci).copied() else {
+                            return Err(format!(
+                                "no names record for the dynamic site at BCI {bci}"
+                            ));
+                        };
+                        // A value is being rendered *because* something consumes it.
+                        self.lambda_expr(bci, instruction, site, true)
+                    }
                     other => Err(format!(
                         "the value at BCI {at} comes from an {other:?} at BCI {bci}, which produces no expression this subset writes"
                     )),
@@ -606,7 +695,7 @@ impl Builder<'_> {
 
     /// Renders one invocation, with its receiver and its arguments.
     fn call_expr(
-        &self,
+        &mut self,
         bci: u32,
         instruction: &SsaInstruction,
         target: &CallTarget,
@@ -636,6 +725,363 @@ impl Builder<'_> {
             },
             bci,
         ))
+    }
+
+    /// Renders one dynamic call site as a lambda or a method reference — or refuses it and records
+    /// which link of the chain failed (P3 2.1, A04).
+    ///
+    /// Everything read here is the payload's own: the class's bootstrap table and pool decide *what
+    /// the site is* ([`crate::lambda`]), the run's names decide the captured values and their BCIs,
+    /// and the frames decide a capture's type. The record is pushed here, where the decision is
+    /// made, so no site can be presented without a record and no record can describe text that was
+    /// never written.
+    fn lambda_expr(
+        &mut self,
+        bci: u32,
+        instruction: &SsaInstruction,
+        site: &DynamicSite,
+        consumed: bool,
+    ) -> Result<Expr, String> {
+        let operands = stack_operands(instruction);
+        let captures: Vec<(Option<u32>, Option<Type>)> = operands
+            .iter()
+            .map(|(_, value)| {
+                (
+                    self.value_bci(*value),
+                    value_type(self.ssa.value(*value).ty()),
+                )
+            })
+            .collect();
+        let verdict = lambda::plan(site, self.bootstrap, self.pool, &captures, &self.profile);
+        let evidence = verdict.evidence;
+        charge(self.budget, CountedBudgetDimension::IrItems, 0, Some(bci)).ok();
+        // A refused site is recorded with the operands it reads and no text: a refusal states where
+        // its evidence came from without pretending to have written it.
+        let unrendered = || -> Vec<LambdaCapture> {
+            captures
+                .iter()
+                .map(|(at, _)| LambdaCapture { bci: *at })
+                .collect()
+        };
+        let plan = match verdict.outcome {
+            Ok(plan) => plan,
+            Err(refusal) => {
+                let record =
+                    Self::lambda_record(bci, site, &evidence, None, Some(&refusal), &unrendered());
+                self.lambdas.push(record);
+                return Err(refusal.message().to_string());
+            }
+        };
+        if !consumed {
+            // The shape is verified, but the instance it creates reaches no statement: creating it
+            // is still an invocation the bytecode makes, so the site is quoted rather than written
+            // off as a value with no effect (a `push` whose value nobody reads is dropped; this is
+            // not a `push`).
+            let refusal = Refusal::shape(
+                "jre_lambda_unconsumed",
+                "nothing in this method reads the instance the site creates, so the invocation the site makes has no place in the body".to_string(),
+            );
+            let record =
+                Self::lambda_record(bci, site, &evidence, None, Some(&refusal), &unrendered());
+            self.lambdas.push(record);
+            return Err(refusal.message().to_string());
+        }
+        // Every captured value has to be replayable before any of its text is written: the value is
+        // written where the shape reads it, and the instruction that produced it may also have been
+        // written as a statement of its own. The rule states the requirement and this is the check
+        // point, so a capture that would run again (or run later) makes the site a fallback.
+        for index in 0..plan.captures {
+            let (at, _) = captures[index];
+            let (_, value) = operands[index];
+            if let Some(reason) = self.unreplayable(value) {
+                let refusal = Refusal::unmet(
+                    &LAMBDA,
+                    Precondition::Replayable,
+                    format!(
+                        "the value captured for the site's argument {index} (BCI {}) cannot be written where the shape reads it: {reason}",
+                        at.map_or_else(|| "unknown".to_string(), |at| at.to_string())
+                    ),
+                );
+                let record =
+                    Self::lambda_record(bci, site, &evidence, None, Some(&refusal), &unrendered());
+                self.lambdas.push(record);
+                return Err(refusal.message().to_string());
+            }
+        }
+        // The captured arguments, in the order the site reads them off the stack — which is the order
+        // the implementation handle receives them in. Each expression carries its own anchor (the
+        // BCI it was produced at), and the nodes whose text reproduces a capture present it as
+        // derived evidence.
+        let mut captures_rendered: Vec<Expr> = Vec::with_capacity(plan.captures);
+        let mut captured: Vec<LambdaCapture> = Vec::with_capacity(plan.captures);
+        for index in 0..plan.captures {
+            let (at, _) = captures[index];
+            let (_, value) = operands[index];
+            let Ok(expr) = self.render_value(value, bci, 0) else {
+                let refusal = Refusal::shape(
+                    "jre_lambda_capture",
+                    format!(
+                        "the value captured for the site's argument {index} (BCI {}) produces no expression this subset writes",
+                        at.map_or_else(|| "unknown".to_string(), |at| at.to_string())
+                    ),
+                );
+                let record =
+                    Self::lambda_record(bci, site, &evidence, None, Some(&refusal), &unrendered());
+                self.lambdas.push(record);
+                return Err(refusal.message().to_string());
+            };
+            captured.push(LambdaCapture { bci: at });
+            captures_rendered.push(expr);
+        }
+        // The site's own anchor (with the pool entry that states it), and the same anchor carrying
+        // the captures as evidence the text reproduces: one lambda expression reaches more than one
+        // original BCI, and the table says so. The nodes *inside* the body — the receiver's type
+        // name, the parameters — are anchored at the site alone: they do not reproduce a captured
+        // value, and a node that claimed to would be evidence that is not true.
+        let site_origin = OriginSet::new(Origin::direct(bci).with_cp(site.cp()));
+        let origin = captured
+            .iter()
+            .fold(site_origin.clone(), |set, capture| match capture.bci {
+                Some(at) => set.plus_derived(Origin::derived(at)),
+                None => set,
+            });
+        let mut params: Vec<LambdaParam> = Vec::with_capacity(plan.params.len());
+        let mut parameters_rendered: Vec<Expr> = Vec::with_capacity(plan.params.len());
+        for (index, ty) in plan.params.iter().enumerate() {
+            let name = self.param_name(index);
+            parameters_rendered.push(Expr::new(
+                ExprKind::Local(name.clone()),
+                site_origin.clone(),
+            ));
+            params.push(LambdaParam {
+                ty: ty.clone(),
+                name,
+            });
+        }
+        let expr = match plan.form {
+            LambdaForm::MethodReference => {
+                // The captures *are* what the handle's own receiver needs and nothing else, so the
+                // site is a reference to the member itself: a type for a static or constructor one,
+                // the bound receiver — the one capture — for an instance one. There are no arguments
+                // to write: a `::` reference takes none.
+                let qualifier = match (plan.reach, captures_rendered.first()) {
+                    (Reach::Receiver, Some(receiver)) => receiver.clone(),
+                    _ => Expr::new(
+                        ExprKind::Path(spell_reference(plan.implementation.owner())),
+                        site_origin.clone(),
+                    ),
+                };
+                let name = match plan.reach {
+                    Reach::Constructor => "new".to_string(),
+                    _ => plan.implementation.name().to_string(),
+                };
+                Expr::new(
+                    ExprKind::MethodReference {
+                        qualifier: Box::new(qualifier),
+                        name,
+                    },
+                    origin.clone(),
+                )
+            }
+            LambdaForm::Lambda => {
+                let mut bound = captures_rendered;
+                let parameter_count = parameters_rendered.len();
+                bound.extend(parameters_rendered);
+                let body = match plan.reach {
+                    Reach::Constructor => Expr::new(
+                        ExprKind::New {
+                            ty: spell_reference(plan.implementation.owner()),
+                            args: bound,
+                        },
+                        origin.clone(),
+                    ),
+                    Reach::Static => Expr::new(
+                        ExprKind::Call {
+                            receiver: Some(Box::new(Expr::new(
+                                ExprKind::Path(spell_reference(plan.implementation.owner())),
+                                site_origin.clone(),
+                            ))),
+                            name: plan.implementation.name().to_string(),
+                            args: bound,
+                        },
+                        origin.clone(),
+                    ),
+                    Reach::Receiver => {
+                        let mut operands_bound = bound.into_iter();
+                        let receiver = operands_bound.next().ok_or_else(|| {
+                            "a receiver-kind implementation with nothing bound to its receiver"
+                                .to_string()
+                        })?;
+                        Expr::new(
+                            ExprKind::Call {
+                                receiver: Some(Box::new(receiver)),
+                                name: plan.implementation.name().to_string(),
+                                args: operands_bound.collect(),
+                            },
+                            origin.clone(),
+                        )
+                    }
+                };
+                debug_assert_eq!(params.len(), parameter_count);
+                Expr::new(
+                    ExprKind::Lambda {
+                        params,
+                        body: Box::new(body),
+                    },
+                    origin.clone(),
+                )
+            }
+        };
+        let record = Self::lambda_record(bci, site, &evidence, Some(plan.form), None, &captured);
+        self.lambdas.push(record);
+        Ok(expr)
+    }
+
+    /// The record of one dynamic site, as the report reads it back.
+    fn lambda_record(
+        bci: u32,
+        site: &DynamicSite,
+        evidence: &crate::lambda::Evidence,
+        form: Option<LambdaForm>,
+        refusal: Option<&Refusal>,
+        captures: &[LambdaCapture],
+    ) -> LambdaRecord {
+        LambdaRecord {
+            use_site: bci,
+            site_cp: site.cp(),
+            bootstrap_index: site.bootstrap_index(),
+            bootstrap: evidence.bootstrap.clone(),
+            bootstrap_arguments: evidence.bootstrap_arguments,
+            sam_name: site.name().to_string(),
+            sam_descriptor: site.descriptor().to_string(),
+            sam_method_type: evidence.sam_method_type.clone(),
+            instantiated_method_type: evidence.instantiated_method_type.clone(),
+            implementation: evidence.implementation.clone(),
+            captures: captures.to_vec(),
+            form,
+            refusal: refusal.map(|refusal| LambdaRefusal::of(refusal, bci)),
+        }
+    }
+
+    /// Why one captured value cannot be written where the shape reads it, when it cannot.
+    ///
+    /// A capture's text is written into the artifact, and the instruction that produced it may also
+    /// have been written as a statement of its own — a call whose result the site captures is a call
+    /// statement *and* an argument. So the value is replayable only when re-reading its text is the
+    /// same thing as having read it once: a literal, or a local the body writes exactly once.
+    fn unreplayable(&self, value: ValueId) -> Option<String> {
+        match self.ssa.value(value).def() {
+            Definition::Instruction { bci, .. } => match self.operations.get(*bci) {
+                Some(Operation::Push(_)) => None,
+                Some(Operation::Load { slot }) => self.written_once(*slot),
+                Some(operation) => Some(format!(
+                    "it comes from an {operation:?} at BCI {bci}, whose text would run again (or run later) inside the shape"
+                )),
+                None => Some(format!(
+                    "it comes from the instruction at BCI {bci}, which this run did not decode"
+                )),
+            },
+            Definition::Entry {
+                slot: Slot::Local(slot),
+                ..
+            }
+            | Definition::Phi {
+                slot: Slot::Local(slot),
+                ..
+            } => self.written_once(*slot),
+            Definition::Entry {
+                slot: Slot::Stack(depth),
+                ..
+            }
+            | Definition::Phi {
+                slot: Slot::Stack(depth),
+                ..
+            } => Some(format!(
+                "it is the entry state of stack depth {depth}, which no instruction produced"
+            )),
+            Definition::Caught { bci, .. } => Some(format!(
+                "it is the exception reference of the throw site at BCI {bci}"
+            )),
+        }
+    }
+
+    /// Why one local's text cannot be read again, when it cannot: the body writes it more than once.
+    ///
+    /// A local the body writes exactly once is *effectively final* in the source's own sense, and
+    /// reading it again — which is what writing it inside a lambda body does — reads the same value.
+    /// A local written twice might not: a later write could land between the site and the lambda's
+    /// invocation, and the recovered text would then read a value the bytecode never captured.
+    /// Refusing is the honest answer, because this layer has no liveness analysis that could prove
+    /// the writes apart.
+    fn written_once(&self, slot: u16) -> Option<String> {
+        let mut writes = 0usize;
+        for block in self.ssa.blocks() {
+            for instruction in block.instructions() {
+                if instruction
+                    .writes()
+                    .iter()
+                    .any(|(written, _)| *written == Slot::Local(slot))
+                {
+                    writes += 1;
+                }
+            }
+        }
+        (writes > 1).then(|| {
+            format!(
+                "the local {slot} is written {writes} times in this body, so reading it again inside the shape would not read the value the site captured"
+            )
+        })
+    }
+
+    /// Whether one value reaches a statement — a read by an instruction this subset *renders* its
+    /// operands for.
+    ///
+    /// A dynamic site's instance is a value like any other, except that dropping it would drop the
+    /// invocation the site makes. The instructions that count are the ones whose rendering writes
+    /// the values they read (a store, a call, a return, a branch, a switch, an arithmetic); a `pop`
+    /// reads a value and writes nothing with it, which is exactly the case this question is about.
+    fn value_is_consumed(&self, value: ValueId) -> bool {
+        self.ssa.blocks().iter().any(|block| {
+            block.instructions().iter().any(|instruction| {
+                instruction.reads().iter().any(|(_, read)| *read == value)
+                    && matches!(
+                        self.operations.get(instruction.bci()),
+                        Some(
+                            Operation::Store { .. }
+                                | Operation::Invoke(_)
+                                | Operation::InvokeDynamic(_)
+                                | Operation::Return
+                                | Operation::Comparison { .. }
+                                | Operation::Switch { .. }
+                                | Operation::Arithmetic { .. }
+                        )
+                    )
+            })
+        })
+    }
+
+    /// The BCI the instruction that produced one value sits at, when an instruction produced it.
+    fn value_bci(&self, value: ValueId) -> Option<u32> {
+        match self.ssa.value(value).def() {
+            Definition::Instruction { bci, .. } | Definition::Caught { bci, .. } => Some(*bci),
+            Definition::Phi { block, .. } => Some(block.bci()),
+            Definition::Entry { .. } => None,
+        }
+    }
+
+    /// One parameter name for a lambda of this body: the first free `pN`.
+    ///
+    /// The class file names no lambda parameter, so the name is derived — and it has to differ from
+    /// every name the body's own locals carry *and* from every parameter name another lambda of this
+    /// body already took (JLS 6.4 forbids a lambda parameter that shadows either). Allocation follows
+    /// the order the shapes are written, so the names are a function of the evidence alone.
+    fn param_name(&mut self, index: usize) -> String {
+        let mut name = self.names.free_name(&format!("p{index}"));
+        while self.lambda_params.contains(&name) {
+            name.push('_');
+        }
+        self.lambda_params.insert(name.clone());
+        name
     }
 
     /// Appends the quoted bytecode of one region or instruction.
@@ -728,7 +1174,7 @@ fn arithmetic_op(op: ArithmeticOp) -> BinaryOp {
 fn condition(
     op: CompareOp,
     operands: &[(Slot, ValueId)],
-    builder: &Builder<'_>,
+    builder: &mut Builder<'_>,
     branch_bci: u32,
     taken: bool,
 ) -> Result<Expr, String> {
@@ -827,22 +1273,32 @@ fn zero(bci: u32) -> Expr {
     Expr::direct(ExprKind::Integer(0), bci)
 }
 
-/// The Java source spelling of an internal name.
-fn source_name(internal: &str) -> String {
-    internal.replace('/', ".")
-}
-
 /// The declared type of a local, when the frames state one.
+///
+/// A reference the frames *name* carries the descriptor form the class file states
+/// (`Ljava/lang/Runnable;`) — that is the fact the frame pass read and kept — so this is where it is
+/// spelled as Java source (`java.lang.Runnable`). An array descriptor is still spelled as the
+/// descriptor says; widening the spelling of arrays is a 3.x presentation question with its own
+/// evidence, and no shape of this layer declares one.
 fn value_type(value: &Value) -> Option<Type> {
     match value {
         Value::Int => Some(Type::Int),
         Value::Long => Some(Type::Long),
         Value::Float => Some(Type::Float),
         Value::Double => Some(Type::Double),
-        Value::Ref(RefType::Named { name, .. }) => {
-            Some(Type::Reference(source_name(&String::from_utf8_lossy(name))))
-        }
+        Value::Ref(RefType::Named { name, .. }) => Some(Type::Reference(spell_reference(
+            &String::from_utf8_lossy(name),
+        ))),
         Value::Ref(_) | Value::Null => Some(Type::Reference("Object".to_string())),
         _ => None,
     }
+}
+
+/// One reference type as the frames state it, spelled as Java source.
+fn spell_reference(descriptor: &str) -> String {
+    let internal = descriptor
+        .strip_prefix('L')
+        .and_then(|rest| rest.strip_suffix(';'))
+        .unwrap_or(descriptor);
+    internal.replace('/', ".")
 }

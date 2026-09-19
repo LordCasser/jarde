@@ -43,9 +43,10 @@ use crate::build;
 use crate::decode::Operations;
 use crate::emit::{Emitted, emit};
 use crate::facts::RecoveryFacts;
+use crate::lambda::LambdaRecord;
 use crate::names::NameTable;
 use crate::normal_flow::NormalFlowView;
-use crate::pass::{RecoveryProfile, RuleVersion};
+use crate::pass::{LAMBDA, RecoveryProfile, RuleVersion};
 use crate::region::{FallbackReason, Recovered, Region};
 use crate::source_map::SourceMap;
 use crate::stop::StopReason;
@@ -152,6 +153,11 @@ pub struct RecoveryReport {
     pub source_map: SourceMap,
     /// Every region the run recovered, in method order.
     pub regions: Vec<RegionRecord>,
+    /// Every `invokedynamic` site of the body, in BCI order, with the bootstrap, SAM, implementation
+    /// and capture evidence behind it and what the run did with it (P3 2.1, A04). A site appears
+    /// whether it was presented as a lambda or refused and left as bytecode: the refusals are part
+    /// of the answer, not an absence from it.
+    pub lambdas: Vec<LambdaRecord>,
     /// Every fallback the run had to keep, with its code.
     pub fallbacks: Vec<&'static str>,
     /// The names the presentation decided, when the run reached the naming step.
@@ -267,8 +273,13 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         canonical,
         ssa,
         &operations,
-        request.facts.method().parameters(),
-        &names,
+        build::Inputs {
+            pool: request.ir.constant_pool(),
+            bootstrap: request.ir.bootstrap_methods(),
+            profile: request.profile.clone(),
+            parameters: request.facts.method().parameters(),
+            names: &names,
+        },
         &recovered.regions,
         budget,
     ) {
@@ -333,7 +344,49 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         ),
     ));
     let regions = region_records(&recovered.regions);
-    let rules = recovered.rules();
+    let mut rules = recovered.rules();
+    // A dynamic site is a rule's answer too: the record names `lambda@1` whether it presented the
+    // site or refused it, so the report's rule list states both. A body with no site names no
+    // lambda rule, which is why the list is built from the records rather than from the table.
+    for lambda in &program.lambdas {
+        let rule = lambda.rule();
+        if !rules.contains(&rule) {
+            rules.push(rule);
+        }
+    }
+    // The refusals are diagnostics of their own: a site that was not presented says which link of
+    // the chain failed, whether it was the class's table, the factory, the SAM's shape or a value
+    // this layer may not replay (A04).
+    for lambda in &program.lambdas {
+        if let Some(refusal) = &lambda.refusal {
+            diagnostics.push(diagnostic(
+                refusal.code,
+                DiagnosticSeverity::Warning,
+                &refusal.message,
+            ));
+        }
+    }
+    if !program.lambdas.is_empty() {
+        diagnostics.push(diagnostic(
+            "jre_lambda_sites",
+            DiagnosticSeverity::Info,
+            &format!(
+                "{} dynamic site(s) read under {}: {} presented, {} refused",
+                program.lambdas.len(),
+                LAMBDA.rule(),
+                program
+                    .lambdas
+                    .iter()
+                    .filter(|site| site.presented())
+                    .count(),
+                program
+                    .lambdas
+                    .iter()
+                    .filter(|site| !site.presented())
+                    .count(),
+            ),
+        ));
+    }
     RecoveryReport {
         profile: request.profile.clone(),
         representation: if structured {
@@ -361,6 +414,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         text: emitted.text,
         source_map: emitted.source_map,
         regions,
+        lambdas: program.lambdas,
         fallbacks,
         aliased_names,
         diagnostics,
@@ -470,6 +524,7 @@ fn stopped(
         text: String::new(),
         source_map: SourceMap::default(),
         regions: Vec::new(),
+        lambdas: Vec::new(),
         fallbacks: Vec::new(),
         aliased_names: Vec::new(),
         diagnostics: vec![diagnostic(code, severity, &message)],

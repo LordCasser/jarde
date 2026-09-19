@@ -20,12 +20,14 @@
 //! requires, and the predicate [`Pass::admits`] the gate reads — not the vocabulary.
 //!
 //! A pass's `required_release` is `None` when the rule is independent of what the profile presents
-//! the artifact as (every structure rule in this slice: a `while`, an `if` and a `switch` are the
+//! the artifact as (every *structure* rule in this crate: a `while`, an `if` and a `switch` are the
 //! same Java in every release). It is `Some(release)` for a rule whose output only exists from that
-//! release on — the Java 8 presentation rules of 2.x (lambda, string concatenation, try-with-
-//! resources) are the first passes that will carry `Some(8)`, and until one exists no profile can
-//! be refused a pass. That is recorded rather than faked: this slice ships the gate, the
-//! classification and its contract, not a made-up pass to trip it.
+//! release on — and as of P3 2.1 there is one: [`LAMBDA`] presents `invokedynamic` call sites, a
+//! Java 8 construct, so a profile that presents the artifact as Java 7 is refused it.[^lambda]
+//!
+//! [^lambda]: Until that slice the recorded gap was that `admits`'s refusing branch had no
+//! production instance; `lambda@1` is the first rule that has one, and its tests check it through the
+//! gate the run really reads (`crate::lambda` refuses a site the profile does not admit).
 //!
 //! # Preconditions fail as fallbacks; missing tables stop the run
 //!
@@ -72,6 +74,16 @@ pub enum IrTable {
     Code,
     /// The constant pool read with the same header.
     ConstantPool,
+    /// The class's `BootstrapMethods` table, read with the same header.
+    ///
+    /// This is the table an `invokedynamic`'s bootstrap index resolves against, and it is the one
+    /// fact from which "this site is a `LambdaMetafactory` call" can be read at all (A04). Unlike
+    /// the two tables above it is *optional for a run*: a class that declares no such attribute
+    /// hands over an empty table, and a site whose index is not in it is a refused *site*, not a
+    /// refused run — nothing about a missing bootstrap stops the rest of a body from being
+    /// presented. So the requirement is checked where a rule would claim a shape, through
+    /// [`crate::region::FallbackReason::unmet`]'s own path, rather than by the run-level gate.
+    BootstrapMethods,
 }
 
 impl IrTable {
@@ -83,6 +95,7 @@ impl IrTable {
             Self::Ssa => "ssa",
             Self::Code => "code",
             Self::ConstantPool => "constant pool",
+            Self::BootstrapMethods => "bootstrap methods",
         }
     }
 }
@@ -96,9 +109,15 @@ impl IrTable {
 pub enum Precondition {
     /// **IR**: the pass reads this table of the run's payload.
     ///
-    /// Checked once per run, before the walk: a payload that does not publish the table stops the
-    /// run with [`crate::stop::StopReason::IrTableMissing`], because nothing can be presented at
-    /// all without it.
+    /// Where the requirement is *checked* depends on what the table is needed for, and the
+    /// declaration says which. A table nothing can be presented without — the canonical graph, the
+    /// names, the decode — is checked once per run, before the walk: a payload that does not publish
+    /// one stops the run with [`crate::stop::StopReason::IrTableMissing`]. A table only some rules
+    /// need is checked **where the rule would claim a shape**, because a run does not stop being
+    /// presentable just because the class happens to declare no such table: the class's
+    /// `BootstrapMethods` table is the live instance ([`LAMBDA`]), and a site whose entry that table
+    /// does not state is a refused *site* with the requirement named in its refusal
+    /// ([`crate::lambda::LambdaRefusal::requirement`]).
     IrTable(IrTable),
     /// **Effect**: every instruction of the block a pass is about to write *inside* the structure it
     /// decides must be part of a value expression — a push, a load or an arithmetic — so that
@@ -116,6 +135,17 @@ pub enum Precondition {
     /// the family is one of the three decision 1 names, and a rule that *did* require a
     /// `LineNumberTable` would have to state it here rather than assume it.
     Metadata { attribute: &'static str },
+    /// **Effect**: every value the shape *repeats* has to be one whose text can be written where the
+    /// shape reads it without running anything again.
+    ///
+    /// A shape can move a value's text into a place that runs at a different time from the
+    /// instruction that produced it — a captured argument written inside a lambda body is read when
+    /// the lambda is *invoked*, not when the site that captured it ran. For a local read or a
+    /// literal that is the same value twice and no effect; for a call, a field read or an arithmetic
+    /// over one, the text would run a second time, or run later than it did. So the rule that decides
+    /// such a shape states this requirement and checks it per operand, and a value that is not
+    /// replayable makes the site a fallback rather than a moved effect.
+    Replayable,
 }
 
 impl Precondition {
@@ -127,6 +157,10 @@ impl Precondition {
                 "a test block whose every instruction is part of a value expression".to_string()
             }
             Self::Metadata { attribute } => format!("the `{attribute}` attribute"),
+            Self::Replayable => {
+                "a captured value whose text can be read again where the shape writes it"
+                    .to_string()
+            }
         }
     }
 }
@@ -273,8 +307,38 @@ pub const SWITCH: Pass = Pass::new(
     ],
 );
 
+/// The pass that presents a verified `LambdaMetafactory` call site as a lambda or method reference.
+///
+/// This is the first rule of this build whose output **is** a Java 8 construct: an `invokedynamic`
+/// call site exists from the class-file version that introduced it, so `Some(8)` here is what the
+/// output needs rather than a promise about the input, and a profile that presents the artifact as
+/// Java 7 does not admit it ([`Pass::admits`]).
+///
+/// What it requires is stated, not assumed:
+///
+/// * the run's **decode** and its **pool**, which is where the site's own name, descriptor and
+///   bootstrap index live;
+/// * the run's **bootstrap table**, which is the only thing that says whether the factory is
+///   `java/lang/invoke/LambdaMetafactory` at all — a site whose entry is not in it is refused with
+///   this requirement named, and a site whose entry names something else is refused as a shape;
+/// * the run's **names** (SSA), because the captured values are read off the same value flow as
+///   every other operand, and their BCIs are what the segment table records;
+/// * [`Precondition::Replayable`] per captured value, because the capture's text is written where
+///   the lambda reads it.
+pub const LAMBDA: Pass = Pass::new(
+    RuleVersion::new("lambda", "1"),
+    Some(8),
+    &[
+        Precondition::IrTable(IrTable::Ssa),
+        Precondition::IrTable(IrTable::Code),
+        Precondition::IrTable(IrTable::ConstantPool),
+        Precondition::IrTable(IrTable::BootstrapMethods),
+        Precondition::Replayable,
+    ],
+);
+
 /// Every pass this build registers, in the order the design lists them.
-pub const PASSES: [Pass; 4] = [STRAIGHT, IF, LOOP, SWITCH];
+pub const PASSES: [Pass; 5] = [STRAIGHT, IF, LOOP, SWITCH, LAMBDA];
 
 /// The registered pass with this rule name, when there is one.
 pub fn pass(rule: &str) -> Option<Pass> {
@@ -325,7 +389,7 @@ mod tests {
 
     #[test]
     fn the_registered_table_states_each_rule_and_its_preconditions() {
-        assert_eq!(PASSES.len(), 4);
+        assert_eq!(PASSES.len(), 5);
         assert_eq!(
             PASSES
                 .iter()
@@ -335,13 +399,27 @@ mod tests {
                 "straight@1".to_string(),
                 "if@1".to_string(),
                 "loop@1".to_string(),
-                "switch@1".to_string()
+                "switch@1".to_string(),
+                "lambda@1".to_string()
             ]
         );
-        // Every registered rule of this slice is release-independent: the Java 8 presentation rules
-        // are 2.x's, and a `Some(8)` entry here would be a pass that does not exist.
+        // Which rules are release-independent and which one is not (P3 2.1). Until then this loop
+        // asserted `None` for **every** registered pass and recorded in its comment that the gate
+        // had no production instance; `lambda@1` is that instance, so the assertion now pins each
+        // rule's own requirement instead of pinning that none has one.
         for pass in PASSES {
-            assert_eq!(pass.required_release(), None, "{pass:?}");
+            match pass.rule().rule() {
+                "lambda" => assert_eq!(
+                    pass.required_release(),
+                    Some(8),
+                    "{pass:?} presents `invokedynamic`, which is a Java 8 construct"
+                ),
+                _ => assert_eq!(
+                    pass.required_release(),
+                    None,
+                    "{pass:?} is a structure rule: the same Java in every release"
+                ),
+            }
             assert!(
                 !pass.requires(Precondition::Metadata {
                     attribute: "LocalVariableTable"
@@ -349,27 +427,45 @@ mod tests {
                 "{pass:?} does not require debug metadata: a body without it is named, not refused"
             );
         }
-        // The loop pass is the one that states the effect precondition, and it is the precondition
-        // this slice checks at the pass site (`region`'s test-block rule).
+        // The effect preconditions: the loop pass states `StatementFree` for its test block and the
+        // lambda rule states `Replayable` for the values it captures; no other rule states either.
         assert!(LOOP.requires(Precondition::StatementFree));
         assert!(!IF.requires(Precondition::StatementFree));
         assert!(!SWITCH.requires(Precondition::StatementFree));
         assert!(!STRAIGHT.requires(Precondition::StatementFree));
-        // The IR preconditions a structure pass states are exactly the tables the run checks before
-        // the walk: a pass that read a table the run never demanded would be a declaration the run
-        // does not honour.
+        assert!(LAMBDA.requires(Precondition::Replayable));
+        assert!(!LOOP.requires(Precondition::Replayable));
+        assert!(!LAMBDA.requires(Precondition::StatementFree));
+        // The IR preconditions a pass may state name the tables that exist, and the lambda rule is
+        // the one that reads the class's bootstrap table beside the decode it reads through. That
+        // table is checked where a site is claimed rather than by the run-level gate — a class with
+        // no bootstrap table is an ordinary class whose other regions are presented as usual — which
+        // is stated in `Precondition::IrTable`'s own documentation and in the refusal this build
+        // produces for a site whose entry the table does not hold.
         for pass in PASSES {
             for requirement in pass.preconditions() {
                 if let Precondition::IrTable(table) = requirement {
-                    assert!(matches!(
-                        table,
-                        IrTable::Canonical | IrTable::Ssa | IrTable::Code
-                    ));
+                    assert!(
+                        matches!(
+                            table,
+                            IrTable::Canonical
+                                | IrTable::Ssa
+                                | IrTable::Code
+                                | IrTable::ConstantPool
+                                | IrTable::BootstrapMethods
+                        ),
+                        "{pass:?} states a table that is not one of this build's"
+                    );
                 }
             }
         }
+        assert!(LAMBDA.requires(Precondition::IrTable(IrTable::BootstrapMethods)));
+        assert!(LAMBDA.requires(Precondition::IrTable(IrTable::ConstantPool)));
+        for pass in [STRAIGHT, IF, LOOP, SWITCH] {
+            assert!(!pass.requires(Precondition::IrTable(IrTable::BootstrapMethods)));
+        }
         assert_eq!(pass("loop"), Some(LOOP));
-        assert_eq!(pass("lambda"), None);
+        assert_eq!(pass("lambda"), Some(LAMBDA));
     }
 
     #[test]

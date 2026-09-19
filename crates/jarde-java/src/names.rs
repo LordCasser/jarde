@@ -31,7 +31,7 @@
 //! (multi-generation javac/ECJ output), and guessing it here would mean emitting identifiers this
 //! layer cannot check.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 /// Words Java does not accept as an identifier, including the literals and the two reserved words.
 ///
@@ -256,6 +256,24 @@ impl NameTable {
     /// The name of one slot, when the table states one.
     pub fn name(&self, slot: u16) -> Option<&RenderedName> {
         self.names.get(&slot)
+    }
+
+    /// The first spelling of the form `base`, `base_`, `base__`, … that no local of this body
+    /// already carries and that Java accepts as an identifier.
+    ///
+    /// A name a *shape* invents for something that is not one of the body's slots — a lambda's
+    /// parameters (P3 2.1) — has to differ from every name the locals were given, because JLS 6.4
+    /// forbids a lambda parameter that shadows an enclosing local. The search is deterministic and
+    /// independent of the order the slots were named in: one candidate order, first free one wins.
+    /// The base itself is checked like every other candidate, so a caller whose base is a keyword or
+    /// an unspellable spelling gets the same treatment a debug name would.
+    pub fn free_name(&self, base: &str) -> String {
+        let taken: BTreeSet<&str> = self.names.values().map(|name| name.text.as_str()).collect();
+        let mut candidate = base.to_string();
+        while taken.contains(candidate.as_str()) || !is_java_identifier(&candidate) {
+            candidate.push('_');
+        }
+        candidate
     }
 
     /// The text of one slot's name, when the table states one.

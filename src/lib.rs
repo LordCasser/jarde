@@ -53,8 +53,9 @@ pub use jarde_reader::{artifact, budget, error, model, multi_release, view};
 // segment is read through stay below, because the map's own read surface answers the questions
 // 1.3 poses ("which text came from this BCI", "what covers this byte") without naming them.
 pub use jarde_java::{
-    IrTable, MethodFacts, Precondition, RecoveryFacts, RecoveryOutcome, RecoveryProfile,
-    RecoveryReport, RecoveryRequest, RegionRecord, RuleVersion, SourceMap, StopReason, recover,
+    IrTable, LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal, MethodFacts, Precondition,
+    RecoveryFacts, RecoveryOutcome, RecoveryProfile, RecoveryReport, RecoveryRequest, RegionRecord,
+    RuleVersion, SourceMap, StopReason, recover,
 };
 
 pub mod facade;

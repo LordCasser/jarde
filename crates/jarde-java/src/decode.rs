@@ -25,10 +25,16 @@
 //!
 //! Every opcode the provable subset models becomes a variant of [`Operation`], classified on the
 //! operand's **effective** opcode (a `wide iload` *is* an `iload`; `0xc4` is a prefix, not an
-//! instruction). Everything else — a field access, an array operation, a conversion, a lambda
-//! bootstrap, `athrow`, `jsr`, a `ret`, an arithmetic opcode this subset has no operator for — is
-//! [`Operation::Other`], which is a *stated* input: the statement it belongs to becomes a fallback
-//! with a diagnostic, never a guess.
+//! instruction). Everything else — a field access, an array operation, a conversion, `athrow`,
+//! `jsr`, a `ret`, an arithmetic opcode this subset has no operator for — is [`Operation::Other`],
+//! which is a *stated* input: the statement it belongs to becomes a fallback with a diagnostic,
+//! never a guess.
+//!
+//! `invokedynamic` is one of the modelled ones (P3 2.1), and modelling it means stating the *site*:
+//! its pool index, the bootstrap entry it names and the name and descriptor it presents. It does
+//! **not** mean stating a lambda — a site's shape is decided above this module, against the class's
+//! bootstrap table, by the `lambda@1` rule, and a site with any other bootstrap keeps only its
+//! identity ([`Operation::InvokeDynamic`]).
 //!
 //! A constant-pool reference is resolved against the class's own pool, in the form the decode
 //! already put it in ([`CpEntryKind::MethodRef`] carries its owner, name and descriptor resolved).
@@ -42,7 +48,9 @@ use jarde_reader::classfile::{
     MethodCodeFacts, SwitchOperands, cp_entry,
 };
 
-use crate::facts::{ArithmeticOp, CallTarget, CompareOp, ConstantValue, InvokeKind, Operation};
+use crate::facts::{
+    ArithmeticOp, CallTarget, CompareOp, ConstantValue, DynamicSite, InvokeKind, Operation,
+};
 
 /// The operations of one decoded body, keyed by bytecode index.
 ///
@@ -128,6 +136,7 @@ fn operation_of(
         0xaa | 0xab => switch(instruction, operands),
         0xa7 | 0xc8 => Operation::Transfer,
         0xb6..=0xb9 => invoke(opcode, instruction, pool),
+        0xba => invokedynamic(instruction, pool),
         0xac..=0xb1 => Operation::Return,
         _ => Operation::Other,
     }
@@ -300,6 +309,40 @@ fn invoke(opcode: u8, instruction: &InstructionFact, pool: &[CpEntryFacts]) -> O
             lossy(descriptor),
         )),
         // `invokedynamic` names a bootstrap method, not a member this layer can write a call for.
+        _ => Operation::Other,
+    }
+}
+
+/// The dynamic call site one `invokedynamic` performs.
+///
+/// The site's identity is in the class's own pool: its `InvokeDynamic` entry states the name and
+/// descriptor the site presents, and the index of the `BootstrapMethods` entry that resolves it.
+/// The *shape* is deliberately not read here — whether this site is a lambda depends on the method
+/// handle and the static arguments that entry names, which is [`crate::lambda`]'s reading of the
+/// payload's bootstrap table and the same pool, under the `lambda@1` rule. Stating the site here and
+/// the shape there is what keeps "an `invokedynamic` was decoded" separate from "this one is a
+/// `LambdaMetafactory` call", which is exactly the difference A04 turns on.
+///
+/// A site whose pool entry does not resolve is `Other`, like every other reference this layer cannot
+/// name: the instruction is stated as unmodelled rather than presented from half its facts.
+fn invokedynamic(instruction: &InstructionFact, pool: &[CpEntryFacts]) -> Operation {
+    let Some(index) = instruction.constant_pool_index else {
+        return Operation::Other;
+    };
+    match cp_entry(pool, index).map(|entry| &entry.kind) {
+        Ok(CpEntryKind::InvokeDynamic {
+            bootstrap_method_attr_index,
+            name,
+            descriptor,
+            ..
+        }) => Operation::InvokeDynamic(DynamicSite::new(
+            index,
+            *bootstrap_method_attr_index,
+            lossy(name),
+            lossy(descriptor),
+        )),
+        // `invokedynamic` names a dynamic call site and nothing else: a different pool entry behind
+        // the opcode is a class this layer cannot state an operation for.
         _ => Operation::Other,
     }
 }

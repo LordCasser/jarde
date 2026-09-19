@@ -47,6 +47,22 @@
 //! the value of a constant, and the compiler enforces it — there is no parameter left through
 //! which a caller could hand in a second opinion.
 //!
+//! # The class's bootstrap table travels with them too (P3 2.1)
+//!
+//! One more fact of the same header read is neither structure nor an operand: the
+//! `BootstrapMethods` attribute, which is what says **which** method handle and which static
+//! arguments an `invokedynamic` site's `bootstrap_method_attr_index` names. Without it a consumer
+//! that holds only the pool can see that a site exists but cannot tell a `LambdaMetafactory` call
+//! site from any other dynamic site — and "is this site a lambda at all" is exactly the question
+//! A04 forbids answering by pattern-matching the pool.
+//!
+//! So [`MethodIr::bootstrap_methods`] carries the table the *same* read decoded, in the same
+//! attribute the header enumeration already located: the function that reads it
+//! ([`jarde_reader::classfile::bootstrap_methods`]) is the one the xref consumer already uses, it
+//! is called on this run's own bytes and pool, and its result is moved into the payload. A class
+//! that declares no such attribute hands over an empty table, reads nothing and charges nothing —
+//! this is a fact layer, not a second decoder.
+//!
 //! # Ownership, lifetime, and why nothing here is shared
 //!
 //! * **Who builds it.** [`crate::engine::analyze_method_ir`] does, at the end of one request: the
@@ -100,7 +116,7 @@ pub use crate::ssa::{
 };
 
 use crate::ir::MethodAnalysisReport;
-use jarde_reader::classfile::{CpEntryFacts, MethodCodeFacts};
+use jarde_reader::classfile::{BootstrapMethodFacts, CpEntryFacts, MethodCodeFacts};
 
 /// The IR payload of one method-analysis request: the tables that run published, each present
 /// exactly when the pass that produces it published one, together with the decode facts the
@@ -115,20 +131,24 @@ pub struct MethodIr {
     ssa: Option<Box<SsaTable>>,
     code: Option<Box<MethodCodeFacts>>,
     constant_pool: Vec<CpEntryFacts>,
+    bootstrap_methods: Vec<BootstrapMethodFacts>,
 }
 
 impl MethodIr {
     /// One payload from the artifacts of one run, in the order the passes publish them.
     ///
-    /// `code` and `constant_pool` are the facts the `raw_facts` pass read: the decoded body and
-    /// the class's own constant pool. Both are moved in beside the tables, and both are present
-    /// exactly when the graph is — the graph is built from them.
+    /// `code`, `constant_pool` and `bootstrap_methods` are the facts the `raw_facts` pass read:
+    /// the decoded body, the class's own constant pool and its `BootstrapMethods` table. All three
+    /// are moved in beside the tables, and all three are present exactly when the graph is — the
+    /// graph is built from the decode they came out of, and a class that declares no bootstrap
+    /// table states that with an empty one.
     pub(crate) fn new(
         canonical: Option<Box<CanonicalCfg>>,
         frames: Option<Box<FrameTable>>,
         ssa: Option<Box<SsaTable>>,
         code: Option<Box<MethodCodeFacts>>,
         constant_pool: Vec<CpEntryFacts>,
+        bootstrap_methods: Vec<BootstrapMethodFacts>,
     ) -> Self {
         debug_assert!(
             frames.is_none() || canonical.is_some(),
@@ -148,6 +168,7 @@ impl MethodIr {
             ssa,
             code,
             constant_pool,
+            bootstrap_methods,
         }
     }
 
@@ -191,6 +212,21 @@ impl MethodIr {
     /// being resolved a second time by a consumer.
     pub fn constant_pool(&self) -> &[CpEntryFacts] {
         &self.constant_pool
+    }
+
+    /// The class's `BootstrapMethods` table as the same header read decoded it; empty when the
+    /// class declares no such attribute.
+    ///
+    /// This is what turns an `invokedynamic`'s `bootstrap_method_attr_index` into the method handle
+    /// and the static arguments the site really names — the only fact from which "this dynamic site
+    /// is a `LambdaMetafactory` call" can be read. Like [`Self::constant_pool`] it is *this* read's
+    /// answer: one run, one table, no second opinion about which bootstrap a site uses.
+    ///
+    /// An entry holds the method-handle index and the argument indexes **as the class states them**
+    /// — resolving them is the consumer's reading of [`Self::constant_pool`], exactly as it is for
+    /// an `invoke*`'s target.
+    pub fn bootstrap_methods(&self) -> &[BootstrapMethodFacts] {
+        &self.bootstrap_methods
     }
 }
 
@@ -336,6 +372,7 @@ mod tests {
             Some(names),
             Some(Box::new(facts)),
             pool,
+            Vec::new(),
         )
     }
 
@@ -382,6 +419,10 @@ mod tests {
         assert!(
             !ir.constant_pool().is_empty(),
             "the class's own pool travels with the body it was decoded from"
+        );
+        assert!(
+            ir.bootstrap_methods().is_empty(),
+            "this class declares no `BootstrapMethods` attribute, and the payload states that with an empty table — the same read found none, so nothing was invented for it"
         );
 
         assert_eq!(canonical.blocks().len(), 4, "0, 6, 11 and 13");
