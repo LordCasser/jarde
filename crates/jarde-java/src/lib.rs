@@ -64,7 +64,10 @@ pub mod source_map;
 pub mod stop;
 
 pub(crate) mod build;
+pub(crate) mod decode;
 pub(crate) mod emit;
+#[cfg(test)]
+mod oracle;
 
 pub use report::{RecoveryOutcome, RecoveryReport, RecoveryRequest, RegionRecord, recover};
 

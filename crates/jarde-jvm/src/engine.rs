@@ -156,7 +156,7 @@ fn run_request(
                 crate::ir::METHOD_ANALYSIS_NOT_IMPLEMENTED,
                 budget,
             ),
-            MethodIr::new(None, None, None),
+            MethodIr::new(None, None, None, None, Vec::new()),
         )
     };
     Ok(Analyzed {
@@ -771,7 +771,19 @@ fn run_method_analysis(
     // re-derives an artifact from the report, and nothing was read, charged or run again to build
     // it — a stopped run hands over the tables it published before the stop, and a run that never
     // reached a pass hands over `None` for it.
-    let ir = MethodIr::new(canonical_cfg, frame_table, ssa_table);
+    //
+    // The decode facts the `raw_facts` pass read travel with them (P3 1.3b): the body and the
+    // class's constant pool are the one source of the symbolic vocabulary a presentation needs,
+    // and moving them in is a move — no pass is re-run, nothing is re-read and nothing is
+    // charged twice for it. The block that owns the pool is the same header read that filled every
+    // pass above, so the pool handed over is the pool those passes read.
+    let ir = MethodIr::new(
+        canonical_cfg,
+        frame_table,
+        ssa_table,
+        facts.map(Box::new),
+        declaration.map_or_else(Vec::new, |declaration| declaration.pool),
+    );
     (run, ir)
 }
 

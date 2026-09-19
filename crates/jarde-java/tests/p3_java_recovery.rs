@@ -19,15 +19,15 @@
 //! 6. a body this slice cannot prove (the committed `jsr`/`finally` fixture) is presented with
 //!    explicit bytecode fallbacks, `representation = mixed`, and the quoted BCIs are the body's own.
 //!
-//! The facts the presentation renders from (the method's identity, its debug names, the decoded
-//! operations) are assembled here by the driver side of the seam: they are what a class file states
-//! and the 1.1 IR payload deliberately does not publish. `operations_of` classifies the opcodes of
-//! exactly the fixtures in this file and panics on anything else, so a fixture cannot silently get
-//! facts that do not describe it.
+//! The only facts this file supplies are the method's identity and its debug names — what the 1.1
+//! payload does not carry. Everything about what the instructions *do* (a branch's polarity and
+//! target, a load's slot, an invocation's owner/name/descriptor, a constant's value) is read out of
+//! the payload by [`jarde_java::decode`], from the very decode the analysis run performed: there is
+//! no table here to get wrong, and no parameter through which one could be handed in.
 
 use jarde_java::{
-    ArithmeticOp, CallTarget, CompareOp, ConstantValue, InvokeKind, MethodFacts, Operation,
-    RecoveryFacts, RecoveryOutcome, RecoveryRequest, StopReason, escape_string, recover,
+    MethodFacts, RecoveryFacts, RecoveryOutcome, RecoveryRequest, StopReason, escape_string,
+    recover,
 };
 use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
@@ -38,7 +38,7 @@ use jarde_jvm::ir::{
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
 use jarde_reader::budget::{Budget, CancellationToken, Limits};
 use jarde_reader::classfile::VerificationStatus;
-use jarde_reader::classfile::{InstructionFact, class_facts, method_code_facts, test_class};
+use jarde_reader::classfile::{class_facts, method_code_facts, test_class};
 use jarde_reader::model::{
     ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
     PhysicalVariant,
@@ -142,78 +142,12 @@ fn analyze(class: &[u8], name: &[u8], descriptor: &[u8]) -> Payload {
     Payload { analysis }
 }
 
-/// The decoded operations of one body, classified from the real decode's own opcodes.
+/// The facts of one method, read from the real class file — identity and debug names only.
 ///
-/// This is the driver side of the seam: the reader states the BCI and the opcode of every
-/// instruction, and this table says what the handful of opcodes these fixtures use *mean* — which is
-/// the fact the recovery layer renders from and the IR payload does not carry. An opcode outside the
-/// table is [`Operation::Other`] rather than a wrong classification, and the fixtures' own bodies
-/// are asserted to be inside it.
-fn operations_of(instructions: &[InstructionFact]) -> Vec<(u32, Operation)> {
-    instructions
-        .iter()
-        .map(|instruction| {
-            let operation = match instruction.opcode {
-                0x00 => Operation::Other,                        // nop
-                0x01 => Operation::Push(ConstantValue::Null),    // aconst_null
-                0x02 => Operation::Push(ConstantValue::Int(-1)), // iconst_m1
-                0x03..=0x08 => {
-                    Operation::Push(ConstantValue::Int(i64::from(instruction.opcode) - 0x03))
-                } // iconst_0..iconst_5
-                0x09 => Operation::Push(ConstantValue::Long(0)), // lconst_0
-                0x0a => Operation::Push(ConstantValue::Long(1)), // lconst_1
-                0x1a..=0x1d => Operation::Load {
-                    slot: u16::from(instruction.opcode - 0x1a),
-                }, // iload_0..iload_3
-                0x2a..=0x2d => Operation::Load {
-                    slot: u16::from(instruction.opcode - 0x2a),
-                }, // aload_0..aload_3
-                0x3b..=0x3e => Operation::Store {
-                    slot: u16::from(instruction.opcode - 0x3b),
-                }, // istore_0..istore_3
-                0x4b..=0x4e => Operation::Store {
-                    slot: u16::from(instruction.opcode - 0x4b),
-                }, // astore_0..astore_3
-                0x60 => Operation::Arithmetic {
-                    op: ArithmeticOp::Add,
-                },
-                0x64 => Operation::Arithmetic {
-                    op: ArithmeticOp::Subtract,
-                },
-                0x99 | 0x9a => Operation::Comparison {
-                    op: if instruction.opcode == 0x99 {
-                        CompareOp::JumpIfZero
-                    } else {
-                        CompareOp::JumpIfNotZero
-                    },
-                }, // ifeq/ifne
-                0x9f | 0xa0 => Operation::Comparison {
-                    op: if instruction.opcode == 0x9f {
-                        CompareOp::JumpIfSame
-                    } else {
-                        CompareOp::JumpIfDifferent
-                    },
-                }, // if_icmpeq/if_icmpne
-                // The one symbolic reference the reader's builder writes into its pool: entry 15 is
-                // `java/lang/Runnable.run:(J)V`. Reading the pool instead of naming it here is the
-                // driver wiring this slice does not claim.
-                0xb9 => Operation::Invoke(CallTarget::new(
-                    InvokeKind::Interface,
-                    "java/lang/Runnable",
-                    "run",
-                    "(J)V",
-                )),
-                0xa7 | 0xa8 => Operation::Transfer, // goto/goto_w: structure, not a statement
-                0xac => Operation::Return,          // ireturn
-                0xb1 => Operation::Return,          // return
-                _ => Operation::Other,
-            };
-            (instruction.bci, operation)
-        })
-        .collect()
-}
-
-/// The facts of one method of one class file, read from the real decode.
+/// The decoded operations are **not** here any more (P3 1.3b): they travel inside the payload the
+/// analysis run produced, so every body in this file is presented from the very decode that ran.
+/// Nothing in this test can state a branch's polarity, a load's slot or a constant's value — the
+/// only way to change what the presentation reads is to change the bytes.
 fn facts_of(
     class: &[u8],
     name: &[u8],
@@ -227,17 +161,12 @@ fn facts_of(
         .iter()
         .find(|member| member.name.raw().0 == name)
         .expect("the fixture declares the method");
-    let code = method_code_facts(class, member, &mut budget).expect("the body decodes");
-    let mut facts = RecoveryFacts::new(MethodFacts::new(
+    RecoveryFacts::new(MethodFacts::new(
         String::from_utf8_lossy(name),
         String::from_utf8_lossy(&member.descriptor.raw().0),
         parameters,
     ))
-    .with_debug_locals(debug);
-    for (bci, operation) in operations_of(&code.instructions) {
-        facts = facts.with_operation(bci, operation);
-    }
-    facts
+    .with_debug_locals(debug)
 }
 
 fn recover_body(
@@ -322,6 +251,445 @@ const IF_ELSE: &[u8] = &[
     0x3d, // 12: istore_2
     0xb1, // 13: return
 ];
+
+/// `iconst_3; istore_1; header: iload_1; ifeq exit; body: aload_2; lconst_0; run; iload_1; iconst_1;
+/// isub; istore_1; goto header; exit: return`
+///
+/// A header-tested loop whose test reads a local **inside** the loop: the read happens once per
+/// iteration, and its condition is the fall-through sense of the branch (`local1 != 0`), because the
+/// successor the branch transfers to is the exit.
+const WHILE_LOOP: &[u8] = &[
+    0x01, // 0: aconst_null
+    0x4d, // 1: astore_2
+    0x06, // 2: iconst_3
+    0x3c, // 3: istore_1
+    0x1b, // 4: iload_1            <-- the header
+    0x99, 0x00, 0x11, // 5: ifeq 22   <-- the test: transfers to the exit
+    0x2c, // 8: aload_2            <-- the body
+    0x09, // 9: lconst_0
+    0xb9, 0x00, 0x0f, 0x02, 0x00, // 10: invokeinterface Runnable.run:(J)V
+    0x1b, // 15: iload_1
+    0x04, // 16: iconst_1
+    0x64, // 17: isub
+    0x3c, // 18: istore_1
+    0xa7, 0xff, 0xf1, // 19: goto 4
+    0xb1, // 22: return
+];
+
+/// `do { aload_2; lconst_0; run; local1 = local1 - 1; } while (local1 != 0);`
+///
+/// The same body with its test at the *bottom*: the latch's branch transfers back to the header, so
+/// the loop repeats when its sense holds — a `do … while`, never a `while`, because the first
+/// iteration runs before the test is read.
+const DO_WHILE_LOOP: &[u8] = &[
+    0x01, // 0: aconst_null
+    0x4d, // 1: astore_2
+    0x06, // 2: iconst_2         <-- the header, entered from the code before it and from the latch
+    0x3c, // 3: istore_1
+    0x2c, // 4: aload_2          <-- the body
+    0x09, // 5: lconst_0
+    0xb9, 0x00, 0x0f, 0x02, 0x00, // 6: invokeinterface Runnable.run:(J)V
+    0x1b, // 11: iload_1
+    0x04, // 12: iconst_1
+    0x64, // 13: isub
+    0x3c, // 14: istore_1
+    0x1b, // 15: iload_1         <-- the latch
+    0x9a, 0xff, 0xf2, // 16: ifne 2   <-- the test: transfers back to the header
+    0xb1, // 19: return
+];
+
+/// `switch (local1) { case 0: case 1: local2 = 1; default: local2 = 2; } return;`
+///
+/// A `tableswitch` with two keys sharing one target and a default of its own: the two keys are one
+/// arm (a Java `case 0: case 1:`), and the default's block falls through into the join.
+const TABLE_SWITCH: &[u8] = &[
+    0x03, // 0: iconst_0
+    0x3c, // 1: istore_1
+    0x1b, // 2: iload_1
+    0xaa, // 3: tableswitch (its operands start at 4, already aligned)
+    0x00, 0x00, 0x00, 0x1a, // 4: default → +26 = 29
+    0x00, 0x00, 0x00, 0x00, // 8: low = 0
+    0x00, 0x00, 0x00, 0x01, // 12: high = 1
+    0x00, 0x00, 0x00, 0x15, // 16: key 0 → +21 = 24
+    0x00, 0x00, 0x00, 0x15, // 20: key 1 → +21 = 24
+    0x04, // 24: iconst_1
+    0x3d, // 25: istore_2
+    0xa7, 0x00, 0x05, // 26: goto 31
+    0x05, // 29: iconst_2
+    0x3d, // 30: istore_2
+    0xb1, // 31: return
+];
+
+/// A cycle with **two** entries: the entry block reaches both blocks of it, so neither dominates the
+/// other and the component has no header.
+///
+/// `if (local1 == 0) goto 11; A: iload_1; ifne 11; return; 11: goto 4`
+const IRREDUCIBLE: &[u8] = &[
+    0x03, // 0: iconst_0
+    0x3c, // 1: istore_1
+    0x1b, // 2: iload_1     (the entry block: it reaches *both* blocks of the cycle)
+    0x99, 0x00, 0x08, // 3: ifeq 11   (→ A when the value is zero)
+    0x1b, // 6: iload_1     (B: entered from the entry block)
+    0x9a, 0x00, 0x04, // 7: ifne 11   (→ A when the value is non-zero; otherwise BCI 10)
+    0xb1, // 10: return
+    0xa7, 0xff, 0xfb, // 11: goto 6   (A → B: 11 + (-5) = 6)
+];
+
+/// A class file whose exception table holds two records with **crossing** declared ranges.
+///
+/// `method()V` is `aconst_null; astore_0; aload_0; athrow; return`, with two more `athrow`s as the
+/// handler entries. The two records cover `[2, 4)` and `[3, 6)` — neither nested nor disjoint — and
+/// both cover the throw site at BCI 3, so the priority between them is the table's order alone.
+fn crossing_exception_class() -> Vec<u8> {
+    let mut pool: Vec<u8> = Vec::new();
+    let entry = |pool: &mut Vec<u8>, tag: u8, body: &[u8]| {
+        pool.push(tag);
+        pool.extend_from_slice(body);
+    };
+    let utf8 = |pool: &mut Vec<u8>, text: &str| {
+        let bytes = text.as_bytes();
+        let mut body = Vec::new();
+        body.extend_from_slice(&(bytes.len() as u16).to_be_bytes());
+        body.extend_from_slice(bytes);
+        entry(pool, 1, &body);
+    };
+    let class = |pool: &mut Vec<u8>, name_index: u16| entry(pool, 7, &name_index.to_be_bytes());
+    utf8(&mut pool, "Test"); // 1
+    class(&mut pool, 1); // 2
+    utf8(&mut pool, "java/lang/Object"); // 3
+    class(&mut pool, 3); // 4
+    utf8(&mut pool, "method"); // 5
+    utf8(&mut pool, "()V"); // 6
+    utf8(&mut pool, "Code"); // 7
+    utf8(&mut pool, "java/lang/RuntimeException"); // 8
+    class(&mut pool, 8); // 9
+    utf8(&mut pool, "java/lang/Error"); // 10
+    class(&mut pool, 10); // 11
+
+    let code: Vec<u8> = vec![
+        0x01, // 0: aconst_null
+        0x4b, // 1: astore_0
+        0x2a, // 2: aload_0
+        0xbf, // 3: athrow      (the protected throw site: both records cover it)
+        0xb1, // 4: return
+        0xbf, // 5: athrow      (record 0's handler entry)
+        0xbf, // 6: athrow      (record 1's handler entry)
+    ];
+    let mut attribute = Vec::new();
+    attribute.extend_from_slice(&1_u16.to_be_bytes()); // max_stack
+    attribute.extend_from_slice(&1_u16.to_be_bytes()); // max_locals
+    attribute.extend_from_slice(&(code.len() as u32).to_be_bytes());
+    attribute.extend_from_slice(&code);
+    attribute.extend_from_slice(&2_u16.to_be_bytes()); // two exception records
+    for (start, end, handler, catch) in [
+        (2_u16, 4_u16, 5_u16, 9_u16),  // [2, 4) catching RuntimeException
+        (3_u16, 6_u16, 6_u16, 11_u16), // [3, 6) catching Error — it crosses the record above
+    ] {
+        attribute.extend_from_slice(&start.to_be_bytes());
+        attribute.extend_from_slice(&end.to_be_bytes());
+        attribute.extend_from_slice(&handler.to_be_bytes());
+        attribute.extend_from_slice(&catch.to_be_bytes());
+    }
+    attribute.extend_from_slice(&0_u16.to_be_bytes()); // the Code attribute has no attribute
+
+    let mut out = Vec::new();
+    out.extend_from_slice(&0xcafebabe_u32.to_be_bytes());
+    out.extend_from_slice(&0_u16.to_be_bytes()); // minor
+    out.extend_from_slice(&52_u16.to_be_bytes()); // major: Java 8
+    out.extend_from_slice(&12_u16.to_be_bytes()); // constant_pool_count
+    out.extend_from_slice(&pool);
+    out.extend_from_slice(&0x0021_u16.to_be_bytes()); // public super
+    out.extend_from_slice(&2_u16.to_be_bytes()); // this_class
+    out.extend_from_slice(&4_u16.to_be_bytes()); // super_class
+    out.extend_from_slice(&0_u16.to_be_bytes()); // interfaces
+    out.extend_from_slice(&0_u16.to_be_bytes()); // fields
+    out.extend_from_slice(&1_u16.to_be_bytes()); // methods
+    out.extend_from_slice(&0x0009_u16.to_be_bytes()); // public static
+    out.extend_from_slice(&5_u16.to_be_bytes()); // name → "method"
+    out.extend_from_slice(&6_u16.to_be_bytes()); // descriptor → "()V"
+    out.extend_from_slice(&1_u16.to_be_bytes()); // one attribute
+    out.extend_from_slice(&7_u16.to_be_bytes()); // "Code"
+    out.extend_from_slice(&(attribute.len() as u32).to_be_bytes());
+    out.extend_from_slice(&attribute);
+    out.extend_from_slice(&0_u16.to_be_bytes()); // no class attributes
+    out
+}
+
+#[test]
+fn a_while_loop_keeps_its_test_inside_the_statement_and_its_body_in_order() {
+    let class = test_class::single_method(52, 8, 3, WHILE_LOOP);
+    let payload = analyze(&class, b"method", b"()V");
+    let facts = facts_of(&class, b"method", 0, Vec::new());
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, &mut budget);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert_eq!(
+        report.representation,
+        Representation::Java,
+        "{}\nregions: {:?}\nfallbacks: {:?}\ngraph:\n{}",
+        report.text,
+        report.regions,
+        report.fallbacks,
+        describe(&payload)
+    );
+    let text = &report.text;
+    // The statement, its test and its body, in one shape: the test is *inside* the `while`, so the
+    // load it makes runs once per evaluation — and the call and the decrement are inside the braces,
+    // so they run once per iteration, in the order the bytecode ran them.
+    assert!(text.contains("while (local1 != 0) {"), "{text}");
+    let cond_at = text.find("while (local1 != 0)").expect("the test");
+    let call_at = text.find("local2.run(0L);").expect("the body's call");
+    let dec_at = text
+        .find("local1 = local1 - 1;")
+        .expect("the body's decrement");
+    let close_at = text.rfind('}').expect("the loop's closing brace");
+    assert!(
+        cond_at < call_at && call_at < dec_at && dec_at < close_at,
+        "the test comes first, then the call, then the decrement, all inside the loop:\n{text}"
+    );
+    assert_eq!(
+        text.matches("local2.run(0L)").count(),
+        1,
+        "one call in the text: nothing hoisted it out of the loop and nothing duplicated it:\n{text}"
+    );
+    assert!(
+        !text.contains("local2.run(0L);\n    while"),
+        "the call is not written before the loop:\n{text}"
+    );
+    assert!(report.fallbacks.is_empty(), "{:?}", report.fallbacks);
+    // The loop's own test BCI reaches the condition node and the statement.
+    assert!(
+        report.text_of_bci(5).len() >= 2,
+        "the branch at BCI 5 tests the condition and is the statement: {:?}",
+        report.text_of_bci(5)
+    );
+}
+
+#[test]
+fn a_do_while_loop_runs_its_body_before_the_test() {
+    let class = test_class::single_method(52, 8, 3, DO_WHILE_LOOP);
+    let payload = analyze(&class, b"method", b"()V");
+    let facts = facts_of(&class, b"method", 0, Vec::new());
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, &mut budget);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert_eq!(
+        report.representation,
+        Representation::Java,
+        "{}\nregions: {:?}\nfallbacks: {:?}\ngraph:\n{}",
+        report.text,
+        report.regions,
+        report.fallbacks,
+        describe(&payload)
+    );
+    let text = &report.text;
+    assert!(text.contains("do {"), "{text}");
+    assert!(
+        text.contains("} while (local1 != 0);"),
+        "the test is the latch's, written after the body:\n{text}"
+    );
+    let body_at = text.find("local2.run(0L);").expect("the body's call");
+    let test_at = text.find("} while (").expect("the test");
+    assert!(
+        body_at < test_at,
+        "the body runs before the test is read:\n{text}"
+    );
+    assert!(report.fallbacks.is_empty(), "{:?}", report.fallbacks);
+}
+
+#[test]
+fn a_tableswitch_becomes_one_arm_per_target_with_its_keys_and_default() {
+    let class = test_class::single_method(52, 8, 3, TABLE_SWITCH);
+    let payload = analyze(&class, b"method", b"()V");
+    let facts = facts_of(&class, b"method", 0, Vec::new());
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, &mut budget);
+    assert!(report.produced(), "{:?}", report.outcome);
+    assert_eq!(
+        report.representation,
+        Representation::Java,
+        "{}\nregions: {:?}\nfallbacks: {:?}\ngraph:\n{}",
+        report.text,
+        report.regions,
+        report.fallbacks,
+        describe(&payload)
+    );
+    let text = &report.text;
+    assert!(text.contains("switch (local1) {"), "{text}");
+    let case0 = text.find("case 0:").expect("the first key");
+    let case1 = text.find("case 1:").expect("the second key");
+    let arm = text.find("int local2 = 1;").expect("the shared arm");
+    let default = text.find("default:").expect("the no-match arm");
+    let default_arm = text.find("local2 = 2;").expect("the default's code");
+    assert!(
+        case0 < case1 && case1 < arm && arm < default && default < default_arm,
+        "two labels, their shared arm, then the default's:\n{text}"
+    );
+    assert_eq!(
+        text.matches("case ").count(),
+        2,
+        "one label per key, and the keys that share a target are one arm:\n{text}"
+    );
+    // Every arm ends in a `break` of its own, at the arm's own indentation: a Java `case` falls
+    // into the case that follows it, so an arm that does not say `break` runs the next arm's code.
+    // (The last arm's `break` is redundant and kept anyway: the rule is the rule for every arm.)
+    assert_eq!(
+        text.matches("break;").count(),
+        2,
+        "one break per arm, in the arms' own bodies:\n{text}"
+    );
+    for line in text.lines().filter(|line| line.contains("break;")) {
+        assert_eq!(
+            line, "            break;",
+            "the break is written with its arm:\n{text}"
+        );
+    }
+    assert!(report.fallbacks.is_empty(), "{:?}", report.fallbacks);
+}
+
+#[test]
+fn a_graph_that_is_not_reducible_is_quoted_whole_with_its_own_reason() {
+    let class = test_class::single_method(52, 8, 2, IRREDUCIBLE);
+    let payload = analyze(&class, b"method", b"()V");
+    let facts = facts_of(&class, b"method", 0, Vec::new());
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, &mut budget);
+    assert!(
+        report.produced(),
+        "the body is presentable as bytecode, not dropped: {:?}",
+        report.outcome
+    );
+    assert_eq!(report.representation, Representation::Mixed);
+    assert_eq!(report.quality, Quality::Fallback);
+    assert_ne!(
+        report.quality,
+        Quality::Structured,
+        "a body the walk could not structure is never reported as structured"
+    );
+    assert!(
+        report.text.contains("// @bytecode"),
+        "{}\nregions: {:?}",
+        report.text,
+        report.regions
+    );
+    // The scan itself completed: a quoted region is a *result*, not a partial one.
+    assert!(
+        matches!(
+            report.execution,
+            jarde_reader::model::ExecutionReport::Complete { .. }
+        ),
+        "the scan completed and said so: {:?}",
+        report.execution
+    );
+    assert_eq!(
+        report.fallbacks,
+        vec!["jre_region_irreducible"],
+        "{:?}",
+        report.regions
+    );
+    assert!(
+        report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "jre_region_irreducible"),
+        "{:?}",
+        report.diagnostics
+    );
+}
+
+#[test]
+fn crossing_exception_records_are_quoted_with_the_priority_the_table_states() {
+    let class = crossing_exception_class();
+    let payload = analyze(&class, b"method", b"()V");
+    let facts = facts_of(&class, b"method", 0, Vec::new());
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, &mut budget);
+    assert!(
+        report.produced(),
+        "the body is quoted, not dropped: {:?}",
+        report.outcome
+    );
+    assert_eq!(report.representation, Representation::Mixed);
+    assert_eq!(report.quality, Quality::Fallback);
+    assert_eq!(
+        report.fallbacks,
+        vec!["jre_region_crossing_exception_regions"],
+        "{:?}",
+        report.regions
+    );
+    assert!(report.text.contains("// @bytecode"), "{}", report.text);
+    // The two records the reason names are the table's own, in table order: record 0 is the one a
+    // throw inside both ranges reaches first, and it is named first.
+    let message = report
+        .regions
+        .iter()
+        .find_map(|region| region.message.clone())
+        .expect("the fallback states why");
+    assert!(
+        message.contains("records 0 and 1"),
+        "the priority is the table's order: {message}"
+    );
+    assert!(
+        matches!(
+            report.execution,
+            jarde_reader::model::ExecutionReport::Complete { .. }
+        ),
+        "a quoted region is not a partial scan: {:?}",
+        report.execution
+    );
+}
+
+#[test]
+fn a_loop_whose_header_writes_state_is_quoted_rather_than_hoisted() {
+    // `local1 = 2; while (local1 != 0) { local1 = local1 - 1; } return;` written the way a compiler
+    // writes it when the *test itself* is where the write belongs: the header loads, decrements and
+    // stores before it branches.
+    //
+    // A `while (…)` has nowhere to put that store: hoisting it out of the loop would run it once
+    // instead of once per iteration, and putting it in the body would run it *after* the test. So
+    // the loop is quoted — the invariant is kept by refusing, not by moving the effect.
+    const HEADER_WRITE: &[u8] = &[
+        0x05, // 0: iconst_2
+        0x3c, // 1: istore_1
+        0x1b, // 2: iload_1       (the header)
+        0x04, // 3: iconst_1
+        0x64, // 4: isub
+        0x3c, // 5: istore_1      (the write the header makes, once per test)
+        0x1b, // 6: iload_1
+        0x99, 0x00, 0x06, // 7: ifeq 13
+        0xa7, 0xff, 0xf8, // 10: goto 2
+        0xb1, // 13: return
+    ];
+    let class = test_class::single_method(52, 4, 2, HEADER_WRITE);
+    let payload = analyze(&class, b"method", b"()V");
+    let facts = facts_of(&class, b"method", 0, Vec::new());
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, &mut budget);
+    assert!(report.produced(), "{:?}", report.outcome);
+    let text = &report.text;
+    assert!(
+        !text.contains("while"),
+        "the write in the test block is not presented as a hoisted statement:\n{text}"
+    );
+    assert!(text.contains("// @bytecode"), "{text}");
+    assert_eq!(
+        report.fallbacks.first().copied(),
+        Some("jre_region_test_block_effect"),
+        "{:?}\n{}",
+        report.regions,
+        text
+    );
+    assert!(
+        report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "jre_region_test_block_effect"),
+        "{:?}",
+        report.diagnostics
+    );
+    assert_eq!(report.representation, Representation::Mixed);
+    assert_eq!(report.quality, Quality::Fallback);
+}
 
 #[test]
 fn a_straight_line_body_with_a_call_reaches_text_and_a_segment_table() {

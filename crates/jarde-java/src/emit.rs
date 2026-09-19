@@ -189,6 +189,65 @@ impl<'a> Emitter<'a> {
                     self.put("}\n", at)
                 }
             }
+            StmtKind::While { cond, body } => {
+                self.put(&pad, at)?;
+                self.put("while (", at)?;
+                self.expr(cond)?;
+                self.put(") {\n", at)?;
+                self.stmts(body, indent + 1)?;
+                self.put(&pad, at)?;
+                self.put("}\n", at)
+            }
+            StmtKind::DoWhile { cond, body } => {
+                self.put(&pad, at)?;
+                self.put("do {\n", at)?;
+                self.stmts(body, indent + 1)?;
+                self.put(&pad, at)?;
+                self.put("} while (", at)?;
+                self.expr(cond)?;
+                self.put(");\n", at)
+            }
+            StmtKind::Switch { value, arms } => {
+                self.put(&pad, at)?;
+                self.put("switch (", at)?;
+                self.expr(value)?;
+                self.put(") {\n", at)?;
+                for arm in arms {
+                    // One label per key, then the no-match label when this arm is the default too.
+                    // Labels nest no further: the arm's statements are written one level in.
+                    let label_pad = indent_text(indent + 1);
+                    for key in &arm.keys {
+                        self.put(&label_pad, at)?;
+                        self.put(&format!("case {key}:\n"), at)?;
+                    }
+                    if arm.default {
+                        self.put(&label_pad, at)?;
+                        self.put("default:\n", at)?;
+                    }
+                    // The `break` sits with the arm's own statements, one level in from its labels.
+                    let body_pad = indent_text(indent + 2);
+                    if arm.body.is_empty() {
+                        // An empty arm — a case whose target is the switch's own join — has to end
+                        // in a `break` of its own, or it would fall into the next arm's code.
+                        self.put(&body_pad, at)?;
+                        self.put("break;\n", at)?;
+                    } else {
+                        self.stmts(&arm.body, indent + 2)?;
+                        // A `break` after a `return` would be unreachable; every other arm needs
+                        // one, because a Java case does fall into the case that follows it.
+                        let returns = matches!(
+                            arm.body.last().map(|stmt| &stmt.kind),
+                            Some(StmtKind::Return { .. })
+                        );
+                        if !returns {
+                            self.put(&body_pad, at)?;
+                            self.put("break;\n", at)?;
+                        }
+                    }
+                }
+                self.put(&pad, at)?;
+                self.put("}\n", at)
+            }
             StmtKind::Fallback { reason, bcis } => {
                 self.put(&pad, at)?;
                 self.put("// @bytecode", at)?;

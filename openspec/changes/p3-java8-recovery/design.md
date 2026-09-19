@@ -246,3 +246,45 @@ jarde-java  ①正常流图视图 → ②异常事实 → ③Region → ④AST +
 
 1. **决策 5 的前提在本生态不成立。** 决策 5 说「通用语法能力优先复用成熟 Rust 库……避免重复实现通用语法基础设施」，但 6 条准入里真正决定性的两条（③ origin、⑤ 预算）**没有任何现存库满足**，③ 更是所有候选发射 API 的形状问题（一次调用回 `String`）。本片按下述读法落地：**能复用的复用**（`petgraph` 复用图算法；classfile/ZIP 继续用既有成熟库；将来若宽度重排或标准 source map 序列化成为需求，`pretty` 族与 `sourcemap` 是现成候选），**不能复用的不假装能复用**（Java 呈现面自研，范围收在决策 2 的可证明子集）。若父级认为决策 5 应解释为「必须引入某个库、可以接受 origin 粒度下降」，那是**契约变更**（决策 3 的「source map 是一等输出、不得事后反推」与准入 ③ 都要改），需要 OpenSpec 修订，不能由 1.3 自行降级。
 2. **spec 里的 coverage 取值名与现有类型不一致。** 三份 P3 delta 写的是 `coverage=CompleteWithinSchema`（`recovery-validation/spec.md:19`、`java8-recovery/spec.md:57`），而仓库里唯一的 coverage 平面是 `jarde-reader::CoverageState::{NotRequested, CompleteWithinSchema, Partial, Unknown}`——`CompleteWithinSchema` 这个拼写在源码与 spec 里都**不存在**（`CompleteWithinSchema` 有约 30 处使用）。1.1b 的产物词汇表没有覆盖这一项。需要在 1.3/3.2 前裁决：是给「恢复范围内的完整」新立一个类型/取值（与 P1/P2 的 schema-scope 语义区分），还是把 spec 句子改成 `CompleteWithinSchema`（并说明为何 schema 与 scope 在这里同义）。本片只记录，不改 spec。
+
+#### 1.3b 的实际落点：事实缝的闭合、循环与 switch、不可约/交叉异常、独立小图 oracle（2026-09-19）
+
+本片的上级裁定只有一条，其余都是它的落地：**恢复层读的必须是同一次运行解出的解码事实，而不是调用方另建的一张表**。
+
+**1. 事实缝怎么闭合的。** 1.3a 记录的那条缝（CP 引用的 owner/name/descriptor、常量值、`ldc`/`*const*`、`*load*`/`*store*` 的槽、分支极性都不在载荷里）按 1.1a 的既有做法闭合在**载荷**上：
+
+- `MethodIr` 新增两个**按值**持有的字段：`code: Option<Box<MethodCodeFacts>>`（`raw_facts` 解出的指令、typed operands、声明的异常表）与 `constant_pool: Vec<CpEntryFacts>`（**同一次** header 读的常量池）。读面只有 `code()`/`constant_pool()` 两个只读借用，没有 `&mut`，也没有第二个构造路径（`new()` 是 `pub(crate)`）。
+- 引擎在 run 末尾把它们 **move** 进载荷：`facts.map(Box::new)` 与 `declaration.pool`（同一次 header 读，frame/ssa 两个 pass 读的就是它）。**没有第二次解码、没有重读、没有计费变化**；`new()` 增加 `debug_assert!(canonical.is_none() || code.is_some())`——图是从解码建的，有图必有解码。
+- `jarde-java` 新增 `decode::Operations::of(code, pool)`：这是 opcode → `Operation` 的**唯一**映射，按 **effective** opcode 分类（`wide` 是前缀不是指令），CP 引用由同一次读的池解析（`CpEntryKind::MethodRef`/`InterfaceMethodRef` 已带 owner/name/descriptor，`String`/`Integer`/`Long` 常量已带值）。未建模的 opcode → `Operation::Other`（被陈述的输入），解析不出来的引用同样 `Other`——不猜。
+- `RecoveryFacts` **缩减**为载荷确实不携带的东西：方法身份（name/descriptor/parameters，请求点名的）与 debug 名（`LocalVariableTable`/`MethodParameters` 证据，驱动侧属性）。`operations` 字段与 `with_operation()`/`operation()`/`operations()` **全部删除**。
+- **极性、槽号、常量值、switch keys 的唯一来源由签名证明**：`RecoveryRequest` 只有 `ir` 与收窄后的 `facts` 两个字段，调用方**没有任何参数**能再交出「另一张表」；一个 `ifne` 被标成 `ifeq` 这种事现在不可能由调用方造成，只可能来自解码本身（而那是被证伪覆盖的）。
+- 同一解码顺带补上的事实面：`Operation::Comparison { op, target }`（`target` = BCI + `branch_offset`，是「哪一个是跳转目标、哪一个是 fall-through」的唯一来源）、`Operation::Switch { cases, default }`（`tableswitch` 的 low/high/offsets 与 `lookupswitch` 的 pairs，键配上绝对目标 BCI）、`Operation::Increment { slot, amount }`（`iinc`）。
+- `CompareOp` 扩到 10 个变体，并按**操作数个数**分成三族：一个值对零的 `JumpIfZero/JumpIfNotZero`，一个引用对 null 的 `JumpIfNull/JumpIfNotNull`，**一个值对零的** `JumpIfNegative/JumpIfNotNegative/JumpIfPositive/JumpIfNotPositive`（`iflt/ifge/ifgt/ifle`），以及**两个值的** `JumpIfSame/JumpIfDifferent/JumpIfLess/JumpIfLessOrEqual/JumpIfGreater/JumpIfGreaterOrEqual`（`if_icmp*`/`if_acmp*`）。第三族与第四族的区分是**小图 oracle 在本片发现的生产 bug**：原来把 `iflt` 与 `if_icmplt` 合成一个变体，分支 arity 前置条件因此把一个合法循环判成 `UnrenderableOperand`。
+
+**2. 循环与 switch 落在哪。** 正常流视图（①）新增 immediate dominators（入口为根）、`dominates()`、`natural_loops()`（回边 = target 支配 source；自然环 = header ∪ 能到达 latch 而不穿过 header 的块）与 `irreducible_blocks()`（**SCC 级**判据：一个含环的强连通分量可约，当且仅当它恰好有一个从分量外进入的节点且该节点支配整个分量——只有一条回边的环在不可约图里根本产生不了回边，所以这必须是分量级问题而不是回边级问题）。Region（③）新增 `Loop { header, test, test_bci, form: While|DoWhile, continuation: Taken|FallThrough, body, exit }` 与 `Switch { prefix, branch, branch_bci, groups: [{keys, default, arm}], join }`。可证明子集：
+
+- **两种循环形状**：header 自己测（`while` 与 `for` 的 `goto test` 形状——test 块是回边目标，分支的 target 在环内、fall-through 在外面）与**唯一 latch 测**（`do … while`，含「整环就是一个自测块」的一元形状，此时块自己的语句就是循环体）。循环必须**单一入口**（环内非 header 块不得有环外前驱，否则 `Irreducible`/`LoopShape`）、**最多一次测试**（header 与 latch 各有一个分支即「两个测试」，不是本子集）。
+- **`continuation` 是解码事实**：分支的 `target` 就是环内后继 → `Taken`（`goto test`/`do … while` 的形状，条件写分支自己的 sense）；否则 `FallThrough`（条件写 sense 的否定）。1.3a 的「更远的后继是 target」在这里恰好是反的，所以这条不变量不只是精度问题——没有它，`for` 形状的循环根本进不来。
+- **switch 按终指令是否是解码出的 `switch` 分派**，不按后继个数：两个键共用一个 target 再加 default，在 graph 里只有**两个**后继。一个 target 一组（`case 0: case 1:` 的共享目标就是一组），target 是 join 的空臂 = `case K: break;`，default 指向 join 时不写 label（`switch` 自己落出去）；臂两两不得重叠（`SwitchArmsOverlap`——那是「一个 case 落进另一个 case 的代码」），键/目标与 graph 后继必须逐一对上（`SwitchShape`）。
+- **effect 次数与次序不变量**：条件与 selector 写在 `while (…)`/`do { … } while (…)`/`switch (…)` 的**括号里**，它们的值表达式就是 test 块指令的文本 → 每次求值一次、次序与字节码一致；body 的语句留在花括号内，一条也不许提出来。两条守卫：(a) **循环的 test 块必须纯**（只有 `Push`/`Load`/`Arithmetic`）——`while (…)` 没有地方放 test 块的写，所以带写的 loop header → `TestBlockEffect` fallback 而不是搬走它（`a_loop_whose_header_writes_state_is_quoted_rather_than_hoisted`）；(b) 循环体在有 scope 的帧里走，任何从**分支**离开环的边（`break`、跳到环外的 arm）→ `LoopLeavesEarly` fallback，且环的每个块都必须被走到（`covers()`）否则 `LoopShape`。`if`/`switch` 的 test 块**效果**（例如条件里的赋值）则按次序写在结构**之前**——那里它只执行一次，位置正确。
+- 循环内的 `Fallback` 形态不变：`Region::Fallback` + 逐条 `FallbackReason`（`LoopShape`/`LoopLeavesEarly`/`TestBlockEffect`/`Irreducible`）+ 诊断码，文本仍是 `// @bytecode …` 引用加原因，**不产空 body**。
+
+**3. 不可约与交叉异常的 fallback。** 两者都在走路之前判定，整具身体引用 bytecode（一个 `Region::Fallback` 覆盖全部 live 块，`blocks` 逐条列出）：
+
+- **不可约 CFG**：`view.irreducible_blocks()` 非空 → `FallbackReason::Irreducible { blocks }`，诊断 `jre_region_irreducible`。理由写在消息里：环在 header 之外被进入，或两环交叉——没有 Java 结构能写这个形状。
+- **交叉异常区域**：按**声明的异常表范围**判定「部分重叠、互不包含」（`[2,4)` 与 `[3,6)` 交叉；同一范围两条 catch 子句、嵌套范围都不算），并要求至少一条在 canonical 里有 handler row（否则没有块被保护，不因为一张表拒绝整具身体）→ `FallbackReason::CrossingExceptionRegions { record, other, blocks }`，诊断 `jre_region_crossing_exception_regions`，消息**按表序**点名两条记录（record 0 在前 = 抛点先到的那条 = primary）并列出它们保护的块——这正是「异常优先级在 fallback 里保留正确事实」的可核对形式。
+- **平面**：两者都是 `representation=Mixed`、`quality=Fallback`、`execution=Complete`——**扫描完整**不是 `Partial`（`Partial` 只属扫描失败），`quality` 不被改写成 `Partial`；两者都**不**报 `Structured`、也不产空 body。
+
+**4. 独立小图 oracle**（`crates/jarde-java/src/oracle.rs`，`#[cfg(test)] mod oracle`，不进生产构建）。
+
+- **它是什么**：一个自写的**朴素字节码机**（自己的 opcode 解码器 + 局部变量/操作数栈机，未建模的 opcode 直接 panic）+ 一个自写的**文本模型**（自己的语句解析器与表达式求值器，只认识本子集写的形状）+ 一个比较器，要求两侧的 **calls 序列、`return` 值、test 求值次数**三项全等。
+- **独立于什么**：两个 marker 之间的**模型段**不出现 `region::`/`Region`/`ast::`/`StmtKind`/`ExprKind`/`NormalFlowView`/`SourceMap`/`text_of_bci`/`build::`/`recover(`——由一个 `include_str!` 源码守卫断言，并**非空洞**地检查模型段确实含 `run_bytecode`/`run_text`/`compare`/`parse`。**不独立于**：fixture 的字节（共享 ground truth，正是对照的对象）与四个 opcode 的含义（oracle 自己解码，transcription 一错就红，不会静默）。
+- **自造形状 ≥3**：`polarity_fixture(initial, sense)`（`ifeq` 与 `ifne` 两个 sense × 三个输入）、`while_fixture(initial)`（header 测、body 有调用与自减、`bipush` 返回）、`do_while_fixture(initial)`（latch 测、`ifgt` 回到 header）、`crossing_class()`（自造 class 字节，异常表 `[2,4)` 与 `[3,6)` 交叉、`athrow` 在 BCI 3）——都不用仓库既有 fixture。
+- **有牙**：三个「削弱式」变异测试要求比较器**看见**问题——翻转条件的文本、把循环体 effect 提到循环外（或从循环里删掉）、改一个 `return` 字面量，各自必须返回 `Err`。比较器本身被削弱（丢掉 calls 比较）时，`the_oracle_rejects_a_loop_effect_moved_out_of_the_loop` 变红（证伪 ③），而生产用例仍绿——独立性因此不是声称。
+- **异常优先级**：`primary_record(table, throw_bci)`（表序第一个覆盖者）由 oracle 从声明的表算出，再要求真实报告在 crossing fallback 里**先点名它**。
+- **它抓到的生产 bug**：`iflt` 家族与 `if_icmp*` 家族的 arity 混淆（见上）——oracle 第一次跑就把它变成了红。
+
+**5. 验证与证伪（本片实际执行）**：`cargo test --workspace --all-targets --all-features --locked --no-fail-fast` = **867 passed / 0 failed / 1 ignored**（1.3a 基线在 `git archive fc2d24b` 的独立副本上用**同一条命令**重测为 847，本片 **+20**：`jarde-java` 单元 20→34、集成 9→15，其余 crate 一字未动）；`cargo fmt --all -- --check` 与 `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`openspec validate --all --strict --no-interactive` = 12 passed；两个 CI example exit 0；分层门禁 `cargo tree -p jarde-jvm/jarde-reader/jarde-query` 均不含 `jarde-java`。四组证伪（`/tmp` 副本 + 独立 `CARGO_TARGET_DIR`，`shasum -a 256 -c` 逐文件确认只有目标文件变了，用完删除）：① 放行循环 test 块的 effect（region 去掉纯度前置 + build 把 test 块的语句写在循环**之前**）→ `a_loop_whose_header_writes_state_is_quoted_rather_than_hoisted` 红，失败输出正是「`local1 = local1 - 1;` 写在 `while (local1 != 0) {}` 之前」这一静默改次数；② `ifeq` 的极性反过来（`decode.rs` 一行）→ 极性/循环/集成 4 条红（含 oracle 的极性用例）；③ 削弱 oracle（比较器不再比 calls）→ `the_oracle_rejects_a_loop_effect_moved_out_of_the_loop` 红而生产用例全绿；④（附加）去掉不可约检查 → `a_graph_that_is_not_reducible_is_quoted_whole_with_its_own_reason` 红（整具身体的答案退化成 `ArmsDoNotMeet` + `UncoveredBlocks`）。
+- **回归口径**：1.3a 的 29 条用例**逐条仍绿**，其中一条的行为按「读真事实」的后果**增强**而非放宽：`an_if_else_is_written_with_the_arm_the_branch_really_picks` 的 fixture 里，分支块在分支**之前**还有 `iconst_0; istore_1`（`local1 = 0`），旧实现把这条语句**静默丢掉**（分支块不被走），现在它按次序写在 `if` 之前——该用例原有的断言（`if (local1 != 0)`、fall-through 在 then、同一 BCI 两个 provenance）一条未改，另由 `a_loop_whose_header_writes_state_is_quoted_rather_than_hoisted` 固定「循环里不可搬走」的另一半。
+
+**6. 留给 1.3c**：CLI 入口与「库/CLI 一致」、A09/A10/A13/A16 的验收覆盖、`RecoveryProfile`/模式前置条件/rule version/失败 fallback 类型（随模式 pass 走，见 1.3 交付项）、`ldc` 的 `float`/`double` 字面量（本片仍 `Other`）、`athrow`/`try`/`finally` 的呈现（2.4，本片只保证异常事实在 fallback 里正确）、字段/数组/转换类操作（2.x）、段表的 `cp` 面（3.2）。

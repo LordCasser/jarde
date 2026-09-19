@@ -1,20 +1,24 @@
-//! The facts the recovery layer renders from but does not own.
+//! The vocabulary the presentation is written in, and the only two facts the payload does not
+//! carry: the method's identity and its debug names.
 //!
-//! # Why this input exists at all
+//! # Where the facts come from (P3 1.3b)
 //!
-//! The 1.1 IR handoff publishes the method's *structure*: canonical blocks and their covered BCIs,
-//! edges, frames, SSA values with their definitions and uses, effects. It publishes no **symbolic
-//! vocabulary** — a constant-pool reference's owner/name/descriptor, the value a `ldc`/`iconst`
-//! pushes, which local a `*load`/`*store` names, whether a branch jumps when its value is zero.
-//! Those are decode facts the layer below read out of the class file, and they are not in the
-//! payload (P3 1.1's own record notes the payload holds no CP index; the effect facts carry the
-//! opcode byte and the BCIs, not the operands).
+//! A presentation cannot be written without knowing which local an instruction reads, what a
+//! constant pushes, whether a branch transfers when its value is zero or when it is non-zero. Those
+//! are **decode facts**: the class file stated them once, and the `raw_facts` pass of the analysis
+//! run read them. They are not in this module and they are not the caller's to supply any more —
+//! they travel inside [`jarde_jvm::method_ir::MethodIr`], with the tables of the very run that
+//! decoded them, and [`crate::decode`] turns them into the [`Operation`]s below. One run, one
+//! source: there is no parameter left through which a caller could hand in a second opinion about
+//! an `ifeq`'s polarity, a `*load`'s slot or a constant's value.
 //!
-//! A presentation cannot be written without them: `local1 = local2 + local3;` needs to know which
-//! slot the instruction read, and `if (local1 != 0)` needs to know which way round an `ifeq` is.
-//! So they enter through this module: **facts about the bytecode, supplied by the caller that read
-//! them**, exactly the way the debug names and the method's identity do. The recovery layer decides
-//! syntax; it does not decode.
+//! What this module still holds is what the payload genuinely does not carry:
+//!
+//! * the method's **identity** (name, descriptor, parameter slots) — the request named it, and the
+//!   payload was built for one method without repeating its name;
+//! * its **debug names** — the `LocalVariableTable`/`MethodParameters` evidence, which is an
+//!   attribute the recovery driver reads beside the body. Absent debug metadata is a stated fact
+//!   (`None` per slot, or no list at all) and [`crate::names`] then derives an ordinal name.
 //!
 //! # The boundary this keeps
 //!
@@ -22,11 +26,9 @@
 //! BCI is an assignment to `count`" — the spelling, the statement shape, the declaration, the
 //! negation of a branch's polarity (the emitter writes the fall-through condition, which is the
 //! negation of the jump sense) and the origin of every node are all decided above this seam. An
-//! operation the subset does not model — a field access, a `switch`, an array operation, a
-//! conversion — is [`Operation::Other`] and makes the statement it belongs to unrenderable, which
-//! is a declared fallback with a diagnostic and never an invented expression.
-
-use std::collections::BTreeMap;
+//! operation the subset does not model — a field access, an array operation, a conversion — is
+//! [`Operation::Other`] and makes the statement it belongs to unrenderable, which is a declared
+//! fallback with a diagnostic and never an invented expression.
 
 /// What a class file says about the method whose body is being presented.
 ///
@@ -94,23 +96,56 @@ pub enum ArithmeticOp {
 /// Both polarities are needed and neither is derivable from structure: an `if (a) … else …` and an
 /// `if (!a) … else …` have the same graph and the same arms. The recovering layer writes the
 /// condition under which control falls through, which is the *negation* of this sense — see
-/// [`crate::region`] for the rule and `crate::build` for where it is applied.
+/// [`crate::region`] for the rule and `crate::build` for where it is applied — and a loop writes
+/// whichever of the two senses is the one that keeps iterating.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CompareOp {
-    /// One value: transfer when it is zero (`ifeq`, `ifnull`).
+    /// One value: transfer when it is zero (`ifeq`).
     JumpIfZero,
-    /// One value: transfer when it is non-zero (`ifne`, `ifnonnull`).
+    /// One value: transfer when it is non-zero (`ifne`).
     JumpIfNotZero,
+    /// One reference: transfer when it is null (`ifnull`).
+    JumpIfNull,
+    /// One reference: transfer when it is not null (`ifnonnull`).
+    JumpIfNotNull,
     /// Two values: transfer when they are equal (`if_icmpeq`, `if_acmpeq`).
     JumpIfSame,
     /// Two values: transfer when they differ (`if_icmpne`, `if_acmpne`).
     JumpIfDifferent,
+    /// One value: transfer when it is below zero (`iflt`).
+    JumpIfNegative,
+    /// One value: transfer when it is at or above zero (`ifge`).
+    JumpIfNotNegative,
+    /// One value: transfer when it is above zero (`ifgt`).
+    JumpIfPositive,
+    /// One value: transfer when it is at or below zero (`ifle`).
+    JumpIfNotPositive,
+    /// Two values: transfer when the first is below the second (`if_icmplt`).
+    JumpIfLess,
+    /// Two values: transfer when the first is at or below the second (`if_icmple`).
+    JumpIfLessOrEqual,
+    /// Two values: transfer when the first is above the second (`if_icmpgt`).
+    JumpIfGreater,
+    /// Two values: transfer when the first is at or above the second (`if_icmpge`).
+    JumpIfGreaterOrEqual,
 }
 
 impl CompareOp {
     /// Whether the instruction reads two values rather than one.
     pub fn reads_two(self) -> bool {
-        matches!(self, Self::JumpIfSame | Self::JumpIfDifferent)
+        matches!(
+            self,
+            Self::JumpIfSame
+                | Self::JumpIfDifferent
+                | Self::JumpIfLess
+                | Self::JumpIfLessOrEqual
+                | Self::JumpIfGreater
+                | Self::JumpIfGreaterOrEqual
+        )
+        // `JumpIfNegative`/`JumpIfNotNegative`/`JumpIfPositive`/`JumpIfNotPositive` read one value
+        // and compare it against zero: they are the `iflt`/`ifge`/`ifgt`/`ifle` family, not the
+        // `if_icmp*` one, and reading two values for them would ask the value flow for one the
+        // instruction never read.
     }
 }
 
@@ -182,8 +217,27 @@ pub enum Operation {
     Store { slot: u16 },
     /// Combines the two values it reads (below the value it reads first).
     Arithmetic { op: ArithmeticOp },
-    /// Transfers on a condition built from the values it reads.
-    Comparison { op: CompareOp },
+    /// Adds a signed amount to a local slot, in place (`iinc`): one statement's worth of effect
+    /// that reads and writes the same slot, which is why it is neither a load nor a store.
+    Increment { slot: u16, amount: i32 },
+    /// Transfers on a condition built from the values it reads, to the BCI the decode states.
+    ///
+    /// The target is a decode fact, not a shape: a conditional branch jumps to the address its own
+    /// operand names, and that address is what tells the fall-through arm (the successor that is
+    /// not the target) from the transferred one. Reading it instead of assuming "the further
+    /// successor is the target" is what lets a backward branch — the condition of a loop — be
+    /// presented at all.
+    Comparison { op: CompareOp, target: u32 },
+    /// A multi-way transfer: the keys the decode enumerated, each with the BCI it transfers to,
+    /// plus the BCI of the no-match case.
+    ///
+    /// Keys are kept as signed values because that is what the payload states: a `tableswitch`
+    /// enumerates a range, a `lookupswitch` a sorted list of `(match, offset)` pairs, and nothing
+    /// below this layer decides how a key is spelled in Java.
+    Switch {
+        cases: Vec<(i64, u32)>,
+        default: u32,
+    },
     /// A plain transfer the *structure* already stands for — a `goto` inside a recovered region.
     ///
     /// It is neither a value nor an effect on the program's state, so it becomes no statement; and it
@@ -199,27 +253,53 @@ pub enum Operation {
     ///
     /// The variant exists so that "this layer has not modelled the operation yet" is a *stated*
     /// input rather than an unstated assumption. A statement built on one becomes a fallback with a
-    /// diagnostic, which is what keeps a `switch`, a field access or an array store from being
+    /// diagnostic, which is what keeps a field access, an array store or a conversion from being
     /// printed as a guess before 2.x/3.x land.
     Other,
 }
 
-/// Every fact the recovery run needs beyond the IR payload: the method, its debug names, and the
-/// decoded operations of its body.
+impl Operation {
+    /// The sense and the target of one conditional branch, when this operation is one.
+    ///
+    /// Both are decode facts of the same instruction, and both are what a structure needs before it
+    /// can write a condition: the sense says which way round the test is, the target says which of
+    /// the two successors the branch transfers to.
+    pub fn comparison(&self) -> Option<(CompareOp, u32)> {
+        match self {
+            Self::Comparison { op, target } => Some((*op, *target)),
+            _ => None,
+        }
+    }
+
+    /// The keys and the no-match target of one `switch`, when this operation is one.
+    pub fn switch(&self) -> Option<(&[(i64, u32)], u32)> {
+        match self {
+            Self::Switch { cases, default } => Some((cases.as_slice(), *default)),
+            _ => None,
+        }
+    }
+}
+
+/// Every fact the recovery run needs that the IR payload does not carry: the method's identity and
+/// the debug names of its locals.
+///
+/// The decoded operations are **not** here. They are [`crate::decode`]'s reading of the payload:
+/// the very instructions and operands one analysis run decoded, moved into
+/// [`jarde_jvm::method_ir::MethodIr`] with the tables of that run. A caller can state a method's
+/// name and its debug names because the payload does not hold them; it cannot state what an
+/// instruction does, because the run that decoded the instruction already said so.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RecoveryFacts {
     method: MethodFacts,
     debug_locals: Vec<Option<String>>,
-    operations: BTreeMap<u32, Operation>,
 }
 
 impl RecoveryFacts {
-    /// The facts of one method, with no debug names and no operations yet.
+    /// The facts of one method, with no debug names.
     pub fn new(method: MethodFacts) -> Self {
         Self {
             method,
             debug_locals: Vec::new(),
-            operations: BTreeMap::new(),
         }
     }
 
@@ -232,12 +312,6 @@ impl RecoveryFacts {
         self
     }
 
-    /// The same facts with one operation decoded for one bytecode index.
-    pub fn with_operation(mut self, bci: u32, operation: Operation) -> Self {
-        self.operations.insert(bci, operation);
-        self
-    }
-
     /// The method these facts describe.
     pub fn method(&self) -> &MethodFacts {
         &self.method
@@ -247,16 +321,6 @@ impl RecoveryFacts {
     pub fn debug_locals(&self) -> &[Option<String>] {
         &self.debug_locals
     }
-
-    /// What the instruction at one bytecode index does, when the caller decoded it.
-    pub fn operation(&self, bci: u32) -> Option<&Operation> {
-        self.operations.get(&bci)
-    }
-
-    /// Every decoded operation, in BCI order.
-    pub fn operations(&self) -> impl Iterator<Item = (&u32, &Operation)> {
-        self.operations.iter()
-    }
 }
 
 #[cfg(test)]
@@ -264,40 +328,31 @@ mod tests {
     use super::*;
 
     #[test]
-    fn facts_are_read_back_where_they_were_written() {
-        let facts = RecoveryFacts::new(MethodFacts::new("add", "(II)I", 2))
-            .with_debug_locals(vec![Some("left".into()), Some("right".into())])
-            .with_operation(0, Operation::Load { slot: 0 })
-            .with_operation(
-                3,
-                Operation::Invoke(CallTarget::new(
-                    InvokeKind::Static,
-                    "java/lang/Math",
-                    "max",
-                    "(II)I",
-                )),
-            );
+    fn the_caller_states_identity_and_debug_names_and_nothing_about_the_body() {
+        // The seam this test states: a caller can build these facts, and there is no way to state
+        // an operation in them — no method to call, no field to set. Polarity, slot numbers and
+        // constant values come from the payload's own decode ([`crate::decode`]) or from nowhere.
+        let facts = RecoveryFacts::new(MethodFacts::new("add", "(II)I", 3))
+            .with_debug_locals(vec![Some("this".into()), Some("left".into())]);
         assert_eq!(facts.method().name(), "add");
-        assert_eq!(facts.operation(0), Some(&Operation::Load { slot: 0 }));
-        assert_eq!(
-            facts.operation(1),
-            None,
-            "an undecoded BCI has no operation"
-        );
+        assert_eq!(facts.method().descriptor(), "(II)I");
+        assert_eq!(facts.method().parameters(), 3);
         assert_eq!(facts.debug_locals().len(), 2);
+        assert_eq!(facts.debug_locals()[1].as_deref(), Some("left"));
         assert_eq!(
-            facts.operations().map(|(bci, _)| *bci).collect::<Vec<_>>(),
-            vec![0, 3],
-            "BCI order"
+            RecoveryFacts::new(MethodFacts::new("run", "()V", 1))
+                .debug_locals()
+                .len(),
+            0,
+            "a body without debug metadata states no name at all"
         );
+    }
+
+    #[test]
+    fn the_arithmetic_and_comparison_vocabulary_is_stated_once() {
         assert!(CompareOp::JumpIfSame.reads_two());
+        assert!(CompareOp::JumpIfGreaterOrEqual.reads_two());
         assert!(!CompareOp::JumpIfZero.reads_two());
-        match facts.operation(3) {
-            Some(Operation::Invoke(target)) => {
-                assert_eq!(target.descriptor(), "(II)I");
-                assert_eq!(target.kind(), InvokeKind::Static);
-            }
-            other => panic!("expected the invocation, got {other:?}"),
-        }
+        assert!(!CompareOp::JumpIfNotNull.reads_two());
     }
 }

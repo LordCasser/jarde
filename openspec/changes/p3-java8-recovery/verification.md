@@ -99,3 +99,30 @@ B2 值得记：**「返回正确的停止理由」并不足以证明「没有留
 ### 遗留的架构问题（已路由 1.3b）
 
 1.3a 指出：`MethodIr` 发布**结构**，但**不发布符号与操作数词汇**——CP 引用的 owner/name/descriptor、常量值、槽命名、以及**分支极性**（`ifeq` 与 `ifne` 图同构，极性唯一来源是解码事实）都不在其中；这些经 `RecoveryFacts`**由调用方交入**。缺事实会落成被陈述的 fallback（安全），但**错的事实会让极性静默反向**。**父级已裁定**：恢复层必须读**同一次运行**的解码事实——而 `engine` 里 `facts: Option<MethodCodeFacts>` 本就是运行内局部量（约 250/329 行）却没交给载荷（约 774 行）。该缝在 **1.3b** 闭合。
+
+
+## 2026-09-19 1.3b：事实缝闭合、循环/switch、不可约与交叉异常、独立小图 oracle
+
+**命令与数字**（全部在本机实跑）：
+
+| 检查 | 命令 | 结果 |
+| --- | --- | --- |
+| 全量测试 | `cargo test --workspace --all-targets --all-features --locked --no-fail-fast` | **867 passed / 0 failed / 1 ignored**（1.3a 基线 847 —— 在 `git archive fc2d24b` 的独立副本上用同一条命令重测；+20 = `jarde-java` 单元 20→34、集成 9→15） |
+| 格式 | `cargo fmt --all -- --check` | 干净 |
+| 静态检查 | `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` | 干净 |
+| 规格 | `openspec validate --all --strict --no-interactive` | 12 passed / 0 failed |
+| CI example | `cargo run --example inspect_class_header/resolve_and_analyze --locked -- tests/fixtures/.../v52/HistoricalControlFlow.class` | 两个 exit 0 |
+| 分层 | `cargo tree -p jarde-jvm/jarde-reader/jarde-query | grep -c jarde-java` | 0 / 0 / 0 |
+
+**事实缝的证明形式**：`RecoveryRequest { ir, facts }` 两个字段，`facts` 只承载方法身份与 debug 名——**签名上已无参数**可以交出极性、槽号或常量值；解码事实按值随 `MethodIr`（`code()`/`constant_pool()` 只读）交出，`new()` 断言「有图必有解码」。
+
+**四组证伪**（`/tmp` 副本 + 独立 `CARGO_TARGET_DIR`；`shasum -a 256 -c` 逐文件确认只有目标文件变化；副本用完删除）：
+
+1. **放行循环 test 块的 effect**（`region.rs` 去掉循环的纯度前置 + `build.rs` 把 test 块语句写在循环之前）→ `a_loop_whose_header_writes_state_is_quoted_rather_than_hoisted` **红**，失败输出正是被禁止的形状：`local1 = local1 - 1;` 写在 `while (local1 != 0) {}` 之前。
+2. **`ifeq` 极性反转**（`decode.rs` 一行：`0x99 => CompareOp::JumpIfNotZero`）→ **4 条红**：`decode::…polarity…`、`oracle::…agree_on_polarity`、`an_if_else_is_written_with_the_arm_the_branch_really_picks`、`a_while_loop_keeps_its_test_inside_the_statement_and_its_body_in_order`；`shasum -c` 显示只有 `decode.rs` 变了。
+3. **削弱 oracle**（比较器不再比较 calls 序列）→ `the_oracle_rejects_a_loop_effect_moved_out_of_the_loop` **红**，而 `p3_java_recovery.rs` 的 15 条生产用例**全绿**；`shasum -c` 显示只有 `oracle.rs` 变了——独立性不是声称。
+4. **（附加）去掉不可约检查** → `a_graph_that_is_not_reducible_is_quoted_whole_with_its_own_reason` **红**：答案退化为 `jre_region_arms_do_not_meet` + `jre_region_uncovered_blocks`，而不是整具身体的 `jre_region_irreducible`。
+
+**oracle 在本片发现的生产 bug**：`iflt/ifge/ifgt/ifle`（一个值对零）与 `if_icmp*`（两个值）被合成同一个 `CompareOp` 变体，分支 arity 前置条件因此把一个合法循环判成 `UnrenderableOperand`；现已按操作数个数拆成两组变体，并由 oracle 的两个 sense × 三个输入的极性用例固定。
+
+**被修正的既有断言**：**零条被放宽**。1.3a 的 29 条用例逐条仍绿；唯一行为变化是**增强**——`an_if_else_is_written_with_the_arm_the_branch_really_picks` 的 fixture 在分支块里还有 `iconst_0; istore_1`，旧实现静默丢掉这条语句，现在它按次序写在 `if` 之前，而该用例原有的四条断言（`if (local1 != 0)`、fall-through 在 then、`} else {` 的位置、同一 BCI 的 direct+derived 两个 provenance）一条未改。

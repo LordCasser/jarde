@@ -39,6 +39,7 @@ use jarde_reader::classfile::VerificationStatus;
 use jarde_reader::model::{Diagnostic, DiagnosticSeverity, ExecutionReport, TerminationReason};
 
 use crate::build;
+use crate::decode::Operations;
 use crate::emit::{Emitted, emit};
 use crate::facts::RecoveryFacts;
 use crate::names::NameTable;
@@ -52,8 +53,10 @@ use crate::stop::StopReason;
 pub struct RecoveryRequest<'a> {
     /// The IR payload of the method-analysis run whose body is being presented.
     pub ir: &'a MethodIr,
-    /// The facts the layer below read: the method's identity, its debug names, and the decoded
-    /// operations of its body.
+    /// The two facts the payload does not carry: the method's identity and its debug names. The
+    /// decoded operations are not here — they travel inside the payload, so that the branch a
+    /// comparison performs, the slot a load names and the value a constant pushes have exactly one
+    /// source, the run that decoded them.
     pub facts: &'a RecoveryFacts,
 }
 
@@ -185,6 +188,14 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     let Some(ssa) = request.ir.ssa() else {
         return stopped(method, StopReason::IrTableMissing { table: "ssa" }, budget);
     };
+    // The decode facts of the same run: the operations the presentation is written in, and the
+    // exception table it states. A payload that holds a graph but no decode is not one run's
+    // artifact (the graph is built from the decode), so this is a malformed payload rather than a
+    // body without facts.
+    let Some(code) = request.ir.code() else {
+        return stopped(method, StopReason::IrTableMissing { table: "code" }, budget);
+    };
+    let operations = Operations::of(code, request.ir.constant_pool());
     if canonical.blocks().is_empty() {
         return stopped(
             method,
@@ -198,11 +209,17 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         Ok(view) => view,
         Err(stop) => return stopped(method, stop, budget),
     };
-    let recovered: Recovered =
-        match crate::region::recover(canonical, &view, ssa, request.facts, budget) {
-            Ok(recovered) => recovered,
-            Err(stop) => return stopped(method, stop, budget),
-        };
+    let recovered: Recovered = match crate::region::recover(
+        canonical,
+        &view,
+        ssa,
+        &operations,
+        &code.exception_handlers,
+        budget,
+    ) {
+        Ok(recovered) => recovered,
+        Err(stop) => return stopped(method, stop, budget),
+    };
     // The slots the names are decided for are the body's own local slots: the frames table states
     // how many there are, and a local the debug metadata never named still needs a name.
     let slots = u16::try_from(frames.locals_slots()).unwrap_or(u16::MAX);
@@ -214,7 +231,8 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     let program = match build::build(
         canonical,
         ssa,
-        request.facts,
+        &operations,
+        request.facts.method().parameters(),
         &names,
         &recovered.regions,
         budget,

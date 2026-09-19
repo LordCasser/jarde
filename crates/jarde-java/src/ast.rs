@@ -66,6 +66,14 @@ pub enum BinaryOp {
     Equal,
     /// `!=` as it appears in a condition.
     NotEqual,
+    /// `<` as it appears in a condition.
+    Less,
+    /// `<=` as it appears in a condition.
+    LessOrEqual,
+    /// `>` as it appears in a condition.
+    Greater,
+    /// `>=` as it appears in a condition.
+    GreaterOrEqual,
 }
 
 impl BinaryOp {
@@ -79,6 +87,10 @@ impl BinaryOp {
             Self::Remainder => "%",
             Self::Equal => "==",
             Self::NotEqual => "!=",
+            Self::Less => "<",
+            Self::LessOrEqual => "<=",
+            Self::Greater => ">",
+            Self::GreaterOrEqual => ">=",
         }
     }
 }
@@ -167,6 +179,12 @@ pub enum StmtKind {
         then_body: Vec<Stmt>,
         else_body: Vec<Stmt>,
     },
+    /// `while (<cond>) { … }` — the test runs before every iteration, the body only when it holds.
+    While { cond: Expr, body: Vec<Stmt> },
+    /// `do { … } while (<cond>);` — the body runs once before the test is read.
+    DoWhile { cond: Expr, body: Vec<Stmt> },
+    /// `switch (<value>) { … }`, with one arm per distinct target of the decoded `switch`.
+    Switch { value: Expr, arms: Vec<SwitchArm> },
     /// Text this slice could not present as Java, quoting what it could not present.
     ///
     /// This is the declared fallback of the recoverable-subset boundary: the bytecode is quoted
@@ -175,6 +193,17 @@ pub enum StmtKind {
     /// It is never an empty body: a region that cannot be presented produces this node or the run
     /// stops and produces no text at all.
     Fallback { reason: String, bcis: Vec<u32> },
+}
+
+/// One arm of a `switch` statement.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SwitchArm {
+    /// The labels this arm is reached by. Empty means the arm is the no-match case alone.
+    pub keys: Vec<i64>,
+    /// Whether the no-match case reaches this arm too (a `default:` label beside the keys).
+    pub default: bool,
+    /// The statements of the arm, each of which runs at most once per execution of the switch.
+    pub body: Vec<Stmt>,
 }
 
 /// One statement and the anchors behind its text.

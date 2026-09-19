@@ -39,12 +39,11 @@ use jarde_jvm::method_ir::{
 };
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 
-use crate::ast::{BinaryOp, Expr, ExprKind, Stmt, StmtKind, Type};
-use crate::facts::{
-    ArithmeticOp, CallTarget, CompareOp, ConstantValue, InvokeKind, Operation, RecoveryFacts,
-};
+use crate::ast::{BinaryOp, Expr, ExprKind, Stmt, StmtKind, SwitchArm, Type};
+use crate::decode::Operations;
+use crate::facts::{ArithmeticOp, CallTarget, CompareOp, ConstantValue, InvokeKind, Operation};
 use crate::names::NameTable;
-use crate::region::Region;
+use crate::region::{Continuation, LoopForm, Region};
 use crate::source_map::{Origin, OriginSet};
 use crate::stop::{StopReason, charge, poll};
 
@@ -71,7 +70,8 @@ pub(crate) struct Program {
 pub(crate) fn build(
     canonical: &CanonicalCfg,
     ssa: &SsaTable,
-    facts: &RecoveryFacts,
+    operations: &Operations,
+    parameters: u16,
     names: &NameTable,
     regions: &[Region],
     budget: &mut Budget,
@@ -85,7 +85,8 @@ pub(crate) fn build(
     let mut builder = Builder {
         canonical,
         ssa,
-        facts,
+        operations,
+        parameters,
         names,
         instructions,
         budget,
@@ -107,7 +108,10 @@ pub(crate) fn build(
 struct Builder<'a> {
     canonical: &'a CanonicalCfg,
     ssa: &'a SsaTable,
-    facts: &'a RecoveryFacts,
+    operations: &'a Operations,
+    /// How many local slots the method's parameters occupy, `this` included when the caller
+    /// counted it: the slots below this one are declared by the signature, not by the body.
+    parameters: u16,
     names: &'a NameTable,
     instructions: BTreeMap<u32, &'a SsaInstruction>,
     budget: &'a mut Budget,
@@ -129,6 +133,7 @@ impl Builder<'_> {
             }
             Region::If {
                 prefix,
+                branch,
                 branch_bci,
                 then_arm,
                 else_arm,
@@ -137,26 +142,12 @@ impl Builder<'_> {
                 for block in prefix {
                     self.block(block)?;
                 }
-                let Some(Operation::Comparison { op }) = self.facts.operation(*branch_bci) else {
-                    // The region layer checked this precondition; a caller that built a region by
-                    // hand reaches the same stated fallback rather than an empty `if`.
-                    return self.fallback(
-                        vec![*branch_bci],
-                        &format!(
-                            "the branch at BCI {branch_bci} has no decoded sense, so its condition cannot be written"
-                        ),
-                        *branch_bci,
-                    );
-                };
-                let op = *op;
-                let Some(instruction) = self.instructions.get(branch_bci).copied() else {
-                    return self.fallback(
-                        vec![*branch_bci],
-                        &format!("no names record for the branch at BCI {branch_bci}"),
-                        *branch_bci,
-                    );
-                };
-                let cond = match condition(op, &stack_operands(instruction), self, *branch_bci) {
+                // Everything the test block does *before* its branch ran before the branch in the
+                // bytecode too, so it is written here, in order: a store or a call the test block
+                // makes is a statement of its own, and it must not be dropped just because the
+                // branch that follows it is what becomes the `if`.
+                self.test_effects(branch, *branch_bci)?;
+                let cond = match self.test_expr(*branch_bci, false) {
                     Ok(cond) => cond,
                     Err(reason) => {
                         return self.fallback(vec![*branch_bci], &reason, *branch_bci);
@@ -179,6 +170,88 @@ impl Builder<'_> {
                     OriginSet::new(Origin::direct(*branch_bci)),
                 ))
             }
+            Region::Switch {
+                prefix,
+                branch,
+                branch_bci,
+                groups,
+                ..
+            } => {
+                for block in prefix {
+                    self.block(block)?;
+                }
+                // As for an `if`: what the switch block does before its selector is read runs
+                // before the switch in the bytecode too.
+                self.test_effects(branch, *branch_bci)?;
+                let Some(instruction) = self.instructions.get(branch_bci).copied() else {
+                    return self.fallback(
+                        vec![*branch_bci],
+                        &format!("no names record for the switch at BCI {branch_bci}"),
+                        *branch_bci,
+                    );
+                };
+                let Some((_, value)) = stack_operands(instruction).last().copied() else {
+                    return self.fallback(
+                        vec![*branch_bci],
+                        &format!("the switch at BCI {branch_bci} reads no value to select on"),
+                        *branch_bci,
+                    );
+                };
+                // The selector is a value the switch reads; the text that renders it is anchored
+                // where the value was produced, and the switch that reads it is added as a
+                // presented anchor, exactly like a branch's condition.
+                let value = match self.render_value(value, *branch_bci, 0) {
+                    Ok(value) => value.derived_from(*branch_bci),
+                    Err(reason) => return self.fallback(vec![*branch_bci], &reason, *branch_bci),
+                };
+                let mut arms = Vec::with_capacity(groups.len());
+                for group in groups {
+                    let mut body = Vec::new();
+                    self.arm(&group.arm, &mut body)?;
+                    arms.push(SwitchArm {
+                        keys: group.keys.clone(),
+                        default: group.default,
+                        body,
+                    });
+                }
+                self.push(Stmt::new(
+                    StmtKind::Switch { value, arms },
+                    OriginSet::new(Origin::direct(*branch_bci)),
+                ))
+            }
+            Region::Loop {
+                test_bci,
+                form,
+                continuation,
+                body,
+                ..
+            } => {
+                // The test is written *inside* the loop statement, so the values it reads and the
+                // calls it makes run once per evaluation — the loop's own count, not the count of a
+                // hoisted copy. Which of the two senses continues the loop is a decode fact
+                // (`Continuation`), and the condition is that sense, not its negation.
+                let taken = *continuation == Continuation::Taken;
+                let cond = match self.test_expr(*test_bci, taken) {
+                    Ok(cond) => cond,
+                    Err(reason) => {
+                        return self.fallback(vec![*test_bci], &reason, *test_bci);
+                    }
+                };
+                let cond = cond.derived_from(*test_bci);
+                let mut loop_body = Vec::new();
+                self.arm(body, &mut loop_body)?;
+                let kind = match form {
+                    LoopForm::While => StmtKind::While {
+                        cond,
+                        body: loop_body,
+                    },
+                    LoopForm::DoWhile => StmtKind::DoWhile {
+                        cond,
+                        body: loop_body,
+                    },
+                };
+                self.push(Stmt::new(kind, OriginSet::new(Origin::direct(*test_bci))))
+            }
             Region::Fallback { blocks, reason } => {
                 let bcis: Vec<u32> = blocks
                     .iter()
@@ -188,6 +261,53 @@ impl Builder<'_> {
                 self.fallback(bcis, &reason.message(), at)
             }
         }
+    }
+
+    /// Writes what a test block does before the test itself, in the order it does it.
+    ///
+    /// A block whose terminal instruction is a branch can still hold statements before it — an
+    /// assignment made while the condition is evaluated, a call whose result the test reads. For an
+    /// `if` or a `switch` those run exactly once, before the test, so writing them there keeps their
+    /// count and their order. (A loop's test block is the one place this cannot be done: its
+    /// statements would run once per iteration, and a `while (…)` has nowhere to write them that
+    /// does — which is why [`crate::region`] refuses such a loop instead of hoisting them.)
+    fn test_effects(&mut self, block: &CanonicalBlockId, test_bci: u32) -> Result<(), StopReason> {
+        let Some(names) = self.ssa.block(block) else {
+            return Ok(());
+        };
+        let instructions: Vec<SsaInstruction> = names
+            .instructions()
+            .iter()
+            .filter(|instruction| instruction.bci() != test_bci)
+            .cloned()
+            .collect();
+        for instruction in &instructions {
+            self.instruction(instruction)?;
+        }
+        Ok(())
+    }
+
+    /// The condition one branch's test states, as the structure that holds it writes it.
+    ///
+    /// `taken` says which sense of the branch the structure continues on: an `if` always writes the
+    /// fall-through condition (the branch *leaves* the `if` when its sense holds), a loop writes the
+    /// sense that iterates. Both are the same decode fact read two ways.
+    fn test_expr(&self, branch_bci: u32, taken: bool) -> Result<Expr, String> {
+        let Some((op, _)) = self
+            .operations
+            .get(branch_bci)
+            .and_then(Operation::comparison)
+        else {
+            return Err(format!(
+                "the branch at BCI {branch_bci} has no decoded sense, so its condition cannot be written"
+            ));
+        };
+        let Some(instruction) = self.instructions.get(&branch_bci).copied() else {
+            return Err(format!(
+                "no names record for the branch at BCI {branch_bci}"
+            ));
+        };
+        condition(op, &stack_operands(instruction), self, branch_bci, taken)
     }
 
     /// Appends one arm's statements to a vector of its own, so the `if` can hold them.
@@ -228,7 +348,7 @@ impl Builder<'_> {
                 Slot::Local(slot) => Some((*slot, *value)),
                 Slot::Stack(_) => None,
             });
-        match self.facts.operation(at) {
+        match self.operations.get(at) {
             Some(Operation::Store { .. }) => {
                 let Some((slot, written)) = write else {
                     return self.fallback(
@@ -328,14 +448,46 @@ impl Builder<'_> {
                     OriginSet::new(Origin::direct(at)),
                 ))
             }
-            // Values whose text lands where they are consumed, the branch the region layer turned
-            // into an `if`, and the transfer the region's edge already stands for: no statement of
-            // their own.
+            Some(Operation::Increment { slot, amount }) => {
+                let Some(target_name) = self.names.text(*slot).map(str::to_owned) else {
+                    return self.fallback(
+                        vec![at],
+                        &format!(
+                            "the increment at BCI {at} writes local {slot}, which has no name"
+                        ),
+                        at,
+                    );
+                };
+                let (op, magnitude) = if *amount < 0 {
+                    (BinaryOp::Subtract, -i64::from(*amount))
+                } else {
+                    (BinaryOp::Add, i64::from(*amount))
+                };
+                let value = Expr::direct(
+                    ExprKind::Binary {
+                        op,
+                        left: Box::new(Expr::direct(ExprKind::Local(target_name.clone()), at)),
+                        right: Box::new(Expr::direct(ExprKind::Integer(magnitude), at)),
+                    },
+                    at,
+                );
+                self.push(Stmt::new(
+                    StmtKind::Assign {
+                        name: target_name,
+                        value,
+                    },
+                    OriginSet::new(Origin::direct(at)),
+                ))
+            }
+            // Values whose text lands where they are consumed, the branches and switches the region
+            // layer turned into `if`/`while`/`switch`, and the transfer the region's edge already
+            // stands for: no statement of their own.
             Some(
                 Operation::Push(_)
                 | Operation::Load { .. }
                 | Operation::Arithmetic { .. }
                 | Operation::Comparison { .. }
+                | Operation::Switch { .. }
                 | Operation::Transfer,
             ) => Ok(()),
             Some(Operation::Other) | None => self.fallback(
@@ -361,7 +513,7 @@ impl Builder<'_> {
         written: ValueId,
         at: u32,
     ) -> Result<Option<Type>, StopReason> {
-        if self.declared.contains(&slot) || slot < self.facts.method().parameters() {
+        if self.declared.contains(&slot) || slot < self.parameters {
             return Ok(None);
         }
         if self.names.text(slot).is_none() {
@@ -400,7 +552,7 @@ impl Builder<'_> {
             },
             Definition::Instruction { bci, .. } => {
                 let bci = *bci;
-                let Some(operation) = self.facts.operation(bci) else {
+                let Some(operation) = self.operations.get(bci) else {
                     return Err(format!(
                         "the value at BCI {at} comes from BCI {bci}, whose operation this run did not decode"
                     ));
@@ -560,12 +712,13 @@ fn arithmetic_op(op: ArithmeticOp) -> BinaryOp {
     }
 }
 
-/// The condition under which control *falls through* a branch.
+/// The condition one sense of a branch states, as the structure that holds it writes it.
 ///
-/// The branch transfers when its decoded sense holds, so the fall-through condition is that sense
-/// negated: `ifeq` falls through when the value is non-zero, `if_icmpne` falls through when the two
-/// values are equal. Writing the negation here — once, next to the sense's meaning — is what makes
-/// an emitted `if`/`else`'s polarity a consequence of the decoded fact rather than of the order two
+/// `taken = false` writes the **fall-through** condition — the sense negated, which is what an `if`
+/// statement tests: a branch transfers only when its sense holds, so control stays in the `if` when
+/// it does not. `taken = true` writes the sense itself, which is what a loop tests when the branch's
+/// target is the block that iterates. Writing either one here — once, next to the sense's meaning —
+/// is what makes an emitted condition a consequence of the decoded fact rather than of the order two
 /// successors happened to be published in.
 ///
 /// The condition node is anchored where the value it tests was produced, and the branch that tests it
@@ -577,6 +730,7 @@ fn condition(
     operands: &[(Slot, ValueId)],
     builder: &Builder<'_>,
     branch_bci: u32,
+    taken: bool,
 ) -> Result<Expr, String> {
     let expected = if op.reads_two() { 2 } else { 1 };
     if operands.len() != expected {
@@ -587,18 +741,73 @@ fn condition(
     }
     let left = builder.render_value(operands[0].1, branch_bci, 0)?;
     let anchor = left.origin.primary().bci();
-    match op {
-        CompareOp::JumpIfZero => Ok(binary(BinaryOp::NotEqual, left, zero(branch_bci), anchor)),
-        CompareOp::JumpIfNotZero => Ok(binary(BinaryOp::Equal, left, zero(branch_bci), anchor)),
-        CompareOp::JumpIfSame => {
+    // The operator the *sense* states, and the operator its negation states.
+    let (positive, negative) = match op {
+        CompareOp::JumpIfZero => (Test::Zero(BinaryOp::Equal), Test::Zero(BinaryOp::NotEqual)),
+        CompareOp::JumpIfNotZero => (Test::Zero(BinaryOp::NotEqual), Test::Zero(BinaryOp::Equal)),
+        CompareOp::JumpIfNegative => (
+            Test::Zero(BinaryOp::Less),
+            Test::Zero(BinaryOp::GreaterOrEqual),
+        ),
+        CompareOp::JumpIfNotNegative => (
+            Test::Zero(BinaryOp::GreaterOrEqual),
+            Test::Zero(BinaryOp::Less),
+        ),
+        CompareOp::JumpIfPositive => (
+            Test::Zero(BinaryOp::Greater),
+            Test::Zero(BinaryOp::LessOrEqual),
+        ),
+        CompareOp::JumpIfNotPositive => (
+            Test::Zero(BinaryOp::LessOrEqual),
+            Test::Zero(BinaryOp::Greater),
+        ),
+        CompareOp::JumpIfNull => (Test::Null(BinaryOp::Equal), Test::Null(BinaryOp::NotEqual)),
+        CompareOp::JumpIfNotNull => (Test::Null(BinaryOp::NotEqual), Test::Null(BinaryOp::Equal)),
+        CompareOp::JumpIfSame => (Test::Pair(BinaryOp::Equal), Test::Pair(BinaryOp::NotEqual)),
+        CompareOp::JumpIfDifferent => (Test::Pair(BinaryOp::NotEqual), Test::Pair(BinaryOp::Equal)),
+        CompareOp::JumpIfLess => (
+            Test::Pair(BinaryOp::Less),
+            Test::Pair(BinaryOp::GreaterOrEqual),
+        ),
+        CompareOp::JumpIfLessOrEqual => (
+            Test::Pair(BinaryOp::LessOrEqual),
+            Test::Pair(BinaryOp::Greater),
+        ),
+        CompareOp::JumpIfGreater => (
+            Test::Pair(BinaryOp::Greater),
+            Test::Pair(BinaryOp::LessOrEqual),
+        ),
+        CompareOp::JumpIfGreaterOrEqual => (
+            Test::Pair(BinaryOp::GreaterOrEqual),
+            Test::Pair(BinaryOp::Less),
+        ),
+    };
+    let test = if taken { positive } else { negative };
+    match test {
+        // The second operand is rendered only where it is written, so a zero or null test does not
+        // ask the value flow for a value the instruction never read.
+        Test::Zero(op) => Ok(binary(op, left, zero(branch_bci), anchor)),
+        Test::Null(op) => Ok(binary(
+            op,
+            left,
+            Expr::direct(ExprKind::Null, branch_bci),
+            anchor,
+        )),
+        Test::Pair(op) => {
             let right = builder.render_value(operands[1].1, branch_bci, 0)?;
-            Ok(binary(BinaryOp::NotEqual, left, right, anchor))
-        }
-        CompareOp::JumpIfDifferent => {
-            let right = builder.render_value(operands[1].1, branch_bci, 0)?;
-            Ok(binary(BinaryOp::Equal, left, right, anchor))
+            Ok(binary(op, left, right, anchor))
         }
     }
+}
+
+/// The comparison one sense of a branch states, before its operands are rendered.
+enum Test {
+    /// One value against the constant zero, with the operator the sense states.
+    Zero(BinaryOp),
+    /// One reference against `null`.
+    Null(BinaryOp),
+    /// The two values the branch reads.
+    Pair(BinaryOp),
 }
 
 /// A binary expression anchored at one bytecode index.

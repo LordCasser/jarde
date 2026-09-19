@@ -42,6 +42,48 @@ use petgraph::visit::EdgeRef;
 
 use crate::stop::{StopReason, charge};
 
+/// One **natural loop** of the projection: a header a back edge enters, and everything that repeats.
+///
+/// The blocks are the standard natural-loop set of the header's back edges: the header itself, plus
+/// every block that reaches a latch without passing through the header. Whether that set is a shape
+/// Java can spell is the structure layer's question ([`crate::region`]); what this type states is
+/// the *fact* — which blocks iterate, which edges go back, and whether the graph itself is
+/// irreducible there.
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub struct NaturalLoop {
+    header: usize,
+    blocks: BTreeSet<usize>,
+    latches: BTreeSet<usize>,
+    irreducible: bool,
+}
+
+impl NaturalLoop {
+    /// The node every back edge of this loop enters.
+    pub fn header(&self) -> usize {
+        self.header
+    }
+
+    /// Every node that iterates: the header and the blocks that reach a latch without passing it.
+    pub fn blocks(&self) -> &BTreeSet<usize> {
+        &self.blocks
+    }
+
+    /// The nodes whose own transfer goes back to the header.
+    pub fn latches(&self) -> &BTreeSet<usize> {
+        &self.latches
+    }
+
+    /// Whether the loop can be entered anywhere but its header — which no Java structure can spell.
+    ///
+    /// Two facts make a loop irreducible: a block of it that an edge from *outside* the loop enters
+    /// (a second entry), and another loop it shares a block with where neither header contains the
+    /// other (two cycles crossing). Both are properties of the graph, not of the shape this layer
+    /// would have liked it to have.
+    pub fn is_irreducible(&self) -> bool {
+        self.irreducible
+    }
+}
+
 /// Which kinds of canonical edge the projection kept, so that a caller can state what it left out.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct ExcludedEdges {
@@ -62,7 +104,9 @@ pub struct NormalFlowView {
     ids: Vec<CanonicalBlockId>,
     index: BTreeMap<CanonicalBlockId, usize>,
     graph: DiGraph<usize, ()>,
+    dominators: Vec<Option<usize>>,
     post_dominators: Vec<Option<usize>>,
+    loops: BTreeMap<usize, NaturalLoop>,
     return_edges: usize,
     excluded: ExcludedEdges,
     cycles: usize,
@@ -123,21 +167,33 @@ impl NormalFlowView {
             );
         }
         charge(budget, CountedBudgetDimension::IrEdges, kept, None)?;
-        // One step per block for each of the two walks below, billed before either runs.
+        // One step per block for each of the walks below, billed before any of them runs: the
+        // dominators, the immediate post-dominators, the cycles and the natural loops.
         charge(
             budget,
             CountedBudgetDimension::AnalysisSteps,
-            nodes.saturating_mul(2),
+            nodes.saturating_mul(4),
             None,
         )?;
 
+        let dominators = dominators::simple_fast(&graph, petgraph::graph::NodeIndex::new(0));
+        let idoms: Vec<Option<usize>> = (0..ids.len())
+            .map(|node| {
+                dominators
+                    .immediate_dominator(petgraph::graph::NodeIndex::new(node))
+                    .map(|dominator| dominator.index())
+            })
+            .collect();
+        let loops = natural_loops(&graph, &idoms);
         let post_dominators = immediate_post_dominators(&graph);
         let cycles = cycle_count(&graph);
         Ok(Self {
             ids,
             index,
             graph,
+            dominators: idoms,
             post_dominators,
+            loops,
             return_edges,
             excluded,
             cycles,
@@ -212,6 +268,99 @@ impl NormalFlowView {
     /// that as "not provable here" rather than as "the method ends".
     pub fn immediate_post_dominator(&self, node: usize) -> Option<usize> {
         self.post_dominators.get(node).copied().flatten()
+    }
+
+    /// Whether every path from the entry to `node` passes through `dominator`.
+    ///
+    /// Read off the immediate-dominator tree: `d` dominates `n` exactly when walking `n`'s
+    /// immediate dominators upwards reaches `d`. The walk cannot loop — an immediate dominator is
+    /// strictly closer to the entry than the node it dominates — and it is bounded by the number
+    /// of nodes it visits.
+    pub fn dominates(&self, dominator: usize, node: usize) -> bool {
+        let mut current = Some(node);
+        let mut steps = 0usize;
+        while let Some(step) = current {
+            if step == dominator {
+                return true;
+            }
+            if steps > self.ids.len() {
+                return false;
+            }
+            steps += 1;
+            current = self.dominators.get(step).copied().flatten();
+        }
+        false
+    }
+
+    /// The natural loop one node is the header of, when any back edge enters it.
+    pub fn loop_entered_at(&self, node: usize) -> Option<&NaturalLoop> {
+        self.loops.get(&node)
+    }
+
+    /// Whether any back edge enters one node: the question "is this a loop header".
+    pub fn is_loop_header(&self, node: usize) -> bool {
+        self.loops.contains_key(&node)
+    }
+
+    /// Every node of a cycle the projection cannot spell as a Java structure, in node order.
+    ///
+    /// Irreducible *here* means a fact about the graph, not a limit of the subset, and it is decided
+    /// the way the textbook decides it: a strongly connected component that holds a cycle is
+    /// reducible exactly when **one** of its nodes is entered from outside the component and that
+    /// node dominates every other node of the component. A cycle two edges enter — or one whose
+    /// single entry does not dominate it — has no header a Java structure could name, and no back
+    /// edge either (nothing in it dominates anything else), which is why this is a component-level
+    /// question and not a back-edge one.
+    pub fn irreducible_blocks(&self) -> Vec<usize> {
+        let mut blocks = BTreeSet::new();
+        for component in tarjan_scc(&self.graph) {
+            let nodes: BTreeSet<usize> = component.iter().map(|node| node.index()).collect();
+            let cyclic = component.len() > 1
+                || self
+                    .graph
+                    .neighbors(component[0])
+                    .any(|neighbour| neighbour == component[0]);
+            if !cyclic {
+                continue;
+            }
+            let entries: Vec<usize> = nodes
+                .iter()
+                .copied()
+                .filter(|node| {
+                    // A node the method starts in, or one any edge of the component's *outside*
+                    // reaches: both are ways in.
+                    *node == 0
+                        || self
+                            .graph
+                            .neighbors_directed(
+                                petgraph::graph::NodeIndex::new(*node),
+                                petgraph::Direction::Incoming,
+                            )
+                            .any(|predecessor| !nodes.contains(&predecessor.index()))
+                })
+                .collect();
+            let reducible =
+                entries.len() == 1 && nodes.iter().all(|node| self.dominates(entries[0], *node));
+            if !reducible {
+                blocks.extend(nodes);
+            }
+        }
+        // A loop the projection marked irreducible earlier (a block entered from outside a natural
+        // loop, or two natural loops crossing) is irreducible for the same reason: no single header
+        // dominates it.
+        for loop_of in self
+            .loops
+            .values()
+            .filter(|loop_of| loop_of.is_irreducible())
+        {
+            blocks.extend(loop_of.blocks().iter().copied());
+        }
+        blocks.into_iter().collect()
+    }
+
+    /// How many natural loops the projection has, stated for the reader of a report.
+    pub fn loops(&self) -> usize {
+        self.loops.len()
     }
 
     /// Whether every path leaving `node` meets `join` before it leaves the method.
@@ -323,6 +472,106 @@ fn immediate_post_dominators(graph: &DiGraph<usize, ()>) -> Vec<Option<usize>> {
                 .filter(|dominator| *dominator != exit)
         })
         .collect()
+}
+
+/// The natural loops of the projection, one per header a back edge enters.
+///
+/// A **back edge** is an edge whose target dominates its source. Grouping them by target gives one
+/// loop per header: the header itself, plus everything that reaches one of the header's latches
+/// without passing through the header (the reverse walk below, which starts at the latches and stops
+/// at the header). Two facts about the graph — not about the shape the subset would like — mark a
+/// loop irreducible: a block of it entered from outside the loop by an edge other than into the
+/// header, and a block shared with another loop whose header this one does not contain.
+fn natural_loops(
+    graph: &DiGraph<usize, ()>,
+    idoms: &[Option<usize>],
+) -> BTreeMap<usize, NaturalLoop> {
+    let dominates = |dominator: usize, node: usize| {
+        let mut current = Some(node);
+        let mut steps = 0usize;
+        while let Some(step) = current {
+            if step == dominator {
+                return true;
+            }
+            if steps > idoms.len() {
+                return false;
+            }
+            steps += 1;
+            current = idoms.get(step).copied().flatten();
+        }
+        false
+    };
+    let mut latches: BTreeMap<usize, BTreeSet<usize>> = BTreeMap::new();
+    for edge in graph.edge_references() {
+        let source = edge.source().index();
+        let target = edge.target().index();
+        if dominates(target, source) {
+            latches.entry(target).or_default().insert(source);
+        }
+    }
+    let mut loops: BTreeMap<usize, NaturalLoop> = BTreeMap::new();
+    for (header, latches) in &latches {
+        let mut blocks = BTreeSet::from([*header]);
+        for latch in latches {
+            // Everything that reaches the latch without going through the header.
+            let mut worklist = vec![*latch];
+            let mut seen = BTreeSet::new();
+            while let Some(node) = worklist.pop() {
+                if node == *header || !seen.insert(node) {
+                    continue;
+                }
+                blocks.insert(node);
+                worklist.extend(
+                    graph
+                        .neighbors_directed(
+                            petgraph::graph::NodeIndex::new(node),
+                            petgraph::Direction::Incoming,
+                        )
+                        .map(|neighbour| neighbour.index()),
+                );
+            }
+        }
+        loops.insert(
+            *header,
+            NaturalLoop {
+                header: *header,
+                blocks,
+                latches: latches.clone(),
+                irreducible: false,
+            },
+        );
+    }
+    // Irreducibility: a second entry into a loop block, or two loops crossing.
+    let headers: Vec<usize> = loops.keys().copied().collect();
+    for header in &headers {
+        let blocks = loops[header].blocks.clone();
+        let second_entry = blocks.iter().any(|block| {
+            *block != *header
+                && graph
+                    .neighbors_directed(
+                        petgraph::graph::NodeIndex::new(*block),
+                        petgraph::Direction::Incoming,
+                    )
+                    .any(|predecessor| !blocks.contains(&predecessor.index()))
+        });
+        let crossing = !second_entry
+            && headers.iter().any(|other| {
+                other != header
+                    && loops[other]
+                        .blocks
+                        .iter()
+                        .any(|block| blocks.contains(block))
+                    && !blocks.contains(other)
+                    && !loops[other].blocks.contains(header)
+            });
+        if second_entry || crossing {
+            loops
+                .get_mut(header)
+                .expect("the header was just read")
+                .irreducible = true;
+        }
+    }
+    loops
 }
 
 /// How many blocks lie on a cycle of the projection.

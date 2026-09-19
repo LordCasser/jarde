@@ -23,6 +23,30 @@
 //!   `ssa` is only ever present with the frames it was named over, and the frames only with the
 //!   canonical graph they were derived from, exactly as the pass table requires.
 //!
+//! # The decode facts travel with the tables (P3 1.3b)
+//!
+//! The three tables state a method's *structure*, not its **symbolic vocabulary**: which local a
+//! `*load`/`*store` names, what a `iconst`/`bipush`/`ldc` pushes, whether a branch transfers when
+//! its value is zero, which constant-pool reference an `invoke*` names, which keys a
+//! `tableswitch` enumerates. That vocabulary is a *decode* fact — it was read from the class bytes
+//! once, by the `raw_facts` pass — and a presentation of the body cannot be written without it.
+//!
+//! Before this slice the recovery layer asked its caller for it instead, through a table the
+//! caller built beside the run: two sources for one body, and a wrong entry in the caller's table
+//! (an `ifeq` labelled `ifne`) produced silently inverted Java that nothing in the pipeline could
+//! have noticed. So the facts the `raw_facts` pass decoded are moved into the payload here, beside
+//! the tables of the same run:
+//!
+//! * [`MethodIr::code`] — the decoded body (its instructions, their typed operands, its declared
+//!   exception table), the very `MethodCodeFacts` the passes above read;
+//! * [`MethodIr::constant_pool`] — the class's own constant pool as the same read decoded it,
+//!   which is where a reference's owner, name and descriptor and an `ldc`'s value live.
+//!
+//! Both are moved in, never copied, never re-decoded: the payload is what *that* run read. A
+//! consumer therefore has exactly one source for the polarity of a branch, the slot of a load and
+//! the value of a constant, and the compiler enforces it — there is no parameter left through
+//! which a caller could hand in a second opinion.
+//!
 //! # Ownership, lifetime, and why nothing here is shared
 //!
 //! * **Who builds it.** [`crate::engine::analyze_method_ir`] does, at the end of one request: the
@@ -76,9 +100,11 @@ pub use crate::ssa::{
 };
 
 use crate::ir::MethodAnalysisReport;
+use jarde_reader::classfile::{CpEntryFacts, MethodCodeFacts};
 
 /// The IR payload of one method-analysis request: the tables that run published, each present
-/// exactly when the pass that produces it published one.
+/// exactly when the pass that produces it published one, together with the decode facts the
+/// `raw_facts` pass read them from.
 ///
 /// The payload owns the tables; see the module documentation for who builds it, how long it lives
 /// and why it is not shared.
@@ -87,14 +113,22 @@ pub struct MethodIr {
     canonical: Option<Box<CanonicalCfg>>,
     frames: Option<Box<FrameTable>>,
     ssa: Option<Box<SsaTable>>,
+    code: Option<Box<MethodCodeFacts>>,
+    constant_pool: Vec<CpEntryFacts>,
 }
 
 impl MethodIr {
     /// One payload from the artifacts of one run, in the order the passes publish them.
+    ///
+    /// `code` and `constant_pool` are the facts the `raw_facts` pass read: the decoded body and
+    /// the class's own constant pool. Both are moved in beside the tables, and both are present
+    /// exactly when the graph is — the graph is built from them.
     pub(crate) fn new(
         canonical: Option<Box<CanonicalCfg>>,
         frames: Option<Box<FrameTable>>,
         ssa: Option<Box<SsaTable>>,
+        code: Option<Box<MethodCodeFacts>>,
+        constant_pool: Vec<CpEntryFacts>,
     ) -> Self {
         debug_assert!(
             frames.is_none() || canonical.is_some(),
@@ -104,10 +138,16 @@ impl MethodIr {
             ssa.is_none() || frames.is_some(),
             "the names are built over the frames: a payload holding them without the frames is not one run's artifact"
         );
+        debug_assert!(
+            canonical.is_none() || code.is_some(),
+            "the canonical graph is built from the decoded body: a payload holding a graph without its decode facts is not one run's artifact"
+        );
         Self {
             canonical,
             frames,
             ssa,
+            code,
+            constant_pool,
         }
     }
 
@@ -129,6 +169,28 @@ impl MethodIr {
     /// Present only when [`Self::frames`] is: the names are the values of those frames.
     pub fn ssa(&self) -> Option<&SsaTable> {
         self.ssa.as_deref()
+    }
+
+    /// The decoded body of this run, or `None` when the `raw_facts` pass read no body.
+    ///
+    /// This is the class file's own decode — the instructions, their typed operands and the
+    /// declared exception table, exactly as one read of the bytes produced them — and it is the
+    /// **only** source of the body's symbolic vocabulary for a consumer above this crate: which
+    /// local an instruction reads or writes, the value a constant pushes, the sense and the target
+    /// of a conditional branch, the keys of a `switch`, the exception ranges the class declares.
+    /// Nothing re-decodes and nothing re-states them.
+    pub fn code(&self) -> Option<&MethodCodeFacts> {
+        self.code.as_deref()
+    }
+
+    /// The class's constant pool as the same read decoded it; empty when no body was read.
+    ///
+    /// The pool is where a symbolic *reference* lives: an `invoke*`'s owner, member name and
+    /// descriptor, an `ldc`'s constant. Together with [`Self::code`] it is one decode's answer to
+    /// "what does this instruction name", which is why it travels with the payload instead of
+    /// being resolved a second time by a consumer.
+    pub fn constant_pool(&self) -> &[CpEntryFacts] {
+        &self.constant_pool
     }
 }
 
@@ -201,7 +263,8 @@ mod tests {
         }
     }
 
-    /// The three tables of one assembled body, over the passes the driver itself schedules.
+    /// The three tables of one assembled body, over the passes the driver itself schedules — plus
+    /// the decode facts the payload now carries beside them (the body and its class's pool).
     fn tables_of(code: &[u8], max_locals: u16) -> MethodIr {
         let bytes = test_class::single_method(52, 8, max_locals, code);
         let mut budget = Budget::new(limits());
@@ -267,7 +330,13 @@ mod tests {
                     panic!("the assembled body is consistent, but was refused: {message}")
                 }
             };
-        MethodIr::new(Some(graph), Some(table), Some(names))
+        MethodIr::new(
+            Some(graph),
+            Some(table),
+            Some(names),
+            Some(Box::new(facts)),
+            pool,
+        )
     }
 
     #[test]
@@ -296,6 +365,24 @@ mod tests {
         let canonical = ir.canonical().expect("the graph was published");
         let frames = ir.frames().expect("the frames were published");
         let ssa = ir.ssa().expect("the names were published");
+
+        // P3 1.3b: the decode facts of the same read travel with the tables, so a consumer above
+        // this crate has one source for the body's vocabulary instead of a table of its own.
+        let code = ir.code().expect("the decoded body travels with the tables");
+        assert_eq!(code.instructions.len(), 10, "one fact per instruction");
+        assert_eq!(
+            code.operands().len(),
+            code.instructions.len(),
+            "the operands are in lockstep with the instructions"
+        );
+        assert_eq!(
+            code.instructions[3].opcode, 0x99,
+            "the branch at BCI 3 is the `ifeq` the caller's own table would have restated"
+        );
+        assert!(
+            !ir.constant_pool().is_empty(),
+            "the class's own pool travels with the body it was decoded from"
+        );
 
         assert_eq!(canonical.blocks().len(), 4, "0, 6, 11 and 13");
         assert_eq!(canonical.edges().len(), 4, "0→6, 0→11, 6→13 and 11→13");
