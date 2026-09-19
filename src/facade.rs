@@ -234,6 +234,7 @@ impl Engine {
             analysis: analyzed.report().clone(),
             recovery,
             callees,
+            facts,
         })
     }
 }
@@ -334,6 +335,11 @@ pub struct RecoveredMethod {
     analysis: crate::ir::MethodAnalysisReport,
     recovery: jarde_java::RecoveryReport,
     callees: Option<jarde_jvm::callee::CalleeReadReport>,
+    /// The facts this run read (P3 3.3's [`RecoveredMethod::facts`]). Not part of the serialized
+    /// document: the report's own `declaration` record is that half of it, and a second copy of the
+    /// same facts in the payload would be a second schema to keep in step.
+    #[serde(skip)]
+    facts: jarde_java::RecoveryFacts,
 }
 
 impl RecoveredMethod {
@@ -345,6 +351,19 @@ impl RecoveredMethod {
     /// The presentation of that run's payload.
     pub fn recovery(&self) -> &jarde_java::RecoveryReport {
         &self.recovery
+    }
+
+    /// The facts the run's own payload stated, and therefore the declaration the artifact was
+    /// written from: the member's flags, raw name, descriptor and parameter-slot count as the
+    /// header read that decoded the body located them, plus the raw debug name of every slot that
+    /// read carried (P3 3.1, P3 2.4).
+    ///
+    /// A consumer that has to **state the same declaration** — P3 3.3's comparison wraps the
+    /// recovered text in a method declaration, and a signature written by hand would be a second
+    /// opinion about the member, wrong the moment a parameter is a `boolean` — reads it here: it is
+    /// the very value the presentation of this run was handed, so the two cannot disagree.
+    pub fn facts(&self) -> &jarde_java::RecoveryFacts {
+        &self.facts
     }
 
     /// The class's own members this request read for the presented body's named call sites, when it

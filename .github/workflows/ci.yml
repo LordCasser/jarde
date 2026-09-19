@@ -56,6 +56,13 @@ jobs:
       - name: Run ignored JDK 25 instruction-boundary oracle
         run: cargo test --test jvm_bytecode_oracle --locked -- --ignored --exact jdk25_instruction_boundaries_match_public_bytecode_inspection
 
+      - name: Run the ignored P3 Java 8 compile-and-execute comparison
+        # P3 3.3's replayable comparison: every fixture is a committed class file, and `javac` is
+        # only asked to compile the wrappers the test generates from the run's own facts, so this
+        # job's JDK version cannot change a sample. The test is `#[ignore]`d for the two-pass
+        # `cargo test` above (a machine with no JDK stays green); this step is the JDK-present half.
+        run: cargo test --test p3_execution_comparison --locked -- --ignored
+
       - name: Run public API example
         run: |
           cargo run --example inspect_class_header --locked -- tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class

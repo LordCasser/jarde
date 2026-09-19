@@ -80,4 +80,24 @@ compression are the production paths, not a test double.
 | directory | compiler / command | outputs and digests | read by |
 | --- | --- | --- | --- |
 | `p3-local-rewrite/` | javac 23.0.1; `javac --release 8 -g:none -d v8 LocalRewrite.java` | `v8/LocalRewrite.class` (52.0, 650 bytes, SHA-256 `f755f062…6158a6`), with the bytecode of every member in that directory's `README.md` | `tests/p3_local_rewrite.rs` (P3-R1: a slot written between a load and its reader at a return, a store and a branch; P3-R2: the producer behind a presented cast) |
+| `p3-corpus/` | javac 23.0.1; `Flags.java` under `--release 8 -g:none`, `-g`, `-g:lines,source` and `-parameters`, plus `-source 8 -target 8` (which produces the `-g:none` bytes byte for byte), and `MissingDependency.java` compiled against a stub that is **not** shipped | five 52.0 `Flags.class` (325–597 bytes) and `v8-missing-dep/MissingDependency.class` (264), SHA-256 in that directory's `README.md` | `tests/p3_execution_comparison.rs` (P3 3.3: the flag matrix, the missing dependency, and the recorded boundary list) |
+
+### The replayable compile-and-execute comparison (P3 3.3)
+
+`tests/p3_execution_comparison.rs` is the shell procedure the earlier P3 records describe, as one
+command:
+
+```text
+cargo test --test p3_execution_comparison --locked -- --ignored --nocapture
+```
+
+It reads every fixture above that P3 3.3 names (the `p3-local-rewrite`, `p3-scope`, `p3-handlers` and
+`historical/ecj-4.6.1/v52` samples and the whole `p3-corpus/` matrix), builds a method declaration for
+each member **from the run's own facts** (the payload's descriptor, access flags and parameter-slot
+count, and `MethodFacts::parameter_types`), compiles the recovered text under it with
+`javac --release 8`, and runs the original and the generated body side by side, comparing their
+traces line for line: return values, the order of the fixture's own output, the times its counter
+moved, and every exception with its suppressed exceptions. It is `#[ignore]`d so that `cargo test`
+stays green without a JDK, and CI's `stable` job runs it with `-- --ignored`. The samples' provenance,
+the flag matrix, the recorded tables and every boundary it found are in `p3-corpus/README.md`.
 
