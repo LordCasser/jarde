@@ -1,9 +1,10 @@
 use clap::Parser;
 use jarde::{
-    ArtifactInput, Budget, ClassTarget, ConsumerSchema, CountedBudgetDimension, Engine,
-    EngineBytecodeReport, EngineHeaderReport, EnumerationReport, Error, InspectionMode, JvmBytes,
-    Limits, MethodSelector, PhysicalEntry, PhysicalScope, PhysicalView, QueryCursor, QueryRelation,
-    QueryReport, QueryRequest, QueryTarget, UsageSnapshot,
+    AnalysisStage, ArtifactInput, Budget, ClassTarget, ConsumerSchema, CountedBudgetDimension,
+    Engine, EngineBytecodeReport, EngineHeaderReport, EnumerationReport, Error, InspectionMode,
+    JvmBytes, Limits, MethodAnalysisReport, MethodAnalysisRequest, MethodSelector, PhysicalEntry,
+    PhysicalMethodId, PhysicalScope, PhysicalView, QueryCursor, QueryRelation, QueryReport,
+    QueryRequest, QueryTarget, ResolutionEnvironment, UsageSnapshot,
 };
 use serde::{Deserialize, Serialize};
 use std::ffi::OsStr;
@@ -11,6 +12,7 @@ use std::fs::File;
 use std::io::{self, Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
+use std::slice;
 
 const MAX_REQUEST_BYTES: usize = 1024 * 1024;
 const MAX_RESPONSE_LENGTH_ITERATIONS: usize = 20;
@@ -36,9 +38,9 @@ struct Request {
 /// Deliberately hand-written instead of derived from `Limits`: `serde` can deserialize a
 /// struct with `#[serde(default)]`, but that would silently substitute zero (or any other
 /// fallback) for a limit the caller forgot, and this schema has no omit-means-default case.
-/// Every dimension stays required, including the six P2 dimensions the CLI accepts now and
-/// uses from 5.1 on, so a request that means to run P2 work cannot accidentally ask for
-/// "no limit" or "zero limit" by leaving a field out.
+/// Every dimension stays required, including the six P2 dimensions the method-analysis
+/// operation really spends, so a request that means to run P2 work cannot accidentally ask
+/// for "no limit" or "zero limit" by leaving a field out.
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct RequestLimits {
@@ -119,6 +121,26 @@ enum Operation {
         #[serde(default)]
         cursor: Option<Box<QueryCursor>>,
     },
+    /// One P2 method-analysis request, carrying the library [`MethodAnalysisRequest`] as it
+    /// stands: the environment, the method's physical identity and the requested stages.
+    ///
+    /// The adapter owns exactly one thing here, and it is not a field of the payload: it opens
+    /// `input_path` and hands *that* artifact to the library as the request's one content. The
+    /// snapshot identities inside the request — the runtime view's own and the `snapshot` roots
+    /// of the domains and providers — are therefore not rewritten, and a request that names
+    /// another artifact is answered by the library's own content check
+    /// (`resolution_snapshot_mismatch`) rather than silently re-pointed at this input. Every
+    /// field stays where the library put it, which is what makes the answer the library's own
+    /// report instead of a re-description of it.
+    AnalyzeMethod {
+        /// Boxed for the same reason the query cursor is: the environment is the largest field
+        /// any operation carries, and this adapter holds exactly one request at a time. `serde`
+        /// treats the box as the value it holds, so the JSON operation is the library's own
+        /// environment shape and nothing here is a second schema of it.
+        environment: Box<ResolutionEnvironment>,
+        method: PhysicalMethodId,
+        stages: Vec<AnalysisStage>,
+    },
 }
 
 #[derive(Deserialize)]
@@ -172,6 +194,7 @@ enum OperationResult {
     Header { report: EngineHeaderReport },
     Bytecode { report: EngineBytecodeReport },
     Query { report: QueryReport },
+    MethodAnalysis { report: MethodAnalysisReport },
 }
 
 #[derive(Serialize)]
@@ -335,6 +358,24 @@ fn execute(
             engine
                 .query(&snapshot, &request, budget)
                 .map(|report| OperationResult::Query { report })
+        }
+        Operation::AnalyzeMethod {
+            environment,
+            method,
+            stages,
+        } => {
+            // The one thing this adapter binds is the content, and it binds it by handing the
+            // snapshot it opened to the library: validation, scheduling, every phase of the
+            // pass table, the stop and the report are the library's, so the payload is the
+            // library's own request and the answer is the library's own report.
+            let request = MethodAnalysisRequest {
+                environment: *environment,
+                method,
+                stages,
+            };
+            engine
+                .analyze_method(slice::from_ref(&snapshot), &request, budget)
+                .map(|report| OperationResult::MethodAnalysis { report })
         }
     }
 }

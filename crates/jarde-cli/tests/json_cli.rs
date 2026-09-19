@@ -1,7 +1,12 @@
 use jarde::{
-    ArtifactInput, Budget, ClassTarget, Engine, EngineBytecodeReport, EngineHeaderReport,
-    EnumerationReport, ExecutionReport, InspectionMode, JvmBytes, Limits, MethodSelector,
-    UsageSnapshot, VerificationStatus,
+    AnalysisStage, ArtifactInput, ArtifactSnapshot, Budget, BudgetDimension, ClassTarget,
+    CompileStatus, DelegationPolicy, Engine, EngineBytecodeReport, EngineHeaderReport,
+    EnumerationReport, ExecutionReport, InspectionMode, JvmBytes, LayoutMode, Limits, LoadDomain,
+    LoadRoot, LoaderId, MethodAnalysisReport, MethodAnalysisRequest, MethodBodyState,
+    MethodSelector, ModuleMode, MultiReleasePolicy, PhysicalClassLocation, PhysicalDefinitionId,
+    PhysicalMethodId, PhysicalScope, PhysicalVariant, PhysicalView, Quality, Representation,
+    ResolutionEnvironment, RuntimeProfile, RuntimeUncertainty, RuntimeView, SemanticValidation,
+    StageState, SyntaxStatus, TerminationReason, UsageSnapshot, VerificationStatus,
 };
 use serde_json::{Value, json};
 use std::fs;
@@ -243,6 +248,142 @@ fn normalized_usage(usage: &UsageSnapshot) -> UsageSnapshot {
     let mut usage = usage.clone();
     usage.elapsed_millis = 0;
     usage
+}
+
+// --- the method-analysis operation -----------------------------------------------------
+
+/// The request limits the P2 method-analysis operation really spends.
+///
+/// The P1 operations of this file are answered from the byte dimensions, so their
+/// `limits(u64::MAX)` leaves every P2 counter at its fail-closed zero — which is exactly what a
+/// request that means to run the pipeline must not do, so the six dimensions `analyze_method`
+/// charges are funded here on top of the P1 ones.
+fn analysis_limits() -> Limits {
+    Limits {
+        class_headers: 4,
+        method_bodies: 4,
+        ir_items: 1 << 20,
+        ir_edges: 1 << 20,
+        analysis_steps: 1 << 20,
+        normalization_clones: 1 << 20,
+        dependency_depth: 4,
+        ..limits(u64::MAX)
+    }
+}
+
+/// One caller domain rooted at the fixture's own snapshot, and nothing else: the simplest
+/// environment the library's validator accepts without a problem.
+fn environment(snapshot: &ArtifactSnapshot) -> ResolutionEnvironment {
+    let domain = LoadDomain {
+        loader: LoaderId("app".to_string()),
+        parent_loader: None,
+        delegation: DelegationPolicy::ParentFirst,
+        roots: vec![LoadRoot::Snapshot {
+            snapshot: snapshot.id().clone(),
+        }],
+        module_mode: ModuleMode::ClassPath,
+        external_override: RuntimeUncertainty::None,
+        runtime_transformation: RuntimeUncertainty::None,
+    };
+    ResolutionEnvironment {
+        runtime: RuntimeView {
+            physical: PhysicalView {
+                snapshot: snapshot.id().clone(),
+                scope: PhysicalScope::SnapshotAll,
+            },
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            load_domain: domain.clone(),
+        },
+        domains: vec![domain],
+        providers: Vec::new(),
+    }
+}
+
+/// One method-analysis request for the fixture's `run()V`, with the physical identity the
+/// library's own reading of the artifact publishes.
+///
+/// The adapter under test binds the content by opening `input_path` and handing *that* snapshot
+/// to the library, so the request has to name the snapshot and the class-bytes digest of those
+/// very bytes. Both are asked of the library here (`open` and `inspect_header`, the public reads
+/// that derive them) rather than recomputed from the fixture, which is what keeps the two answers
+/// comparable and keeps this test free of a hashing dependency the CLI package does not declare.
+fn method_request(path: &Path, stages: Vec<AnalysisStage>) -> MethodAnalysisRequest {
+    let mut budget = Budget::new(analysis_limits());
+    let engine = Engine::new();
+    let snapshot = engine
+        .open(ArtifactInput::Path(path.to_path_buf()), &mut budget)
+        .expect("open the fixture for its identity");
+    let header = engine
+        .inspect_header(
+            &snapshot,
+            ClassTarget::Root,
+            &mut budget,
+            InspectionMode::Strict,
+        )
+        .expect("read the fixture's own class bytes identity");
+    MethodAnalysisRequest {
+        environment: environment(&snapshot),
+        method: PhysicalMethodId {
+            owner: PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: snapshot.id().clone(),
+                },
+                class_bytes: header.source.class_bytes,
+                variant: PhysicalVariant::Base,
+            },
+            name: JvmBytes(b"run".to_vec()),
+            descriptor: JvmBytes(b"()V".to_vec()),
+        },
+        stages,
+    }
+}
+
+/// The `analyze_method` operation of one library request: the payload is the library's own
+/// serialization plus the operation tag, so this adapter is not a second schema of it.
+fn method_operation(request: &MethodAnalysisRequest) -> Value {
+    let mut operation =
+        serde_json::to_value(request).expect("a method-analysis request serializes");
+    operation
+        .as_object_mut()
+        .expect("the request serializes as an object")
+        .insert("kind".to_string(), json!("analyze_method"));
+    operation
+}
+
+/// One report as JSON with every `elapsed_millis` removed: the one measurement two entry paths
+/// cannot share, and the only field the 5.1 acceptance lets them differ in.
+fn strip_elapsed(report: &MethodAnalysisReport) -> Value {
+    fn walk(value: &mut Value) {
+        match value {
+            Value::Object(fields) => {
+                fields.remove("elapsed_millis");
+                for child in fields.values_mut() {
+                    walk(child);
+                }
+            }
+            Value::Array(items) => {
+                for item in items {
+                    walk(item);
+                }
+            }
+            _ => {}
+        }
+    }
+    let mut value = serde_json::to_value(report).expect("a method-analysis report serializes");
+    walk(&mut value);
+    value
+}
+
+fn diagnostic_codes(report: &MethodAnalysisReport) -> Vec<&str> {
+    report
+        .diagnostics
+        .iter()
+        .map(|diagnostic| diagnostic.code.as_str())
+        .collect()
 }
 
 #[test]
@@ -553,4 +694,206 @@ fn request_larger_than_one_mib_is_rejected_before_json_parsing() {
         value["usage"],
         serde_json::to_value(UsageSnapshot::default()).unwrap()
     );
+}
+
+#[test]
+fn method_analysis_matches_direct_engine_field_by_field() {
+    let temp = TempDir::new();
+    let class_path = temp.write("Test.class", &class(&[0xb1]));
+    let request_limits = analysis_limits();
+    let analysis = method_request(&class_path, vec![AnalysisStage::Ssa]);
+
+    let output = run_stdin(
+        &request(&class_path, &request_limits, method_operation(&analysis)),
+        false,
+        false,
+    );
+    let value = assert_ok(&output, "method_analysis");
+    let cli_report: MethodAnalysisReport =
+        serde_json::from_value(value["result"]["report"].clone())
+            .expect("the CLI report deserializes as the library report type");
+
+    let engine = Engine::new();
+    let mut budget = Budget::new(request_limits);
+    let snapshot = engine
+        .open(ArtifactInput::Path(class_path), &mut budget)
+        .expect("open the fixture directly");
+    let direct_report = engine
+        .analyze_method(std::slice::from_ref(&snapshot), &analysis, &mut budget)
+        .expect("analyze the fixture directly");
+
+    // The whole document, not a chosen subset of it: a field this adapter dropped, reordered or
+    // rewrote would show up here even when no named plane below looks at that field. Only the
+    // wall clock is removed, because the two runs are two runs.
+    assert_eq!(strip_elapsed(&cli_report), strip_elapsed(&direct_report));
+    assert_eq!(cli_report.method, direct_report.method);
+    assert_eq!(cli_report.reads, direct_report.reads);
+
+    // The planes the 5.1 acceptance names, stated on the wire document of a request that ran the
+    // whole pipeline this build declares: bytecode, conservative, not Java, not compiled, local
+    // invariants as this run's own evidence, and the verifier still not performed.
+    assert_eq!(cli_report.representation, Representation::Bytecode);
+    assert_eq!(cli_report.quality, Quality::Conservative);
+    assert_eq!(cli_report.syntax_status, SyntaxStatus::NotJava);
+    assert_eq!(cli_report.compile_status, CompileStatus::NotAttempted);
+    assert_eq!(
+        cli_report.semantic_validation,
+        SemanticValidation::LocalInvariants
+    );
+    assert_eq!(cli_report.verification, VerificationStatus::NotPerformed);
+    assert_eq!(cli_report.body, MethodBodyState::Present);
+    assert_eq!(cli_report.requested_stages, vec![AnalysisStage::Ssa]);
+    assert_eq!(
+        cli_report
+            .stages
+            .iter()
+            .map(|stage| stage.state.clone())
+            .collect::<Vec<_>>(),
+        vec![StageState::Completed; 6]
+    );
+    assert!(matches!(
+        cli_report.execution,
+        ExecutionReport::Complete { .. }
+    ));
+    assert_eq!(value["result"]["report"]["execution"]["status"], "complete");
+}
+
+#[test]
+fn method_protocol_errors_are_transport_errors() {
+    let temp = TempDir::new();
+    let class_path = temp.write("Test.class", &class(&[0xb1]));
+    let request_limits = analysis_limits();
+    let well_formed = method_request(&class_path, vec![AnalysisStage::Ssa]);
+
+    // A stage name the schema does not know: the operation's own shape, refused like every other
+    // operation's protocol error, with the same code and the same empty usage.
+    let mut unknown_stage = method_operation(&well_formed);
+    unknown_stage["stages"] = json!(["ssa", "ssa_typo"]);
+    let output = run_stdin(
+        &request(&class_path, &request_limits, unknown_stage),
+        false,
+        false,
+    );
+    let value = assert_error_code(&output, "cli_request_json");
+    assert_eq!(value["error"]["kind"], "invalid_input");
+    assert_eq!(
+        value["usage"],
+        serde_json::to_value(UsageSnapshot::default()).unwrap()
+    );
+
+    // A required field left out, and a field this operation does not have: both are the same
+    // protocol error, because the operation is a closed schema.
+    let mut missing = method_operation(&well_formed);
+    missing
+        .as_object_mut()
+        .expect("the operation is an object")
+        .remove("stages");
+    let output = run_stdin(
+        &request(&class_path, &request_limits, missing),
+        false,
+        false,
+    );
+    assert_error_code(&output, "cli_request_json");
+
+    let mut unexpected = method_operation(&well_formed);
+    unexpected
+        .as_object_mut()
+        .expect("the operation is an object")
+        .insert(
+            "selector".to_string(),
+            json!({"name": [114, 117, 110], "descriptor": [40, 41, 86]}),
+        );
+    let output = run_stdin(
+        &request(&class_path, &request_limits, unexpected),
+        false,
+        false,
+    );
+    assert_error_code(&output, "cli_request_json");
+
+    // An input error of the *library* is a transport error too, not a report: the request names a
+    // snapshot this invocation did not open, and the adapter answers the library's own code
+    // instead of silently re-pointing the environment at its input.
+    let mut foreign_snapshot = method_operation(&well_formed);
+    foreign_snapshot["environment"]["runtime"]["physical"]["snapshot"] = json!("0".repeat(64));
+    let output = run_stdin(
+        &request(&class_path, &request_limits, foreign_snapshot),
+        false,
+        false,
+    );
+    let value = assert_error_code(&output, "resolution_snapshot_mismatch");
+    assert_eq!(value["error"]["kind"], "invalid_input");
+    assert!(
+        value["error"]["message"]
+            .as_str()
+            .is_some_and(|message| message.contains("snapshot")),
+        "the message names what the request and the input disagree about: {}",
+        value["error"]["message"]
+    );
+}
+
+#[test]
+fn a_method_analysis_stop_is_the_payload_of_a_successful_response() {
+    let temp = TempDir::new();
+    let class_path = temp.write("Test.class", &class(&[0xb1]));
+    let analysis = method_request(&class_path, vec![AnalysisStage::Ssa]);
+
+    // A budget that cannot fund the pipeline's work: the charge the run cannot make ends it, and
+    // that stop belongs to the *report* — an `ok` response carrying a `Partial` execution and the
+    // budget layer's own diagnostic, never an error of the control plane.
+    let mut stopped = analysis_limits();
+    stopped.analysis_steps = 0;
+    let output = run_stdin(
+        &request(&class_path, &stopped, method_operation(&analysis)),
+        false,
+        false,
+    );
+    let value = assert_ok(&output, "method_analysis");
+    let report: MethodAnalysisReport = serde_json::from_value(value["result"]["report"].clone())
+        .expect("the CLI report deserializes as the library report type");
+    assert!(matches!(
+        report.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::AnalysisSteps
+            },
+            ..
+        }
+    ));
+    assert_eq!(value["result"]["report"]["execution"]["status"], "partial");
+    assert_eq!(
+        diagnostic_codes(&report),
+        vec!["budget_exceeded_analysis_steps"]
+    );
+    assert_eq!(
+        report.quality,
+        Quality::Fallback,
+        "no canonical artifact was produced by a run that stopped inside the raw graph"
+    );
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::Unproven,
+        "a stopped run carries no semantic evidence"
+    );
+    // The stop is a phase's own state inside the report: the phase the refused charge ended is
+    // `Partial`, and every phase behind it never ran. The body the run had already read stays a
+    // fact of the report, because the stop did not unread it.
+    let stopped_at = report
+        .stages
+        .iter()
+        .position(|stage| stage.state != StageState::Completed)
+        .expect("a budget stop leaves a phase that did not complete");
+    assert_eq!(
+        report.stages[stopped_at].state,
+        StageState::Partial,
+        "the stopped phase is partial: {:?}",
+        report.stages
+    );
+    assert!(
+        report.stages[stopped_at + 1..]
+            .iter()
+            .all(|stage| stage.state == StageState::NotPerformed),
+        "no phase behind the stopped one ran: {:?}",
+        report.stages
+    );
+    assert_eq!(report.body, MethodBodyState::Present);
 }

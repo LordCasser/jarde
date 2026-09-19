@@ -7,7 +7,9 @@
 //! `quality`, `syntax_status`, `compile_status`, `semantic_validation` and `verification`.
 //! No plane is derived from another: a stage this build does not implement does not make the
 //! bytecode representation incomplete, and a complete bytecode range does not make an IR
-//! stage performed.
+//! stage performed. The one plane the run's own stage results decide is `semantic_validation`,
+//! which the phase that checks the local invariants raises and nothing else does — while
+//! `verification` stays `NotPerformed` however far the pipeline runs.
 //!
 //! This module owns the request shape ([`validate_request`]) and the report assembly
 //! ([`analysis_report`], from an [`AnalysisRun`]); the code that drives the stages themselves
@@ -135,11 +137,31 @@ pub enum CompileStatus {
 }
 
 /// Strongest semantic evidence that applies to this report.
+///
+/// The variants are evidence about *this build's own artifacts*, never about the artifact the
+/// request named: a report that states [`SemanticValidation::LocalInvariants`] still says
+/// nothing about whether the bytecode is legal — that is the verifier's question, which
+/// [`VerificationStatus`] answers — and nothing about the Java a decompiler would print.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SemanticValidation {
+    /// The local invariants this build is able to check **did** pass over the IR the run
+    /// published: exactly one definition per value, def-use agreement in both directions, one
+    /// phi input per logical predecessor, and one value behind the two slots of a category-2
+    /// pair.
+    ///
+    /// The evidence is the `ssa` phase's own: those checks are what that phase runs, and a body
+    /// that contradicts one of them is answered with `Inconsistent` (`ir_ssa_inconsistent`), so
+    /// a phase that reached `Completed` passed them. Nothing else raises this variant — not a
+    /// produced canonical CFG, not a complete coverage plane, and not 5.3's fixture
+    /// differential evidence, which is per-sample and cannot speak for an ordinary production
+    /// request.
     LocalInvariants,
+    /// A fixture differential (5.3) compared this report's artifact with an oracle. That is
+    /// per-sample evidence and is not claimed by a production request.
     FixtureDifferential,
+    /// No semantic evidence applies: the run stopped before the `ssa` phase completed, never
+    /// scheduled it, or was refused before it read anything.
     Unproven,
 }
 
@@ -195,6 +217,9 @@ pub struct MethodAnalysisReport {
     pub quality: Quality,
     pub syntax_status: SyntaxStatus,
     pub compile_status: CompileStatus,
+    /// The strongest semantic evidence this run itself produced, decided by the run's own
+    /// stage results — see [`SemanticValidation`] for what `LocalInvariants` does and does not
+    /// mean.
     pub semantic_validation: SemanticValidation,
     pub verification: VerificationStatus,
     /// Requested phases after normalization, in phase order.
@@ -349,10 +374,11 @@ pub(crate) fn terminal(error: &Error, usage: UsageSnapshot) -> (ExecutionReport,
 /// The environment problems and their diagnostics come first, then the run's diagnostics, which
 /// is the order 1.1 fixed for a rejected environment and keeps every problem visible next to
 /// the capability it prevented. The product planes are the P2 baseline (`Bytecode`, `NotJava`,
-/// `NotAttempted`, `Unproven`, `NotPerformed`); the quality plane is the run's own — see
-/// [`Quality`] for the rule 3.5 fixed — and `origin` stays empty because the IR payloads are
-/// crate-private in P2 (invariant 11): the report anchors the request by `method`, and 5.1 is
-/// where a published IR count would have to add its own field first.
+/// `NotAttempted`, `NotPerformed`); the quality plane is the run's own — see [`Quality`] for the
+/// rule 3.5 fixed — and `semantic_validation` is the run's evidence too, which is why only the
+/// phase that checks it can raise it ([`SemanticValidation`]); `origin` stays empty because the
+/// IR payloads are crate-private in P2 (invariant 11): the report anchors the request by
+/// `method`, and 5.1 is where a published IR count would have to add its own field first.
 pub(crate) fn analysis_report(
     request: &MethodAnalysisRequest,
     problems: Vec<EnvironmentProblem>,
@@ -361,6 +387,7 @@ pub(crate) fn analysis_report(
 ) -> MethodAnalysisReport {
     let mut diagnostics = environment_diagnostics(&problems);
     diagnostics.extend(run.diagnostics);
+    let semantic_validation = local_invariant_evidence(&run.stages);
     MethodAnalysisReport {
         environment_identity,
         environment_problems: problems,
@@ -373,7 +400,7 @@ pub(crate) fn analysis_report(
         quality: run.quality,
         syntax_status: SyntaxStatus::NotJava,
         compile_status: CompileStatus::NotAttempted,
-        semantic_validation: SemanticValidation::Unproven,
+        semantic_validation,
         verification: VerificationStatus::NotPerformed,
         requested_stages: request.normalized_stages(),
         stages: run.stages,
@@ -382,5 +409,27 @@ pub(crate) fn analysis_report(
         coverage: run.coverage,
         execution: run.execution,
         diagnostics,
+    }
+}
+
+/// The semantic evidence the stages of this run carry, and nothing else.
+///
+/// Local invariants are checked inside the `ssa` phase: a body that contradicts them is answered
+/// with `Inconsistent`, so the phase reports `Partial` under its own code and the run behind it
+/// is a stop, not a completion. A phase that reached `Completed` is therefore exactly the
+/// evidence that those checks passed — and no other stage state is evidence of anything: a
+/// scheduled-but-unreached phase, a phase this build stopped inside, and a phase the request
+/// never scheduled all leave the plane `Unproven`, like a refused environment that ran nothing.
+///
+/// Nothing here re-derives a stage state from another plane, and nothing here reads the caller's
+/// request: what a request asked for does not decide what it proved.
+fn local_invariant_evidence(stages: &[StageResult]) -> SemanticValidation {
+    let checked = stages
+        .iter()
+        .any(|stage| stage.stage == AnalysisStage::Ssa && stage.state == StageState::Completed);
+    if checked {
+        SemanticValidation::LocalInvariants
+    } else {
+        SemanticValidation::Unproven
     }
 }

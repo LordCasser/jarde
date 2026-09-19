@@ -25,7 +25,14 @@
 //!    contract): a definition that loader's order does not select stops the pass under
 //!    `resolution_definition_unbound` with its physical read still published, while a definition
 //!    the loader really provides performs the whole pipeline — the binding is the loader's own
-//!    decision, never snapshot equality.
+//!    decision, never snapshot equality;
+//! 7. 5.1's failure isolation, on classes that are not one finished method: two members of one
+//!    class are answered about themselves — a stop in one report is not a state of the other, and
+//!    neither request's body attempt reaches the other member — while a class whose **header**
+//!    cannot be decoded answers no member at all instead of fabricating a method result.
+//!
+//! Sections 1–6 are the 3.2/3.3/3.4 acceptance of the raw-CFG slice; section 7 is the 5.1
+//! contract over the same entry point.
 
 use jarde::*;
 use std::slice;
@@ -723,56 +730,73 @@ fn class_bytes(this_class: &[u8], major: u16, methods: &[SyntheticMethod<'_>]) -
 
 #[test]
 fn a_member_that_declares_no_body_is_a_fact_and_not_a_failed_pass() {
-    // `ACC_ABSTRACT` (0x0400) with no `Code` attribute: the declaration says there is no body,
-    // so no pass can run and the request is complete as far as its input allows.
-    let content = class_bytes(b"p/Shape", 52, &[(0x0401, b"area", b"()I", None)]);
-    let fixture = fixture(&content);
-    let method = PhysicalMethodId {
-        owner: fixture.definition.clone(),
-        name: bytes(b"area"),
-        descriptor: bytes(b"()I"),
-    };
-    let request = request(&fixture, method, vec![AnalysisStage::RawCfg]);
-    let (report, budget) = analyze(&fixture, &request, limits());
+    // `ACC_ABSTRACT` (0x0400) and `ACC_NATIVE` (0x0100), each with no `Code` attribute: the
+    // declaration says there is no body, so no pass can run and the request is complete as far as
+    // its input allows. The two kinds are separate facts of the declaration, not one "no body"
+    // bucket, so both are checked here — 5.1's acceptance names the pair.
+    for (access, kind) in [
+        (0x0401_u16, NoBodyKind::Abstract),
+        (0x0101, NoBodyKind::Native),
+    ] {
+        let content = class_bytes(b"p/Shape", 52, &[(access, b"area", b"()I", None)]);
+        let fixture = fixture(&content);
+        let method = PhysicalMethodId {
+            owner: fixture.definition.clone(),
+            name: bytes(b"area"),
+            descriptor: bytes(b"()I"),
+        };
+        let request = request(&fixture, method, vec![AnalysisStage::RawCfg]);
+        let (report, budget) = analyze(&fixture, &request, limits());
 
-    assert_eq!(
-        report.body,
-        MethodBodyState::DeclaredWithoutBody {
-            no_body_kind: NoBodyKind::Abstract
-        }
-    );
-    assert_eq!(
-        report
-            .stages
-            .iter()
-            .map(|result| result.state.clone())
-            .collect::<Vec<_>>(),
-        vec![StageState::NotPerformed, StageState::NotPerformed],
-        "no phase ran: there is nothing to analyze"
-    );
-    assert_eq!(
-        without_wall_clock(&report.execution),
-        ExecutionReport::Complete {
-            usage: counted_usage(&budget.usage()),
-        },
-        "a declaration without a body is not a failure"
-    );
-    assert_eq!(
-        diagnostic_codes(&report),
-        vec!["ir_method_declared_without_body"]
-    );
-    assert_eq!(
-        report.coverage,
-        Coverage::not_requested(),
-        "there is no body, so no BCI range was covered"
-    );
-    assert_eq!(budget.usage().class_headers, 1);
-    assert_eq!(
-        budget.usage().method_bodies,
-        0,
-        "a member without a body is never attempted"
-    );
-    assert_eq!(budget.usage().ir_items, 0);
+        assert_eq!(
+            report.body,
+            MethodBodyState::DeclaredWithoutBody { no_body_kind: kind },
+            "{kind:?} is the fact the declaration itself states"
+        );
+        assert_eq!(
+            report
+                .stages
+                .iter()
+                .map(|result| result.state.clone())
+                .collect::<Vec<_>>(),
+            vec![StageState::NotPerformed, StageState::NotPerformed],
+            "no phase ran: there is nothing to analyze"
+        );
+        assert_eq!(
+            without_wall_clock(&report.execution),
+            ExecutionReport::Complete {
+                usage: counted_usage(&budget.usage()),
+            },
+            "a declaration without a body is not a failure"
+        );
+        assert_eq!(
+            report.representation,
+            Representation::Bytecode,
+            "the representation plane is P2's, and a member without a body does not move it"
+        );
+        assert_eq!(
+            diagnostic_codes(&report),
+            vec!["ir_method_declared_without_body"]
+        );
+        assert_eq!(report.diagnostics[0].severity, DiagnosticSeverity::Info);
+        assert!(
+            report.diagnostics[0].message.contains(&format!("{kind:?}")),
+            "the diagnostic explains why no phase ran and names the kind the flags state: {}",
+            report.diagnostics[0].message
+        );
+        assert_eq!(
+            report.coverage,
+            Coverage::not_requested(),
+            "there is no body, so no BCI range was covered"
+        );
+        assert_eq!(budget.usage().class_headers, 1);
+        assert_eq!(
+            budget.usage().method_bodies,
+            0,
+            "a member without a body is never attempted"
+        );
+        assert_eq!(budget.usage().ir_items, 0);
+    }
 }
 
 #[test]
@@ -962,4 +986,202 @@ fn a_driver_definition_the_declared_loader_does_not_bind_stops_the_body_pass() {
     assert_eq!(bound.reads.len(), 1);
     assert_eq!(bound_budget.usage().class_headers, 1);
     assert_eq!(bound_budget.usage().method_bodies, 1);
+}
+
+// ---------------------------------------------------------------------------
+// 5.1: one class, several members — every report answers for its own member
+// ---------------------------------------------------------------------------
+
+/// The identity of one member of the fixture class, derived the way the request names it.
+fn member(fixture: &Fixture, name: &[u8], descriptor: &[u8]) -> PhysicalMethodId {
+    PhysicalMethodId {
+        owner: fixture.definition.clone(),
+        name: bytes(name),
+        descriptor: bytes(descriptor),
+    }
+}
+
+#[test]
+fn two_members_of_one_class_are_answered_about_themselves() {
+    // One class whose members do not share a fate. `ok()V` is a one-instruction body that runs the
+    // whole pipeline; `stop()V` consumes a `new` where only an initialized reference is meaningful
+    // and therefore stops the frame phase — the boundary 4.2 draws, not a claim about the bytes.
+    // Each request is answered about its own member, and the stop is not a state of the class: a
+    // request for `ok` made *after* the stop answers exactly what it answered before it.
+    let content = class_bytes(
+        b"p/Mixed",
+        52,
+        &[
+            (0x0009, b"ok", b"()V", Some(vec![0xb1])),
+            (
+                0x0009,
+                b"stop",
+                b"()V",
+                // 0: new p/Mixed (#2)  3: ifnull +3 -> 6  6: return
+                Some(vec![0xbb, 0x00, 0x02, 0xc6, 0x00, 0x03, 0xb1]),
+            ),
+        ],
+    );
+    let fixture = fixture(&content);
+    let ok = member(&fixture, b"ok", b"()V");
+    let stop = member(&fixture, b"stop", b"()V");
+
+    let (first_ok, first_ok_budget) = analyze(
+        &fixture,
+        &request(&fixture, ok.clone(), vec![AnalysisStage::Ssa]),
+        limits(),
+    );
+    assert_eq!(first_ok.method, ok);
+    assert_eq!(stage(&first_ok, AnalysisStage::Ssa), StageState::Completed);
+    assert_eq!(
+        without_wall_clock(&first_ok.execution),
+        ExecutionReport::Complete {
+            usage: counted_usage(&first_ok_budget.usage()),
+        }
+    );
+    assert_eq!(first_ok.body, MethodBodyState::Present);
+    assert_eq!(first_ok.quality, Quality::Conservative);
+    assert_eq!(
+        first_ok.semantic_validation,
+        SemanticValidation::LocalInvariants,
+        "the member that ran to the end carries its own evidence"
+    );
+    assert!(diagnostic_codes(&first_ok).is_empty());
+    assert_eq!(
+        first_ok_budget.usage().method_bodies,
+        1,
+        "one body attempt: the requested member's, not the class's"
+    );
+
+    let (stopped, stopped_budget) = analyze(
+        &fixture,
+        &request(&fixture, stop.clone(), vec![AnalysisStage::Ssa]),
+        limits(),
+    );
+    assert_eq!(stopped.method, stop);
+    assert_eq!(
+        stage(&stopped, AnalysisStage::Frame),
+        StageState::Partial,
+        "the boundary is inside the frame phase"
+    );
+    assert_eq!(
+        stage(&stopped, AnalysisStage::Ssa),
+        StageState::NotPerformed
+    );
+    assert!(matches!(
+        &stopped.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::Error { code },
+            ..
+        } if code == "ir_frame_deferred"
+    ));
+    assert_eq!(diagnostic_codes(&stopped), vec!["ir_frame_deferred"]);
+    assert_eq!(
+        stopped.body,
+        MethodBodyState::Present,
+        "the body was located and read: the stop is what the phase made of it"
+    );
+    assert_eq!(
+        stopped.semantic_validation,
+        SemanticValidation::Unproven,
+        "the phase that checks the local invariants never ran in this request"
+    );
+    assert_eq!(
+        stopped_budget.usage().method_bodies,
+        1,
+        "the stopping member's own body attempt, and only that one"
+    );
+
+    // The comparison that isolates the two reports: the same request as the first, made after the
+    // stopping one, is field by field the report it was before — and it charges the same counts.
+    let (again_ok, again_ok_budget) = analyze(
+        &fixture,
+        &request(&fixture, ok, vec![AnalysisStage::Ssa]),
+        limits(),
+    );
+    assert_eq!(
+        without_elapsed(&again_ok),
+        without_elapsed(&first_ok),
+        "a stopped member does not leak into another member's report"
+    );
+    assert_eq!(
+        counted_usage(&again_ok_budget.usage()),
+        counted_usage(&first_ok_budget.usage())
+    );
+}
+
+#[test]
+fn a_class_whose_header_cannot_be_read_fabricates_no_method_result() {
+    // The physical definition a request names is the bytes of a real class file, and here those
+    // bytes are a class file whose constant pool is cut off: the snapshot still opens (the magic
+    // is intact), and the failure happens where the class-level header is decoded. It is the
+    // class's own failure, so the answer about the member is no answer: no body fact, no coverage,
+    // no phase behind the read, and the code is the reader's.
+    let whole = class_bytes(
+        b"p/Broken",
+        52,
+        &[(0x0009, b"run", b"()V", Some(vec![0xb1]))],
+    );
+    let truncated = &whole[..16];
+    let fixture = fixture(truncated);
+    let run = member(&fixture, b"run", b"()V");
+    let request = request(&fixture, run.clone(), vec![AnalysisStage::Ssa]);
+    let (report, budget) = analyze(&fixture, &request, limits());
+
+    assert_eq!(report.method, run);
+    assert_eq!(
+        stage(&report, AnalysisStage::RawFacts),
+        StageState::Failed {
+            code: "classfile_decode".to_string()
+        },
+        "the class-level header read is the phase that failed"
+    );
+    assert!(
+        report.stages[1..]
+            .iter()
+            .all(|result| result.state == StageState::NotPerformed),
+        "no phase behind the failed read ran: {:?}",
+        report.stages
+    );
+    assert!(matches!(
+        &report.execution,
+        ExecutionReport::Failed {
+            reason: TerminationReason::Error { code },
+            ..
+        } if code == "classfile_decode"
+    ));
+    assert_eq!(diagnostic_codes(&report), vec!["classfile_decode"]);
+    assert_eq!(report.diagnostics[0].severity, DiagnosticSeverity::Error);
+    assert_eq!(
+        report.body,
+        MethodBodyState::NotInspected,
+        "the member's own bytes were never reached, so no body fact is stated"
+    );
+    assert!(
+        !matches!(
+            report.body,
+            MethodBodyState::Present | MethodBodyState::DeclaredWithoutBody { .. }
+        ),
+        "a class-level failure must not become a claim about the member"
+    );
+    assert_eq!(
+        report.coverage,
+        Coverage::not_requested(),
+        "no BCI range of the member was scanned or skipped"
+    );
+    assert_eq!(
+        budget.usage().method_bodies,
+        0,
+        "the body of a member of an undecodable class is never attempted"
+    );
+    assert_eq!(
+        budget.usage().class_headers,
+        1,
+        "the one header read failed"
+    );
+    assert_eq!(
+        report.quality,
+        Quality::Fallback,
+        "no canonical artifact was produced, so the quality plane is not `Conservative`"
+    );
 }

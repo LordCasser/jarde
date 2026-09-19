@@ -1808,6 +1808,13 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
         vec!["budget_exceeded_class_headers"]
     );
     assert!(counted_usage_is_zero(&budget.usage()));
+    // The semantic plane of a run that was refused before it read anything: the phase that
+    // checks the local invariants is scheduled here, but it never ran, so it proved nothing.
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::Unproven,
+        "a refused charge is not semantic evidence"
+    );
 
     // A single requested phase does not schedule the phases after it.
     let report = Engine::new()
@@ -1831,6 +1838,23 @@ fn method_analysis_normalizes_the_request_and_schedules_the_prerequisites() {
             AnalysisStage::CanonicalCfg,
             AnalysisStage::Frame,
         ]
+    );
+    // Every scheduled phase completed and the request is still `Unproven`: the phase that checks
+    // the local invariants is `ssa`, this request never scheduled it, and what a caller asked for
+    // does not decide what the run proved.
+    assert_eq!(
+        report
+            .stages
+            .iter()
+            .filter(|stage| stage.state == StageState::Completed)
+            .count(),
+        5,
+        "the whole scheduled prefix completed"
+    );
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::Unproven,
+        "a phase this build never scheduled proves nothing"
     );
 }
 
@@ -1945,9 +1969,13 @@ fn result_planes_are_reported_side_by_side_and_never_inferred() {
     assert_eq!(report.compile_status, CompileStatus::NotAttempted);
     assert_eq!(report.verification, VerificationStatus::NotPerformed);
     // The canonical CFG is the artifact this pipeline produces, and this run published one, so
-    // the quality plane is `Conservative` — while the run itself still ends on the phase this
-    // build does not implement, which is why the planes are reported side by side.
+    // the quality plane is `Conservative` — while the run itself still ends inside a phase, which
+    // is why the planes are reported side by side.
     assert_eq!(report.quality, Quality::Conservative);
+    // The semantic plane is the run's own evidence and this run carries none: the phase that
+    // checks the local invariants is the one the step budget stopped, so it never completed and
+    // proved nothing. `Unproven` is the honest state of a produced artifact beside a stopped run,
+    // and the two assertions on the same field below keep that from being read as a claim.
     assert_eq!(report.semantic_validation, SemanticValidation::Unproven);
     // The body plane states what was located: this run really read the member's body, and
     // `Present` says nothing about how much of the pipeline ran.

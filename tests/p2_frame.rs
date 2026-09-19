@@ -21,7 +21,10 @@
 //!    constructor call, that body performs no such call, and whether its bytes are legal at all
 //!    is the verifier's question, which this build answers with `NotPerformed`;
 //! 5. and in every case the product planes stay what they are: `verification` is `NotPerformed`
-//!    and the semantic evidence is `Unproven`. Deriving frames is not verifying a method.
+//!    — deriving frames is not verifying a method — while `semantic_validation` is the run's own
+//!    evidence and each test states it for the run it really performed: a request that reaches
+//!    `ssa` and completes it reports the local invariants that phase checked, and the request
+//!    that stops at the frame boundary reports `Unproven`.
 
 use jarde::*;
 use std::slice;
@@ -167,7 +170,11 @@ fn diagnostic(report: &MethodAnalysisReport, code: &str) -> DiagnosticSeverity {
         .severity
 }
 
-/// The four product planes a P2 report always states, whatever the run proved.
+/// The four product planes a P2 report always states, whatever the run proved: the P1 baseline
+/// and the verifier status this build never raises.
+///
+/// `semantic_validation` is deliberately not one of them: since 4.3 it is the run's own evidence,
+/// so each test below states it for the run that test really performed.
 fn assert_planes_stay_p1(report: &MethodAnalysisReport) {
     assert_eq!(report.representation, Representation::Bytecode);
     assert_eq!(report.syntax_status, SyntaxStatus::NotJava);
@@ -176,11 +183,6 @@ fn assert_planes_stay_p1(report: &MethodAnalysisReport) {
         report.verification,
         VerificationStatus::NotPerformed,
         "deriving frames is not verifying the method"
-    );
-    assert_eq!(
-        report.semantic_validation,
-        SemanticValidation::Unproven,
-        "4.1 proves local invariants of its own states, and 4.3 is what may raise this"
     );
 }
 
@@ -212,6 +214,13 @@ fn the_frame_phase_completes_a_body_without_any_debug_table() {
     assert_eq!(report.quality, Quality::Conservative);
     assert_eq!(report.body, MethodBodyState::Present);
     assert_planes_stay_p1(&report);
+    // The pipeline ran to its end, so the phase that checks the local invariants of the IR
+    // completed: the frames this run published are internally consistent by the one plane that
+    // states such evidence, and nothing here claims the bytes are legal.
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::LocalInvariants
+    );
 
     // The frames are derived storage and a worklist walk, so a request that reaches the phase
     // bills strictly more than the same request without it on both dimensions its row declares;
@@ -267,6 +276,13 @@ fn a_constructor_completes_because_its_constructor_call_converts_the_this() {
     assert_eq!(report.quality, Quality::Conservative);
     assert_eq!(report.body, MethodBodyState::Present);
     assert_planes_stay_p1(&report);
+    // `ssa` completed over the converted `this`, so the local invariants it checks passed over
+    // the IR this run published — one definition per value, and the alias the constructor call
+    // converted is one of them.
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::LocalInvariants
+    );
 }
 
 #[test]
@@ -320,6 +336,10 @@ fn an_uninitialized_value_used_as_a_reference_stays_the_boundary_of_this_build()
     );
     assert_eq!(report.body, MethodBodyState::Present);
     assert_planes_stay_p1(&report);
+    // The run stopped at the frame boundary: the phase behind it never ran, so this report
+    // carries no semantic evidence at all — `Unproven` is what a stop inside this build states,
+    // and it is not a claim that the body is damaged.
+    assert_eq!(report.semantic_validation, SemanticValidation::Unproven);
 }
 
 #[test]
@@ -330,8 +350,9 @@ fn a_pre_initialization_putfield_of_the_own_name_is_accepted_without_any_declare
     // same. `class_without_fields` is that shape at its sharpest — `fields_count` is zero and the
     // one field the pool names exists nowhere in the file — and the run derives the constructor's
     // frames instead of stopping at the boundary. Whether a body storing a field that no class
-    // declares is legal is the verifier's question, which is why the planes below still state
-    // `NotPerformed` and `Unproven`.
+    // declares is legal is the verifier's question, and this build answers it with
+    // `NotPerformed` — a different plane from the one the run's own completed `ssa` phase raises
+    // over the IR it published.
     //
     // 0  aload_0       the uninitialized `this`
     // 1  iconst_1      the value
@@ -360,6 +381,13 @@ fn a_pre_initialization_putfield_of_the_own_name_is_accepted_without_any_declare
     assert_eq!(report.quality, Quality::Conservative);
     assert_eq!(report.body, MethodBodyState::Present);
     assert_planes_stay_p1(&report);
+    // `ssa` completed over that body, so the local invariants of the published IR hold — the
+    // values of this method are defined once and used where they were named, whatever the
+    // verifier would say about the field the `putfield` names.
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::LocalInvariants
+    );
 }
 
 /// A real class file with one `Test.method()V` whose body the caller writes, and the constant pool

@@ -15,8 +15,10 @@
 //!    are published, and the termination is the budget layer's own;
 //! 4. and a cancellation is a cancellation, not a bound and not a set of names.
 //!
-//! In every case the product planes stay what they are: `verification` is `NotPerformed` and the
-//! semantic evidence is `Unproven`. Naming the values of a body is not verifying a method.
+//! In every case the product planes stay what they are: `verification` is `NotPerformed` — naming
+//! the values of a body is not verifying a method — while `semantic_validation` is the run's own
+//! evidence, so the request that completes the phase reports the local invariants it checked and
+//! the two runs that stop short of that report `Unproven`.
 
 use jarde::*;
 use std::slice;
@@ -146,13 +148,16 @@ fn diagnostic_codes(report: &MethodAnalysisReport) -> Vec<&str> {
         .collect()
 }
 
-/// The four product planes a P2 report always states, whatever the run proved.
+/// The four product planes a P2 report always states, whatever the run proved: the P1 baseline
+/// and the verifier status this build never raises.
+///
+/// `semantic_validation` is deliberately not one of them: since 4.3 it is the run's own evidence,
+/// so each test below states it for the run that test really performed.
 fn assert_planes_stay_p1(report: &MethodAnalysisReport) {
     assert_eq!(report.representation, Representation::Bytecode);
     assert_eq!(report.syntax_status, SyntaxStatus::NotJava);
     assert_eq!(report.compile_status, CompileStatus::NotAttempted);
     assert_eq!(report.verification, VerificationStatus::NotPerformed);
-    assert_eq!(report.semantic_validation, SemanticValidation::Unproven);
 }
 
 #[test]
@@ -185,6 +190,13 @@ fn the_ssa_phase_names_a_real_body_and_completes_the_pipeline() {
     assert_eq!(report.quality, Quality::Conservative);
     assert_eq!(report.body, MethodBodyState::Present);
     assert_planes_stay_p1(&report);
+    // This run's own evidence: the phase that checks the local invariants of the published IR —
+    // one definition per value, def-use agreement both ways, one phi input per logical
+    // predecessor, one value behind a category-2 pair — ran and completed.
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::LocalInvariants
+    );
     // The names are derived storage, so they are really billed: the phase's own row declares the
     // item and edge dimensions it charges.
     assert!(budget.usage().ir_items > 0);
@@ -272,6 +284,9 @@ fn a_step_budget_that_ends_the_ssa_phase_keeps_the_last_valid_phase() {
         "a published canonical graph is still the artifact of the run"
     );
     assert_planes_stay_p1(&report);
+    // The phase stopped inside itself, so it never reached the checks that would be this run's
+    // semantic evidence: `Partial` is not a completed phase and the plane stays `Unproven`.
+    assert_eq!(report.semantic_validation, SemanticValidation::Unproven);
 }
 
 #[test]
@@ -304,4 +319,7 @@ fn a_cancelled_request_publishes_no_names() {
         0,
         "a cancelled run publishes nothing"
     );
+    // Cancellation is not evidence either: no phase completed, so the run proved nothing about
+    // the local invariants — and `Cancelled` must not be read as a claim about the body.
+    assert_eq!(report.semantic_validation, SemanticValidation::Unproven);
 }
