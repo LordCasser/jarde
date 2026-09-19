@@ -2643,6 +2643,12 @@ pub(crate) enum FrameOutcome {
 /// handler for the same source — a named catch and a catch-all over one site is the shape — which
 /// is why the group is not the source alone: the records of the two edges are two groups, and the
 /// merge that built this state saw both of them.
+///
+/// The **count** is the invariant, not only the grouping: the records a block holds are exactly
+/// the contributions its entry state was merged from, one per distinct edge of the graph that
+/// feeds it. [`crate::frame::frames`] refuses a table whose two readings of that one fact
+/// disagree, because a record list that folded two edges into one group would state a block
+/// entered with a class none of the inputs it lists defines.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct LogicalInput {
     /// The block the state comes from.
@@ -2663,7 +2669,9 @@ pub(crate) struct BlockFrame {
     pub(crate) stack: Vec<Value>,
     /// One record per logical input this state was merged from, ordered by source block, then by
     /// the edge's exception-table ordinal — a plain transfer, whose ordinal is `None`, before the
-    /// exception edges of that source — and then by throw site.
+    /// exception edges of that source — and then by throw site. Their number is the number of
+    /// contributions the merge of this state really saw, which is what
+    /// [`crate::frame::frames`] checks before it publishes the table.
     pub(crate) inputs: Vec<LogicalInput>,
 }
 
@@ -2884,6 +2892,15 @@ fn replay(
 /// not an exception transfer carries `None`.
 type EdgeKey = (CanonicalBlockId, Option<u32>);
 
+/// Identity of one canonical edge as the *graph* states it: the node it leaves and its kind, which
+/// carries the exception-table ordinal of an exception transfer.
+///
+/// It is not [`EdgeKey`], and the difference is the point: the two are derived in two different
+/// places — this one from the canonical edge alone, `EdgeKey` from the edge the pass is walking —
+/// so counting the contributions by this one is what makes "the records are the contributions the
+/// merge saw" a statement about the graph instead of a restatement of the key.
+type EdgeIdentity = (CanonicalBlockId, CanonicalEdgeKind);
+
 /// The fixpoint itself, as [`frames`] documents it.
 fn run(
     facts: &MethodCodeFacts,
@@ -2935,6 +2952,17 @@ fn run(
     // by then — it runs per contribution, not per edge — so losing one record here would publish
     // a state whose own class no input it lists defines.
     let mut inputs: Vec<BTreeMap<EdgeKey, Vec<LogicalInput>>> =
+        vec![BTreeMap::new(); canonical.blocks.len()];
+    // The contributions each block's entry state was **merged from**, keyed by the canonical edge
+    // that carried them: one count per edge, set by that edge's last run, exactly like the record
+    // group above it. Two numbers describe one target — how many records it holds and how many
+    // contributions its merge saw — and they are equal for every block this pass publishes, which
+    // is the invariant the publish step below refuses a table for breaking. The count is per
+    // *edge* and not per group key on purpose: a key that folded two edges of the graph into one
+    // group leaves the two numbers disagreeing instead of hiding the fold, and duplicate edges of
+    // one (from, kind) — the same transfer stated twice by the canonization — are one entry, since
+    // the merge of an identical contribution twice is that contribution.
+    let mut merged: Vec<BTreeMap<EdgeIdentity, u64>> =
         vec![BTreeMap::new(); canonical.blocks.len()];
     entries[entry] = Some(first);
     let mut worklist = VecDeque::from([entry]);
@@ -2996,6 +3024,7 @@ fn run(
                 }
             };
             let target_id = &canonical.blocks[*target].id;
+            let fed = u64::try_from(contributions.len()).unwrap_or(u64::MAX);
             let mut records = Vec::with_capacity(contributions.len());
             for (incoming, throw_site) in contributions {
                 budget.charge(CountedBudgetDimension::IrItems, 1)?;
@@ -3029,6 +3058,10 @@ fn run(
                 },
             );
             inputs[*target].insert(key, records);
+            // The same statement that records the group counts the contributions this edge handed
+            // the merge: `fed` is the length of the very list the group was built from, so the two
+            // numbers agree here and can only be made to disagree by a later run of this edge.
+            merged[*target].insert((block.id.clone(), *kind), fed);
         }
     }
 
@@ -3047,6 +3080,22 @@ fn run(
         missing.is_empty(),
         "every canonical block is reached or listed as unreachable, found {missing:?}"
     );
+
+    // The invariant this pass owes the graph, and the reason it is checked **here** rather than
+    // left to the pass behind: the logical input records of a block are the contributions its
+    // entry state was merged from. Both are built in one statement of the walk above — the records
+    // the merge was handed, and the count of them under the edge that carried them — so a block
+    // whose two numbers disagree holds a record list that folded some of the graph's edges into
+    // one group. That is a defect of this pass's own bookkeeping and not a fact about the method,
+    // and it has to be refused as such: a folded list states a block entered with a class no input
+    // it lists defines, and the phase behind would report the *bytes* as self-contradictory for it
+    // (`ir_ssa_inconsistent`, on a legal body). Refusing keeps the defect where it was made.
+    //
+    // The check is a named function of its own so the refusal can be driven with the two readings
+    // of one fact directly (see the unit test), instead of only through a body that folds them.
+    for (position, (records, contributions)) in inputs.iter().zip(merged.iter()).enumerate() {
+        records_are_the_contributions(&canonical.blocks[position].id, records, contributions)?;
+    }
 
     let deepest_stack = entries
         .iter()
@@ -3076,6 +3125,49 @@ fn run(
         locals_slots: usize::from(facts.max_locals),
         deepest_stack,
     })
+}
+
+/// The invariant of one block's published record list: **the records it holds are the
+/// contributions its entry state was merged from**.
+///
+/// The two numbers are two readings of one fact — the walk above writes the group and the count of
+/// the very same contributions in one statement — so a block whose record list folded two edges of
+/// the graph into one group is a block whose list states fewer inputs than its state was built
+/// from. Such a state is entered with a class none of the inputs it lists defines: the merge took
+/// both edges' contributions, the list kept only one of their records, and the phase behind reads
+/// the disagreement as a contradiction of the *bytes*. It is not one, so the record list is refused
+/// here, where the two halves of the fact still sit next to each other.
+///
+/// `contributions` is keyed by the **edge the graph states** ([`EdgeIdentity`]) rather than by the
+/// group key the list is keyed with, which is what gives this check teeth: counting the
+/// contributions under the same key the records are grouped by would restate the grouping instead
+/// of comparing it with the graph. Duplicate edges of one `(from, kind)` are one entry on purpose —
+/// a transfer the canonization states twice hands the merge the same contribution twice, and the
+/// merge of a contribution with itself is that contribution.
+///
+/// A refusal is [`Problem::Inconsistent`], the module's own code for two artifacts of one run that
+/// must agree and do not; it is the same path the other graph defects of this pass are refused
+/// through (an edge naming a block the graph does not hold, an exception edge whose record no row
+/// states).
+fn records_are_the_contributions(
+    block: &CanonicalBlockId,
+    records: &BTreeMap<EdgeKey, Vec<LogicalInput>>,
+    contributions: &BTreeMap<EdgeIdentity, u64>,
+) -> Norm<()> {
+    let held: u64 = records
+        .values()
+        .map(|group| u64::try_from(group.len()).unwrap_or(u64::MAX))
+        .sum();
+    let merged_from: u64 = contributions.values().copied().sum();
+    if held != merged_from {
+        return inconsistent(format!(
+            "block {block:?} holds {held} logical input record(s) for the {} edge(s) that feed it, \
+             while its entry state was merged from {merged_from} contribution(s): the records and \
+             the merge are two readings of one fact and cannot disagree",
+            contributions.len()
+        ));
+    }
+    Ok(())
 }
 
 /// Charges a run of derived frame slots, **before** the storage they count is allocated.
@@ -5652,6 +5744,77 @@ mod tests {
                 },
             ],
             "the join names both arms, with no throw site: a plain transfer is not an exception"
+        );
+    }
+
+    /// The check the publish step runs on every block, driven with the two readings of one fact
+    /// **directly**: the records a block holds against the contributions its merge saw.
+    ///
+    /// A folded record list is the defect the grouping key of [`run`] used to have — two exception
+    /// edges of one source into one handler, and one group left for both of them — and it is a
+    /// legal body of the graph, so no body can be written that makes this check fail while the pass
+    /// is correct. It is therefore pinned here: the same list under one key is refused, the same
+    /// list under the graph's two keys is accepted, and the count of the edges is what the refusal
+    /// names. A check that a mutation turns into `debug_assert!`, or that someone relaxes into "the
+    /// list is non-empty", fails this test long before the phase behind reports the bytes as
+    /// self-contradictory.
+    #[test]
+    fn a_record_list_that_folded_two_edges_into_one_group_is_refused() {
+        let source = CanonicalBlockId {
+            bci: 4,
+            path: Vec::new(),
+        };
+        let handler = CanonicalBlockId {
+            bci: 11,
+            path: Vec::new(),
+        };
+        let record = LogicalInput {
+            from: source.clone(),
+            throw_site: Some(5),
+        };
+        // The two edges the graph holds: one handler named by two records, which is what makes
+        // them two edges of one source and one target.
+        let contributions: BTreeMap<EdgeIdentity, u64> = BTreeMap::from([
+            (
+                (
+                    source.clone(),
+                    CanonicalEdgeKind::Exception { handler_ordinal: 0 },
+                ),
+                1,
+            ),
+            (
+                (
+                    source.clone(),
+                    CanonicalEdgeKind::Exception { handler_ordinal: 2 },
+                ),
+                1,
+            ),
+        ]);
+        let folded: BTreeMap<EdgeKey, Vec<LogicalInput>> =
+            BTreeMap::from([((source.clone(), Some(2)), vec![record.clone()])]);
+        let message = match records_are_the_contributions(&handler, &folded, &contributions) {
+            Err(Problem::Inconsistent(message)) => message,
+            Err(_) => panic!(
+                "a fold is refused through the module's own contradiction code, not as a budget \
+                 stop or a boundary of this build"
+            ),
+            Ok(()) => panic!("a folded record list must be refused"),
+        };
+        assert!(
+            message.contains("1 logical input record(s)") && message.contains("2 contribution(s)"),
+            "the refusal states both readings of the fact: {message}"
+        );
+        assert!(
+            message.contains("2 edge(s)"),
+            "and the graph's own count, which is what the grouping must answer for: {message}"
+        );
+        let kept: BTreeMap<EdgeKey, Vec<LogicalInput>> = BTreeMap::from([
+            ((source.clone(), Some(0)), vec![record.clone()]),
+            ((source.clone(), Some(2)), vec![record]),
+        ]);
+        assert!(
+            records_are_the_contributions(&handler, &kept, &contributions).is_ok(),
+            "two groups answer for the graph's two edges"
         );
     }
 }

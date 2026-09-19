@@ -412,9 +412,10 @@ fn a_pre_initialization_putfield_of_the_own_name_is_accepted_without_any_declare
 
 /// One record of a `Code` attribute's `exception_table` (JVMS 4.7.3).
 ///
-/// The fixtures below use `catch_type = 0` only — the catch-all record, which names no class and
+/// Most fixtures below use `catch_type = 0` only — the catch-all record, which names no class and
 /// therefore needs no constant-pool entry — so the class builder of this file holds the pool both
-/// written fixtures already share.
+/// written fixtures already share. The one fixture whose records name a class states its own pool
+/// ([`two_catch_types_one_handler_class`]), because the class it names has to be an entry of it.
 #[derive(Clone, Copy)]
 struct ExceptionRecord {
     start_pc: u16,
@@ -789,6 +790,165 @@ const OVERLAP_MIXED: &[u8] =
 #[test]
 fn two_records_naming_one_handler_still_hand_it_both_inputs() {
     let fixture = fixture_of(OVERLAP_MIXED, b"guarded", b"(I)I");
+    let (report, _) = analyze(&fixture, vec![AnalysisStage::Ssa], limits());
+    assert_eq!(
+        stage_states(&report),
+        vec![StageState::Completed; 6],
+        "both records' states reach the handler and every phase completes: {:?}",
+        report.diagnostics
+    );
+    assert!(
+        diagnostic_codes(&report).is_empty(),
+        "neither the frames nor the names over them stopped: {:?}",
+        report.diagnostics
+    );
+    assert!(matches!(report.execution, ExecutionReport::Complete { .. }));
+    assert_eq!(report.quality, Quality::Conservative);
+    assert_eq!(report.body, MethodBodyState::Present);
+    assert_planes_stay_p1(&report);
+    assert_eq!(
+        report.semantic_validation,
+        SemanticValidation::LocalInvariants
+    );
+}
+
+/// The class file of the **distinguishable** two-records-one-handler shape: one throw site, two
+/// records naming one handler, and the two records catch two *different* classes.
+///
+/// `Test.method()V`, static, `max_stack` 2, `max_locals` 1, at class-file version 49 (a body of
+/// this shape needs no `StackMapTable`, and the frame slice never reads one):
+///
+/// ```text
+///  0: iconst_1        block A, the entry
+///  1: iconst_0
+///  2: idiv            the body's one throw site, covered by both records
+///  3: pop
+///  4: return
+///  5: pop             the handler both records name
+///  6: return
+/// exception_table:
+///   record 0: start_pc=0, end_pc=3, handler_pc=5, catch_type=#9  (java/lang/RuntimeException)
+///   record 1: start_pc=0, end_pc=3, handler_pc=5, catch_type=#11 (java/lang/Throwable)
+/// ```
+///
+/// The two records hand the handler two **named** classes this layer keeps apart — it holds no
+/// class hierarchy, so it does not see that one is a subtype of the other — and the merge of two
+/// different named references is the conservative unknown one. That is what makes the fold visible
+/// from the bytecode plan alone: the handler's entry state is the unknown reference while *either*
+/// record's own class is a name, so a source-keyed list of inputs that kept one record for the two
+/// edges leaves a state and an input stating two different classes, whichever of the two records it
+/// kept. The review's seven probes were the other arrangement — a named catch and a catch-all over
+/// one site — and that one can pass before and after the key change, because the catch-all's
+/// unknown reference is what the merge states anyway; this case exists so the regression cannot be
+/// answered by a shape like that.
+///
+/// The order of the two records is part of the shape: the canonical graph sorts the exception edges
+/// of one source by the record's own ordinal, so the record written last is the one a source-keyed
+/// list keeps.
+fn two_catch_types_one_handler_class() -> Vec<u8> {
+    /// The body above: one `idiv`, the fall-through `return`, and the handler both records name.
+    const CODE: &[u8] = &[
+        0x04, 0x03, 0x6c, 0x57, // 0: iconst_1; 1: iconst_0; 2: idiv; 3: pop
+        0xb1, // 4: return
+        0x57, 0xb1, // 5: pop; 6: return (the handler both records name)
+    ];
+    let mut pool = Vec::new();
+    utf8(&mut pool, b"Test"); // 1
+    class(&mut pool, 1); // 2
+    utf8(&mut pool, b"java/lang/Object"); // 3
+    class(&mut pool, 3); // 4
+    utf8(&mut pool, b"method"); // 5
+    utf8(&mut pool, b"()V"); // 6
+    utf8(&mut pool, b"Code"); // 7
+    utf8(&mut pool, b"java/lang/RuntimeException"); // 8
+    class(&mut pool, 8); // 9
+    utf8(&mut pool, b"java/lang/Throwable"); // 10
+    class(&mut pool, 10); // 11
+
+    let mut content = code_attribute_with(
+        CODE,
+        2,
+        1,
+        &[
+            ExceptionRecord {
+                start_pc: 0,
+                end_pc: 3,
+                handler_pc: 5,
+                catch_type: 9,
+            },
+            ExceptionRecord {
+                start_pc: 0,
+                end_pc: 3,
+                handler_pc: 5,
+                catch_type: 11,
+            },
+        ],
+    );
+    let mut method = method(0x0009, 5, 6, &mut content);
+
+    let mut bytes = header_at(12, 49);
+    bytes.extend_from_slice(&pool);
+    class_tail(&mut bytes, 2, 4, &mut method);
+    bytes
+}
+
+/// The same defect as the seed above, in the arrangement that can be **told apart** from a correct
+/// run: two records of one exception table naming one handler for one source block, catching two
+/// different classes, neither of them the catch-all.
+///
+/// The seed's records are a named catch and a catch-all, and the review's probes were shaped the
+/// same way — a probe whose surviving record is the catch-all states the unknown reference the
+/// merge states anyway, so it passed before and after the key change and proved nothing. Here both
+/// records name a class, so the handler is entered with the unknown reference of their conservative
+/// merge while the input a fold keeps defines a name: the two readings of one fact state two
+/// different classes, whatever the fold keeps, and the run reports a legal body as contradicting
+/// itself — `ir_ssa_inconsistent` when the record list was keyed by the source block and nothing
+/// counted it, `ir_frame_inconsistent` now that the frame pass counts its own records against the
+/// contributions it merged.
+///
+/// Both halves are asserted: the bytecode plan states the shape this case is about — two records,
+/// one handler, two different catch types — and the analysis over the same bytes completes every
+/// phase this build implements and reports nothing.
+#[test]
+fn the_two_records_of_one_handler_are_read_in_the_order_that_shows_a_fold() {
+    let class = two_catch_types_one_handler_class();
+    // The shape itself, read through 1.2's own inspection rather than assumed from the bytes
+    // written above: two records, one handler, different catch types. A fixture that lost that
+    // shape would stop exercising the defect and must fail here instead of passing quietly.
+    let mut budget = Budget::new(limits());
+    let snapshot = Engine::new()
+        .open(ArtifactInput::bytes(class.clone()), &mut budget)
+        .expect("the fixture opens as a standalone CLASS");
+    let inspected = Engine::new()
+        .inspect_method_bytecode(
+            &snapshot,
+            ClassTarget::Root,
+            MethodSelector {
+                name: bytes(b"method"),
+                descriptor: bytes(b"()V"),
+            },
+            &mut budget,
+        )
+        .expect("the 1.2 inspection reads the body of this class");
+    let handlers = &inspected.inspection.exception_handlers;
+    assert_eq!(handlers.len(), 2, "two records");
+    assert!(
+        handlers
+            .iter()
+            .all(|record| (record.start_bci, record.end_bci, record.handler_bci) == (0, 3, 5)),
+        "both cover the same range and name the same handler: {handlers:?}"
+    );
+    assert_eq!(
+        handlers
+            .iter()
+            .map(|record| record.catch_type_index)
+            .collect::<Vec<_>>(),
+        vec![Some(9), Some(11)],
+        "the two records name two different classes: the handler's merge is the unknown reference \
+         and neither record's own class is it"
+    );
+
+    let fixture = fixture_of(&class, b"method", b"()V");
     let (report, _) = analyze(&fixture, vec![AnalysisStage::Ssa], limits());
     assert_eq!(
         stage_states(&report),

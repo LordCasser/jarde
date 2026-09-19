@@ -12,7 +12,10 @@
 
 use jarde_reader::artifact::ArtifactSnapshot;
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
-use jarde_reader::classfile::{BytecodeStop, CpEntryFacts, MemberHeader, MethodCodeFacts};
+use jarde_reader::classfile::{
+    BytecodeStop, CpEntryFacts, MemberHeader, MethodCodeFacts, VersionCapability,
+    version_rule_diagnostic,
+};
 use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
     Coverage, Diagnostic, DiagnosticSeverity, ExecutionReport, TerminationReason,
@@ -180,9 +183,12 @@ fn run_method_analysis(
     let mut ledger = FactLedger::new();
     let mut stop: Option<ExecutionReport> = None;
     let mut facts: Option<MethodCodeFacts> = None;
-    // The class file's dialect and the raw graph of this run: `legacy_normalization` reads both,
-    // and both are facts of the passes that already completed.
-    let mut major_version: Option<u16> = None;
+    // The class file's version, as the reader classifies it, and the raw graph of this run:
+    // `legacy_normalization` reads both, and both are facts of the passes that already completed.
+    // The classification travels with the read instead of the two version fields coming back
+    // together, so the rules that decide a dialect are read from one authority — the reader's own
+    // (`jarde_reader::classfile::version_capability`) — rather than restated per pass.
+    let mut version: Option<VersionCapability> = None;
     let mut raw: Option<crate::cfg::RawCfgOutcome> = None;
     // The call contexts 3.4b established, kept for `canonical_cfg` (3.5): the payload stays in
     // this run, so the cloning pass consumes the proven contexts instead of re-deriving them.
@@ -212,10 +218,10 @@ fn run_method_analysis(
                 let decoded = match read_driver_method(content, request, &mut run, budget) {
                     Ok(DriverRead::Decoded {
                         facts,
-                        major_version: version,
+                        version: read_version,
                         declaration: read_declaration,
                     }) => {
-                        major_version = Some(version);
+                        version = Some(read_version);
                         declaration = Some(read_declaration);
                         *facts
                     }
@@ -308,7 +314,7 @@ fn run_method_analysis(
             }
             IrPhase::LegacyNormalization => {
                 let (Some(decoded), Some(raw), Some(version)) =
-                    (facts.as_ref(), raw.as_ref(), major_version)
+                    (facts.as_ref(), raw.as_ref(), version.as_ref())
                 else {
                     // The pass requires the facts of the two passes before it, so a run that
                     // reached it without them is the ledger's own `ir_pass_prerequisite_missing`
@@ -321,7 +327,44 @@ fn run_method_analysis(
                     }
                     break;
                 };
-                match crate::call_context::call_contexts(decoded, raw, version, budget) {
+                // The format's own version rule comes first, because this is the phase that reads
+                // the class file's version at all: a major below the minimum the format defines,
+                // or a modern minor that is neither 0 nor 65535, is not a dialect to normalize but
+                // a version the format has no class file for. The verdict and its wording are the
+                // reader's own — the same code, message and `Error` severity the header plan
+                // publishes for these bytes — and the run keeps what the phases before this one
+                // produced: the raw facts and the raw graph of the body stay published, nothing
+                // canonical is built over them, and the reason travels with them.
+                //
+                // Whether such a body is *readable* is a different question and stays a different
+                // plane: the decode of the body and its coverage are the `raw_facts` facts above,
+                // and `verification` stays `NotPerformed` whatever this refusal says about the
+                // version.
+                if let Some(refusal) = version_rule_diagnostic(version) {
+                    let code = refusal.code.clone();
+                    run.stages[index].state = StageState::Failed { code: code.clone() };
+                    run.diagnostics.push(Diagnostic {
+                        code: code.clone(),
+                        severity: refusal.severity,
+                        message: format!(
+                            "{}: the raw facts and the raw graph of this body are kept, and the \
+                             method builds no call contexts",
+                            refusal.message
+                        ),
+                        provenance: None,
+                    });
+                    stop = stop.or(Some(ExecutionReport::Failed {
+                        reason: TerminationReason::Error { code },
+                        usage: budget.usage(),
+                    }));
+                    break;
+                }
+                match crate::call_context::call_contexts(
+                    decoded,
+                    raw,
+                    version.version.major,
+                    budget,
+                ) {
                     Ok(crate::call_context::CallContextOutcome::Established(established)) => {
                         if let Err(error) = ledger.apply(pass) {
                             let (execution, diagnostic) =
@@ -664,14 +707,15 @@ fn run_method_analysis(
 ///
 /// The decoded facts are boxed because they are much larger than the alternative: the enum is
 /// built once per request and passed on to the next pass, and the indirection keeps the common
-/// path from moving a `MethodCodeFacts` by value twice. The class file's own major version
-/// travels with them because the dialect decisions of the later passes are the class file's
-/// version alone and nothing else ([`crate::ir::AnalysisStage::LegacyNormalization`]).
+/// path from moving a `MethodCodeFacts` by value twice. The class file's version travels with them
+/// — as the reader classifies it, which is what the format's own version rule needs — because the
+/// dialect decisions of the later passes are the class file's version alone and nothing else
+/// ([`crate::ir::AnalysisStage::LegacyNormalization`]).
 enum DriverRead {
     /// The member has a body and the reader decoded (at least a prefix of) it.
     Decoded {
         facts: Box<MethodCodeFacts>,
-        major_version: u16,
+        version: VersionCapability,
         /// The declaration facts the later passes need beside the body.
         declaration: FrameDeclaration,
     },
@@ -819,8 +863,12 @@ fn read_driver_method(
     Ok(DriverRead::Decoded {
         facts: Box::new(decoded),
         // The dialect of the later passes is the class file's version and nothing else, so it
-        // is read here, once, from the same header the member was located in.
-        major_version: read.header.facts.major_version,
+        // is classified here, once, from the same header the member was located in: the reader's
+        // own rule over the two version fields, not a second reading of them.
+        version: jarde_reader::classfile::version_capability(
+            read.header.facts.major_version,
+            read.header.facts.minor_version,
+        ),
         // The same read carries the declaration facts the `frame` pass needs. The constant pool
         // is *moved* out of the header facts: this request keeps one copy of it, and the pool of
         // no other class is read for it.

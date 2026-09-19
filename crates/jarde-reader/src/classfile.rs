@@ -867,11 +867,29 @@ fn classify_version(major: u16, minor: u16) -> VersionCapability {
     }
 }
 
-fn version_diagnostics(capability: &VersionCapability) -> Vec<Diagnostic> {
-    let mut diagnostics = Vec::new();
+/// The version rule of one class-file version, as this reader classifies it, from the two fields
+/// alone and without reading the bytes they came from.
+///
+/// [`inspect_header`] applies the rule to the header it read; a caller that already holds the
+/// version fields — a method-analysis request reads the header by identity instead of through
+/// 1.2's inspection — asks this function instead of restating the rule, so the two plans cannot
+/// drift apart. `major` below 45 is below the minimum the format defines, and a `minor` that is
+/// neither `0` nor `65535` contradicts a major of 56 or above (JVMS 4.1).
+pub fn version_capability(major: u16, minor: u16) -> VersionCapability {
+    classify_version(major, minor)
+}
+
+/// The refusal the format's own version rule states for one version, if the version violates it.
+///
+/// The diagnostic is the very one [`inspect_header`] publishes for the same version — the reader's
+/// own code, message and `Error` severity — so a caller that refuses an illegal version states the
+/// fact the header plan states instead of inventing a second wording. `None` for a version the rule
+/// accepts, whatever dialect support this build has for it: what a version *is* and what this build
+/// supports of it are two different statements, and only the first one is a refusal.
+pub fn version_rule_diagnostic(capability: &VersionCapability) -> Option<Diagnostic> {
     match capability.version_rule {
-        VersionRuleStatus::Valid => {}
-        VersionRuleStatus::InvalidMajor => diagnostics.push(version_diagnostic(
+        VersionRuleStatus::Valid => None,
+        VersionRuleStatus::InvalidMajor => Some(version_diagnostic(
             "classfile_invalid_major_version",
             DiagnosticSeverity::Error,
             format!(
@@ -879,7 +897,7 @@ fn version_diagnostics(capability: &VersionCapability) -> Vec<Diagnostic> {
                 capability.version.major
             ),
         )),
-        VersionRuleStatus::InvalidModernMinor => diagnostics.push(version_diagnostic(
+        VersionRuleStatus::InvalidModernMinor => Some(version_diagnostic(
             "classfile_invalid_modern_minor_version",
             DiagnosticSeverity::Error,
             format!(
@@ -888,6 +906,11 @@ fn version_diagnostics(capability: &VersionCapability) -> Vec<Diagnostic> {
             ),
         )),
     }
+}
+
+fn version_diagnostics(capability: &VersionCapability) -> Vec<Diagnostic> {
+    let mut diagnostics: Vec<Diagnostic> =
+        version_rule_diagnostic(capability).into_iter().collect();
     match capability.version_dialect_support {
         VersionDialectSupport::Supported => {}
         VersionDialectSupport::StructuralProbeOnly => diagnostics.push(version_diagnostic(

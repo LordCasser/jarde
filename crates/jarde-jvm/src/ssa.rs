@@ -65,6 +65,19 @@
 //! rewritten are the records held" an exact count — the one check [`Assigner::replace`] makes —
 //! rather than a count with an exception for the phi a replacement left holding its own value.
 //!
+//! **Dropping those records is a by-block decision, not a positional one.** Which record answers
+//! for which occurrence is not a fact either order of the table states: an entry record holds the
+//! block whose phi carries the occurrence and nothing else, and the orders the two sides are
+//! *written* in differ. [`Assigner::complete`] pushes one entry record per participant while the
+//! block that holds the phi resolves them — so a value's entry records are in the order its
+//! consumer blocks were completed, with a block a missing source woke later pushing again at the
+//! end — while [`Assigner::replace`] rewrites the phi operands in [`Assigner::phis`] table order,
+//! which is the order the phis were created in. Nothing ties those two traversals together, so
+//! "the first N entry records" can take the records of blocks whose occurrences were not the
+//! rewritten ones while the totals still add up, and both blocks would then publish a def-use edge
+//! the other holds. The drop is therefore counted per block, and a block whose occurrences ask for
+//! more records than it holds is a refusal rather than a silent misattribution.
+//!
 //! **The replaced phi's origins are not merged into the target.** The target is still defined
 //! exactly once — by an instruction, by the entry state, by a caught reference or by a phi of its
 //! own — and its `OriginSet` states where that one definition came from; the replaced value stays
@@ -1599,6 +1612,21 @@ impl Assigner {
     /// it, so the count above stays the exact equality it states and no phi ever publishes its own
     /// value as a `Value` operand. See the module documentation, "a self-reference has one
     /// spelling".
+    ///
+    /// Which records those are is decided **by block**, never by position in the list. A record of
+    /// an entry carries nothing but the block whose phi holds the occurrence — that is the whole
+    /// identity the table states for it — while the list order is another fact entirely: an entry
+    /// record is pushed by [`Assigner::complete`] as that block resolves its participants, so the
+    /// entries of one value are in the order its consumer blocks were completed, and a block a
+    /// missing source woke later pushes again at the end. This function, by contrast, walks
+    /// [`Assigner::phis`] in table order — the order the phis were created in, which is the order
+    /// their blocks were entered. The two are orders of two different traversals of the same
+    /// occurrences, and nothing ties them together: "the first `self_named` entry records" would
+    /// drop the records of blocks whose occurrences were *not* the rewritten ones while the totals
+    /// still added up, and the wrong def-use edge would then be published for both blocks. So the
+    /// records are dropped block by block, and a block whose occurrences ask for more records than
+    /// it holds is refused below: that is the two readings of one fact disagreeing, not a case to
+    /// paper over.
     fn replace(&mut self, from: ValueId, to: ValueId, budget: &mut Budget) -> Norm<()> {
         let uses = std::mem::take(&mut self.values[from.index()].uses);
         self.values[from.index()].replaced_by = Some(to);
@@ -1647,14 +1675,17 @@ impl Assigner {
         // holding its own value as a *value* operand, and the count below would then find a record
         // for an occurrence the next replacement has to leave alone.
         let mut operands_rewritten = 0u64;
-        let mut self_named = 0u64;
+        // The occurrences that became self-references, counted per block: one record of an entry
+        // is identified by its block alone, so this is the count each block's records have to
+        // answer for. See the remark on dropping below.
+        let mut self_named: BTreeMap<CanonicalBlockId, u64> = BTreeMap::new();
         for phi in self.phis.iter_mut() {
             let own = phi.value == from || phi.value == to;
             for input in phi.inputs.iter_mut() {
                 if matches!(input, PhiInput::Value(value) if *value == from) {
                     if own {
                         *input = PhiInput::Itself;
-                        self_named += 1;
+                        *self_named.entry(phi.block.clone()).or_default() += 1;
                     } else {
                         *input = PhiInput::Value(to);
                     }
@@ -1668,16 +1699,36 @@ impl Assigner {
                  it as an operand {operands_rewritten} time(s)"
             ));
         }
-        // Which of the operand records the count above names is not a fact the table states — the
-        // records are the multiset of occurrences — so the ones whose occurrence became a
-        // self-reference are simply the first `self_named` of them, in the order they are held.
+        // The records of the occurrences that became self-references, taken **by block**: the
+        // number of entry records a block hands over is the number of its phi operands that were
+        // rewritten into `Itself`, so a block holding fewer records than that is a record list
+        // that does not describe these phis, and it is refused rather than dropped from wherever
+        // the list happens to hold them. The list order is not a fact this function may lean on —
+        // see its documentation — and the counts below are what make the two readings comparable.
+        let self_named_total: u64 = self_named.values().copied().sum();
+        let mut left = self_named;
         let mut dropped = 0u64;
         for use_record in uses {
-            if use_record.bci.is_none() && dropped < self_named {
+            let is_a_self_reference = use_record.bci.is_none()
+                && match left.get_mut(&use_record.block) {
+                    Some(count) if *count > 0 => {
+                        *count -= 1;
+                        true
+                    }
+                    _ => false,
+                };
+            if is_a_self_reference {
                 dropped += 1;
                 continue;
             }
             self.record_use(to, &use_record.block, use_record.bci, budget)?;
+        }
+        if dropped != self_named_total {
+            return inconsistent(format!(
+                "one replacement turns {self_named_total} occurrence(s) of one value into \
+                 self-references while the records of the blocks holding them answer for {dropped} \
+                 of them: the records and the phis are two readings of one fact and cannot disagree"
+            ));
         }
         for block in self.blocks.iter_mut() {
             for (value, _) in block.defs.values_mut() {
@@ -2973,6 +3024,86 @@ mod tests {
             "every use of the replaced phi moved to the target"
         );
         audit("the loop head of the 27-byte body", &table);
+    }
+
+    #[test]
+    fn a_replacement_records_the_block_that_holds_each_occurrence() {
+        // The one body of this crate where dropping the records of the occurrences that became
+        // self-references **by position** would publish a wrong def-use relation: the records of
+        // one value sit in three different blocks, and the replacement hands one of them a
+        // self-reference while the other two keep naming the target.
+        //
+        // The body is one of the corpus the property run generates (`legal_body` of
+        // `tests/p2_properties.rs`, drawn from the search that looked for exactly this shape) — a
+        // nest of loops over three int locals, a `()V` method at class-file version 52, 59 bytes:
+        //
+        // ```text
+        //  0: iconst_1; istore_0; iconst_1; istore_1; iconst_1; istore_2
+        //  6: iload_2; iconst_1; iadd; istore_1
+        // 10: iconst_1; ifeq 50
+        // 14: iload_2; iconst_1; iadd; istore_1; iload_2; iconst_3; iadd; istore_0
+        // 22: iconst_1; ifeq 26
+        // 26: iload_0; iconst_2; iadd; istore_0      the loop head the back edges at 39 and 47 name
+        // 30: iconst_1; ifeq 42
+        // 34: iload_1; iconst_2; iadd; istore_1
+        // 38: iconst_1; ifeq 26
+        // 42: iload_1; iconst_3; iadd; istore_1
+        // 46: iconst_1; ifeq 26
+        // 50: iload_1; iconst_1; iadd; istore_1; iload_2; iconst_2; iadd; istore_2; return
+        // ```
+        //
+        // `istore_2` at BCI 5 defines the value the body's trivial phi is replaced *by*, and the
+        // merge points of three blocks name that one value: BCI 26's head twice-over through its
+        // back edges, and BCI 42 and BCI 50 once each. The three blocks complete their phis in an
+        // order that is the wake order of the fixpoint, not the phis table's order, so a removal
+        // that took "the first N entry records" would take the records of blocks whose occurrences
+        // were *not* the rewritten ones — with the total still adding up, which is why the removal
+        // is counted per block now (see the module documentation, "dropping those records is a
+        // by-block decision") and why the check that the two counts agree is exact. What catches
+        // it here is [`audit`], which compares the published records with the uses the published
+        // table holds, both halves of the def-use relation.
+        let code: &[u8] = &[
+            0x04, 0x3b, 0x04, 0x3c, 0x04, 0x3d, 0x1c, 0x04, 0x60, 0x3c, 0x04, 0x99, 0x00, 0x27,
+            0x1c, 0x04, 0x60, 0x3c, 0x1c, 0x07, 0x60, 0x3b, 0x04, 0x99, 0x00, 0x03, 0x1a, 0x06,
+            0x60, 0x3b, 0x04, 0x99, 0x00, 0x0b, 0x1b, 0x05, 0x60, 0x3c, 0x04, 0x99, 0xff, 0xf3,
+            0x1b, 0x07, 0x60, 0x3c, 0x04, 0x99, 0xff, 0xeb, 0x1b, 0x04, 0x60, 0x3c, 0x1c, 0x05,
+            0x60, 0x3d, 0xb1,
+        ];
+        let (body, canonical) = body_of_code(code, 3);
+        assert_eq!(
+            canonical
+                .blocks
+                .iter()
+                .map(|block| block.id.bci)
+                .collect::<Vec<_>>(),
+            vec![0, 14, 50, 26, 34, 42],
+            "the branches and the back edges name the body's blocks, in the order the \
+             normalization created them"
+        );
+        let table = ssa_of(&body).expect("the body names its values");
+        let target = table
+            .values()
+            .iter()
+            .max_by_key(|value| {
+                value
+                    .uses
+                    .iter()
+                    .filter(|use_record| use_record.bci.is_none())
+                    .count()
+            })
+            .expect("the body defines values");
+        let blocks: BTreeSet<&CanonicalBlockId> = target
+            .uses
+            .iter()
+            .filter(|use_record| use_record.bci.is_none())
+            .map(|use_record| &use_record.block)
+            .collect();
+        assert!(
+            blocks.len() >= 2,
+            "the body's most-used merge value has its entry records in only {blocks:?}: the shape \
+             this case is about is one value named by merge points of more than one block"
+        );
+        audit("the three-block replacement body", &table);
     }
 
     #[test]

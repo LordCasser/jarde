@@ -55,6 +55,15 @@ fn under_version(bytes: &[u8], major: u16) -> Vec<u8> {
     patched
 }
 
+/// The same bytes under a version whose **minor** the caller names: for a major of 56 or above the
+/// format allows `0` and `65535` only, so any other minor contradicts the version it is written
+/// under (JVMS 4.1).
+fn under_minor(bytes: &[u8], minor: u16) -> Vec<u8> {
+    let mut patched = bytes.to_vec();
+    patched[4..6].copy_from_slice(&minor.to_be_bytes());
+    patched
+}
+
 fn limits() -> Limits {
     Limits {
         input_bytes: 1 << 20,
@@ -466,6 +475,139 @@ fn a_legacy_opcode_in_the_modern_dialect_is_a_violation_not_a_limitation() {
     );
 }
 
+/// A class file whose **version the format does not allow** is refused by the phase that reads the
+/// version at all, and the refusal keeps what the phases before it produced.
+///
+/// The two arms of the reader's own version rule, on the very bytes of the 45 fixture:
+///
+/// * major **44** — below the minimum the format defines, so these bytes are not a class file of
+///   any version, whatever their body says;
+/// * major **56** with minor **1** — a modern version whose minor is neither `0` nor `65535`, the
+///   two the format allows for 56 and above.
+///
+/// Both are the *version's* own verdict and not a fact about the body: the decode of the body is
+/// complete and its coverage stays published, and the reader's header plan states the same code
+/// for the same bytes. What this case pins is that the analysis path states it too — until now it
+/// walked all six phases with no diagnostic at all over a version the format has no class file
+/// for, which is what `specs/jvm-ir/spec.md`, "Legacy normalization before canonical frames",
+/// states as "非法版本…时保留原始 Bytecode 与原因" — and that it is refused **before** the dialect
+/// rules of the body are applied: the 45 fixture's `jsr`/`ret` is a legal legacy opcode, and at
+/// major 56 the same opcode is a forbidden modern one, so a run that reported the opcode would
+/// have decided a dialect for a version that does not exist.
+///
+/// The refusal has the same shape as the modern-dialect violation above — the raw facts and the raw
+/// graph stay published, nothing canonical is built over them, the run fails with an `Error` under
+/// the reader's own code — and the two planes that answer different questions, whether the body was
+/// read and whether it verifies, stay untouched.
+#[test]
+fn a_version_the_format_does_not_allow_is_refused_where_the_dialect_is_decided() {
+    for (class, code) in [
+        (under_version(V45, 44), "classfile_invalid_major_version"),
+        (
+            under_minor(&under_version(V45, 56), 1),
+            "classfile_invalid_modern_minor_version",
+        ),
+    ] {
+        let fixture = fixture(&class);
+        let request = request(&fixture, fixture.method.clone(), vec![AnalysisStage::Ssa]);
+        let (report, budget) = analyze(&fixture, &request, limits());
+
+        assert_eq!(
+            stage(&report, AnalysisStage::RawFacts),
+            StageState::Completed,
+            "{code}: the class header and the body were read"
+        );
+        assert_eq!(
+            stage(&report, AnalysisStage::RawCfg),
+            StageState::Completed,
+            "{code}: the raw facts and the raw graph are kept, not deleted"
+        );
+        assert_eq!(
+            stage(&report, AnalysisStage::LegacyNormalization),
+            StageState::Failed {
+                code: code.to_string()
+            },
+            "{code}: the phase that reads the version reports it"
+        );
+        assert_eq!(
+            stage(&report, AnalysisStage::CanonicalCfg),
+            StageState::NotPerformed,
+            "{code}: nothing canonical is built over a version the format does not allow"
+        );
+        assert_eq!(
+            without_wall_clock(&report.execution),
+            ExecutionReport::Failed {
+                reason: TerminationReason::Error {
+                    code: code.to_string(),
+                },
+                usage: counted_usage(&budget.usage()),
+            },
+            "{code}: the run fails under the reader's own code"
+        );
+        assert_eq!(diagnostic_codes(&report), vec![code]);
+        assert_eq!(
+            report.diagnostics[0].severity,
+            DiagnosticSeverity::Error,
+            "{code}: an illegal version is an error, not a warning"
+        );
+        assert_eq!(report.body, MethodBodyState::Present);
+        assert_eq!(
+            report.coverage.artifact_structural.state,
+            CoverageState::CompleteWithinSchema,
+            "{code}: the bytecode plane still describes the body that was read"
+        );
+        assert_eq!(
+            report.quality,
+            Quality::Fallback,
+            "{code}: no canonical artifact was produced"
+        );
+        assert_eq!(report.representation, Representation::Bytecode);
+        assert_eq!(report.syntax_status, SyntaxStatus::NotJava);
+        assert_eq!(report.compile_status, CompileStatus::NotAttempted);
+        assert_eq!(
+            report.verification,
+            VerificationStatus::NotPerformed,
+            "{code}: refusing an illegal version is not verifying the method"
+        );
+        assert_eq!(report.semantic_validation, SemanticValidation::Unproven);
+        assert!(
+            report.reads.len() == 1,
+            "{code}: the one read the request performed is still stated"
+        );
+    }
+}
+
+/// The contrast that keeps the refusal above from being read as "an old version is refused": the
+/// same bytes at a version the format allows keep analyzing — the 45 dialect normalizes its
+/// `jsr`/`ret` and the whole pipeline completes — so what the case above refuses is the version's
+/// own rule and not the age of the class file.
+#[test]
+fn a_version_the_format_allows_still_analyzes_however_old_it_is() {
+    for class in [
+        under_version(V45, 45),
+        under_minor(&under_version(V45, 56), u16::MAX),
+    ] {
+        let fixture = fixture(&class);
+        let request = request(&fixture, fixture.method.clone(), vec![AnalysisStage::Ssa]);
+        let (report, _) = analyze(&fixture, &request, limits());
+        assert_eq!(
+            stage(&report, AnalysisStage::RawFacts),
+            StageState::Completed,
+            "a lawful version is read like any other"
+        );
+        assert!(
+            !report
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code.starts_with("classfile_invalid")),
+            "no version rule is violated here: {:?}",
+            diagnostic_codes(&report)
+        );
+    }
+}
+
+/// A body whose decode stopped before its `ret` keeps its call graph unresolved, and both reasons
+/// are reported: the reader's own stop and the pass's own code.
 #[test]
 fn a_body_whose_decode_stopped_keeps_its_call_graph_unresolved() {
     // 22 of the fixture's 23 code bytes fit the budget, so the decode stops at the `ret` of the
