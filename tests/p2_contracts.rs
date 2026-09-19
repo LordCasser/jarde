@@ -18,8 +18,9 @@
 //!    from another,
 //! 4. the serde shape of the new types is pinned, including the two places where the
 //!    written contract cannot be spelled directly with serde 1.0.229,
-//! 5. A17 holds at source level: every guarded file (all of `crates/jarde-query/src/query.rs`
-//!    and `crates/jarde-query/src/xref/**/*.rs`, enumerated from the directory so a new file
+//! 5. A17 holds at source level: every guarded file (all of `crates/jarde-query/src/query.rs`,
+//!    the module added beside it in P4 — `crates/jarde-query/src/plugin.rs` — and
+//!    `crates/jarde-query/src/xref/**/*.rs`, enumerated from the directory so a new file
 //!    counts too) is free of P2 module paths, module aliases, glob imports and P2 type names —
 //!    the type names are derived from the P2 modules themselves rather than listed by hand —
 //!    while `crates/jarde-jvm/src/engine.rs`, the module allowed to call the P2 entries, is
@@ -2722,6 +2723,43 @@ const A17_XREF_DIRECTORY: GuardedModule = GuardedModule {
     candidates: &["src/xref", "crates/jarde-query/src/xref"],
 };
 
+/// The module P4 added beside `query.rs`: the plugin entry, and the rest of the guarded floor.
+///
+/// The guarded set is the physical-entry surface of X1, and the crate is what that surface is:
+/// `query.rs` and the modules below `xref/` were all of it when the guard was written, and
+/// `plugin.rs` joined them — an entry that reports a `PhysicalView` and a plugin analysis, and may
+/// no more start the resolver or name the recovery layer than the modules beside it. Leaving it out
+/// is what would need a reason, since the set is enumerated by identity here and a module the
+/// enumeration does not know is a module the table never reads.
+///
+/// Both homes are listed, pre-split first, exactly as the P1 table spells them, and
+/// `resolve_layout` still asserts that exactly one is on disk. The module was added after the split,
+/// so the first candidate is the identity's home in the pre-split layout this table is written for
+/// rather than a file that ever existed: naming it keeps this identity from being the one member
+/// whose path is written down in a single layout, which is what `assert_single_layout` compares.
+///
+/// The two crates below the guarded one are deliberately **not** added, and that is a judgement
+/// about what A17 asserts rather than an omission. `jarde-reader` and `jarde-jvm` are where the P2
+/// types *live*: `reflection.rs` reaches `crate::environment`, `crate::resolver` and `crate::ir` on
+/// purpose and names `jarde_java::pass::RuleVersion` in prose, and `runtime_matrix.rs` names
+/// `jarde_jvm::providers` in prose — the module-path half of the detector matches a source as
+/// written, comments included, so both files would be reported by a table they are entitled to
+/// write. Measured by adding both identities under this constant: `reflection.rs` comes back with
+/// `crate::environment`, `crate::resolver`, `crate::ir` and the resolution/IR type names it has to
+/// import, `runtime_matrix.rs` with the single `jarde_jvm::` its prose carries. "A guarded file may
+/// not name the P2 modules" is a rule about the physical entries that *read* those planes, not about
+/// the modules that own them; and the recovery layer is out of the lower crates' reach structurally,
+/// by the same refused dependency edge [`A17_MODULE_TOKENS`] records, so adding them would widen the
+/// policy without adding a reach that could be observed.
+const A17_PLUGIN_MODULE: GuardedModule = GuardedModule {
+    identity: "plugin.rs",
+    candidates: &["src/plugin.rs", "crates/jarde-query/src/plugin.rs"],
+};
+
+/// The modules the guarded set gained after the P1 table was written: same crate, same surface,
+/// addressed by identity like every other one so none of them can fall out of the set silently.
+const A17_ADDED_MODULES: [GuardedModule; 1] = [A17_PLUGIN_MODULE];
+
 /// The module that is allowed, and required, to call the P2 entries: the P2 driver.
 ///
 /// It is the guard's positive control, so its path is resolved like every other one and moves
@@ -2758,8 +2796,9 @@ const A17_P2_SOURCE_MODULES: [GuardedModule; 3] =
 /// Number of guarded files the repository has today.
 ///
 /// The enumeration below is not allowed to silently find nothing or to lose a file, so the
-/// real count is asserted as well.
-const A17_GUARDED_FILES: usize = 6;
+/// real count is asserted as well: `query.rs`, the five modules below the xref directory, and the
+/// module added beside `query.rs`.
+const A17_GUARDED_FILES: usize = 7;
 
 /// Smallest plausible size of one of the six P1 files, in bytes.
 const A17_MIN_SOURCE_LEN: usize = 1_000;
@@ -3308,33 +3347,44 @@ fn resolve_guarded_directory(root: &Path, module: &GuardedModule) -> &'static st
 /// assertions cannot see it: they count what was resolved, and both halves resolve. The
 /// guard would then be reading one module from the old home and its siblings from the new
 /// one. Comparing the layout roots turns that tree into a failure that says so.
-fn assert_single_layout(query: &str, xref: &str) {
+///
+/// Every resolved file is compared with the directory, not only the two the check started with, so
+/// a module added to the set later is inside the comparison from the moment it is enumerated.
+fn assert_single_layout(files: &[(&'static str, &'static str)], xref: &'static str) {
     /// The repository-relative root a guarded path sits under: `src/` before the split,
     /// `crates/` after it. The candidates are written pre-split first, so the order here has
     /// to match their order.
     fn layout_of(relative: &str) -> usize {
         if relative.starts_with("src/") { 0 } else { 1 }
     }
-    assert_eq!(
-        layout_of(query),
-        layout_of(xref),
-        "the guarded sources are split across layouts ({query} and {xref}): a half-moved tree \
-         has to fail rather than let each module resolve on its own"
-    );
+    for (identity, relative) in files {
+        assert_eq!(
+            layout_of(relative),
+            layout_of(xref),
+            "{identity} ({relative}) and the guarded directory ({xref}) are in different layouts: \
+             a half-moved tree has to fail rather than let each module resolve on its own"
+        );
+    }
 }
 
-/// Reads every guarded source under `root`: the `query.rs` identity plus every `*.rs` below
-/// the resolved xref directory, including nested directories.
+/// Reads every guarded source under `root`: the `query.rs` identity, the modules the set gained
+/// after it, and every `*.rs` below the resolved xref directory, including nested directories.
 ///
 /// Both halves are resolved by layout, so the same walk covers the pre-split and the
 /// post-split tree. The list is enumerated from the directory rather than written out by
 /// hand, so a file added to the xref directory — and a `mod` line registering it — is guarded
-/// as soon as it exists.
+/// as soon as it exists; the modules added beside `query.rs` are named by identity for the same
+/// reason, so one of them cannot leave the set without the resolution failing.
 fn guarded_sources(root: &Path) -> Vec<GuardedSource> {
-    let query = resolve_guarded_file(root, &A17_QUERY_MODULE);
+    let mut identities = Vec::new();
+    let mut listed = Vec::new();
+    for module in std::iter::once(A17_QUERY_MODULE).chain(A17_ADDED_MODULES) {
+        let relative = resolve_guarded_file(root, &module);
+        identities.push((module.identity, relative));
+        listed.push((module.identity.to_string(), root.join(relative)));
+    }
     let xref = resolve_guarded_directory(root, &A17_XREF_DIRECTORY);
-    assert_single_layout(query, xref);
-    let mut listed = vec![(A17_QUERY_MODULE.identity.to_string(), root.join(query))];
+    assert_single_layout(&identities, xref);
     let mut xref_paths = Vec::new();
     collect_rs_files(&root.join(xref), &mut xref_paths);
     listed.extend(xref_paths.into_iter().map(|path| {
@@ -3458,10 +3508,10 @@ fn physical_entry_modules_do_not_reference_the_p2_modules() {
     // Non-vacuity of the enumeration: the guarded tree really is there, and it is neither
     // losing nor silently gaining a file. Every identity is resolved by layout first — a path
     // shape this table does not know fails there — and has to show up in what the directory
-    // walk enumerated. A new `*.rs` below the xref directory has to be reviewed here (its own
-    // contents are already scanned above), which is what stops the guard from decaying into
-    // "the files that existed when it was written".
-    for module in &A17_EXPECTED_MODULES {
+    // walk enumerated, the modules added to the set later included. A new `*.rs` below the xref
+    // directory has to be reviewed here (its own contents are already scanned above), which is
+    // what stops the guard from decaying into "the files that existed when it was written".
+    for module in A17_EXPECTED_MODULES.iter().chain(A17_ADDED_MODULES.iter()) {
         let relative = resolve_guarded_file(root, module);
         assert!(
             sources.iter().any(|source| source.label == relative),
@@ -3852,6 +3902,21 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
             tiny_files: &[],
         },
         Case {
+            // The module the guarded set gained after the P1 table is scanned by the same walk and
+            // reported by the same matcher: enumerating a file is what makes it guarded, so this
+            // case is what keeps the added identity from being listed and then not read.
+            name: "added_module_reference",
+            files: &[
+                ("query.rs", CLEAN_QUERY),
+                ("xref/mod.rs", "mod clean;\n"),
+                ("xref/clean.rs", CLEAN_XREF),
+                ("plugin.rs", "use jarde_java::RecoveryReport;\n"),
+            ],
+            offenders: &["plugin.rs"],
+            evidence: &["jarde_java::", "RecoveryReport"],
+            tiny_files: &[],
+        },
+        Case {
             // The size floor is about the six P1 files, not about the guarded set: a new
             // small module is legitimate and must not be reported as "unexpectedly small".
             name: "tiny_new_module",
@@ -3895,6 +3960,12 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
                 case.name
             ));
             let _ = std::fs::remove_dir_all(&root);
+            // Every tree carries the modules the guarded set gained after the P1 table, as clean
+            // stubs. No case below is about them, and the guard resolves each guarded identity: a
+            // tree without one would fail while resolving it instead of showing the fault the case
+            // injects. The stubs are written first, so a case that does name one of them — the
+            // added-module case does — still writes its own contents.
+            write_added_module_stubs(&root, layout);
             for (identity, contents) in case.files.iter().copied() {
                 write_sandbox_file(&root, layout, identity, contents, case.tiny_files);
             }
@@ -3942,12 +4013,16 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
                 }
                 write_sandbox_file(&clean_root, layout, identity, contents, case.tiny_files);
             }
-            // `query.rs` is always part of the guarded set, so a clean file stands in for the
-            // removed offender. The stand-in is padded: in a size case the offender *is* the
-            // tiny stub, and the control has to show the tree without the injected fault.
-            let placeholder = clean_root.join(layout.path("query.rs"));
-            if !placeholder.exists() {
-                write_sandbox_file(&clean_root, layout, "query.rs", CLEAN_QUERY, &[]);
+            // `query.rs` and the modules added later are always part of the guarded set, so a clean
+            // file stands in for the removed offender. The stand-in is padded by
+            // `write_sandbox_file` whenever its identity carries the size floor: in a size case the
+            // offender *is* the tiny stub, and the control has to show the tree without the
+            // injected fault rather than a tree that is missing a guarded file.
+            for module in std::iter::once(A17_QUERY_MODULE).chain(A17_ADDED_MODULES) {
+                let placeholder = clean_root.join(layout.path(module.identity));
+                if !placeholder.exists() {
+                    write_sandbox_file(&clean_root, layout, module.identity, CLEAN_QUERY, &[]);
+                }
             }
             assert_eq!(
                 guard_violations(&clean_root, &type_tokens),
@@ -3959,6 +4034,19 @@ fn the_a17_guard_detects_rewritten_references_and_added_files() {
 
             let _ = std::fs::remove_dir_all(&root);
         }
+    }
+}
+
+/// Writes the modules the guarded set gained after the P1 table into one sandbox tree, clean.
+///
+/// A sandbox tree is written from the identities a case names, and the guard refuses to enumerate a
+/// set with one of its modules missing, so every tree needs them: without the stub the case would
+/// fail while resolving `plugin.rs`, which says nothing about the injection it was built for.
+fn write_added_module_stubs(root: &Path, layout: &SandboxLayout) {
+    // Nothing a case injects, and nothing the guard looks for.
+    const CLEAN_ADDED_MODULE: &str = "/// a module of the guarded set, with no reference in it\n";
+    for module in &A17_ADDED_MODULES {
+        write_sandbox_file(root, layout, module.identity, CLEAN_ADDED_MODULE, &[]);
     }
 }
 

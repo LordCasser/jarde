@@ -1069,3 +1069,74 @@ fn an_unsupplied_parent_makes_the_order_unknown() {
     assert!(matches!(definition.loader, LoaderOrder::Unknown { .. }));
     assert_eq!(definition.candidates().len(), 3);
 }
+
+/// The matrix answers the physical plane, and it never claims a verification it did not perform.
+///
+/// `RuntimeMatrix.verification` is the header plane's own `VerificationStatus` — the same type
+/// `HeaderInspection` carries — and the matrix writes `NotPerformed` into it where the report is
+/// built. The assertion is negative on purpose: `Performed` would be the report claiming a plane
+/// this entry never enters, because what the matrix does is choose a physical entry per profile and
+/// answer the loader, layout and crate-graph questions. It reads no method body, builds no CFG and
+/// hands nothing to a verifier, so the field is a claim the matrix is not allowed to make rather
+/// than a value that happens to hold today.
+#[test]
+fn the_matrix_never_claims_verification() {
+    let snapshot = open(divergent_jar());
+    let request = request(
+        &snapshot,
+        vec![profile(8), profile(11), profile(17)],
+        vec![domain(
+            "app",
+            vec![snapshot_root(&snapshot)],
+            DelegationPolicy::ParentFirst,
+        )],
+    );
+    let matrix = matrix(&snapshot, &request);
+
+    assert_eq!(matrix.verification, VerificationStatus::NotPerformed);
+    // It is not `NotPerformed` because the run gave up: three profiles were answered, and none of
+    // them reported a problem.
+    assert_eq!(matrix.profiles.len(), 3);
+    assert!(
+        matrix
+            .diagnostics
+            .iter()
+            .all(|diagnostic| diagnostic.severity() != DiagnosticSeverity::Error),
+        "{:?}",
+        matrix.diagnostics
+    );
+}
+
+/// The same field on a run that does report an error, which is where a claim would be tempting.
+///
+/// A refused request never gets this far — `RuntimeMatrix` comes back as `Err`, so there is no
+/// report to assert on — and the run that reaches a report while having something to complain about
+/// is the nonconformant selection below: an `Error` diagnostic, and still no verification claimed.
+/// An error in the physical answer is not "a verifier ran and disagreed".
+#[test]
+fn a_matrix_that_reports_an_error_never_claims_verification() {
+    let snapshot = open(zip(&[
+        (b"META-INF/MANIFEST.MF", ACTIVE_MANIFEST),
+        (b"META-INF/versions/11/p/Join.class", &class(55)),
+    ]));
+    let request = request(
+        &snapshot,
+        vec![profile(11)],
+        vec![domain(
+            "app",
+            vec![snapshot_root(&snapshot)],
+            DelegationPolicy::ParentFirst,
+        )],
+    );
+    let matrix = matrix(&snapshot, &request);
+
+    assert!(
+        matrix
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.severity() == DiagnosticSeverity::Error),
+        "{:?}",
+        matrix.diagnostics
+    );
+    assert_eq!(matrix.verification, VerificationStatus::NotPerformed);
+}
