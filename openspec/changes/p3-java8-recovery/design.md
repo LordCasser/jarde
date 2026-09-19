@@ -100,3 +100,128 @@
 以 P2 的结果契约为输入，再增量加入 recovery profile、Java AST/source map 和独立状态字段；若契约需要改变，必须通过 OpenSpec 明确修订，不作旧接口持续有效的承诺。完成 A09/A10/A12/A13/A16 与 Java 8 语料门槛后，P4 才消费稳定的 recovery result contract。
 
 实施顺序为 **1.1 → 1.2 → 1.3（包含 3.1/3.2 的最小命名与映射子集）→ 2.x 各模式 → 3.x 完整覆盖与发布**。1.3 的退出条件是简单方法从真实库入口到 Java 文本/source map 可用，语法糖规则未命中仍能输出通用表达，复杂异常或资源停止能返回正确 fallback/状态；库/薄 CLI 消费相同结果。该闭环只是 P3 首片交付，不代表 P3 完成或全体 45–52 方法都可表达为 Java。3.1/3.2 在同一实现上扩展作用域、派生跨方法 origin 等覆盖，不另起第二套命名和映射系统。
+
+### 1.2 的库评估与 1.3 的最小实现路线（2026-09-19）
+
+**结论先行。** 在 2026-09-19 当日对 crates.io 的全量检索里，**没有任何 Rust 库同时满足 6 条准入**；决定性的一条是准入 3（origin 可映射）：所有候选的发射 API 都是「一次调用 → 一个 `String`」，而 P3 决策 3 要求 AST node 到 BCI/CP 的映射与文本**同时**产生、不得事后从成品文本反推，节点级位置只能在渲染过程中记录。因此 1.3 的最小实现是**自有的最小 Java 语句/表达式 AST + 记录偏移的 emitter**；复用面是仓库已有的 `petgraph`（图算法）与既有 classfile/ZIP 依赖（决策 5 早先那条基线）。**本片不新增任何依赖**（`Cargo.toml` 一字未改），也不建通用 backend trait。
+
+#### 检索面（本次实际执行的工具与查询）
+
+- **crates.io API**：`/api/v1/crates?q=…` 与 `/api/v1/crates/{name}`、`/{name}/{version}/dependencies`，取版本、许可、下载量、最近下载、最后更新、依赖清单与 repo。查询词：`java parser`、`java ast`、`java formatter`、`java decompiler`、`java codegen`、`java emitter`、`java writer`、`java source generator`、`java pretty print`、`javadoc`、`documentation comment`、`jvm bytecode decompiler`、`java bytecode`、`decompiler java class`、`pretty printer`、`wadler`、`tree-sitter-java`；另按 `keyword=java&sort=downloads` 取全量前 40 做兜底（共 274 个带该关键词的 crate）。
+- **GitHub API**：`/repos/{r}` 与 `/repos/{r}/commits`（星数、最后 push、最近提交）用于准入 6；核对 `Eatgrapes/JSyntax`、`mzdk100/java-lang`、`ejfkdev/jdc-core`、`ejfkdev/jcdc`、`Marwes/pretty.rs`、`tree-sitter/tree-sitter-java`。
+- **exa 网页检索** 3 组：Rust 解析 Java 源码的 AST 库、Rust 的 Java 格式化/美化库、"generates Java source code from an AST with source position mapping"。
+- **读候选源码**（不是读 README）：把 `jsyntax 0.1.0`、`jdc-core 0.1.9`、`java-lang 0.3.2`、`jarust-ast 0.1.0`、`pretty 0.12.5` 的 `.crate` 解到 `/tmp` 逐文件核对 API 形状与词法实现。
+
+**查了但没有（如实记录）**：没有满足全部准入的完整库；**没有任何 Rust Java emitter 暴露「渲染中回调/位置报告」接口**；没有任何面向「字节码 → Java 文本 + source map」的库（现存 Java emitter 全是 IDL/SDK/协议 codegen：`zerodds-idl-java`、`rdc`、`baml sdkgen_java`、`brec_java_gen`……发的是各自 schema 的固定骨架，没有 origin，也没有预算接口）；没有任何 Java **注释文本生成**库（现存 `javadoc` 命中的全是解析器）。
+
+#### 判定图例
+
+准入 ①：纯 Rust、无 JVM 运行时依赖（不得间接引入 JVM 或需要外部反编译器进程）；②：许可证在 `deny.toml` 允许集合内且**不需要新增全局例外**；③：origin 可映射（AST node 能携带/关联我们给的 BCI/CP/attribute，或 API 能把 node 与我们生成的位置绑定）；④：转义由库负责或可被我们控制；⑤：输出预算可约束（分步/可度量，或先算规模再输出，不能是黑盒一次吐全）；⑥：活跃度与质量（最近发布/提交、下载量/被采用、测试与文档、维护者响应迹象）。`—` 表示该条的判定对象不存在（类型不适用）。
+
+#### 表 1 解析器族：**方向不符**，整族不适用（①③④⑤⑥ 只在「将来要解析 Java 源码」时才相关）
+
+| 候选 | 版本 / 许可 / 最后活跃 | ① | ② | ③ | ④ | ⑤ | ⑥ | 判定 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `java-lang` | 0.3.2 / MIT OR Apache-2.0 / 2026-06-11（2★，1004 dl，依赖 `thiserror`+`unicode-xid`） | ✅ | ✅ | ❌ 只有 `Span`（源码字节偏移），**无 emitter** | — | — | ⚠ 单一作者、无 CI 迹象 | 不满足（且方向相反） |
+| `jarust-ast` | 0.1.0 / MIT OR Apache-2.0 / 2026-09-18（13 dl，**零依赖**） | ✅ | ✅ | ❌ | — | — | ❌ 发布 1 天、2 个提交 | 不是 AST：全库 33 行，`AstNode::Method { body: String }` |
+| `java-ast-parser` | 1.0.0 / MIT / 2026-04-06（226 dl） | ✅ | ✅ | ❌ | — | — | ⚠ | 自述 "without initializers and function bodies"，连方法体都不表示 |
+| `oak-java` | 0.0.11 / **MPL-2.0** / 2026-03-30（473 dl，12 版） | ✅ | ❌ **不在 allow 集合** | ❌ 红绿树无 origin 槽位 | — | — | ⚠ 0.0.x | 不满足（见「若要走例外」） |
+| `tree-sitter-java`（+ `tree-sitter`） | 0.23.5 / MIT / 2024-12-21（11.3M dl，275★） | ❌ 核心是 C（`cc` 编译生成 C 解析器），非纯 Rust | ✅ | ❌ | — | — | ✅ 业界标准 | 解析源码用，P3 不解析源码 |
+| `rezel-lang-java` | 0.0.0 / MIT OR Apache-2.0 / 2026-09-06（12 dl） | ✅ | ✅ | ❌ | — | — | ❌ | 不满足 |
+
+**为什么整族不适用（结构性理由，不是偏好）**：P3 的方向是**生成**——我们有 Region、SSA、origin，要产出 Java 文本；解析器族解决的是「源码 → AST」，而 class file 里**没有 Java 源码**可解析。同理，class file 里也**没有 doc comment**：`tree-sitter-javadoc 0.3.1`（MIT，2026-03-22，31.8k dl）、`doctor 0.3.4`（MIT，2021-01-12，**5 年未更新**）、`oak-javadoc`（MPL-2.0）这些 javadoc 解析器**没有可解析对象**（唯一可用的 debug 证据是 LVT/LineNumberTable/MethodParameters/Signature）。因此注释能力的判定只在**生成侧**，而那侧没有任何库。
+
+#### 表 2 发射 / 反编译族：形状对得上，但准入 3、5、6 全数不满足
+
+| 候选 | 版本 / 许可 / 最后活跃 | ① | ② | ③ | ④ | ⑤ | ⑥ | 判定 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `jsyntax` 0.1.0 | MIT / 2026-09-18（10 dl；仓库同日创建、**2 个提交、0★、无 README、无 tests 目录**） | ✅ 纯 Rust，`forbid(unsafe_code)`；依赖 `unicode-general-category`（Apache-2.0）+ 可选 `ferro-jtype` | ✅ 闭包全在 allow 集合 | ❌ **AST 无 id/span 字段，`to_java_with(&PrintOptions) -> Result<String, EmitError>` 只回文本**；只能「并行表 + 逐节点发射」关联，节点级位置拿不到 | ✅ 见下 | ❌ 内部 `String` 累加，无 sink/回调/上限，只能按节点分步 | ❌ 发布 1 天、0 采用、无测试 | 不满足 |
+| `jdc-core` 0.1.9 | MIT / 2026-09-18（112 dl；仓库 2026-09-15 创建、1★、包 2026-09-16 起 2 天内 8 个版本；带 `tests/`） | ✅ 依赖 `bitflags` + 可选 `serde` | ✅ | ❌ **全库无 origin→IR 映射**：`ir::Expr/Stmt` 不带 pc，`Cfg::Block` 的 `u32` offset 不进入语句树；发射器只认 `VarTable` | ✅ `escape_string`/`escape_char` 到 `\uXXXX` | ❌ `Printer { out: String, .. }` 私有累加 | ❌ 2 天、无第三方依赖 | 不满足；**且它是整条 structuring(7.7k 行)+convert(1.7k)+emit(3.6k)**，采用它会替换决策 2 划给项目的 Region/语义恢复，并要求实现其 `Ctx` 前端 trait——超出决策 5 的复用边界 |
+| `jcdc` / `jcdc-decompiler` | 0.1.1 / MIT / 2026-09-14（10–12 dl） | ✅ | ✅ | ❌ | ✅ | ❌ | ❌ | 同上，且是 `jdc-core` 的 CLI 侧 |
+| `rusty-javac` | 0.2.3 / MIT / 2026-05-30（150 dl） | ✅ | ✅ | ❌ | — | — | ⚠ | 方向相反（源码→字节码），其 AST 只服务编译 |
+| `coffea` | 0.1.0 / MIT / 2020-06-22（近 30 天 9 dl） | ✅ | ✅ | ❌ | — | — | ❌ 自称 WIP、5 年未动 | 不满足 |
+| `ferro-jtype` | 0.2.5 / MIT / 2026-09-18（365 dl） | ✅ | ✅ | — | — | — | ⚠ | 字节码类型推断，非 AST/发射；只有在 1.3 之后要做类型呈现时才相关 |
+
+`jsyntax` 值得单独记两笔：它的词法实现是这批候选里**唯一**认真处理准入 4 的（`escaped()` 按 UTF-16 单元转义、控制字符走八进制/`\uXXXX`、`NaN`/`Infinity` 展开成 `(0.0F / 0.0F)`；`identifier()` 拒绝保留字与非法字符；`comments()` 显式拒绝注释里的 `\u` 与 `*/`——注释里的 Unicode 转义是 JLS 的真实陷阱），且带 Java 语言级别门控（`PrintOptions::language`）——只是**没有任何测试随包发布**，这些规则没有被它的作者用可复核的方式固定下来。它是「将来若有带位置回调的成熟版本，可以重评」的对象，不是今天可以承重的对象（1 天的 0.1.0 不能承担「支持矩阵按多代 javac/ECJ 语料发布」的稳定面）。
+
+#### 表 3 布局/文档组合（Wadler Doc）族：允许，但只解决排版，不解决 origin/转义
+
+| 候选 | 版本 / 许可 / 最后活跃 | ① | ② | ③ | ④ | ⑤ | ⑥ | 判定 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `pretty` | 0.12.5 / MIT / 2025-09-26（21.8M dl，181★；依赖 `arrayvec`/`typed-arena`/`unicode-width`） | ✅ | ✅ | ⚠ 只有 `annotate(A)` + `RenderAnnotated::{push,pop}_annotation`：**自定义 sink 能在渲染时记录标注开合点**（`A` 可以是我们的 OriginSet），但引擎本身不报位置，未标注文本无从对应 | — 语言无关 | ✅ `render_fmt(width, &mut W: fmt::Write)`，预算 sink 返回 `Err` 即中途中断 | ✅ | 引擎可用，但准入 3 只能经「标注 sink + 我们自己的字典」间接满足，准入 4 仍归我们：**不是能承重的完整实现**；见下 |
+| `prettyless` | 0.3.0 / MIT / 2025-07-17（81k dl） | ✅ | ✅ | ⚠ 同上族 | — | ✅ | ✅ | 同族替代品 |
+| `tiny_pretty` | 0.4.3 / MIT / 2026-08-05（912k dl） | ✅ | ✅ | ⚠ | — | ✅ | ✅ | 同族替代品 |
+| `pretty-lang` | 1.0.0 / Apache-2.0 OR MIT / 2026-07-07（22 dl，`no_std`+`forbid(unsafe_code)`，`render_into`/`render_writer`） | ✅ | ✅ | ⚠ | — | ✅ | ❌ 发布 2 个多月、无采用 | 不满足 |
+| `oak-pretty-print` | 0.0.11 / **MPL-2.0** / 2026-03-29（9928 dl） | ✅ | ❌ | ⚠ 需 oak 红绿树 | — | ✅ | ⚠ | 不满足（许可） |
+| `sourcemap` | 9.3.2 / BSD-3-Clause / 2026-01-20（36.1M dl） | ✅ | ✅ | — 这是**序列化格式**库，不是发射器 | — | — | ✅ | 记在 3.2 名下：若将来要把我们的映射导成标准 source map 文件，它是现成的成熟选择；1.3 不需要 |
+
+**为什么 1.3 不引入 Doc 引擎。** 布局引擎能用 `annotate` + 自定义 sink 把准入 3 重新变成可达（这是它唯一真正的加分项），代价是：① 我们仍要写全部文本拼装、转义与命名；② 每个节点都必须被标注，并额外维护「标注 → Origin」字典，映射多了一层可脱节的机制；③ 换来的是**宽度重排**——P3 三份 delta 里没有任何一句要求它。而我们自己的 emitter 里，节点 range 是同一次写入的副产物（一次机制，不可能失配），插入点正好就是预算检查必须存在的位置。因此 Doc 引擎记为**将来若出现宽度重排需求时的首选重评对象**（届时准入 3 仍可满足），不是今天的最小实现。
+
+#### 决定：1.3 的最小实现路线（Route A）
+
+代价一句话：**我们承担决策 2 那个可证明子集的词法与版式**（不含完整 Java），换来 origin、转义和预算三条准入由同一层同时满足，且 0 新依赖。
+
+1. **AST 与 formatter：自己写最小 Java 语句/表达式 AST + 自己的 emitter**，放 `jarde-java` 私有模块。理由不只是「没有库满足准入」，还有结构性的两条：(a) 解析器族方向相反；(b) 发射族要么不带 origin、要么连 Region 一起替换掉（越界）。**边界（明确不覆盖）**：只做决策 2 的「简单表达式、调用、return、if/loop/switch 的可证明子集」；不覆盖 lambda/method reference、`StringBuilder` 拼接、TWR/synchronized/finally、内部类/枚举、注解与泛型签名的完整语法面（2.x 逐项加），也不做宽度重排（固定版式，确定性优先）。这不是「重复实现通用语法基础设施」，而是把决策 2 要求的最小呈现面连同它的 origin/预算义务一起放在一层里。
+2. **source map 载体：AST node 持有 `OriginSet`，emitter 同步产段表。** `OriginSet { primary: Origin, derived: Vec<Origin> }`，`Origin { bci: u32, cp: Option<u16>, provenance: Direct | Derived }`；段表 `Segment { start, end, origin: OriginSet }` 用**生成文本的字节区间**做键（不是行/列，因为我们不重排）。多段来源（派生 accessor/lambda）落在 `derived` 上并标 `Derived`，正是 `source-maps` 规格里「同时包含调用 accessor 的原始 BCI 和 accessor 访问字段的 BCI，并标记为 derived」的形状。**这就是 1.3 的接口前提**：3.1 的命名与 3.2 的 CP/attribute、跨方法派生都往同一张段表上长，不另起第二套。
+3. **文档组合：不需要库；注释文本组装是我们自己的小函数。** class file 里没有 doc comment 可解析（见上）；能写进注释的只有我们已有的证据（原始名、descriptor、解析到的类型、fallback 原因），组装就是把文本折行、加 `*` 对齐，并拒绝 `*/` 与 `\u`（JLS 危险点，`jsyntax` 的实现值得照抄这条规则）。
+4. **转义与输出预算在哪一层：都在 emitter 一层，且都在写入口。** 转义：字符串/字符字面量按 **UTF-16 单元**转义（补充字符 → 代理对，`\uXXXX`），控制字符、`"`、`\`、`\n` 等显式处理；标识符走「关键字 + 非法字符」自检，不可写就出**确定性安全别名**（原拼写只作为 evidence 保留，不进文本）。预算：**每个 `put`/`line` 前检查**（可复用既有 `CountedBudgetDimension` 的 `OutputBytes`，节点/边记 `IrItems`、算法步记 `AnalysisSteps`，具体清单由 1.3 定），超限返回带 `written`/`limit`/停顿 BCI 的理由并**丢弃部分文本**——调用方不会拿到半成品当结果、更不会拿到「成功」状态。这与 `jvm/cfg.rs` 已记录的已知边界一致：petgraph 的支配点算法内部没有中断钩子，所以**必须在进入算法前**用块数上限计费（沿用该模块 `MAX_BLOCKS_DEFAULT` 的做法），不能指望算法中途停下。
+5. **探针证据**（一次性，只在 `/tmp`，不入库；`sha256` 见下）。`/tmp/p3probe/probe.rs`（std-only，`rustc --edition 2021 -O`）实跑 **PROBE OK**，27 项断言全绿（每条打印 `ok`，失败即退非零），其中直接支撑准入 3/4/5 的是：
+   - 一次 `if (count + 1) { other.count + 1; } else { return; } return 0;` 的发射得 **71 字节 / 12 段**；字段节点自身的区间**恰为 `other.count`**，其 origin 为 `primary bci 30 / cp 9（Direct）` + `derived bci 55（Derived）`；**共享同一 BCI 30 的表达式段与语句段各自保留不同区间**（`other.count + 1` 与 `    other.count + 1;\n`）——即「node → 文本区间」是映射表说了算，不需要回扫文本。
+   - 预算：同一发射在 `limit=65` 时于写出 **61 字节**后停在 **bci 20**，返回 `Budget { written: 61, limit: 65, at: bci 20 }`，缓冲里只剩这 61 字节且调用方不构造输出——**中断发生在节点内部**，不是语句边界。
+   - 转义 9 条向量 + 2 条性质：`"` → `\"`、`\` → `\\`、`\n` → `\n`（转义）、`\u0000`/`\u0007`/`\u007f`/`\u2028` 全部走 `\uXXXX`、`😀` → `\ud83d\ude00`（UTF-16 语义）；产物无裸控制字符、`"` 只由 `\"` 产生；`int` 不是合法标识符且获得确定性别名 `int_`。
+   - 平面：`Mixed + Fallback + CompleteWithinScope` 与 `Java + NotJava` 两组组合在产物上直接构造成功（见下节）。
+   `probe.rs` `sha256 43db4815…7598`；二进制 `sha256 517d26e8…2195`。**注意它的定位**：它证明的是**路线可行**（三类准入由一层同时满足），**不是**证明自研实现优于现成实现——后者本片没有证据，也不宣称。
+6. **若要走许可例外（`oak-java`/`oak-pretty-print` 的 MPL-2.0）**：需要往 `deny.toml` 的 `[[licenses.exceptions]]` 加一条 crate/版本收窄的例外（P1 对 `libfuzzer-sys@0.4.13` 的 NCSA 已有先例）。代价明显更高：NCSA 那条是 **test-only** 依赖，而 MPL-2.0 是弱 copyleft，会覆盖一个生产依赖；且这两个 crate 仍不满足准入 3。**1.2 不建议走**，理由与代价一并记在此处供 1.3 复核。
+
+#### 四者职责与数据流（正常流图视图 / 异常事实 / Region / Java 输出）
+
+| 层 | 职责 | 输入 | 输出 | 明确不做 | 归属 |
+| --- | --- | --- | --- | --- | --- |
+| **正常流图视图** | 用**过滤后的正常控制流**判定支配关系、循环与可约性 | canonical CFG 的块/普通边（`CanonicalCfg::canonical()/blocks()/edges()`） | 只读的派生视图（块身份 → `petgraph::NodeIndex` 的映射 + 各算法结果） | 不删边、不改写 canonical、不从它推异常语义、不判 handler 归属 | `jarde-java`（消费 `jarde-jvm` 的只读载荷） |
+| **异常事实** | 提供 throw site、保护区间、catch 类型与声明顺序、effect 次序 | canonical 的 `throw_sites`/`handler_rows` + SSA effects | 区域边界与 handler 入口判定的**事实输入** | 不全局删异常边、不用正常流支配关系推异常语义、不改 effect 次数与次序 | 事实由 `jarde-jvm` 拥有；消费在 `jarde-java` |
+| **Region** | 决定结构：循环/条件/switch/异常区域的形状与嵌套 | 正常流图视图（结构）+ 异常事实（范围）+ SSA 条件与终结指令 + effect | Region 树（AST 的唯一输入） | 不发文本、不解码字节码、不决定语法；证据不足**绝不**产出空 body | `jarde-java` |
+| **Java 输出** | 决定语法：AST（带 `OriginSet`）+ emitter（文本、段表、预算、转义、命名自检、诊断） | Region + origin + 命名决策 | Java/Mixed 文本 + source map + 诊断 + fallback 片段 | 不做边发现、循环识别、异常范围推导；不解析 bytecode | `jarde-java` |
+
+数据流方向**单向**（与归档的 `layer-jarde-crates` 一致）：
+
+```
+jarde-reader（facts：method/code/exception table/attribute/CP）
+        │ 既有
+        ▼
+jarde-jvm   raw CFG（petgraph DiGraph，BCI 为节点）→ canonical CFG（blocks/edges/throw sites/handler rows）+ frames/SSA/effects/origin
+        │ MethodIr 的**只读**借用（1.1 已交付，载荷即那三张表）
+        ▼
+jarde-java  ①正常流图视图 → ②异常事实 → ③Region → ④AST + emitter → 文本/段表/诊断
+        │ （Region、AST、命名、source map 全部属 jarde-java，见 layer-jarde-crates 的表）
+        ▼
+根门面 jarde / jarde-cli（只做入口委托与呈现）
+```
+
+- **`jarde` 底座不得反向依赖 `jarde-java`**：`jarde-jvm`/`jarde-reader`/`jarde-query` 不认识 Region、AST、命名或段表；`jarde-java` 由 1.3 随首个真实闭环创建（本片不建骨架）。恢复侧也**不**改写原始 X1 facts 或反向调用统一门面。
+- **沿用 `petgraph`（本片不新增依赖）**：既有 `jarde-jvm` 的 raw CFG 已经用 `petgraph::graph::DiGraph`（`crates/jarde-jvm/src/cfg.rs`）。1.3 只在**①正常流图视图**这一层用它：以 canonical 块标识为键建/复用一份过滤后的有向图，调用 `dominators::simple_fast`、`tarjan_scc`、`toposort` 等既有算法，结果只读。**边界**：petgraph 的支配点算法没有中断钩子（`cfg.rs` 已记录），所以上限与计费必须在**进入算法前**收口（块数上限 + `IrItems`/`AnalysisSteps`），不能把「算法跑到一半停下」当作预算机制。
+- **不新增通用 backend trait**：生产者一个（`jarde-jvm`）、消费者一个（`jarde-java`）、被呈现的语言一套（Java）。四者用 `jarde-java` 内的**私有模块 + 具体函数**表达即可；现在加 `trait Backend`、动态 pass 注册或跨层 IR 抽象，正是 P3 design 明确推迟到「实际需要多个实现之前」的东西，也会让「Region 决定结构、Java 输出负责语法」这条分工被抽象层冲淡。将来若真出现第二个消费者（P4 的现代语义插件），再按那时的证据决定，而不是提前造。
+
+#### 产出平面可独立表达
+
+六个平面各自的取值来源互相独立，且类型之间**没有任何 `From`/构造耦合**（`crates/jarde-jvm/src/ir.rs` 里 `Representation`/`Quality`/`SyntaxStatus`/`CompileStatus`/`SemanticValidation` 之间无 `impl From`，本片核对为空）：
+
+| 平面 | 1.3 由什么写 | 独立输入 |
+| --- | --- | --- |
+| `representation` | 装配：有任一区域回退到 bytecode → `Mixed`；全部区域是 Java → `Java` | 区域回退集合（与结构强度无关） |
+| `quality` | 按区域的结构恢复强度，整体取最弱处；`Structured` 只描述呈现 | 每个 region 的前提满足情况 |
+| `syntax_status` | 名字/结构能否写成 Java（别名只影响呈现）；`Checked`/`Unchecked` 由是否真跑过语法检查决定 | 标识符自检 + 是否跑了检查 |
+| `compile_status` | **只有 3.3 真跑了编译**才写 `Compiles`/`Failed` | 受控重编译的执行 |
+| `semantic_validation` | P2 的 SSA 不变量（`LocalInvariants`）/3.3 的 fixture 对照（`FixtureDifferential`） | 不变量检查或对照执行 |
+| `verification` | 只有真跑了验证才写 `Performed`/`Failed` | 独立执行 |
+
+规格明写的两种组合，本路线都能产出（探针上直接构造成功）：
+
+- **`representation=Mixed` + `quality=Fallback` + `coverage=CompleteWithinScope`**：扫描**完整**跑完，但某个区域只保留了可靠低级结构（`BytecodeFallback` 节点，文本形如 `// @bytecode 44 45 46 …`）。三件事分别来自「区域呈现混合」「区域结构强度」「扫描是否完成」，没有任何一步把它们绑在一起——`quality` 也不会被改写成 `Partial`（`Partial` 属 coverage，不属 quality）。
+- **`representation=Java` + `syntax_status=NotJava`**：原始名是 Java 关键字/非法标识符/混淆名时，文本里出现的是**确定性别名**（例：`int` → `int_`），呈现仍是 Java（`representation=Java`），但该结果不被声称为合法 Java 语法（`syntax_status=NotJava`），并同时是 `compile_status=NotAttempted`、`semantic_validation=Unproven`、`verification=NotPerformed`——与 `recovery-validation` 的 `Structured output cannot compile` 场景逐字对应。
+
+做不到的（明说）：本片**没有**任何生产者能写出 `Checked`/`Compiles`/`Performed` 这些强状态（1.1b 已如此记录），1.3 也只写 `Unchecked`/`NotAttempted`/`NotPerformed` 一侧；谁能写 `Compiles`/`Failed` 与 `Performed`/`Failed` 仍由 3.3 决定。
+
+#### 需要的裁决与发现的冲突（不在本片擅自改）
+
+1. **决策 5 的前提在本生态不成立。** 决策 5 说「通用语法能力优先复用成熟 Rust 库……避免重复实现通用语法基础设施」，但 6 条准入里真正决定性的两条（③ origin、⑤ 预算）**没有任何现存库满足**，③ 更是所有候选发射 API 的形状问题（一次调用回 `String`）。本片按下述读法落地：**能复用的复用**（`petgraph` 复用图算法；classfile/ZIP 继续用既有成熟库；将来若宽度重排或标准 source map 序列化成为需求，`pretty` 族与 `sourcemap` 是现成候选），**不能复用的不假装能复用**（Java 呈现面自研，范围收在决策 2 的可证明子集）。若父级认为决策 5 应解释为「必须引入某个库、可以接受 origin 粒度下降」，那是**契约变更**（决策 3 的「source map 是一等输出、不得事后反推」与准入 ③ 都要改），需要 OpenSpec 修订，不能由 1.3 自行降级。
+2. **spec 里的 coverage 取值名与现有类型不一致。** 三份 P3 delta 写的是 `coverage=CompleteWithinScope`（`recovery-validation/spec.md:19`、`java8-recovery/spec.md:57`），而仓库里唯一的 coverage 平面是 `jarde-reader::CoverageState::{NotRequested, CompleteWithinSchema, Partial, Unknown}`——`CompleteWithinScope` 这个拼写在源码与 spec 里都**不存在**（`CompleteWithinSchema` 有约 30 处使用）。1.1b 的产物词汇表没有覆盖这一项。需要在 1.3/3.2 前裁决：是给「恢复范围内的完整」新立一个类型/取值（与 P1/P2 的 schema-scope 语义区分），还是把 spec 句子改成 `CompleteWithinSchema`（并说明为何 schema 与 scope 在这里同义）。本片只记录，不改 spec。
