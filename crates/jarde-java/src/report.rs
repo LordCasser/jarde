@@ -317,7 +317,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         &view,
         ssa,
         &operations,
-        &code.exception_handlers,
+        code,
         &request.profile,
         budget,
     ) {

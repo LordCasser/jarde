@@ -1,6 +1,8 @@
 //! P3 3.3: the **replayable** Java 8 compile-and-execute comparison of the recovered bodies.
 
 use jarde::*;
+use jarde_jvm::engine::analyze_method_ir;
+use jarde_jvm::method_ir::MethodIr;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -300,16 +302,19 @@ const GUARDED: Sample = Sample {
     scaffold: &[],
     counter: None,
     members: &[
+        // P3-R5's argument side, closed: the `new@1` rule wrote `new Res(arg0, 0)` — an `int` constant
+        // where the constructor's own descriptor declares `boolean` — until the shared argument path
+        // started typing every call's arguments by the callee's descriptor. Both members execute now,
+        // so the fixture that states what a call's arguments are is compared and not just compiled:
+        // the constructor still receives `false`/`true`, and the value the body returns is the same
+        // `Res` and the same printed line on both sides.
         Member {
             name: "open",
-            expect: Expect::NotACompilationUnit(
-                "the `new@1` rule passes `0` where the callee's own descriptor declares a \
-                 `boolean` parameter",
-            ),
+            expect: Expect::Executed,
         },
         Member {
             name: "openFailing",
-            expect: Expect::NotACompilationUnit("the same `new@1` argument shape as `open`"),
+            expect: Expect::Executed,
         },
         Member {
             name: "fail",
@@ -410,13 +415,20 @@ const ECJ_V52: Sample = Sample {
             name: "add",
             expect: Expect::Executed,
         },
+        // P3-R7: `finallyPath` declares `Exception table: from 0 to 4 target 9 type any` while the
+        // decode reads BCI 9's four instructions and the graph's only node is `[0, 9)` — nothing of
+        // `[0, 4)` can throw synchronously, so the handler was never made a node and never listed as
+        // dead. The run refuses the body whole under the reason that quotes BCI 9/10/13/14; the `v45`
+        // body of the same class file keeps its handler inside a dead node and is refused for its own
+        // reasons instead (P3-R7's other half, `p3_java_recovery`).
         Member {
             name: "finallyPath",
-            expect: Expect::Executed,
+            expect: Expect::Quoted(Some("jre_region_unaccounted_instruction")),
         },
     ],
-    point: "a second compiler at the same class-file version: the same walk presents an ECJ body \
-            and the values agree",
+    point: "a second compiler at the same class-file version: `add` is presented whole by the same \
+            walk and the values agree, and `finallyPath` — whose graph is not an account of its own \
+            handler — is quoted instead of being presented as if it were the body",
 };
 
 const MISSING_DEPENDENCY: Sample = Sample {
@@ -848,6 +860,16 @@ const TRACE_HELPERS: &str = r#"    static String show(Object value) {
     }
 "#;
 
+/// One call's label as it can stand **inside** the trace's string literal.
+///
+/// A label is the argument list as Java source (`["r"]` for a `String`), and the trace prints it
+/// inside a `"…"` literal of its own: the quotes a `String` argument brings have to be escaped, or
+/// the runner does not compile for a member whose parameter is a `String`. Both sides print the same
+/// escaped label, so the comparison is unchanged — only its ability to run such a member is.
+fn trace_label(label: &str) -> String {
+    label.replace('\\', "\\\\").replace('"', "\\\"")
+}
+
 /// One member's rows in the runner: the value row (this member's own behaviour) and, when the run
 /// refused the body's value, the count row (how many times the text it did write calls something).
 fn runner_rows(
@@ -873,6 +895,7 @@ fn runner_rows(
             // return type: a counter read as an argument of the same `println` as the call would be
             // a count taken *before* the call, which is not a count of anything.
             let invocation = format!("{target}({})", call.arguments);
+            let label = trace_label(&call.label);
             if plan.return_type == "void" {
                 // A `void` member has no value to show: the trace states `void`, which is what the
                 // original's own declaration states too.
@@ -882,8 +905,8 @@ fn runner_rows(
                      }} catch (Throwable thrown) {{\n                \
                      System.out.println(\"value {}{} {}{counter_after} -> throws \" + describe(thrown));\n            \
                      }}\n        }}\n",
-                    plan.name, plan.descriptor, call.label,
-                    plan.name, plan.descriptor, call.label,
+                    plan.name, plan.descriptor, label,
+                    plan.name, plan.descriptor, label,
                 ));
             } else {
                 rows.push_str(&format!(
@@ -894,8 +917,8 @@ fn runner_rows(
                      System.out.println(\"value {}{} {}{counter_after} -> throws \" + describe(thrown));\n            \
                      }}\n        }}\n",
                     plan.return_type,
-                    plan.name, plan.descriptor, call.label,
-                    plan.name, plan.descriptor, call.label,
+                    plan.name, plan.descriptor, label,
+                    plan.name, plan.descriptor, label,
                 ));
             }
         } else if counted {
@@ -904,7 +927,7 @@ fn runner_rows(
                  try {{\n                {target}({});\n            }} catch (Throwable thrown) {{\n                \
                  outcome = \"threw=\" + describe(thrown);\n            }}\n            \
                  System.out.println(\"count {}{} {}{counter_after} \" + outcome);\n        }}\n",
-                call.arguments, plan.name, plan.descriptor, call.label,
+                call.arguments, plan.name, plan.descriptor, trace_label(&call.label),
             ));
         }
     }
@@ -1059,8 +1082,8 @@ struct Planned {
     unanchored: Vec<u32>,
     /// The bytecode indexes of every region the run refused without structuring it.
     refused_blocks: Vec<u32>,
-    /// Exception-table handler entries no anchor answers for: a finding about the *run*, not about
-    /// this comparison (see the report).
+    /// Exception-table handler entries the *run* leaves unaccounted for: no anchor of the map answers
+    /// for the BCI and no quote of the text names it. Printed nowhere — `run_sample` asserts it.
     unanchored_handlers: Vec<u32>,
     /// javac's message, when the wrapper of the recovered text did not compile.
     refusal: Option<String>,
@@ -1258,9 +1281,10 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
             }
         }
         // The body's own exception table, read from the fixture's bytes by the reader's entry: this
-        // is not a fact about the run, it is what the bytes state. A handler entry the map does not
-        // answer for is a finding about the run's coverage of that member, and it is printed rather
-        // than asserted, because it is not this comparison's business to decide what sound means.
+        // is not a fact about the run, it is what the bytes state. A handler entry the run neither
+        // anchors nor quotes is a finding about the run's coverage of that member, and it is asserted
+        // by `run_sample` (P3-R7): the comparison refuses to pass over a handler the artifact
+        // silently dropped.
         let mut unanchored_handlers = Vec::new();
         let selector = MethodSelector {
             name: JvmBytes(name.as_bytes().to_vec()),
@@ -1394,6 +1418,58 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
             "{}: `{name}{descriptor}` quotes bytecode no anchor answers for: {:?}",
             sample.label,
             planned.unanchored
+        );
+
+        // P3-R7, hardened: the note this file used to print is now a failure. Every instruction the
+        // member's bytes decode to has to be **accounted for** by the graph the presentation was
+        // built from — covered by a canonical block's half-open span, or held by a node the graph
+        // lists as dead — or quoted by the text. The ledger is read from an *independent* analysis of
+        // the same bytes through the same request, so this is an assertion about what the class file
+        // holds and not about the run's account of itself; and it is stated over the decode's
+        // instruction starts rather than over the handler entries alone, because "the graph is not an
+        // account of these bytes" is a fact about the body and the handler is only where the committed
+        // case shows it (ECJ 4.6.1 v52 `finallyPath`).
+        let mut analysis_budget = Budget::new(limits());
+        let analyzed =
+            analyze_method_ir(slice::from_ref(&snapshot), &request, &mut analysis_budget)
+                .expect("the same request whose body was presented reads its own payload");
+        let ledger = ledger_of(analyzed.ir());
+        assert!(
+            ledger.unaccounted.is_empty()
+                || ledger
+                    .unaccounted
+                    .iter()
+                    .all(|bci| planned.quotes.contains(bci)),
+            "{}: `{name}{descriptor}` decodes instruction(s) {:?} that no canonical block covers and \
+             that the graph does not list as unreachable, and the text quotes none of them: a body the \
+             graph has no account of may not be presented ({:?}), and the bytes it holds may not be \
+             dropped silently",
+            sample.label,
+            ledger.unaccounted,
+            report.representation
+        );
+
+        // The handler entries the member's own exception table declares, answered for one by one: the
+        // map anchors it, the text quotes it, or a block of the graph covers it — a proved
+        // `try`-with-resources states the instructions of the handler it consumed in its region's own
+        // record instead of writing a segment per instruction, and that is an answer. An entry with
+        // none of the three is one the artifact never mentions, and the run may then not report a
+        // complete body.
+        let unanswered: Vec<u32> = planned
+            .unanchored_handlers
+            .iter()
+            .copied()
+            .filter(|bci| !planned.quotes.contains(bci))
+            .filter(|bci| !ledger.accounted.contains(bci))
+            .collect();
+        assert!(
+            unanswered.is_empty() || !matches!(report.representation, Representation::Java),
+            "{}: `{name}{descriptor}` declares exception handler entr(ies) {unanswered:?} that no \
+             anchor of the map answers for, no quote of the text names and no block of the graph \
+             covers, and the run reports {:?}: a body that claims to be complete may not leave a \
+             handler it declares unaccounted for",
+            sample.label,
+            report.representation
         );
 
         rows.push(planned);
@@ -1551,12 +1627,6 @@ fn print_outcomes(outcomes: &[SampleOutcome]) {
                 "| `{}{}` | {run} | {wrapper} | {result} |",
                 row.name, row.descriptor
             );
-            if !row.unanchored_handlers.is_empty() {
-                println!(
-                    "| | | | note: exception handler entry BCI(s) {:?} are named by no anchor |",
-                    row.unanchored_handlers
-                );
-            }
             if let Some(Err(message)) = &row.count_control {
                 println!(
                     "| | | | the count control does not compile either: {} |",
@@ -1588,6 +1658,57 @@ fn print_outcomes(outcomes: &[SampleOutcome]) {
         if traces {
             println!("{}", outcome.trace);
         }
+    }
+}
+
+/// What one member's decode and its graph say about each other (P3-R7).
+///
+/// The two lists partition the instruction starts the bytes decode to: `accounted` holds the ones
+/// the canonical graph answers for — a block's half-open span, from the first original block start it
+/// stands for to its `end_bci`, or a node the graph lists as dead, which is a statement about an
+/// instruction and not a silence about it — and `unaccounted` holds the rest: the instruction starts
+/// in no range and in no dead node, which are the ones no presentation of this graph may drop.
+struct Ledger {
+    accounted: Vec<u32>,
+    unaccounted: Vec<u32>,
+}
+
+/// Reads one analysis's ledger: where the decode and the canonical graph disagree (P3-R7).
+fn ledger_of(ir: &MethodIr) -> Ledger {
+    let (Some(code), Some(canonical)) = (ir.code(), ir.canonical()) else {
+        return Ledger {
+            accounted: Vec::new(),
+            unaccounted: Vec::new(),
+        };
+    };
+    let mut covered = std::collections::BTreeSet::new();
+    for block in canonical.blocks() {
+        let start = block
+            .blocks()
+            .first()
+            .copied()
+            .unwrap_or_else(|| block.id().bci());
+        covered.extend(start..block.end_bci());
+    }
+    for id in canonical.unreachable() {
+        covered.insert(id.bci());
+        if let Some(block) = canonical.blocks().iter().find(|block| block.id() == id) {
+            let start = block.blocks().first().copied().unwrap_or_else(|| id.bci());
+            covered.extend(start..block.end_bci());
+        }
+    }
+    let mut accounted = Vec::new();
+    let mut unaccounted = Vec::new();
+    for instruction in &code.instructions {
+        if covered.contains(&instruction.bci) {
+            accounted.push(instruction.bci);
+        } else {
+            unaccounted.push(instruction.bci);
+        }
+    }
+    Ledger {
+        accounted,
+        unaccounted,
     }
 }
 

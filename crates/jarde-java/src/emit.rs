@@ -379,6 +379,7 @@ impl<'a> Emitter<'a> {
         self.node(&expr.origin, |emitter| match &expr.kind {
             ExprKind::Local(name) => emitter.put(name, at),
             ExprKind::Integer(value) => emitter.put(&value.to_string(), at),
+            ExprKind::Boolean(value) => emitter.put(if *value { "true" } else { "false" }, at),
             ExprKind::Long(value) => emitter.put(&format!("{value}L"), at),
             ExprKind::Str(value) => emitter.put(&format!("\"{}\"", escape_string(value)), at),
             ExprKind::Null => emitter.put("null", at),

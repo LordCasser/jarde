@@ -56,6 +56,15 @@ use jarde_reader::view::{
 const HISTORICAL_V45: &[u8] =
     include_bytes!("../../../tests/fixtures/historical/ecj-4.6.1/v45/HistoricalControlFlow.class");
 
+/// The same class compiled by the same compiler at class-file version **52** (P3-R7): its
+/// `finallyPath(I)I` is the committed body whose decode and canonical graph disagree — the class
+/// declares an `any` handler at BCI 9 over `[0, 4)` and the decode reads BCI 9's four instructions,
+/// while the graph's only block is `[0, 9)` and lists no dead node. Two `finally` codegens of one
+/// compiler, one body each: `v45` keeps every instruction of the handler in a node, `v52` keeps none
+/// of them.
+const HISTORICAL_V52: &[u8] =
+    include_bytes!("../../../tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class");
+
 /// The `p3-scope` sample's body, compiled by javac 23.0.1 `--release 8 -g`: `reuse(ZI)I` reuses slot
 /// 3 for the `then` arm's `c` and the `else` arm's `d`, and its `LocalVariableTable` is the evidence
 /// P3 3.4 splits the slot from. This file states that evidence itself (see
@@ -1173,6 +1182,208 @@ fn a_body_the_subset_cannot_prove_is_quoted_rather_than_emptied() {
         "at least one reason names where it could not prove: {:?}",
         report.diagnostics
     );
+}
+
+/// P3-R7: the very body of the finding, driven through the entry point on the committed fixture.
+///
+/// `finallyPath(I)I` of the ECJ 4.6.1 **v52** class is the one committed body whose decode and
+/// canonical graph disagree: the class declares `Exception table: from 0 to 4 target 9 type any`,
+/// the decode reads eleven instructions (BCI 9's `astore_2`, 10's `iinc`, 13's `aload_2` and 14's
+/// `athrow` among them), and the graph holds a single block `[0, 9)` with nothing dead. Before this
+/// change the run presented the three statements of `[0, 8)` under `java`/`structured` and never
+/// mentioned BCI 9/10/13/14 — a reader could not tell "judged dead" from "never seen".
+///
+/// What this test states is the invariant, not the shape of one message: every decoded instruction
+/// of the body is either covered by a canonical block or named as unreachable, **or** the body is
+/// refused whole under a reason that quotes every instruction the graph failed to account for.
+#[test]
+fn an_instruction_no_block_covers_refuses_the_body_it_belongs_to() {
+    let payload = analyze(HISTORICAL_V52, b"finallyPath", b"(I)I");
+    let facts = facts_of(
+        HISTORICAL_V52,
+        b"finallyPath",
+        3,
+        vec![None, Some("arg1".to_string()), None, None],
+    );
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, &mut budget);
+
+    // The two facts the refusal is about, read independently of the run's own tables: the bytes
+    // decode to eleven instruction starts and declare one `any` handler at BCI 9 over `[0, 4)`.
+    let mut decode_budget = Budget::new(limits());
+    let header =
+        class_facts(HISTORICAL_V52, &mut decode_budget).expect("the fixture is a class file");
+    let member = header
+        .methods
+        .iter()
+        .find(|member| member.name.raw().0 == b"finallyPath")
+        .expect("the fixture declares finallyPath");
+    let code = method_code_facts(HISTORICAL_V52, member, &mut decode_budget).expect("it decodes");
+    let starts: Vec<u32> = code
+        .instructions
+        .iter()
+        .map(|instruction| instruction.bci)
+        .collect();
+    assert_eq!(
+        starts,
+        vec![0, 1, 2, 3, 4, 7, 8, 9, 10, 13, 14],
+        "the class file's own decode of the body"
+    );
+    assert_eq!(
+        code.exception_handlers
+            .iter()
+            .map(|handler| (handler.start_bci, handler.end_bci, handler.handler_bci))
+            .collect::<Vec<(u32, u32, u32)>>(),
+        vec![(0, 4, 9)],
+        "the class file's own exception table"
+    );
+
+    // The graph's account of the same body, computed from the payload's own tables: an instruction
+    // is accounted for by a block's half-open span or by a dead node, and nothing else.
+    let unaccounted = unaccounted_of(&payload);
+    assert_eq!(
+        unaccounted,
+        vec![9, 10, 13, 14],
+        "the handler's four instructions are in no block and in no dead node:\n{}",
+        describe(&payload)
+    );
+
+    // The product: the whole body is quoted under the reason that names all four, with an anchor for
+    // every quoted BCI, and no statement survives that the graph cannot account for.
+    assert_eq!(report.representation, Representation::Mixed);
+    assert_eq!(report.quality, Quality::Fallback);
+    assert_eq!(report.syntax_status, SyntaxStatus::NotJava);
+    assert_eq!(
+        report.fallbacks,
+        vec!["jre_region_unaccounted_instruction"],
+        "{:?}",
+        report.regions
+    );
+    let diagnostic = report
+        .diagnostics
+        .iter()
+        .find(|diagnostic| diagnostic.code == "jre_region_unaccounted_instruction")
+        .expect("the refusal is diagnosed");
+    for bci in &unaccounted {
+        assert!(
+            diagnostic.message.contains(&bci.to_string()),
+            "the reason names BCI {bci}: {}",
+            diagnostic.message
+        );
+    }
+    assert_eq!(
+        quoted_bcis(&report),
+        vec![0, 9, 10, 13, 14],
+        "the quote names the blocks it refuses *and* every instruction the graph missed:\n{}",
+        report.text
+    );
+    for bci in quoted_bcis(&report) {
+        assert!(
+            !report.source_map.of_bci(bci).is_empty(),
+            "quoted BCI {bci} has an anchor:\n{}",
+            report.text
+        );
+    }
+    for presented in ["int local3", "return local3", "arg1 = arg1 + 2"] {
+        assert!(
+            !report.text.contains(presented),
+            "the body the graph cannot account for is not presented (`{presented}`):\n{}",
+            report.text
+        );
+    }
+    assert!(
+        !report.text.is_empty(),
+        "and it is not emptied either: {:?}",
+        report.outcome
+    );
+
+    // The member the graph *does* account for is untouched by the check: one class file, one body
+    // refused and the other still presented.
+    let add = analyze(HISTORICAL_V52, b"add", b"(II)I");
+    let add_facts = facts_of(HISTORICAL_V52, b"add", 3, Vec::new());
+    let mut add_budget = Budget::new(limits());
+    let add_report = recover_body(&add, &add_facts, &mut add_budget);
+    assert_eq!(add_report.representation, Representation::Java);
+    assert_eq!(add_report.quality, Quality::Structured);
+    assert!(add_report.fallbacks.is_empty(), "{:?}", add_report.regions);
+    assert!(
+        add_report.text.contains("return arg1 + arg2;"),
+        "{}",
+        add_report.text
+    );
+}
+
+/// The other half of P3-R7: an instruction a **dead node** holds is accounted for.
+///
+/// The `v45` body of the same class file and the same compiler keeps the handler inside its graph —
+/// the `jsr` normalization creates a node for every call context, so the handler's four instructions
+/// are a node the entry cannot reach. That is a statement about them ("dead, and the run can say
+/// why"), not the silence the v52 graph leaves, so the reason this test's sibling states must **not**
+/// fire here: the check refuses a body the graph has no account of, not one it accounts for.
+#[test]
+fn a_handlers_instructions_a_dead_node_holds_are_accounted_for() {
+    let payload = analyze(HISTORICAL_V45, b"finallyPath", b"(I)I");
+    let facts = facts_of(HISTORICAL_V45, b"finallyPath", 1, Vec::new());
+    let mut budget = Budget::new(limits());
+    let report = recover_body(&payload, &facts, &mut budget);
+
+    assert!(
+        unaccounted_of(&payload).is_empty(),
+        "the v45 graph accounts for every instruction it decoded:\n{}",
+        describe(&payload)
+    );
+    assert!(
+        !report
+            .fallbacks
+            .contains(&"jre_region_unaccounted_instruction"),
+        "a body the graph accounts for is refused for its own reasons, not this one: {:?}",
+        report.regions
+    );
+}
+
+/// The instruction starts one payload's decode produced that its canonical graph does not account
+/// for: neither in any block's half-open span nor in a node the graph lists as dead (P3-R7).
+fn unaccounted_of(payload: &Payload) -> Vec<u32> {
+    let ir = payload.analysis.ir();
+    let code = ir.code().expect("the body decoded");
+    let canonical = ir.canonical().expect("the graph is published");
+    let mut covered = std::collections::BTreeSet::new();
+    for block in canonical.blocks() {
+        let start = block
+            .blocks()
+            .first()
+            .copied()
+            .unwrap_or_else(|| block.id().bci());
+        covered.extend(start..block.end_bci());
+    }
+    for id in canonical.unreachable() {
+        covered.insert(id.bci());
+        if let Some(block) = canonical.blocks().iter().find(|block| block.id() == id) {
+            let start = block.blocks().first().copied().unwrap_or_else(|| id.bci());
+            covered.extend(start..block.end_bci());
+        }
+    }
+    code.instructions
+        .iter()
+        .map(|instruction| instruction.bci)
+        .filter(|bci| !covered.contains(bci))
+        .collect()
+}
+
+/// Every BCI the artifact's `// @bytecode` quotes name, in the order the text names them.
+fn quoted_bcis(report: &RecoveryReport) -> Vec<u32> {
+    report
+        .source_map
+        .segments()
+        .iter()
+        .filter(|segment| {
+            segment
+                .text(&report.text)
+                .trim_start()
+                .starts_with("// @bytecode")
+        })
+        .flat_map(|segment| segment.origin().bcis())
+        .collect()
 }
 
 #[test]

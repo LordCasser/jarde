@@ -115,6 +115,16 @@ pub enum ExprKind {
     Local(String),
     /// An `int`-shaped literal.
     Integer(i64),
+    /// `true`/`false` — a boolean constant.
+    ///
+    /// This node exists for the same reason [`ExprKind::Not`] does, read from the other side: a
+    /// `boolean` parameter and an `int` one are one slot shape and the bytecode pushes the
+    /// `int`-shaped `1`/`0` for `true`/`false`, so the *call site* cannot state which of the two it
+    /// passes and the **callee's own descriptor** is the only evidence that can. [`crate::build`]
+    /// writes this node where that descriptor declares the parameter `boolean` and the argument is a
+    /// literal `0`/`1`; every other argument keeps the literal it was rendered as (P3-R5's argument
+    /// side).
+    Boolean(bool),
     /// A `long` literal, written with its `L` suffix.
     Long(i64),
     /// A string literal; the raw value is held here and escaped by the emitter, so no expression

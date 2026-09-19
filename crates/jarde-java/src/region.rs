@@ -39,7 +39,7 @@ use std::collections::BTreeSet;
 
 use jarde_jvm::method_ir::{CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, SsaTable};
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
-use jarde_reader::classfile::ExceptionHandlerFact;
+use jarde_reader::classfile::{ExceptionHandlerFact, MethodCodeFacts};
 
 use crate::decode::Operations;
 use crate::facts::Operation;
@@ -140,6 +140,28 @@ pub enum FallbackReason {
     },
     /// Live blocks the walk did not claim, reachable only through edges the projection leaves out.
     UncoveredBlocks { blocks: Vec<u32> },
+    /// The decoded body states instruction(s) that **no** canonical block covers and that the graph
+    /// does not list as unreachable (P3-R7).
+    ///
+    /// This is the third fact of the same kind as [`Self::Irreducible`] and
+    /// [`Self::CrossingExceptionRegions`]: a premise of the whole presentation that the graph itself
+    /// contradicts. A block-or-dead instruction is a body this walk can present or refuse by region,
+    /// because every instruction of the body is accounted for by *some* node; an instruction that is
+    /// in neither is a body the graph is not an account of at all — the normalization never created a
+    /// node for it and never said why not, so no region of this walk covers it and no quote of the
+    /// regions would name it either. Presenting the blocks that *are* accounted for would then state
+    /// a body while silently dropping the instructions the class file really holds (the ECJ 4.6.1
+    /// v52 `finallyPath` is the committed case: its `Exception table` names a handler at BCI 9 and the
+    /// decode reads BCIs 9/10/13/14, while the graph's only block is `[0, 9)`).
+    ///
+    /// The `bcis` are the unaccounted instruction starts, ascending, and they reach the artifact in
+    /// one of two ways, depending on what the walk was going to say about the body: as the reason of
+    /// a whole-body refusal when every region the walk produced was structured (nothing else was
+    /// going to be said, and the body may not be presented as if it were complete), or as the reason
+    /// of a region of its own beside the refusals the walk did find (a specific reason a rule
+    /// examined is worth more than "the graph has a hole", and the bytes still have to be named).
+    /// [`crate::build`] reads [`Self::unaccounted`] in both cases, so the quote names them either way.
+    UnaccountedInstructions { bcis: Vec<u32> },
     /// The block's own evidence is incomplete: it branches but the names table states no last
     /// instruction for it, so which instruction branches cannot be stated.
     MissingEvidence { block_bci: u32 },
@@ -165,7 +187,21 @@ impl FallbackReason {
             Self::SwitchShape { .. } => "jre_region_switch_shape",
             Self::Guard { code, .. } => code,
             Self::UncoveredBlocks { .. } => "jre_region_uncovered_blocks",
+            Self::UnaccountedInstructions { .. } => "jre_region_unaccounted_instruction",
             Self::MissingEvidence { .. } => "jre_region_missing_evidence",
+        }
+    }
+
+    /// The instruction starts this reason states that **no** canonical block covers, ascending.
+    ///
+    /// Only [`Self::UnaccountedInstructions`] states any: every other reason, whole-body or by
+    /// region, is about blocks the graph holds, and a quote of that region already names them. A
+    /// refusal that does list them has to quote them too ([`crate::build`] reads this to do it), or
+    /// the artifact would refuse a body while dropping exactly the bytes it refused it for.
+    pub fn unaccounted(&self) -> &[u32] {
+        match self {
+            Self::UnaccountedInstructions { bcis } => bcis,
+            _ => &[],
         }
     }
 
@@ -280,6 +316,10 @@ impl FallbackReason {
             Self::UncoveredBlocks { blocks } => format!(
                 "{} live block(s) are reachable only through edges the normal-flow view leaves out: {blocks:?}",
                 blocks.len()
+            ),
+            Self::UnaccountedInstructions { bcis } => format!(
+                "the decoded body states {} instruction(s) at BCI {bcis:?} that no canonical block covers and that the graph does not list as unreachable: the graph is not an account of these bytes, so no region of it may be presented as the body",
+                bcis.len()
             ),
             Self::MissingEvidence { block_bci } => format!(
                 "block at BCI {block_bci} has no last instruction the names table states, so its branch cannot be named"
@@ -538,13 +578,19 @@ impl Recovered {
 }
 
 /// Recovers the region tree of one method from the projection, the decoded operations and the
-/// exception table the same decode stated.
+/// decode facts the same read produced.
+///
+/// The decode itself travels in `code` rather than piece by piece because the walk reads two
+/// things out of it — the declared exception table ([`MethodCodeFacts::exception_handlers`]) and the
+/// **instructions** it decoded — and both have to be the same read's: the whole-body check below
+/// asks whether the graph accounts for exactly those instructions, which is a question no table
+/// rebuilt from a report could answer.
 pub(crate) fn recover(
     canonical: &CanonicalCfg,
     view: &NormalFlowView,
     ssa: &SsaTable,
     operations: &Operations,
-    handlers: &[ExceptionHandlerFact],
+    code: &MethodCodeFacts,
     profile: &crate::pass::RecoveryProfile,
     budget: &mut Budget,
 ) -> Result<Recovered, StopReason> {
@@ -558,7 +604,9 @@ pub(crate) fn recover(
     // shapes nothing Java could write: a graph that is not reducible over some block (a loop
     // entered twice, or two loops crossing) and an exception table whose records cross. Quoting
     // every live block is the honest answer — presenting the reducible part around a cycle the
-    // reader cannot see would hide exactly the fact that made it unprovable.
+    // reader cannot see would hide exactly the fact that made it unprovable. A third fact of the
+    // same kind is asked of the decode, and it is answered at the end of this function, because
+    // what the body has to become then depends on what the walk found.
     let irreducible = view.irreducible_blocks();
     if !irreducible.is_empty() {
         let bcis = irreducible
@@ -571,7 +619,7 @@ pub(crate) fn recover(
             canonical,
         ));
     }
-    if let Some((record, other)) = crossing_records(handlers, canonical) {
+    if let Some((record, other)) = crossing_records(&code.exception_handlers, canonical) {
         return Ok(quoted_whole(
             live,
             FallbackReason::CrossingExceptionRegions {
@@ -587,12 +635,14 @@ pub(crate) fn recover(
             canonical,
         ));
     }
+    // P3-R7's own check runs *after* the walk, because what the body has to become depends on what
+    // the walk was going to say about it (see the end of this function).
     let mut walker = Walker {
         canonical,
         view,
         ssa,
         operations,
-        handlers,
+        handlers: &code.exception_handlers,
         profile,
         budget,
         visited: BTreeSet::new(),
@@ -633,6 +683,41 @@ pub(crate) fn recover(
             reason: FallbackReason::UncoveredBlocks { blocks: bcis },
         });
     }
+    // P3-R7, last: the graph has to be an account of the body it stands for **before** any region of
+    // it is presented as that body. Every instruction the same read decoded is either covered by a
+    // canonical block or named as unreachable; an instruction that is in neither is one the
+    // normalization never walked and never stated, so no region of this walk covers it and no quote
+    // of the regions would name it either — the ECJ 4.6.1 v52 `finallyPath` is the committed case
+    // (its `Exception table` names a handler at BCI 9, the decode reads BCIs 9/10/13/14, and the
+    // graph's only node is `[0, 9)` because nothing in `[0, 4)` can throw synchronously).
+    //
+    // What the body has to become depends on what this walk was going to say about it, and in both
+    // cases the artifact ends up **naming** those instructions:
+    //
+    // * every region is structured: this walk was about to present the body whole, which is the
+    //   claim of completeness the graph cannot support. The body is quoted whole, so the text of a
+    //   body the graph has no account of is never the body that looks complete;
+    // * the walk already refused something: it claims no completeness already, and the refusals it
+    //   found are rules that examined a shape and said why (a guarded region's unproven close, a
+    //   `jsr` body). Those reasons stay, and the unaccounted instructions are stated beside them as
+    //   a quote of their own — replacing a specific reason with "the graph has a hole" would tell a
+    //   reader less, and dropping the bytes would be the silence this check exists to undo.
+    let unaccounted = unaccounted_instructions(code, canonical);
+    if !unaccounted.is_empty() {
+        if regions.iter().all(Region::is_structured) {
+            return Ok(quoted_whole(
+                live,
+                FallbackReason::UnaccountedInstructions { bcis: unaccounted },
+                canonical,
+            ));
+        }
+        // `blocks` is empty on purpose: these instruction starts belong to **no** node of the graph,
+        // which is the whole point of the reason, so the quote is the reason's own list.
+        regions.push(Region::Fallback {
+            blocks: Vec::new(),
+            reason: FallbackReason::UnaccountedInstructions { bcis: unaccounted },
+        });
+    }
     Ok(Recovered {
         regions,
         claimed: walker.visited,
@@ -654,6 +739,53 @@ fn quoted_whole(
         claimed: BTreeSet::new(),
         blocks: canonical.blocks().len(),
     }
+}
+
+/// The instruction starts one decode produced that the canonical graph does not account for (P3-R7).
+///
+/// The question is asked of the **decoded instruction starts**, not of the operations, the frames or
+/// the names: the decode is the most basic statement of what the body is, and a graph that disagrees
+/// with it about which instructions exist is a graph no presentation may call the body. An
+/// instruction is accounted for when
+///
+/// * some block of the graph covers it — its BCI lies in the half-open range a node spans, from the
+///   first original block start it stands for (`CanonicalBlock::blocks`) to its `end_bci` — or
+/// * the graph lists the node that holds it as dead ([`CanonicalCfg::unreachable`]), which is a
+///   statement about it and not a silence: a dead instruction is a fact of this body with a reason
+///   the run can explain, and the ECJ 4.6.1 v45 `finallyPath`'s three dead nodes are that shape.
+///
+/// Neither is the same as **absent**: a BCI in no range and in no dead node is an instruction the
+/// normalization never walked and never stated, which is the third state [`CanonicalCfg::unreachable`]
+/// warns about. This walk was written to refuse such a body rather than present the part of it the
+/// graph happens to hold.
+///
+/// The list is ascending — the decode's own order — and deduplicated by construction: one entry per
+/// instruction start of the body.
+fn unaccounted_instructions(code: &MethodCodeFacts, canonical: &CanonicalCfg) -> Vec<u32> {
+    let mut covered = BTreeSet::new();
+    for block in canonical.blocks() {
+        let start = block
+            .blocks()
+            .first()
+            .copied()
+            .unwrap_or_else(|| block.id().bci());
+        covered.extend(start..block.end_bci());
+    }
+    // A node the entry cannot reach is accounted for by the dead list as well, so that a graph which
+    // published a dead node *outside* the range its id names — the shape a consumer must not read as
+    // reachable — still accounts for it. Both lists are read together; neither alone is a partition.
+    for id in canonical.unreachable() {
+        covered.insert(id.bci());
+        if let Some(block) = canonical.blocks().iter().find(|block| block.id() == id) {
+            let start = block.blocks().first().copied().unwrap_or_else(|| id.bci());
+            covered.extend(start..block.end_bci());
+        }
+    }
+    code.instructions
+        .iter()
+        .map(|instruction| instruction.bci)
+        .filter(|bci| !covered.contains(bci))
+        .collect()
 }
 
 /// The first pair of exception-table records whose declared ranges cross, when the graph holds a

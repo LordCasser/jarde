@@ -108,13 +108,14 @@ historical/ecj/v52 add(II)I                      is wrapped as `public int add(i
 to `Object` (which would be a *different* signature) and the descriptor's class is the fact that
 names it.
 
-## What the comparison answered (the recorded run of 2026-09-20)
+## What the comparison answered (the recorded run of 2026-09-20, re-run after P3-R7 and finding (i) were closed)
 
 `cargo test --test p3_execution_comparison --locked -- --ignored --nocapture`
 on javac 23.0.1 = **2 passed; 0 failed; 0 ignored**. Columns: the run's own classification
 (`Java/Structured` = it wrote the whole body as Java; `Mixed/Fallback` = it kept quoted bytecode), what
 `javac --release 8` did with the wrapper of that member's own declaration, and what the comparison then
-did with it (the two traces compared line for line).
+did with it (the two traces compared line for line). The two rows that changed with the closure of the
+two findings are marked **closed** below; every other row is the earlier run's own answer, unchanged.
 
 ### The required members (P3-R1/R2/R3 and R5)
 
@@ -132,11 +133,11 @@ did with it (the two traces compared line for line).
 | | `simple`, `armOnly`, `reuse`, `after`, `reassign`, `receiver` | Java/Structured | compiles | executed: traces identical |
 | `p3-scope/v8-debug` (javac, `--release 8 -g`) | the same seven | Java/Structured | compiles with the class file's own names (`b`, `seed`, `a`) | executed: traces identical |
 | `p3-handlers/v8` (javac, `--release 8 -g:none`) | `body`, `tail`, `one`, `two`, `three`, `suppressed`, `secondInitFails`, `sync`, `syncThrows`, `main` | Java/Structured | compiles | executed: traces identical (70 lines, incl. the reverse close order of `two`/`three` and `boom \| suppressed close-r`) |
-| | `open`, `openFailing` | Java/Structured | **javac refuses** | boundary: see finding (i) |
+| | `open`, `openFailing` | Java/Structured | compiles | executed: traces identical (**closed**: see finding (i)) |
 | | `syncBody`, `fail`, `boom` | Mixed/Fallback | compiles (quoted body) | boundary: the run wrote no body to execute |
 | | `withCatch` (`jre_guard_unexplained_row`), `branching` (`jre_guard_body`), `fin`, `catchFinally` (`jre_guard_finally_copy`), `syncThrowsCatching`, `secondInitFailsCatching` (`jre_guard_resource_init`), `suppressedCatching` (`jre_region_irreducible`) | Mixed/Fallback | compiles (quoted) | boundary: every BCI of every refused region is quoted, and every quoted BCI is anchored |
 | `historical/ecj-4.6.1/v52` (**ECJ 4.6.1**, `-source 1.3`, target 52.0) | `add(II)I` | Java/Structured | compiles | executed: traces identical |
-| | `finallyPath(I)I` | Java/Structured | compiles | executed: traces identical; see finding (ii) |
+| | `finallyPath(I)I` | Mixed/Fallback | javac: missing return statement | boundary: quoted whole (**closed**: see finding (ii)) — the graph of that body accounts for no instruction of its handler, which the text now quotes |
 
 ### The corpus and the missing dependency
 
@@ -168,15 +169,14 @@ declaration this comparison derived from the run's facts.
    a `void` body; executing it would compare an empty body against a body that opens a resource or
    throws, which is why the comparison asserts the quote instead (every BCI of every refused region is
    quoted, and every quoted BCI is an anchor of the source map).
-3. **The declaration of the body itself cannot be compiled under the member's own signature — finding
-   (i)**: `Guarded.open` and `Guarded.openFailing`. The `new@1` rule writes the constructor call as
-   `new Res(arg0, 0)` / `new Res(arg0, 1)`, and `Res`'s own descriptor declares the second parameter
-   `boolean`, so `javac` refuses the text (`int cannot be converted to boolean` for the literal where a
-   `boolean` is declared). This is the **argument-side counterpart of P3-R5**: the fix of 2.4 types the
-   *parameters* of the presented member from its descriptor, and this sample shows the same question
-   asked one level down, at an argument whose callee's descriptor the run has in the pool but does not
-   read for the literal. It is recorded here, not fixed: it is a change to what `new@1` writes (and to
-   the text of every shape like it), which is its own slice's question.
+3. **The declaration of the body itself cannot be compiled under the member's own signature**: no
+   member of this corpus is a boundary for this reason any more. It was finding (i) — `Guarded.open`
+   and `Guarded.openFailing`, whose `new@1` argument was written as the integer literal `0`/`1` where
+   `Res.<init>`'s own descriptor declares `boolean` — and the shared argument path of the build now
+   types every call's arguments by the callee's descriptor, so both members compile **and execute**
+   (their rows are above). The literal's type is decided where every invocation is written, not in
+   `new@1` alone: the same question is asked by `invokevirtual`, `invokestatic`, `invokespecial`, the
+   constructor call of a construction site and the `super(…)`/`this(…)` of an instance initializer.
 4. **The type the body names is not shipped — finding (ii)-adjacent**: `MissingDependency.viaAbsentLibrary`.
    The layer reads one class file and states the call; `javac` needs the class (`cannot find symbol`),
    which no fixture in this repository has. The *original* member cannot be run either
@@ -194,19 +194,22 @@ declaration this comparison derived from the run's facts.
    `LocalRewrite.calls` by 1, and the recovered text moves it by 1 as well. `saved`'s control does not
    compile either (`unexpected return value`) and the row states that too.
 
-## Findings this corpus produced (recorded, not fixed here)
+## Findings this corpus produced (**both closed** by the change that follows them)
 
 **(i) A `boolean` argument is written as an integer literal.** `Guarded.open`/`openFailing`: the text
-`new Res(arg0, 0)`/`new Res(arg0, 1)` is not compilable because `Res.<init>`'s descriptor says
-`(Ljava/lang/String;Z)V`. The report states `representation=Java`, `quality=Structured` for these
-bodies (it never claims `syntax_status=Checked`), so the boundary is visible only when the text is
-actually compiled — which is what this comparison does. Owner: the `new@1` rule's argument writing
-(P3 2.3/2.4); size: one literal's type decision, plus whatever the existing text assertions say about
-those shapes.
+`new Res(arg0, 0)`/`new Res(arg0, 1)` was not compilable because `Res.<init>`'s descriptor says
+`(Ljava/lang/String;Z)V`. The report stated `representation=Java`, `quality=Structured` for these
+bodies (it never claims `syntax_status=Checked`), so the boundary was visible only when the text was
+actually compiled — which is what this comparison does. **Closed** by typing a call's arguments by the
+callee's own descriptor in the shared argument path (`crate::build::typed_arguments`): an argument that
+is a *literal* `0`/`1` is written `false`/`true` where the parameter is `Z`, and every other parameter
+type keeps the argument it had (`byte`/`char`/`short` legally take an `int` constant, JLS 5.3). The two
+members are now `compiles` + `executed: traces identical`, and the comparison's own tables state that
+rather than a boundary.
 
 **(ii) An ECJ `finally` body's exceptional copy is not accounted for.** `HistoricalControlFlow.finallyPath`
-is *presented as Java* (`{ int local3 = arg1 + 1; arg1 = arg1 + 2; return local3; }`) and its value
-comparison passes, but the class file states an exception table row `[0, 4) → 9` and BCIs `9..14`
+*was* presented as Java (`{ int local3 = arg1 + 1; arg1 = arg1 + 2; return local3; }`) and its value
+comparison passed, while the class file states an exception table row `[0, 4) → 9` and BCIs `9..14`
 (`astore_2; iinc 1, 2; aload_2; athrow` — the copy of the `finally` the compiler emitted for the
 exceptional path, which also increments `value`):
 
@@ -218,25 +221,44 @@ public int finallyPath(int);
    Exception table: from 0 to 4 target 9 any
 ```
 
-The run's own record of that member is one structured region at BCI 0 with `blocks=[0]`, and the
-comparison's own line for it is `note: exception handler entry BCI(s) [9] are named by no anchor`: the
-handler's entry — and the code behind it — has no text and no anchor in the artifact. javac's own
-`finally` copy *is* refused (`fin`/`catchFinally` → `jre_guard_finally_copy`, listed above), so the two
-compilers' `finally` shapes are answered differently, and the difference is worth a decision: either
-the walk has to see the block behind that handler row (and refuse this shape too), or the presentation
-has to state which rows it does not account for. Owner: the guard/walk of P3 2.4; recorded here because
-3.3's corpus is what produced it.
+The run's own record of that member was one structured region at BCI 0 with `blocks=[0]`, and the
+comparison printed `note: exception handler entry BCI(s) [9] are named by no anchor`: the handler's
+entry — and the code behind it — had no text and no anchor in the artifact, so a reader could not tell
+"judged dead" from "never seen". javac's own `finally` copy *is* refused (`fin`/`catchFinally` →
+`jre_guard_finally_copy`, listed above), so the two compilers' `finally` shapes were answered
+differently. **Closed** by the recovery layer's own coverage check
+(`crate::region::unaccounted_instructions`): before any region of the graph is presented as the body,
+every instruction the same read decoded has to be covered by a canonical block or named as
+unreachable. The graph of this body accounts for none of BCI 9/10/13/14 — nothing in `[0, 4)` can throw
+synchronously, so the normalization never made the handler a node and never listed it as dead — so the
+body is now refused whole under `jre_region_unaccounted_instruction`, quoting exactly those BCIs; its
+row above reads `Mixed/Fallback` and the comparison's ledger assertion is what keeps it that way. When
+the walk *already* refuses part of a body, the same check adds a quote naming the unaccounted
+instructions instead of replacing the walk's own reason (`p3_guard`'s patched `one` shows both codes at
+once).
 
-**(iii) The TWR members' handler entries are also unanchored, and that is not a finding.** For
-`one`/`two`/`three`/`suppressed`/`secondInitFails` the same note prints the handler entries (BCIs 32,
+**The canonical graph's own side of (ii)** — reported, not changed: the handler block is not merely
+unreachable, it is **absent**. `MayThrow` (`jarde-jvm/src/cfg.rs`) is a per-opcode table, and exception
+edges are created only from instructions that table admits, inside blocks the walk already created; the
+declared `Exception table` is not itself a walk root. In the ECJ **v45** twin the same handler survives
+as a node because the `jsr` normalization creates one per call context (six nodes, three dead); at v52
+there is no call context, so `canonical.blocks()` is a single node `[0, 9)`, `unreachable()` is empty
+and `handler_rows()`/`throw_sites()` are both empty. Making the normalization root at every declared
+handler would publish a new dead node for every such body, which is a P2 decision (frames, SSA, billing
+and the archived golden counts all move with it), and the coverage check above is what makes the P3
+artifact honest without it.
+
+**The TWR members' handler entries: an unanchored entry label is not an unaccounted instruction.** For
+`one`/`two`/`three`/`suppressed`/`secondInitFails` the old note also printed handler entries (BCIs 32,
 38, 69, 44, 77, 108). Their shape is *presented* as `try (Res local0 = open("r")) { … }`, whose
 statements (both closes, the `addSuppressed`, the `athrow`, the primary's store) are anchored — the
-handler *entry label* is the JVM's jump target, which the `try` statement states rather than quotes.
-The note is printed for both, and this paragraph is why only (ii) is a finding.
+handler *entry label* is the JVM's jump target, which the `try` statement states in its region's own
+block list rather than quoting. That distinction is what the comparison's assertions are written
+against: an instruction is accounted for when a canonical block covers it or the graph names it dead,
+so a covered-but-unanchored entry passes, while an entry no block covers has to be quoted (P3-R7's
+invariant, asserted over **every** decoded instruction and not only over handler entries).
 
-## What this corpus does not cover
-
-* **A second javac generation**: only javac 23.0.1 is installed here. The *target* version (52.0) and
+## What this corpus does not cover* **A second javac generation**: only javac 23.0.1 is installed here. The *target* version (52.0) and
   the flag set are covered (`--release 8`, `-source 8 -target 8`, `-g`, `-g:none`, `-g:lines,source`,
   `-parameters`), but "an older javac's own codegen" is not available on this machine and no sample
   claims to be one.
@@ -250,4 +272,7 @@ The note is printed for both, and this paragraph is why only (ii) is a finding.
   `groovyc` are all absent) and there is no network access. ECJ is the second compiler this corpus
   could have, and does.
 * **Execution of the boundary members**: by construction (see "The boundaries" above).
-* **`p3-handlers`' `open`/`openFailing`**: presented as Java, refused by `javac` — finding (i).
+* **A *new* ECJ sample**: the ECJ fixture is read as bytes only (no jar, no network), so the second
+  compiler's shapes are covered by the committed class files and not by a re-run of the compiler.
+* **`p3-handlers`' `open`/`openFailing`** are no longer a gap at all: they compile and execute, which
+  is the closure of finding (i) recorded above.

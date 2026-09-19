@@ -456,6 +456,26 @@ fn a_close_the_exception_path_lacks_is_refused() {
     let recovered = refused(&engine, &fixture, "one", "jre_guard_handler");
     let report = recovered.recovery();
     assert!(!report.text.contains("try ("), "{}", report.text);
+    // P3-R7, on the same body: `invokevirtual Res.close:()V` was the only instruction of the
+    // protected range `[25, 29)` that could raise, so the handler it fed — the suppression handler at
+    // BCI 32 — is a node the graph never creates, and its four instructions sit in no block and in no
+    // dead node. The rule's own refusal stays (it is the reason a rule examined the shape and found),
+    // and the instructions the graph never accounted for are quoted beside it instead of being
+    // dropped: a refused body still has to say which bytes it could not account for.
+    assert!(
+        report
+            .fallbacks
+            .contains(&"jre_region_unaccounted_instruction"),
+        "{:?}",
+        report.fallbacks
+    );
+    for bci in [32, 33, 34, 35] {
+        assert!(
+            cited(&report.text).contains(&bci),
+            "the instructions no block covers are quoted (BCI {bci}): {}",
+            report.text
+        );
+    }
 }
 
 #[test]

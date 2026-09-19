@@ -802,10 +802,19 @@ impl Builder<'_> {
                 }
             }
             Region::Fallback { blocks, reason } => {
-                let bcis: Vec<u32> = blocks
+                let mut bcis: Vec<u32> = blocks
                     .iter()
                     .flat_map(|block| self.covered_bcis(block))
                     .collect();
+                // P3-R7: a refusal may state instruction starts that no block covers at all — the
+                // ones the graph failed to account for. The quote has to name them beside the
+                // region's own blocks, or the artifact would refuse a body while dropping exactly
+                // the bytes it refused it for, which is the silence the refusal exists to undo.
+                for bci in reason.unaccounted() {
+                    if !bcis.contains(bci) {
+                        bcis.push(*bci);
+                    }
+                }
                 let at = bcis.first().copied().unwrap_or(0);
                 self.fallback(bcis, &reason.message(), at)
             }
@@ -1764,6 +1773,7 @@ impl Builder<'_> {
         for (_, value) in args {
             arguments.push(self.render_value(*value, bci, 0)?);
         }
+        let arguments = typed_arguments(target.descriptor(), arguments);
         Ok(Expr::direct(
             ExprKind::Call {
                 receiver,
@@ -1921,6 +1931,13 @@ impl Builder<'_> {
         for (_, value) in stack_operands(instruction).iter().skip(1) {
             args.push(self.render_value(*value, site.constructor, depth + 1)?);
         }
+        // The constructor's **own** descriptor types the arguments, exactly as a call's does: a
+        // construction site writes the call the class file holds, and `new Res(arg0, 0)` for a
+        // `Res(String, boolean)` constructor is a call the member's own signature refuses to compile.
+        let args = match self.invoke_descriptor(site.constructor) {
+            Some(descriptor) => typed_arguments(&descriptor, args),
+            None => args,
+        };
         let origin = site
             .owned
             .iter()
@@ -1959,10 +1976,28 @@ impl Builder<'_> {
                 }
             }
         }
+        // `super(…)`/`this(…)` is an invocation like any other: the constructor it names states the
+        // parameter types its arguments are written under.
+        let args = match self.invoke_descriptor(at) {
+            Some(descriptor) => typed_arguments(&descriptor, args),
+            None => args,
+        };
         self.push(Stmt::new(
             StmtKind::ConstructorCall { target, args },
             OriginSet::new(Origin::direct(at)),
         ))
+    }
+
+    /// The descriptor of the invocation one BCI holds, as the pool decoded it states it.
+    ///
+    /// `None` when the instruction is not an invocation of this decode: a site that names no
+    /// `invoke*` states no descriptor, and a caller then leaves its arguments as they were rendered
+    /// rather than guessing a signature (P3-R5's argument side).
+    fn invoke_descriptor(&self, bci: u32) -> Option<String> {
+        match self.operations.get(bci) {
+            Some(Operation::Invoke(target)) => Some(target.descriptor().to_string()),
+            _ => None,
+        }
     }
 
     /// Writes one verified field write as the assignment it performs (P3 2.3).
@@ -2614,6 +2649,90 @@ impl Builder<'_> {
             .map(|block| block.blocks().to_vec())
             .unwrap_or_default()
     }
+}
+
+/// The arguments of one call, typed by the **callee's own descriptor** (P3-R5's argument side).
+///
+/// A `boolean` parameter and an `int` one are one slot shape, and the value the bytecode pushes for
+/// `true`/`false` is the `int`-shaped `1`/`0` (`iconst_1`/`iconst_0`): a call site cannot state which
+/// of the two it is passing, and the descriptor of the member it calls is the only evidence that can.
+/// So an argument that is a **literal** `0`/`1` — and only a literal: an expression that computes one
+/// is a value whose type this layer would be guessing at — is written `false`/`true` where the
+/// parameter is declared `boolean`.
+///
+/// Every other parameter type keeps the argument exactly as it was rendered. `int`, `long`, `float`,
+/// `double`, `String` and reference types already spell what their descriptor states, and a
+/// `byte`/`char`/`short` parameter legally takes an `int` **constant** (JLS 5.3 narrows a constant
+/// expression of `int` type in a method-invocation context), so re-typing those would be writing a
+/// different program than the bytecode holds.
+///
+/// The mapping is by position, so it is only applied where the descriptor and the arguments really
+/// line up: a descriptor that does not parse, or one whose parameter count differs from the number of
+/// arguments the call reads, leaves the arguments untouched rather than typing one of them from a
+/// guess. This is the shared path every invocation of this layer goes through — `invokevirtual`,
+/// `invokespecial`, `invokestatic` and `invokeinterface` alike, the constructor call of a `new` and
+/// the `super(…)`/`this(…)` of an instance initializer — because "which argument is a `boolean`" is a
+/// fact about the callee, not about the shape that writes the call.
+///
+/// One place is deliberately **not** this shape: the arguments a lambda's factory site binds are the
+/// site's own captures, whose types the `invokedynamic` descriptor states for the SAM rather than for
+/// the implementation the reference names, so nothing there is re-typed.
+pub(crate) fn typed_arguments(descriptor: &str, arguments: Vec<Expr>) -> Vec<Expr> {
+    let Some(parameters) = parameter_descriptors(descriptor) else {
+        return arguments;
+    };
+    if parameters.len() != arguments.len() {
+        return arguments;
+    }
+    arguments
+        .into_iter()
+        .zip(parameters)
+        .map(|(argument, parameter)| {
+            if parameter != "Z" {
+                return argument;
+            }
+            let ExprKind::Integer(value) = argument.kind else {
+                return argument;
+            };
+            let spelled = match value {
+                0 => false,
+                1 => true,
+                _ => return argument,
+            };
+            Expr {
+                kind: ExprKind::Boolean(spelled),
+                origin: argument.origin,
+            }
+        })
+        .collect()
+}
+
+/// The parameter type descriptors one method descriptor states, in order
+/// (`(Ljava/lang/String;Z)V` → `["Ljava/lang/String;", "Z"]`), or `None` when it does not parse.
+///
+/// Only the parameter list is read: the return type is not part of how an argument is spelled, and a
+/// descriptor whose `)` is missing states no parameters a caller could line arguments up with.
+fn parameter_descriptors(descriptor: &str) -> Option<Vec<&str>> {
+    let arguments = descriptor.strip_prefix('(')?.split_once(')')?.0;
+    let bytes = arguments.as_bytes();
+    let mut types = Vec::new();
+    let mut at = 0usize;
+    while at < bytes.len() {
+        let start = at;
+        while bytes.get(at) == Some(&b'[') {
+            at += 1;
+        }
+        match bytes.get(at) {
+            // A reference type runs to its `;`: its name may hold any character, so scanning for the
+            // terminator is the only reading that cannot split one in two.
+            Some(b'L') => at = arguments[at..].find(';')? + at + 1,
+            // Every other field descriptor is one character (a primitive or an element type).
+            Some(_) => at += 1,
+            None => return None,
+        }
+        types.push(&arguments[start..at]);
+    }
+    Some(types)
 }
 
 /// The value one instruction reads out of one local slot, when it reads that slot at all.
