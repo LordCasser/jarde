@@ -1090,3 +1090,39 @@ M2 **实测印证了契约那句「普通图测试通过不能替代异常测试
 - CLI 侧**不为** abstract/native 与成员隔离另造 fixture（库侧已覆盖，CLI 对它们只有一行转发 + content 绑定，已由 B1/B2/B3 钉住）——判定为重复而非缺口。
 - `FixtureDifferential` 仍无生产请求能raised它（属 5.3）。
 - MSRV、supply-chain、fuzz 冒烟、`openspec validate --strict` 属 5.4 的门禁，本片未跑。
+
+## 2026-09-19 5.2：入口计数、只读需要的字节与确定性（提交 `955d7f3`）
+
+### 交付
+
+新增 `tests/p2_entry_counts.rs`（5 个用例，纯新增；**未修改任何既有断言**）。
+
+- **① 无关 Body 为零**（`one_method_analysis_attempts_one_body_however_many_the_class_declares`）：fixture 是一个**真的有三个带 `Code` 的方法**（`first`/`second`/`target`）+ 一个 abstract 成员的类；**前提先由 reader 自己的 `Engine::inspect_header` 独立断言**（4 个成员、3 个带 `Code` shell），所以断言的对象**确实是「一个有其它 body 可读的类」**。对每个带体的成员各发一次请求：`method_bodies == 1`（**不是 3**）、`class_headers == 1`、`code_bytes == 该方法自己的指令字节数`（1/3/2，其余体的字节**从未被解码**）、`report.reads` 恰一条且 `reason == DriverMethodBody`、六阶段全 `Completed`。另补：目标为 abstract 成员时 `method_bodies == 0`、`code_bytes == 0`。
+- **② X0/X1 构造计数为零**：X1（consumer scan）与 X0（pool probe）两个入口均断言 `ir_items == 0`、`ir_edges == 0`、`analysis_steps == 0`、`normalization_clones == 0`、`class_headers == 0`、`method_bodies == 0`，且 `class_bytes > 0`（证明查询**真的跑了**，不是空转）。X0 另断言 **`code_bytes == 0`**（一字未解码）；X1 的证据本来就是解码后的指令流（P1 自有路径），故其侧改为断言 `method_bodies == 0` 并**注明理由**——**未把它伪装成已覆盖**。
+- **③ 确定性**（`the_same_method_analysis_repeats_field_by_field`）：4 种形状 × 2 次 × 各自新 `Budget`——V52 全流水线、V45 `jsr/ret`（`normalization_clones == 2`）、`add(II)I` 截断（6×`Partial` + 诊断 + skipped 区间）、被拒环境（2 条诊断按声明序、零计费）。比较**序列化 JSON 去 `elapsed_millis`**（覆盖 `reads`/`diagnostics`/`stages`/`coverage` 的**顺序**），另加 18 维逐维计费相等。附带 `every_published_sequence_is_in_its_own_order`：`stages` 等于固定 pass 表序、覆盖区间按 `start` 升序——这是 3.1「所有输出自排序」主张的**可证伪点**。
+
+### A17 图算法依赖守卫的核对与行为侧证据
+
+三个 token（`petgraph::`/`petgraph as`/`extern crate petgraph`）**已在** `tests/p2_contracts.rs` 的 `A17_IMPORT_TOKENS`，且**已有**沙箱注入用例（`petgraph_import`）。实现者另用变异实测其牙齿：① 删掉三个 token → 守卫用例转红；② 往**真实受守卫文件**注入 `use petgraph::algo::…`（并给包加上该依赖以复现 pre-split 可达条件）→ `physical_entry_modules_do_not_reference_the_p2_modules` 转红。**无需重复造**。
+
+### 证伪（实现在副本做，父级另做两组独立证伪）
+
+| 变异 | 结果 |
+| --- | --- |
+| 实现者：`read_driver_method` 把同类所有带 `Code` 的体都读一遍（**真实生产路径注入**） | 目标用例红：`left: 4, right: 1` |
+| 实现者：`query::execute` 顶部计一次 `IrItems` | 两个 X 用例均红 |
+| 实现者：按奇偶反转 `diagnostics` / 反转 `stages` | 确定性用例均红（diff 显示顺序互换） |
+| 实现者：**比较器削弱**为只比 `stage_states` | 用例**绿**且打印 `full serialized reports differ = true`——证明牙齿来自 JSON 全字段覆盖，而非别的机制 |
+| **父级独立**：`MethodBodies` 多计一次 | `one_method_analysis_attempts_one_body…` 与确定性用例转红 |
+| **父级独立**：`query::execute` 计一次 `IrItems` | 两个 X 用例转红 |
+
+### 证据
+
+全量 **754 passed / 0 failed / 1 ignored**（749 + 新文件 5；逐 target 计数与基线一致）；`p1_xref_golden` 5、`p2_contracts` 29、`p2_cfg` 12、`p2_ssa` 4、`p2_frame` 4、`p2_canonical` 8、新 `p2_entry_counts` 5、`-p jarde-cli` 22、`-p jarde-jvm` 194；fmt 与 clippy 1.98.1 干净；两个 CI example exit 0；CI run 35421240509 四 job success。
+
+### 覆盖缺口（如实记录，不掩盖）
+
+1. **构造计数缺直接维度**：resolver/CFG/SSA/Region/Java AST **各自没有预算维度**，「未启动」只能由三条**代理证据**支撑——四个构造维度为零 + 未触碰的覆盖平面 + A17 源码守卫。**其中 Region 与 Java AST 在本 build 里根本还没有构造路径**（属 P3），故其「为零」**不是已证明，而是尚不存在**——不得据此声称已覆盖。新文件的模块文档写明了这一点。
+2. `QueryReport` **没有 `reads` 平面**，故「没有 `DriverMethodBody`」无法直接断言；等价证据是 `class_headers == 0` + `method_bodies == 0`。
+3. `analyze_method` **至多一条 `reads`**，所以「`reads` 顺序」变异不可观测；顺序牙齿由 `diagnostics` 与 `stages` 两个变异证明。
+4. 历史 fixture 的 X1 请求未新增 golden 条目；「输出逐字段不变」以 `p1_xref_golden` 的 5 个重放 + `p2_contracts` 的 P1 身份用例**引用**为证。
