@@ -1,3 +1,6 @@
+# P3 实施验证记录
+
+当前状态见文末 [2026-09-19 恢复复核](#review-2026-09-19-recovery)。下列各交付片段的待实施、任务归属与数字是历史时点记录；继续实施以本轮复核和 tasks 当前路线为准；已完成 1.1/1.2/1.3/2.1/2.2，新修正单列 1.3d，不把历史完成解释为新反例已通过。
 
 ## 2026-09-19 1.1：只读 IR 交接与产物词汇（提交 `b422f80`、`bbebe93`）
 
@@ -397,3 +400,137 @@ cargo metadata --manifest-path fuzz/Cargo.toml --locked
 ### 已知边界（留给后续）
 
 **门面未接成员表**：`Engine::recover_method` 明说不做第二次类读，故经门面对访问器调用给 `jre_accessor_members_missing`（被陈述的拒绝，文本保留调用）。呈现这一半在库层（`ClassMembers` + `RecoveryRequest::with_members`）已可用；把成员读接到门面与 3.1 的 receiver/参数命名是**同一件事**，属 **3.1**。其余：`StringBuilder` 之外的拼接类、嵌套链、方法转发型 accessor 的呈现、`altMetafactory` 非零标志位、段表 `cp` 面与新 `*Record` 的 `Deserialize` 面（3.2）。
+
+
+<a id="review-2026-09-19-recovery"></a>
+## 2026-09-19 恢复实现与路线复核
+
+代码基线 `bc283c0`，收尾纳入 `492e31e` 的 2.2 实现及 `51a5cac` 完成记录。两版均在 git archive 隔离副本核对；主工作区另有 agent 的 build/模式测试改动，不作为已关闭证据，本轮未修改生产代码或仓库测试。P2 29/29 与分层 7/7 已由 `7a5f994` 归档，原 R9/R10 修正及 P2 门禁不再是待办。P3 历史 5/11 完成，新增 1.3d 后 **5/12**。
+
+### P3-R1 · P1：跨 local 写入的旧值被重读 → 1.3d
+
+用 OpenJDK 23.0.1 的 `javac --release 8 -g:none` 编译 `public static int post(int x) { return x++; }`，真实字节为 `1a 84 00 01 ac`（iload_0; iinc 0,1; ireturn）。公开 `Engine::recover_method` 在 `bc283c0` 和 `492e31e` 都输出：
+
+```java
+{
+    local0 = local0 + 1;
+    return local0;
+}
+```
+
+结果为 Java/Structured/Unchecked，生产语义平面为 Unproven。将生成的 body 原样包入 `static int post(int local0)` 后编译/执行：原方法 `post(7)=7`，生成方法 `post(7)=8`。原始读取已留在 operand stack，`build::render_value` 却把其 `Operation::Load` 重新写成当前 slot 名；这是值语义错误，不是缺少 debug 或未执行编译。应保存该 SSA 值并保持必要的物化与顺序；只在 lambda capture 上使用 replayable 守卫不足以保护通用路径。
+
+### P3-R2 · P1：消费者 fallback 时调用生产者消失 → 1.3d
+
+真实 Java 输入：`static Object make(){ calls++; return "ok"; }`、`public static String cast(){ return (String)make(); }`。`492e31e` 的公开恢复结果为 Mixed/Fallback，文本只引用 checkcast 的 BCI 3 和 areturn 的 BCI 6；没有 `make()`，也没有生产者 BCI 0 的低级引用。`call_value_reaches_a_reader` 把 CheckCast 归为可渲染消费者，调用臂因此不发射语句；非 bridge 所属 cast 又只发射自己的 fallback，消费处没有兑现生产者值。
+
+降级可以不生成 Java，但必须保留完整 effect/来源，不能以 Mixed 掩盖生产者丢失。修正需要决定“哪些值最终由哪个实际产物消费”，或将依赖生产者合并进 fallback，不能只用 opcode 名单删语句。该反例与 `51a5cac` 中怀疑的方向一致，本轮已从公开入口复现；后续工作区修正未计为关闭。
+
+**已关闭对照**：`bc283c0` 对 `return tick()` 输出 `tick(); return tick();`，受控执行原方法返回 1/调用 1 次，生成方法返回 2/调用 2 次。`492e31e` 同一反例只输出 `return tick();`，本轮已复测关闭；不把这个旧缺陷继续列为当前重复调用。保留单次调用回归，避免修 R2 时重新引入它。
+
+### P3-R3 · P2：分支声明作用域不成立 → 3.1
+
+真实 `public static int scope(boolean b){ int x; if(b) x=1; else x=2; return x; }`，字节 `1a 99 00 08 04 3c a7 00 05 05 3c 1b ac`。公开输出为 Java/Structured/Unchecked：
+
+```java
+{
+    if (local0 != 0) {
+        int local1 = 1;
+    } else {
+        local1 = 2;
+    }
+    return local1;
+}
+```
+
+即便给测试包装提供 `int local0` 以单独排除条件类型问题，`javac --release 8` 仍在 else 和 return 两处报 local1 不可见。`build::declare` 的全方法已声明集合不代表 Java 词法作用域。将已有 3.1 提前，按定义/使用与 Region 选择声明位置；同时补同次方法 flags、receiver/参数槽与 boolean/category-2 类型边界，不把普通分支的正确性留到复杂模式之后。
+
+### P3-R4 · P2：确定性比较包含 elapsed，测试存在假红 → 3.4 先修
+
+`bc283c0` 原始全量首次在 `p3_java_recovery::a_body_without_debug_names_is_named_deterministically_and_invents_no_source_scope`（约 1312 行）失败：两份完整 RecoveryReport 唯一区别为 `usage.elapsed_millis=1/0`。随后重跑通过。恢复层须复用已有递归排除 elapsed 的比较口径，保留全部确定字段/顺序与计费断言，并以字段/顺序变异证伪；不增加可跳过真实差异的宽松比较器。
+
+### 交接与 source map 的现状
+
+- MethodIr 三表、同次 code/CP/bootstrap、jarde-java、门面/CLI recover_method 都已存在，不重复列为待实现。
+- 门面仍以 `parameters=0` 交 RecoveryFacts，未交访问 flags/receiver/debug；bridge 所需声明与 accessor 所需 ClassMembers 主要由低层 API 的调用方补充。把这部分记为底层实现，不声称公开入口已能呈现所有 2.2 模式。
+- 当前 source-map Origin 只有 bci/cp/provenance，没有物理方法身份；accessor callee 的字段 BCI 与 caller BCI 无法由 anchor 自身区分。3.2 复用既有物理身份并绑定 CP，不能新增同义身份体系。
+- “读当前方法声明”与“读 accessor 的另一个 Body”是两类需求。后者按实际候选请求并计费、绑定定义/CP；普通恢复不读无关 Body，不能为接线预装全类成员。公开成功呈现与 X1 两边保真应在同一验收中发生。
+
+### 本轮验证与调整
+
+- `bc283c0` 首次原始测试：因上述 elapsed 用例失败，默认 fail-fast 未完成全量；后续重跑 894 条既有回归通过、1 ignored（同次另有 1 条隔离探针，单独计数）。不以重跑绿色抹掉假红。
+- `492e31e` 原始固定副本（排除审计探针）：`cargo test --workspace --all-targets --all-features --locked --no-fail-fast` = **925 passed / 0 failed / 1 ignored**。
+- 四类公开入口探针均经真实 javac CLASS 和 reader/IR/恢复管线；返回值、调用次数与作用域的受控对照使用 OpenJDK 23.0.1，只证明这些 fixture，不替代 JDK 25 reader oracle 或完整 P3 语料。
+- 新路线：**1.3d → 3.1 → 3.2 → 2.3/2.4 → 3.3/3.4**；elapsed 比较先修，现有 2.2 勾选保留。P4/P5 不扩大，P2/分层档案不改写。完成记录、规格/入口文档、能力与公开边界已按同一状态修订。
+- 文档校验：`openspec validate --all --strict --no-interactive` **12 passed / 0 failed**；本轮修改文档的本地路径与锚点检查通过，`git diff --check` 干净。补正当前入口和 fuzz 文档的 P2/分层归档链接，保留归档文件原记录。最终核对 HEAD 仍为 `51a5cac`；其他 agent 未提交的 2.3 源码继续保留，不纳入本次验收计数。
+
+## 2026-09-19 1.3d：跨写入的旧值重读修复（提交 `1e6521e`）
+
+修复复核的 **P3-R1**（P1）并为 **P3-R2** 落下真实语料回归。**R4 已在 `b8ba342` 先行修复**（见下）。
+
+### 根因（父级用 SSA 探针定位，实现者复核一致）
+
+`post(int x) { return x++; }`（`1a 84 00 01 ac`）的 SSA **本来就是对的**：
+
+```
+bci 0 iload_0  reads [(Local(0), V0)] writes [(Stack(0), V1)]
+bci 1 iinc 0,1 reads [(Local(0), V0)] writes [(Local(0), V2)]
+bci 4 ireturn  reads [(Stack(0), V1)] writes []
+V1 uses = [bci 4]（返回的正是加载的旧值）；V2 无人使用
+```
+
+**缺陷纯在渲染**：`render_value` 对 `Definition::Instruction` + `Operation::Load{slot}` **无条件**把槽名当表达式。而槽名在**使用点**表示的是该槽**当时**的内容（此处 `V2`），不是该 load 所表示的 `V1`。
+
+### 修法
+
+新增 `Builder::slot_name_denotes_the_same_value(slot, denotes, at) -> bool`：在**含使用点 `at` 的 block** 里，取 `entry()` 中该槽的值，再按 `instructions()` 顺序把 `bci < at` 的每次对 `Local(slot)` 的写入覆盖上去（最后写者胜），**判等 `denotes`**。
+- `denotes` 的三种来源：`Load{slot}` = **该 load 自己 `reads()` 里的 Local 值**；`Entry{slot}`/`Phi{slot}` = 该 value id 自身。
+- `at` 语义未改（仍是**使用点** BCI）；`at` 不在任何 block 时返回 `false`（无证据不写名）。
+- 不成立时返回 `Err` 走既有 `fallback`，**绝不退回写槽名**；新增 `deferred_producers(value, reader, …)` 走查，使拒绝**同时**陈述 load 的 BCI 与使用点（R2 的原则：降级可以不出 Java，但 effect/来源必须完整）。
+
+### 实现者发现的两处父级诊断之外的情形（**均有执行对照**）
+
+| 形态 | 修前产物 | 执行对照 |
+| --- | --- | --- |
+| `int y = x++`（store 消费点） | `int local1 = local0;` | 原 7 / 修前 **8** |
+| `if (x++ > 0)`（分支消费点） | `if (local0 > 0)` | `conditional(0)` 原 0 / 修前 **1**（**改变走哪条臂**） |
+| `post`（return 消费点，即用户反例） | `local0 = local0 + 1; return local0;` | 原 7 / 修前 **8** |
+
+**修后**（`post` 的公开产物）：
+```java
+{
+    local0 = local0 + 1;
+    // @bytecode 4 0
+    // the value at BCI 4 is the value local 0 held at BCI 0, and the slot does not hold it at BCI 4: the slot's name would read the value the body wrote in between
+}
+```
+即**不再声称有 return**、平面降为 `Mixed/Fallback`——不完整但诚实（把旧值物化成临时变量从而**呈现**而非降级不在本片）。
+
+### 必须保持的反面（对照组）
+
+`bump`/`doubleIt`（真写后重读 → 仍写 `return local0;`）、`loopAcross`（**跨块**：循环体改了槽，循环后仍写 `return local2;`）——修后**完整呈现、零引用**；执行对照 `doubleIt(7)=14`、`loopAcross(7,3)=7` 与原方法同值。
+
+### 父级独立证伪（两个方向，副本 + `sha256sum -c`）
+
+| 变异 | 结果 |
+| --- | --- |
+| 判据**恒真**（恢复修前行为） | **恰好 3 红**：`a_value_the_slot_no_longer_holds_is_not_returned_through_the_slot_name`、`a_store_of_a_superseded_load_is_refused_with_the_read_named`、`a_branch_on_a_superseded_load_is_refused_with_the_read_named` |
+| 判据**恒假**（一律拒绝） | **恰好 3 红**：两条对照组 + store 的呈现面 |
+
+**真值在中间**，两个方向各有测试承重——这正是「不是一律拒绝」的证明。
+
+### fixture 与可复现性（父级独立复核）
+
+`tests/fixtures/p3-local-rewrite/`：真实 `javac 23.0.1 --release 8 -g:none` 输出，8 个成员（`post`/`saved`/`conditional` 为缺陷面；`bump`/`doubleIt`/`loopAcross` 为对照面；`cast`/`make` 为 R2）。README 记录编译器、命令、逐成员字节码。
+**父级用提交的源文件自行重编译**：输出与提交的 `.class` **逐字节相同**（均为 `f755f062bc9779d941e93bf1ef4889b3ce6efb0dbd670e5ccbd07152126158a6`，650 字节，major version **52**）——fixture 确实由所提交源码产生，非手工拼装。
+
+### 证据
+
+全量 **953 passed / 0 failed / 1 ignored**（947 + 6，全部来自新测试目标 `p3_local_rewrite`；既有目标无状态改变）；fmt 与 clippy 1.98.1 干净；`openspec validate --all --strict` 12 passed；两个 CI example exit 0；分层三包中 `jarde-java` **0** 次；**未触及依赖边**（故未跑 fuzz 锁检查）。
+**CI**：`1e6521e` → 见下。
+**唯一被修正的既有断言**（收紧而非放宽）：`classfile.rs::repository_class_fixtures_validate_without_false_target_rejections` 的计数 `(15, 42, 8, 8, 8)` → `(16, 51, 8, 11, 8)`——新增第 16 个 fixture class（9 个有体成员、3 个新分支目标），断言仍是同一个严格相等。
+
+### 尚未闭环的边界（如实）
+
+- `Entry`/`Phi` 的 `Local` 分支在本切片**没有可达路径**（`render_value` 只被喂 stack 值）——判据在这两处是同一不变量的**补全**，但**未经实测触发**。
+- 本片只做到「不再产出错误的 Java」；把旧值**呈现**为 `x++` 或临时变量属后续模式工作。
