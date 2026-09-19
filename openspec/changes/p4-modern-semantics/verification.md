@@ -419,3 +419,59 @@ plugin 只发布 3 个**配置里拼写的名字**（含归档里**不存在**�
 ### 一处流程注记（父级）
 
 实现者报告「共享 Skill 入口不可用」并列出其检查过的位置——它检查的是**仓内**路径与 `../../skills`，而本宿主该 Skill 位于 `~/.grow/skills/software-engineering/SKILL.md`（**父级已确认存在并读毕**）。**教训**：派单时应把 Skill 的**绝对路径**写进 brief。本片的验证面与汇报结构因此完全依父级 brief 而定，未受影响；后续派单已加入该路径。
+
+## 2026-09-20 3.3：A04–A07/A12 逐行落证据、现代矩阵、output conflict 与对抗测试（提交 `bc2d205`）
+
+### A04–A07/A12 逐行证据（**本片的核心**）
+
+| 行 | P4 侧证据（实跑全绿） | 增量判定 |
+| --- | --- | --- |
+| **A04** | `p4_modern_facts::a_bootstrap_handle_that_names_nothing_is_never_resolved`（句柄指向**本仓库不存在**的类，图仍完整且断言**所有** `BootstrapHandle` 边 `edge.to == handle`——「走到句柄即止，从不跟随它命名的成员」）；`an_indy_site_whose_handle_is_not_a_member_gets_no_concat_fact`；`a_class_whose_invokedynamic_sites_are_not_concat_reports_no_concat_fact`；`a_real_concat_site_is_a_reader_fact_and_joins_to_the_bci_of_its_instruction` | **有增量，但只在事实平面**：`implementation handle 和创建/调用的区分；未知最终目标` 在 condy/concat 这条「任意 bootstrap」路径上被**证据化**。P4 **未**给 lambda 加语义（那仍是 P3）。**若把该列读成要求恢复语义，则 P4 无增量**——口径边界，**未虚报** |
+| **A05** | `nodes.len()==12`/`edges.len()==15`（「每个节点一次，无论多少路径到达」）、`steps==35`/`max_depth==6`、`cycles.len()==2`、共享节点之后两入口 `via[..]` **逐元素相等**而各自前缀深度不同（6 vs 4）；四条预算用例 + 环用例 | 逐条对上（visited/cycle、边数/深度预算、共享节点与 via 路径） |
+| **A06** | 三 profile 三答案并存 + `physical_entries().len()==4` + 每定义 3 候选 + `unselected().len()==2`；manifest 条件诊断（Warning，版本条目**仍列出**）；不合规选择（`NonConformant` + Error + 转发 `MultiReleasePublicPredecessorMissing`）；`matrix == 3×扫描 + Σ每 profile == 三个 standalone` | 逐条对上 |
+| **A07** | `p/Dup.class` **两个 origin**（WAR 根 vs 嵌套 `WEB-INF/lib/a.jar`）、ordinal/origin 不同；`roots=[Snapshot]`→`Ambiguous`；`ArtifactTree{嵌套}+Snapshot`→`Ordered`；**parent-first 回到 Ambiguous、child-first → Ordered**；`Custom`→`Undetermined` + `search` 空 | 逐条对上 |
+| **A12** | **P4 无增量（如实）**：P4 未触碰恢复层——**父级独立核实**：`grep ModernFacts\|modern_facts\|ModernOrigin\|OutputLevelStatus` 在 `crates/jarde-java/src/` 与 `tests/` 中**零命中**；`Engine::recover_method` 输出与 P3 相同；plugin item 不带 X1 边与 source map 锚；1.2 的 concat 事实**不产生文本**。P3 侧证据本片实跑 4 passed | **无增量**（「现代恢复」= 把 concat 站点呈现为 `+`、record/sealed 呈现为源码，**不在 P4**；触发条件已写进矩阵） |
+
+### 现代支持矩阵（`docs/support-matrix.md`，8 处逐字替换全部匹配成功）
+
+1. 首行复核边界 → 2026-09-20 + 三个归档提交 + **P4 已实现** + 指向新章节；
+2. `Classfile 53–71` 行 → 追加 registry（45–71 逐 release 登记引入约束）+ 事实路径 + **未登记 = 无主张**；
+3. `Preview` 行 → 追加 `PreviewRule` 登记与 `classfile_invalid_modern_minor_version`（结构仍 complete）；
+4. `Future major` 行 → 追加 `UnregisteredRelease`（**无主张**）+ `classfile_future_release`；
+5. **新增小节**「现代（53–71）能力与 P4 新增入口」：**五平面表**（parse/X1/resolution/decompile-quality/output-level）+ RuntimeMatrix + plugin + X3 + 「**source map 无 P4 增量**」+ 逐条「未做」；
+6–8. `README.md`：新增 P4 段、路线句改为「完成 P4 的 3.4 与 P5」、并**修正一处 P3 时代遗留的矛盾句**（原写「门面尚未提供参数/receiver/debug」，与 P3 3.1/3.2 的实现和 support-matrix 冲突）。
+
+**逐字替换全部成功，无一处找不到目标串。**
+
+### Java 8 output conflict 与 source map 的判断（**判断有依据，非偏好**）
+
+- **不加更多 output level**。理由（代码事实）：`assess_output_level` 的谓词是「**Java 8 没有等价物**」，**不是** `since > level`——concat 的 `since` 是 `invokedynamic` **tag** 规则 **51**（比 Java 8 还老），按档位比较会把 concat **误判为可表示**；而 record/sealed 在 11/17 下确实可表示。唯一消费者是 P3 的 Java 8 恢复层，**给无消费者的档位产判定就是「报告一个没人产出的结论」**。
+- **做的机制改动**（`modern.rs` +15/−0，**行为不变**）：把 level 变成**穷尽 match** 的显式表态点——**新增 `OutputLevel` 变体会编译失败**，必须在该处给出新档自己的谓词；并新增 `a_construct_no_pass_judges_gets_no_output_level_verdict` 钉住「module/nestmate/condy 不产输出级别结论」。**触发条件**（出现第二个目标档）已写进矩阵。
+- **source map：无 P4 增量**（如实写进矩阵）。P4 不产被呈现的文本；concat 事实自带 `ModernOrigin`；plugin item 的 entry 证据属另一平面。当前锚点仍是 P3 3.2 的 `Origin`/`OriginMember::MethodPoint`；**触发条件**：恢复层开始把 concat 呈现成文本。
+
+### 对抗测试（**实跑输出**，Tier 3 口径）
+
+| 面 | 结果 |
+| --- | --- |
+| ZIP bomb / 超大 entry | **4 passed / 0 failed**。探明：P0 语料已含**真实 bomb 形状**——central directory 谎报 uncompressed size 为 1、实际流展开 `READ_CHUNK+1` → `BudgetExceeded{EntryBytes}` 且**不返回字节**（`declared` 与 `understated` 两侧都断言） |
+| condy 图（预算/环/深度/不解析） | **7 passed / 0 failed**（未退化） |
+| 缺失依赖 / open-world | **4 passed / 0 failed** |
+| 不可约 CFG | **1 passed / 0 failed** |
+| 取消压力（workspace 过滤 `cancel`） | **40 passed / 0 failed** |
+| 非法现代形状（golden） | **6 passed / 0 failed**（含 `an_illegal_class_file_is_read_and_its_planes_stay_separate`） |
+
+**无回归。**
+
+### 父级独立复核与证据
+
+- 全量 **1075 passed / 0 failed / 3 ignored**（1074 + 1）；fmt/clippy 1.98.1 干净；`openspec validate --all --strict` **14 passed**（父级复跑）；两个 CI example exit 0；分层三包中 `jarde-java` **0** 次；**未触及依赖边**。
+- **A12「无增量」由父级独立核实**（见上表：`jarde-java` 对现代事实**零引用**）。
+- **测试断言零改动**（`git diff --numstat -- tests/` = **+65/−0**，删除行含 `assert` 计数 **0**）；`modern.rs` 的 +15/−0 是文档注释 + 穷尽 match，**无行为变化**。
+- **实现者两组证伪**：① 让 record 在 Java 8 下**不报冲突**（伪等价降级）→ **2 红**（含 golden 的 `left: "representable" / right: "conflict", ["record_components"]`）；② 让矩阵**塌缩**（release 固定 17）→ **3 红**。副本 216 文件清单校验、仓库事后 216 OK。
+- **CI**：`bc2d205` → 见下。
+
+### 未完成（如实，属 3.4）
+
+**3.4**：全量门禁数字与「**结构支持 vs 源码恢复独立状态**」的结论。**本片给出的可用表述**：结构支持（parse/registry/事实/矩阵/X2/X3/plugin）已到 3.1–3.2 且**未**触及恢复层；恢复层（decompile-quality、source map）**仍是 P3 状态**，`OutputLevel` 只有 Java 8，因此 A04/A12 的「现代恢复」增量**尚未发生**（触发条件：恢复层开始消费 `ModernFacts`）。
+**前序遗留（本片未变、仍如实记录）**：CLI 出口（三个新入口只有库/门面出口）；plugin 的 `ArtifactTree` 嵌套 scope 答 `NotRequested`；X3 若干分支与 plugin `Skipped{Error}`/`Cancelled` 无 fixture；`MethodParameters` 未读；类级事实不在载荷；flag 具体位置不主张。
+**小风险（父级记录）**：矩阵/README 新增的章节锚点按 GitHub 规则推导，**未在渲染器中验证**。
