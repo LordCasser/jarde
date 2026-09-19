@@ -899,3 +899,74 @@ for (slot, spelling, primitive) in &described {      // 事实与描述符必须
 - **3.4**：`RecoveredMethod::facts()` 需文档行；`tests/fixtures/p3-corpus/README.md` 的矩阵应并入 `docs/support-matrix.md`（本片未改用户文件）。
 - **CI-only 未验证**：`--release 8` 在 CI 的 Temurin 25 上仍受支持（本机只有 23）。
 - 本片**未做独立 review**（父级已核 ignored 计数、CI diff 与全量门禁）。
+
+## 2026-09-20 P3-R6 已关闭：slot 复用按 spec 拆分（提交 `58f0df9`）
+
+**规格句**（`specs/source-maps/spec.md`，MUST 级、该 delta 的既有内容）：`Slot reuse across ranges`——同一 slot 在不同 BCI 区间承载不同变量时 SHALL 建立**不同作用域/名称**，**不得**把整个 slot 合并成一个变量。
+
+### 分组规则（本片的实际难点）
+
+**不是**「range 包含该 BCI」那么简单：**LVT range 描述的是变量可见范围，不是存储范围**——`c` 的 range 从 BCI 8 开始，而存它的 `istore_3` 在 **BCI 7**；`d` 同理（store 16 / range 17 起）。新增 `src/reuse.rs` 的判据：
+
+- **read** → 归「range 包含**该 read 自己** BCI」的记录；
+- **write** → 归「**其值被某条 range 内 read 消费**」的记录（反向用 `store_producing()` 定位产生该值的 store，与 1.3d 的 `slot_name_denotes_the_same_value` 同一套块内扫描）——**这正是 store 落在 range 之外的解药**；
+- 仅在**赋值完整且无歧义**时拆（每条 read 恰落在一条 record、每个 write 的值恰被一条 record 的 in-range read 消费、同 BCI 的 read/write 归属一致）；否则退回「一个槽一个变量 + 序号名」；
+- **range 不完整的 `a`**（slot 2，两条**同名**记录）→ 名字相同即 `Whole("a")`，**不**拆分，仍按 R3 规则提升到两臂与合流都可见处；
+- 另两条保守规则：range 重叠/空/无 range 不拆；**guard 头部声明的资源槽永不拆**（2.4 的 header 自己写声明）。
+
+### `NameTable` 的合同变更
+
+从「一槽一名」变为「一槽一条（未拆）或多条（拆）」：键由 `u16` 变为新公开类型 **`LocalVariable { slot, index }`**；证据类型由「每槽一个名字」变为带 range 的 **`DebugLocal`** 与 **`SlotEvidence { Unnamed | Whole(String) | Split(Vec<String>) }`**；冲突/别名/`free_name` 改跑在**变量**上（槽序 → 槽内变量序，确定性）；新增 `whole(slot)`（**只**在该槽是一条变量时给名字，资源槽走它，防止误用第一条变量名）。声明提升（R3 的规则）也按**变量**各自计算。
+
+### 产物（父级独立经公开入口复现）
+
+`reuse(ZI)I`，`-g` 样本——**与原源码同形**：
+```java
+{
+    int a;
+    if (b) {
+        int c = seed + 1;
+        a = c;
+    } else {
+        int d = seed + 2;
+        a = d;
+    }
+    return a;
+}
+```
+`-g:none` 样本——**保持 3.1 的保守形**（无证据不拆，序号名）：`int local2; int local3; if (arg0) { local3 = arg1 + 1; local2 = local3; } …`，符合「缺失证据时 MUST 使用稳定 `argN`/`localN`」。
+
+### 父级独立验收（**不用实现者的 harness**）
+
+把 `-g` 产物自行包成 `public static int reuse(boolean b, int seed)` → `javac --release 8` **exit 0**；自行执行对照：
+```
+b=true  seed=5  generated=6  original=6
+b=false seed=5  generated=7  original=7
+```
+
+### 父级独立证伪（三组，与实现者自报一致）
+
+| 变异 | 结果 |
+| --- | --- |
+| `split()` 恒 `None`（退回合并） | 用例红，失败输出正是 3.1 旧形（`int local3;` 提升 + 两臂赋值 `local3`） |
+| 拆分的名字**逆序**（c/d 对调） | 同一用例红，输出 `int d = seed + 1;` / `int c = seed + 2;`——证明用例钉的是**名字对位**而不只是「拆开了」 |
+| （实现者）R3 的声明退回首次写入处 | R3 用例红，打印 `int local1 = 1; … local1 = 2;`（证明修 R6 没打断 R3） |
+
+### 既有两个断言的处理（**编码的正是错误行为**）
+
+- `two_variables_sharing_one_slot_…` **改名**为 `without_debug_evidence_a_reused_slot_stays_one_variable`——它只跑 `NO_DEBUG` 样本，**断言值一字未动**；改的是它原先写下的**通则**（「本层命名槽而非源变量，所以诚实的呈现是一个变量」）被限定为「**无 LVT 证据时**一槽一变量」。
+- `a_table_that_names_a_slot_twice_states_no_name_for_it` 拆成两条：`scope(Z)I` 的 3 条断言**逐字保留**；`reuse` 的 3 条断言**编码的正是错误行为**（`int local3;` + `local3 = c;` 不出现），替换为对整块产物的精确断言 + 「不得出现 `local3`/`local2`」+ c/d 各在各自臂内 + `int a;` 在 `if` 之前。**弃用的 3 条没有以更弱形式保留。**
+
+### 证据
+
+全量 **986 passed / 0 failed / 3 ignored**（982 + 4 新用例）；fmt 与 clippy 1.98.1 干净；`openspec validate --all --strict` 12 passed；两个 CI example exit 0；分层三包中 `jarde-java` **0** 次；**未触及依赖边**；`cargo test --test p3_execution_comparison -- --ignored` = **2 passed**（`reuse` 的 `Expect::Executed` 未回归）。
+**CI**：`58f0df9` → 见下。
+
+### 附：3.1 的勾选据此成立
+
+3.1 任务文本的「覆盖 slot 复用」一项**在 3.1 交付时与 spec 相反**（父级派单失误：把已由 spec 定下的事当成可自由选择，见 P3-R6 段）。本片交付后该覆盖项**才真正成立**，故 3.1 的勾选由本片补齐依据。
+
+### 仍待处理（不做，如实记录）
+
+- **`docs/support-matrix.md` 第 51 行仍写「门面只有 ordinal local 名称」**——P3-R5/R6 之前的口径，属用户正在编辑的文件，本片只报告不改（3.4 应同步）。
+- **P3-R7（ECJ v52 handler 未被交代）与发现 (i)（`new@1` 把 boolean 实参写成 `0/1`）仍未修**，两者都是「已记录、证据齐备、待排期」。
