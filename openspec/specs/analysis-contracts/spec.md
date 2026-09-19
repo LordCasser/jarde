@@ -1,7 +1,7 @@
 # analysis-contracts Specification
 
 ## Purpose
-让库调用方和命令行用户准确解释分析结果的来源、覆盖边界和终止原因，避免把未扫描、取消、解析失败或不支持的内容误解为不存在或已经验证成功。
+让库调用方和命令行用户准确解释分析结果的来源、覆盖边界和终止原因，避免把未扫描、取消、解析失败或不支持的内容误解为不存在或已经验证成功。本契约覆盖当前全部分析平面：artifact 枚举与物理视图、classfile Header 与 bytecode inspection、结构 XRef、显式运行环境下的符号解析与声明引用，以及方法分析报告（IR 阶段状态、质量、覆盖、执行与语义证据平面）；方法分析交付的是内部 IR 与报告平面，不含 Java 源码恢复。
 
 ## Requirements
 
@@ -32,7 +32,7 @@
 - **THEN** 两条 origin chain 分别保留其父 entry ordinal/raw name 和 child container ID，内层同名定义不得因容器名称相同而合并
 
 ### Requirement: Provenance and execution are explicit
-系统 SHALL 为枚举、artifact-tree、Header 和 bytecode 返回快照/entry 身份及适用的 container origin、class offset 或方法 BCI，并分别返回 coverage、execution、diagnostics 和预算消耗。`nested_depth` SHALL 作为非累加的高水位预算维度进入 limits、usage 和 BudgetExceeded 结果；root container depth 为 0，直接 child 为 1。
+系统 SHALL 为枚举、artifact-tree、Header、bytecode、解析/闭包和方法分析返回快照/entry 身份及适用的 container origin、class offset 或方法 BCI，并分别返回 coverage、execution、diagnostics 和预算消耗。非累加的高水位预算维度 SHALL 进入 limits、usage 和 BudgetExceeded 结果：`nested_depth` 表示已接受的容器嵌套深度（root container depth 为 0，直接 child 为 1），`dependency_depth` 表示已接受的依赖闭包深度；两者相互独立，任一维度不得代替或改写另一维度。任何计费维度 SHALL 同时出现在 `Limits`、`UsageSnapshot`、终止维度枚举以及库与 CLI 两个请求 schema 中，请求 schema 保持显式——缺失维度是协议错误，不静默取默认值。
 
 #### Scenario: Cancelled enumeration
 - **WHEN** ZIP 根容器已经建立，且枚举开始前或过程中收到取消
@@ -49,6 +49,10 @@
 #### Scenario: Nested depth is a high-water limit
 - **WHEN** artifact-tree 已接受 depth 1 的 child，随后请求 depth 2 而 `nested_depth` limit 为 1
 - **THEN** usage 的 nested depth 高水位保持 1，execution 为 Partial 且 reason 指向 `nested_depth`，depth 2 child 标为未扫描而不是累加消费或空成功
+
+#### Scenario: Dependency depth is an independent high-water limit
+- **WHEN** 同一请求已接受容器深度 2（`nested_depth` limit 为 3），随后依赖闭包扩展到深度 5 而 `dependency_depth` limit 为 4
+- **THEN** execution 为 Partial 且 reason 指向 `dependency_depth`，保留已接受的容器深度与依赖深度 usage；`usage.nested_depth` 与 `usage.dependency_depth` 分别记录各自高水位，任一维度超限不改写另一维度的 usage 或判定
 
 ### Requirement: Independent evidence and coverage dimensions
 结构引用 SHALL 分开表示 relation、derivation、resolution、applicability 和 validity。结果 MUST 分开描述 artifact structural coverage、runtime resolution coverage、dynamic analysis coverage、execution 和分页；“对已声明 schema 完整”不得扩张为理解任意未知 attribute 或完整运行图。

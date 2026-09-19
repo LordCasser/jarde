@@ -7,12 +7,12 @@
 
 ### Requirement: Query compiler preserves soundness
 
-查询 SHALL 先声明 P1 支持的目标关系（`mentions_symbol`、`literal_value` 或 raw CP）、artifact/runtime view、consumer 类别和预算，再选择过滤器。过滤器允许假阳性但 MUST 不因过滤造成假阴性；无法安全判定时 SHALL 将候选标记 Unknown 并继续 consumer 扫描或扩大范围，预算不足时显式 Partial。`references_definition` 与 `may_dispatch_to` 在 P1 返回 `UnsupportedAnalysis`，由 P2 的 resolver 处理。
+查询 SHALL 先声明 P1 支持的目标关系（`mentions_symbol`、`literal_value` 或 raw CP）、artifact/runtime view、consumer 类别和预算，再选择过滤器。过滤器允许假阳性但 MUST 不因过滤造成假阴性；无法安全判定时 SHALL 将候选标记 Unknown 并继续 consumer 扫描或扩大范围，预算不足时显式 Partial。`Engine::query` 的 `references_definition` 与 `may_dispatch_to` 不在此入口解析：它们返回 `UnsupportedAnalysis`，声明解析与已知范围 dispatch 由显式运行环境下的独立入口 `Engine::resolve_symbol` 与 `Engine::declaration_references` 提供，把这两条关系接到 resolver 属独立变更。
 
-#### Scenario: Definition relation requested before resolver
+#### Scenario: Definition relation requested from the query engine
 
 - **WHEN** 调用方请求从调用点推导声明类或运行时派发目标
-- **THEN** 响应为 `UnsupportedAnalysis`，保留原始 owner/name/descriptor 的 `mentions_symbol` 或 raw CP evidence，不将其误报为已解析关系
+- **THEN** 响应为 `UnsupportedAnalysis`，保留原始 owner/name/descriptor 的 `mentions_symbol` 或 raw CP evidence，不将其误报为已解析关系；解析入口已存在也不改变本入口的关系语义，query 不因此启动 resolver
 
 #### Scenario: Unknown filter continues scanning
 

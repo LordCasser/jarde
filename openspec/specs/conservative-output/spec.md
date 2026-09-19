@@ -1,8 +1,10 @@
+# conservative-output Specification
+
 ## Purpose
 
 交付可复核的方法 Bytecode 分析，分别说明质量、已完成阶段、覆盖、执行状态和验证证据；报告交付的是阶段、平面与证据，不含 Java 源码恢复，也不代表 JVM verifier 已执行。
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Honest fallback output
 

@@ -52,6 +52,8 @@
 - 远端 CI：实现与文档提交 `9f618e6`、`e4f6bdb` 推送 `main` 后，CI run [`35251066394`](https://github.com/LordCasser/jarde/actions/runs/35251066394) 四个 job 全部 success（`stable` 含 ignored JDK 25 oracle、`MSRV 1.88.0`、双 workspace `supply chain`、`fuzz smoke`）。
 - 事故记录：本轮实现过程中，coder 在变异实验里误用 `git checkout -- src/classfile.rs` 回退了未提交实现，随后从会话快照恢复并重放本轮改动。主 Agent 独立核实：HEAD 仍为 `6f820ab`（未提交任何东西）、工作树两处改动完好、文件 sha256 `3ba8b359…` 与 coder 声称一致、`git show HEAD:src/classfile.rs` 仍是 P2 前基线、20 个 1.2 测试函数全部在位、全量测试与仓库语料测试通过。结论：无内容丢失；后续变异实验一律用文件副本还原，不得触碰 git。
 
+<a id="verify-1-3-budget"></a>
+
 ### 1.3 预算维度扩展（含 churn 同步）
 
 - 维度面：`CountedBudgetDimension` 9 → 15（`ClassHeaders`/`MethodBodies`/`IrItems`/`IrEdges`/`AnalysisSteps`/`NormalizationClones`），`BudgetDimension` 11 → 18（新增非累加高水位 `DependencyDepth`，插在 `NestedDepth` 与 `ElapsedMillis` 之间）；`ALL`/`counted_limit`/`counted_usage`/`add`/`get`/`From`/`TryFrom` 全部同步，`TryFrom` 拒绝集恰为 `{NestedDepth, DependencyDepth, ElapsedMillis}`。新增 `Budget::observe_dependency_depth`（与 `check_nested_depth` 同形：超限报 `DependencyDepth` 且 `consumed = depth-1`，否则取 `max` 高水位），两者相互独立。新增 `impl Default for Limits`（**全零、fail-closed**，文档写明是测试/工具基底而非隐式生产限额）。
@@ -81,6 +83,8 @@
 - 证据：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **385 passed / 0 failed / 1 ignored**（`p2_resolution` 16、`p2_contracts` 29、`src/providers.rs` lib 单测 7），示例 exit 0 并打印 `state=Resolved`/`class_headers=1`；由主 Agent 独立复跑确认。
 - 远端 CI：实现与文档提交 `2d25ce0`、`07b771b` 推送 `main` 后，CI run [`35258105942`](https://github.com/LordCasser/jarde/actions/runs/35258105942) 四个 job 全部 success。
 - 独立复核结论：**Approve**（"必须改"两项：本条记录与读取层失败用例，均已处理）。登记的债务：`output_bytes` 在 standalone（`root_bytes`）与 ZIP/tree（`read_entry_internal`）之间口径不对称，2.2/5.3 按维度断言前须先钉死；skipped 的语义是"未达判定的 position"而非"未触及"；带目录属性但名字不以 `/` 结尾的 entry 会被当候选并报解码失败（artifact 层无目录位）；ArtifactTree position 每次查找都枚举整棵树（2.2 多次查找会重复计费，P5 索引前）；`MethodAnalysisRequest` 侧没有"无 caller 时不报"的显式用例；2.1 不应用 `RuntimeProfile` 的 release/multi-release 与 uncertainty 判定（MR 由 `select_multi_release` 提供，uncertain-runtime 诊断归 2.5）。
+
+<a id="verify-2-2-closure"></a>
 
 ### 2.2 按需 Header 闭包、读取 reason 与去重
 
@@ -122,6 +126,8 @@
 
 未验证/遗留：`simple_fast` 最坏 O(|V|²) 未复现（block 上限是唯一保险）；递归/栈只测了链状深图；跨平台（CI 的 Linux x86_64）未复跑；依赖引入后需重跑 MSRV、两个图的 `cargo deny` 与 feature-tree 断言。
 
+<a id="verify-2-3-members"></a>
+
 ### 2.3 成员解析（JVMS 5.4.3 / 5.4.4）与调用种类规则
 
 - 交付：新增 crate-private `src/members.rs`（字段/class method/interface method 三条搜索路径、maximally-specific 集合、访问与调用种类规则、sig-poly 与数组 owner 分支）；`src/resolver.rs` 把成员符号从 `NotPerformed` 接成真解析（`resolved` 只在 `Resolved` 发布，声明符号与请求符号都可见）；`src/providers.rs` 增加 `SupertypeEdge` 与 root reason 参数，使 `ReadReason` 按语义拆分（`super_class` 边 → `ParentChain`、`interfaces` 边 → `HierarchyClosure`、按身份命名 → `MemberOwner`，两个变体都有真实生产者、映射仍穷尽）。
@@ -132,6 +138,8 @@
 - 语义边界（已写入 `specs/demand-resolver` 的边界段，不得读作 JVMS 完全实现）：default conflict 在解析期报告（JVMS 8 放在 invocation selection）；interface owner 不隐式继承 `java/lang/Object` 的方法；只检查成员自身声明的可访问性（不查声明类，JVMS 5.4.3.1）；`InvokeDynamic` 的 owner 只是搜索起点；同一 owner 内同名同描述符重复声明只能表达为 `Ambiguous`。
 - 登记的债务：调用方层级成环时 `subtype_of` 静默跳过 → 判 `Inaccessible` 且无环诊断（与声明侧不对称）；sig-poly 在调用点描述符恰好等于声明描述符时仍发"两者按规则不同"的文案；`read_definition` 的记录挂在请求声明的 `caller.loader` 上（`PhysicalDefinitionId` 不含 loader，API 内不可校验）；成员 coverage 的求和语义与"推导有效序之前停止则区间为空"已写入契约；`HierarchyWalk` 的逐层 reason 仍只由 `providers` 的 lib 单测固定（公开消费者是 2.5）。
 
+<a id="verify-2-4-decl-refs"></a>
+
 ### 2.4 声明引用查询（复用结构 consumer）
 
 - 交付：`src/xref/mod.rs` 增 crate-private `CandidateFilter`（`Exact` / `MemberShape{name,descriptor}`（owner 不参与）/ `SignaturePolymorphic{owner,name}`）与 `scan_candidates`；三个 consumer 子模块改走同一 `candidate_matches`/`published_target` 决策点（`resource.rs` 按类型形状天然不参与）；`src/resolver.rs` 的 `Engine::declaration_references` 从诚实不可用变为真查询（成员形状候选 → 逐条 2.1+2.3 解析 → 只发布解析到请求声明的候选；未决候选计数 + 保留 use-site；`max_items` 截断按 P1 页限；scope 校验与 P1 同规则）。
@@ -141,6 +149,8 @@
 - 证据：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **487 passed / 0 failed / 1 ignored**（`p2_declaration_refs` 34、`p1_xref_golden` 5、`p2_members` 46）；示例 exit 0；由主 Agent 独立复跑确认。
 - 远端 CI：实现与文档提交 `2da3abe`、`d94206e` 推送 `main` 后，CI run [`35277379198`](https://github.com/LordCasser/jarde/actions/runs/35277379198) 四个 job 全部 success。
 - 独立复核结论：**Approve**（三轮）。登记债务：closure 自身诊断的计费循环当前无生产者（2.5 接上后生效，代码 fail-safe）；`DeclarationRefQuery.consumers.version` 不校验（`Engine::query` 会拒绝非 1）；"解析到别的声明"无独立报告字段（由 `reads`/usage 观察）；签名多态与 `MemberShape` 共享 2.3 的 name-only 近似。
+
+<a id="verify-2-5-dispatch"></a>
 
 ### 2.5 已知范围 dispatch 与 open-world
 
@@ -163,6 +173,8 @@
 - 证据：单作业下 `cargo fmt --all -- --check`、`cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` 干净；`cargo test --workspace --all-targets --all-features --locked` = **540 passed / 0 failed / 1 ignored**（27 个 suite 全 ok；lib 160→162、`p2_passes` 4），`cargo test --test p1_xref_golden --locked` = 5；由主 Agent 独立复跑确认。
 - 远端 CI：实现与文档提交 `2bc0ea6`、`8d74ce4` 推送 `main` 后，CI run [`35287796487`](https://github.com/LordCasser/jarde/actions/runs/35287796487) 四个 job 全部 success。
 - 独立复核结论：**Approve**（无必修项；D1 契约缺口已在 3.3 前修正）。登记债务：**`engine.rs` 的接入不可观测**（删掉调用或换序都无测试变红，且前缀规则在 `ir::scheduled_stages` 与 `passes::validate_schedule` 各有一份实现——5.1 必须以校验器返回的表前缀作为唯一执行/阶段来源，并把「报告 `stages` == 校验器前缀」写成断言）；`Effects` 目前无消费者（其失效在运行时不被强制，故契约已写明「事实的消费者必须写进 `requires`」）；`progress()` 的 `no phase completed yet` 分支与空集合分支仓内无覆盖（探针证明可达且正确）；本片的计费语句只有声明，真实计费点从 3.3 起。
+
+<a id="verify-3-3-cfg"></a>
 
 ### 3.3 raw CFG、throw sites 与 effect facts
 
@@ -221,6 +233,8 @@
 | D39 | `InstructionOperands::default()` 的 `effective_opcode` 是 `0x00`：夹具漏设会静默按 `nop` 分类，靠 `cfg`/`call_context` 测试 helper 的 `debug_assert` 兜底 | 0.2 复核 | 接受（已核对全部 27 处 `..Default()` 构造都显式设了 effective）；契约已写明「夹具必须显式给出编码事实」 |
 | D40 | 仓内缺 category-2（双槽 ±2）的宽化对照断言：`wide lload/lstore` 的 `Some(2)`/`Some(-2)` 目前只有间接证据（映射测试 + 未改动的 delta 表） | 0.2 复核 | **转 0.4 轮一起补**（同一文件 `cfg.rs`，一次改动完成，避免为一条断言单独开一轮） |
 | D41 | `multianewarray` 的 `stack_delta` 为 `None`（`1 - dimensions` 未定） | 0.2 复核 | **转 4.1**：Frame 按 atype 决定元素类型、按 dimensions 决定弹槽数；4.1 的验收须含这一条 |
+<a id="verify-0-1-loader"></a>
+
 ### 0.1 loader 身份修正（initiating / defining loader）
 
 - **缺陷与根因**：用户复核的反例 R1 证明 child 域（ChildFirst）里请求 parent 定义的 `p/Owner extends p/Base` 时，解析返回 **child 的同名 Base** 并报 `Resolved`/`Complete`。根因有三处耦合：`HeaderClosure::demand` 把每次需求的起点硬编码为 `runtime.load_domain.loader`；`ordered_domains` 只从该 loader 起走父链；`HierarchyWalk` 的待展开层只携带名字。JVMS 5.4.3.1 要求父类/接口符号由**该类的 defining loader** 解析。2.2 曾把「闭包键的 loader 分量不可证伪」记为可接受边界，该边界被 R1 证伪并撤回。
@@ -405,22 +419,24 @@
   - **M1 跳过的站点在载荷中不可见**：返回点未解码且不可达的调用点既不生成 context、也不进 `unreachable_call_sites`；3.5 因此看不到它，若下游需要须另设表达。
   - 既有：`elapsed_millis` 并行竞态 flake；0.3b 缺第三方连续复核。
 - 登记债务不变：值身份缺口（无可避免的无关引用被当作地址）归 4.x；同槽中转与「存储在到不了 `ret` 的臂上」两处保守拒绝随契约登记；`elapsed_millis` 并行竞态 flake（既有）与 0.3b 缺第三方连续复核未变。
+<a id="p2-acceptance-map"></a>
+
 ## P2 验收映射现状（滚动更新）
 
-按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。
+按 `openspec/acceptance.md` 与 tasks 的对应关系逐条对照，避免"局部通过"被当成"整体正确"。状态只在有验证记录时前进。P2 出口要求 **A09、A10、A11、A13、A14、A16、A17 在 P2 范围内为「通过」且各自给出指向本记录具体小节的证据链接**；A18 保持 P1 已覆盖、随每个缓存/并行阶段回归。5.4 改写本表时逐条核对证据确实存在（结果与命令见 [5.4 门禁记录](#gates-5-4)），A11 的 P4 深度扩展、A09 的 P3 Java 恢复不属于本次判定。
 
-| 验收 | 承担任务 | 现状 | 还缺什么（退出 P2 前必须补） |
+| 验收 | 承担任务 | 现状 | 证据（本记录小节） |
 | --- | --- | --- | --- |
-| A11 Base.foo / Sub CP owner | 0.1、2.3、2.4、2.5 | **功能面已达成（0.1 起含跨 loader）**：2.3 的三条 JVMS 5.4.3 搜索路径、访问与调用种类规则、default conflict；2.4 的 `Base.foo` 在 `Sub` 调用的端到端对照（`mentions_symbol(Base.foo)`=0 而声明查询返回该 use-site）；2.5 的 dispatch 候选与 open-world；**0.1** 关闭跨 loader 身份（R1 反例转永久回归：child ChildFirst + parent 定义的 Owner → 解析到 **parent 的 Base 物理定义**），并证明 dispatch 祖先按节点而非 owner 名字 | 5.4 的总门禁与文档同步 |
-| A14 全范围中断/缺失依赖 | 1.3、2.1、2.2、2.3、2.4、2.5、5.1 | **部分**：18 项预算维度与两个高水位就位；2.1–2.5 的停止语义（`Partial`/`Cancelled`/`BudgetExceeded` + 前缀）各有实证，2.5 补上 scope 枚举预算与 `DependencyDepth`→listing 截断的停止路径 | 5.1 的库/CLI 一致性与终止语义逐字段一致；4.x 阶段的停止（Frame/SSA 预算） |
-| A16 单方法按需边界 | 2.2、2.3、2.4、2.5、5.2 | **部分**：`reads` 记录 (definition, loader) 与理由（含 `DispatchScope`）；成员搜索与 dispatch 都不读 Body（`code_bytes == 0` 有真实对照，2.4 另有"与同 consumers 的 P1 扫描计费相等"口径） | 5.2 的实际入口读取/构造计数（不加载无关 Body、不建全局 XRef） |
-| A17 X1 零 CFG/SSA/AST | 1.1、3.3、5.2 | **部分**：petgraph、cfg、passes 的 token 守卫已由 3.3 补齐；工作区另有 call_context token | 5.2 的实际构造计数；新增私有模块的守卫覆盖仍须审计，源码 token 不是行为证明 |
-| A09 历史 jsr/finally | 0.2、0.3、3.3–3.5 | **部分**：raw CFG（3.3）与真实历史 finally 语料已交付；0.2 正在补 wide/数组/调用操作数并同步分类；3.4 候选被 R2/R3/R4 与 D-1/D-2 阻塞，0.3（派生存储计费）与 0.4（非块首 jsr）是其前置 | 修正值流/异常/预算、重跑历史语料与 3.5 有界规范化 |
-| A10 缺失 StackMap/debug | 4.1–4.3 | **未开始** | Frame 推导、版本合法性诊断、`NotPerformed` 语义 |
-| A13 成员级失败 | 5.1 | **未开始** | 同类正常与失败方法并存、五平面分开报告 |
-| A18 输入变化 | P0/P1 已覆盖 | **保持** | 每个缓存/并行阶段引入时回归（P5） |
+| A11 Base.foo / Sub CP owner | 0.1、2.3、2.4、2.5 | **通过（P2 范围；P4 深度扩展另计）**：2.3 的三条 JVMS 5.4.3 搜索路径、访问与调用种类规则、default conflict；2.4 的 `Base.foo` 在 `Sub` 调用的端到端对照（`mentions_symbol(Base.foo)`=0 而声明查询返回该 use-site）；2.5 的 dispatch 候选与 open-world；**0.1** 关闭跨 loader 身份（R1 反例转永久回归：child ChildFirst + parent 定义的 Owner → 解析到 **parent 的 Base 物理定义**），并证明 dispatch 祖先按节点而非 owner 名字 | [0.1](#verify-0-1-loader)、[2.3](#verify-2-3-members)、[2.4](#verify-2-4-decl-refs)、[2.5](#verify-2-5-dispatch) |
+| A14 全范围中断/缺失依赖 | 1.3、2.1、2.2、2.3、2.4、2.5、4.3b、5.1 | **通过（P2 范围）**：18 项预算维度与两个高水位就位；2.1–2.5 的停止语义（`Partial`/`Cancelled`/`BudgetExceeded` + 前缀）各有实证，2.5 补上 scope 枚举预算与 `DependencyDepth`→listing 截断的停止路径；4.3b 让 Frame/SSA 的派生存储增长前计费（R10 的乘积被界住）；5.1/5.2 证明库/CLI 与真实入口的停止语义一致，5.3 的 fuzz 对损坏输入断言不变量 | [1.3](#verify-1-3-budget)、[2.5](#verify-2-5-dispatch)、[4.2b/4.3b](#verify-4-2b-4-3b)、[5.1](#verify-5-1-cli)、[5.2](#verify-5-2-counts)、[5.3](#verify-5-3-golden) |
+| A16 单方法按需边界 | 2.2、2.3、2.4、2.5、5.2 | **通过（P2 范围）**：`reads` 记录 (definition, loader) 与理由（含 `DispatchScope`）；成员搜索与 dispatch 都不读 Body（`code_bytes == 0` 有真实对照，2.4 另有"与同 consumers 的 P1 扫描计费相等"口径）；5.2 在真实入口上钉住 `method_bodies == 1`、`code_bytes` 恰为目标成员、其余体从未解码 | [2.2](#verify-2-2-closure)、[5.2](#verify-5-2-counts) |
+| A17 X1 零 CFG/SSA/AST | 1.1、3.3、5.2 | **通过（X0/X1 范围）**：petgraph、cfg、passes、call_context 的 token 守卫已由 3.3/5.2 补齐并各有注入证伪；5.2 在真实入口上钉住 X0/X1 的 `ir_items`/`ir_edges`/`analysis_steps`/`normalization_clones`/`class_headers`/`method_bodies` 全为 0 且 `class_bytes > 0`。**证据边界（如实）**：构造计数是预算维度的代理而非逐 pass 计数器；Region/Java AST 在本 build 尚无构造路径，其"为零"是"尚不存在"而非"已证明"，不得据此声称已覆盖；源码 token 守卫是近似（`jarde-jvm` 侧新增私有模块名不在 token 表，但它们在受守卫 crate 内不可达，跨 crate 路径由 `jarde_jvm::`/`jarde::` token 与 CI 的 Cargo 分层闭包步拦截） | [5.2](#verify-5-2-counts)、[3.3](#verify-3-3-cfg) |
+| A09 历史 jsr/finally | 0.2、0.3、0.4、3.3–3.5、5.3 | **通过（P2 范围：raw facts → 值证明 → 有界克隆规范化；P3 的 Java 恢复另验收）**：raw CFG 与真实历史 finally 语料（ECJ 4.6.1 v45）；0.2/0.4 关闭 wide/数组/调用操作数与非块首 `jsr` 的读取缺口；3.4b 只接受有来源证据的 call-site token（R2–R7 反例全部转永久回归）；3.5 每调用点一套克隆、克隆 origin 保留全部原始 BCI、超界即 `ir_legacy_normalization_unbounded` + 不发布 fact；51+ 的 `jsr`/`ret` 报 `ir_legacy_opcode_forbidden`；非法版本在 dialect 相位被拒 | [3.3](#verify-3-3-cfg)、[3.4b](#verify-3-4b)、[3.5](#verify-3-5-clones)、[5.3](#verify-5-3-golden) |
+| A10 缺失 StackMap/debug | 4.1、4.2、4.3、4.2b、4.3b、5.3 | **通过**：Frame 从 descriptor 与数据流推导（缺 LVT/LineNumberTable/StackMapTable 是分析输入而非拒绝理由，推导成功不等于 verifier 通过），`verification` 恒 `NotPerformed`；异常输入参与固定点（R9 的 17 字节 class 经公开入口转红/转绿）；版本合法性诊断分开报告，非法版本在 dialect 相位被拒；SSA 有独立朴素 oracle 与独立 Frame 预期 | [4.1](#verify-4-1-frame)、[4.3a](#verify-4-3a-ssa)、[4.2b/4.3b](#verify-4-2b-4-3b)、[5.3](#verify-5-3-golden) |
+| A13 成员级失败 | 3.5、5.1 | **通过**：同一类里正常方法与失败方法并存且互不影响（一个方法的 `Failed`/`Partial` 不改另一个的 `Complete`）；representation、quality、execution、诊断与覆盖分开报告；abstract/native 无 Body 是事实（`execution = Complete`）；库/CLI 对同一请求逐字段一致（仅 `elapsed_millis` 可不同），报告内停止不被提升为 transport 错误 | [3.5](#verify-3-5-clones)、[5.1](#verify-5-1-cli) |
+| A18 输入变化 | P0/P1 已覆盖 | **保持** | 保持 P1 的已覆盖状态；在每个缓存/并行阶段引入时回归（P5） |
 
-当前结论：A11 的功能面已随 0.1 关闭（跨 loader 身份修正经独立复核 Approve、CI 绿），但仍只在 5.4 总门禁跑完后才算通过。A09 的 0.2/0.3/0.4 是 3.4 的前置，3.4 尚未通过；A14/A16/A17 仍缺各自后续入口/资源证据。**不能因某片测试全绿就宣布 P2 完成**。
+当前结论：A09、A10、A11、A13、A14、A16、A17 在 P2 范围内均为**通过**，每条的证据指向本记录的具体小节；A18 保持 P1 已覆盖、随 P5 的缓存与并行阶段回归。5.4 另把本 change 的 spec deltas 同步进 `openspec/specs/` 并重跑全套门禁（见 [5.4 门禁记录](#gates-5-4)）。**不能因某片测试全绿就宣布 P2 完成**：整体出口仍以完整门禁、规定时长 fuzz 与 CI run 记录为准，归档由父级在 CI 确认后执行。
 
 ## 第一片（1.1–1.3）状态与闸口
 
@@ -543,6 +559,8 @@ assert state=Resolved && resolved.loader=parent
 
 复核截止增量为 `3646a97`（仅 CI）：dev/build 漏检已修正并由隔离探针确认拒绝；可选非默认 feature 的 petgraph 依赖仍可绕过专用门禁，剩余证据及任务归 layer 3.2。P2 源码未变，R7 的四个反例仍未修复。
 
+<a id="verify-3-4b"></a>
+
 ## 2026-09-18 3.4b 实施：返回地址的**值**证明（提交 `ee1a723`）
 
 R7 的四个反例已修复。旧实现按**位置**判定（某槽恰好一次写入、是引用存储、支配 `ret`），从不看存进去的是什么，还排除内层上下文的写入；新实现让**来源**决定判决。
@@ -600,6 +618,8 @@ CI：`ee1a723`（实现）→ run 35363205357、`56dbbfa`（复核修正）→ r
 - **F1**：规则 2 的支配半边现**不可证伪**——能制造通往 `ret` 分叉的指令都会先清掉栈顶 flag，故没有样本能只靠去掉支配而转红。逻辑**保留未放宽**，并有正例（`dominates` 恒 false 的变异会让 5 条用例转红）证明其参与判决。
 - **F2**：规则 3 使**活环**先于 `nesting_cycle` 被拒绝，故环专用诊断对活环不可达（死环用例仍通过，结局同为 `Unresolved`）。若要保留该诊断，需把环检查提到逐 context 裁决之前。
 - 值身份仍止于「token / 非 token」两态：不追踪引用是否为合法地址；完整值身份属 4.x。
+
+<a id="verify-3-5-clones"></a>
 
 ## 2026-09-18 3.5 实施：有界 `jsr`/`ret` 克隆规范化与 CanonicalCFG（提交 `3847bc7`）
 
@@ -704,6 +724,8 @@ Frame/SSA（4.x）、canonical 图的公共发布（5.1）、fuzz 语料新增 3
 **证据（`7abaa72`）**：全量 **657 passed / 0 failed / 1 ignored**；`-p jarde-jvm` = 116；`p2_canonical` = 7；`p1_xref_golden` = 5；`p2_contracts` = 29；fmt 干净；**clippy 1.98.1 干净**；CI run 35373756887 四 job success。
 
 **父级过程失误（如实记录）**：为修正提交信息里被 shell 反引号吃掉的一个词，我对**已推送**的提交执行了 `--amend` + `--force-with-lease`。这属于「改写已发布历史」，按本仓库/宿主的纪律应先征得确认；`--force-with-lease` 保证了无并发分叉、内容逐字未变（只改消息文本），但做法本身不应重复——此后遇同类问题改用后续提交修正。
+
+<a id="verify-4-1-frame"></a>
 
 ## 2026-09-19 4.1 实施：descriptor 驱动的 Frame（`febdc3e` → `f40a308`）
 
@@ -889,6 +911,8 @@ message=throw site ... block: CanonicalBlockId { bci: 3, path: [] } ... names a 
 
 **遗留债务（已记，不阻塞）**：① `UninitializedThis` 的适用性只认**直接** `super_class`（不读超类链；javac/ECJ 只产出 `this()`/`super()`，故实际不误拒合法体，且退化为 `deferred` 而非 `inconsistent`）；② 继承字段若被某编译器写成 owner == 本类，初始化前 `putfield` 会过宽（本层不解析，靠注释兜底）；③ `invokeinterface` + 名为 `<init>` 已被同一检查覆盖但无单独用例；④ 将来 resolver 带进超类链事实时，①是首个升级点。
 
+<a id="verify-4-3a-ssa"></a>
+
 ## 2026-09-19 4.3 前半：stack/local SSA 构造（提交 `f390677`）
 
 **P2 的调度流水线至此全部实现**：`raw_facts → raw_cfg → legacy_normalization → canonical_cfg → frame → ssa`，六个相位都会执行。独立 oracle 对照属后半。
@@ -1045,6 +1069,8 @@ M2 **实测印证了契约那句「普通图测试通过不能替代异常测试
 
 **CI**：`c971002` → run 35400527137，四 job success。
 
+<a id="verify-5-1-cli"></a>
+
 ## 2026-09-19 5.1：库与薄 JSON CLI 接通（提交 `d94f008`）
 
 ### 交付
@@ -1090,6 +1116,8 @@ M2 **实测印证了契约那句「普通图测试通过不能替代异常测试
 - CLI 侧**不为** abstract/native 与成员隔离另造 fixture（库侧已覆盖，CLI 对它们只有一行转发 + content 绑定，已由 B1/B2/B3 钉住）——判定为重复而非缺口。
 - `FixtureDifferential` 仍无生产请求能raised它（属 5.3）。
 - MSRV、supply-chain、fuzz 冒烟、`openspec validate --strict` 属 5.4 的门禁，本片未跑。
+
+<a id="verify-5-2-counts"></a>
 
 ## 2026-09-19 5.2：入口计数、只读需要的字节与确定性（提交 `955d7f3`）
 
@@ -1198,6 +1226,8 @@ exception_table: [start_pc=2, end_pc=12, handler_pc=14, catch_type=0]
 
 本轮文档验证：`openspec validate --all --strict --no-interactive` **11 passed / 0 failed**；21 份修改文档的 84 个本地文件/锚点链接有效；`git diff --check` 干净。`openspec list --json` 与当前任务清单一致：P2 **25/29**、layer **7/7**，P3–P5 未开始。
 
+<a id="verify-4-2b-4-3b"></a>
+
 ## 2026-09-19 4.2b 与 4.3b：修复复核发现的 R9/R10（提交 `ddb15e8`）
 
 用户复核的两项发现（本节上文 R9/R10）均已修复。**父级独立复现并证伪**，未采信实现者自报。
@@ -1277,6 +1307,8 @@ left:  [C, C, C, C, Partial, NotPerformed]   right: [C, C, C, C, C, C]
 **遗留待查（复核者提出，未归因于本次提交）**：复核者在一条 8-site 环形异常图上得到 `ir_frame_inconsistent`（`block {bci:3}` 栈深 1 vs 0），时限内未定位是 fixture 非法还是另一处既存缺陷。**记为待查**（5.3 的构造覆盖面应能顺带覆盖到）。
 
 **CI**：`535e696` → run 35424903198，四 job success。
+
+<a id="verify-5-3-golden"></a>
 
 ## 2026-09-19 5.3：golden、性质、独立 Frame 预期与有预算 fuzz（`e59701f` + 后续修复）
 
@@ -1404,3 +1436,71 @@ left:  [C, C, C, C, Partial, NotPerformed]   right: [C, C, C, C, C, C]
 全量 **812 passed / 0 failed / 1 ignored**（807 + 5 条新用例，**无既有断言改动**）；`p2_frame` 15→16、`p2_return_address` 9→11、`-p jarde-jvm` 223→225；`p2_golden` 9、`p2_properties` 3、`frame_oracle` 17、`ir_audit` 8、`p2_canonical` 8、`p2_contracts` 29、`p2_cfg` 12、`p1_xref_golden` 5、`-p jarde-cli` 22 不变；`fuzz` workspace 21；fmt 与 clippy 1.98.1 干净；两个 CI example exit 0；`method_analysis` fuzz 冒烟 60s = **762,532 execs / 0 crash**。
 **CI**：`d2e9cda` → run 35430946170，四 job success（含新冒烟步）。
 **过程说明（如实）**：实现者一度把 fuzz 冒烟指向仓库内语料目录，fuzzer 新增的 1262 个文件已全部删除，语料目录只剩 6 个受控种子、`fuzz/artifacts/method_analysis` 空目录亦已移除。
+
+<a id="gates-5-4"></a>
+
+## 2026-09-19 5.4：文档、主规格同步与门禁记录（代码基线 `d2e9cda` + `a882ffd`）
+
+本片**只改文档与规格**（`openspec/specs/`、`openspec/acceptance.md`、`docs/support-matrix.md`、`README.md`、`fuzz/README.md`、本记录与一处 delta 的 Purpose），未改任何 `.rs`，因此本机门禁的测试数字应与上节基线逐项一致。
+
+### 主规格同步（归档前置）
+
+把本 change 的 spec deltas 落进 `openspec/specs/`，正文与 `changes/p2-jvm-ir/specs/` **逐行一致**（只有 delta 的 `## ADDED Requirements` 标题按主规格格式改为 `## Requirements`）：
+
+- 新增 `specs/demand-resolver/spec.md`：`Explicit resolution environment`、`Demand-bound symbol resolution`、`Declaration reference queries preserve symbolic evidence`、`Resolution and dispatch are separate`、`Bounded Header closure`。
+- 新增 `specs/jvm-ir/spec.md`：`Typed bytecode facts and target validation`、`Bounded analysis storage and work`、`Phase-ordered JVM IR`、`Legacy normalization before canonical frames`、`JVM frame exception and effect semantics`、`IR invariants and honest verification`。
+- 新增 `specs/conservative-output/spec.md`：`Honest fallback output`、`Validation evidence is independent`、`Method-level demand boundary`。
+- **`specs/analysis-contracts/spec.md`：Purpose 直接编辑**。原文只描述 P1 口径的分析面；现写明契约覆盖 artifact 枚举与物理视图、Header 与 bytecode inspection、结构 XRef、显式运行环境下的符号解析与声明引用、以及方法分析报告（阶段状态、质量、覆盖、执行与语义证据平面），并写明**方法分析交付内部 IR 与报告平面，不含 Java 源码恢复**。归档不会自己改主规格的 Purpose（`openspec` 在这一点上只告警），所以这一处必须手改——这正是 5.4 的显式前置。
+- **`specs/analysis-contracts/spec.md`：`Provenance and execution are explicit` 按 delta 合并**。主规格原有四个 scenario（Cancelled enumeration、Partial or failed enumeration after root open、Root container cannot be established、Nested depth is a high-water limit）**全部保留**，新增 `Dependency depth is an independent high-water limit`；statement 增加 `dependency_depth` 第二个高水位、两者互不代替，以及「任何计费维度必须同时出现在 `Limits`、`UsageSnapshot`、终止维度枚举与库/CLI 两个请求 schema」。
+- **`specs/query-api/spec.md`：消除过时阶段承诺**。原文写「`references_definition` 与 `may_dispatch_to` 在 P1 返回 `UnsupportedAnalysis`，由 P2 的 resolver 处理」，而 P2 **没有**把这两条关系接到 `Engine::query`。现改为：本入口保持 `UnsupportedAnalysis`，声明解析与已知范围 dispatch 由显式运行环境下的独立入口 `Engine::resolve_symbol`/`Engine::declaration_references` 提供，接线属独立变更；scenario 改名 `Definition relation requested from the query engine` 并写明「解析入口已存在也不改变本入口的关系语义，query 不因此启动 resolver」。**未改实现，X0/X1 行为不变**（5.2 的零构造计数与 A17 守卫仍然成立）。
+- **一处有意的偏离**：`conservative-output` 的 Purpose 比 delta 多一句「报告交付的是阶段、平面与证据，不含 Java 源码恢复，也不代表 JVM verifier 已执行」。原因是 `openspec validate --strict` 对主规格 Purpose 有最短长度检查（delta 的 47 字符原文触发 `Purpose section is too brief` 并使 `--all --strict` 失败）；delta 同步了同一句，两处保持一致，语义未变。
+
+### 支持矩阵、README 与验收行
+
+- **五维支持矩阵**（`docs/support-matrix.md`）：resolution 从 `Partial` 改为 `Supported`，限定写死在「显式运行环境下的类与成员**声明**解析与已知范围 dispatch」，并写明 `Engine::query` 的关系语义不变；decompile-quality 写明 P2 交付的是 raw/canonical CFG + Frame + SSA/effects 的**内部 IR**、不产出 Java，R9/R10 已由 4.2b/4.3b 关闭并转为永久回归；output-level 增加库/CLI 的方法分析报告，并写明内部表不可遍历、没有 Java 或伪代码；平台/adapter 表补 `resolve_symbol`/`declaration_references`/`analyze_method` 与三个 fuzz target；已知边界补 D05（`Entry.span` 坐标口径、record component descriptor 类别）。按 d2e9cda 的范围决定记入一句：**非法版本按格式自身规则在 dialect 相位被拒；dialect 支持档位是 P0 头部平面的能力陈述，P2 不据此拒绝方法分析**。
+- **README**：当前状态改为 5.4 文档同步后的口径（4.2b/4.3b 已关闭、5.3 已交付、主规格已同步、**Java/Region/verifier 未实现**、整体门禁与归档未完成）；解析入口的限定与方法分析报告的公开面各补一句并指向主规格；「规格与验证」清单加入 P2 主规格与 P2 验证记录。
+- **`openspec/acceptance.md`**：A09/A10/A11/A13/A14/A16/A17 七行的证据列各附指向本记录小节的链接，过时的 P2 段落（R9/R10 待修、5.3/5.4 未完成）替换为实际交付与同步结果；A16/A17 的证据边界（预算维度代理、Region/AST 无生产构造路径）与「不得声称 Java 恢复或 verifier 通过」写进正文。
+- **`fuzz/README.md`**：补 `method_analysis` target（如何从输入推导被测方法、九个固定 shape、断言集）、`corpus/method_analysis/` 六个种子（大小与 SHA-256）、`generate_method_analysis_seeds.py`、四条 `the_analysis_check_rejects_*` 阴性对照、三个 target 的 CI 口径与本机命令。
+- **验收映射表**（本文件上方）：A09、A10、A11、A13、A14、A16、A17 由「部分/未开始」改为**通过**并各附证据锚点；A18 保持 P1 已覆盖。逐条判断时确认了证据确实存在，例如 A13 的成员隔离与库/CLI 逐字段一致在 5.1 节、A16 的"只读目标 Body"在 5.2 节、A17 的 guard 缺口边界在 5.2 节 `A17 图算法依赖守卫的核对与行为侧证据`。
+
+### 本机门禁与实测数字
+
+环境：macOS aarch64、`rustc 1.98.1` / `cargo 1.98.1`、`CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 RUST_TEST_THREADS=1`。
+
+| 门禁 | 命令 | 结果 |
+| --- | --- | --- |
+| 格式 | `cargo fmt --all -- --check` | exit 0 |
+| Lint | `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` | exit 0（零告警） |
+| 工作区测试 | `cargo test --workspace --all-targets --all-features --locked --no-fail-fast` | **812 passed / 0 failed / 1 ignored**（与上节基线逐项一致） |
+| MSRV | `cargo +1.88.0 check --workspace --all-targets --all-features --locked` | exit 0（本机装有 1.88.0 工具链，因此**本机已跑**；CI 的 `MSRV 1.88.0` job 跑的是不带 `--all-features` 的同一命令） |
+| fuzz workspace 单测 | `cd fuzz && cargo test --locked` | **21 passed / 0 failed / 0 ignored** |
+| OpenSpec | `openspec validate --all --strict --no-interactive` | **14 passed / 0 failed**（此前 11；新增三个 capability） |
+| 空白与行尾 | `git diff --check` | 无输出 |
+| supply-chain（root） | `cargo deny --manifest-path Cargo.toml --workspace --locked --config deny.toml check` | `advisories ok, bans ok, licenses ok, sources ok`（本机 cargo-deny 0.20.2） |
+| supply-chain（fuzz） | `cargo deny --manifest-path fuzz/Cargo.toml --workspace --locked --config deny.toml check` | 同上通过 |
+
+**规定时长 fuzz（本机 60 秒/目标）**：cargo-fuzz 0.13.2 + `nightly-2026-07-20`，单 worker、`-max_len=65536 -rss_limit_mb=512 -timeout=10`，语料用 `/tmp` 的 scratch 副本（不写仓库内语料目录）：
+
+| target | 结果 |
+| --- | --- |
+| `query` | 638 566 execs / 61 s（10 468 exec/s），exit 0 |
+| `artifact_tree` | 1 062 615 execs / 61 s，exit 0 |
+| `method_analysis` | 724 022 execs / 61 s，exit 0 |
+
+三个 target 都**没有** crash、timeout 或契约断言失败（日志中 `crash|timeout|ERROR:|panicked` 零命中）；`fuzz/artifacts/` 为空，tracked 语料逐字节未变。
+
+**本机未跑**（只能由 CI 执行）：
+
+- **JDK 25 oracle**（`cargo test --test jvm_bytecode_oracle --locked -- --ignored --exact jdk25_instruction_boundaries_match_public_bytecode_inspection`）：本机只有 JDK 23.0.1 与 8，而该用例断言 `oracle.runtime.starts_with("25.")`，因此本机**无法**执行，只能由 CI（Temurin 25.0.4+7）跑。
+- 完整 CI 四 job 与 CI 上的 20 秒/目标 fuzz 冒烟：由父级在提交后记录；上表与 fuzz 数字全部是本机实测。
+
+### 精确提交与 CI run
+
+- 代码基线：`d2e9cda`（复核必改项与非法版本门控）与其后的 `a882ffd`（5.3 文档收口，本片开工时已在 HEAD）；本片在其之上只改文档与主规格。
+- 本片提交：`<PENDING：由父级在提交后补>`；对应 CI run：`<PENDING：由父级在 CI 确认后补>`。
+- 已记录的最近 CI（对照用）：`535e696` → run 35424903198、`e59701f` → run 35427118396、`167a3f4` → run 35428563398、`d2e9cda` → run 35430946170，均四 job success（含 `method_analysis` 冒烟）。
+
+### 未做
+
+- 归档本身（由父级在 CI 确认后执行）；tasks 的 5.4 勾选因此保持未勾。
+- 支持矩阵与 README 的具体文案按本机实测能力撰写，未宣称 Java 恢复、Region 分析或 verifier 通过；A16/A17 仍标明证据是预算维度代理与源码/依赖守卫，没有逐 pass 构造计数器。
