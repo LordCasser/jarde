@@ -167,3 +167,15 @@ exist only as bytes `tests/p1_artifact_tree.rs` builds, the two proptest suites 
 cases per run (CI's fixed `PROPTEST_RNG_SEED` makes that reproducible, not pinned), and the JDK 25
 oracle's reading comes from whatever JDK runs it.
 
+## Consuming the fingerprint (`tests/p5_benchmark.rs`, P5 1.2/1.3)
+
+P5 1.2's benchmark is the first consumer, and it reads this document rather than restating it: it
+names two of the files listed above as its subjects (`fuzz/corpus/query/minimal-jar`, which A15's
+own corpus list carries, and `historical/ecj-4.6.1/v52/HistoricalControlFlow.class`, a carrier of
+the `recovery` dimension), checks each one's blake3 and byte count against `files` before the first
+run, and asserts that the fingerprint still classifies each subject under the row or dimension the
+harness names. The bytes a row runs over are therefore the bytes the fingerprint fixed, and a
+rewritten fixture fails the benchmark instead of moving the baseline it is filed against. It also
+records `blake3(corpus-fingerprint.json)` — the document cannot hold its own digest, so the
+consumer computes it — as the corpus version of every row's measurement context.
+
