@@ -240,6 +240,14 @@ jobs:
         run: cargo +nightly-2026-07-20 test --manifest-path fuzz/Cargo.toml --locked
 
       - name: Run the bounded query smoke
+        # The RSS limit is a guard against runaway allocation, not a memory budget: it has to
+        # sit above what a healthy fuzz session reaches, or it fires on ordinary operation.
+        # A 20-second session peaks at 188 MB (query), 486 MB (artifact_tree) and 278 MB
+        # (method_analysis) on macOS/arm64, and the target that does no analysis work at all
+        # is the one that peaks highest - so the hundreds of megabytes are the fuzzer's own
+        # resident set and allocator behaviour, not the pipeline's work. glibc retains more
+        # than macOS does, and one Linux run crossed 512 MB on a target that peaks at 260 MB
+        # locally. 2048 leaves better than 4x the highest observed peak.
         run: |
           # New corpus entries and crash artifacts must not land in the tracked tree:
           # the run starts from a scratch copy of the committed corpus, and crash inputs
@@ -248,7 +256,7 @@ jobs:
           cp -r fuzz/corpus/query/. "$RUNNER_TEMP/corpus/query/"
           cd fuzz
           cargo +nightly-2026-07-20 fuzz run query "$RUNNER_TEMP/corpus/query" -- \
-            -max_total_time=20 -max_len=65536 -rss_limit_mb=512 -timeout=10 -workers=1 -print_final_stats=1
+            -max_total_time=20 -max_len=65536 -rss_limit_mb=2048 -timeout=10 -workers=1 -print_final_stats=1
 
       - name: Run the bounded artifact-tree smoke
         run: |
@@ -256,7 +264,7 @@ jobs:
           cp -r fuzz/corpus/artifact_tree/. "$RUNNER_TEMP/corpus/artifact_tree/"
           cd fuzz
           cargo +nightly-2026-07-20 fuzz run artifact_tree "$RUNNER_TEMP/corpus/artifact_tree" -- \
-            -max_total_time=20 -max_len=65536 -rss_limit_mb=512 -timeout=10 -workers=1 -print_final_stats=1
+            -max_total_time=20 -max_len=65536 -rss_limit_mb=2048 -timeout=10 -workers=1 -print_final_stats=1
 
       - name: Run the bounded method-analysis smoke
         # The newest target, and the only one that reaches the analysis pipeline: its corpus
@@ -268,7 +276,7 @@ jobs:
           cp -r fuzz/corpus/method_analysis/. "$RUNNER_TEMP/corpus/method_analysis/"
           cd fuzz
           cargo +nightly-2026-07-20 fuzz run method_analysis "$RUNNER_TEMP/corpus/method_analysis" -- \
-            -max_total_time=20 -max_len=65536 -rss_limit_mb=512 -timeout=10 -workers=1 -print_final_stats=1
+            -max_total_time=20 -max_len=65536 -rss_limit_mb=2048 -timeout=10 -workers=1 -print_final_stats=1
 
       - name: Ensure the smoke runs left the tracked tree unchanged
         # Mirrors the `stable` job's `git diff --exit-code`, and also fails on a new
