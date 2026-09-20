@@ -28,7 +28,7 @@ P0/P1、P2（29/29）和分层（7/7）均已归档，P2/分层归档提交为 `
 
 ### droidsaw 中端设计的吸收边界
 
-版本与源码取舍沿用 [P2 design §6.1](../archive/2026-09-19-p2-jvm-ir/design.md)。`jarde-java` 已通过具体模块实现正常流视图、事实输入、Region、AST 与 emitter；没有动态 backend/pass 框架。`MethodIr` 已持有本次运行的 canonical/frame/ssa、解码、CP 与 bootstrap facts，`recover_method` 只调用一次分析，根门面只委托。剩余接缝是同次方法声明（flags/receiver/参数/debug）和按需 callee 证据的绑定，不再把任务写成“开放三张表”或“创建 jarde-java”。
+版本与源码取舍沿用 [P2 design §6.1](../2026-09-19-p2-jvm-ir/design.md)。`jarde-java` 已通过具体模块实现正常流视图、事实输入、Region、AST 与 emitter；没有动态 backend/pass 框架。`MethodIr` 已持有本次运行的 canonical/frame/ssa、解码、CP 与 bootstrap facts，`recover_method` 只调用一次分析，根门面只委托。剩余接缝是同次方法声明（flags/receiver/参数/debug）和按需 callee 证据的绑定，不再把任务写成“开放三张表”或“创建 jarde-java”。
 
 - **图的视图与语义事实分开。** 借鉴 DEX 的 `NormalFlow`，普通 if/loop/switch 的支配关系使用过滤后的正常控制流视图，尽量借用现有图。异常恢复使用完整的 throw-site/context、保护区间、catch 类型与 handler 顺序；处理 handler 自身的普通控制流时明确其入口。不能全局删除异常边，也不能用正常流支配关系推出异常语义。
 - **Region 决定结构，Java 输出负责语法。** 结构恢复消费 CFG/SSA 的条件、终结指令和 effect，构造已有规划中的 RegionIR；AST/formatter 消费 Region 和 origin。边发现、循环识别、异常范围推导不放进 formatter，AST 也不再解码 bytecode。droidsaw 的 `StmtBackend` 展示了这种分工，但 Jarde 首期只有 Java 消费方，使用具体私有函数即可。

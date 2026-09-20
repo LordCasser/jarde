@@ -425,7 +425,7 @@ CI 步骤 `Check layered crate dependency closure`：对 reader/query/jvm 三层
 
 三包仍直接声明 blake3：这与旧 §3.5 的强制集中决定不符。本轮已在 design 修订决定为按真实语义所有者保留直接使用，不再将 Digest::of 包装列为前置或声称它已实现；旧记录中的“待收敛”不再是本 change 任务。shared Digest、版本/features 及现有摘要结果保持不变。
 
-P2 新增 3.4b：已有 3.4 仍会接受普通引用和内层覆盖为 returnAddress。结构拆分的回归通过只证明旧行为未漂移，不证明该语义正确。完整反例、标准来源和本轮验证范围见 [P2 拆包后复核](../p2-jvm-ir/verification.md#review-2026-09-18-layers)。收尾后先交接 3.4b，关闭后才进入 3.5；不在搬迁 change 中顺带修算法。
+P2 新增 3.4b：已有 3.4 仍会接受普通引用和内层覆盖为 returnAddress。结构拆分的回归通过只证明旧行为未漂移，不证明该语义正确。完整反例、标准来源和本轮验证范围见 [P2 拆包后复核](../2026-09-19-p2-jvm-ir/verification.md#review-2026-09-18-layers)。收尾后先交接 3.4b，关闭后才进入 3.5；不在搬迁 change 中顺带修算法。
 
 **最新门面边界（724bf1b）**：`jarde::classfile` 已移除，顶层 facts 白名单现在确实约束该模块可达面；显式依赖 reader 并打开 test-support 的测试消费者仍可使用 builder。此前 2.2 关于模块路径仍可达的记录仅指 35a779d 及之前，不再代表最新门面。
 

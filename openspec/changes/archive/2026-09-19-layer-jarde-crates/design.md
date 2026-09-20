@@ -73,7 +73,7 @@ Rust 的 `pub(crate)` 不能跨 workspace 包，不能靠重导出绕过。这�
 
 P2 继续产出 JVM 分析结果，不让 Frame/SSA 依赖 Java 表达能力。P3 `1.3` 随第一个真实 Region→AST→文本闭环创建 `jarde-java`。恢复侧需要的 typed method/CFG/value/effect/origin 视图由 jvm 所有；P3 `1.1` 明确只读访问契约，不能仅凭现在的摘要型 report 假定已能恢复，也不能让 java 读中端私有字段或反向调用统一门面。
 
-不预建“跨 DEX/JVM 的通用 IR 包”。droidsaw 的 SSA 名字分配与指令语义分离、普通控制流与异常事实分离、Region 与 emitter 分离可在各自所属包内实现。具体复用判断见 [P2 design §6.1](../p2-jvm-ir/design.md) 和 [P3 design](../p3-java8-recovery/design.md)；保持自研边界不等于证明自研质量更高。
+不预建“跨 DEX/JVM 的通用 IR 包”。droidsaw 的 SSA 名字分配与指令语义分离、普通控制流与异常事实分离、Region 与 emitter 分离可在各自所属包内实现。具体复用判断见 [P2 design §6.1](../2026-09-19-p2-jvm-ir/design.md) 和 [P3 design](../2026-09-20-p3-java8-recovery/design.md)；保持自研边界不等于证明自研质量更高。
 
 ### 3.5 接缝归属的三个定案（2026-09-18，盘点后）
 

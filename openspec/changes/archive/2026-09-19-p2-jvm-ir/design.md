@@ -20,9 +20,9 @@ P0/P1 及 P1 验证维护已归档。本轮算法复核固定在 `eac3759`，并
 
 ### 单独处理的验证维护项
 
-以下是验证缺口，不是已证明的运行时错误。它们由独立的 [harden-p1-validation](../archive/2026-09-17-harden-p1-validation/tasks.md) 承接，验证通过后再进入本 tasks 的实现；P2 设计先完成。不把维护代码混进 IR 任务，也不重新打开历史归档。
+以下是验证缺口，不是已证明的运行时错误。它们由独立的 [harden-p1-validation](../2026-09-17-harden-p1-validation/tasks.md) 承接，验证通过后再进入本 tasks 的实现；P2 设计先完成。不把维护代码混进 IR 任务，也不重新打开历史归档。
 
-本轮状态：V1/V2 修复和本地正反例验证已完成，见[验证记录](../archive/2026-09-17-harden-p1-validation/verification.md)。维护提交 `555c785`、`acbba49` 已推送，CI run `35238994798` 四个 job success（含双 workspace supply-chain 与修复后的 fuzz smoke）；该 change 已归档，P2 实现前置条件满足。
+本轮状态：V1/V2 修复和本地正反例验证已完成，见[验证记录](../2026-09-17-harden-p1-validation/verification.md)。维护提交 `555c785`、`acbba49` 已推送，CI run `35238994798` 四个 job success（含双 workspace supply-chain 与修复后的 fuzz smoke）；该 change 已归档，P2 实现前置条件满足。
 
 | 项 | 证据与影响 | 最小修正与退出条件 |
 | --- | --- | --- |

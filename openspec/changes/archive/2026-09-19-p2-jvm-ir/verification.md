@@ -555,7 +555,7 @@ assert state=Resolved && resolved.loader=parent
 
 本轮固定提交的隔离副本执行 fmt、clippy `--workspace --all-targets --all-features --locked -- -D warnings`、workspace 全量测试与上述六条公开入口探针。全量结果为 **628 passed / 0 failed / 1 ignored**；ignored JDK oracle 不计为通过。工作区最初同命令也为 628/0/1，但并发变异期间的编译失败不用于评估固定基线。新的规划执行 OpenSpec strict 与 diff/链接核对；既有 CI run、MSRV、oracle、supply-chain 与 fuzz 记录仅引用原交付证据，本轮未重跑，未声称候选已获远端 CI 通过。
 
-收尾增量验证：`724bf1b` 的 workspace fmt/clippy 与全量测试亦通过，仍为 **628/0/1**；返回地址算法与隔离反例基线无 diff。新闭包 CI 的 dev-dependency 漏检已用隔离反例实证（R8），见 [layer 复核](../layer-jarde-crates/verification.md)。规划最终 OpenSpec strict **11/11**，`git diff --check` 与修改文档的本地链接检查通过。
+收尾增量验证：`724bf1b` 的 workspace fmt/clippy 与全量测试亦通过，仍为 **628/0/1**；返回地址算法与隔离反例基线无 diff。新闭包 CI 的 dev-dependency 漏检已用隔离反例实证（R8），见 [layer 复核](../2026-09-19-layer-jarde-crates/verification.md)。规划最终 OpenSpec strict **11/11**，`git diff --check` 与修改文档的本地链接检查通过。
 
 复核截止增量为 `3646a97`（仅 CI）：dev/build 漏检已修正并由隔离探针确认拒绝；可选非默认 feature 的 petgraph 依赖仍可绕过专用门禁，剩余证据及任务归 layer 3.2。P2 源码未变，R7 的四个反例仍未修复。
 
