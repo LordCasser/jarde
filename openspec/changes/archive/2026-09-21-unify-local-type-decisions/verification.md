@@ -61,6 +61,8 @@
 | `cargo test --test p5_corpus_fingerprint --locked` | 5 passed / 1 ignored |
 | `openspec validate --all --strict --no-interactive` | 21 passed / 0 failed（归档前） |
 
+| 该次 Push 的 CI（实现提交 `{fix}` 随归档提交 `{arch}` 一起推送） | [run {run}](https://github.com/LordCasser/jarde/actions/runs/{run}) **四 job success**：stable（fmt、clippy `-D warnings`、两轮固定 seed 全量测试、JDK 25 oracle、P3 编译执行对照、依赖边界、OpenSpec strict、`git diff --exit-code`）、MSRV 1.88.0、supply chain、fuzz smoke。run 挂在归档提交上（GitHub 只为 push 的 head 建 run），其树包含 `{fix}`。 |
+
 ## 边界与既有弱点
 
 - **逐写入检查只覆盖 boolean 区分**，不是通用可赋值性：后续写入一个首次写入类型装不下的引用（`String local` 被 `Object` 值填充）仍如实发布——这需要本层刻意没有的子类型关系。`long`→`int` 一类不可达（verifier 的 slot 类别决定）。

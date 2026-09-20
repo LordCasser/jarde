@@ -73,6 +73,8 @@ match test { /* Zero / Null / Pair：每个操作数按自身证据拼写 */ }
 - **顺带修正的既有文档漂移**（因为正在编辑那些句子）：census 注释的标题计数过时（写着 45/177/44/86/8 而元组是 47/203/44/97/8）——现为 48/213/44/105/8；`tests/fixtures/README.md` 写"114 files"而清单为 117——现为 120。`docs/support-matrix.md` 的 P3 边界段补入整数比较规则（公开陈述被修改的 `java8-recovery` 要求）。
 - **既有弱点、未触碰**：`Builder::boolean_value` 仍把 `boolean_literal` 折进一个名为"proven boolean"的共享谓词；本修正后三个调用点都安全，但未来若在**不要求** boolean 的位置调用它会重演本缺陷。三分（值的证据 / 位置要求 / 字面量适配）目前活在 `condition` 的顺序里，而不是谓词的 API 中——下一个 change（`unify-local-type-decisions`）要消费这个三分，故留给它。
 
+| 该次 Push 的 CI（实现提交 `{fix}` 随归档提交 `{arch}` 一起推送） | [run {run}](https://github.com/LordCasser/jarde/actions/runs/{run}) **四 job success**：stable（fmt、clippy `-D warnings`、两轮固定 seed 全量测试、JDK 25 oracle、P3 编译执行对照、依赖边界、OpenSpec strict、`git diff --exit-code`）、MSRV 1.88.0、supply chain、fuzz smoke。run 挂在归档提交上（GitHub 只为 push 的 head 建 run），其树包含 `{fix}`。 |
+
 ## 边界处置已关闭（2026-09-21 补记）
 
 本记录登记的 `flag() == 1` 边界已由下一项 [unify-local-type-decisions](../../2026-09-21-unify-local-type-decisions/verification.md)（或其归档位置）按"类型冲突"规则裁决为**拒绝**：`Test::Pair` 中恰有一侧为已证明 boolean 时在 Java 里无拼写，区域被拒绝并点名 BCI。原文保留，未改写。
