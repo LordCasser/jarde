@@ -54,6 +54,7 @@ reader 侧新增有限：`classfile::{class_member_facts, ClassMemberFacts, Memb
 | `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` | 通过 |
 | `cargo test --test p3_execution_comparison --locked -- --ignored` | 2 passed / 0 failed（18.6 s） |
 | `openspec validate --all --strict --no-interactive` | 22 passed / 0 failed（归档前） |
+| 实现提交的 CI（`e0c83b6`） | [run 35499237358](https://github.com/LordCasser/jarde/actions/runs/35499237358) **四 job success**：stable（fmt、clippy `-D warnings`、两轮固定 seed 全量测试、JDK 25 oracle、P3 编译执行对照、依赖边界、OpenSpec strict、`git diff --exit-code`）、MSRV 1.88.0、supply chain、fuzz smoke |
 
 未新增 fixture 文件、未调用编译器（全部为 `tests/navigation.rs` 内的内存生成器，并在 `tests/fixtures/README.md` 登记一行），因此 corpus fingerprint 与 `p5_corpus_fingerprint` 未变（5 passed）。
 
