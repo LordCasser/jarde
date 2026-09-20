@@ -100,3 +100,93 @@
 **属后续片**：1.2 的冷/热与三路 benchmark（本片只固定输入）；1.3 的结果 fingerprint/稳定排序/coverage 对照 → **A15**；2.x 的 cache key 与失效/回退 → **A18 的缓存半**；3.1–3.4 的差分与门槛。
 **本片如实列出的 `known_gaps` 五条**（见上）**未闭合**。
 **前序遗留（本片未处理）**：CLI 出口缺失；X3 若干分支与 plugin `Skipped{Error}`/`Cancelled` 无 fixture；`MethodParameters` 未读；类级事实不在载荷；A17 源码守卫的 4 个模块盲区（依赖边由 cargo 兜底）。
+
+## 2026-09-20 1.2 + 1.3：direct 基线、结果 fingerprint 与 A15/A16（提交 `e7f509f`）
+
+### 落点与 cache/parallel 的处理选择（**判断**）
+
+**先探明**：仓库**没有任何** benchmark 设施——`benches/` 目录 0 个、`criterion`/`[[bench]]`/`harness = false` 在所有 `Cargo.toml` **0 命中**、无手工计时工具。故本片**新建**。
+
+**落点** `tests/p5_benchmark.rs`（测试内 harness，7 条常开 + 1 条 `#[ignore]` 重复测量）。理由：① 常开的确定性/排序/coverage 对照必须与测量走**同一套请求构造与同一套 fingerprint 函数**，拆到 `benches/` 会出现两个权威；② `harness = false` 的 bench 目标会被 `cargo test --all-targets` 一并执行，把 200 次重复塞进既有门禁；③ 本仓库对昂贵/选项式工作的既有约定就是 `#[ignore]` 集成测试（`p3_execution_comparison`、1.1 的再生成器）。**未触及 `Cargo.toml`**。
+
+**cache/parallel 选「甲」**：**只建 `direct` harness，cache/parallel 如实记为 `absent`**，**不**跑「关缓存/开缓存」两条同代码路径。
+**理由**：`design.md` 决策 5 要的是 `optimized vs direct` 的**两条真实路径**；给同一段代码贴两个标签，会把「结果相同」读成「缓存已验证」——**正是 design.md Risk 与 A15 备注警告的那种「测量形状的主张」**。
+**预留位是代码而非输出**：`compare(&RunRecord, &RunRecord)`/`Verdicts` 对**任意两次运行**通用，第二条路径出现当天即由同一函数测量与对照；context 里 `cache`/`concurrency` 写明「absent，P5 2.2 / 2.x 拥有」。
+
+### 指标五项与内存代理的局限
+
+| 指标 | 来源 |
+| --- | --- |
+| 耗时 | harness `Instant`（µs）**+** 报告自身的 `usage.elapsed_millis` |
+| 读取字节 | `input_bytes`/`entry_bytes`/`read_bytes`/`output_bytes` |
+| 物化范围 | `archive_entries`/`class_headers`/`method_bodies`/`analysis_steps`/`normalization_clones` **+** 发布的 `coverage`（各维 `state`/`scanned`/`skipped`） |
+| 内存代理 | `class_bytes`/`attribute_bytes`/`code_bytes`（已物化的 class-file 内容）+ `ir_items`/`ir_edges`（逐单位分配的派生存储）+ `result_items` |
+| 取消状态 | `ExecutionReport` 的终止状态 + `diagnostics`（既有语义，未新增表达） |
+
+**代理的局限（写进代码文档）**：① **不是 RSS**；② 是 `UsageSnapshot` 的**累计计费计数**，无 allocator 开销/碎片，除 `nested_depth`/`dependency_depth` 外**无高水位**，无法区分峰值与总量，且计数**包含已释放的临时对象**；③ 一次运行完全可以在不 charge 这些维度的前提下分配内存。故这些维度上的 delta 只能支持「**这条路径派生/持有的工作单位更多**」，**不能**支持「这条路径用了更多内存」。**未**引入 allocator 计数器或新依赖。
+
+**耗时为何用 harness 时钟**：报告时钟是**整毫秒**，本语料下每次重复**都是 0**，承载不了分布；`elapsed_millis` 仍是 fingerprint 归一化的那一个字段。
+
+### 实测基线（`REPEATS = 200`／行；同一台机器、单线程构建、`RUST_TEST_THREADS=1`）
+
+**耗时**（µs；`first` = 进程内首次）：两次完整测量（相隔数分钟、同一代码）
+
+| 行 | run A: min / median / p90 / max / first | run B: min / median / p90 / max / first |
+| --- | --- | --- |
+| `full-range-xref/minimal-jar` | 122 / **131** / 154 / 274 / 274 | 127 / **141** / 157 / 472 / 472 |
+| `full-range-xref/v52-class` | 129 / **139** / 157 / 200 / 141 | 132 / **147** / 160 / 244 / 160 |
+| `single-member/v52-class` | 120 / **134** / 171 / 537 / 537 | 123 / **141** / 188 / 1825 / 1825 |
+| `cancelled/…minimal-jar` | 19 / **21** / 22 / 54 / 54 | 19 / **22** / 23 / 71 / 57 |
+
+**固定量**（两次测量**逐字相同**，已 diff 证明）：
+
+| 行 | 读取字节 | 物化范围 | 内存代理 | 状态 |
+| --- | --- | --- | --- | --- |
+| `full-range-xref/minimal-jar` | input=659 entry=627 read=627 out=0 | entries=13 headers=**0** bodies=**0** steps=0 | class=555 attr=174 code=22 ir_items=**0** ir_edges=**0** items=4 | complete |
+| `full-range-xref/v52-class` | input=303 read=**909** out=909 | headers=0 bodies=0 | class=**909** attr=588 code=48 items=1 | complete |
+| `single-member/v52-class` | input=303 read=**303** out=418 | headers=**1** bodies=**1** steps=29 | class=303 attr=120 code=4 ir_items=86 ir_edges=5 | complete |
+| `cancelled/…minimal-jar` | input=659，其余 0 | 全 0 | 全 0 | **cancelled** |
+
+**可比性声明（必须随数字一起读）**：均为**同一台机器、同一进程池、单线程构建**的重复测量；语料是提交的小样本（659 B 归档 / 303 B class），数字刻画的是 direct 路径在该规模下的**形状**，**不可外推**；**不给任何加速倍数、P95、吞吐或目标**；两次测量中位数漂移 **+5%~+8%**、前后半差最多 ~12%、**进程内首次运行是 1.3×~13× 中位数**——即**低于约 10% 的差异在本机这套 harness 上不可区分**，**跨环境比较一律不做**。
+
+### 结果 fingerprint 与稳定排序
+
+**形状**：对**完整运行**的序列化文档（query 行 = 整个 `QueryReport`；局部行 = 整个 `RecoveredMethod`）**递归删除 `elapsed_millis`**（**唯一**归一化，与 `p2_golden`/`p1_xref_golden` 同口径），按 `serde_json` 渲染后取 **blake3**。`Published` 同时保留原始文档，使「归一化到底做了什么」**可被质问**。
+
+**确定性证据（父级独立复现）**：① 8 次进程内重复 × 3 行：fingerprint/计费/状态/顺序**全等**；② **三个独立进程**的 marker **逐字相同**（`full-range-xref/minimal-jar blake3:7603cd8c…`、`full-range-xref/v52-class blake3:1a255003…`、`single-member/v52-class blake3:27354fa2…`）——**这一条才把「确定」与「只是本进程的 HashMap 顺序稳定」区分开**（seed 按进程变化）；③ 两次完整测量之间所有计费/coverage/诊断/fingerprint 行**逐字相等**（仅时间戳变）。
+**稳定排序基线**：同进程 8 次 + 跨进程的 item identity 序列（source+consumer+operation+target+derivation）逐字相同；对照报告把顺序要求定为**相等**而非「同一集合的另一种稳定序」，因为决策 4 说并行只改调度、不改发布顺序。**今天没有并行，所以这是「顺序基线现在是确定的」的证据，不是并行正确性的证明。**
+
+### 父级独立证伪（**修正了一次无效变异**）
+
+- **第一次尝试无效**：在 `fingerprint_of` 里对文档**无条件插入** `elapsed_millis` → **7 条全绿**。原因是该变异对**比较双方施加同一变换**，故对断言是 no-op——**是我的变异写错，不是断言弱**。**如实记录，不计入证据。**
+- **正确变异**：跳过 `strip_elapsed`（归零 `removed`）→ **2 红**，与实现者自报一致：`the_result_fingerprint_ignores_the_wall_clock_and_nothing_else` 与 `the_direct_row_fingerprints_are_printed_for_a_cross_process_comparison`，后者给出的正是**同进程两次同输入运行的不同摘要**（`8cb7f902…` vs `bc6adb02…`，局部行的墙钟偶尔跨 1 ms）。
+- **值得记录的一点**：`repeated_direct_runs_publish_the_same_result_fingerprint` 在两次变异下**都保持绿**——本语料下报告时钟几乎恒为 0，**「只重复比对」不足以照出这个缺陷**，这正是 stamp 测试存在的理由。
+- **实现者第二组**：局部行记录 `class_headers += 1` → **恰好 1 红**（`the_local_and_the_full_range_runs_are_compared_field_by_field`，`left: 2 / right: 1`），其余 6 绿。副本校验通过。
+
+### A15 / A16 的如实判定
+
+**A15：仍未通过。** 今天能验的是**重复那一半**：同一 direct 请求 8 次重复 + 3 个独立进程，完整结果（含 evidence/coverage/representation/diagnostics/usage）在去掉墙钟后一致 → **verified**。
+**不能验的是缓存一致性**：仓库**不存在任何 cache/index**（`cache` 只出现在 `crates/jarde-jvm/src/{ssa.rs,method_ir.rs}` 的「不缓存」文档注释），**没有第二条路径**可以「关缓存/开缓存」，spec 的 `Cold and warm comparison` 第 2 个条件（「以**开启缓存**执行」）**无法满足**。故 **A15 判定维持 1.1 的「未通过」**，负责片为 **2.x + 3.1**。
+顺带：`冷/热` 今天只能测「进程内首次 vs 重复」的**耗时**差，其**语义**差被断言为 **0**（首次运行的 fingerprint 与后续每次相同）。
+
+**A16：不重做。** 本片只在 benchmark 层面**记录**物化范围：局部行 `class_headers=1`、`method_bodies=1`（该类声明 **3** 个有 body 的成员，前提由 harness 自己的 header 读取得出）、`read_bytes=303`、`coverage=complete_within_schema scanned=2`；同一 303 B 语料上的全范围行 `read_bytes=909`、`class_bytes=909`、`attribute_bytes=588`、`code_bytes=48`。这就是「**局部 vs 全范围**」在**相同语料**上的对照数字。
+
+### 与 1.1 fingerprint 的实际接法
+
+运行时读 `tests/fixtures/corpus-fingerprint.json` → 断言 `schema == "jarde-corpus-fingerprint/1"` → 用 `files[]` 逐条校验 subject 的 **blake3 + 字节数**（**跑的就是校验过的那些字节**）→ 用 `acceptance_rows["A15"].corpus[]`（`minimal-jar`）与 `dimensions["recovery"].carriers[]`（v52）断言「该 subject 仍被归类在那一行/那一维下」→ 每行 context 记录 **`blake3(corpus-fingerprint.json)` = `5b56783f4cbdaa6f4d5b…`** 作为**语料版本**（文件不能含自身摘要，由消费者算）。**改语料 → benchmark 红**，而不是静默换基线。
+
+### 对 3.1 可比性有直接影响的**四项实测事实**（本片发现，建议 3.1 先读）
+
+① 局部行 `Engine::recover_method` 的**发布报告少报请求计费**（`output_bytes +115`、`ir_items +2`、`analysis_steps +5` 在报告之外被 charge）——资源门槛若读 `analysis.execution.usage` 会**低估局部路径**；
+② **X1 全范围行的 `class_headers`/`method_bodies` 恒 0**，却物化了 588–606 `class_bytes`（X1 走自己的读取计费，**不走 P2 的 header/body demand 路径**）——**「读了几次 header」在 X1 路径与 P2/recovery 路径之间不可直接对照**，资源门槛必须**两侧取同一条计费路径**（本片 `compare()` 统一取**请求总计费** `budget.usage()`）；
+③ `result_items` 是**计费量而非页大小**（归档行 `result_items=4` 而实际发布 1 个 item）；
+④ 本机中位数复现性 **~10%**，进程内首次运行可达中位数 **13×**。
+
+### 证据
+
+全量 **1089 passed / 0 failed / 5 ignored**（基线 1082/0/4 → **+7 passed、+1 ignored** = 新文件的 7 常开 + 1 `#[ignore]`；**无既有用例改红或改绿**）；`p5_benchmark` 7 passed / 1 ignored；fmt 与 clippy 1.98.1 干净；`openspec validate --all --strict` **16 passed**；两个 CI example exit 0；分层三包中 `jarde-java` **0** 次；锁文件两条 exit 0 且 **`Cargo.toml`/`Cargo.lock` 无 diff（未新增依赖）**。**被修正的既有断言：0 条**。
+**CI**：`e7f509f` → 见下。
+
+### 未完成（如实）
+
+**A15 的缓存半**属 2.2（cache/index）+ 3.1（optimized/direct 差分）——今天无第二条路径可测；**cache/parallel 的实测量与对照**属 2.x（本片只预留 `compare()` 机制与 context 字段）；**取消压力**（并发/解压/IR 内取消）属 3.2（本片只覆盖「入口前取消」的确定性变体）；**ZIP bomb/condy 图/不可约 CFG/缺失依赖语料上的优化回归**属 3.2。1.1 的 `known_gaps` 五条**未闭合**，本片未动。
