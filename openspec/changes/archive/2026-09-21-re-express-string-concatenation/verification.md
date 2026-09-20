@@ -73,6 +73,8 @@ pub struct ConcatPart { pub parameter: Type, pub value: Expr }
 - `Chain::appends` 携带解析后的 `Type`，使接受集判定留在原处，发布的 `parameter` 字符串不变。
 - 额外给了两个证伪（变异 C 与"合并/交换会改变结果"的执行对照）。
 
+| 该次 Push 的 CI（实现提交 `5c35cbf` 随归档提交 `c2aa793` 一起推送） | [run 35524042352](https://github.com/LordCasser/jarde/actions/runs/35524042352) **四 job success**：stable（fmt、clippy `-D warnings`、两轮固定 seed 全量测试、JDK 25 oracle、P3 编译执行对照、依赖边界、OpenSpec strict、`git diff --exit-code`）、MSRV 1.88.0、supply chain、fuzz smoke。run 挂在归档提交上（GitHub 只为 push 的 head 建 run），其树包含 `5c35cbf`。 |
+
 ## 边界
 
 - **CLI 无法报告"发射中途的 `output_bytes` 停止"**：同一上限同时资助请求工作与渲染出的文档。实测 `N=2048` 时 19,000–31,000 落在发射中（`consumed == limit`），适配器随后以 `budget_exceeded` 拒绝（exit 2、stderr、无 stdout）；17,000 则在足够早处停止、报告放得下（exit 4）。因此**发射中途的清理**（2048 段全部构建后再释放）断言在**库入口**（`output_bytes = 12_288` → `Stopped(Budget { OutputBytes, written 3770, at BCI 2043 })`、`content=not_produced`、空 text/segment、两次运行一致），CLI 侧覆盖的是"可交付的停止"形状。
