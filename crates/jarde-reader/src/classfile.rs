@@ -9818,14 +9818,17 @@ mod tests {
     /// rules must not reject real code, and real historical subroutines must go through
     /// the same target checks.
     ///
-    /// The counts are the measured population — 37 classes, 138 bodies, 44 exception table
+    /// The counts are the measured population — 41 classes, 153 bodies, 44 exception table
     /// records, 86 branch/switch targets, 8 `jsr`/`jsr_w` instructions (the ECJ 4.6.1 45–48
     /// `finally` codegen; neither the P3 samples nor the P4 modern samples contain a
     /// subroutine) — so a fixture that silently stops being visited, or a body that stops
     /// decoding, fails here instead of quietly shrinking the sweep. The P4 modern samples raise
     /// the first two counts by their own files and bodies and leave the last three where they
     /// were, which is also how the sweep states that a javac 23.0.1 class at major 60 or 61 is
-    /// read by the same structural path as every earlier fixture. The one count the P3 samples do
+    /// read by the same structural path as every earlier fixture. The 2026-09 P3 eval-context
+    /// samples rise the first two the same way (`p3-nested-eval/v8/NestedEval.class` adds five
+    /// bodies and `p3-refused-cast/v8`'s four classes add ten, none of them with an exception
+    /// table, a branch or a subroutine), and the one count the P3 samples do
     /// not move is the last: `p3-local-rewrite`, `p3-scope`, `p3-handlers` and `p3-corpus` are
     /// javac 23.0.1 output, which has no subroutines at all, so every `jsr` in the sweep is the ECJ
     /// corpus's.
@@ -9889,7 +9892,7 @@ mod tests {
                 branch_targets,
                 subroutines
             ),
-            (37, 138, 44, 86, 8),
+            (41, 153, 44, 86, 8),
             "fixture population changed: re-measure these counts"
         );
     }

@@ -1202,7 +1202,7 @@ impl Builder<'_> {
                     }
                     return Ok(());
                 }
-                let call = match self.call_expr(at, instruction, target) {
+                let call = match self.call_expr(at, instruction, target, at) {
                     Ok(call) => call,
                     Err(reason) => {
                         let bcis = self.quoted_bcis(at);
@@ -1526,7 +1526,20 @@ impl Builder<'_> {
         in_use == Some(denotes)
     }
 
-    /// Renders one SSA value as an expression.
+    /// Renders one SSA value as an expression, for a use at BCI `at`.
+    ///
+    /// `at` is the position at which the text produced here is **evaluated**: the instruction whose
+    /// statement the expression is written into, or the consumer a nested expression is rendered
+    /// for. It is never the definition the value came from, and keeping the two apart is what P3-R8
+    /// is about — a value the bytecode computed at BCI 2 can be written into a statement that runs
+    /// after a write at BCI 3, so every check that asks what a slot *holds*, and every refusal that
+    /// quotes a position, has to be taken at `at` rather than at the producer's own BCI. Which is
+    /// why a recursive call passes the context it was given and not the BCI of the instruction it is
+    /// descending through.
+    ///
+    /// The nodes themselves keep the BCIs they were produced at as their own anchors
+    /// (`Expr::direct`, `OriginSet` and the derived chain): origin is about provenance, `at` is about
+    /// evaluation, and a refusal is the only thing that moves between the two.
     fn render_value(&mut self, value: ValueId, at: u32, depth: usize) -> Result<Expr, String> {
         if depth > MAX_VALUE_DEPTH {
             return Err(format!(
@@ -1624,8 +1637,12 @@ impl Builder<'_> {
                                 operands.len()
                             ));
                         }
-                        let left = self.render_value(operands[0].1, bci, depth + 1)?;
-                        let right = self.render_value(operands[1].1, bci, depth + 1)?;
+                        // Both operands are read by the sum, so both are checked where the sum is
+                        // evaluated: a nested arithmetic does not move the use point to itself
+                        // (P3-R8 — the value the operand names is on the stack when the sum runs,
+                        // whatever the slot holds by then).
+                        let left = self.render_value(operands[0].1, at, depth + 1)?;
+                        let right = self.render_value(operands[1].1, at, depth + 1)?;
                         Ok(Expr::direct(
                             ExprKind::Binary {
                                 op: arithmetic_op(*op),
@@ -1643,9 +1660,12 @@ impl Builder<'_> {
                         // concatenation: the expression is written here, where its value is read,
                         // and every original BCI of the chain stays in the table as an anchor.
                         if let Some(chain) = self.chains.value_at(bci) {
-                            return self.concat_expr(chain);
+                            return self.concat_expr(chain, at);
                         }
-                        self.invoke_expr(bci, instruction, target)
+                        // The call is written where its value is consumed, so its receiver and its
+                        // arguments are evaluated *there* and are checked at `at` — not at the
+                        // call's own BCI, which nothing in the text rewinds to (P3-R8's call half).
+                        self.invoke_expr(bci, instruction, target, at)
                     }
                     Operation::CheckCast { .. } => {
                         let Some(instruction) = self.instructions.get(&bci).copied() else {
@@ -1663,8 +1683,9 @@ impl Builder<'_> {
                         };
                         // The cast is dropped *and* kept: the value is written where the forwarded
                         // invocation wrote it, and the cast's own BCI stays in the segment table as
-                        // a derived anchor of the node that presents it.
-                        let expr = self.render_value(value, bci, depth + 1)?;
+                        // a derived anchor of the node that presents it. The value it drops is read
+                        // where the cast's own value is used, so it is checked at `at`.
+                        let expr = self.render_value(value, at, depth + 1)?;
                         Ok(expr.derived_from(bci))
                     }
                     // A dynamic call site is a *value* whose shape this layer decides from the
@@ -1692,7 +1713,10 @@ impl Builder<'_> {
                             ));
                         };
                         let receiver = match shape.receiver {
-                            Some(value) => self.render_value(value, bci, depth + 1)?,
+                            // The receiver the read dereferences is evaluated where the read's own
+                            // value is used: a chain of reads is one expression, and its inner
+                            // reads answer to the position its value is consumed at (P3-R8).
+                            Some(value) => self.render_value(value, at, depth + 1)?,
                             None => {
                                 Expr::direct(ExprKind::Path(spell_reference(&evidence.owner)), bci)
                             }
@@ -1725,8 +1749,10 @@ impl Builder<'_> {
                                 operands.len()
                             ));
                         }
-                        let array = self.render_value(operands[0].1, bci, depth + 1)?;
-                        let selector = self.render_value(operands[1].1, bci, depth + 1)?;
+                        // The table and the selector are the values the read indexes with, and the
+                        // read's value is used at `at`: both are checked there.
+                        let array = self.render_value(operands[0].1, at, depth + 1)?;
+                        let selector = self.render_value(operands[1].1, at, depth + 1)?;
                         let origin = OriginSet::new(Origin::direct(bci))
                             .plus_derived(Origin::derived(table.bci))
                             .plus_derived(Origin::derived(index.bci));
@@ -1750,11 +1776,18 @@ impl Builder<'_> {
     }
 
     /// Renders one invocation, with its receiver and its arguments.
+    ///
+    /// `bci` is the invocation's own instruction, which is the node's anchor and the BCI the pool
+    /// is read through; `at` is the position at which the rendered call is **evaluated**. They are
+    /// the same for the statement a call writes of its own ([`Self::call_statement`]), and they
+    /// differ where the call is written where its *value* is consumed: a nested `tick(x)` inside
+    /// `tick(x) + ++x` reads its argument where the sum runs, after the increment (P3-R8).
     fn call_expr(
         &mut self,
         bci: u32,
         instruction: &SsaInstruction,
         target: &CallTarget,
+        at: u32,
     ) -> Result<Expr, String> {
         let operands = stack_operands(instruction);
         let (receiver, args) = match target.kind() {
@@ -1766,12 +1799,12 @@ impl Builder<'_> {
                 // The receiver is a value the call reads; when the subset cannot render it (an
                 // uninitialized `new`, an operation it does not model) the call falls back rather
                 // than naming the owner type in its place.
-                (Some(Box::new(self.render_value(receiver.1, bci, 0)?)), args)
+                (Some(Box::new(self.render_value(receiver.1, at, 0)?)), args)
             }
         };
         let mut arguments = Vec::with_capacity(args.len());
         for (_, value) in args {
-            arguments.push(self.render_value(*value, bci, 0)?);
+            arguments.push(self.render_value(*value, at, 0)?);
         }
         let arguments = typed_arguments(target.descriptor(), arguments);
         Ok(Expr::direct(
@@ -1790,11 +1823,16 @@ impl Builder<'_> {
     /// the one the accessor's own verified body named. The node carries **both** original BCIs: the
     /// call site's as its own anchor and the field access inside the accessor's body as a derived
     /// one — which is exactly what A12 asks the segment table to keep (P3 2.2).
+    ///
+    /// `at` is the position the rendered expression is evaluated at, passed through to the receiver
+    /// for the same reason [`Self::call_expr`] takes it: the instance the accessor reads is read
+    /// where the expression is, not where the call site was.
     fn invoke_expr(
         &mut self,
         bci: u32,
         instruction: &SsaInstruction,
         target: &CallTarget,
+        at: u32,
     ) -> Result<Expr, String> {
         if let accessor::Verdict::Accessor { evidence, shape } =
             accessor::verify(target, self.members, self.pool)
@@ -1804,7 +1842,7 @@ impl Builder<'_> {
                 .first()
                 .copied()
                 .map(|(_, value)| value);
-            match receiver.map(|receiver| self.render_value(receiver, bci, 0)) {
+            match receiver.map(|receiver| self.render_value(receiver, at, 0)) {
                 Some(Ok(receiver)) => {
                     let origin = OriginSet::new(Origin::direct(bci))
                         .plus_derived(Origin::derived(shape.field_bci).in_method(&shape.method));
@@ -1834,7 +1872,7 @@ impl Builder<'_> {
                 }
             }
         }
-        self.call_expr(bci, instruction, target)
+        self.call_expr(bci, instruction, target, at)
     }
 
     /// Presents one verified write accessor's call site as the assignment it performs.
@@ -1893,13 +1931,16 @@ impl Builder<'_> {
     }
 
     /// The statement an invocation becomes when no rule presented it as a field access.
+    ///
+    /// The call writes a statement of its own, so it is evaluated where the instruction is: the
+    /// evaluation context passed to [`Self::call_expr`] is the instruction's own BCI.
     fn call_statement(
         &mut self,
         at: u32,
         instruction: &SsaInstruction,
         target: &CallTarget,
     ) -> Result<(), StopReason> {
-        let call = match self.call_expr(at, instruction, target) {
+        let call = match self.call_expr(at, instruction, target, at) {
             Ok(call) => call,
             Err(reason) => return self.fallback(vec![at], &reason, at),
         };
@@ -1920,6 +1961,10 @@ impl Builder<'_> {
     /// its own, anchored where *it* was produced — and every BCI the site owns stays in the segment
     /// table as an anchor: one construction reaches several original instructions, and the table says
     /// so rather than keeping one of them.
+    ///
+    /// The arguments are read by the construction, which is written where the value at `at` is used:
+    /// they are checked at `at`, not at the constructor's own BCI (`at` and `site.constructor` differ
+    /// only where the `new` expression is evaluated later than the call that initialises it).
     fn new_expr(&mut self, site: &init::Site, at: u32, depth: usize) -> Result<Expr, String> {
         let Some(instruction) = self.instructions.get(&site.constructor).copied() else {
             return Err(format!(
@@ -1929,7 +1974,7 @@ impl Builder<'_> {
         };
         let mut args = Vec::new();
         for (_, value) in stack_operands(instruction).iter().skip(1) {
-            args.push(self.render_value(*value, site.constructor, depth + 1)?);
+            args.push(self.render_value(*value, at, depth + 1)?);
         }
         // The constructor's **own** descriptor types the arguments, exactly as a call's does: a
         // construction site writes the call the class file holds, and `new Res(arg0, 0)` for a
@@ -2136,6 +2181,25 @@ impl Builder<'_> {
     /// text lands where its value is consumed, and where the slot no longer holds what it read at
     /// `reader` that text is refused (P3 1.3d) — so the read itself is what the quote has to name,
     /// and the read is named rather than dropped from the answer.
+    ///
+    /// A **claimed field read** belongs here too: it writes no statement of its own either — a
+    /// claimed read is a value whose text lands where the value is consumed — so a reader that
+    /// refuses must name it, or the answer drops an effect the bytecode really performs (running a
+    /// static initializer, or the `NullPointerException` an instance read can throw). The walk names
+    /// it and keeps descending, because the receiver's own lost producers are the read's producers
+    /// as well — that is how `External.holder.value` is answered for down to the `getstatic` behind
+    /// the `getfield` (P3-R9).
+    ///
+    /// What is deliberately *not* here: an `invokedynamic` site's linkage and an `enumswitch@1`
+    /// dispatch-table read stay unnamed when their consumer refuses. Naming them would state a
+    /// linkage this walk does not own, and no rule of this change extends the rule to them.
+    ///
+    /// Every judgement in the walk is taken at the position the walk **started** from: the renderer
+    /// that refused judged the loads it could not write at the consumer's use point, so the quote
+    /// has to name the same read the refusal was about — a recursion that re-narrowed the use point
+    /// to each intermediate instruction would judge a load where the artifact does not evaluate it
+    /// and stay silent about the read it actually refused (P3-R8, and P3-R1's `post` for the
+    /// direct-operand case).
     fn deferred_producers(&self, value: ValueId, reader: u32, into: &mut Vec<u32>, depth: usize) {
         if depth > MAX_VALUE_DEPTH {
             return;
@@ -2164,10 +2228,21 @@ impl Builder<'_> {
                 }
                 return;
             }
+            // A claimed read is named like a deferred call — and, unlike one, the walk continues
+            // through it, because what its own operands read is behind the same refusal.
+            if self
+                .fields
+                .claim(bci)
+                .is_some_and(|(_, shape)| !shape.writes())
+                && !into.contains(&bci)
+            {
+                into.push(bci);
+            }
             for (_, operand) in stack_operands(instruction) {
-                // The operand of *this* instruction is read here, not by the reader the walk
-                // started from: the walk descends one instruction, and so does the use point.
-                self.deferred_producers(operand, bci, into, depth + 1);
+                // The operand of *this* instruction is read where the reader the walk started from
+                // reads it: the walk descends through instructions, but the use point does not move
+                // with it — the renderer's checks are taken at the consumer's position.
+                self.deferred_producers(operand, reader, into, depth + 1);
             }
         }
     }
@@ -2211,7 +2286,11 @@ impl Builder<'_> {
     /// the expression, and every BCI the chain owns is kept as a derived anchor of it: one
     /// concatenation reaches many original instructions, and the table says so rather than keeping
     /// one of them (P3 2.2, the source-map requirement).
-    fn concat_expr(&mut self, chain: &concat::Chain) -> Result<Expr, String> {
+    ///
+    /// `at` is the position the concatenation is evaluated at — the consumer that renders it, since
+    /// the chain's own text lands there — and every piece is checked there for the reason
+    /// [`Self::render_value`] takes `at` at all (P3-R8).
+    fn concat_expr(&mut self, chain: &concat::Chain, at: u32) -> Result<Expr, String> {
         let mut pieces: Vec<Expr> = Vec::with_capacity(chain.appends.len());
         for (append_bci, _) in &chain.appends {
             let Some(instruction) = self.instructions.get(append_bci).copied() else {
@@ -2225,7 +2304,7 @@ impl Builder<'_> {
                     "the `append` at BCI {append_bci} appends no value this run states"
                 ));
             };
-            pieces.push(self.render_value(value, *append_bci, 0)?);
+            pieces.push(self.render_value(value, at, 0)?);
         }
         let mut pieces = pieces.into_iter();
         let Some(first) = pieces.next() else {

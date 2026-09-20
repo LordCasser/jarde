@@ -678,6 +678,22 @@
         },
         {
           "kind": "file",
+          "path": "tests/fixtures/p3-nested-eval/v8/NestedEval.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-refused-cast/v8/RefusedCast.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-refused-cast/v8/External.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-refused-cast/v8/Holder.class"
+        },
+        {
+          "kind": "file",
           "path": "tests/fixtures/p3-corpus/v8-gnone/Flags.class"
         },
         {
@@ -1100,6 +1116,46 @@
       "blake3": "7aa56f8589c4c1c32e4ef1c5e4cdc804fb250b79e0b4ae7f0d3cf48dde0eacfe",
       "bytes": 650,
       "path": "tests/fixtures/p3-local-rewrite/v8/LocalRewrite.class"
+    },
+    {
+      "blake3": "9b85caadf1fbf095ec0cfb075b3f0c59a046300f06df106d7939e60438852edb",
+      "bytes": 644,
+      "path": "tests/fixtures/p3-nested-eval/Baseline.java"
+    },
+    {
+      "blake3": "ad59f93e194b11f35e6c55e104cb90c68edc4b8a74a0a6b9bff1b4b53ca8a7e1",
+      "bytes": 304,
+      "path": "tests/fixtures/p3-nested-eval/NestedEval.java"
+    },
+    {
+      "blake3": "3697d4178bbed31ebe7811b7bcfb275f1530242197e12685878bbc6bdb22e8d7",
+      "bytes": 361,
+      "path": "tests/fixtures/p3-nested-eval/v8/NestedEval.class"
+    },
+    {
+      "blake3": "3aa46c10f360abf4fe543011fa76487dd6ce626aa577e38b2c92ef12a519e9fb",
+      "bytes": 1498,
+      "path": "tests/fixtures/p3-refused-cast/Baseline.java"
+    },
+    {
+      "blake3": "9e1a8f2f6cd26ee705d64c50de6dcd0e1c79f7366c84fea426f0c807430cbaf6",
+      "bytes": 731,
+      "path": "tests/fixtures/p3-refused-cast/RefusedCast.java"
+    },
+    {
+      "blake3": "8a94fba71b6f7b13671dcf70c8a2fc40a810fffe80dc33d8d8a0f0b0f021d7d8",
+      "bytes": 427,
+      "path": "tests/fixtures/p3-refused-cast/v8/External.class"
+    },
+    {
+      "blake3": "56a295fad799ebc996b4a2553d1404b7d0a32eddb7407163caf7ea1381137df4",
+      "bytes": 158,
+      "path": "tests/fixtures/p3-refused-cast/v8/Holder.class"
+    },
+    {
+      "blake3": "2652eb2c60298f7d47483d256809ddfbe7032c747d1d242a3b15ad32c1e32cf2",
+      "bytes": 666,
+      "path": "tests/fixtures/p3-refused-cast/v8/RefusedCast.class"
     },
     {
       "blake3": "0a32b2ea235cc96196d96466dfd175576041522e8492f5537a48c58d73f69f3c",

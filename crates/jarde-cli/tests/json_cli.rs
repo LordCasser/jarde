@@ -1295,3 +1295,352 @@ fn a_recovery_request_that_asks_for_no_ssa_stops_inside_a_successful_response() 
         1
     );
 }
+
+// --- the P3-R8/P3-R9 samples: one input, two entry paths, one document --------------------------
+
+/// The committed P3-R8 sample: `(x + 1) + ++x` and its controls, compiled by javac 23.0.1
+/// `--release 8 -g:none` (the fixture's README states the command, the digests and every body).
+const NESTED_EVAL: &[u8] =
+    include_bytes!("../../../tests/fixtures/p3-nested-eval/v8/NestedEval.class");
+
+/// The committed P3-R9 sample: the refused casts and their controls, compiled the same way.
+const REFUSED_CAST: &[u8] =
+    include_bytes!("../../../tests/fixtures/p3-refused-cast/v8/RefusedCast.class");
+
+/// `External`: the class the refused reads of [`REFUSED_CAST`] name, shipped beside the sample the
+/// way `p3-handlers` ships `Res.class` beside `Guarded.class`. Reading its field is the effect the
+/// quote of `fieldCast` owes, and its static initializer is what that read can run.
+const EXTERNAL: &[u8] = include_bytes!("../../../tests/fixtures/p3-refused-cast/v8/External.class");
+
+/// `Holder`: the type of the read behind `External.holder`'s own read, shipped for the same reason.
+const HOLDER: &[u8] = include_bytes!("../../../tests/fixtures/p3-refused-cast/v8/Holder.class");
+
+/// The bytecode indexes the artifact's own quotes name, in the order each quote states them.
+///
+/// A quote is the answer's statement of which bytecode it could not write: `// @bytecode 8 0` is
+/// one statement naming the reader and the read it refused, and it is the machine-readable half of
+/// the reason written next to it. The same reading as `tests/p3_eval_context.rs`, applied to the
+/// text the CLI's response carries.
+fn quoted_bcis(text: &str) -> Vec<u32> {
+    text.lines()
+        .filter_map(|line| line.trim().strip_prefix("// @bytecode "))
+        .flat_map(|bcis| {
+            bcis.split_whitespace().map(|bci| {
+                bci.parse::<u32>()
+                    .expect("a quoted bytecode index is a number")
+            })
+        })
+        .collect()
+}
+
+/// One field record of the wire report, by the BCI of the instruction it names.
+fn wire_field_record(report: &Value, bci: u64) -> &Value {
+    report["fields"]
+        .as_array()
+        .expect("the report states its field records")
+        .iter()
+        .find(|record| record["bci"] == json!(bci))
+        .unwrap_or_else(|| {
+            panic!(
+                "the run read a field instruction at BCI {bci}: {}",
+                report["fields"]
+            )
+        })
+}
+
+/// The text the report's own segment table maps to one bytecode index, read from the wire document
+/// the way `RecoveryReport::text_of_bci` reads it from the library's report: every segment whose
+/// anchors mention the index, sliced out of the report's own `text`.
+fn wire_text_of_bci(report: &Value, bci: u64) -> Vec<String> {
+    let text = report["text"]
+        .as_str()
+        .expect("the report carries its text");
+    let mentions = |anchor: &Value| anchor["bci"] == json!(bci);
+    report["source_map"]["segments"]
+        .as_array()
+        .expect("the report carries the segment table of its text")
+        .iter()
+        .filter(|segment| {
+            let origin = &segment["origin"];
+            mentions(&origin["primary"])
+                || origin["derived"]
+                    .as_array()
+                    .expect("a segment states the anchors it presents")
+                    .iter()
+                    .any(mentions)
+        })
+        .map(|segment| {
+            let start = usize::try_from(segment["start"].as_u64().expect("segment start"))
+                .expect("segment start fits usize");
+            let end = usize::try_from(segment["end"].as_u64().expect("segment end"))
+                .expect("segment end fits usize");
+            text[start..end].to_string()
+        })
+        .collect()
+}
+
+/// One member of a committed sample through both entry paths of P3 1.3, on the same input: the
+/// bounded JSON CLI's `recover_method` and `Engine::recover_method` directly.
+///
+/// The caller writes the committed bytes to one temp path, and the library builds the request — its
+/// own `open` and `inspect_header` derive the snapshot and class-bytes identity both sides must
+/// name — exactly as [`recovery_matches_the_library_entry_field_by_field`] does. The comparison is
+/// the whole document of both halves the operation answers with, so a field this adapter dropped,
+/// reordered or rewrote would show up here even when no named plane below looks at that field. Only
+/// the wall clock is removed, because the two runs are two runs.
+fn one_recovery_through_both_entry_paths(path: &Path, name: &[u8], descriptor: &[u8]) -> Value {
+    let analysis = member_request(path, name, descriptor, AnalysisStage::ALL.to_vec());
+    let output = run_stdin(
+        &request(path, &analysis_limits(), recover_operation(&analysis)),
+        false,
+        false,
+    );
+    let value = assert_ok(&output, "recover_method");
+
+    let engine = Engine::new();
+    let mut budget = Budget::new(analysis_limits());
+    let snapshot = engine
+        .open(ArtifactInput::Path(path.to_path_buf()), &mut budget)
+        .expect("open the fixture directly");
+    let direct = engine
+        .recover_method(std::slice::from_ref(&snapshot), &analysis, &mut budget)
+        .expect("the same request through the library");
+
+    let member = String::from_utf8_lossy(name);
+    assert_eq!(
+        strip_elapsed_document(&value["result"]["report"]),
+        strip_elapsed_document(
+            &serde_json::to_value(direct.recovery()).expect("the recovery report serializes")
+        ),
+        "{member}: the adapter's document is the library's own report, field by field"
+    );
+    assert_eq!(
+        strip_elapsed_document(&value["result"]["analysis"]),
+        strip_elapsed_document(
+            &serde_json::to_value(direct.analysis()).expect("the analysis report serializes")
+        ),
+        "{member}: and the run it answers beside it is that same run's report"
+    );
+    value
+}
+
+/// The sorted, deduplicated set of bytecode indexes the text's quotes name.
+///
+/// Which instructions the answer accounts for is the acceptance these samples pin, so a quote that
+/// names an instruction it did not read fails here as much as one that dropped the read the refusal
+/// was about. `tests/p3_execution_comparison.rs` reads its own table of quoted indexes the same way.
+fn quoted_bci_set(text: &str) -> Vec<u32> {
+    let mut named = quoted_bcis(text);
+    named.sort_unstable();
+    named.dedup();
+    named
+}
+
+#[test]
+fn the_nested_eval_sample_crosses_the_wire_field_by_field() {
+    // P3-R8 through the bounded JSON CLI: the committed javac sample, the same request and the same
+    // comparison as `recovery_matches_the_library_entry_field_by_field` above, whose body is
+    // hand-written. `tests/p3_eval_context.rs` states these acceptance facts on the library's own
+    // report; here they are stated on the document the CLI answers with, member by member.
+    let temp = TempDir::new();
+    let class_path = temp.write("NestedEval.class", NESTED_EVAL);
+
+    let local = one_recovery_through_both_entry_paths(&class_path, b"nestedLocal", b"(I)I");
+    let plain = one_recovery_through_both_entry_paths(&class_path, b"nestedPlain", b"(I)I");
+    let call = one_recovery_through_both_entry_paths(&class_path, b"nestedCall", b"(I)I");
+    // The sample's own counter is covered by the same comparison: the equality must hold for a body
+    // written whole as well as for the refusals, or it would only be an equality about refusals.
+    one_recovery_through_both_entry_paths(&class_path, b"tick", b"(I)I");
+
+    // `nestedLocal` is `(x + 1) + ++x`: the load at BCI 0 is judged where the text that evaluates it
+    // lands (the `ireturn` at BCI 8), and the `iinc` at BCI 3 wrote slot 0 before that. The write
+    // the layer can prove is still written, the statement that would answer 17 where the original
+    // answers 16 is not, and the quote names the consumer and the read it refused.
+    let report = &local["result"]["report"];
+    let text = report["text"]
+        .as_str()
+        .expect("the report carries its text");
+    assert!(
+        text.contains("arg0 = arg0 + 1;"),
+        "the increment at BCI 3 is a write this layer writes:\n{text}"
+    );
+    assert!(
+        !text.contains("return arg0 + 1 + arg0;"),
+        "the load at BCI 0 no longer denotes what slot 0 holds at BCI 8:\n{text}"
+    );
+    assert_eq!(
+        quoted_bcis(text),
+        vec![8, 0],
+        "the quote states the `ireturn` at BCI 8 and the load at BCI 0 it could not name:\n{text}"
+    );
+    assert!(
+        text.contains("BCI 8") && text.contains("BCI 0"),
+        "and the reason states both bytecode indexes in words:\n{text}"
+    );
+    assert_eq!(report["representation"], "mixed", "{report}");
+    assert_eq!(report["quality"], "fallback", "{report}");
+    assert_eq!(
+        report["outcome"], "produced",
+        "a degraded body is still an answer: {report}"
+    );
+
+    // `nestedCall` is the same rule at a call argument: the deferred invocation at BCI 1 reads the
+    // load at BCI 0, and its value is consumed by the `ireturn` at BCI 9 after the increment wrote
+    // the slot, so `tick(arg0) + arg0` after it would call `tick` on the incremented value.
+    let report = &call["result"]["report"];
+    let text = report["text"]
+        .as_str()
+        .expect("the report carries its text");
+    assert!(
+        text.contains("arg0 = arg0 + 1;"),
+        "the increment at BCI 4 is a write this layer writes:\n{text}"
+    );
+    assert!(
+        !text.contains("tick(arg0)"),
+        "the argument the call reads is the value local 0 held at BCI 0:\n{text}"
+    );
+    assert_eq!(
+        quoted_bcis(text),
+        vec![9, 1],
+        "the quote states the `ireturn` at BCI 9 and the deferred invocation at BCI 1:\n{text}"
+    );
+    assert!(
+        text.contains("BCI 9") && text.contains("BCI 0"),
+        "and the reason states the consumer's bytecode and the read it refused in words:\n{text}"
+    );
+    assert_eq!(report["representation"], "mixed", "{report}");
+    assert_eq!(report["quality"], "fallback", "{report}");
+
+    // `nestedPlain` is the control: the same left-nested `+` shape with no write between the loads
+    // and the outer sum, so the names still hold what each load read and nothing is quoted.
+    let report = &plain["result"]["report"];
+    let text = report["text"]
+        .as_str()
+        .expect("the report carries its text");
+    assert!(
+        text.contains("return arg0 + 1 + arg0 + 2;"),
+        "both loads still denote what they read where the sum is evaluated:\n{text}"
+    );
+    assert!(
+        quoted_bci_set(text).is_empty(),
+        "nothing in this body had to be quoted:\n{text}"
+    );
+    assert_eq!(report["representation"], "java", "{report}");
+    assert_eq!(report["quality"], "structured", "{report}");
+}
+
+#[test]
+fn the_refused_cast_sample_crosses_the_wire_field_by_field() {
+    // P3-R9 through the bounded JSON CLI, with the same comparison as the case above.
+    // `tests/p3_eval_context.rs` is where these acceptance facts are stated on the library's report.
+    let temp = TempDir::new();
+    // The fixture ships as three classes: the sample and the two helpers its own classpath names,
+    // the way `p3-handlers` ships `Res.class` beside `Guarded.class`. The comparison compiles Java
+    // that names them; the recovery reads the sample itself and needs neither helper's body — the
+    // fixture's README states it, and `tests/p3_eval_context.rs` recovers these members from these
+    // same bytes alone — so the CLI's one input path is the sample, with the helpers written beside
+    // it as the fixture ships them.
+    let class_path = temp.write("RefusedCast.class", REFUSED_CAST);
+    temp.write("External.class", EXTERNAL);
+    temp.write("Holder.class", HOLDER);
+
+    let field =
+        one_recovery_through_both_entry_paths(&class_path, b"fieldCast", b"()Ljava/lang/String;");
+    let instance = one_recovery_through_both_entry_paths(
+        &class_path,
+        b"instanceCast",
+        b"(LExternal;)Ljava/lang/String;",
+    );
+    let chain =
+        one_recovery_through_both_entry_paths(&class_path, b"chainCast", b"()Ljava/lang/String;");
+    let left = one_recovery_through_both_entry_paths(&class_path, b"leftRead", b"()I");
+    let right = one_recovery_through_both_entry_paths(&class_path, b"rightRead", b"()I");
+    // The sample's own counter, covered by the same comparison.
+    one_recovery_through_both_entry_paths(&class_path, b"tick", b"()I");
+
+    // `fieldCast` is `getstatic External.value; checkcast; areturn`. The cast is refused, and the
+    // `getstatic` writes no statement of its own, so before the fix the quote named BCI 3 and 6
+    // alone: reading the field can run `External`'s static initializer, and a quote that does not
+    // name it has dropped an effect of the very bytecode it stands for.
+    let report = &field["result"]["report"];
+    let text = report["text"]
+        .as_str()
+        .expect("the report carries its text");
+    assert_eq!(
+        quoted_bci_set(text),
+        vec![0, 3, 6],
+        "the quotes name the `getstatic` at BCI 0, the `checkcast` at BCI 3 and the `areturn` at \
+         BCI 6, and no other instruction:\n{text}"
+    );
+    assert_eq!(report["representation"], "mixed", "{report}");
+    assert_eq!(report["quality"], "fallback", "{report}");
+    let read = wire_field_record(report, 0);
+    assert_eq!(read["access"], "read", "{read}");
+    assert_eq!(
+        read["presented"],
+        json!(true),
+        "`field@1` presented the static read at BCI 0: {read}"
+    );
+    assert!(
+        !wire_text_of_bci(report, 0).is_empty(),
+        "the read at BCI 0 is an anchor of the quote that accounts for it:\n{text}"
+    );
+
+    // `instanceCast` is `aload_0; getfield External.instance; checkcast; areturn`: the read at BCI 1
+    // dereferences the argument, so the quote names it to keep the failure it can throw.
+    let report = &instance["result"]["report"];
+    let text = report["text"]
+        .as_str()
+        .expect("the report carries its text");
+    assert_eq!(
+        quoted_bci_set(text),
+        vec![1, 4, 7],
+        "the quotes name the `getfield` at BCI 1 and the consumer at BCI 4/7, and no other \
+         instruction:\n{text}"
+    );
+    assert_eq!(report["representation"], "mixed", "{report}");
+    assert_eq!(report["quality"], "fallback", "{report}");
+
+    // `chainCast` is `getstatic External.holder; getfield Holder.value; checkcast; areturn`: naming
+    // the read the refusal consumed means naming the read behind it as well.
+    let report = &chain["result"]["report"];
+    let text = report["text"]
+        .as_str()
+        .expect("the report carries its text");
+    assert_eq!(
+        quoted_bci_set(text),
+        vec![0, 3, 6, 9],
+        "the quotes name both reads (BCI 0 and BCI 3), the refused cast (BCI 6) and the `areturn` \
+         (BCI 9), and no other instruction:\n{text}"
+    );
+    assert_eq!(report["representation"], "mixed", "{report}");
+    assert_eq!(report["quality"], "fallback", "{report}");
+
+    // `leftRead`/`rightRead` are the controls: a claimed static read composed with a deferred call,
+    // in both operand orders. Both stay written whole, with the call written exactly once, because
+    // naming an unaccounted read must not turn a written one into a refusal.
+    for (value, expected) in [
+        (&left, "return External.count + tick();"),
+        (&right, "return tick() + External.count;"),
+    ] {
+        let report = &value["result"]["report"];
+        let text = report["text"]
+            .as_str()
+            .expect("the report carries its text");
+        assert!(
+            text.contains(expected),
+            "the field read and the call are both written where the return reads them:\n{text}"
+        );
+        assert_eq!(
+            text.matches("tick(").count(),
+            1,
+            "the call is written exactly once:\n{text}"
+        );
+        assert!(
+            quoted_bci_set(text).is_empty(),
+            "this body presents every instruction it has:\n{text}"
+        );
+        assert_eq!(report["representation"], "java", "{report}");
+        assert_eq!(report["quality"], "structured", "{report}");
+    }
+}

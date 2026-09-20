@@ -143,6 +143,24 @@ struct Member {
 /// One class file of a sample's classpath: the name it is written under, and its bytes.
 type ClasspathFile = (&'static str, &'static [u8]);
 
+/// The committed driver of one sample: what the **original** class does, run in a controlled way.
+///
+/// A refusal may rest on an effect the original really performs — a static initializer that runs, the
+/// `NullPointerException` a field read throws, the value an increment changed — and asserting that
+/// from memory would be asserting the fixture's *intent* rather than its bytes. The driver is a real
+/// source beside the fixture (so the corpus fingerprint covers it) that the ignored test compiles
+/// with the sample on its classpath and runs as its own program; the lines it prints are asserted
+/// exactly, and the fixture's README records the run.
+struct Baseline {
+    /// The class the committed source declares, and the class `java` runs.
+    class: &'static str,
+    /// The committed source, read at compile time (`include_str!`, relative to this file): a driver
+    /// that is missing, renamed or emptied fails the build rather than quietly observing nothing.
+    source: &'static str,
+    /// What it prints, exactly, one line per observation.
+    lines: &'static [&'static str],
+}
+
 struct Sample {
     /// The row label: which fixture, which compiler, which flags.
     label: &'static str,
@@ -158,6 +176,20 @@ struct Sample {
     /// The sample's own counter, when it states one: it is printed around every call, which is how
     /// "how many times a call happened" is compared.
     counter: Option<&'static str>,
+    /// The members whose **count control** is worth measuring: a refused body whose written text
+    /// still performs the effect the count is about (P3-R2's `cast`, whose text calls `make()` once).
+    /// A refused body that quotes the effect itself has no count to compare — the fragment it would
+    /// be run as does not perform it — so it is not listed here, and what varies with the refusal is
+    /// measured by `baseline` on the original instead.
+    measured: &'static [&'static str],
+    /// The quoted bytecode each refused member must name, for the samples whose refusals exist to pin
+    /// *which* instructions the answer accounts for: `(member, the indexes its quotes state)`. The
+    /// set is compared exactly, so a quote that names an instruction it did not read fails here as
+    /// well as one that dropped the read the refusal was about.
+    quotes: &'static [(&'static str, &'static [u32])],
+    /// The committed baseline driver of this sample, when its refusals rest on observations of the
+    /// original class rather than on the recovered text.
+    baseline: Option<Baseline>,
     /// Every member this comparison classifies. A member the sample declares that is **not** named
     /// here fails the run: an unclassified member would be an uncovered one.
     members: &'static [Member],
@@ -194,6 +226,13 @@ const LOCAL_REWRITE: Sample = Sample {
         java: "static Object make() { return LocalRewrite.make(); }",
     }],
     counter: Some("LocalRewrite.calls"),
+    // R2's substance is the count of `make` calls the refused `cast` text makes; the other three
+    // refusals of this sample are counted for the same reason (their control compiles wherever the
+    // text still holds the statement the count is about, and the row states where it does not).
+    measured: &["post", "saved", "conditional", "cast"],
+    // The quotes of this sample are pinned by `tests/p3_local_rewrite.rs`, which needs no JDK.
+    quotes: &[],
+    baseline: None,
     members: &[
         Member {
             name: "post",
@@ -272,6 +311,9 @@ const SCOPE_NO_DEBUG: Sample = Sample {
     extends: None,
     scaffold: &[],
     counter: None,
+    measured: &[],
+    quotes: &[],
+    baseline: None,
     members: SCOPE_MEMBERS,
     point: "P3-R3 (a declaration hoisted above both arms compiles) and P3-R5 (`boolean` from the \
             descriptor; `arg2` is the category-2 parameter's own slot)",
@@ -285,6 +327,9 @@ const SCOPE_DEBUG: Sample = Sample {
     extends: None,
     scaffold: &[],
     counter: None,
+    measured: &[],
+    quotes: &[],
+    baseline: None,
     members: SCOPE_MEMBERS,
     point: "the same shapes with a `LocalVariableTable`: the wrapper's parameter names come from \
             the class file's own table (`b`, `seed`, `a`) instead of the ordinal the reader invents",
@@ -301,6 +346,9 @@ const GUARDED: Sample = Sample {
     extends: Some("Guarded"),
     scaffold: &[],
     counter: None,
+    measured: &[],
+    quotes: &[],
+    baseline: None,
     members: &[
         // P3-R5's argument side, closed: the `new@1` rule wrote `new Res(arg0, 0)` — an `int` constant
         // where the constructor's own descriptor declares `boolean` — until the shared argument path
@@ -410,6 +458,9 @@ const ECJ_V52: Sample = Sample {
     extends: None,
     scaffold: &[],
     counter: None,
+    measured: &[],
+    quotes: &[],
+    baseline: None,
     members: &[
         Member {
             name: "add",
@@ -439,6 +490,9 @@ const MISSING_DEPENDENCY: Sample = Sample {
     extends: None,
     scaffold: &[],
     counter: None,
+    measured: &[],
+    quotes: &[],
+    baseline: None,
     members: &[
         Member {
             name: "viaAbsentLibrary",
@@ -465,6 +519,9 @@ const fn flags(label: &'static str, bytes: &'static [u8]) -> Sample {
         extends: Some("Flags"),
         scaffold: &[],
         counter: Some("Flags.probes"),
+        measured: &[],
+        quotes: &[],
+        baseline: None,
         members: FLAGS_MEMBERS,
         point: "one source, several legal flag sets: the same shapes, and different debug evidence \
                 for them",
@@ -492,12 +549,129 @@ const FLAGS_PARAMETERS: Sample = flags(
 const FLAGS_SOURCE_TARGET: &[u8] =
     include_bytes!("fixtures/p3-corpus/v8-source-target/Flags.class");
 
+const NESTED_EVAL: Sample = Sample {
+    label: "p3-nested-eval/v8 (javac 23.0.1, --release 8 -g:none)",
+    class: "NestedEval",
+    bytes: include_bytes!("fixtures/p3-nested-eval/v8/NestedEval.class"),
+    classpath: &[],
+    extends: Some("NestedEval"),
+    scaffold: &[],
+    counter: Some("NestedEval.calls"),
+    // A refused body of this sample quotes the call it could not write, so the count control — which
+    // runs the *written* fragment and compares how often it moves the counter — has no count to
+    // compare: nothing of the effect is in the text. What the refusal rests on is the original's own
+    // answer, and `baseline` is where that is executed.
+    measured: &[],
+    quotes: &[("nestedLocal", &[8, 0]), ("nestedCall", &[9, 1])],
+    baseline: Some(Baseline {
+        class: "Baseline",
+        source: include_str!("fixtures/p3-nested-eval/Baseline.java"),
+        lines: &["nestedLocal(7)=16", "nestedCall(3)=7", "tick calls=1"],
+    }),
+    members: &[
+        Member {
+            name: "tick",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "nestedLocal",
+            expect: Expect::Quoted(None),
+        },
+        Member {
+            name: "nestedPlain",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "nestedCall",
+            expect: Expect::Quoted(None),
+        },
+    ],
+    point: "P3-R8: `(x + 1) + ++x` is refused because the load it needs is judged where the text is \
+            evaluated and the slot no longer holds it by then — the quote names the consumer and the \
+            read — while `(x + 1) + (x + 2)`, the same shape with no write in between, is written \
+            whole and executed (its trace is identical, with the counter moved once by `tick`)",
+};
+
+const REFUSED_CAST: Sample = Sample {
+    label: "p3-refused-cast/v8 (javac 23.0.1, --release 8 -g:none)",
+    class: "RefusedCast",
+    bytes: include_bytes!("fixtures/p3-refused-cast/v8/RefusedCast.class"),
+    classpath: &[
+        (
+            "External.class",
+            include_bytes!("fixtures/p3-refused-cast/v8/External.class"),
+        ),
+        (
+            "Holder.class",
+            include_bytes!("fixtures/p3-refused-cast/v8/Holder.class"),
+        ),
+    ],
+    extends: Some("RefusedCast"),
+    scaffold: &[],
+    counter: Some("RefusedCast.calls"),
+    // The three refused members quote the read and the cast rather than writing them, so the written
+    // fragments perform none of the reads: their evidence is the committed original, run by
+    // `baseline`, and the quotes' own BCIs (the reads at BCI 0/1/3 down to the class initializer).
+    measured: &[],
+    quotes: &[
+        ("fieldCast", &[0, 3, 6]),
+        ("instanceCast", &[1, 4, 7]),
+        ("chainCast", &[0, 3, 6, 9]),
+    ],
+    baseline: Some(Baseline {
+        class: "Baseline",
+        source: include_str!("fixtures/p3-refused-cast/Baseline.java"),
+        lines: &[
+            "fieldCast()=ok",
+            "External initializations=1",
+            "instanceCast(new External())=instance-ok",
+            "instanceCast(null)=java.lang.NullPointerException",
+            "chainCast()=chained",
+            "leftRead()=7",
+            "rightRead()=7",
+            "tick calls=3",
+        ],
+    }),
+    members: &[
+        Member {
+            name: "fieldCast",
+            expect: Expect::Quoted(None),
+        },
+        Member {
+            name: "instanceCast",
+            expect: Expect::Quoted(None),
+        },
+        Member {
+            name: "chainCast",
+            expect: Expect::Quoted(None),
+        },
+        Member {
+            name: "leftRead",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "rightRead",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "tick",
+            expect: Expect::Executed,
+        },
+    ],
+    point: "P3-R9: a refused cast keeps the observable producers its expression depended on — the \
+            `getstatic` that can run `External`'s static initializer (measured once by the driver), \
+            the `getfield` that can throw for a null receiver, and the read behind another read — \
+            while a claimed read composed with a deferred call stays written whole",
+};
+
 const REQUIRED: &[&Sample] = &[
     &LOCAL_REWRITE,
     &SCOPE_NO_DEBUG,
     &SCOPE_DEBUG,
     &GUARDED,
     &ECJ_V52,
+    &NESTED_EVAL,
+    &REFUSED_CAST,
 ];
 
 const CORPUS: &[&Sample] = &[
@@ -1106,6 +1280,8 @@ struct SampleOutcome {
     skipped: Vec<String>,
     executed: Vec<String>,
     counted: Vec<String>,
+    /// What the sample's committed baseline driver printed, when it states one.
+    baseline: Option<String>,
     trace_lines: usize,
     trace_identical: bool,
     trace: String,
@@ -1302,26 +1478,31 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
 
         // The count control: a body whose value the run refused is placed in the weakest
         // declaration that can hold it, and the calls that text makes are measured there. R2's
-        // substance is this count, and it is measured rather than counted in the text.
-        let count_control =
-            if sample.counter.is_some() && matches!(member.expect, Expect::Quoted(_)) {
-                let control_declaration =
-                    declaration_of(method, &parameters, &return_type, Some("void"));
-                let compiled = compile_wrapper(
-                    dir.path(),
-                    sample,
-                    name,
-                    descriptor,
-                    &control_declaration,
-                    &report.text,
-                );
-                if compiled.is_ok() {
-                    counted.push(name.clone());
-                }
-                Some(compiled.map(|_| ()))
-            } else {
-                None
-            };
+        // substance is this count, and it is measured rather than counted in the text. It is
+        // measured only for the refusals the sample names in `measured`: where the refusal quoted
+        // the effect itself, the fragment has no count to compare (and compiling it only to compare
+        // it against an effect it does not perform would be a comparison of two different programs).
+        let count_control = if sample.counter.is_some()
+            && matches!(member.expect, Expect::Quoted(_))
+            && sample.measured.contains(&name.as_str())
+        {
+            let control_declaration =
+                declaration_of(method, &parameters, &return_type, Some("void"));
+            let compiled = compile_wrapper(
+                dir.path(),
+                sample,
+                name,
+                descriptor,
+                &control_declaration,
+                &report.text,
+            );
+            if compiled.is_ok() {
+                counted.push(name.clone());
+            }
+            Some(compiled.map(|_| ()))
+        } else {
+            None
+        };
 
         let mut planned = Planned {
             name: name.clone(),
@@ -1399,6 +1580,29 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
                     );
                 }
             }
+        }
+
+        // The quote acceptance of a sample that exists to pin *which* instructions its refusals
+        // account for: the indexes the answer's own quotes name, deduplicated, are exactly the ones
+        // the table states. No fewer — a named read the quote dropped is an effect the artifact
+        // stopped accounting for — and no more, since a quote that names an instruction it did not
+        // read would be an anchor pointing at the wrong bytecode.
+        if let Some((_, expected)) = sample
+            .quotes
+            .iter()
+            .find(|(member, _)| *member == name.as_str())
+        {
+            let mut named = planned.quotes.clone();
+            named.sort_unstable();
+            named.dedup();
+            let mut expected = expected.to_vec();
+            expected.sort_unstable();
+            assert_eq!(
+                named, expected,
+                "{}: `{name}{descriptor}` must quote exactly the bytecode its refusal accounts \
+                 for: {:?}\n{}",
+                sample.label, expected, report.text
+            );
         }
 
         // The report's own account of a refusal: every bytecode index of a refused region is quoted
@@ -1504,6 +1708,10 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
         );
     }
 
+    // The original's own answers, executed: the refusals of this sample rest on effects its bytes
+    // really perform, and the driver observes them beside the classes the test wrote.
+    let baseline = run_baseline(sample, dir.path());
+
     let (trace_lines, trace_identical, trace) =
         compare_traces(sample, dir.path(), &rows, &executed, &counted);
 
@@ -1514,10 +1722,46 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
         skipped,
         executed,
         counted,
+        baseline,
         trace_lines,
         trace_identical,
         trace,
     }
+}
+
+/// Runs one sample's committed baseline driver beside the classes this test wrote, and answers with
+/// what it printed — or `None` when the sample states none.
+///
+/// The driver is a real Java source next to the fixture (`include_str!`), it is compiled with the
+/// sample on the classpath the way the wrappers are, and it prints one line per observation. The
+/// lines are asserted exactly: this is the original class's own behaviour, executed, and it is the
+/// only evidence a refusal that quotes an *effect* can rest on.
+fn run_baseline(sample: &Sample, dir: &Path) -> Option<String> {
+    let baseline = sample.baseline.as_ref()?;
+    let file = format!("{}.java", baseline.class);
+    fs::write(dir.join(&file), baseline.source)
+        .expect("write the baseline driver into the comparison directory");
+    javac(dir, &[&file]).unwrap_or_else(|message| {
+        panic!(
+            "{}: the committed baseline driver compiles beside the sample:\n{message}",
+            sample.label
+        )
+    });
+    let output = java(dir, baseline.class);
+    assert!(
+        output.status.success(),
+        "{}: the baseline driver runs:\n{}",
+        sample.label,
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let printed = String::from_utf8_lossy(&output.stdout).into_owned();
+    let lines: Vec<&str> = printed.lines().collect();
+    assert_eq!(
+        lines, baseline.lines,
+        "{}: the committed original answers what this comparison and the fixture's README record:\n{printed}",
+        sample.label
+    );
+    Some(printed)
 }
 
 /// The sample's declaration witness: every member's declaration, with a body that touches every
@@ -1636,6 +1880,14 @@ fn print_outcomes(outcomes: &[SampleOutcome]) {
         }
         for skip in &outcome.skipped {
             println!("- not wrapped: {skip}");
+        }
+        // The refusals that rest on the original's own behaviour: the committed driver's output, as
+        // the fixture's README records it.
+        if let Some(baseline) = &outcome.baseline {
+            println!("\nthe committed baseline driver printed:");
+            println!("```text");
+            print!("{baseline}");
+            println!("```");
         }
         println!(
             "The declaration of each member, as this comparison derived it from that run's own facts:"

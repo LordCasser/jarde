@@ -1,0 +1,494 @@
+//! P3 stage A acceptance: the **position** a nested expression's checks are taken at, and the
+//! producers a refused expression owes the answer.
+//!
+//! Two review findings are pinned here, both through the entry point the CLI calls
+//! ([`Engine::recover_method`]) over **real compiled samples** — the committed javac 23.0.1
+//! `--release 8 -g:none` classes under `tests/fixtures/p3-nested-eval/` and
+//! `tests/fixtures/p3-refused-cast/`, whose own READMEs state the command, the digests and the
+//! bytecode of every member:
+//!
+//! * **P3-R8.** `nestedLocal(I)I` is `iload_0; iconst_1; iadd; iinc 0,1; iload_0; iadd; ireturn`: the
+//!   outer `iadd` reads a value the `iload_0` at BCI **0** produced, and the `iinc` at BCI 3 writes
+//!   slot 0 *before* the outer sum is evaluated. The check that a slot's name denotes the value a
+//!   load read is therefore a statement about BCI **8** — where the generated text evaluates it —
+//!   and not about BCI 2, where the inner `iadd` was produced. Judging the load at the producer's
+//!   BCI passes it, and the artifact writes `return arg0 + 1 + arg0;` after `arg0 = arg0 + 1;`,
+//!   which answers 17 where `nestedLocal(7)` answers 16. The same rule is checked at the *call*
+//!   argument: `nestedCall(I)I` is `iload_0; invokestatic tick; iinc 0,1; iload_0; iadd; ireturn`,
+//!   and the text `tick(arg0) + arg0` after the increment calls `tick` on the incremented value.
+//!   The property here is that neither statement is written, that the write the layer can prove is
+//!   still written (`arg0 = arg0 + 1;`), and that the quote names the consumer *and* the read it
+//!   refused.
+//! * **P3-R9.** `fieldCast()Ljava/lang/String;` is `getstatic External.value; checkcast; areturn`.
+//!   The cast is refused, and the `getstatic` writes no statement of its own (a claimed field
+//!   *read* is a value: its text lands where it is consumed) — so before the fix the artifact
+//!   quoted BCI 3 and 6 alone and named BCI 0 nowhere, while `report.fields` still recorded that
+//!   read as `presented`. Running `External`'s static initializer is an observable effect of that
+//!   bytecode, so a quote that does not name it has dropped an effect. The instance and chain
+//!   shapes are the same rule: `instanceCast` is `aload_0; getfield External.instance; checkcast;
+//!   areturn`, whose read can throw (`instanceCast(null)`), and `chainCast` is `getstatic
+//!   External.holder; getfield Holder.value; checkcast; areturn`, where the walk must not stop at
+//!   the first read: the `getfield`'s own producer, the `getstatic` at BCI 0, is named too.
+//!
+//! The controls are what keep the fix from being "refuse every nested expression" and "quote every
+//! field read":
+//!
+//! * `nestedPlain(I)I` is `(x + 1) + (x + 2)`: the same nested-arithmetic shape with **no write
+//!   between the loads and the sum**, so both loads still hold their values where the text is
+//!   evaluated and the whole body must stay `Java`/`Structured` with the slot names;
+//! * `leftRead()` and `rightRead()` read a claimed static field and call once, in either order
+//!   (`External.count + tick()` and `tick() + External.count`): a field read composed with a
+//!   deferred call is presented, not quoted, and `tick` appears exactly once in each text — the
+//!   reasoning that *names* an unaccounted read must not turn a written one into a refusal.
+//!
+//! The names are the ones the declaration facts produce: the members are `static` and declare at
+//! most one `int` or `External` parameter, so slot 0 is named `arg0`; `-g:none` means the class
+//! states no debug name and no source name is invented.
+
+use jarde::*;
+use std::slice;
+
+/// The committed sample of P3-R8, compiled by javac 23.0.1 `--release 8 -g:none` (see the fixture's
+/// README).
+const NESTED: &[u8] = include_bytes!("fixtures/p3-nested-eval/v8/NestedEval.class");
+/// The committed sample of P3-R9, compiled the same way (see the fixture's README).
+const REFUSED: &[u8] = include_bytes!("fixtures/p3-refused-cast/v8/RefusedCast.class");
+
+fn limits() -> Limits {
+    Limits {
+        input_bytes: 1 << 20,
+        archive_entries: 1_000,
+        entry_bytes: 1 << 20,
+        read_bytes: 1 << 20,
+        class_bytes: 1 << 20,
+        attribute_bytes: 1 << 20,
+        code_bytes: 1 << 20,
+        result_items: 1 << 20,
+        output_bytes: 1 << 20,
+        class_headers: 10,
+        method_bodies: 10,
+        ir_items: 1 << 20,
+        ir_edges: 1 << 20,
+        analysis_steps: 1 << 20,
+        normalization_clones: 1 << 20,
+        nested_depth: 8,
+        dependency_depth: 4,
+        elapsed_millis: u64::MAX,
+    }
+}
+
+/// One caller domain rooted at the fixture's own snapshot, and nothing else: the simplest
+/// environment the library's validator accepts without a problem.
+fn environment(snapshot: &ArtifactSnapshot) -> ResolutionEnvironment {
+    let domain = LoadDomain {
+        loader: LoaderId("app".to_string()),
+        parent_loader: None,
+        delegation: DelegationPolicy::ParentFirst,
+        roots: vec![LoadRoot::Snapshot {
+            snapshot: snapshot.id().clone(),
+        }],
+        module_mode: ModuleMode::ClassPath,
+        external_override: RuntimeUncertainty::None,
+        runtime_transformation: RuntimeUncertainty::None,
+    };
+    ResolutionEnvironment {
+        runtime: RuntimeView {
+            physical: PhysicalView {
+                snapshot: snapshot.id().clone(),
+                scope: PhysicalScope::SnapshotAll,
+            },
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            load_domain: domain.clone(),
+        },
+        domains: vec![domain],
+        providers: Vec::new(),
+    }
+}
+
+/// The opened sample and the class identity the reader's own header read stated for it.
+struct Fixture {
+    snapshot: ArtifactSnapshot,
+    class_bytes: ClassBytesId,
+}
+
+/// Opens one committed sample and reads its header through the reader's own entry point, so that
+/// the members presented below are the ones the class declares rather than the ones this file
+/// claims.
+fn fixture(engine: &Engine, bytes: &[u8]) -> Fixture {
+    let mut budget = Budget::new(limits());
+    let snapshot = engine
+        .open(ArtifactInput::bytes(bytes.to_vec()), &mut budget)
+        .expect("the fixture opens as a standalone CLASS");
+    let inspected = engine
+        .inspect_header(
+            &snapshot,
+            ClassTarget::Root,
+            &mut budget,
+            InspectionMode::Strict,
+        )
+        .expect("the fixture's own header is readable");
+    Fixture {
+        snapshot,
+        class_bytes: inspected.source.class_bytes.clone(),
+    }
+}
+
+/// One recovery run over one member of a sample, through the entry point the CLI calls.
+fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -> RecoveryReport {
+    let request = MethodAnalysisRequest {
+        environment: environment(&fixture.snapshot),
+        method: PhysicalMethodId {
+            owner: PhysicalDefinitionId {
+                location: PhysicalClassLocation::StandaloneRoot {
+                    snapshot: fixture.snapshot.id().clone(),
+                },
+                class_bytes: fixture.class_bytes.clone(),
+                variant: PhysicalVariant::Base,
+            },
+            name: JvmBytes(name.to_vec()),
+            descriptor: JvmBytes(descriptor.to_vec()),
+        },
+        stages: AnalysisStage::ALL.to_vec(),
+    };
+    engine
+        .recover_method(
+            slice::from_ref(&fixture.snapshot),
+            &request,
+            &mut Budget::new(limits()),
+        )
+        .expect("a legal request is answered, not raised")
+        .recovery()
+        .clone()
+}
+
+/// The bytecode indexes the artifact's own quotes name, in the order each quote states them.
+///
+/// A quote is the answer's statement of which bytecode it could not write: `// @bytecode 8 0` is one
+/// statement naming the reader and the read it refused, and it is the machine-readable half of the
+/// reason written next to it.
+fn quoted_bcis(text: &str) -> Vec<u32> {
+    text.lines()
+        .filter_map(|line| line.trim().strip_prefix("// @bytecode "))
+        .flat_map(|bcis| {
+            bcis.split_whitespace().map(|bci| {
+                bci.parse::<u32>()
+                    .expect("a quoted bytecode index is a number")
+            })
+        })
+        .collect()
+}
+
+/// The member a field record names, spelled the way the artifact spells it (`External.value`).
+fn spelled(owner: &str, name: &str) -> String {
+    format!("{}.{}", owner.replace('/', "."), name)
+}
+
+/// Every presented field **read** of one run is accounted for by the artifact it came with: the text
+/// spells the member, or the source map answers for the instruction's own BCI.
+///
+/// This is the review's "`FieldRecord.presented` agrees with the artifact" as an assertion: a record
+/// that claims presentation while the quotes and the map account for nothing is a record about the
+/// run's *intent*, not about an answer a caller can use.
+fn presented_reads_are_accounted_for(member: &str, report: &RecoveryReport) {
+    for record in report
+        .fields
+        .iter()
+        .filter(|record| record.presented && record.access == "read")
+    {
+        assert!(
+            report.text.contains(&spelled(&record.owner, &record.name))
+                || !report.text_of_bci(record.bci).is_empty(),
+            "{member}: the field read at BCI {} is recorded as presented, and the artifact \
+             accounts for it nowhere: neither `{}` nor any text is mapped to that bytecode:\n{}",
+            record.bci,
+            spelled(&record.owner, &record.name),
+            report.text
+        );
+    }
+}
+
+/// The control that keeps the R8 fix from refusing every nested arithmetic, and the two controls
+/// that keep the R9 fix from quoting every field read.
+#[test]
+fn a_nested_expression_that_crosses_no_write_is_still_written() {
+    let engine = Engine::new();
+    let nested = fixture(&engine, NESTED);
+
+    // The control: the same left-nested `+` shape with no write between the two loads and the sum.
+    // Both loads still hold what they read where the text is evaluated, so nothing is refused.
+    let report = recover(&engine, &nested, b"nestedPlain", b"(I)I");
+    let text = &report.text;
+    assert!(
+        text.contains("return arg0 + 1 + arg0 + 2;"),
+        "nestedPlain is `(x + 1) + (x + 2)` and the slot still holds what each load read where the \
+         sum is evaluated, so the names are the right expressions:\n{text}"
+    );
+    assert!(
+        quoted_bcis(text).is_empty(),
+        "nothing in this body had to be quoted:\n{text}"
+    );
+    assert_eq!(report.representation, Representation::Java, "{report:?}");
+    assert_eq!(report.quality, Quality::Structured, "{report:?}");
+
+    // The two field-read controls: one claimed static read composed with one deferred call, in both
+    // orders. A read that *is* presented keeps its text, and the call it is composed with is written
+    // exactly once — naming an unaccounted read must not cost a written one its statement.
+    let refused = fixture(&engine, REFUSED);
+    for (member, expected) in [
+        (b"leftRead".as_slice(), "return External.count + tick();"),
+        (b"rightRead".as_slice(), "return tick() + External.count;"),
+    ] {
+        let report = recover(&engine, &refused, member, b"()I");
+        let text = &report.text;
+        let name = String::from_utf8_lossy(member);
+        assert!(
+            text.contains(expected),
+            "{name}: the field read and the call are both written where the return reads them:\n{text}"
+        );
+        assert_eq!(
+            text.matches("tick(").count(),
+            1,
+            "{name}: the call is written exactly once:\n{text}"
+        );
+        assert_eq!(report.representation, Representation::Java, "{report:?}");
+        assert_eq!(report.quality, Quality::Structured, "{report:?}");
+        assert!(
+            quoted_bcis(text).is_empty(),
+            "{name}: this body presents every instruction it has:\n{text}"
+        );
+        presented_reads_are_accounted_for(&name, &report);
+    }
+}
+
+/// P3-R8, at a local read: the check is taken where the generated text is evaluated, not where the
+/// value was produced.
+#[test]
+fn a_nested_arithmetic_is_checked_where_its_text_is_evaluated() {
+    let engine = Engine::new();
+    let fixture = fixture(&engine, NESTED);
+    let report = recover(&engine, &fixture, b"nestedLocal", b"(I)I");
+    let text = &report.text;
+
+    // The write the body really performs is still presented: this is a degraded read, not a body
+    // that was emptied to pass the test below.
+    assert!(
+        text.contains("arg0 = arg0 + 1;"),
+        "the increment at BCI 3 is a write this layer writes:\n{text}"
+    );
+    // The forbidden statement, and the reason it is forbidden: the outer `iadd` at BCI 7 reads the
+    // value the load at BCI 0 produced, and the `iinc` at BCI 3 wrote slot 0 before BCI 8 evaluates
+    // it. `arg0 + 1 + arg0` after `arg0 = arg0 + 1;` is `7 + 1 + 8`: the original `nestedLocal(7)`
+    // answers 16 and the written method would answer 17.
+    assert!(
+        !text.contains("return arg0 + 1 + arg0;"),
+        "the load at BCI 0 no longer denotes what slot 0 holds at BCI 8, so the return may not name \
+         the slot there: `nestedLocal(7)` is 16 and `return arg0 + 1 + arg0;` after \
+         `arg0 = arg0 + 1;` is 17:\n{text}"
+    );
+    // And the read it refused is not dropped silently: the quote names the consumer's own BCI next
+    // to the load's, which is the whole effect the statement it could not write would have carried.
+    let quoted = quoted_bcis(text);
+    assert!(
+        quoted.contains(&8) && quoted.contains(&0),
+        "the quote states the `ireturn` at BCI 8 and the load at BCI 0 it could not name: \
+         {quoted:?}\n{text}"
+    );
+    assert!(
+        text.contains("BCI 8") && text.contains("BCI 0"),
+        "and the reason states both bytecode indexes in words:\n{text}"
+    );
+    assert!(
+        !report.text_of_bci(0).is_empty(),
+        "the load's own bytecode is an anchor of the quote:\n{text}"
+    );
+    // The answer says of itself that it is not claiming Java for the whole body: part of it is
+    // quoted bytecode, which is what a refused read is. Before the fix this run claimed Java text
+    // with full structure and wrote the other program.
+    assert_eq!(report.representation, Representation::Mixed, "{report:?}");
+    assert_eq!(report.quality, Quality::Fallback, "{report:?}");
+    assert!(report.produced(), "a degraded body is still an answer");
+}
+
+/// P3-R8, at a call argument: the call's own BCI is where its statement is written, but the value it
+/// reads is evaluated where the *consumer* of its result is, and that is the position the argument's
+/// load is judged at.
+#[test]
+fn a_call_argument_is_checked_where_the_consuming_expression_is_evaluated() {
+    let engine = Engine::new();
+    let fixture = fixture(&engine, NESTED);
+    let report = recover(&engine, &fixture, b"nestedCall", b"(I)I");
+    let text = &report.text;
+
+    assert!(
+        text.contains("arg0 = arg0 + 1;"),
+        "the increment at BCI 4 is a write this layer writes:\n{text}"
+    );
+    // The call at BCI 1 reads the value the load at BCI 0 produced, and that load's value is not
+    // what slot 0 holds where the outer sum at BCI 8 is evaluated: `tick(arg0) + arg0` after
+    // `arg0 = arg0 + 1;` calls `tick` on 4 where `nestedCall(3)` calls it on 3 (`3 + 4` against
+    // `4 + 4`, so 7 against 8).
+    assert!(
+        !text.contains("tick(arg0)"),
+        "the argument the call reads is the value local 0 held at BCI 0, and the increment wrote \
+         the slot before the call's value is consumed: `tick(arg0) + arg0` after `arg0 = arg0 + 1;` \
+         is a different program than `nestedCall(3)`:\n{text}"
+    );
+    // The call is a producer whose statement was deferred to a reader that could not write it, so
+    // the quote names the call — and the read the call's argument could not be written from.
+    let quoted = quoted_bcis(text);
+    assert!(
+        quoted.contains(&9) && quoted.contains(&1),
+        "the quote states the `ireturn` at BCI 9 and the deferred invocation at BCI 1: \
+         {quoted:?}\n{text}"
+    );
+    assert!(
+        text.contains("BCI 9") && text.contains("BCI 0"),
+        "and the reason states the consumer's bytecode and the read it refused in words:\n{text}"
+    );
+    assert_eq!(report.representation, Representation::Mixed, "{report:?}");
+    assert_eq!(report.quality, Quality::Fallback, "{report:?}");
+}
+
+/// P3-R9, static read: the quote names the `getstatic` whose class initialization it can run.
+#[test]
+fn a_refused_static_read_keeps_the_class_initialization_it_can_run() {
+    let engine = Engine::new();
+    let fixture = fixture(&engine, REFUSED);
+    let report = recover(&engine, &fixture, b"fieldCast", b"()Ljava/lang/String;");
+    let text = &report.text;
+
+    // The bytecode is `getstatic External.value; checkcast; areturn`: reading the field can run
+    // `External`'s static initializer, which is an effect the answer owes whoever calls it — the
+    // fixture's driver shows the initializer really runs once for the original member.
+    let quoted = quoted_bcis(text);
+    for bci in [0u32, 3, 6] {
+        assert!(
+            quoted.contains(&bci),
+            "the quote names the `getstatic` at BCI 0, the `checkcast` at BCI 3 and the `areturn` \
+             at BCI 6: {quoted:?}\n{text}"
+        );
+    }
+    assert!(
+        !report.text_of_bci(0).is_empty(),
+        "the read at BCI 0 is an anchor of the quote that accounts for it:\n{text}"
+    );
+    let read = report
+        .fields
+        .iter()
+        .find(|record| record.bci == 0)
+        .expect("the run read the field instruction at BCI 0");
+    assert!(
+        read.presented,
+        "`field@1` presented the static read at BCI 0: {read:?}"
+    );
+    presented_reads_are_accounted_for("fieldCast", &report);
+    assert_eq!(report.representation, Representation::Mixed, "{report:?}");
+    assert_eq!(report.quality, Quality::Fallback, "{report:?}");
+}
+
+/// P3-R9, instance read: the quote names the `getfield` whose `NullPointerException` it can throw.
+#[test]
+fn a_refused_instance_read_keeps_the_null_pointer_it_can_throw() {
+    let engine = Engine::new();
+    let fixture = fixture(&engine, REFUSED);
+    let report = recover(
+        &engine,
+        &fixture,
+        b"instanceCast",
+        b"(LExternal;)Ljava/lang/String;",
+    );
+    let text = &report.text;
+
+    // The bytecode is `aload_0; getfield External.instance; checkcast; areturn`: the read at BCI 1
+    // dereferences the argument, so the original throws for a null receiver — the fixture's driver
+    // runs it — and a quote that dropped the read would drop that observable failure too.
+    let quoted = quoted_bcis(text);
+    for bci in [1u32, 4, 7] {
+        assert!(
+            quoted.contains(&bci),
+            "the quote names the `getfield` at BCI 1 and the consumer at BCI 4/7: {quoted:?}\n{text}"
+        );
+    }
+    assert!(
+        !report.text_of_bci(1).is_empty(),
+        "the read at BCI 1 is an anchor of the quote that accounts for it:\n{text}"
+    );
+    let read = report
+        .fields
+        .iter()
+        .find(|record| record.bci == 1)
+        .expect("the run read the field instruction at BCI 1");
+    assert!(
+        read.presented && !read.is_static,
+        "`field@1` presented the instance read at BCI 1: {read:?}"
+    );
+    presented_reads_are_accounted_for("instanceCast", &report);
+    assert_eq!(report.representation, Representation::Mixed, "{report:?}");
+    assert_eq!(report.quality, Quality::Fallback, "{report:?}");
+}
+
+/// P3-R9, a read behind a read: the walk does not stop at the first read it names.
+#[test]
+fn a_read_behind_another_read_is_named_too() {
+    let engine = Engine::new();
+    let fixture = fixture(&engine, REFUSED);
+    let report = recover(&engine, &fixture, b"chainCast", b"()Ljava/lang/String;");
+    let text = &report.text;
+
+    // `getstatic External.holder; getfield Holder.value; checkcast; areturn`: the `getfield` at BCI 3
+    // reads the value the `getstatic` at BCI 0 produced, so naming the read that the refusal consumed
+    // means naming the read behind it as well — and the `areturn` at BCI 9 is the consumer.
+    let quoted = quoted_bcis(text);
+    for bci in [0u32, 3, 6, 9] {
+        assert!(
+            quoted.contains(&bci),
+            "the quote names both reads (BCI 0 and BCI 3), the refused cast (BCI 6) and the \
+             `areturn` (BCI 9): {quoted:?}\n{text}"
+        );
+    }
+    for bci in [0u32, 3] {
+        assert!(
+            !report.text_of_bci(bci).is_empty(),
+            "the read at BCI {bci} is an anchor of the quote that accounts for it:\n{text}"
+        );
+    }
+    presented_reads_are_accounted_for("chainCast", &report);
+    assert_eq!(report.representation, Representation::Mixed, "{report:?}");
+    assert_eq!(report.quality, Quality::Fallback, "{report:?}");
+}
+
+/// The report-wide half of P3-R9: no member of either sample may claim a presented field read that
+/// the artifact it came with accounts for nowhere.
+#[test]
+fn every_presented_field_read_is_accounted_for_by_its_artifact() {
+    let engine = Engine::new();
+    let nested = fixture(&engine, NESTED);
+    for (name, descriptor) in [
+        (b"nestedLocal".as_slice(), b"(I)I".as_slice()),
+        (b"nestedPlain".as_slice(), b"(I)I".as_slice()),
+        (b"nestedCall".as_slice(), b"(I)I".as_slice()),
+        (b"tick".as_slice(), b"(I)I".as_slice()),
+    ] {
+        let report = recover(&engine, &nested, name, descriptor);
+        presented_reads_are_accounted_for(&String::from_utf8_lossy(name), &report);
+    }
+    let refused = fixture(&engine, REFUSED);
+    for (name, descriptor) in [
+        (b"fieldCast".as_slice(), b"()Ljava/lang/String;".as_slice()),
+        (
+            b"instanceCast".as_slice(),
+            b"(LExternal;)Ljava/lang/String;".as_slice(),
+        ),
+        (b"chainCast".as_slice(), b"()Ljava/lang/String;".as_slice()),
+        (b"leftRead".as_slice(), b"()I".as_slice()),
+        (b"rightRead".as_slice(), b"()I".as_slice()),
+        (b"tick".as_slice(), b"()I".as_slice()),
+    ] {
+        let report = recover(&engine, &refused, name, descriptor);
+        presented_reads_are_accounted_for(&String::from_utf8_lossy(name), &report);
+    }
+}
