@@ -4,7 +4,7 @@ P0–P5 与分层已按各阶段范围归档：P2 29/29、分层 7/7、P3 12/12�
 
 相关入口：[OpenSpec 规划入口](README.md)、[技术栈与依赖选型](dependencies.md)、[架构验收与阶段映射](acceptance.md)。
 
-**最新完成判定（代码构建基线 `a4dcd96`，文档 `b5557f6`）：benchmark 缺陷尚未全部关闭。** [本次复测](completion-review.md) 确认指定崩溃方法已返回停止报告、`Mod.inverse32` 已保留算术分组；boolean 返回/比较与数组类型仍失败，另有调用 receiver 分组导致可编译但算错的反例。Produced/content 契约已交付；`ArrayUtils.removeElement` 的具体 receiver 指控经字节码核对为本类静态调用，不能据此认定引擎丢 receiver。性能专项仍 0/22。
+**最新完成判定（代码 `8807fa5`，文档 `98e3747`）：原反例修复成立，仍有四项已复现问题。** [第三轮复核](completion-review.md) 确认 receiver、boolean 返回/调用条件、数组声明原反例均已修正；但整数二元比较出现 boolean 化回归，跨分支提升声明仍漏掉 boolean 局部证据。另外，concat 的数值前缀转换仍算错，深拼接在 debug 构建仍会 abort；release 主线程对本轮 2048–15000 次 append 完成，不能混淆构建边界。Produced/content 已交付，性能专项仍 0/22。
 
 历史 R1/P1（名称选择丢失搜索停止）与 R2/P2（类视图顶层漏汇总 body 停止）已由 [preserve-task-operation-stops](changes/archive/2026-09-20-preserve-task-operation-stops/tasks.md)（5/5，`8586356`）关闭。`8586356` 保留为当时冻结的性能比较臂，不代表后续恢复修正已被包含；新的正式候选须在声明缺口和范围后重新冻结。
 
@@ -44,12 +44,16 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 | 顺序 | 范围 | 完成条件 |
 | --- | --- | --- |
 | 已关闭 | 停止传播、指定递归 abort、`inverse32` 二元分组、Produced/content 读法 | 分别由 `8586356`、`4f62e26`、`445a277` 及契约归档交付；不推广为任意输入安全或完整源码恢复 |
-| 已关闭 | 调用 receiver 分组（`fa6dc6e` 实现，见其归档验证） | `(a + b).substring(1)` 现恢复为分组文本，执行对照 `("a","bc")` 得 `bc`；位置枚举覆盖 printer 每个写入点，javac 不可达位置由单测见证 | `(a + b).substring(1)` 输入 `("a", "bc")` 的恢复值须为 `"bc"`，不能为 `"ac"`；补齐实际可达上下文及编译/行为对照，保留 origin 与求值次数 |
-| 已关闭 | boolean 上下文定型（`5a8c36a` 实现，见其归档验证） | `Z` 返回写 `true`/`false`、条件不再对 boolean 调用结果写 `!= 0`、由已证明值写入的局部声明为 `boolean`；三个站点合入同一 change，`int` 对照不变 | 以 descriptor 和本次值证据定型；`isSCSV` 不返回 int，boolean 调用结果不与 0 比较；无足够证据时可靠拒绝，不一揽子改写类型系统 |
-| 已关闭 | 数组类型拼写（`66bd2d0` 实现，见其归档验证） | `[B`/`[Ljava.lang.String;`/`[[I` 现拼成 `byte[]`/`java.lang.String[]`/`int[][]`；类型位置枚举覆盖五个写入点，无法拼成合法类型时拒绝 | `[B`、引用数组与多维数组在类型位置写合法 Java 或明确拒绝；固定 `hash2FieldElement` 及受控声明样例，不把 descriptor 直接输出 |
+| 原反例已关闭 | 调用 receiver 分组（`fa6dc6e`） | `(a + b).substring(1)` 保持分组，输入 `("a","bc")` 得 `bc`；不重开该反例 |
+| 原反例已关闭 | boolean 返回/调用条件、就地局部声明（`5a8c36a`） | 原样例通过，但不能概括为所有 int 对照不变或所有提升声明已完成，见 T2/T3 |
+| 原反例已关闭 | 数组类型拼写（`66bd2d0`） | `byte[]`、引用数组及多维数组原样例通过；既有记录边界保留，本轮未确认新的正常数组声明回归 |
+| 1 / T1 | 深拼接的递归发射，待独立修正 | 当前 debug 的 2048 次 append 必须返回产物或明确停止报告，不得 SIGABRT；同时验证构建、发射和释放，不用增大线程栈替代界限。debug/release 分别记录 |
+| 已关闭 | 整数二元比较回归（`f4d1044` 实现，见其归档验证） | `1 == n`、`0 < n`、`1 < n` 保持整数文本，覆盖常量左右位置与比较方向；boolean 原反例仍通过 |
+| 3 / T3 | 提升声明的 boolean 证据，待独立修正 | 已声明 boolean 局部跨分支复制后仍按一致证据定型，或可靠拒绝；不得生成 `int local3` 再赋入 boolean 的矛盾文本 |
+| 4 / T4 | concat 数值前缀转换，待独立修正 | `append(1).append(2).append("!")` 的恢复执行结果为 `"12!"`；保留 append 转换和求值顺序，不能仅补括号 |
 | 核实 | 历史 clone/toString 报错 | 逐条保存 opcode、owner、descriptor 和包装器上下文；`ArrayUtils.removeElement` 是静态 helper 正向对照，不作为丢 receiver 反例 |
-| 4 | 重新冻结 benchmark 候选 | 保留 `85828c4`、`8586356` 的历史身份；新候选记录修正范围、未闭合反例、构建与输入摘要，不把不同版本结果相互替代 |
-| 5 | `optimize-demand-workloads`，0/22 | 调查可继续；正式对照先 G0/W1–W5 与 O1 已交付证据复核，再 O2–O8 调查/准入；不混入上述正确性实现 |
+| 5 | 重新冻结 benchmark 候选 | 保留历史版本身份；新候选登记 T1–T4 的处置、构建与输入摘要，不把不同版本/构建配置结果相互替代 |
+| 6 | `optimize-demand-workloads`，0/22 | 调查可继续；正式对照先 G0/W1–W5 与 O1 已交付证据复核，再 O2–O8 调查/准入；不混入上述正确性实现 |
 
 ## 已关闭的恢复正确性收尾
 
