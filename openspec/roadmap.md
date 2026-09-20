@@ -54,7 +54,7 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 | 顺序 | Change | 状态 |
 | --- | --- | --- |
 | 1 | [expose-recovery-content](changes/archive/2026-09-20-expose-recovery-content/proposal.md) | 已归档（4/4，`7d095ce`）：产物内容三值分类，评测分母可对账 |
-| 2 | [carry-declaring-class-evidence](changes/carry-declaring-class-evidence/proposal.md) | 实施中：同源 driver class name/flags 交接 |
+| 2 | [carry-declaring-class-evidence](changes/archive/2026-09-20-carry-declaring-class-evidence/proposal.md) | 已归档（4/4，`618de49`）：同源 driver class name/flags 交接，声明 form 由本次读取决定 |
 | 3 | [bound-container-lookup](changes/bound-container-lookup/proposal.md) | 待实施：定向 container 访问、有界复用与容量核算 |
 | 4 | [bind-prefixed-load-roots](changes/bind-prefixed-load-roots/proposal.md) | 待实施：container+raw prefix 的 root 与 CLI 树枚举 |
 

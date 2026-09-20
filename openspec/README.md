@@ -18,7 +18,7 @@ P0–P5 与分层已按各阶段范围归档：P2 29/29、分层 7/7、P3 12/12�
 | P5 | [p5-measured-optimization](changes/archive/2026-09-20-p5-measured-optimization/proposal.md) | 10/10，`cd6f2f0` 归档；cache 默认 off，性能阈值未定 |
 | 收尾 | [close-recovery-correctness-gaps](changes/archive/2026-09-20-close-recovery-correctness-gaps/proposal.md) | 4/4，`fd0aae8` 归档；R8/R9 关闭，反例与正向对照进入永久语料 |
 | Benchmark 批次 1/4 | [expose-recovery-content](changes/archive/2026-09-20-expose-recovery-content/proposal.md) | 4/4，`7d095ce` 归档；`RecoveryReport.content` 三值闭合 |
-| Benchmark 批次 2/4 | [carry-declaring-class-evidence](changes/carry-declaring-class-evidence/proposal.md) | 实施中；driver class name/flags 同源交接 |
+| Benchmark 批次 2/4 | [carry-declaring-class-evidence](changes/archive/2026-09-20-carry-declaring-class-evidence/proposal.md) | 4/4，`618de49` 归档；driver class name/flags 同源交接 |
 | Benchmark 批次 3/4 | [bound-container-lookup](changes/bound-container-lookup/proposal.md) | 待实施；定向 container 访问与有界复用 |
 | Benchmark 批次 4/4 | [bind-prefixed-load-roots](changes/bind-prefixed-load-roots/proposal.md) | 待实施；container+prefix root 与 CLI 树枚举 |
 
