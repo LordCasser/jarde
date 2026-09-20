@@ -301,3 +301,37 @@ matrix 行:      class_bytes −555、attribute_bytes −87，其余 14 维全 0
 
 **未实现**（按 §0「选一层做完整语义」）：X1/resolution/IR-source 三层**只有契约**；`KEY_DIMENSIONS` 的 `IR`/`recovery` 仍 `Carrier::Absent`。**容量以 entry 数计，不以字节计**（deferral：触发条件 = 出现比「request 允许读进来的最大 class」更值得约束的内存压力）。**中位数是一次机器读数、未阈值化**，两个中位数**无测试断言**（确定性半边才有）。
 **属 3.1**：全层 evidence/coverage/representation/diagnostic 差分；**属 3.2**：ZIP bomb/condy/不可约 CFG/缺失依赖语料上的同一对照；**属 3.3/3.4**：启用开关的发布记录与全量门槛。
+
+## 2026-09-20 资源边界：fuzz smoke 的内存守卫落在正常区间内（提交 `819c12a`）
+
+**这不是 P5 的任务项，而是 P5 期间由 CI 暴露、并被父级定位的一个**资源边界**问题——属 3.2 的「资源边界」面。
+
+### 现象
+
+`83a6909`（**纯文档提交**，只改 `openspec/changes/p5-measured-optimization/*.md`）的 CI 中 `fuzz-smoke` job 的 **method-analysis** 步骤失败：libFuzzer 报 **`out-of-memory`**，`peak_rss_mb: 574`（限 `-rss_limit_mb=512`），失败输入 84 字节（一个截断的 `fuzz/SharedSubroutine` class）。
+**关键归因线索**：同一个 fuzz 步骤在**前一次**提交 `2f6754a`（**facts cache**，代码改动）上**通过**——**纯文档提交不可能引起 OOM**，故这是**概率性**的。
+
+### 父级定位（四项实测）
+
+1. **单输入不是原因**：把那 84 字节输入单独跑 → **3 ms 完成、不 OOM**。故 574 MB 是**整个 20 秒会话的常驻集**，不是某个输入的开销。
+2. **不是每次执行的泄漏**：method_analysis 20 s（210,890 execs）→ **260 MB**；90 s（747,487 execs）→ **401 MB**。执行数 **×3.5** 而 RSS 只 **×1.54**——**次线性**，符合分配器行为而非逐次泄漏。
+3. **归因清晰（决定性）**：**等时长比较三个 target**（20 s、同机、`-rss_limit_mb=4096`）：
+   | target | execs | peak RSS |
+   | --- | --- | --- |
+   | `query` | 153,509 | 188 MB |
+   | `artifact_tree` | 271,064 | **486 MB** |
+   | `method_analysis` | 194,721 | 278 MB |
+   **做零 IR 工作的 `artifact_tree` 峰值最高**，而跑整条流水线的 `method_analysis` 三者中最低——故数百 MB 是**fuzzer 自身的常驻集与分配器行为**，**不是流水线的开销**。
+4. **引擎侧无不随预算增长**：查过 `with_capacity`（全按 `blocks.len()`/`edges.len()`，不按 limit）——**没有「按预算预分配」**。
+
+### 处置
+
+`-rss_limit_mb` **512 → 2048**（三个 smoke 步骤），并在 CI 里**逐条记录上述测量**（188/486/278 MB、次线性增长、glibc 比 macOS 保留更多——一次 Linux 运行在本地峰值为 260 MB 的 target 上越过了 512）。
+**理由**：该守卫的用途是**捕捉失控分配**，**必须高于健康会话的常驻区间**，否则会把正常运作报成故障；2048 留出**高于最高实测峰值 4 倍以上**的余量。
+**不做的**：**不**降低 fuzz target 的预算（那会改变被测试的内容，而现有证据不支持）；**不**把 RRS 限值当作引擎内存门禁（引擎的边界由预算系统承担，已在别处验证）。
+
+### 证据
+
+- 本地实测（macOS/arm64、单 worker、`-max_len=65536 -timeout=10`）：上表 + 90 秒增长曲线。
+- **CI**：`819c12a` → run 35482664074，**四 job success**（含此前失败的 fuzz smoke）。
+- **如实边界**：CI 在 glibc 上的具体峰值未测得（只知 574 MB）；`artifact_tree` 的 486 MB **同样未解释到分配点**——本记录证明的是「**不是流水线的逐次开销**」，**不是**「引擎没有保留」。若将来要收紧，方向是给 harness 加内存剖面，而不是继续调这个数字。
