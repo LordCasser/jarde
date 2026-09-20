@@ -43,7 +43,11 @@ reader 侧新增有限：`classfile::{class_member_facts, ClassMemberFacts, Memb
 5. **候选读取之间的取消在黑盒测试中不可达**：token 只在 poll/charge 边界被观察，测试覆盖「取消的范围扫描」（空前缀、`Cancelled`、无 provenance 的诊断）与「带已确认前缀的预算停止」，两者合起来构成前缀 + 非 Complete 的证据。
 6. 其他自定取舍：类列举用 `unconfirmed` 列表、条目用 `member_table`（比塞一个索引更忠实）；列举 coverage 合并 reader 的物理范围与一条列举进度范围；成员列举计一次 `class_headers` 尝试（该维度不得少报一次 Header 读取）。
 
-## 门禁
+## 归档后修正（由下一个 change 的全量门禁发现）
+
+`tests/navigation.rs::a_budget_stop_keeps_the_confirmed_prefix` 原本把停止的 `ExecutionReport` 整体与期望值比较，其中包含 `usage.elapsed_millis`——正是确定性要求排除的那一个观测字段。该用例在 `add-task-oriented-cli` 的门禁全量运行中失败过一次（左 `elapsed_millis: 0`、右 `1`），随后在提交 `85828c4` 中改为只对该字段做归一化（新增本文件内的 `without_observed_elapsed` helper），其余字段仍逐项比较；该二进制连跑 6 次全绿，随后两次全量运行均 1249 passed / 0 failed。
+
+这与 `carry-declaring-class-evidence` 中修的同类假红是同一个失败模式（比较整份报告时带上墙钟），两处现在都按 `recovery-validation` 的确定性要求排除该字段。测试断言本身未被放宽：停止的原因与全部计数字段仍在比较范围内。
 
 | 门禁 | 结果 |
 | --- | --- |

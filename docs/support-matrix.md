@@ -1,6 +1,6 @@
 # 当前五维支持矩阵
 
-当前复核边界（2026-09-20，`fd0aae8`）：P0–P5 与分层均已归档；P2/分层归档 `7a5f994`，P3 `250fe1f`，P4 `88416ab`，P5 `cd6f2f0`。`cd6f2f0` 复核出的两条 P1 已关闭：嵌套表达式按生成文本的实际求值位置校验，fallback 保留被拒表达式依赖的字段读取、字段链与物理 origin，见 [收尾验证](../openspec/changes/archive/2026-09-20-close-recovery-correctness-gaps/verification.md)。已有受控 javac/执行对照与固定提交门禁通过；生产 verifier、自动编译和普遍语义等价证明仍未实现。
+当前复核边界（2026-09-20，`85828c4`）：P0–P5 与分层均已归档；P2/分层归档 `7a5f994`，P3 `250fe1f`，P4 `88416ab`，P5 `cd6f2f0`。此后完成两批：**benchmark 批次**（`fd0aae8` 关闭 R8/R9，`7d095ce` 产物内容分类，`2428752`… 见下）与**易用性三阶段**（导航列举、任务导向库操作、任务链 CLI），全部归档并各自通过固定提交门禁。已有受控 javac/执行对照、定向 container 访问与显式前缀加载位置；生产 verifier、自动编译和普遍语义等价证明仍未实现。
 
 本页是当前用户可见能力状态的单一事实源。P0 的验收要求以[已生效主规格](../openspec/specs/)和[归档 tasks](../openspec/changes/archive/2026-09-17-establish-p0-foundation/tasks.md)为准；P1 的增量以[归档 tasks](../openspec/changes/archive/2026-09-17-p1-query-xref/tasks.md)和[verification](../openspec/changes/archive/2026-09-17-p1-query-xref/verification.md)为准；P2 的解析、方法 IR 与方法分析报告以主规格 `demand-resolver`、`jvm-ir`、`conservative-output` 与 [verification](../openspec/changes/archive/2026-09-19-p2-jvm-ir/verification.md) 为准。这里只描述实际实现，不是未来路线承诺。
 
