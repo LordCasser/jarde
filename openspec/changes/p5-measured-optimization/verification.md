@@ -335,3 +335,65 @@ matrix 行:      class_bytes −555、attribute_bytes −87，其余 14 维全 0
 - 本地实测（macOS/arm64、单 worker、`-max_len=65536 -timeout=10`）：上表 + 90 秒增长曲线。
 - **CI**：`819c12a` → run 35482664074，**四 job success**（含此前失败的 fuzz smoke）。
 - **如实边界**：CI 在 glibc 上的具体峰值未测得（只知 574 MB）；`artifact_tree` 的 486 MB **同样未解释到分配点**——本记录证明的是「**不是流水线的逐次开销**」，**不是**「引擎没有保留」。若将来要收紧，方向是给 harness 加内存剖面，而不是继续调这个数字。
+
+## 2026-09-20 3.1 + 3.2：差分门禁与对抗语料回归（提交 `6ca0cc2`）
+
+**改动面只有两个测试文件**（父级独立复核：`crates/`、`src/`、`openspec/`、`Cargo.toml`/`Cargo.lock` **零改动**）——本片是**门禁与证据**，不是实现。
+
+### 差分门禁的形状
+
+`plane_comparison(plane, &Comparison) -> PlaneComparison`（`Compared(bool)` / `NoObject(&'static str)`）把规格的**八面**逐条映射到值：
+**evidence** = **去 charge 的文档** fingerprint；**representation** = 同一文档（仅恢复行有）；**coverage**；**diagnostics**；**snapshot/view identity** = 新增 `Verdicts.identity`（scope/view/profile/providers）；**peak memory proxy** = 新增 `Verdicts.peaks`（**只有两个真高水位** `nested_depth`/`dependency_depth`；其余是累计 charge，只作 delta 报告）；**cancellation** = `status`；**budget results** = 新增 `Verdicts.termination` + coverage。**名单外的面名直接 `panic!`**（防止门禁静默漏面）。
+**阻断默认启用 = `blocking_difference`**：任一行任一 `Compared(false)` 即 `Err(理由 + 哪一面)`；`enablement_allowed` 另拒「没有第二条路径」。`Candidate` 新增 `default_state`，今天三项**全部 `Disabled`**。
+**门禁测试 `a_candidate_may_be_enabled_only_while_its_differential_is_equivalent` 逐候选**跑差分——`Unmeasured` 的两个候选打印原因，`Measured` 的 `facts-cache/index` 跑**全部**行；判定**不依赖 state**（实测候选一旦差分不等即红）。**父级独立复核**：该用例通过。
+
+### 「无对照对象」的如实清单（**本片的核心诚实项**）
+
+- **逐行**：`representation` 在 query/resolution 行上是 `NoObject`（该层发布 item、不发布源码），由恢复行承担；**测试同时断言「有对象的行必须 Compared、无对象的行必须 NoObject」**，防止静默缺席。
+- **整体**（`NO_SECOND_PATH_TODAY`，逐条原因实跑打印）：index 路径、parallel 路径、merged/single-flight 路径、**P4 modern 事实面**（矩阵无一行问 `ModernFacts`）、**真峰值 RSS**（无 allocator 仪表）——五项**今天只有一个值**，**不是被跳过**。
+
+### 五类语料回归（十行 × 三跑 × 八面，off/on 全 equal）
+
+| 语料 | 行 | 终止与范围断言（实跑） |
+| --- | --- | --- |
+| ZIP bomb | `zip-bomb/understated-entry`（自建：central+descriptor **谎报** uncompressed=1、流实为 8 KiB） | `partial` + `{"dimension":"entry_bytes","kind":"budget_exceeded"}` + scanned/skipped 非空 |
+| condy 图 | `condy-graph/shared-subgraph`（Dynamic 链 + 两入口共享 bootstrap entry） | `complete`；含 `bootstrap_edge`+`bootstrap_argument` |
+| 不可约 CFG | `irreducible-cfg/guarded-suppressedCatching`（**提交的** `p3-handlers/v8/Guarded.class`） | `complete`；含 `jre_region_irreducible` |
+| **A13 对照** | `irreducible-cfg/guarded-one`（**同一类**的可呈现成员） | `complete`；`"representation":"java"` |
+| 缺失依赖 | `missing-dependency/{unresolved,resolved,negative}` | `unresolved_dependency` / `"state":"resolved"` / `"state":"missing"`+依赖清空 |
+| 取消（解压） | `cancelled-under-decompression/nested`（提交的 `nested.jar`） | `cancelled` + 未建立 ordinal 进 skipped |
+| 取消（IR） | `budget-under-ir/guarded-one`（`analysis_steps:4`） | `partial` + `{"dimension":"analysis_steps",…}` |
+| 取消（IR） | `cancelled-under-ir/guarded-one` | `cancelled`；三维 coverage 全 `not_requested`（**「未处理」如实、不伪装完成**） |
+
+存储**确实在回路里**（非取消行断言 `consultations>0 && hits>0`；取消行断言 `Cancelled`）。
+
+### A13/A14/A18 逐条
+
+- **A13**：off/on 两侧，`guarded-one`（呈现）与 `guarded-suppressedCatching`（拒答）**同类并存**、四平面分离；resolution 面 `resolved` 与 `missing` **同类并存**；`unresolved` 行证明**缺失依赖不变否定**。
+- **A14**：四条停止行在两侧都给出**已扫描范围**与**终止原因**，且 `exit != complete`；`partial` 行三维 coverage 至少一维非 `complete_within_schema`。
+- **A18**：**本片补**跨快照隔离（**2.3 未覆盖，父级在派单里点名要求**）——`one_store_serves_two_snapshots_without_answering_either_with_the_other` 三段：(a) 两个快照持**不同内容**共用一个 store，各自等于自己的 direct 运行、`entries==2`；(b) **同内容不同 origin** 的两快照共享一个 entry、各自仍发布**自己的** origin/身份；(c) **取消的请求不留任何东西给另一个快照**。token/cursor 半引用既有的 `p1_query_api.rs`。
+**父级独立证伪**：把**内容从 key 里拿掉**（空 digest、长度 0）→ **恰好该用例红**，消息即 `the second snapshot was answered with facts read from the first one: the store is not keyed by the content it holds (A18's cross-snapshot isolation)`；还原后校验 OK。
+
+### 实现者三组证伪
+
+① cache **改变 evidence** → 3 红（门禁指名 `plane evidence`）；② **跨快照污染** → A18 用例红（published item 的 `constant_pool_index` 4 vs 3、span 42 vs 37）；③ **取消被报成 Complete** —— 分两个方向，**这一对是本片最有价值的方法学记录**：
+- **③a 引擎侧对称地**把 `Error::Cancelled` 出版为 `Complete` → **取消压力用例红**，但**差分本身仍判「相等」**（两侧同样错）。**如实记录**：「差分抓不到**对称**的语义错误，抓到它的是每行自己的 `exit`/终止原因断言，**二者缺一不可**」。
+- **③b 只丢 cache-on 侧的取消** → 用例与**门禁同时红**（面 `cancellation` DIFFERENT）——即差分**确实阻断**这样一个不对称差异。
+
+### 两处机制性限制（本片发现，写进代码文档）
+
+① **取消不可能被 cache「吞掉」**：引擎每次 cache 咨询**之前**都已 poll 过读取路径，故那种 bug **无法产生**；能产生并演示的是**配置不对称**的终止状态丢失。② **差分对对称错误判相等**（见 ③a）。
+
+### 被修正的既有断言（1 处，无放宽）
+
+`Comparison::equivalent()`：原含 `verdicts.fingerprint` → 新为 `evidence && order && coverage && diagnostics && identity && peaks && termination`。**原因**：`fingerprint` **含 charge 记录**，而 `Cold and warm results` 列举的**必须相等平面里没有资源**（charge 正是缓存**应当**移动的一半）。**未放宽**：唯一既有调用者（warm→warm）**仍单独断言** `warm_pair.verdicts.fingerprint`；含 charge 的整档 fingerprint **仍被比较、仍打印**；新增的 identity/peaks/termination 是把比较面**扩到规格原文**。`tests/` 的 diff **删除行数为 1**，其余全部新增。
+
+### 证据
+
+全量 **1113 passed / 0 failed / 5 ignored**（1109 → **+4**：p5_benchmark +3、p5_facts_cache +1；**无既有用例改红或改绿**）；fmt 与 clippy 1.98.1 干净；`openspec validate --all --strict` 16 passed；两个 CI example exit 0；分层三包中 `jarde-java` **0** 次；锁文件两条 exit 0；**未新增依赖**。
+**CI**：`6ca0cc2` → 见下。
+
+### 未完成（如实）
+
+**`NO_SECOND_PATH_TODAY` 五条仍无第二条路径**（index/parallel/merged、P4 modern 面、真 RSS）；`KEY_DIMENSIONS` 的 IR/recovery 仍 `Carrier::Absent`；容量仍按 entry 数计。
+**属 3.3**：把「今天默认 off、门槛未定（决策 5）、测得范围与未决阈值」写成发布记录——本片只提供**可执行门禁与实跑数字**（**未阈值化**：十行的墙钟未断言）。**属 3.4**：文档同步与最终门禁归档。
