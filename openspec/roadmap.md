@@ -46,7 +46,7 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 | 已关闭 | 停止传播、指定递归 abort、`inverse32` 二元分组、Produced/content 读法 | 分别由 `8586356`、`4f62e26`、`445a277` 及契约归档交付；不推广为任意输入安全或完整源码恢复 |
 | 已关闭 | 调用 receiver 分组（`fa6dc6e` 实现，见其归档验证） | `(a + b).substring(1)` 现恢复为分组文本，执行对照 `("a","bc")` 得 `bc`；位置枚举覆盖 printer 每个写入点，javac 不可达位置由单测见证 | `(a + b).substring(1)` 输入 `("a", "bc")` 的恢复值须为 `"bc"`，不能为 `"ac"`；补齐实际可达上下文及编译/行为对照，保留 origin 与求值次数 |
 | 已关闭 | boolean 上下文定型（`5a8c36a` 实现，见其归档验证） | `Z` 返回写 `true`/`false`、条件不再对 boolean 调用结果写 `!= 0`、由已证明值写入的局部声明为 `boolean`；三个站点合入同一 change，`int` 对照不变 | 以 descriptor 和本次值证据定型；`isSCSV` 不返回 int，boolean 调用结果不与 0 比较；无足够证据时可靠拒绝，不一揽子改写类型系统 |
-| 3 | [spell-array-types](changes/spell-array-types/proposal.md)，已规划 | `[B`、引用数组与多维数组在类型位置写合法 Java 或明确拒绝；固定 `hash2FieldElement` 及受控声明样例，不把 descriptor 直接输出 |
+| 已关闭 | 数组类型拼写（`66bd2d0` 实现，见其归档验证） | `[B`/`[Ljava.lang.String;`/`[[I` 现拼成 `byte[]`/`java.lang.String[]`/`int[][]`；类型位置枚举覆盖五个写入点，无法拼成合法类型时拒绝 | `[B`、引用数组与多维数组在类型位置写合法 Java 或明确拒绝；固定 `hash2FieldElement` 及受控声明样例，不把 descriptor 直接输出 |
 | 核实 | 历史 clone/toString 报错 | 逐条保存 opcode、owner、descriptor 和包装器上下文；`ArrayUtils.removeElement` 是静态 helper 正向对照，不作为丢 receiver 反例 |
 | 4 | 重新冻结 benchmark 候选 | 保留 `85828c4`、`8586356` 的历史身份；新候选记录修正范围、未闭合反例、构建与输入摘要，不把不同版本结果相互替代 |
 | 5 | `optimize-demand-workloads`，0/22 | 调查可继续；正式对照先 G0/W1–W5 与 O1 已交付证据复核，再 O2–O8 调查/准入；不混入上述正确性实现 |
