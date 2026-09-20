@@ -24,6 +24,12 @@
 //!   today. Two of those dimensions have no carrier at all, which is part of why no key type is
 //!   built (see "The decisions tasks 2.1 and 2.2 ask for").
 //!
+//! The **container** half of the cache — directed access along an origin chain and the bounded
+//! reuse of a container's verified facts — is measured by `tests/p5_container_lookup.rs`, which
+//! carries its own fixtures, its off/cold/warm/capacity comparison and the two fingerprints. This
+//! file keeps the cache-state census below (`the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler`),
+//! so the set of sources that may name a cache handle is checked in one place.
+//!
 //! ```text
 //! verify:  cargo test --test p5_benchmark --locked
 //! measure: cargo test --test p5_benchmark --locked -- --ignored --nocapture p5_repeated_direct_baseline
@@ -1679,13 +1685,14 @@ const REFERENCE_CONCURRENCY: &str = "1: no parallel scheduler exists (P5 2.x own
 
 /// The configuration the cache-on row really runs in: the label is this literal, and the test that
 /// compares the two paths asserts it equals the label the handle itself describes
-/// ([`cache_context`]). The entry count is the row's own capacity, and the identity is this build's.
-const CACHE_ON: &str = "on: facts cache (registry 71 entry format 1), capacity 64 entries";
+/// ([`cache_context`]). Both bounds are the row's own, and the identity is this build's.
+const CACHE_ON: &str =
+    "on: facts cache (registry 71 entry format 1), capacity 64 entries / 8388608 retained bytes";
 
-/// The entries a cache-on row is allowed to hold. Every class of the corpus fits; the bound is
-/// declared rather than convenient, because an unbounded store is the state a benchmark would grow
-/// into without saying so.
-const CACHE_CAPACITY: usize = 64;
+/// What a cache-on row may hold: 64 answers, and 8 MiB of retained weight. Every class of the
+/// corpus fits; the bounds are declared rather than convenient, because an unbounded store is the
+/// state a benchmark would grow into without saying so.
+const CACHE_CAPACITY: FactsCapacity = FactsCapacity::new(64, 8 * 1024 * 1024);
 
 /// A fresh cache for one row, under this build's identity.
 fn facts_cache() -> FactsCache {
@@ -3083,15 +3090,17 @@ fn the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler() {
     assert_eq!(
         naming,
         [
+            "crates/jarde-reader/src/artifact.rs",
             "crates/jarde-reader/src/budget.rs",
             "crates/jarde-reader/src/classfile.rs",
             "crates/jarde-reader/src/lib.rs",
             "src/lib.rs",
         ],
-        "the cache is named in {naming:?}, which is not the budget that carries a handle, the two \
-         read entries that consult it, the module declaration and the facade's re-export: a file \
-         outside that set has grown a second path into the cache. (The module that declares it names \
-         no module path, which is why it is not in this list: the declaration is checked above.)"
+        "the cache is named in {naming:?}, which is not the budget that carries a handle, the read \
+         entries that consult it (the class-file facts and the directed container access), the \
+         module declaration and the facade's re-export: a file outside that set has grown a second \
+         path into the cache. (The module that declares it names no module path, which is why it is \
+         not in this list: the declaration is checked above.)"
     );
 
     // (3) Nothing in the engine switches it on.

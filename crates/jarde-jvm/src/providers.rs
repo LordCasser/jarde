@@ -69,15 +69,13 @@
 
 use crate::environment::{EnvironmentProblemCode, ResolutionEnvironment};
 use jarde_reader::artifact::{ArtifactKind, ArtifactSnapshot, PhysicalEntry};
-use jarde_reader::budget::{
-    Budget, BudgetDimension, CountedBudgetDimension, Limits, UsageSnapshot,
-};
+use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{ClassFacts, class_facts};
 use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
-    ClassBytesId, ContainerOrigin, Diagnostic, DiagnosticSeverity, Digest, ExecutionReport,
-    JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalEntryId, PhysicalVariant,
-    SnapshotId, TerminationReason, physical_variant_for_path,
+    ClassBytesId, ContainerId, ContainerOrigin, Diagnostic, DiagnosticSeverity, Digest, JvmBytes,
+    PhysicalClassLocation, PhysicalDefinitionId, PhysicalEntryId, PhysicalVariant, SnapshotId,
+    physical_variant_for_path,
 };
 use jarde_reader::view::{DelegationPolicy, LoadDomain, LoadRoot, LoaderId, ModuleMode};
 use std::collections::VecDeque;
@@ -1614,25 +1612,35 @@ fn probe_root(
     }
 }
 
-/// The raw-name candidates of a ZIP root.
+/// The raw-name candidates of a ZIP snapshot's own container.
 ///
-/// The listing is the existing `snapshot.enumerate` path, so its `archive_entries` and
-/// `result_items` accounting is unchanged and 2.1 builds no index of its own.
+/// A snapshot is one container — its root — so this is the directed access with the root origin:
+/// the container's central directory is parsed once and the name is looked up in the locator built
+/// from it, exactly as it is for a nested container. A top-level ZIP and a nested JAR differ in
+/// *which* container is addressed, never in how it is read, and neither path enumerates a
+/// container the request did not name.
 fn zip_candidates(
     snapshot: &ArtifactSnapshot,
     entry_name: &[u8],
     label: &str,
     budget: &mut Budget,
 ) -> Result<Vec<PhysicalEntry>> {
-    let report = snapshot.enumerate(budget)?;
-    require_complete_listing(budget, &report.execution, &report.diagnostics, label)?;
-    Ok(matching_entries(report.entries, entry_name))
+    let origin = ContainerOrigin {
+        snapshot: snapshot.id().clone(),
+        root_container: ContainerId("root".into()),
+        steps: Vec::new(),
+    };
+    candidates_at(snapshot, &origin, entry_name, label, budget)
 }
 
 /// The raw-name candidates of one artifact-tree root container.
 ///
 /// The position is the declared container itself: entries of nested containers are separate
-/// positions and are searched only when a loader declares them as its own root.
+/// positions and are searched only when a loader declares them as their own root. Only the
+/// container and the ancestor chain that reaches it are read, so an unrelated sibling — however
+/// many there are, and whatever state it is in — is neither materialized nor reported here. The
+/// explicit whole-tree enumeration keeps reporting every container it finds; the two paths have
+/// deliberately different coverage and a local result never claims whole-tree completeness.
 fn tree_candidates(
     snapshot: &ArtifactSnapshot,
     root: &ContainerOrigin,
@@ -1640,38 +1648,20 @@ fn tree_candidates(
     label: &str,
     budget: &mut Budget,
 ) -> Result<Vec<PhysicalEntry>> {
-    let report = snapshot.enumerate_artifact_tree(budget)?;
-    let Some(container) = report
-        .containers
-        .iter()
-        .find(|container| container.origin == *root)
-    else {
-        // A complete enumeration proves this snapshot has no such container, so the declared
-        // position holds no candidate; an incomplete one cannot prove it, and reading it as
-        // "the name is not here" would be a guess.
-        require_complete_listing(budget, &report.execution, &report.diagnostics, label)?;
-        return Ok(Vec::new());
-    };
-    require_complete_listing(budget, &container.execution, &report.diagnostics, label)?;
-    Ok(container
-        .entries
-        .iter()
-        .filter(|entry| entry.id.raw_name.0 == entry_name)
-        .cloned()
-        .collect())
+    candidates_at(snapshot, root, entry_name, label, budget)
 }
 
-/// The listing's raw-name candidates, in the listing's own order.
-///
-/// The rule is P1's candidate discipline: byte-exact, case-sensitive equality with
-/// `internal_name + ".class"`, container order and entry ordinal preserved. Nothing is
-/// normalized, so a `Foo.class` entry is never a candidate for `foo`; a directory name ends
-/// with `/` and can therefore never equal a class entry name.
-fn matching_entries(entries: Vec<PhysicalEntry>, entry_name: &[u8]) -> Vec<PhysicalEntry> {
-    entries
-        .into_iter()
-        .filter(|entry| entry.id.raw_name.0 == entry_name)
-        .collect()
+/// One directed container lookup, with the declared position named in any refusal.
+fn candidates_at(
+    snapshot: &ArtifactSnapshot,
+    origin: &ContainerOrigin,
+    entry_name: &[u8],
+    label: &str,
+    budget: &mut Budget,
+) -> Result<Vec<PhysicalEntry>> {
+    snapshot
+        .container_candidates(origin, entry_name, budget)
+        .map_err(|error| at_origin(error, label))
 }
 
 /// Decides one position from the candidates it really holds.
@@ -1902,39 +1892,25 @@ pub(crate) struct DefinitionContent {
 
 /// The listed entry one definition names, so its bytes can be read.
 ///
-/// A flat entry comes from the snapshot's own listing and a nested one from the container that
-/// holds it. Both listings have to be complete: an incomplete listing cannot prove that the
-/// entry is absent, and reading its prefix as "the definition is gone" would be a guess.
+/// The identity already carries the container, the ordinal and the raw name, so the snapshot's own
+/// directed access answers at that coordinate: the container that holds the entry is reached along
+/// its real ancestor chain and the record at that ordinal is the one returned. Nothing enumerates
+/// the artifact tree, so an unrelated container is not materialized to read this one, and nothing
+/// is read from the entry's bytes here — the read that follows re-checks the record and verifies
+/// the bytes themselves.
+///
+/// `content_not_provided` keeps its meaning from the listing era: it says the provided snapshot
+/// has no entry at this coordinate, which a complete directory proves. An incomplete one is a
+/// refusal, not an absence, and the directed access answers that before this returns.
 fn listed_entry(
     snapshot: &ArtifactSnapshot,
     entry: &PhysicalEntryId,
     label: &str,
     budget: &mut Budget,
 ) -> Result<PhysicalEntry> {
-    if entry.origin.steps.is_empty() {
-        let report = snapshot.enumerate(budget)?;
-        require_complete_listing(budget, &report.execution, &report.diagnostics, label)?;
-        return report
-            .entries
-            .into_iter()
-            .find(|candidate| candidate.id == *entry)
-            .ok_or_else(|| missing_entry(label));
-    }
-    let report = snapshot.enumerate_artifact_tree(budget)?;
-    let Some(container) = report
-        .containers
-        .iter()
-        .find(|container| container.origin == entry.origin)
-    else {
-        require_complete_listing(budget, &report.execution, &report.diagnostics, label)?;
-        return Err(missing_entry(label));
-    };
-    require_complete_listing(budget, &container.execution, &report.diagnostics, label)?;
-    container
-        .entries
-        .iter()
-        .find(|candidate| candidate.id == *entry)
-        .cloned()
+    snapshot
+        .container_record(entry, budget)
+        .map_err(|error| at_origin(error, label))?
         .ok_or_else(|| missing_entry(label))
 }
 
@@ -2018,111 +1994,6 @@ fn definition_label(definition: &PhysicalDefinitionId) -> String {
         PhysicalClassLocation::StandaloneRoot { snapshot } => format!(
             "the standalone CLASS definition of snapshot `{}`",
             snapshot.0
-        ),
-    }
-}
-
-/// A listing that stopped early cannot decide a position.
-///
-/// The listing keeps its own evidence (execution reason and diagnostics); the lookup propagates
-/// the same refusal as an `Err`, so the report layer maps one plane per cause: a budget stop
-/// stays a budget stop, a cancellation stays a cancellation, and a structural failure keeps the
-/// code of the diagnostic that names the damage. The search never reads a stopped listing as
-/// "this root has no such name".
-fn require_complete_listing(
-    budget: &Budget,
-    execution: &ExecutionReport,
-    diagnostics: &[Diagnostic],
-    label: &str,
-) -> Result<()> {
-    let reason = match execution {
-        ExecutionReport::Complete { .. } => return Ok(()),
-        ExecutionReport::Partial { reason, .. } | ExecutionReport::Failed { reason, .. } => reason,
-        ExecutionReport::Cancelled { .. } => {
-            return Err(Error::Cancelled {
-                reason: listing_message(diagnostics, label),
-            });
-        }
-    };
-    Err(match reason {
-        TerminationReason::BudgetExceeded { dimension } => budget_refusal(budget, *dimension),
-        TerminationReason::Error { code } => {
-            Error::invalid_input(code.clone(), listing_message(diagnostics, label))
-        }
-        TerminationReason::Unsupported { code } => {
-            Error::unsupported(code.clone(), listing_message(diagnostics, label))
-        }
-    })
-}
-
-/// The refusal a stopped listing stands for, with the numbers the listing hit.
-///
-/// The stopped listing already charged its dimension to the limit, so the limit and usage the
-/// budget holds are the evidence the listing stopped with.
-fn budget_refusal(budget: &Budget, dimension: BudgetDimension) -> Error {
-    let limits = budget.limits();
-    let usage = budget.usage();
-    let (limit, consumed) = dimension_evidence(limits, &usage, dimension);
-    Error::BudgetExceeded {
-        dimension,
-        limit,
-        consumed,
-        requested: 1,
-    }
-}
-
-/// Limit and usage of one dimension, read from its own slots.
-///
-/// Every dimension has its own arm, so a dimension added later fails to compile here instead of
-/// silently reporting another dimension's numbers. The counted ones read the counted table, the
-/// three high-water ones their own high-water slots.
-fn dimension_evidence(
-    limits: &Limits,
-    usage: &UsageSnapshot,
-    dimension: BudgetDimension,
-) -> (u64, u64) {
-    let counted = |dimension| {
-        (
-            limits.counted_limit(dimension),
-            usage.counted_usage(dimension),
-        )
-    };
-    match dimension {
-        BudgetDimension::InputBytes => counted(CountedBudgetDimension::InputBytes),
-        BudgetDimension::ArchiveEntries => counted(CountedBudgetDimension::ArchiveEntries),
-        BudgetDimension::EntryBytes => counted(CountedBudgetDimension::EntryBytes),
-        BudgetDimension::ReadBytes => counted(CountedBudgetDimension::ReadBytes),
-        BudgetDimension::ClassBytes => counted(CountedBudgetDimension::ClassBytes),
-        BudgetDimension::AttributeBytes => counted(CountedBudgetDimension::AttributeBytes),
-        BudgetDimension::CodeBytes => counted(CountedBudgetDimension::CodeBytes),
-        BudgetDimension::ResultItems => counted(CountedBudgetDimension::ResultItems),
-        BudgetDimension::OutputBytes => counted(CountedBudgetDimension::OutputBytes),
-        BudgetDimension::ClassHeaders => counted(CountedBudgetDimension::ClassHeaders),
-        BudgetDimension::MethodBodies => counted(CountedBudgetDimension::MethodBodies),
-        BudgetDimension::IrItems => counted(CountedBudgetDimension::IrItems),
-        BudgetDimension::IrEdges => counted(CountedBudgetDimension::IrEdges),
-        BudgetDimension::AnalysisSteps => counted(CountedBudgetDimension::AnalysisSteps),
-        BudgetDimension::NormalizationClones => {
-            counted(CountedBudgetDimension::NormalizationClones)
-        }
-        BudgetDimension::NestedDepth => (limits.nested_depth, usage.nested_depth),
-        BudgetDimension::DependencyDepth => (limits.dependency_depth, usage.dependency_depth),
-        BudgetDimension::ElapsedMillis => (limits.elapsed_millis, usage.elapsed_millis),
-    }
-}
-
-/// Message of a stopped listing: the position stays undecided, and the listing's own last
-/// diagnostic (the one that names the stop) is kept in the text.
-fn listing_message(diagnostics: &[Diagnostic], label: &str) -> String {
-    match diagnostics.last() {
-        Some(diagnostic) => format!(
-            "{label} could not be listed completely ({}: {}); the search position stays \
-             undecided and the lookup does not continue",
-            diagnostic.code, diagnostic.message
-        ),
-        None => format!(
-            "{label} could not be listed completely; the search position stays undecided and \
-             the lookup does not continue"
         ),
     }
 }
@@ -2252,7 +2123,7 @@ pub(crate) fn escaped(raw: &[u8]) -> String {
 mod tests {
     use super::*;
     use jarde_reader::artifact::ArtifactInput;
-    use jarde_reader::budget::{CancellationToken, Limits};
+    use jarde_reader::budget::{BudgetDimension, CancellationToken, Limits};
     use jarde_reader::view::{
         LayoutMode, ModuleMode, MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile,
         RuntimeUncertainty, RuntimeView,

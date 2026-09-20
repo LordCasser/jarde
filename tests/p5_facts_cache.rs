@@ -35,7 +35,9 @@
 //! The **cold/warm comparison** of a whole published result, its fingerprint and its resource
 //! deltas lives in `tests/p5_benchmark.rs`, over the rows and the comparison report of tasks 1.2 and
 //! 1.3: that is where a second path is judged. This file judges the layer itself, through the
-//! reader's and the engine's own entry points.
+//! reader's and the engine's own entry points. The **container** product of the same store — the
+//! directed access, its raw-name locator, its dual bounds and the request limits a hit obeys — is
+//! judged the same way in `tests/p5_container_lookup.rs`.
 
 use jarde::*;
 use rawzip::{CompressionMethod, ZipArchiveWriter, path::EntryPath};
@@ -85,8 +87,11 @@ fn limits_with(class_bytes: u64, result_items: u64) -> Limits {
 }
 
 /// A fresh cache holding up to `capacity` entries, read under this build's identity.
+///
+/// The byte bound is left untouched (`u64::MAX`): these cases are about the entry limit, and the
+/// product of a class parse is always a handful of bytes.
 fn cache(capacity: usize) -> FactsCache {
-    FactsCache::current(capacity)
+    FactsCache::current(FactsCapacity::new(capacity, u64::MAX))
 }
 
 /// The cheapest class file the reader accepts, with `this_class` set to `this_class`.

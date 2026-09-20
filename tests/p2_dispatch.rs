@@ -2192,15 +2192,18 @@ fn the_range_enumerates_each_name_once() {
         0,
         "the first occurrence of the name in range order is the one the order resolves to"
     );
-    // The bill of this whole request, pinned: four listings of this tree — each one charging its
-    // five entries, its two containers and its nested-archive candidate, and three of them
-    // standing behind the three header reads this range demands — the declaration's own warning
-    // and the one published candidate. 34 is the *measured* sum of that work on this fixture, a
-    // recorded pin rather than a number derived from this sentence. The second half of the pin is
-    // the boundary: one unit less and the run stops at that very candidate, so a second
+    // The bill of this whole request, pinned: the name is located at the two declared positions
+    // the range walks — the tree's root container and its nested JAR — and each location charges
+    // the records of the container it really read, plus the declaration's own warning and the one
+    // published candidate. It was 34 while a location was a whole-tree listing that also charged
+    // two containers and a nested-archive candidate per listing; those charges are gone because a
+    // lookup no longer produces a listing nobody asked for, and the records the directories really
+    // contain are charged on both paths. 22 is the *measured* sum of the directed access on this
+    // fixture, a recorded pin rather than a number derived from this sentence. The second half of
+    // the pin is the boundary: one unit less and the run stops at that very candidate, so a second
     // publication of the same name could not have been paid for by this number.
     let bill = result_items(&report);
-    assert_eq!(bill, 34, "{:?}", report.execution);
+    assert_eq!(bill, 22, "{:?}", report.execution);
     let mut budget = Budget::new(Limits {
         result_items: bill - 1,
         ..limits()

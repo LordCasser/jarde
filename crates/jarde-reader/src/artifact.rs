@@ -4,6 +4,25 @@
 //! entry read. `EntryBytes` counts logical bytes produced by decompression, and
 //! `OutputBytes` independently accounts for the owned result buffer returned to
 //! the caller. The latter two intentionally describe different resources.
+//!
+//! ## Two ways to read a container
+//!
+//! `enumerate` reads one container's whole directory and publishes it as the request's own
+//! result; `enumerate_artifact_tree` walks every container the tree holds and reports each one,
+//! damage included. Both keep their coverage.
+//!
+//! `container_candidates` and `container_record` are the **directed** access: they address one
+//! container by its origin, walk only the ancestors that reach it, parse that container's own
+//! complete central directory and look the requested raw name up in the multi-value locator built
+//! from it. A container the caller did not name is never enumerated, so a local answer is never a
+//! whole-tree claim — and a directory that stopped on the budget, on a cancellation or on damage
+//! is a refusal, never "this name is missing".
+//!
+//! Both ways share one parser ([`parse_container_directory`]) and one local-header check
+//! ([`verify_local_against_record`]), so a record is validated the same way whichever path read
+//! it. A container's facts can be handed to the request's [`crate::facts_cache::FactsCache`] and
+//! retained across requests; the direct path is the same code with no cache attached, and nothing
+//! here requires one to exist.
 
 use crate::budget::{Budget, BudgetDimension, CountedBudgetDimension, UsageSnapshot};
 use crate::error::{Error, Result};
@@ -13,9 +32,9 @@ use crate::model::{
     ExecutionReport, Location, PhysicalEntryId, Provenance, SnapshotId, TerminationReason,
 };
 use crate::view::{PhysicalScope, PhysicalView};
-use rawzip::ZipArchive;
+use rawzip::{ZipArchive, ZipArchiveEntryWayfinder};
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 use std::fs::{File, Metadata};
 use std::io::{Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
@@ -256,228 +275,20 @@ impl ArtifactSnapshot {
                 "physical entry enumeration requires a ZIP snapshot",
             ));
         }
-        let archive = ZipArchive::from_slice(&self.bytes).map_err(zip_invalid("zip_open"))?;
-        let expected = archive.entries_hint();
-        let directory_offset = archive.directory_offset();
-        let mut iterator = archive.entries();
-        let mut entries = Vec::new();
-        let mut diagnostics = Vec::new();
-        let mut names: HashMap<Vec<u8>, u64> = HashMap::new();
-        let mut ranges: BTreeMap<u64, (u64, u64)> = BTreeMap::new();
-        let mut ordinal = 0_u64;
-
-        loop {
-            if let Err(error) = budget.poll() {
-                return Ok(terminated_enumeration(
-                    &self.id,
-                    entries,
-                    diagnostics,
-                    EnumerationProgress {
-                        completed: ordinal,
-                        expected,
-                        known_end: None,
-                    },
-                    error,
-                    budget,
-                ));
-            }
-            let header = match iterator.next_entry() {
-                Ok(Some(header)) => header,
-                Ok(None) => break,
-                Err(error) => {
-                    let known_end = ordinal.checked_add(1).ok_or_else(|| {
-                        Error::invalid_input(
-                            "entry_count_overflow",
-                            "central entry evidence exceeds u64",
-                        )
-                    })?;
-                    return Ok(terminated_enumeration(
-                        &self.id,
-                        entries,
-                        diagnostics,
-                        EnumerationProgress {
-                            completed: ordinal,
-                            expected,
-                            known_end: Some(known_end),
-                        },
-                        zip_invalid("central_directory")(error),
-                        budget,
-                    ));
-                }
-            };
-            let known_end = ordinal.checked_add(1).ok_or_else(|| {
-                Error::invalid_input("entry_count_overflow", "central entry evidence exceeds u64")
-            })?;
-            if let Err(error) = budget.charge(CountedBudgetDimension::ArchiveEntries, 1) {
-                return Ok(terminated_enumeration(
-                    &self.id,
-                    entries,
-                    diagnostics,
-                    EnumerationProgress {
-                        completed: ordinal,
-                        expected,
-                        known_end: Some(known_end),
-                    },
-                    error,
-                    budget,
-                ));
-            }
-
-            let parsed = (|| -> Result<(PhysicalEntry, Option<Diagnostic>, u64, u64)> {
-                budget.poll()?;
-                let local = archive
-                    .get_entry(header.wayfinder())
-                    .map_err(zip_invalid("local_entry"))?;
-                budget.poll()?;
-                validate_headers(&header, &local)?;
-                let (data_start, data_end) = local.compressed_data_range();
-                let range_start = header.local_header_offset();
-                if range_start > data_start || data_start > data_end || data_end > directory_offset
-                {
-                    return Err(Error::invalid_input(
-                        "invalid_entry_span",
-                        format!(
-                            "entry {ordinal} range {range_start}..{data_end} is invalid for the file area ending at {directory_offset}"
-                        ),
-                    ));
-                }
-                ensure_disjoint_range(&ranges, ordinal, range_start, data_end)?;
-
-                budget.poll()?;
-                if local
-                    .data_descriptor()
-                    .map_err(zip_invalid("data_descriptor"))?
-                    .is_some_and(|descriptor| {
-                        descriptor.crc32() != header.crc32()
-                            || descriptor.compressed_size() != header.compressed_size_hint()
-                            || descriptor.uncompressed_size() != header.uncompressed_size_hint()
-                    })
-                {
-                    return Err(Error::invalid_input(
-                        "descriptor_central_mismatch",
-                        format!("entry {ordinal} data descriptor conflicts with central directory"),
-                    ));
-                }
-                budget.poll()?;
-
-                let raw_name = header.file_path().as_bytes().to_vec();
-                let pending_diagnostic = names.get(&raw_name).map(|first| Diagnostic {
-                    code: "duplicate_raw_name".into(),
-                    severity: DiagnosticSeverity::Warning,
-                    message: format!(
-                        "entry {ordinal} repeats raw name first seen at ordinal {first}"
-                    ),
-                    provenance: None,
-                });
-                budget.check(CountedBudgetDimension::ResultItems, 1)?;
-                if pending_diagnostic.is_some() {
-                    budget.check(CountedBudgetDimension::ResultItems, 2)?;
-                }
-                budget.charge(CountedBudgetDimension::ResultItems, 1)?;
-                if pending_diagnostic.is_some() {
-                    budget.charge(CountedBudgetDimension::ResultItems, 1)?;
-                }
-
-                let flags = header.flags();
-                let method = header.compression_method().as_u16();
-                Ok((
-                    PhysicalEntry {
-                        id: PhysicalEntryId {
-                            origin: ContainerOrigin {
-                                snapshot: self.id.clone(),
-                                root_container: ContainerId("root".into()),
-                                steps: Vec::new(),
-                            },
-                            ordinal,
-                            raw_name: ArchiveNameBytes(raw_name),
-                        },
-                        compression: compression(method),
-                        compression_method: method,
-                        flags: EntryFlags {
-                            raw_bits: flags.bits(),
-                            encrypted: flags.is_encrypted(),
-                            strong_encryption: flags.has_strong_encryption(),
-                            data_descriptor: flags.has_data_descriptor(),
-                        },
-                        crc32: header.crc32(),
-                        compressed_size: header.compressed_size_hint(),
-                        uncompressed_size: header.uncompressed_size_hint(),
-                        layout: EntryLayout {
-                            local_header_offset: range_start,
-                            central_header_offset: header.central_directory_offset(),
-                            compressed_data: ByteSpan::new(data_start, data_end - data_start),
-                        },
-                        nested_archive: nested_state(header.file_path().as_bytes()),
-                        signature_metadata: signature_metadata(header.file_path().as_bytes()),
-                    },
-                    pending_diagnostic,
-                    range_start,
-                    data_end,
-                ))
-            })();
-
-            let (entry, pending_diagnostic, range_start, range_end) = match parsed {
-                Ok(parsed) => parsed,
-                Err(error) => {
-                    return Ok(terminated_enumeration(
-                        &self.id,
-                        entries,
-                        diagnostics,
-                        EnumerationProgress {
-                            completed: ordinal,
-                            expected,
-                            known_end: Some(known_end),
-                        },
-                        error,
-                        budget,
-                    ));
-                }
-            };
-            if let Some(diagnostic) = pending_diagnostic {
-                diagnostics.push(diagnostic);
-            } else {
-                names.insert(entry.id.raw_name.0.clone(), ordinal);
-            }
-            ranges.insert(range_start, (range_end, ordinal));
-            entries.push(entry);
-            ordinal = ordinal.checked_add(1).ok_or_else(|| {
-                Error::invalid_input("entry_count_overflow", "central entry ordinal overflow")
-            })?;
-            completed_hook(ordinal);
-        }
-
-        if ordinal != expected {
-            return Ok(terminated_enumeration(
-                &self.id,
-                entries,
-                diagnostics,
-                EnumerationProgress {
-                    completed: ordinal,
-                    expected,
-                    known_end: None,
-                },
-                Error::invalid_input(
-                    "entry_count_mismatch",
-                    format!(
-                        "EOCD declares {expected} entries but central directory yielded {ordinal}"
-                    ),
-                ),
-                budget,
-            ));
-        }
+        let origin = root_origin(&self.id);
+        let parsed = parse_container_directory(
+            &self.bytes,
+            &origin,
+            DirectoryIntent::Publish,
+            budget,
+            &mut completed_hook,
+        )?;
         Ok(EnumerationReport {
             snapshot: self.id.clone(),
-            entries,
-            coverage: enumeration_coverage(
-                CoverageState::CompleteWithinSchema,
-                ordinal,
-                expected,
-                None,
-            ),
-            execution: ExecutionReport::Complete {
-                usage: budget.usage(),
-            },
-            diagnostics,
+            entries: parsed.entries,
+            coverage: parsed.coverage,
+            execution: parsed.execution,
+            diagnostics: parsed.diagnostics,
         })
     }
 
@@ -668,6 +479,9 @@ impl ArtifactSnapshot {
                         ) {
                             Ok(materialized) => {
                                 let bytes: Arc<[u8]> = Arc::from(materialized.bytes);
+                                if let Some(cache) = budget.facts_cache() {
+                                    cache.note_nested_materialization(bytes.len() as u64);
+                                }
                                 match ZipArchive::from_slice(&bytes) {
                                     Ok(archive) => {
                                         let expected_entries = archive.entries_hint();
@@ -907,23 +721,6 @@ impl ArtifactSnapshot {
             .get_entry(header.wayfinder())
             .map_err(zip_invalid("local_entry"))?;
         budget.poll()?;
-        validate_headers(&header, &local)?;
-        budget.poll()?;
-        if local
-            .data_descriptor()
-            .map_err(zip_invalid("data_descriptor"))?
-            .is_some_and(|descriptor| {
-                descriptor.crc32() != header.crc32()
-                    || descriptor.compressed_size() != header.compressed_size_hint()
-                    || descriptor.uncompressed_size() != header.uncompressed_size_hint()
-            })
-        {
-            return Err(Error::invalid_input(
-                "descriptor_central_mismatch",
-                format!("entry {current} data descriptor conflicts with central directory"),
-            ));
-        }
-        budget.poll()?;
         let flags = header.flags();
         let method = header.compression_method().as_u16();
         let (data_start, data_end) = local.compressed_data_range();
@@ -956,108 +753,20 @@ impl ArtifactSnapshot {
             nested_archive: nested_state(header.file_path().as_bytes()),
             signature_metadata: signature_metadata(header.file_path().as_bytes()),
         };
+        // The local header is checked against the **record this snapshot's own central directory
+        // produced**, never against the caller's report: the report is compared afterwards, and
+        // the two checks answer different questions.
+        verify_local_against_record(&authoritative, &local)?;
         if entry != &authoritative {
             return Err(Error::invalid_input(
                 "entry_metadata_mismatch",
                 "caller-supplied entry metadata differs from the fixed snapshot",
             ));
         }
-        if authoritative.flags.encrypted || authoritative.flags.strong_encryption {
-            return Err(Error::unsupported(
-                "encrypted_zip_entry",
-                "encrypted, strong-encryption, and AES entries are not supported",
-            ));
-        }
-        if !matches!(
-            authoritative.compression,
-            EntryCompression::Stored | EntryCompression::Deflated
-        ) {
-            return Err(Error::unsupported(
-                "zip_compression_method",
-                format!(
-                    "compression method {} is not supported",
-                    authoritative.compression_method
-                ),
-            ));
-        }
-        budget.check(
-            CountedBudgetDimension::EntryBytes,
-            authoritative.uncompressed_size,
-        )?;
-        if accounting == MaterializationAccounting::CallerOutput {
-            budget.check(
-                CountedBudgetDimension::OutputBytes,
-                authoritative.uncompressed_size,
-            )?;
-        }
-        budget.check(
-            CountedBudgetDimension::ReadBytes,
-            authoritative.compressed_size,
-        )?;
-        let compressed_len = as_u64(local.data().len())?;
-        if compressed_len != authoritative.compressed_size {
-            return Err(Error::invalid_input(
-                "compressed_size_mismatch",
-                format!(
-                    "central size {} differs from local data span {compressed_len}",
-                    authoritative.compressed_size
-                ),
-            ));
-        }
-        budget.charge(CountedBudgetDimension::ReadBytes, compressed_len)?;
-
-        let mut output = Vec::new();
-        let read_result =
-            match authoritative.compression {
-                EntryCompression::Stored => {
-                    let reader = std::io::Cursor::new(local.data());
-                    read_verified(&local, reader, &mut output, budget, accounting, &mut hook)
-                        .and_then(|reader| {
-                            if reader.position() == local.data().len() as u64 {
-                                Ok(())
-                            } else {
-                                Err(std::io::Error::other(
-                                    "stored entry has trailing compressed bytes",
-                                ))
-                            }
-                        })
-                }
-                EntryCompression::Deflated => {
-                    let decoder = flate2::bufread::DeflateDecoder::new(local.data());
-                    read_verified(&local, decoder, &mut output, budget, accounting, &mut hook)
-                        .and_then(|decoder| {
-                            if decoder.total_in() == local.data().len() as u64 {
-                                Ok(())
-                            } else {
-                                Err(std::io::Error::other(
-                                    "deflate stream has trailing compressed bytes",
-                                ))
-                            }
-                        })
-                }
-                EntryCompression::Unsupported => unreachable!("unsupported method rejected above"),
-            };
-        if let Err(error) = read_result {
-            output.clear();
-            return Err(map_verification_error(error));
-        }
-        let actual = as_u64(output.len())?;
-        if actual != authoritative.uncompressed_size {
-            return Err(Error::invalid_input(
-                "uncompressed_size_mismatch",
-                format!(
-                    "central size {} differs from actual output {actual}",
-                    authoritative.uncompressed_size
-                ),
-            ));
-        }
-        let content_digest = crate::model::Digest(blake3::hash(&output).to_hex().to_string());
-        Ok(MaterializedEntry {
-            entry: entry.id.clone(),
-            bytes: output,
-            content_digest,
-            usage: budget.usage(),
-        })
+        let mut materialized =
+            materialize_verified(&authoritative, &local, budget, accounting, &mut hook)?;
+        materialized.entry = entry.id.clone();
+        Ok(materialized)
     }
 
     fn locate_entry_for_replay(
@@ -1165,6 +874,220 @@ impl ArtifactSnapshot {
         )
     }
 
+    // -------------------------------------------------------------------------------------------
+    // Directed container access
+    // -------------------------------------------------------------------------------------------
+
+    /// The raw-name candidates of one container, reached along its own ancestor chain.
+    ///
+    /// This is the one entry point a lookup uses to ask "which physical entries of *this* declared
+    /// position carry this raw name". It validates the origin — the snapshot, the root container
+    /// and every derivation in the chain — walks the ancestors the container really has, parses
+    /// the container's own complete central directory and looks the name up in the multi-value
+    /// locator built from it. It never enumerates a container the caller did not name, so an
+    /// unrelated sibling is neither read nor reported, and the candidates it returns are the
+    /// directory's own records, ordered by central-directory ordinal and never merged by name.
+    ///
+    /// The shape is deliberately source-agnostic: a container origin plus the raw bytes of the
+    /// name. A later change that addresses a container together with a prefix (an entry of a
+    /// container selected by a path prefix rather than by the name being looked up) reaches this
+    /// same entry point with the container's origin; the name it passes stays the requested raw
+    /// name, and the prefix rule is applied to the candidates this returns.
+    ///
+    /// A lookup that cannot prove the container's directory complete is refused, never answered
+    /// with the entries it managed to read: `Missing` and `Ambiguous` mean "this container holds
+    /// no/these candidates for the name", and an incomplete directory cannot say that.
+    pub fn container_candidates(
+        &self,
+        origin: &ContainerOrigin,
+        raw_name: &[u8],
+        budget: &mut Budget,
+    ) -> Result<Vec<PhysicalEntry>> {
+        let facts = self.container_facts(origin, budget)?;
+        Ok(facts.candidates(raw_name))
+    }
+
+    /// The authoritative record one entry identity names, looked up at its own container.
+    ///
+    /// The identity carries its container, its ordinal and its raw name, so this asks that
+    /// container's directory for the record at that ordinal and requires the record to carry that
+    /// raw name. `Ok(None)` is "this snapshot has no such entry at that coordinate", which is the
+    /// same verdict a whole-snapshot listing would give, reached without enumerating a container
+    /// the caller did not name.
+    pub fn container_record(
+        &self,
+        entry: &PhysicalEntryId,
+        budget: &mut Budget,
+    ) -> Result<Option<PhysicalEntry>> {
+        let facts = self.container_facts(&entry.origin, budget)?;
+        let Ok(position) = usize::try_from(entry.ordinal) else {
+            return Ok(None);
+        };
+        Ok(facts
+            .entries
+            .get(position)
+            .filter(|record| record.id.raw_name == entry.raw_name)
+            .cloned())
+    }
+
+    /// The verified facts of one container, from retention when a cache answers and from this
+    /// request's own read otherwise.
+    ///
+    /// The direct path is this function with no cache attached: the same validation, the same
+    /// ancestor walk and the same directory parse, with the product dropped when the request ends.
+    /// Nothing about the access depends on a cache existing.
+    fn container_facts(
+        &self,
+        origin: &ContainerOrigin,
+        budget: &mut Budget,
+    ) -> Result<Arc<ContainerFacts>> {
+        if let Some(facts) = self.retained_container_facts(origin, budget)? {
+            return Ok(facts);
+        }
+        let facts = self.build_container_facts(origin, budget)?;
+        if let Some(cache) = budget.facts_cache() {
+            cache.remember_container(&facts);
+        }
+        Ok(facts)
+    }
+
+    /// The facts of one container when the request's cache already holds them.
+    ///
+    /// This is the *retention* half only: it never builds anything, so a caller that must not pay
+    /// for a directory parse (the selected-entry read on a warm path) can ask without risking one.
+    fn retained_container_facts(
+        &self,
+        origin: &ContainerOrigin,
+        budget: &mut Budget,
+    ) -> Result<Option<Arc<ContainerFacts>>> {
+        let Some(cache) = budget.facts_cache().cloned() else {
+            return Ok(None);
+        };
+        cache.container(origin, budget)
+    }
+
+    /// Reads one container's facts from the fixed snapshot, walking its real ancestor chain.
+    ///
+    /// Every ancestor is reached through its own parent's directory — the parent entry is located
+    /// by ordinal and raw name, its derivation is recomputed and compared, and its bytes are
+    /// materialized under the budget through the same verified path a class read uses — so a
+    /// forged origin chain is refused at the step that does not derive and no sibling entry is
+    /// ever touched.
+    fn build_container_facts(
+        &self,
+        origin: &ContainerOrigin,
+        budget: &mut Budget,
+    ) -> Result<Arc<ContainerFacts>> {
+        self.check_container_origin(origin)?;
+        let backing = match origin.steps.split_last() {
+            None => self.bytes.clone(),
+            Some((step, parents)) => {
+                let parent_origin = ContainerOrigin {
+                    snapshot: origin.snapshot.clone(),
+                    root_container: origin.root_container.clone(),
+                    steps: parents.to_vec(),
+                };
+                let parent = self.container_facts(&parent_origin, budget)?;
+                if step.child_container
+                    != derive_child_container(&parent_origin, step.via_ordinal, &step.via_raw_name)
+                {
+                    return Err(Error::invalid_input(
+                        "child_container_mismatch",
+                        "nested origin child container is not derived from its verified parent entry",
+                    ));
+                }
+                let depth = u64::try_from(origin.steps.len()).map_err(|_| {
+                    Error::invalid_input("nested_depth_overflow", "nested origin is too deep")
+                })?;
+                budget.check_nested_depth(depth)?;
+                let position = usize::try_from(step.via_ordinal).map_err(|_| {
+                    Error::invalid_input("entry_count_overflow", "entry ordinal does not fit usize")
+                })?;
+                let Some(parent_entry) = parent.entries.get(position) else {
+                    return Err(Error::invalid_input(
+                        "entry_not_found",
+                        "entry ordinal is absent",
+                    ));
+                };
+                if parent_entry.id.raw_name.0 != step.via_raw_name.0 {
+                    return Err(Error::invalid_input(
+                        "entry_locator_mismatch",
+                        "entry ordinal does not match the requested raw name",
+                    ));
+                }
+                if parent_entry.nested_archive != NestedArchiveState::CandidateNotScanned {
+                    return Err(Error::invalid_input(
+                        "nested_parent_not_candidate",
+                        "nested origin parent entry is not an archive candidate",
+                    ));
+                }
+                let materialized =
+                    parent.read_entry(position, budget, MaterializationAccounting::Intermediate)?;
+                if let Some(cache) = budget.facts_cache() {
+                    cache.note_nested_materialization(materialized.bytes.len() as u64);
+                }
+                Arc::from(materialized.bytes)
+            }
+        };
+        let parsed = parse_container_directory(
+            &backing,
+            origin,
+            DirectoryIntent::Locate,
+            budget,
+            &mut |_| {},
+        )?;
+        if !matches!(parsed.execution, ExecutionReport::Complete { .. }) {
+            return Err(container_refusal(budget, origin, &parsed));
+        }
+        Ok(Arc::new(ContainerFacts::new(
+            origin.clone(),
+            backing,
+            parsed,
+        )))
+    }
+
+    /// Checks that `origin` addresses a container of **this** snapshot and that every step of the
+    /// chain derives from the one before it.
+    ///
+    /// The derivation is the same one the tree walk uses, so an origin that was not produced by
+    /// reading this snapshot's entries cannot be addressed at all — a caller cannot name a
+    /// container that does not exist, or move a whole chain under another parent, by handing in a
+    /// fabricated `ContainerOrigin`.
+    fn check_container_origin(&self, origin: &ContainerOrigin) -> Result<()> {
+        if self.kind != ArtifactKind::Zip {
+            return Err(Error::invalid_input(
+                "not_zip",
+                "container access requires a ZIP snapshot",
+            ));
+        }
+        if origin.snapshot != self.id {
+            return Err(Error::invalid_input(
+                "entry_snapshot_mismatch",
+                "container origin does not belong to this snapshot",
+            ));
+        }
+        let root = root_origin(&self.id);
+        if origin.root_container != root.root_container {
+            return Err(Error::invalid_input(
+                "entry_origin_mismatch",
+                "container origin root container does not match this snapshot",
+            ));
+        }
+        let mut current = root;
+        for step in &origin.steps {
+            if step.child_container
+                != derive_child_container(&current, step.via_ordinal, &step.via_raw_name)
+            {
+                return Err(Error::invalid_input(
+                    "child_container_mismatch",
+                    "nested origin child container is not derived from its verified parent entry",
+                ));
+            }
+            current.steps.push(step.clone());
+        }
+        Ok(())
+    }
+
     fn read_nested_entry_with_accounting(
         &self,
         entry: &PhysicalEntry,
@@ -1183,6 +1106,13 @@ impl ArtifactSnapshot {
                 "entry_origin_mismatch",
                 "nested entry root container does not match this snapshot",
             ));
+        }
+        // A retained container answers the read without a second directory pass and without
+        // re-materializing the parents it already holds. The record it serves is checked against
+        // the caller's metadata and the selected entry's own bytes are still verified in full, so
+        // a hit changes what the request pays for, never what it proves.
+        if let Some(facts) = self.retained_container_facts(&entry.id.origin, budget)? {
+            return facts.read_caller_entry(entry, budget, final_accounting);
         }
         let mut bytes = self.bytes.clone();
         let mut current_origin = root;
@@ -1225,6 +1155,9 @@ impl ArtifactSnapshot {
                 |_| {},
                 |_| {},
             )?;
+            if let Some(cache) = budget.facts_cache() {
+                cache.note_nested_materialization(materialized.bytes.len() as u64);
+            }
             bytes = Arc::from(materialized.bytes);
             ZipArchive::from_slice(&bytes).map_err(zip_invalid("nested_zip_open"))?;
             current_origin.steps.push(step.clone());
@@ -1265,6 +1198,734 @@ impl ArtifactSnapshot {
         materialized.usage = budget.usage();
         Ok(materialized)
     }
+}
+
+// -----------------------------------------------------------------------------------------------
+// Directed container access: one directory parser, one locator, one verified backing
+// -----------------------------------------------------------------------------------------------
+
+/// What one directory parse is for.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum DirectoryIntent {
+    /// The entries are the request's own result: each one is charged as a published item and a
+    /// repeated raw name also publishes the duplicate diagnostic.
+    Publish,
+    /// The directory is the internal locator of one container: its records are charged as derived
+    /// storage the request holds while it locates a name, but nothing is published, so the
+    /// duplicate diagnostic has no report to go into. Dropping the report is the point of the
+    /// local path; dropping the charge would be a hidden subsidy, so the entries are still billed.
+    Locate,
+}
+
+/// One parse of one container's central directory, complete or stopped.
+///
+/// A stopped parse still carries the records it accepted and the execution that says why it
+/// stopped; the caller decides whether an incomplete directory may be used at all. The directed
+/// access never uses one.
+struct ParsedDirectory {
+    entries: Vec<PhysicalEntry>,
+    /// The wayfinder that reaches each entry's local header and data without a second
+    /// central-directory pass, parallel to `entries`.
+    wayfinders: Vec<ZipArchiveEntryWayfinder>,
+    /// Raw name -> positions in `entries`, ascending. This is the multi-value locator: two
+    /// physical entries with one raw name are two positions and are never merged.
+    names: BTreeMap<Vec<u8>, Vec<u64>>,
+    diagnostics: Vec<Diagnostic>,
+    coverage: Coverage,
+    execution: ExecutionReport,
+}
+
+/// Parses one container's central directory out of `bytes`.
+///
+/// `bytes` is the container's own backing — the snapshot's bytes for the root container, the
+/// materialized nested container otherwise — and `origin` is where those bytes live, so every
+/// record this yields is identified by the container it really belongs to. The record validation,
+/// the charging and the stop semantics are the ones the whole-snapshot enumeration always had; the
+/// intent is the only thing that differs between the two callers.
+///
+/// The returned `execution` is `Complete` only when the whole declared directory was read and
+/// matched the EOCD's own count. Every other ending returns the prefix it read together with the
+/// reason, exactly as `enumerate` publishes it.
+fn parse_container_directory<F>(
+    bytes: &Arc<[u8]>,
+    origin: &ContainerOrigin,
+    intent: DirectoryIntent,
+    budget: &mut Budget,
+    completed_hook: &mut F,
+) -> Result<ParsedDirectory>
+where
+    F: FnMut(u64),
+{
+    let archive = ZipArchive::from_slice(bytes).map_err(zip_invalid("zip_open"))?;
+    // The parse is counted where it starts, not where it succeeds: a directory that stopped on the
+    // budget or on damage was still parsed, and a measurement that only counted complete ones would
+    // report less work than the request really did.
+    if let Some(cache) = budget.facts_cache() {
+        cache.note_directory_parse();
+    }
+    let expected = archive.entries_hint();
+    let directory_offset = archive.directory_offset();
+    let mut iterator = archive.entries();
+    let mut entries = Vec::new();
+    let mut wayfinders = Vec::new();
+    let mut diagnostics = Vec::new();
+    let mut names: BTreeMap<Vec<u8>, Vec<u64>> = BTreeMap::new();
+    let mut ranges: BTreeMap<u64, (u64, u64)> = BTreeMap::new();
+    let mut ordinal = 0_u64;
+
+    loop {
+        if let Err(error) = budget.poll() {
+            return Ok(terminated_directory(
+                entries,
+                wayfinders,
+                names,
+                diagnostics,
+                EnumerationProgress {
+                    completed: ordinal,
+                    expected,
+                    known_end: None,
+                },
+                error,
+                budget,
+            ));
+        }
+        let header = match iterator.next_entry() {
+            Ok(Some(header)) => header,
+            Ok(None) => break,
+            Err(error) => {
+                let known_end = ordinal.checked_add(1).ok_or_else(|| {
+                    Error::invalid_input(
+                        "entry_count_overflow",
+                        "central entry evidence exceeds u64",
+                    )
+                })?;
+                return Ok(terminated_directory(
+                    entries,
+                    wayfinders,
+                    names,
+                    diagnostics,
+                    EnumerationProgress {
+                        completed: ordinal,
+                        expected,
+                        known_end: Some(known_end),
+                    },
+                    zip_invalid("central_directory")(error),
+                    budget,
+                ));
+            }
+        };
+        let known_end = ordinal.checked_add(1).ok_or_else(|| {
+            Error::invalid_input("entry_count_overflow", "central entry evidence exceeds u64")
+        })?;
+        if let Err(error) = budget.charge(CountedBudgetDimension::ArchiveEntries, 1) {
+            return Ok(terminated_directory(
+                entries,
+                wayfinders,
+                names,
+                diagnostics,
+                EnumerationProgress {
+                    completed: ordinal,
+                    expected,
+                    known_end: Some(known_end),
+                },
+                error,
+                budget,
+            ));
+        }
+
+        let parsed = (|| -> Result<(PhysicalEntry, Option<Diagnostic>, u64, u64)> {
+            budget.poll()?;
+            let wayfinder = header.wayfinder();
+            let local = archive
+                .get_entry(wayfinder)
+                .map_err(zip_invalid("local_entry"))?;
+            budget.poll()?;
+            validate_headers(&header, &local)?;
+            let (data_start, data_end) = local.compressed_data_range();
+            let range_start = header.local_header_offset();
+            if range_start > data_start || data_start > data_end || data_end > directory_offset {
+                return Err(Error::invalid_input(
+                    "invalid_entry_span",
+                    format!(
+                        "entry {ordinal} range {range_start}..{data_end} is invalid for the file area ending at {directory_offset}"
+                    ),
+                ));
+            }
+            ensure_disjoint_range(&ranges, ordinal, range_start, data_end)?;
+
+            budget.poll()?;
+            if local
+                .data_descriptor()
+                .map_err(zip_invalid("data_descriptor"))?
+                .is_some_and(|descriptor| {
+                    descriptor.crc32() != header.crc32()
+                        || descriptor.compressed_size() != header.compressed_size_hint()
+                        || descriptor.uncompressed_size() != header.uncompressed_size_hint()
+                })
+            {
+                return Err(Error::invalid_input(
+                    "descriptor_central_mismatch",
+                    format!("entry {ordinal} data descriptor conflicts with central directory"),
+                ));
+            }
+            budget.poll()?;
+
+            let raw_name = header.file_path().as_bytes().to_vec();
+            let pending_diagnostic = (intent == DirectoryIntent::Publish)
+                .then(|| {
+                    names
+                        .get(&raw_name)
+                        .and_then(|seen| seen.first())
+                        .map(|first| Diagnostic {
+                            code: "duplicate_raw_name".into(),
+                            severity: DiagnosticSeverity::Warning,
+                            message: format!(
+                                "entry {ordinal} repeats raw name first seen at ordinal {first}"
+                            ),
+                            provenance: None,
+                        })
+                })
+                .flatten();
+            budget.check(CountedBudgetDimension::ResultItems, 1)?;
+            if pending_diagnostic.is_some() {
+                budget.check(CountedBudgetDimension::ResultItems, 2)?;
+            }
+            budget.charge(CountedBudgetDimension::ResultItems, 1)?;
+            if pending_diagnostic.is_some() {
+                budget.charge(CountedBudgetDimension::ResultItems, 1)?;
+            }
+
+            let flags = header.flags();
+            let method = header.compression_method().as_u16();
+            Ok((
+                PhysicalEntry {
+                    id: PhysicalEntryId {
+                        origin: origin.clone(),
+                        ordinal,
+                        raw_name: ArchiveNameBytes(raw_name),
+                    },
+                    compression: compression(method),
+                    compression_method: method,
+                    flags: EntryFlags {
+                        raw_bits: flags.bits(),
+                        encrypted: flags.is_encrypted(),
+                        strong_encryption: flags.has_strong_encryption(),
+                        data_descriptor: flags.has_data_descriptor(),
+                    },
+                    crc32: header.crc32(),
+                    compressed_size: header.compressed_size_hint(),
+                    uncompressed_size: header.uncompressed_size_hint(),
+                    layout: EntryLayout {
+                        local_header_offset: range_start,
+                        central_header_offset: header.central_directory_offset(),
+                        compressed_data: ByteSpan::new(data_start, data_end - data_start),
+                    },
+                    nested_archive: nested_state(header.file_path().as_bytes()),
+                    signature_metadata: signature_metadata(header.file_path().as_bytes()),
+                },
+                pending_diagnostic,
+                range_start,
+                data_end,
+            ))
+        })();
+
+        let (entry, pending_diagnostic, range_start, range_end) = match parsed {
+            Ok(parsed) => parsed,
+            Err(error) => {
+                return Ok(terminated_directory(
+                    entries,
+                    wayfinders,
+                    names,
+                    diagnostics,
+                    EnumerationProgress {
+                        completed: ordinal,
+                        expected,
+                        known_end: Some(known_end),
+                    },
+                    error,
+                    budget,
+                ));
+            }
+        };
+        if let Some(diagnostic) = pending_diagnostic {
+            diagnostics.push(diagnostic);
+        }
+        names
+            .entry(entry.id.raw_name.0.clone())
+            .or_default()
+            .push(ordinal);
+        ranges.insert(range_start, (range_end, ordinal));
+        entries.push(entry);
+        wayfinders.push(header.wayfinder());
+        ordinal = ordinal.checked_add(1).ok_or_else(|| {
+            Error::invalid_input("entry_count_overflow", "central entry ordinal overflow")
+        })?;
+        completed_hook(ordinal);
+    }
+
+    if ordinal != expected {
+        return Ok(terminated_directory(
+            entries,
+            wayfinders,
+            names,
+            diagnostics,
+            EnumerationProgress {
+                completed: ordinal,
+                expected,
+                known_end: None,
+            },
+            Error::invalid_input(
+                "entry_count_mismatch",
+                format!("EOCD declares {expected} entries but central directory yielded {ordinal}"),
+            ),
+            budget,
+        ));
+    }
+    Ok(ParsedDirectory {
+        entries,
+        wayfinders,
+        names,
+        diagnostics,
+        coverage: enumeration_coverage(
+            CoverageState::CompleteWithinSchema,
+            ordinal,
+            expected,
+            None,
+        ),
+        execution: ExecutionReport::Complete {
+            usage: budget.usage(),
+        },
+    })
+}
+
+/// A per-record residency weight for one retained directory. A **proxy**, like every weight this
+/// change adds: it stands for the map slot, the identity and the layout a `PhysicalEntry` keeps,
+/// and no allocator measured it.
+const DIRECTORY_ENTRY_WEIGHT: u64 = 192;
+
+/// A per-name residency weight for one locator slot, on top of the name's own bytes.
+const NAME_TABLE_SLOT_WEIGHT: u64 = 48;
+
+/// One container's verified facts: the immutable backing its entries live in, its complete central
+/// directory, the raw-name locator over that directory and the wayfinder that reaches each entry's
+/// data without a second central-directory pass.
+///
+/// A `ContainerFacts` is only ever built for a container whose directory parsed completely — the
+/// builder refuses a stopped parse instead of keeping a prefix — so "this container holds no such
+/// name" is never read out of an incomplete directory. It is immutable once built, which is what
+/// lets one be retained across requests and shared by every handle of one store.
+///
+/// The value holds the container's **own** backing: the bytes its central directory and its
+/// entries live in. A nested container's backing is the materialized output of its parent entry,
+/// which was verified in full before it was opened as an archive; a locator from this directory is
+/// therefore only ever used against this backing, and the recorded spans are re-checked against it
+/// on every read.
+#[derive(Debug)]
+pub(crate) struct ContainerFacts {
+    origin: ContainerOrigin,
+    backing: Arc<[u8]>,
+    entries: Vec<PhysicalEntry>,
+    wayfinders: Vec<ZipArchiveEntryWayfinder>,
+    names: BTreeMap<Vec<u8>, Vec<u64>>,
+    weight: u64,
+}
+
+impl ContainerFacts {
+    fn new(origin: ContainerOrigin, backing: Arc<[u8]>, parsed: ParsedDirectory) -> Self {
+        let weight = container_weight(backing.len() as u64, &parsed.entries, &parsed.names);
+        Self {
+            origin,
+            backing,
+            entries: parsed.entries,
+            wayfinders: parsed.wayfinders,
+            names: parsed.names,
+            weight,
+        }
+    }
+
+    pub(crate) fn origin(&self) -> &ContainerOrigin {
+        &self.origin
+    }
+
+    /// The residency weight this product contributes to a store that retains it.
+    pub(crate) fn weight(&self) -> u64 {
+        self.weight
+    }
+
+    /// The physical entries whose raw name is exactly `raw_name`, in central-directory order.
+    ///
+    /// A hit copies the matched records only: the locator is keyed by name, so nothing walks or
+    /// clones the directory, and two records under one name stay two records.
+    pub(crate) fn candidates(&self, raw_name: &[u8]) -> Vec<PhysicalEntry> {
+        match self.names.get(raw_name) {
+            Some(positions) => positions
+                .iter()
+                .filter_map(|position| self.entries.get(*position as usize).cloned())
+                .collect(),
+            None => Vec::new(),
+        }
+    }
+
+    /// The one record of this directory at `position`, or the refusal that says the address does
+    /// not exist in it.
+    fn record(&self, position: usize) -> Result<&PhysicalEntry> {
+        self.entries.get(position).ok_or_else(|| {
+            Error::invalid_input(
+                "entry_not_found",
+                "entry ordinal is absent from the container",
+            )
+        })
+    }
+
+    /// Reads the caller's entry out of this retained directory and its backing.
+    ///
+    /// The rules of a nested read are unchanged; only the way to the record is. The record at the
+    /// caller's ordinal has to carry the caller's raw name, the caller's whole metadata has to
+    /// equal the **authoritative** record this directory parsed — a caller-deserialized report is
+    /// never trusted over it — and the selected entry's own local header, CRC and sizes are then
+    /// verified against that record before any byte is returned.
+    fn read_caller_entry(
+        &self,
+        entry: &PhysicalEntry,
+        budget: &mut Budget,
+        accounting: MaterializationAccounting,
+    ) -> Result<MaterializedEntry> {
+        if self.origin != entry.id.origin {
+            return Err(Error::invalid_input(
+                "entry_origin_mismatch",
+                "entry origin does not match the retained container",
+            ));
+        }
+        let position = usize::try_from(entry.id.ordinal).map_err(|_| {
+            Error::invalid_input("entry_count_overflow", "entry ordinal does not fit usize")
+        })?;
+        let authoritative = self.record(position)?;
+        if authoritative.id.raw_name != entry.id.raw_name {
+            return Err(Error::invalid_input(
+                "entry_locator_mismatch",
+                "entry ordinal does not match the requested raw name",
+            ));
+        }
+        if authoritative != entry {
+            return Err(Error::invalid_input(
+                "entry_metadata_mismatch",
+                "caller-supplied nested entry metadata differs from the fixed snapshot",
+            ));
+        }
+        let mut materialized = self.read_entry(position, budget, accounting)?;
+        materialized.entry = entry.id.clone();
+        materialized.usage = budget.usage();
+        Ok(materialized)
+    }
+
+    /// Materializes one entry of this directory from its verified backing.
+    ///
+    /// The record's own local header is read at the offset it names and checked against the
+    /// record, the compressed span is checked to be the one the record describes, and the bytes
+    /// are then read through the same verifying reader every other read uses, so CRC and size are
+    /// re-established for the selected entry itself. No central-directory pass happens here: the
+    /// directory this product holds is the one that was charged when it was parsed.
+    fn read_entry(
+        &self,
+        position: usize,
+        budget: &mut Budget,
+        accounting: MaterializationAccounting,
+    ) -> Result<MaterializedEntry> {
+        let record = self.record(position)?;
+        let archive = ZipArchive::from_slice(&self.backing).map_err(zip_invalid("zip_open"))?;
+        budget.poll()?;
+        let local = archive
+            .get_entry(self.wayfinders[position])
+            .map_err(zip_invalid("local_entry"))?;
+        budget.poll()?;
+        verify_local_against_record(record, &local)?;
+        materialize_verified(record, &local, budget, accounting, &mut |_| {})
+    }
+}
+
+/// The residency weight of one container product: the backing bytes, the parsed records and the
+/// name table that locates them.
+fn container_weight(
+    backing_len: u64,
+    entries: &[PhysicalEntry],
+    names: &BTreeMap<Vec<u8>, Vec<u64>>,
+) -> u64 {
+    let mut weight = backing_len.saturating_add(
+        u64::try_from(entries.len())
+            .unwrap_or(u64::MAX)
+            .saturating_mul(DIRECTORY_ENTRY_WEIGHT),
+    );
+    for (name, positions) in names {
+        weight = weight
+            .saturating_add(u64::try_from(name.len()).unwrap_or(u64::MAX))
+            .saturating_add(NAME_TABLE_SLOT_WEIGHT)
+            .saturating_add(
+                u64::try_from(positions.len())
+                    .unwrap_or(u64::MAX)
+                    .saturating_mul(8),
+            );
+    }
+    weight
+}
+
+/// The refusal one stopped directory parse stands for.
+///
+/// The parse already charged the dimension it stopped on to the limit, so the numbers the budget
+/// holds are the evidence it stopped with. The message names the container the request was
+/// addressing, because a local lookup's failure has to say which position it could not decide.
+fn container_refusal(budget: &Budget, origin: &ContainerOrigin, parsed: &ParsedDirectory) -> Error {
+    let label = format!("container `{}`", origin.current_container().0);
+    let message = match parsed.diagnostics.last() {
+        Some(diagnostic) => format!(
+            "{label} could not be read completely ({}: {}); the position stays undecided and the \
+             lookup does not continue",
+            diagnostic.code, diagnostic.message
+        ),
+        None => format!(
+            "{label} could not be read completely; the position stays undecided and the lookup \
+             does not continue"
+        ),
+    };
+    match &parsed.execution {
+        ExecutionReport::Complete { .. } => panic!("a complete directory is not a refusal"),
+        ExecutionReport::Cancelled { .. } => Error::Cancelled { reason: message },
+        ExecutionReport::Partial { reason, .. } | ExecutionReport::Failed { reason, .. } => {
+            match reason {
+                TerminationReason::BudgetExceeded { dimension } => {
+                    let (limit, consumed) = dimension_evidence(budget, *dimension);
+                    Error::BudgetExceeded {
+                        dimension: *dimension,
+                        limit,
+                        consumed,
+                        requested: 1,
+                    }
+                }
+                TerminationReason::Error { code } => Error::invalid_input(code.clone(), message),
+                TerminationReason::Unsupported { code } => {
+                    Error::unsupported(code.clone(), message)
+                }
+            }
+        }
+    }
+}
+
+/// Limit and usage of one dimension, read from its own slots.
+fn dimension_evidence(budget: &Budget, dimension: BudgetDimension) -> (u64, u64) {
+    let limits = budget.limits();
+    let usage = budget.usage();
+    let counted = |dimension| {
+        (
+            limits.counted_limit(dimension),
+            usage.counted_usage(dimension),
+        )
+    };
+    match dimension {
+        BudgetDimension::InputBytes => counted(CountedBudgetDimension::InputBytes),
+        BudgetDimension::ArchiveEntries => counted(CountedBudgetDimension::ArchiveEntries),
+        BudgetDimension::EntryBytes => counted(CountedBudgetDimension::EntryBytes),
+        BudgetDimension::ReadBytes => counted(CountedBudgetDimension::ReadBytes),
+        BudgetDimension::ClassBytes => counted(CountedBudgetDimension::ClassBytes),
+        BudgetDimension::AttributeBytes => counted(CountedBudgetDimension::AttributeBytes),
+        BudgetDimension::CodeBytes => counted(CountedBudgetDimension::CodeBytes),
+        BudgetDimension::ResultItems => counted(CountedBudgetDimension::ResultItems),
+        BudgetDimension::OutputBytes => counted(CountedBudgetDimension::OutputBytes),
+        BudgetDimension::ClassHeaders => counted(CountedBudgetDimension::ClassHeaders),
+        BudgetDimension::MethodBodies => counted(CountedBudgetDimension::MethodBodies),
+        BudgetDimension::IrItems => counted(CountedBudgetDimension::IrItems),
+        BudgetDimension::IrEdges => counted(CountedBudgetDimension::IrEdges),
+        BudgetDimension::AnalysisSteps => counted(CountedBudgetDimension::AnalysisSteps),
+        BudgetDimension::NormalizationClones => {
+            counted(CountedBudgetDimension::NormalizationClones)
+        }
+        BudgetDimension::NestedDepth => (limits.nested_depth, usage.nested_depth),
+        BudgetDimension::DependencyDepth => (limits.dependency_depth, usage.dependency_depth),
+        BudgetDimension::ElapsedMillis => (limits.elapsed_millis, usage.elapsed_millis),
+    }
+}
+
+/// Checks one entry's local header and data descriptor against the record the container's central
+/// directory produced.
+///
+/// This is the one local-vs-record validation: the whole-snapshot read builds its record from the
+/// central record it just scanned and calls this, and a retained directory hands the record it
+/// parsed and calls the same function, so both paths accept and refuse exactly the same bytes. The
+/// central side is the **record**, never a caller's report, which is why a deserialized `PhysicalEntry`
+/// cannot weaken the check that follows.
+fn verify_local_against_record(
+    record: &PhysicalEntry,
+    local: &rawzip::ZipSliceEntry<'_>,
+) -> Result<()> {
+    let local_header = local.local_header();
+    if record.id.raw_name.0 != local_header.file_path().as_bytes() {
+        return Err(Error::invalid_input(
+            "central_local_name_mismatch",
+            "central and local raw entry names differ",
+        ));
+    }
+    if record.compression_method != local_header.compression_method().as_u16() {
+        return Err(Error::invalid_input(
+            "central_local_method_mismatch",
+            "central and local compression methods differ",
+        ));
+    }
+    if record.flags.raw_bits != local_header.flags().bits() {
+        return Err(Error::invalid_input(
+            "central_local_flags_mismatch",
+            "central and local flags differ",
+        ));
+    }
+    if !record.flags.data_descriptor
+        && (record.crc32 != local_header.crc32()
+            || record.compressed_size != local_header.compressed_size_hint()
+            || record.uncompressed_size != local_header.uncompressed_size_hint())
+    {
+        return Err(Error::invalid_input(
+            "central_local_integrity_mismatch",
+            "central and local CRC or size fields differ",
+        ));
+    }
+    if local
+        .data_descriptor()
+        .map_err(zip_invalid("data_descriptor"))?
+        .is_some_and(|descriptor| {
+            descriptor.crc32() != record.crc32
+                || descriptor.compressed_size() != record.compressed_size
+                || descriptor.uncompressed_size() != record.uncompressed_size
+        })
+    {
+        return Err(Error::invalid_input(
+            "descriptor_central_mismatch",
+            format!(
+                "entry {} data descriptor conflicts with central directory",
+                record.id.ordinal
+            ),
+        ));
+    }
+    if local.compressed_data_range()
+        != (
+            record.layout.compressed_data.start,
+            record
+                .layout
+                .compressed_data
+                .start
+                .saturating_add(record.layout.compressed_data.length),
+        )
+    {
+        return Err(Error::invalid_input(
+            "entry_locator_mismatch",
+            "entry identity no longer matches the fixed central-directory locator",
+        ));
+    }
+    Ok(())
+}
+
+/// Reads and verifies the bytes of one entry whose local header already matches its record.
+///
+/// The checks before the read are the contract every materialization keeps: an encrypted or
+/// unsupported method is refused instead of read, the budget is asked *before* the bytes are
+/// selected (`ReadBytes`, plus `EntryBytes` and, for a caller-owned result, `OutputBytes`), and
+/// the compressed length the record claims has to be the length really present. The read itself
+/// runs through rawzip's verifying reader, so the CRC and the uncompressed size are re-established
+/// from the bytes, and a decode that stops or ends early clears the buffer instead of returning it.
+fn materialize_verified<F>(
+    record: &PhysicalEntry,
+    local: &rawzip::ZipSliceEntry<'_>,
+    budget: &mut Budget,
+    accounting: MaterializationAccounting,
+    hook: &mut F,
+) -> Result<MaterializedEntry>
+where
+    F: FnMut(usize),
+{
+    if record.flags.encrypted || record.flags.strong_encryption {
+        return Err(Error::unsupported(
+            "encrypted_zip_entry",
+            "encrypted, strong-encryption, and AES entries are not supported",
+        ));
+    }
+    if !matches!(
+        record.compression,
+        EntryCompression::Stored | EntryCompression::Deflated
+    ) {
+        return Err(Error::unsupported(
+            "zip_compression_method",
+            format!(
+                "compression method {} is not supported",
+                record.compression_method
+            ),
+        ));
+    }
+    budget.check(CountedBudgetDimension::EntryBytes, record.uncompressed_size)?;
+    if accounting == MaterializationAccounting::CallerOutput {
+        budget.check(
+            CountedBudgetDimension::OutputBytes,
+            record.uncompressed_size,
+        )?;
+    }
+    budget.check(CountedBudgetDimension::ReadBytes, record.compressed_size)?;
+    let compressed_len = as_u64(local.data().len())?;
+    if compressed_len != record.compressed_size {
+        return Err(Error::invalid_input(
+            "compressed_size_mismatch",
+            format!(
+                "central size {} differs from local data span {compressed_len}",
+                record.compressed_size
+            ),
+        ));
+    }
+    budget.charge(CountedBudgetDimension::ReadBytes, compressed_len)?;
+
+    let mut output = Vec::new();
+    let read_result = match record.compression {
+        EntryCompression::Stored => {
+            let reader = std::io::Cursor::new(local.data());
+            read_verified(local, reader, &mut output, budget, accounting, hook).and_then(|reader| {
+                if reader.position() == local.data().len() as u64 {
+                    Ok(())
+                } else {
+                    Err(std::io::Error::other(
+                        "stored entry has trailing compressed bytes",
+                    ))
+                }
+            })
+        }
+        EntryCompression::Deflated => {
+            let decoder = flate2::bufread::DeflateDecoder::new(local.data());
+            read_verified(local, decoder, &mut output, budget, accounting, hook).and_then(
+                |decoder| {
+                    if decoder.total_in() == local.data().len() as u64 {
+                        Ok(())
+                    } else {
+                        Err(std::io::Error::other(
+                            "deflate stream has trailing compressed bytes",
+                        ))
+                    }
+                },
+            )
+        }
+        EntryCompression::Unsupported => unreachable!("unsupported method rejected above"),
+    };
+    if let Err(error) = read_result {
+        output.clear();
+        return Err(map_verification_error(error));
+    }
+    let actual = as_u64(output.len())?;
+    if actual != record.uncompressed_size {
+        return Err(Error::invalid_input(
+            "uncompressed_size_mismatch",
+            format!(
+                "central size {} differs from actual output {actual}",
+                record.uncompressed_size
+            ),
+        ));
+    }
+    let content_digest = crate::model::Digest(blake3::hash(&output).to_hex().to_string());
+    Ok(MaterializedEntry {
+        entry: record.id.clone(),
+        bytes: output,
+        content_digest,
+        usage: budget.usage(),
+    })
 }
 
 fn root_origin(snapshot: &SnapshotId) -> ContainerOrigin {
@@ -1612,14 +2273,18 @@ pub const fn budget_dimension_code(dimension: BudgetDimension) -> &'static str {
     }
 }
 
-fn terminated_enumeration(
-    snapshot: &SnapshotId,
+/// The directory parse that stopped, as a value that carries exactly the evidence
+/// `enumerate` publishes for the same stop: the accepted prefix, the coverage that says how much
+/// of the declared directory was read, the execution and the diagnostic naming the cause.
+fn terminated_directory(
     entries: Vec<PhysicalEntry>,
+    wayfinders: Vec<ZipArchiveEntryWayfinder>,
+    names: BTreeMap<Vec<u8>, Vec<u64>>,
     mut diagnostics: Vec<Diagnostic>,
     progress: EnumerationProgress,
     error: Error,
     budget: &Budget,
-) -> EnumerationReport {
+) -> ParsedDirectory {
     let (execution, severity) = match &error {
         Error::Cancelled { .. } => (
             ExecutionReport::Cancelled {
@@ -1667,9 +2332,11 @@ fn terminated_enumeration(
         message: error.to_string(),
         provenance: None,
     });
-    EnumerationReport {
-        snapshot: snapshot.clone(),
+    ParsedDirectory {
         entries,
+        wayfinders,
+        names,
+        diagnostics,
         coverage: enumeration_coverage(
             CoverageState::Partial,
             progress.completed,
@@ -1677,7 +2344,6 @@ fn terminated_enumeration(
             progress.known_end,
         ),
         execution,
-        diagnostics,
     }
 }
 

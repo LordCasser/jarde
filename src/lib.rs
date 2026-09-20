@@ -86,7 +86,9 @@ pub use jarde_query::query::{
     QueryResolution, QueryTarget, XrefCertainty, XrefDerivation, XrefEvidence, XrefItem,
     XrefOperation, XrefTarget,
 };
-pub use jarde_reader::facts_cache::{FACTS_FORMAT, FactsCache, FactsIdentity, FactsReport};
+pub use jarde_reader::facts_cache::{
+    CONTAINER_FACTS_SCHEMA, FACTS_FORMAT, FactsCache, FactsCapacity, FactsIdentity, FactsReport,
+};
 // The versioned plugin plane (P4 3.1) crosses the same way the query layer does: as its product
 // types and its registry functions, never as the query layer's module path — the entry point that
 // performs a request (`plugin::execute`) stays below and is reached through

@@ -125,11 +125,30 @@ P5（`p5-measured-optimization`，**已交付并归档 10/10**，归档提交 `c
 
 | 开关 | 今天的状态 | 理由（均来自上表实测） |
 | --- | --- | --- |
-| facts cache（`Budget::with_facts_cache`，CP/Header 层） | **存在，默认 off**：`Budget::new` 不带 cache，只有显式附上的调用方才会被咨询 | 收益只在 charge 维度上确定（−555 class / −87 attribute bytes）；墙钟 137→116 µs 是**一次机器读数、未阈值化**；门槛未定（决策 5），故按 `performance-gates`「若收益不稳定或正确性对照失败…保留未启用状态并记录原因」 |
+| facts cache（`Budget::with_facts_cache`，CP/Header 层 + container facts 层） | **存在，默认 off**：`Budget::new` 不带 cache，只有显式附上的调用方才会被咨询 | CP/Header 层收益只在 charge 维度上确定（−555 class / −87 attribute bytes）；墙钟 137→116 µs 是**一次机器读数、未阈值化**；container facts 层只发布确定性工作计数与语义/完整报告对照，**不发布加速倍数**；门槛未定（决策 5），故按 `performance-gates`「若收益不稳定或正确性对照失败…保留未启用状态并记录原因」 |
 | index 路径 | **不存在** | 无消费者、无第二条路径可比；由源码守卫机械核对（不是一次性 grep） |
 | 并行 / merged / single-flight 路径 | **不存在** | 语料太小、候选收益低于同机重复带宽（~10%），且**没有「一个 snapshot 两个请求」的行**可量 |
 
 **关闭时与之前逐字节相同**（A15 的「关缓存」那一侧）：`Budget::new` 不携带 cache，未被附上的 cache 被断言 `consultations == 0`（`tests/p5_facts_cache.rs::the_default_path_consults_no_cache`），引擎**零 cache 构造点**（`tests/p5_benchmark.rs::the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler` + `crates/` 内 grep）；cache 打开时**结果四平面 status/order/coverage/diagnostics 逐字段相等**、差异只落在 `usage` 的 charge 字段（3.1/3.2 的 off/on 差分）。五个平面里**只有 parse 的 CP/Header parse 会被 cache 答复**（读取、CRC、digest、origin、coverage 与 read evidence 全部照旧产生，命中不 charge 任何计数字段）；X1、resolution、decompile-quality、output-level **一字未改**。
+
+### container facts 复用与定向访问（`bound-container-lookup`）
+
+同一 cache handle 上另有第二层产品：一个 container 的**已验证事实**——不可变 backing、完整中央目录，以及「raw name → 物理 entries」的多值定位表。它仍只在显式附上 handle 的请求中存在（`Budget::new` 不带 cache，引擎**零构造点**）。
+
+| 维度 | 实际状态 |
+| --- | --- |
+| 键 | snapshot 内容身份 + 完整 `ContainerOrigin` + 目录/验证 schema（`CONTAINER_FACTS_SCHEMA`）。`RuntimeProfile`、loader 顺序与 prefix **不在键里**：它们是 resolver 每次请求施加的选择规则，不是物理事实 |
+| 覆盖 | 只发布**完整**目录：因预算/取消/损坏而停止的 container 不写，也不缓存「未找到名字」的结论；一个失败 child 不污染完整 sibling，也不伪造空目录；首版不保存跨请求 `Partial` |
+| 容量 | `FactsCapacity { entries, retained_bytes }` 双上限，统一权重覆盖 backing、目录、名称表与既有 CP/Header payload；**满则拒绝插入**（无 LRU、无驱逐队列、无新依赖）。拒绝后当前请求继续使用已构造事实，不重扫 |
+| 权重口径 | **驻留代理，不是 RSS**：backing 字节 + 每条目录记录的估算 + 名称表占用；同一 backing 只计一次。`clear`/`drop` 释放 store 持有的引用 |
+| 命中 | 先 `poll`，再按**当前请求**的取消、时间与 `nested_depth` 等结构限制检查；不重放旧 usage、不重置预算、不把停止变成 `Complete`。实际 class 读取仍计费，并重新校验该 entry 的本地头、CRC 与 size；调用方反序列化的 metadata 不被信任 |
+| 报告 | `FactsReport` 分别报 container 命中/未命中、目录解析次数、nested 物化次数与字节、retained weight 与两类容量拒绝；这些计数只统计附有该 handle 的请求 |
+| 定向访问 | `ArtifactSnapshot::container_candidates`/`container_record` 只访问被声明的 container 及其祖先链：`providers.rs::tree_candidates` 不再调用整树枚举，`zip_candidates` 走同一目录事实路径。显式 `enumerate_artifact_tree` 仍报告全部 descendants（含坏 sibling）；局部查询不宣称整树完整 |
+| 接口影响 | cache 构造改为 `FactsCache::new(identity, FactsCapacity)`（**BREAKING**，仓库调用点一次性迁移，不留平行旧接口）；除此之外未新增依赖、crate 或其它公共 API |
+
+**不承诺加速**：不发布固定倍数、延迟阈值或 RSS 收益。可比证据只有同机、同 harness、同度量的重复读数；确定性验收是「未搜索 sibling 物化 0 次、保留期间同 container 二次解析/解压 0 次、暖路径不扫整目录、语义 fingerprint 相等」，以及相同 cache 初始状态下只剔除 `elapsed_millis` 的完整报告逐字段一致（`tests/p5_container_lookup.rs`，含 off/cold/warm/容量不足对照与 `--ignored container_lookup_timings`）。
+
+**容量是取舍**：保留 container backing 会增加常驻内存，`retained_bytes` 只是代理；默认关闭，且不承诺比基线更低 RSS。**未完成**：prefix root 语义属兄弟 change `bind-prefixed-load-roots`；定向访问入口的形状是「container origin + 请求的 raw name」，prefix 迁移在该入口之上施加，本 change 不改 root 选择语义。
 
 ### A15 / A18 的当前判定
 

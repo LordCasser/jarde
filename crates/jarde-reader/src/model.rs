@@ -1,16 +1,16 @@
 use serde::de::Error as _;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct SnapshotId(pub String);
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ContainerId(pub String);
 
 /// Raw bytes whose JSON representation is an array of octets, never lossy text.
-#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ArchiveNameBytes(pub Vec<u8>);
 
@@ -169,7 +169,7 @@ impl ByteSpan {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ContainerOriginStep {
     pub via_ordinal: u64,
@@ -177,7 +177,14 @@ pub struct ContainerOriginStep {
     pub child_container: ContainerId,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+/// One container's physical identity: the immutable snapshot plus the chain of nested entries
+/// that reaches it.
+///
+/// The order is the derivation order — snapshot, root container, then each step — so a
+/// `BTreeMap` over origins is a stable, total order that no hash seed can move. The container
+/// facts cache keys on this type and nothing about the request (`RuntimeProfile`, loader order,
+/// prefix) is in it.
+#[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ContainerOrigin {
     pub snapshot: SnapshotId,
