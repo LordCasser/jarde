@@ -151,6 +151,61 @@ two findings are marked **closed** below; every other row is the earlier run's o
 | `p3-corpus/v8-missing-dep` | `viaAbsentLibrary(I)I` | Java/Structured | **javac refuses**: cannot find symbol (`absent` is not shipped) | boundary |
 | | `plain(I)I` | Java/Structured | compiles | executed: traces identical |
 
+## The content classification of this sample (recorded run of 2026-09-20, `25ed621` + this change)
+
+The comparison's per-member table prints a `content` column beside the run's representation/quality,
+from `RecoveryReport::content`: `contains_statements` when the artifact the run committed holds at
+least one statement the emitter wrote as Java, `explanation_only` when the artifact is the envelope,
+its reasons and the quoted bytecode alone, and `not_produced` when the request was answered with a
+stop and no artifact. Each sample's table is followed by its own reconciliation, and those numbers
+are these:
+
+| sample (compiler, flags) | members declared | with `Code` | requests | produced | contains_statements | explanation_only | stopped | not requested (initializer) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `p3-corpus/v8-gnone` | 4 | 4 | 3 | 3 | 3 | 0 | 0 | 1 |
+| `p3-corpus/v8-g` | 4 | 4 | 3 | 3 | 3 | 0 | 0 | 1 |
+| `p3-corpus/v8-glines` | 4 | 4 | 3 | 3 | 3 | 0 | 0 | 1 |
+| `p3-corpus/v8-parameters` | 4 | 4 | 3 | 3 | 3 | 0 | 0 | 1 |
+| `p3-corpus/v8-missing-dep` | 3 | 3 | 2 | 2 | 2 | 0 | 0 | 1 |
+| `p3-local-rewrite/v8` | 9 | 9 | 8 | 8 | 8 | 0 | 0 | 1 |
+| `p3-scope/v8` | 8 | 8 | 7 | 7 | 7 | 0 | 0 | 1 |
+| `p3-scope/v8-debug` | 8 | 8 | 7 | 7 | 7 | 0 | 0 | 1 |
+| `p3-handlers/v8` | 24 | 24 | 22 | 22 | 14 | 8 | 0 | 2 |
+| `historical/ecj-4.6.1/v52` | 3 | 3 | 2 | 2 | 1 | 1 | 0 | 1 |
+| `p3-nested-eval/v8` | 5 | 5 | 4 | 4 | 4 | 0 | 0 | 1 |
+| `p3-refused-cast/v8` | 7 | 7 | 6 | 6 | 3 | 3 | 0 | 1 |
+| **total** | **83** | **83** | **70** | **70** | **58** | **12** | **0** | **13** |
+
+The counts reconcile three ways, and the comparison asserts each: 83 members declared = 83 with
+`Code` + 0 without; 70 requests = 70 produced + 0 stopped; 70 produced = 58 `contains_statements` +
+12 `explanation_only`. Every one of the 13 members not requested is a constructor or class
+initializer: a wrapper would have to re-declare the sample's own class name and this layer's AST does
+not model `super()`/`this()`, so those members are listed as *not requested* and are in no denominator
+above. They are the same shape the benchmark's reference decompiler folding `<init>`/`<clinit>`
+represents: an unmatched initializer is an applicability fact, not a failure of either engine, and it
+is excluded here rather than counted against either side.
+
+Twelve of the 70 artifacts hold no statement: `p3-handlers`' refused guarded bodies, `finallyPath`
+(the ECJ `finally` body finding (ii) closes), and the three refused casts of `p3-refused-cast`. Their
+text is not empty — it is the reasons and the quoted bytecode — which is exactly the case a
+text-shaped classification gets wrong. The other 58 include the refusals that keep a statement
+(`post`, `conditional`, `cast`, `nestedLocal`), which is why `explanation_only` and
+`contains_statements` are the only two produced values and neither is derived from the other.
+
+### The historical token heuristic is a heuristic, not this classification
+
+The distribution the architecture review quotes — 25,853 requests over the benchmark corpus, 99.4%
+"has text", ≈83.4% "has statements", 16.0% explanation-only — comes from `compare2.py`'s
+`statements` heuristic: it strips comment lines from the artifact's text and asks whether any token
+is left. It is an audit trail with its own definition, measured on the benchmark corpus (not on these
+fixtures), and it is **not** the engine's classification: `RecoveryReport::content` is read from the
+committed structure, per request, with no text parsing at all. The two are not the same instrument
+and must not be read as one: the old numbers are kept as they were, no historical percentage is
+rewritten from these counts, and nothing here is a statement-coverage rate. `contains_statements`
+means "the artifact holds a statement", not "the body was recovered"; `explanation_only` is the
+share of *produced* artifacts that hold none, and a produced artifact of either value can still be
+`Mixed`/`Fallback` with unproven semantics.
+
 ## The boundaries: what cannot be a compilation unit, and why
 
 Every row below is a place where the recovered text is **not** a method body Java accepts. The reason

@@ -14,7 +14,7 @@ jarde 是纯 Rust、library-first 的 JVM artifact 分析引擎。P0/P1 已完�
 
 `Engine::query` 保持 physical X0/X1，`references_definition`/`may_dispatch_to` 仍返回 UnsupportedAnalysis；`resolve_symbol`/`declaration_references` 是显式运行环境下的独立入口，回答类/字段/方法的**声明**解析与声明引用，dispatch 报告已知候选与 open-world 证据，不声称完整 JVMS 实现或 runtime selection（契约见主规格 `demand-resolver`）。`Engine::analyze_method` 可调度到 SSA；CLI 的 `analyze_method` 接收同形的 `environment`、`method`、`stages`，返回 `method_analysis`。适配层只提供 `input_path` 打开的单一 snapshot，不重写请求中的身份；方法报告含阶段与结果平面，P2 报告保持 Bytecode 契约；`jarde_jvm::analyze_method_ir` 另以只读 `MethodIr` 交付同次运行的实际表。`Engine::recover_method` 消费该载荷，CLI 同名 operation 返回方法分析与恢复报告，分析不重复执行。
 
-恢复产物目前是**方法体**，包含 `text`、source map、rules/profile、诊断和独立结果平面。完整结构可标记 Java/Structured，有低级引用时为 Mixed/Fallback；生产请求保持 `compile_status=NotAttempted`、`semantic_validation=Unproven`、`verification=NotPerformed`。门面已提供参数/receiver/debug 与按需成员证据（P3 3.1/3.2），accessor 的字段访问可从公开入口直接呈现；仍不在载荷里的是类级事实（`InnerClasses`/`ACC_INTERFACE`），故不声称嵌套。当前支持范围见 [支持矩阵](docs/support-matrix.md)。
+恢复产物目前是**方法体**，包含 `text`、source map、rules/profile、诊断和独立结果平面。报告还带闭合的 `content`（`not_produced`/`explanation_only`/`contains_statements`），从最终提交的结构判断产物是否含实际发射的 Java 语句；`Produced` 仅表示产物已交付，`content` 不证明完整恢复，也不证明可编译或语义等价。完整结构可标记 Java/Structured，有低级引用时为 Mixed/Fallback；生产请求保持 `compile_status=NotAttempted`、`semantic_validation=Unproven`、`verification=NotPerformed`。门面已提供参数/receiver/debug 与按需成员证据（P3 3.1/3.2），accessor 的字段访问可从公开入口直接呈现；仍不在载荷里的是类级事实（`InnerClasses`/`ACC_INTERFACE`），故不声称嵌套。当前支持范围见 [支持矩阵](docs/support-matrix.md)。
 
 `Strict` 的 45.x–51.x 与 52.0 支持只表示结构读取和 version-only gate，不能解释为完整 dialect validation 或 JVM verifier。现代版本、preview、future 与缺失输入分别报告能力限制。实际边界以 [五维支持矩阵](docs/support-matrix.md) 为准。
 

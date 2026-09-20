@@ -1124,6 +1124,10 @@ fn recovery_matches_the_library_entry_field_by_field() {
     assert_eq!(report["semantic_validation"], "unproven");
     assert_eq!(report["verification"], "not_performed");
     assert_eq!(report["outcome"], "produced");
+    // The content classification of the delivered artifact, on the wire, in the library's own
+    // spelling: this body is an `if`/`else` whose arms return, so it holds statements. The enum's
+    // other two values are asserted by the stop case and by `fieldCast` below.
+    assert_eq!(report["content"], "contains_statements", "{report}");
     assert_eq!(report["method"], "run()V");
     assert_eq!(report["profile"]["java_release"], 8);
     let rules: Vec<&str> = report["rules"]
@@ -1272,6 +1276,11 @@ fn a_recovery_request_that_asks_for_no_ssa_stops_inside_a_successful_response() 
         report["outcome"]["stopped"]["ir_table_missing"]["table"],
         "ssa"
     );
+    assert_eq!(
+        report["content"], "not_produced",
+        "the field states what the delivered artifact holds, and this answer delivers none: \
+         {report}"
+    );
     assert_eq!(report["text"], "");
     assert_eq!(report["source_map"]["segments"], json!([]));
     assert_eq!(report["regions"], json!([]));
@@ -1293,6 +1302,26 @@ fn a_recovery_request_that_asks_for_no_ssa_stops_inside_a_successful_response() 
     assert_eq!(
         value["result"]["analysis"]["execution"]["usage"]["method_bodies"],
         1
+    );
+
+    // The library's own answer for the same request, compared field by field the way the produced
+    // cases of this file are: a stop's document is the library's report too, so the classification of
+    // a stop is checked where every other field of it is, and an adapter that dropped or rewrote
+    // `content` would show up here even though the named assertions above pass.
+    let engine = Engine::new();
+    let mut budget = Budget::new(analysis_limits());
+    let snapshot = engine
+        .open(ArtifactInput::Path(class_path), &mut budget)
+        .expect("open the fixture directly");
+    let direct = engine
+        .recover_method(std::slice::from_ref(&snapshot), &analysis, &mut budget)
+        .expect("the same request through the library");
+    assert_eq!(
+        strip_elapsed_document(&value["result"]["report"]),
+        strip_elapsed_document(
+            &serde_json::to_value(direct.recovery()).expect("the recovery report serializes")
+        ),
+        "the adapter's document is the library's own stopped report, field by field"
     );
 }
 
@@ -1483,6 +1512,10 @@ fn the_nested_eval_sample_crosses_the_wire_field_by_field() {
         report["outcome"], "produced",
         "a degraded body is still an answer: {report}"
     );
+    assert_eq!(
+        report["content"], "contains_statements",
+        "the increment is a statement written beside the quote: {report}"
+    );
 
     // `nestedCall` is the same rule at a call argument: the deferred invocation at BCI 1 reads the
     // load at BCI 0, and its value is consumed by the `ireturn` at BCI 9 after the increment wrote
@@ -1527,6 +1560,7 @@ fn the_nested_eval_sample_crosses_the_wire_field_by_field() {
     );
     assert_eq!(report["representation"], "java", "{report}");
     assert_eq!(report["quality"], "structured", "{report}");
+    assert_eq!(report["content"], "contains_statements", "{report}");
 }
 
 #[test]
@@ -1572,8 +1606,16 @@ fn the_refused_cast_sample_crosses_the_wire_field_by_field() {
         "the quotes name the `getstatic` at BCI 0, the `checkcast` at BCI 3 and the `areturn` at \
          BCI 6, and no other instruction:\n{text}"
     );
-    assert_eq!(report["representation"], "mixed", "{report}");
+    assert_eq!(
+        report["representation"], "mixed",
+        "the artifact of this refusal is the quotes themselves: {report}"
+    );
     assert_eq!(report["quality"], "fallback", "{report}");
+    assert_eq!(
+        report["content"], "explanation_only",
+        "`fieldCast` delivers non-empty text — two reasons and their quoted bytecode — and no \
+         statement at all, which is the case a text-shaped classification gets wrong: {report}"
+    );
     let read = wire_field_record(report, 0);
     assert_eq!(read["access"], "read", "{read}");
     assert_eq!(
@@ -1642,5 +1684,6 @@ fn the_refused_cast_sample_crosses_the_wire_field_by_field() {
         );
         assert_eq!(report["representation"], "java", "{report}");
         assert_eq!(report["quality"], "structured", "{report}");
+        assert_eq!(report["content"], "contains_statements", "{report}");
     }
 }

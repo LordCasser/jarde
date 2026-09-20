@@ -56,6 +56,11 @@ pub(crate) struct Emitted {
     pub(crate) source_map: SourceMap,
     /// How many bytes the recovery run wrote, which is what a stopped run reports.
     pub(crate) written: u64,
+    /// How many statements of the body this emission wrote as Java. A [`StmtKind::Fallback`] is not
+    /// one of them: it writes a reason and the bytecode indexes it quotes. This is the fact
+    /// [`crate::report`] classifies a committed artifact's content from, and it travels *with* the
+    /// text because both are the emission's: a run that stops mid-emission hands out neither.
+    pub(crate) statements: usize,
 }
 
 /// Emits one method body.
@@ -93,6 +98,9 @@ struct Emitter<'a> {
     limit: u64,
     /// The member body every anchor of this emission belongs to, when the payload stated one.
     member: Option<&'a PhysicalMethodId>,
+    /// How many statements of the body have been written as Java so far: the fact
+    /// [`Emitted::statements`] publishes once every write succeeded.
+    statements: usize,
 }
 
 impl<'a> Emitter<'a> {
@@ -105,6 +113,7 @@ impl<'a> Emitter<'a> {
             written: 0,
             limit,
             member,
+            statements: 0,
         }
     }
 
@@ -186,6 +195,14 @@ impl<'a> Emitter<'a> {
     fn stmt(&mut self, stmt: &Stmt, indent: usize) -> Result<(), StopReason> {
         let at = Some(stmt.origin.primary().bci());
         let pad = indent_text(indent);
+        // What a statement is, stated where statements are written: a fallback writes the reason and
+        // the bytecode it could not present, so it is not one. Everything else this emitter spells —
+        // a declaration, an assignment, a call, a constructor call, `return` and the control-flow
+        // statements — is. The count is only ever read out of a finished [`Emitted`], so a stop
+        // inside this call discards it with the text.
+        if !matches!(stmt.kind, StmtKind::Fallback { .. }) {
+            self.statements += 1;
+        }
         match &stmt.kind {
             StmtKind::Declare { ty, name, value } => {
                 self.put(&pad, at)?;
@@ -514,6 +531,7 @@ impl<'a> Emitter<'a> {
             text: self.text,
             source_map,
             written: self.written,
+            statements: self.statements,
         }
     }
 }

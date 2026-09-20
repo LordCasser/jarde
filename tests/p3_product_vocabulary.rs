@@ -26,6 +26,13 @@
 //!    expectation lives here instead of on the types because no production code iterates these
 //!    planes, and a public `ALL` list would exist for this guard alone.
 //!
+//! The **content classification of a delivered artifact** ([`RecoveryContent`]) is pinned here for
+//! the same reason and by the same reading of its declaring file, though it is not one of those six
+//! planes: no P2 report carries it, it is stated by the recovery report from the artifact that was
+//! committed, and (being a report output and not a report input) it publishes without deserializing.
+//! Its set is closed at exactly the three values the `java8-recovery` sentences write, and a fourth
+//! value is a change to that contract rather than an addition to it.
+//!
 //! Neither check is a producer, and neither may become one: this slice adds no variant that a run
 //! of this build can emit. The P2 baseline of every plane — `bytecode`, `not_java`,
 //! `not_attempted`, `not_performed`, with a quality of `conservative`/`fallback` — is asserted on
@@ -34,7 +41,8 @@
 //! that widening the sets changed no output, and this slice left them untouched.
 
 use jarde::{
-    CompileStatus, Quality, Representation, SemanticValidation, SyntaxStatus, VerificationStatus,
+    CompileStatus, Quality, RecoveryContent, Representation, SemanticValidation, SyntaxStatus,
+    VerificationStatus,
 };
 use std::path::Path;
 
@@ -44,6 +52,10 @@ const IR_MODULE: &str = "crates/jarde-jvm/src/ir.rs";
 /// The file that declares the classfile vocabulary the `verification` plane reuses: P2's report
 /// states that plane with the reader's type, so the set is declared where the type lives.
 const CLASSFILE_MODULE: &str = "crates/jarde-reader/src/classfile.rs";
+
+/// The file that declares the recovery report and its own closed classification of what the delivered
+/// artifact holds. The type lives with the report it belongs to, so this is where its set is read.
+const REPORT_MODULE: &str = "crates/jarde-java/src/report.rs";
 
 /// Asserts one plane's whole vocabulary: every listed value publishes its `snake_case` name and
 /// round-trips, and the list is exactly the declaring file's variants, in declaration order.
@@ -150,6 +162,46 @@ fn the_six_report_planes_declare_the_values_the_p3_sentences_write() {
         "VerificationStatus",
         VerificationStatus,
         [NotPerformed, Performed, Failed]
+    );
+}
+
+/// The recovery report's own closed classification, read the way the six planes above are read: every
+/// value publishes the `snake_case` name derived from the variant, and the list is exactly the
+/// variants the declaring file writes, in declaration order.
+///
+/// The round-trip half of `plane!` is deliberately absent: the report types of `jarde-java` are output
+/// documents (`RecoveryReport`, `RecoveryOutcome` and `RegionRecord` all derive `Serialize` alone), so
+/// a value of this enum is proved to publish its name, and comparing it with the declaration is what
+/// keeps the set closed.
+#[test]
+fn the_recovery_content_classification_is_the_closed_published_set() {
+    // `content`（NotProduced/ExplanationOnly/ContainsStatements）: what the delivered artifact holds.
+    // `not_produced` is the stop (nothing was committed, so there is no content to describe),
+    // `explanation_only` is an artifact whose whole content is the envelope, its reasons and the
+    // bytecode they quote, and `contains_statements` is one the emitter wrote a statement into — a
+    // declaration, an assignment, a call, a constructor call, a `return` or a control-flow statement.
+    // `Produced` alone says none of that, which is the sentence this set exists for.
+    let report = read_repository_file(REPORT_MODULE);
+    let values: Vec<RecoveryContent> = vec![
+        RecoveryContent::NotProduced,
+        RecoveryContent::ExplanationOnly,
+        RecoveryContent::ContainsStatements,
+    ];
+    let mut names = Vec::new();
+    for value in values {
+        let name = format!("{value:?}");
+        assert_eq!(
+            serde_json::to_string(&value).expect("a content value serializes"),
+            format!("\"{}\"", serde_code(&name)),
+            "`{name}` must publish the snake_case name the recovery report uses"
+        );
+        names.push(name);
+    }
+    assert_eq!(
+        names,
+        declared_variants(&report, "RecoveryContent"),
+        "the values listed here must be every variant `RecoveryContent` declares, in declaration \
+         order: the classification is closed, and a fourth value is a change to that contract"
     );
 }
 

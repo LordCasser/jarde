@@ -60,8 +60,8 @@ pub use jarde_reader::{artifact, budget, error, model, multi_release, runtime_ma
 // 1.3 poses ("which text came from this BCI", "what covers this byte") without naming them.
 pub use jarde_java::{
     IrTable, LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal, MethodFacts, Precondition,
-    RecoveryFacts, RecoveryOutcome, RecoveryProfile, RecoveryReport, RecoveryRequest, RegionRecord,
-    RuleVersion, SourceMap, StopReason, recover,
+    RecoveryContent, RecoveryFacts, RecoveryOutcome, RecoveryProfile, RecoveryReport,
+    RecoveryRequest, RegionRecord, RuleVersion, SourceMap, StopReason, recover,
 };
 
 pub mod facade;

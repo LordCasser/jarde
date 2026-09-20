@@ -92,7 +92,9 @@ pub use field::{FieldRecord, FieldRefusal};
 pub use init::{InitRecord, InitRefusal, NewRecord, NewRefusal};
 pub use lambda::{LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal};
 pub use pass::{IrTable, Pass, Precondition, RecoveryProfile, RuleVersion};
-pub use report::{RecoveryOutcome, RecoveryReport, RecoveryRequest, RegionRecord, recover};
+pub use report::{
+    RecoveryContent, RecoveryOutcome, RecoveryReport, RecoveryRequest, RegionRecord, recover,
+};
 
 pub use ast::{BinaryOp, ConstructorTarget, Expr, ExprKind, Stmt, StmtKind, Type};
 pub use emit::{comment_text, escape_string};

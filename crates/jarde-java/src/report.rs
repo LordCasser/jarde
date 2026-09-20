@@ -4,7 +4,8 @@
 //!
 //! [`recover`] takes the P2 payload by reference ([`MethodIr`], the 1.1 handoff) plus the facts the
 //! layer below read ([`RecoveryFacts`]), and produces at most one artifact: the Java text, its
-//! segment table, a diagnostic list, and the six planes that describe what was produced.
+//! segment table, a diagnostic list, the six planes that describe what was produced, and
+//! [`RecoveryContent`] — what the artifact holds.
 //!
 //! # The six planes are written, not inferred from each other
 //!
@@ -23,6 +24,16 @@
 //! The combinations the P3 spec states are therefore all reachable without any plane being bent to
 //! fit another: `Mixed`/`Fallback` for a body with an unprovable region, and `Java`/`NotJava` for a
 //! body whose local is named `int` in the source and `int_` in the text.
+//!
+//! # The content classification is read from the committed artifact
+//!
+//! [`RecoveryContent`] is not a second quality: it is read from the emission that committed the
+//! artifact — how many statements the emitter wrote that were not fallbacks — and no plane is read
+//! from it or writes it. It exists because `Produced` says only that an artifact was delivered: a
+//! report whose whole artifact is reasons and quoted bytecode is `Produced` too, and before this
+//! field a caller had to strip comments from [`RecoveryReport::text`] to guess which of the two it
+//! held. A stopped run holds no artifact, so the report of a stop states `NotProduced` without asking
+//! whether anything was built or written before the refusal.
 //!
 //! # A stop is not a produced artifact
 //!
@@ -130,6 +141,33 @@ impl RecoveryOutcome {
     }
 }
 
+/// What a report's artifact holds: whether the run stopped without one, delivered explanation alone,
+/// or delivered Java statements.
+///
+/// This is the answer to "does the artifact hold anything a caller can call code", and it is
+/// deliberately the *only* answer to it — not a second quality plane and not a recovery measure. It
+/// is read from the committed structure (the statements the emitter wrote, in `crate::emit`) and
+/// never from [`RecoveryReport::text`]: no comment is stripped, no token is counted, and no caller
+/// has to parse the artifact to learn this. A statement is a declaration, an assignment, a call, a
+/// constructor call, a `return` or a control-flow statement; a wrapper line, a brace, a fallback's
+/// reason and its bytecode indexes are not.
+///
+/// Two shapes keep the classification honest in both directions: `return;` alone is
+/// `ContainsStatements`, and `if (arg0) {}` is `ContainsStatements` too (its condition is
+/// evaluated), while neither of them raises `quality` or becomes a claim about the rest of the body.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RecoveryContent {
+    /// The run stopped before an artifact was committed, so there is no content to describe: the
+    /// text and the segment table are empty, as the stop contract states.
+    NotProduced,
+    /// An artifact was delivered and it holds no statement: what it says is the envelope, the
+    /// reasons and the quoted bytecode of the regions the run refused.
+    ExplanationOnly,
+    /// The artifact holds at least one statement the emitter wrote as Java.
+    ContainsStatements,
+}
+
 /// What one recovered region is, stated so that a reader can check the run's own claim about it.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct RegionRecord {
@@ -175,6 +213,11 @@ pub struct RecoveryReport {
     pub execution: ExecutionReport,
     /// Whether the run produced an artifact or stopped.
     pub outcome: RecoveryOutcome,
+    /// What the delivered artifact holds, read from the committed structure. `Produced` says only
+    /// that an artifact was delivered; this says whether any statement is in it — and says nothing
+    /// about completeness, compilability or semantic equivalence, which the planes above state for
+    /// themselves.
+    pub content: RecoveryContent,
     /// The Java text, empty when the run stopped.
     pub text: String,
     /// The segment table of [`Self::text`], empty when the run stopped.
@@ -401,6 +444,11 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         Ok(emitted) => emitted,
         Err(stop) => return stopped(method, profile.clone(), stop, budget),
     };
+    // What the artifact that was just committed holds. The classification is taken here, from the
+    // emission itself, and not from the AST the build had produced: a statement that was built and
+    // then never committed (the emitter stopped inside it) is not in any artifact, and the run that
+    // stopped is classified by [`stopped`], which never asks this question.
+    let content = content_of(&emitted);
 
     // The planes, each from its own input.
     let structured = recovered.is_structured() && !program.ragged;
@@ -766,6 +814,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             usage: budget.usage(),
         },
         outcome: RecoveryOutcome::Produced,
+        content,
         text: emitted.text,
         source_map: emitted.source_map,
         regions,
@@ -803,6 +852,17 @@ fn region_records(regions: &[Region]) -> Vec<RegionRecord> {
             }
         })
         .collect()
+}
+
+/// The content of a committed artifact, from the statements its emission wrote: an artifact that
+/// holds only the envelope, the reasons and the quoted bytecode is [`RecoveryContent::ExplanationOnly`],
+/// and one statement the emitter spelled as Java makes it [`RecoveryContent::ContainsStatements`].
+fn content_of(emitted: &Emitted) -> RecoveryContent {
+    if emitted.statements == 0 {
+        RecoveryContent::ExplanationOnly
+    } else {
+        RecoveryContent::ContainsStatements
+    }
 }
 
 /// The report of a run that stopped: no text, no segments, and an execution plane that says so.
@@ -884,6 +944,9 @@ fn stopped(
         verification: VerificationStatus::NotPerformed,
         execution,
         outcome: RecoveryOutcome::Stopped(reason),
+        // Nothing was committed, so there is no content to describe. A stop is never classified from
+        // whatever the failed run had built or written before it refused.
+        content: RecoveryContent::NotProduced,
         text: String::new(),
         source_map: SourceMap::default(),
         regions: Vec::new(),

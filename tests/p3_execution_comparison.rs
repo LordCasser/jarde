@@ -1246,6 +1246,11 @@ struct Planned {
     declaration: String,
     represent: Representation,
     quality: Quality,
+    /// What the delivered artifact holds, as the report's own content plane states it.
+    content: RecoveryContent,
+    /// Whether the run delivered an artifact at all: a stopped request holds no content, and the
+    /// two values are compared rather than assumed to agree.
+    produced: bool,
     /// The scratch class this member's wrapper was written into.
     scratch: String,
     /// The diagnostic codes the report's refused regions state, in report order.
@@ -1277,6 +1282,17 @@ struct SampleOutcome {
     label: String,
     point: String,
     rows: Vec<Planned>,
+    /// How many members the class declares, how many of them declare a body, and how many therefore
+    /// are not requests at all.
+    declared: usize,
+    with_code: usize,
+    without_code: usize,
+    /// How many requests this sample performed, and how the engine's own reports classified them.
+    requested: usize,
+    produced: usize,
+    contains_statements: usize,
+    explanation_only: usize,
+    stopped: usize,
     skipped: Vec<String>,
     executed: Vec<String>,
     counted: Vec<String>,
@@ -1311,7 +1327,7 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
             InspectionMode::Strict,
         )
         .expect("the fixture's own header is readable");
-    let declared: Vec<(String, String)> = inspected
+    let declared: Vec<(String, String, bool)> = inspected
         .inspection
         .header
         .methods
@@ -1320,6 +1336,12 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
             (
                 String::from_utf8_lossy(&member.name.raw().0).into_owned(),
                 String::from_utf8_lossy(&member.descriptor.raw().0).into_owned(),
+                // Whether the member declares a body at all: the same attribute shell the recovery
+                // entry reads, so the applicability line below is a fact about the bytes.
+                member
+                    .attributes
+                    .iter()
+                    .any(|shell| shell.name.raw().0.as_slice() == b"Code"),
             )
         })
         .collect();
@@ -1328,7 +1350,7 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
     // so a renamed fixture fails here instead of quietly covering less.
     for member in sample.members {
         assert!(
-            declared.iter().any(|(name, _)| name == member.name),
+            declared.iter().any(|(name, ..)| name == member.name),
             "{}: the sample declares `{}`",
             sample.label,
             member.name
@@ -1340,7 +1362,17 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
     let mut executed = Vec::new();
     let mut counted = Vec::new();
 
-    for (name, descriptor) in &declared {
+    for (name, descriptor, has_code) in &declared {
+        if !has_code {
+            // A member with no `Code` attribute (abstract, native) is not a member a run can be
+            // asked to present, so it is not a request at all: it is an applicability fact about the
+            // sample, listed here and kept out of every denominator below.
+            skipped.push(format!(
+                "`{name}{descriptor}`: the member declares no `Code` attribute, so there is no body \
+                 to present"
+            ));
+            continue;
+        }
         if name.starts_with('<') {
             skipped.push(format!(
                 "`{name}{descriptor}`: a constructor or class initializer cannot be re-declared in \
@@ -1512,6 +1544,8 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
             declaration: declaration.clone(),
             represent: report.representation,
             quality: report.quality,
+            content: report.content.clone(),
+            produced: report.produced(),
             scratch: scratch.clone(),
             codes,
             quotes,
@@ -1715,10 +1749,66 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
     let (trace_lines, trace_identical, trace) =
         compare_traces(sample, dir.path(), &rows, &executed, &counted);
 
+    // The content reconciliation of this sample, from the reports themselves: every declared member
+    // is either requested or stated as not requestable, every request is answered with a produced or
+    // a stopped report, the two produced values partition the produced requests, and `not_produced`
+    // is exactly the stopped ones. The counts are read from four different places — the header's
+    // attribute shells, the loop that performed the requests, the reports' outcome plane and the
+    // reports' content field — so the equalities below are statements about the run, not arithmetic
+    // on one number.
+    let with_code = declared.iter().filter(|(_, _, has_code)| *has_code).count();
+    let without_code = declared.len() - with_code;
+    let requested = rows.len();
+    let produced = rows.iter().filter(|row| row.produced).count();
+    let stopped = rows.iter().filter(|row| !row.produced).count();
+    let contains_statements = rows
+        .iter()
+        .filter(|row| row.content == RecoveryContent::ContainsStatements)
+        .count();
+    let explanation_only = rows
+        .iter()
+        .filter(|row| row.content == RecoveryContent::ExplanationOnly)
+        .count();
+    let not_produced = rows
+        .iter()
+        .filter(|row| row.content == RecoveryContent::NotProduced)
+        .count();
+    assert_eq!(
+        declared.len(),
+        requested + skipped.len(),
+        "{}: every member the class declares is either requested or stated as not requestable",
+        sample.label
+    );
+    assert_eq!(
+        produced + stopped,
+        requested,
+        "{}: every request is answered with a produced or a stopped report",
+        sample.label
+    );
+    assert_eq!(
+        contains_statements + explanation_only,
+        produced,
+        "{}: the two produced content values partition the produced requests",
+        sample.label
+    );
+    assert_eq!(
+        not_produced, stopped,
+        "{}: `not_produced` is exactly the stopped requests",
+        sample.label
+    );
+
     SampleOutcome {
         label: sample.label.to_string(),
         point: sample.point.to_string(),
         rows,
+        declared: declared.len(),
+        with_code,
+        without_code,
+        requested,
+        produced,
+        contains_statements,
+        explanation_only,
+        stopped,
         skipped,
         executed,
         counted,
@@ -1838,8 +1928,8 @@ fn print_outcomes(outcomes: &[SampleOutcome]) {
         println!("\n## {}", outcome.label);
         println!("{}", outcome.point.replace('\n', " "));
         println!();
-        println!("| member | run | wrapper | result |");
-        println!("| --- | --- | --- | --- |");
+        println!("| member | run | content | wrapper | result |");
+        println!("| --- | --- | --- | --- | --- |");
         for row in &outcome.rows {
             let run = format!(
                 "{}/{}",
@@ -1868,12 +1958,14 @@ fn print_outcomes(outcomes: &[SampleOutcome]) {
                 )
             };
             println!(
-                "| `{}{}` | {run} | {wrapper} | {result} |",
-                row.name, row.descriptor
+                "| `{}{}` | {run} | {} | {wrapper} | {result} |",
+                row.name,
+                row.descriptor,
+                content_name(&row.content)
             );
             if let Some(Err(message)) = &row.count_control {
                 println!(
-                    "| | | | the count control does not compile either: {} |",
+                    "| | | | | the count control does not compile either: {} |",
                     first_line(message)
                 );
             }
@@ -1881,6 +1973,44 @@ fn print_outcomes(outcomes: &[SampleOutcome]) {
         for skip in &outcome.skipped {
             println!("- not wrapped: {skip}");
         }
+        // The content reconciliation of this sample, printed from the report fields the rows carry:
+        // what the requests were, what the engine delivered, and how the two content values and the
+        // stops add up. The sample's applicability is stated beside the coverage numbers so that a
+        // member with no body, or an initializer the comparison cannot re-declare, is not read as a
+        // failed request. `contains_statements` is not a recovery rate: `explanation_only` is the
+        // share of *produced* artifacts that hold no statement, and neither value nor their sum says
+        // anything about how much of the body was recovered.
+        println!();
+        println!("| content | count |");
+        println!("| --- | --- |");
+        println!("| members declared | {} |", outcome.declared);
+        println!("| members with `Code` | {} |", outcome.with_code);
+        println!(
+            "| members without `Code` (applicability only) | {} |",
+            outcome.without_code
+        );
+        println!("| requests performed | {} |", outcome.requested);
+        println!("| produced | {} |", outcome.produced);
+        println!("| contains_statements | {} |", outcome.contains_statements);
+        println!("| explanation_only | {} |", outcome.explanation_only);
+        println!("| stopped | {} |", outcome.stopped);
+        println!(
+            "| not requested (initializer/constructor) | {} |",
+            outcome.skipped.len() - outcome.without_code
+        );
+        println!(
+            "reconciliation: {} declared = {} with `Code` + {} without; {} requested = {} produced \
+             + {} stopped; {} produced = {} contains_statements + {} explanation_only",
+            outcome.declared,
+            outcome.with_code,
+            outcome.without_code,
+            outcome.requested,
+            outcome.produced,
+            outcome.stopped,
+            outcome.produced,
+            outcome.contains_statements,
+            outcome.explanation_only
+        );
         // The refusals that rest on the original's own behaviour: the committed driver's output, as
         // the fixture's README records it.
         if let Some(baseline) = &outcome.baseline {
@@ -1989,5 +2119,14 @@ fn quality_name(quality: Quality) -> &'static str {
         Quality::Structured => "Structured",
         Quality::Fallback => "Fallback",
         _ => "other",
+    }
+}
+
+/// The wire name of one content value, so the table prints the same spelling the report publishes.
+fn content_name(content: &RecoveryContent) -> &'static str {
+    match content {
+        RecoveryContent::NotProduced => "not_produced",
+        RecoveryContent::ExplanationOnly => "explanation_only",
+        RecoveryContent::ContainsStatements => "contains_statements",
     }
 }
