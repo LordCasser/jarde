@@ -31,7 +31,7 @@
 //!   unusable: neither is dropped silently, because a silently dropped instruction is exactly the
 //!   failure a presentation must not have.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use jarde_jvm::method_ir::{
     CanonicalBlockId, CanonicalCfg, Definition, RefType, Slot, SsaInstruction, SsaTable, Value,
@@ -186,19 +186,104 @@ struct Declarations {
     /// The variables declared at the start of one region, by that region's path, in slot and
     /// variable order.
     at_region: BTreeMap<RegionPath, Vec<HoistedDeclaration>>,
+    /// What the plan decided about each variable's type, by that variable's own identity: the one
+    /// decision the hoisted declaration, the in-place declaration, the assignments, the conditions
+    /// and the returns all present the variable with.
+    decided: BTreeMap<LocalVariable, Decided>,
+}
+
+/// What the plan decided about one local variable's type before a statement of this body existed.
+///
+/// The decision is the same evidence the layer always read — a descriptor, a read of a variable the
+/// same plan decided `boolean`, otherwise the frame's own type — read **once**, for every variable,
+/// and then only consumed. Deciding here rather than at each use is what keeps the two declaration
+/// paths from answering differently, and what lets every write be checked against one answer.
+#[derive(Clone, Debug, Eq, PartialEq)]
+enum Decided {
+    /// The variable holds this type: `boolean` when a descriptor states it or a variable this plan
+    /// decided boolean is copied into it, and otherwise the type the frames state for the value its
+    /// first write stores.
+    Type(Type),
+    /// No type can be decided for the variable, with the fact that stopped it: a write of it can
+    /// then not be published as a declaration, and the structure that write belongs to is refused.
+    Unknown(NoType),
+}
+
+impl Decided {
+    /// Whether this decision states a `boolean`.
+    fn is_boolean(&self) -> bool {
+        matches!(self, Self::Type(Type::Boolean))
+    }
+}
+
+/// Why the plan could not decide a variable's type.
+///
+/// The two reasons are the ones the in-place declaration path already refused with; they are
+/// recorded here because the plan is where they are now read, and the write that carries the
+/// refusal states the BCI it is about.
+#[derive(Clone, Debug, Eq, PartialEq)]
+enum NoType {
+    /// The value the variable's first write stores has no frame entry that states a type
+    /// (`Top`, a category-2 value's second slot, an uninitialized value, a return address).
+    NoFrameEntry,
+    /// The value the variable's first write stores has a frame entry that names a descriptor this
+    /// layer cannot spell as a Java type.
+    Unspellable(String),
+}
+
+impl NoType {
+    /// The reason a refused declaration states, at the write that would have carried it.
+    fn message(&self, slot: u16, at: u32) -> String {
+        match self {
+            Self::NoFrameEntry => format!("local {slot} has no frame entry stating its type"),
+            Self::Unspellable(name) => format!(
+                "the local written at BCI {at} holds a value the frames name `{name}`, which is a descriptor this layer cannot spell as a Java type, so the declaration is refused instead of writing it"
+            ),
+        }
+    }
 }
 
 /// One declaration written at the start of a region instead of at the write that fills the variable.
 #[derive(Clone)]
 struct HoistedDeclaration {
     variable: LocalVariable,
+    /// The plan's own decision ([`Declarations::decided`]) for this variable: the one type both
+    /// declaration paths write, so a variable cannot be typed one way above the branch and another
+    /// way inside it.
     ty: Type,
     /// The write whose value states the type and whose frame entry states the variable's type: the
     /// anchor the declaration is written under, exactly like the in-place declaration it replaces.
     at: u32,
 }
 
-/// Plans where each local variable's declaration is written.
+/// What one write's declaration did.
+///
+/// The three outcomes are three different answers, and the ambiguity this enum removes is the defect
+/// the change fixes: before it, `Ok(None)` meant both "no declaration is due" and "the declaration
+/// failed and a fallback was written", so a caller could not tell a variable that needs no
+/// declaration from one whose declaration was refused — and went on to write the assignment.
+#[derive(Clone, Debug, Eq, PartialEq)]
+enum Declaration {
+    /// This write carries the variable's declaration, with the plan's type for it.
+    Declared(Type),
+    /// No declaration is due: a parameter's (the signature declares it), an already declared
+    /// variable's, or a variable with no name to declare.
+    NotDue,
+    /// No declaration could be written: the plan decided no type for the variable, the fallback that
+    /// states why is already recorded, and the assignment this write would otherwise become may not
+    /// be written.
+    Refused,
+}
+
+/// Plans where each local variable's declaration is written, and what type every variable's uses
+/// are presented with.
+///
+/// The two are one plan because they are one decision: a variable's type is decided here, by the
+/// variable's own identity, before a statement of the body exists, and the declaration's *place*
+/// only says where that decision is written. Deciding the type here is what keeps the hoisted path
+/// (which runs before any declaration exists) and the in-place path (which used to recognize the
+/// declarations it had already written) from answering differently about the same value, and what
+/// makes the answer independent of the order the regions are walked in.
 #[allow(clippy::too_many_arguments)]
 fn declarations(
     regions: &[Region],
@@ -209,8 +294,83 @@ fn declarations(
     parameters: u16,
     parameter_types: &BTreeMap<u16, Type>,
     fields: &field::Plan,
-) -> Declarations {
+    budget: &mut Budget,
+) -> Result<Declarations, StopReason> {
     let paths = region_paths(regions);
+    let uses = slot_uses(ssa, operations, reuse, &paths);
+    let mut plan = Declarations {
+        decided: decide_types(
+            &uses,
+            ssa,
+            operations,
+            reuse,
+            parameters,
+            parameter_types,
+            fields,
+            budget,
+        )?,
+        ..Declarations::default()
+    };
+    // The slots a guarded statement declares **in its own header** (P3 2.4): a `try (T n = …)`
+    // header is the declaration, no statement of the body writes one, and hoisting a second
+    // declaration above the statement would declare the same name twice.
+    let resources = resource_slots(regions);
+    for (variable, variable_uses) in &uses {
+        // A parameter's declaration is the signature, not the body, and a variable this layer has no
+        // name for is one whose writes are already reported as a fallback of their own.
+        if variable.slot() < parameters
+            || names.text(*variable).is_none()
+            || resources.contains(&variable.slot())
+        {
+            continue;
+        }
+        let Some(region) = declaration_region(variable_uses, &paths) else {
+            continue;
+        };
+        // The write that fills the variable first, in method order: the region path a block stands
+        // in is the order the regions are written in, and the bytecode index orders the blocks of
+        // one region.
+        let Some(first) = variable_uses
+            .iter()
+            .filter(|use_| use_.written.is_some())
+            .min_by_key(|use_| (use_.path.clone(), use_.bci))
+        else {
+            continue;
+        };
+        if first.path.as_ref() == Some(&region) {
+            // Every use is in the first write's own region: the declaration the write carries is in
+            // scope for all of them, which is the text this layer has always written.
+            continue;
+        }
+        // The declaration states the type the plan decided for this variable — the same answer the
+        // write that fills it would state in place. A variable whose type could not be decided keeps
+        // the write's own refusal, which is what the in-place path states for it.
+        let Some(Decided::Type(ty)) = plan.decided.get(variable) else {
+            continue;
+        };
+        plan.at_region
+            .entry(region)
+            .or_default()
+            .push(HoistedDeclaration {
+                variable: *variable,
+                ty: ty.clone(),
+                at: first.bci,
+            });
+    }
+    Ok(plan)
+}
+
+/// Every local access of this body, grouped by the variable it belongs to.
+///
+/// A read is recorded where it reads and a write where it writes, with the region path of the block
+/// the instruction stands in — the order the regions are written in is the path's own order, which
+/// is what makes "the first write" a fact about the method rather than about this walk.
+fn slot_uses(
+    ssa: &SsaTable,
+    operations: &Operations,
+    reuse: &reuse::Plan,
+    paths: &RegionPaths,
+) -> BTreeMap<LocalVariable, Vec<SlotUse>> {
     let mut uses: BTreeMap<LocalVariable, Vec<SlotUse>> = BTreeMap::new();
     for block in ssa.blocks() {
         let path = paths.paths.get(block.block());
@@ -241,65 +401,167 @@ fn declarations(
             }
         }
     }
-    // The slots a guarded statement declares **in its own header** (P3 2.4): a `try (T n = …)`
-    // header is the declaration, no statement of the body writes one, and hoisting a second
-    // declaration above the statement would declare the same name twice.
-    let resources = resource_slots(regions);
-    let mut plan = Declarations::default();
-    for (variable, variable_uses) in &uses {
-        // A parameter's declaration is the signature, not the body, and a variable this layer has no
-        // name for is one whose writes are already reported as a fallback of their own.
-        if variable.slot() < parameters
-            || names.text(*variable).is_none()
-            || resources.contains(&variable.slot())
-        {
-            continue;
-        }
-        let Some(region) = declaration_region(variable_uses, &paths) else {
-            continue;
-        };
-        // The write that fills the variable first, in method order: the region path a block stands
-        // in is the order the regions are written in, and the bytecode index orders the blocks of
-        // one region.
-        let Some(first) = variable_uses
+    uses
+}
+
+/// The write one variable's type is decided from, and the values that state it.
+struct FirstWrite {
+    /// The write's own bytecode index: the anchor a declaration or a refusal is written under.
+    at: u32,
+    /// The value the slot takes.
+    written: ValueId,
+    /// The value the writing instruction **reads** as the one it stores, when the two differ: it is
+    /// this value — not the slot's own — whose evidence states what the variable holds.
+    stored: ValueId,
+}
+
+/// Decides every variable's type once, from a finite list of evidence, before a statement exists.
+///
+/// The evidence is a closed list, and nothing is followed anywhere else:
+///
+/// * a **descriptor** fact about the value a variable's first write stores: a `Z` parameter slot's
+///   load, a call whose callee descriptor returns `Z`, a field read a `field@1` claim states is `Z`
+///   ([`boolean_proof`]) — for a parameter variable, its own descriptor is that same fact, read
+///   directly;
+/// * a **read of another variable this plan decided boolean**, one read and one hop: a variable whose
+///   first write stores such a read is boolean too, and a chain of copies therefore reaches a
+///   fixpoint. Nothing else is followed: a store's own value, a value two definitions away and a
+///   value merged out of several pushes state nothing;
+/// * the **frame's type** for the value a variable's first write stores — the type of every
+///   non-boolean decision, because the frames state one slot shape for the four int-sized
+///   primitives and cannot tell a `boolean` from an `int`;
+/// * **nothing else**: the `0`/`1` literal is refused as the *initiating* evidence (a fresh local
+///   states no type, so `int x = 0;` and `boolean c = true;` are the same bytes), and it adapts to
+///   `true`/`false` only where the target is already decided boolean — which is how the consumers
+///   spell it, not a decision of this pass.
+///
+/// A variable whose first write states no usable type is [`Decided::Unknown`]: the write that would
+/// have declared it refuses instead, and no second place decides a type for it.
+///
+/// The propagation runs on a worklist to a fixpoint, so a chain of copies is decided the same way
+/// whatever order the variables are met in, and every queue entry is billed and polled against the
+/// run's own budget and cancellation before it is processed. The queue holds each variable at most
+/// once, so the pass is bounded by the variables' own write count.
+#[allow(clippy::too_many_arguments)]
+fn decide_types(
+    uses: &BTreeMap<LocalVariable, Vec<SlotUse>>,
+    ssa: &SsaTable,
+    operations: &Operations,
+    reuse: &reuse::Plan,
+    parameters: u16,
+    parameter_types: &BTreeMap<u16, Type>,
+    fields: &field::Plan,
+    budget: &mut Budget,
+) -> Result<BTreeMap<LocalVariable, Decided>, StopReason> {
+    // The write each variable's type is decided from: the first one in method order, which is the
+    // write both declaration paths read today.
+    let mut first: BTreeMap<LocalVariable, FirstWrite> = BTreeMap::new();
+    for (variable, variable_uses) in uses {
+        let Some(use_) = variable_uses
             .iter()
             .filter(|use_| use_.written.is_some())
             .min_by_key(|use_| (use_.path.clone(), use_.bci))
         else {
             continue;
         };
-        if first.path.as_ref() == Some(&region) {
-            // Every use is in the first write's own region: the declaration the write carries is in
-            // scope for all of them, which is the text this layer has always written.
-            continue;
-        }
-        let Some(value) = first.written else { continue };
-        // The same evidence the in-place declaration reads ([`boolean_proof`]): the class's own
-        // descriptors where the value being stored is a `boolean` parameter's, a `Z`-returning
-        // call's or a `Z` field's, and the type the frame states otherwise. A variable neither fact
-        // types keeps the write's own fallback.
-        let evidence = first.stored.unwrap_or(value);
-        let stated = if boolean_proof(ssa, operations, parameter_types, fields, evidence) {
-            Ok(Some(Type::Boolean))
-        } else {
-            value_type(ssa.value(value).ty())
-        };
-        // A frame entry that states no type leaves the variable to the write's own declaration; one
-        // that states a name this layer cannot spell as a Java type (`spell_reference`) does the
-        // same, and the write that fills the variable refuses the declaration with that reason.
-        let Ok(Some(ty)) = stated else {
+        let Some(written) = use_.written else {
             continue;
         };
-        plan.at_region
-            .entry(region)
-            .or_default()
-            .push(HoistedDeclaration {
-                variable: *variable,
-                ty,
-                at: first.bci,
-            });
+        first.insert(
+            *variable,
+            FirstWrite {
+                at: use_.bci,
+                written,
+                stored: use_.stored.unwrap_or(written),
+            },
+        );
     }
-    plan
+    // The variables a descriptor proves boolean on their own: the parameter slots the member's own
+    // descriptor declares `Z`, and the variables whose first write stores a value a descriptor
+    // proves boolean.
+    let mut boolean_variables: BTreeSet<LocalVariable> = BTreeSet::new();
+    let mut queue: VecDeque<LocalVariable> = VecDeque::new();
+    for (variable, write) in &first {
+        let descriptor_proof = (variable.slot() < parameters
+            && matches!(parameter_types.get(&variable.slot()), Some(Type::Boolean)))
+            || boolean_proof(ssa, operations, parameter_types, fields, write.stored);
+        if descriptor_proof && boolean_variables.insert(*variable) {
+            queue.push_back(*variable);
+        }
+    }
+    // Which variables read each variable, one read being one edge: a variable whose first write
+    // stores a read of a boolean variable is boolean itself.
+    let mut readers: BTreeMap<LocalVariable, BTreeSet<LocalVariable>> = BTreeMap::new();
+    for (variable, write) in &first {
+        if let Some(read) = read_variable(ssa, operations, reuse, write.stored, write.at) {
+            readers.entry(read).or_default().insert(*variable);
+        }
+    }
+    while let Some(variable) = queue.pop_front() {
+        let Some(write) = first.get(&variable) else {
+            continue;
+        };
+        // The work this entry pays for is the decision it spreads; the entry's own write BCI is
+        // where a run that cannot afford it stops, exactly as the statements bill their own.
+        charge(budget, CountedBudgetDimension::IrItems, 1, Some(write.at))?;
+        poll(budget, Some(write.at))?;
+        for reader in readers.get(&variable).into_iter().flatten() {
+            if boolean_variables.insert(*reader) {
+                queue.push_back(*reader);
+            }
+        }
+    }
+    // The decision every consumer reads: the descriptor's boolean for a parameter, the propagated
+    // boolean for a variable a read proved one, and otherwise the frame's own type for the value
+    // the first write stores.
+    let mut decided: BTreeMap<LocalVariable, Decided> = BTreeMap::new();
+    for (variable, write) in &first {
+        let decision = if variable.slot() < parameters {
+            // A parameter's type is the signature's, not the frames': the descriptor states it, and
+            // a body's write cannot widen it.
+            match parameter_types.get(&variable.slot()) {
+                Some(ty) => Decided::Type(ty.clone()),
+                None => continue,
+            }
+        } else if boolean_variables.contains(variable) {
+            Decided::Type(Type::Boolean)
+        } else {
+            match value_type(ssa.value(write.written).ty()) {
+                Ok(Some(ty)) => Decided::Type(ty),
+                Ok(None) => Decided::Unknown(NoType::NoFrameEntry),
+                Err(name) => Decided::Unknown(NoType::Unspellable(name)),
+            }
+        };
+        decided.insert(*variable, decision);
+    }
+    Ok(decided)
+}
+
+/// The variable one value denotes a read of, when it denotes a read at all.
+///
+/// A `load` names the variable the slot holds at the load's own BCI; the entry state or the phi of
+/// a local slot names the variable the slot holds at the use point `at`. Everything else — a value
+/// another instruction produced, a stack value, a caught exception — denotes no variable, which is
+/// the boundary the plan's propagation keeps: one read, one hop, and no definition chain.
+fn read_variable(
+    ssa: &SsaTable,
+    operations: &Operations,
+    reuse: &reuse::Plan,
+    value: ValueId,
+    at: u32,
+) -> Option<LocalVariable> {
+    let (slot, read_at) = match ssa.value(value).def() {
+        Definition::Instruction { bci, .. } => match operations.get(*bci) {
+            Some(Operation::Load { slot }) => (*slot, *bci),
+            _ => return None,
+        },
+        Definition::Entry { slot, .. } | Definition::Phi { slot, .. } => match slot {
+            Slot::Local(slot) => (*slot, at),
+            Slot::Stack(_) => return None,
+        },
+        Definition::Caught { .. } => return None,
+    };
+    reuse.variable_at(slot, read_at)
 }
 
 /// Every slot a guarded statement's header declares.
@@ -510,17 +772,8 @@ pub(crate) fn build(
         inputs.parameters,
         inputs.parameter_types,
         inputs.fields,
-    );
-    // The variables the plan typed `boolean` before a statement was written: a hoisted declaration
-    // states its type above the region whose writes fill it, so reads of it are proven from the
-    // first statement the build writes rather than from the declaration it will reach later.
-    let boolean_locals: BTreeSet<LocalVariable> = declarations
-        .at_region
-        .values()
-        .flatten()
-        .filter(|declaration| declaration.ty == Type::Boolean)
-        .map(|declaration| declaration.variable)
-        .collect();
+        budget,
+    )?;
     let mut builder = Builder {
         canonical,
         ssa,
@@ -544,7 +797,6 @@ pub(crate) fn build(
         block_of,
         budget,
         declared: BTreeSet::new(),
-        boolean_locals,
         stmts: Vec::new(),
         statements: 0,
         ragged: false,
@@ -615,11 +867,6 @@ struct Builder<'a> {
     /// The variables declared so far: a write of a variable whose declaration is already written
     /// becomes an assignment, and every variable's declaration is written once.
     declared: BTreeSet<LocalVariable>,
-    /// The variables this build knows hold a **boolean**: the ones whose declaration it wrote
-    /// `boolean` (planned hoisted declarations and in-place ones alike). A read of one of them is
-    /// proven boolean, which is the item the body itself states — the class's own descriptor of the
-    /// value that filled the variable, recorded where the declaration was written.
-    boolean_locals: BTreeSet<LocalVariable>,
     stmts: Vec<Stmt>,
     statements: usize,
     ragged: bool,
@@ -634,12 +881,24 @@ struct Builder<'a> {
     /// instruction that produced them: what a quote has to name when the reader turns out not to
     /// write them after all (P3 2.3 §0).
     deferred: Vec<(ValueId, u32)>,
-    /// Where each local slot's declaration is written (P3 3.1): the slot whose declaration is not
-    /// the first write's is declared at the start of the region that contains all of its uses.
+    /// Where each local slot's declaration is written (P3 3.1), and what type the plan decided for
+    /// every variable: the slot whose declaration is not the first write's is declared at the start
+    /// of the region that contains all of its uses, and every consumer of a variable's type reads
+    /// this one decision instead of deciding again.
     declarations: Declarations,
 }
 
 impl Builder<'_> {
+    /// What the plan decided about one variable's type, when the plan reached that variable.
+    fn decision(&self, variable: LocalVariable) -> Option<&Decided> {
+        self.declarations.decided.get(&variable)
+    }
+
+    /// Whether the plan decided one variable holds a `boolean`.
+    fn decided_boolean(&self, variable: LocalVariable) -> bool {
+        self.decision(variable).is_some_and(Decided::is_boolean)
+    }
+
     /// Appends the statements of one region, with the region's own declarations first.
     fn region(&mut self, region: &Region, path: &RegionPath) -> Result<(), StopReason> {
         self.declare_at(path)?;
@@ -1130,7 +1389,7 @@ impl Builder<'_> {
             });
         match self.operations.get(at) {
             Some(Operation::Store { .. }) => {
-                let Some((slot, written)) = write else {
+                let Some((slot, _written)) = write else {
                     return self.fallback(
                         vec![at],
                         &format!("the store at BCI {at} writes no local slot this run names"),
@@ -1157,7 +1416,7 @@ impl Builder<'_> {
                         return self.fallback(bcis, &reason, at);
                     }
                 };
-                self.write_statement(variable, target, written, stored, value, at)
+                self.write_statement(variable, target, stored, value, at)
             }
             Some(Operation::Invoke(target)) => {
                 // The call an instance initializer makes on its own uninitialized `this` is the
@@ -1259,7 +1518,7 @@ impl Builder<'_> {
                 };
                 // The invocation produces the value its own slot takes, so the value written and the
                 // value whose evidence types it are one and the same.
-                self.write_statement(variable, target_name, written, written, call, at)
+                self.write_statement(variable, target_name, written, call, at)
             }
             Some(Operation::Return) => {
                 let value = match stack_operands(instruction).last().copied() {
@@ -1467,7 +1726,54 @@ impl Builder<'_> {
     /// a boolean context refuses it rather than guessing. This is not a type system: it reads the
     /// same descriptors ([`typed_arguments`] does) plus the declarations this very build wrote.
     fn boolean_value(&self, value: ValueId, at: u32) -> bool {
-        self.boolean_evidence(value) || self.boolean_literal(value) || self.boolean_local(value, at)
+        self.boolean_proven(value, at) || self.boolean_literal(value)
+    }
+
+    /// Whether the layer presents one value as a boolean **by its own evidence**, outside any
+    /// position that requires one: a descriptor fact, or a read of a variable the plan decided
+    /// boolean ([`Self::boolean_local`]).
+    ///
+    /// This is the proof the `0`/`1` literal is deliberately not part of: the literal is how both a
+    /// boolean and an `int` are pushed, so it is a boolean only where a position that already
+    /// requires one reads it ([`Self::boolean_value`]), and an `int` everywhere else.
+    fn boolean_proven(&self, value: ValueId, at: u32) -> bool {
+        self.boolean_evidence(value) || self.boolean_local(value, at)
+    }
+
+    /// Why no Java comparison spells one branch's pair comparison, when the operands' own evidence
+    /// says so.
+    ///
+    /// A pair comparison (`if_icmp*`, `if_acmp*`) reads two `int`s or two references, and the layer
+    /// presents each operand the way that operand's own evidence spells it. One operand it proves
+    /// boolean beside one it does not is therefore a comparison with no Java spelling — the text
+    /// `flag() == 1` is refused by javac (`incomparable types: boolean and int`) — and ordering two
+    /// booleans has none either (`bad operand types for binary operator '<'`), while equality between
+    /// two of them does. Both are the same rule as a write that cannot be spelled as its variable's
+    /// decided type: the structure terminates instead of publishing text the compiler rejects.
+    ///
+    /// The shape is the hand-built `Boundary` class in `tests/p3_boolean_contexts.rs` — a compiler
+    /// folds `flag() == true` into `flag()`, so source never reaches it — and the change that fixed
+    /// the operands' spelling recorded it as a boundary and handed its disposition to this rule.
+    fn pair_comparison_refusal(
+        &self,
+        op: BinaryOp,
+        operands: &[(Slot, ValueId)],
+        at: u32,
+    ) -> Option<String> {
+        let left = self.boolean_proven(operands[0].1, at);
+        let right = self.boolean_proven(operands[1].1, at);
+        if left != right {
+            return Some(format!(
+                "the branch at BCI {at} compares a value this layer proves boolean with one it does not (`{}`), and no Java comparison spells that pair of operands: the text this layer would write is refused by javac (`incomparable types: boolean and int`)",
+                op.spell()
+            ));
+        }
+        (left && !matches!(op, BinaryOp::Equal | BinaryOp::NotEqual)).then(|| {
+            format!(
+                "the branch at BCI {at} orders two values this layer proves boolean with `{}`, which no Java source spells on `boolean` operands",
+                op.spell()
+            )
+        })
     }
 
     /// Whether the class's own descriptors state that one value is a boolean, with no context and no
@@ -1501,69 +1807,50 @@ impl Builder<'_> {
         )
     }
 
-    /// Whether one value reads a local variable this build proved boolean: a `load` of that
+    /// Whether one value reads a local variable the plan decided boolean: a `load` of that
     /// variable, or the entry/phi its own slot holds at `at`.
     ///
-    /// The proof is the variable's own declaration — the write whose stored value a descriptor
-    /// typed — and it is recorded where that declaration was written. Following the value further
-    /// (through the write that filled the variable, or through a phi's operands) is exactly what
-    /// this does **not** do: an unproven variable is not a boolean local, however boolean the shape
-    /// of its flow looks.
+    /// The proof is the plan's own decision for that variable — read from one place, whatever the
+    /// order the body is walked in — and it is the item the plan calls "a local the run proved
+    /// boolean". Following the value further (through the write that filled the variable, or
+    /// through a phi's operands) is exactly what this does **not** do: a variable no evidence
+    /// proves is not a boolean local, however boolean the shape of its flow looks.
     fn boolean_local(&self, value: ValueId, at: u32) -> bool {
-        let (slot, read_at) = match self.ssa.value(value).def() {
-            Definition::Instruction { bci, .. } => match self.operations.get(*bci) {
-                Some(Operation::Load { slot }) => (*slot, *bci),
-                _ => return false,
-            },
-            Definition::Entry { slot, .. } | Definition::Phi { slot, .. } => match slot {
-                Slot::Local(slot) => (*slot, at),
-                Slot::Stack(_) => return false,
-            },
-            Definition::Caught { .. } => return false,
-        };
-        self.reuse
-            .variable_at(slot, read_at)
-            .is_some_and(|variable| self.boolean_locals.contains(&variable))
-    }
-
-    /// Whether one variable is known to hold a boolean: a parameter slot the member's descriptor
-    /// declares `Z`, or a local a write of this body declared `boolean`.
-    fn boolean_variable(&self, variable: LocalVariable) -> bool {
-        if variable.slot() < self.parameters {
-            return matches!(
-                self.parameter_types.get(&variable.slot()),
-                Some(Type::Boolean)
-            );
-        }
-        self.boolean_locals.contains(&variable)
+        read_variable(self.ssa, self.operations, self.reuse, value, at)
+            .is_some_and(|variable| self.decided_boolean(variable))
     }
 
     /// The statement one write of a value into a variable becomes.
     ///
-    /// Three outcomes, and the last two are one rule read in both directions:
+    /// The type is never decided here: [`Self::declare`] answers with the plan's own decision for
+    /// the variable, and this method only spells the value that decision requires. Three outcomes:
     ///
-    /// * this write **states** the variable's type: a declaration, whose type is the stored value's
-    ///   own evidence and whose boolean value is spelled `true`/`false`;
-    /// * an earlier write stated it: an assignment, whose value is what the variable's type requires.
-    ///   A value this run cannot prove boolean, stored into a variable it knows holds a `boolean`, is
-    ///   refused — `local1 = 2;` beside `boolean local1 = …;` is text the variable's own type
-    ///   rejects, exactly like the `int` spelling of a boolean return;
-    /// * neither: an assignment whose value keeps the type it had.
+    /// * this write **carries** the variable's declaration: the plan's type, with a boolean value
+    ///   spelled `true`/`false`;
+    /// * an earlier write carried it, or the signature states it: an assignment, whose value is
+    ///   checked against the same decision in both directions — a value the layer presents as a
+    ///   boolean is not published into a variable the decision says holds something else
+    ///   (`int local3; … local3 = <boolean value>;` is text the variable's own type rejects), and a
+    ///   value it cannot prove boolean is not published into a variable the decision says holds a
+    ///   `boolean` (`boolean local1; … local1 = 2;`, the same rejection read the other way);
+    /// * the plan could not decide the variable's type: [`Self::declare`] has already refused the
+    ///   structure this write belongs to, and nothing is written for it.
     ///
-    /// `written` is the value the slot takes (the frame's own record of the write) and `stored` is
-    /// the value the writing instruction reads — see [`Self::declare`].
-    #[allow(clippy::too_many_arguments)]
+    /// `stored` is the value the writing instruction reads: a store writes the slot and reads the
+    /// stack, and it is that value whose evidence the decision was taken from — so it is the value
+    /// the assignment's compatibility check reads too. An instruction that produces the value it
+    /// writes (an invocation the SSA already places in the slot) stores nothing it read, and names
+    /// its own result there.
     fn write_statement(
         &mut self,
         variable: LocalVariable,
         name: String,
-        written: ValueId,
         stored: ValueId,
         value: Expr,
         at: u32,
     ) -> Result<(), StopReason> {
-        match self.declare(variable, written, stored, at)? {
-            Some(ty) => {
+        match self.declare(variable, at)? {
+            Declaration::Declared(ty) => {
                 let value = if ty == Type::Boolean {
                     boolean_spelling(value)
                 } else {
@@ -1578,7 +1865,33 @@ impl Builder<'_> {
                     OriginSet::new(Origin::direct(at)),
                 ))
             }
-            None if self.boolean_variable(variable) => {
+            // The declaration this write would have carried was refused, and the fallback that says
+            // so is already recorded: the assignment after it is not written, because a name that
+            // never got a declaration may not be assigned and a refused write may not be published
+            // in a spelling the refusal contradicts.
+            Declaration::Refused => Ok(()),
+            Declaration::NotDue => self.assignment(variable, name, stored, value, at),
+        }
+    }
+
+    /// The assignment one write becomes when its declaration is already written elsewhere.
+    ///
+    /// The value is checked against the variable's decided type before it is published, and the
+    /// check reads the same one decision the declaration does — never a second guess. The two
+    /// directions are one rule: the value must be spellable as the decided type. A `0`/`1` literal
+    /// is spellable as either (it is how both are pushed, and it adapts to `true`/`false` where the
+    /// decision is `boolean`), while a value only a descriptor or a decided-boolean local proves is
+    /// a boolean and cannot be presented as anything else.
+    fn assignment(
+        &mut self,
+        variable: LocalVariable,
+        name: String,
+        stored: ValueId,
+        value: Expr,
+        at: u32,
+    ) -> Result<(), StopReason> {
+        match self.decision(variable) {
+            Some(Decided::Type(Type::Boolean)) => {
                 if !self.boolean_value(stored, at) {
                     return self.fallback(
                         vec![at],
@@ -1594,6 +1907,33 @@ impl Builder<'_> {
                     OriginSet::new(Origin::direct(at)),
                 ))
             }
+            Some(Decided::Type(ty)) => {
+                // A value the layer presents as a boolean is not spellable as `{ty}`. The `0`/`1`
+                // literal is not one of them: it is the same bytes for both, and it keeps the
+                // integer spelling the decision states.
+                if self.boolean_proven(stored, at) {
+                    return self.fallback(
+                        vec![at],
+                        &format!(
+                            "the value at BCI {at} is stored into `{name}`, which this run decided holds `{}`, and this layer presents the value as a boolean (a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this run decided `boolean`): the `boolean` spelling this layer would write is text the variable's own type rejects",
+                            ty.spell()
+                        ),
+                        at,
+                    );
+                }
+                self.push(Stmt::new(
+                    StmtKind::Assign { name, value },
+                    OriginSet::new(Origin::direct(at)),
+                ))
+            }
+            // The variable's own type could not be decided: the structure this write belongs to is
+            // refused rather than written with a type nobody stated.
+            Some(Decided::Unknown(reason)) => {
+                let reason = reason.message(variable.slot(), at);
+                self.fallback(vec![at], &reason, at)
+            }
+            // The plan reached no variable here, which its own use map cannot produce for a write:
+            // the write keeps the assignment it has always been.
             None => self.push(Stmt::new(
                 StmtKind::Assign { name, value },
                 OriginSet::new(Origin::direct(at)),
@@ -1603,84 +1943,46 @@ impl Builder<'_> {
 
     /// Whether a local variable has to be declared at this write, and with which type.
     ///
-    /// The type comes from the value being written, not from the frame's entry state for the slot: at
-    /// the block where a local is first written the frame still says `Top` for it — nothing has
-    /// written it yet — so the frame cannot state a type here, while the value that is about to fill
-    /// the slot can, and is the same evidence the source's declaration was read from.
+    /// The type is the plan's own decision for this variable ([`decide_types`]), taken before any
+    /// statement of the body existed and read here — at the in-place declaration the write carries,
+    /// exactly as the hoisted declaration reads it. Deciding it here instead would be the defect
+    /// this rule exists to close: the plan runs before the body's statements, so the two declaration
+    /// paths read one answer instead of two, and the answer does not depend on the order the regions
+    /// are walked in.
     ///
-    /// `written` is the value the slot takes and `stored` is the value the writing instruction
-    /// reads: a store writes the slot and reads the stack, and the **stored** value is the one whose
-    /// evidence states what the slot holds (a call that writes its slot directly produces the value
-    /// it writes, so both are the same value there).
-    ///
-    /// `Ok(None)` means "no declaration is due": the variable is a parameter's (its declaration is the
-    /// method's signature) or it was declared at an earlier write in this run.
-    fn declare(
-        &mut self,
-        variable: LocalVariable,
-        written: ValueId,
-        stored: ValueId,
-        at: u32,
-    ) -> Result<Option<Type>, StopReason> {
+    /// `Declared` means this write carries the declaration; `NotDue` means it does not (the
+    /// variable is a parameter's, its declaration is already written, or it has no name to declare);
+    /// `Refused` means no declaration can be written and the write's assignment may not follow.
+    fn declare(&mut self, variable: LocalVariable, at: u32) -> Result<Declaration, StopReason> {
         if self.declared.contains(&variable) || variable.slot() < self.parameters {
-            return Ok(None);
+            return Ok(Declaration::NotDue);
         }
         if self.names.text(variable).is_none() {
             // No name to declare: the assignment that follows states the same thing and is already
             // reported as a fallback of its own.
-            return Ok(None);
+            return Ok(Declaration::NotDue);
         }
-        // A local whose **stored** value this run proved boolean is declared `boolean`: the frames
-        // state one `int` shape for the four int-sized primitives, so the fact that says which of
-        // them the value is comes from the value's own evidence — a descriptor, or a local an
-        // earlier declaration proved boolean (P3-R5's reading, one site further along).
-        //
-        // The `0`/`1` literal is deliberately not evidence here, and this is the one place the
-        // predicate is narrower than the positions that require a boolean: a fresh local states no
-        // type at all, so `int y = 0;` and `boolean c = true;` are the same bytes and reading the
-        // literal would declare every `int` local filled with `0`/`1` a boolean. That was measured,
-        // not assumed: with the literal added to this decision, `p3-scope`'s `scope(Z)I` recovers
-        // `boolean local1; if (arg0) { local1 = true; } else { …refused… }` and the execution
-        // comparison stops on `scope(Z)I is a body the run writes whole, and this run states Mixed`.
-        // Everything else keeps the frame's evidence.
-        let boolean = self.boolean_evidence(stored) || self.boolean_local(stored, at);
-        let stated = if boolean {
-            Ok(Some(Type::Boolean))
-        } else {
-            value_type(self.ssa.value(written).ty())
+        // The decision, and the only one: a variable the plan could not type is refused at the write
+        // that would have declared it — the fallback quotes this write's bytecode, and the
+        // declaration it would have carried is not written either. A frame entry that states no type
+        // and one that states a name this layer cannot spell as a Java type (`spell_reference`) are
+        // the two facts that reach this, and both are stated on the variable by the plan.
+        let refusal = match self.decision(variable) {
+            Some(Decided::Unknown(reason)) => Some(reason.message(variable.slot(), at)),
+            _ => None,
         };
-        let ty = match stated {
-            Ok(Some(ty)) => ty,
-            // A frame entry that states no type and one that states a name this layer cannot spell
-            // as a Java type (`spell_reference`) both stop the declaration — at the write that would
-            // have carried it, with the fact that stopped it as the reason.
-            Ok(None) => {
-                self.fallback(
-                    vec![at],
-                    &format!(
-                        "local {} has no frame entry stating its type",
-                        variable.slot()
-                    ),
-                    at,
-                )?;
-                return Ok(None);
-            }
-            Err(name) => {
-                self.fallback(
-                    vec![at],
-                    &format!(
-                        "the local written at BCI {at} holds a value the frames name `{name}`, which is a descriptor this layer cannot spell as a Java type, so the declaration is refused instead of writing it"
-                    ),
-                    at,
-                )?;
-                return Ok(None);
-            }
+        if let Some(reason) = refusal {
+            self.fallback(vec![at], &reason, at)?;
+            return Ok(Declaration::Refused);
+        }
+        let Some(Decided::Type(ty)) = self.decision(variable).cloned() else {
+            // No decision at all: the plan's own use map holds no write for this variable, which a
+            // write cannot produce. Nothing is declared here and the assignment keeps the text it has
+            // always had rather than inventing a second answer.
+            return Ok(Declaration::NotDue);
         };
         self.declared.insert(variable);
-        if boolean {
-            self.boolean_locals.insert(variable);
-        }
-        Ok(Some(ty))
+        Ok(Declaration::Declared(ty))
     }
 
     /// The variable one write of local `slot` at BCI `at` fills, with the text its name is written
@@ -3322,6 +3624,20 @@ fn condition(
         ),
     };
     let test = if taken { positive } else { negative };
+    // A pair comparison is the one branch shape that carries a *requirement of its own* about its
+    // operands: it reads two `int`s (or, for a null test, two references), so an operand this layer
+    // proves boolean beside one it does not has no Java spelling at all — javac refuses
+    // `flag() == 1` with `incomparable types: boolean and int` — and ordering two booleans has none
+    // either. The two are refused before any operand is rendered, as one rule: a comparison the
+    // layer's own evidence says cannot be spelled is not published with a type nobody could accept.
+    // The predecessor decision that fixed the *spelling* of a pair's operands (`1 == arg0` keeps its
+    // integer literal, each operand keeps its own evidence) is untouched by this: what is refused is
+    // a pair whose two spellings cannot stand in one comparison.
+    if let Test::Pair(op) = test
+        && let Some(reason) = builder.pair_comparison_refusal(op, operands, branch_bci)
+    {
+        return Err(reason);
+    }
     // The position's requirement, and only it, is what may read the literal proof: a boolean is
     // required here exactly where the test is a zero test on a value the evidence owns. The operands
     // are rendered **after** this decision, and each keeps its own evidence: `render_value` spells a

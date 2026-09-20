@@ -1166,6 +1166,21 @@
       "path": "tests/fixtures/p3-handlers/v8/Res.class"
     },
     {
+      "blake3": "b77931b3cdb9d069e574287841aea65331e53b1df9e96a007338f19340c667c0",
+      "bytes": 2203,
+      "path": "tests/fixtures/p3-hoisted-boolean/Baseline.java"
+    },
+    {
+      "blake3": "86eb84ce0cc321c95cd636957f30e0c16136c4bdc96cfa1de13ffd53b5ec0def",
+      "bytes": 4236,
+      "path": "tests/fixtures/p3-hoisted-boolean/HoistedBoolean.java"
+    },
+    {
+      "blake3": "3cced9b171c5d791160959b704efeae18685d413cc64d483a52894de46a02124",
+      "bytes": 743,
+      "path": "tests/fixtures/p3-hoisted-boolean/v8/HoistedBoolean.class"
+    },
+    {
       "blake3": "4ae4615332bb605169ffbcc99efb5b5a852ca61c8483d15f6525b3e0f2eed216",
       "bytes": 2924,
       "path": "tests/fixtures/p3-int-comparisons/Baseline.java"

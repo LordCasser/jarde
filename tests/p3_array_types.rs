@@ -671,8 +671,9 @@ fn a_descriptor_that_states_no_java_type_is_refused_at_its_bci() {
     );
 
     // `elementless` reads a `static` field whose descriptor is `[L;`: the array form whose element
-    // has no name. The value itself is a claimed read (`HandBuilt.field`), so the refusal is the
-    // declaration alone — the array spelling is what could not be produced, not the expression.
+    // has no name. The refusal is the store the declaration would have carried — the array spelling
+    // is what could not be produced, not the expression — and the array descriptor is what the
+    // refusal names.
     let report = recover(&engine, &fixture, b"elementless", b"()Ljava/lang/Object;");
     assert_refused(
         &report,
@@ -685,9 +686,19 @@ fn a_descriptor_that_states_no_java_type_is_refused_at_its_bci() {
             "the declaration is refused instead of writing it",
         ],
     );
+    // A refused declaration is not followed by the assignment it would have carried
+    // (`unify-local-type-decisions`: the two outcomes of `declare()` are distinct, and after
+    // "refused" nothing is written): the store at BCI 3 is quoted instead, and the read the
+    // declaration could not type is therefore not published either. Before that change the same
+    // refusal was followed by `local0 = HandBuilt.field;` — the text this assertion now forbids.
     assert!(
-        report.text.contains("HandBuilt.field"),
-        "the read the declaration could not type is still written:\n{}",
+        !report.text.contains("local0 = "),
+        "a refused declaration is not followed by its assignment:\n{}",
+        report.text
+    );
+    assert!(
+        !report.text.contains("HandBuilt.field"),
+        "and an assignment that is not written publishes no expression:\n{}",
         report.text
     );
     assert!(

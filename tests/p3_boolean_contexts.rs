@@ -552,16 +552,21 @@ fn every_declared_member_of_the_comparison_sample_is_covered() {
     }
 }
 
-/// One hand-built class for the boundary the change records and does **not** close: a
+/// One hand-built class for the boundary the predecessor change recorded and handed on: a
 /// `Test::Pair` comparison whose left operand is proven boolean (a call whose callee descriptor
 /// returns `Z`) and whose right operand is the `int` literal `1`. The two bodies are
 /// [`BOUNDARY_MEMBERS`].
 ///
-/// `javac` folds `flag() == true` into `flag()`, so no compiler emits this shape, and the rule this
-/// change fixes (each operand of a pair comparison keeps its own evidence) writes it `flag() == 1`,
-/// which `javac --release 8` refuses (`incomparable types: boolean and int`). That was already the
-/// text before the fix and stays the text after it: the boundary is recorded, not closed, and no
-/// general proof is invented for it.
+/// `javac` folds `flag() == true` into `flag()`, so no compiler emits this shape, and the rule that
+/// fixed a pair comparison's operand *spelling* (each operand keeps its own evidence) wrote it
+/// `flag() == 1`, which `javac --release 8` refuses (`incomparable types: boolean and int`). That
+/// change recorded the shape as a boundary and stated that its disposition — refuse it or keep it —
+/// belonged to the next change's conflicting-types rule; `unify-local-type-decisions` took the
+/// decision and refuses it: a comparison whose two spellings cannot stand in one comparison has no
+/// Java text to publish, so the structure terminates with its bytecode quoted instead of claiming
+/// Java for text the compiler rejects. The literal's *spelling* is not what decides this — a `0`/`1`
+/// literal is an `int` until a position requires a boolean, which is why `1 == arg0` and `arg0 > 0`
+/// keep their text.
 fn boundary_class() -> Vec<u8> {
     let mut output = 0xcafebabe_u32.to_be_bytes().to_vec();
     u16b(&mut output, 0); // minor_version
@@ -657,25 +662,35 @@ const BOUNDARY_MEMBERS: &[HandMember] = &[
 ];
 
 #[test]
-fn a_proven_boolean_operand_beside_an_int_literal_is_a_recorded_boundary() {
-    // Decision 3 of the change: a `Test::Pair` comparison that mixes a proven boolean with an `int`
-    // literal is **not** closed here. The rule this change fixes keeps each operand's own evidence,
-    // so this shape is written `flag() == 1` — text `javac --release 8` refuses (`incomparable
-    // types: boolean and int`) — and it was already written that way before the fix. The assertion
-    // pins the boundary and the two directions a fix must not take: the proven call is not spelled
-    // as a boolean comparison, and the literal is not spelled `true` to make the text look
-    // boolean-typed.
+fn a_proven_boolean_operand_beside_an_int_literal_is_refused() {
+    // The disposition the predecessor change handed to `unify-local-type-decisions`: a `Test::Pair`
+    // comparison that mixes a proven boolean (the `Z` call `flag()`) with an operand it does not
+    // prove boolean (the `int` literal `1`) is refused. The predecessor decision about *spelling*
+    // stands — the literal is not re-spelled as a boolean to make the text look boolean-typed — and
+    // the operand each keeps its own evidence; what this rule adds is that the two spellings cannot
+    // stand in one comparison, which javac states as `incomparable types: boolean and int`. The
+    // structure therefore terminates with its bytecode quoted (the region is `if_icmpne` at BCI 4,
+    // whose block the quote names) instead of publishing text the compiler rejects while the report
+    // claims Java.
     let engine = Engine::new();
     let bytes = boundary_class();
     let fixture = fixture(&engine, &bytes);
-    let text = whole_body(&engine, &fixture, b"probe", b"()I");
+    let report = recover(&engine, &fixture, b"probe", b"()I");
+    assert_refused(&report, "probe", 4);
     assert!(
-        text.contains("if (flag() == 1) {"),
-        "the boundary stands as recorded: `flag() == 1`, refused by javac, not closed here:\n{text}"
+        report.text.contains("incomparable types: boolean and int"),
+        "the refusal states the compiler's own verdict about the pair of operands:\n{}",
+        report.text
     );
     assert!(
-        !text.contains("flag() == true") && !text.contains("true == flag()"),
-        "the fix may not invent a boolean spelling for the int literal to hide the boundary:\n{text}"
+        !report.text.contains("flag() == 1") && !report.text.contains("flag() != 1"),
+        "the comparison no Java spelling accepts may not be published:\n{}",
+        report.text
+    );
+    assert!(
+        !report.text.contains("flag() == true") && !report.text.contains("true == flag()"),
+        "and the literal may not be spelled as a boolean to make the text look boolean-typed:\n{}",
+        report.text
     );
 }
 

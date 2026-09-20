@@ -1176,6 +1176,130 @@ const ARRAY_TYPES: Sample = Sample {
             had",
 };
 
+const HOISTED_BOOLEAN: Sample = Sample {
+    label: "p3-hoisted-boolean/v8 (javac 23.0.1, --release 8 -g:none)",
+    class: "HoistedBoolean",
+    bytes: include_bytes!("fixtures/p3-hoisted-boolean/v8/HoistedBoolean.class"),
+    classpath: &[],
+    // No member of this sample calls another: every value comes from a parameter or from a local of
+    // the body itself, so nothing has to resolve to the committed class.
+    extends: None,
+    scaffold: &[],
+    counter: None,
+    measured: &[],
+    // `copied` and `swapped` are called with both values of `b` and with `n` on either side of their
+    // branch, so both writes of the local the review's finding is about are executed on each side;
+    // `relayed` runs the copy chain, and the controls keep their own inputs.
+    inputs: Some(&[
+        (
+            "copied",
+            &[
+                &["true", "0"],
+                &["false", "0"],
+                &["true", "7"],
+                &["false", "-1"],
+            ],
+        ),
+        (
+            "swapped",
+            &[
+                &["true", "0"],
+                &["false", "0"],
+                &["true", "7"],
+                &["false", "-1"],
+            ],
+        ),
+        ("relayed", &[&["true"], &["false"]]),
+        ("literalArmed", &[&["true"], &["false"]]),
+        (
+            "fromParameter",
+            &[&["true", "0"], &["false", "7"], &["true", "-1"]],
+        ),
+        ("intLocal", &[&["7"], &["0"], &["-1"]]),
+    ]),
+    quotes: &[],
+    // The original's own answers for those inputs, executed by the committed driver: the two
+    // members the finding is about answer what the bytecode answers, which is what makes "the text
+    // compiles under the member's own declaration" also mean "and it returns the same values".
+    baseline: Some(Baseline {
+        class: "Baseline",
+        source: include_str!("fixtures/p3-hoisted-boolean/Baseline.java"),
+        lines: &[
+            "copied(true, 0)=1",
+            "copied(false, 0)=0",
+            "copied(true, 7)=1",
+            "copied(false, -1)=0",
+            "swapped(true, 0)=1",
+            "swapped(false, 0)=0",
+            "swapped(true, 7)=1",
+            "swapped(false, -1)=0",
+            "relayed(true)=true",
+            "relayed(false)=false",
+            "literalArmed(true)=1",
+            "literalArmed(false)=0",
+            "fromParameter(true, 0)=true",
+            "fromParameter(false, 7)=false",
+            "fromParameter(true, -1)=true",
+            "intLocal(7)=7",
+            "intLocal(0)=1",
+            "intLocal(-1)=-1",
+        ],
+    }),
+    members: &[
+        Member {
+            name: "copied",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "swapped",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "relayed",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "literalArmed",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "fromParameter",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "intLocal",
+            expect: Expect::Executed,
+        },
+        // The two refusals of this sample: `unproven`'s only writes are `true`/`false` literals
+        // returned from a `Z` method (the position requires a boolean the evidence does not have),
+        // and `conflicted` writes a descriptor-proven boolean into the local its own first write
+        // decided is an `int`.
+        Member {
+            name: "unproven",
+            expect: Expect::Quoted(None),
+        },
+        Member {
+            name: "conflicted",
+            expect: Expect::Quoted(None),
+        },
+    ],
+    point: "a local's type is decided once, before its statements are built: the type the plan \
+            decides for a variable is what its hoisted declaration, its in-place declaration and \
+            every use are written with, so `copied` — the review's shape, whose local `c` is filled \
+            in one arm from a local the body declared `boolean` and in the other from a `boolean` \
+            parameter — is `boolean local3; … local3 = local2; … local3 = arg0; if (local3) …` and \
+            compiles under the member's own declaration, where the pre-fix text was `int local3; … \
+            local3 = local2; … local3 = arg0; … if (local3 != 0)` and javac refused it (`boolean \
+            cannot be converted to int`); its twin `swapped`, which differs only in which arm runs \
+            first, gets the same type, the same declaration and the same uses; the copy chain \
+            `relayed` (a read of a local whose own decision is one hop away) keeps `boolean` on \
+            every variable and compiles where the pre-fix text refused it; the literal-armed \
+            boundary and the pure-`int` control keep the text they had (`int`); and a write that \
+            cannot be spelled as the type its variable's own first write decided (`conflicted`) or \
+            a value the evidence does not have in a position that requires one (`unproven`) is \
+            refused with the bytecode quoted instead of being published",
+};
+
 const REQUIRED: &[&Sample] = &[
     &LOCAL_REWRITE,
     &SCOPE_NO_DEBUG,
@@ -1189,6 +1313,7 @@ const REQUIRED: &[&Sample] = &[
     &BOOLEAN_CONTEXTS,
     &INT_COMPARISONS,
     &ARRAY_TYPES,
+    &HOISTED_BOOLEAN,
 ];
 
 const CORPUS: &[&Sample] = &[
