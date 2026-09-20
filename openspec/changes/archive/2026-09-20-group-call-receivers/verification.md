@@ -50,6 +50,8 @@ recover --input Recv.class --policy single-class --class-name Recv \
 | `cargo test --test p5_corpus_fingerprint --locked` | 5 passed / 1 ignored |
 | `openspec validate --all --strict --no-interactive` | 22 passed / 0 failed（归档前） |
 
+| 该次 Push 的 CI（实现提交 `fa6dc6e` 随归档提交 `d4684d8` 一起推送） | [run 35513528744](https://github.com/LordCasser/jarde/actions/runs/35513528744) **四 job success**：stable（fmt、clippy `-D warnings`、两轮固定 seed 全量测试、JDK 25 oracle、P3 编译执行对照、依赖边界、OpenSpec strict、`git diff --exit-code`）、MSRV 1.88.0、supply chain、fuzz smoke。说明：GitHub 只为一次 push 的 head 提交建 run，因此 run 挂在 `d4684d8` 上，而 `d4684d8` 的树**包含** `fa6dc6e`——两者是同一份被测代码。 |
+
 ## 边界
 
 - **没有形状需要走拒绝路径**：所有位置都能靠分组打印回同一棵树，计划里的拒绝分支未触发。

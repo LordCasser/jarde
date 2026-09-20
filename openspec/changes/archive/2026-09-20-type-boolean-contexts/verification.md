@@ -74,6 +74,8 @@
 | `cargo test --test p5_corpus_fingerprint --locked` | 5 passed / 1 ignored |
 | `openspec validate --all --strict --no-interactive` | 21 passed / 0 failed（归档前） |
 
+| 该次 Push 的 CI（实现提交 `5a8c36a` 随归档提交 `44dd8fa` 一起推送） | [run 35515405182](https://github.com/LordCasser/jarde/actions/runs/35515405182) **四 job success**：stable（fmt、clippy `-D warnings`、两轮固定 seed 全量测试、JDK 25 oracle、P3 编译执行对照、依赖边界、OpenSpec strict、`git diff --exit-code`）、MSRV 1.88.0、supply chain、fuzz smoke。说明：GitHub 只为一次 push 的 head 提交建 run，因此 run 挂在 `44dd8fa` 上，而 `44dd8fa` 的树**包含** `5a8c36a`——两者是同一份被测代码。 |
+
 ## 边界
 
 - **仍然不能表达**（如实登记）：`boolean c = true; return c;` —— 字面量定型的局部无证据，现在**拒绝**而不是发布 `int c = 1; return c;`（能力收窄，但输出不再非法）；比较结果赋值（`c = (n != 0);`）今天不可渲染；**语句级**拒绝仍只存在于产物（`// @bytecode N` + 理由 + anchor + `report.method`），不进 `report.diagnostics`。
