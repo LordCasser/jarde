@@ -56,7 +56,7 @@ a class's instance method: the class the run's own read declares
 | `cargo test --test p3_execution_comparison --locked -- --ignored` | 2 passed / 0 failed（18.8 s） |
 | `cargo test --test p5_corpus_fingerprint --locked` | 5 passed / 1 ignored（files 101→105，`recovery` 维度 carrier 21→23） |
 | `openspec validate --all --strict --no-interactive` | 21 passed / 0 failed（归档前） |
-| 该提交的 CI（`618de49`） | 见仓库 Actions；本次记录以本机门禁为准 |
+| 该提交的 CI（`618de49`） | [run 35495275106](https://github.com/LordCasser/jarde/actions/runs/35495275106) **四 job success**：stable（fmt、clippy `-D warnings`、两轮固定 seed 全量测试、JDK 25 oracle、P3 编译执行对照、依赖边界、OpenSpec strict、`git diff --exit-code`）、MSRV 1.88.0、supply chain、fuzz smoke |
 
 ## 边界
 
