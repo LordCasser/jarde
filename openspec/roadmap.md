@@ -47,13 +47,20 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 | 原反例已关闭 | 调用 receiver 分组（`fa6dc6e`） | `(a + b).substring(1)` 保持分组，输入 `("a","bc")` 得 `bc`；不重开该反例 |
 | 原反例已关闭 | boolean 返回/调用条件、就地局部声明（`5a8c36a`） | 原样例通过，但不能概括为所有 int 对照不变或所有提升声明已完成，见 T2/T3 |
 | 原反例已关闭 | 数组类型拼写（`66bd2d0`） | `byte[]`、引用数组及多维数组原样例通过；既有记录边界保留，本轮未确认新的正常数组声明回归 |
-| 1 / T1 | 深拼接的递归发射，待独立修正 | 当前 debug 的 2048 次 append 必须返回产物或明确停止报告，不得 SIGABRT；同时验证构建、发射和释放，不用增大线程栈替代界限。debug/release 分别记录 |
+| 已关闭 | 深拼接（`5c35cbf` 实现，见其归档验证） | 当前 debug 的 2048 次 append 必须返回产物或明确停止报告，不得 SIGABRT；同时验证构建、发射和释放，不用增大线程栈替代界限。debug/release 分别记录 |
 | 已关闭 | 整数二元比较回归（`f4d1044` 实现，见其归档验证） | `1 == n`、`0 < n`、`1 < n` 保持整数文本，覆盖常量左右位置与比较方向；boolean 原反例仍通过 |
 | 已关闭 | 局部类型一次性决定（`2895bc4` 实现，见其归档验证） | 已声明 boolean 局部跨分支复制后仍按一致证据定型，或可靠拒绝；不得生成 `int local3` 再赋入 boolean 的矛盾文本 |
 | 4 / T4 | concat 数值前缀转换，待独立修正 | `append(1).append(2).append("!")` 的恢复执行结果为 `"12!"`；保留 append 转换和求值顺序，不能仅补括号 |
 | 核实 | 历史 clone/toString 报错 | 逐条保存 opcode、owner、descriptor 和包装器上下文；`ArrayUtils.removeElement` 是静态 helper 正向对照，不作为丢 receiver 反例 |
 | 5 | 重新冻结 benchmark 候选 | 保留历史版本身份；新候选登记 T1–T4 的处置、构建与输入摘要，不把不同版本/构建配置结果相互替代 |
-| 6 | `optimize-demand-workloads`，0/22 | 调查可继续；正式对照先 G0/W1–W5 与 O1 已交付证据复核，再 O2–O8 调查/准入；不混入上述正确性实现 |
+| 6 | `optimize-demand-workloads`，0/22 | 调查继续；正式对照先 G0 与 O1 证据复核；已确认的 W6a 全量并行交给下述子 change，其余候选独立处置 |
+| 6a | [add-parallel-bulk-recovery](changes/add-parallel-bulk-recovery/tasks.md)，0/22 | 类准备复用 → 串行流式 bulk → 共享总账和类间并行 → CLI → 真实 1/2/4/6 worker 全量门禁；发布前验证普通 worker 栈和同一正确性基线 |
+
+## 全量导出架构（2026-09-21，规划完成、实现未开始）
+
+多线程已是明确需求，不再以“尚无并发宿主”为理由暂缓本场景。[设计](changes/add-parallel-bulk-recovery/design.md) 与 [bulk 契约](changes/add-parallel-bulk-recovery/specs/bulk-recovery/spec.md) 定义：一次打开输入、按类共享准备、类间有界 worker、按方法有序交付，共用总预算与有界保留。CLI 目标默认 `--jobs auto`，单线程是同一操作的 `--jobs 1` 配置；数值容量和启用依据仍需实施门禁确认。
+
+子 change 唯一拥有 O2 恢复路径、O4 bulk、O7 类间并行和必需的 O5/O8，父专项继续测量归因；查询分页、预热、跨请求 single-flight 和完整类源码各自独立。首版导出方法 JSONL，不能宣称等于 jadx 的完整 Java 工程。性能判据是包含准备、编码及输出关闭的实测总时间，不能用 warm p50 推导整包追平。主 specs 在真实实现验收归档前不提升为已交付能力。
 
 ## 已关闭的恢复正确性收尾
 

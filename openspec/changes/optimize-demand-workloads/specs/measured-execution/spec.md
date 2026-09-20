@@ -14,6 +14,11 @@
 - **WHEN** 调查决定进入会改变产品行为的优化实现
 - **THEN** 记录负责该方案的独立 change、受影响 specs、验证与回退范围；总专项和其它子项不重复拥有同一实现
 
+#### Scenario: Full export has an explicit parallel workload
+
+- **WHEN** 调用方已声明全量导出及多 worker 需求
+- **THEN** 调查将其登记为具体工作负载，指定批量/并行实现的唯一子 change；其它宿主的跨请求合并缺少需求时可以单独暂缓，不能把已声明需求也标成缺失或把完成规划标为交付
+
 #### Scenario: Investigation closure differs from feature completion
 
 - **WHEN** 所有方案已完成调查，但部分被否决或暂缓
@@ -21,7 +26,7 @@
 
 ### Requirement: Workload measurements preserve end-to-end boundaries
 
-评测 SHALL 区分冷单次、同 snapshot 多 class、同 class 多方法、查询与分页、超过 cache 容量的扫描，以及有明确需求时的并发宿主。每组 MUST 记录进程/快照/请求生命周期、工作单位、目标顺序、预算、cache 初态和主指标，并分别给出准备/预热、请求或首次结果、完整序列总成本。不得把库内请求、CLI 进程、不同输出单位或不同语义配置的数字混为同口径结论。
+评测 SHALL 区分冷单次、同 snapshot 多 class、同 class 多方法、查询与分页、超过 cache 容量的扫描、已明确的全量并行导出，以及有独立需求时的跨请求并发宿主。每组 MUST 记录进程/快照/请求生命周期、工作单位、目标顺序、预算、cache 初态和主指标，并分别给出准备/预热、请求或首次结果、完整序列总成本。全量导出 MUST 包含打开、发现、准备、计算、编码和输出关闭，不以逐方法 p50 替代总耗时。不得把库内请求、CLI 进程、不同输出单位或不同语义配置的数字混为同口径结论。
 
 #### Scenario: Warm navigation has nonzero preparation cost
 
@@ -116,12 +121,17 @@
 
 ### Requirement: Performance evidence keeps distinct determinism checks
 
-专项 SHALL 分别保存同执行配置的完整领域报告确定性对照、跨策略的语义对照及外部性能记录。未触发 elapsed 截止或外部取消的同配置确定性对照 MUST 继续只排除 `elapsed_millis`，保留预算计数；配置包含 cache 产品、容量及初态。跨策略足额完整结果的语义对照只排除实际工作 usage、cache 状态/计数和耗时，MUST 保留身份、顺序、诊断、coverage、规则及输出证据。harness 阶段时间不得写入领域报告以规避该边界。
+专项 SHALL 分别保存同执行配置的确定性对照、跨策略的语义对照及外部性能记录。既有串行及批量 workers=1 在未触发 elapsed 截止或外部取消时，同配置完整领域报告对照 MUST 继续只排除 `elapsed_millis`，保留预算计数；配置包含 cache 产品、容量及初态。新增并行路径 MUST 先由实施 spec 明确完整语义与资源归属的确定性边界，并保留独立资源总账；不得把语义 fingerprint 冒充原始报告字节一致。跨策略足额完整结果的语义对照只排除实际工作 usage、cache 状态/计数和耗时，MUST 保留身份、顺序、语义诊断、coverage、规则及输出证据。harness 阶段时间不得写入领域报告以规避该边界。
 
 #### Scenario: Warm and direct paths spend different work
 
 - **WHEN** 两个策略足额完成且 warm 实际少读了数据
-- **THEN** 跨策略语义对照允许真实 usage 不同；两个相同 warm 初态的完整确定性对照仍核对预算计数，不能用语义子集替代
+- **THEN** 跨策略语义对照允许真实 usage 不同；两个相同 warm 初态的串行完整确定性对照仍核对预算计数，不能用语义子集替代
+
+#### Scenario: Parallel admission changes resource ownership
+
+- **WHEN** 新并行路径的 cache 准入次序或总额度竞争随调度发生变化
+- **THEN** 按其已声明的契约保留足额完整语义、实际 usage 及中止范围；受控调度扰动必须证明总预算不突破、已执行未交付工作不丢失，差异白名单不能移除语义诊断或来源证据
 
 #### Scenario: A deadline terminates at different physical points
 
