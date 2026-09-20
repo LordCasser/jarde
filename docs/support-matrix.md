@@ -1,6 +1,6 @@
 # 当前五维支持矩阵
 
-当前复核边界（2026-09-20，P0/P1/P2 与分层归档见 `492e31e`/`51a5cac`，P3 归档见 `250fe1f`）：P0/P1/P2 与分层均已归档，P2 原 4.2b/4.3b 已关闭；P4 已交付并归档（10/10，`88416ab`），本轮复核的实际状态见下文[现代（53–71）能力](#现代5371能力与-p4-新增入口2026-09-20)，P4 待办见 [P4 验证记录](../openspec/changes/archive/2026-09-20-p4-modern-semantics/verification.md)；P3 已交付并归档（12/12）：方法体恢复、Region、lambda、concat/bridge/accessor、TWR/monitor 与逐项审计/作用域修正均在归档内。当前旧值重读、fallback effect 漏失与作用域反例见 [恢复复核](../openspec/changes/p3-java8-recovery/verification.md#review-2026-09-19-recovery)。verifier、生产重编译和行为验证未执行。
+当前复核边界（2026-09-20，P0/P1/P2 与分层归档见 `492e31e`/`51a5cac`，P3 归档见 `250fe1f`）：P0/P1/P2 与分层均已归档，P2 原 4.2b/4.3b 已关闭；P4 已交付并归档（10/10，`88416ab`），本轮复核的实际状态见下文[现代（53–71）能力](#现代5371能力与-p4-新增入口2026-09-20)，P4 待办见 [P4 验证记录](../openspec/changes/archive/2026-09-20-p4-modern-semantics/verification.md)；P3 已交付并归档（12/12）：方法体恢复、Region、lambda、concat/bridge/accessor、TWR/monitor 与逐项审计/作用域修正均在归档内。当前旧值重读、fallback effect 漏失与作用域反例见 [恢复复核](../openspec/changes/archive/2026-09-20-p3-java8-recovery/verification.md#review-2026-09-19-recovery)。P5（`p5-measured-optimization`）已交付 1.1–3.2，**实测范围、重复策略、未决门槛与启用开关**见下文 [P5 实测边界与启用开关](#p5-实测边界与启用开关2026-09-20)：今天默认关闭，且 P5 **未改变任何既有结果契约**。verifier、生产重编译和行为验证未执行。
 
 本页是当前用户可见能力状态的单一事实源。P0 的验收要求以[已生效主规格](../openspec/specs/)和[归档 tasks](../openspec/changes/archive/2026-09-17-establish-p0-foundation/tasks.md)为准；P1 的增量以[归档 tasks](../openspec/changes/archive/2026-09-17-p1-query-xref/tasks.md)和[verification](../openspec/changes/archive/2026-09-17-p1-query-xref/verification.md)为准；P2 的解析、方法 IR 与方法分析报告以主规格 `demand-resolver`、`jvm-ir`、`conservative-output` 与 [verification](../openspec/changes/archive/2026-09-19-p2-jvm-ir/verification.md) 为准。这里只描述实际实现，不是未来路线承诺。
 
@@ -70,6 +70,72 @@ P4 已交付并归档（**10/10**，归档提交 `88416ab`）；命令、数字�
 
 **source map 无 P4 增量（如实）**：source map 仍只有 P3 3.2 的物理方法身份（`Origin` / `OriginMember::MethodPoint`），P4 未新增锚点种类——P4 不产被呈现的文本，concat 事实自带 `ModernOrigin`（CP 索引 + span），等未来恢复层把 concat 呈现为文本时才需要在同一映射里加锚点；plugin item 的 entry 证据属另一平面，不进该映射。
 
+## P5 实测边界与启用开关（2026-09-20）
+
+P5（`p5-measured-optimization`）已交付 1.1–3.2：1.1 语料 fingerprint，1.2/1.3 benchmark 与结果 fingerprint，2.1/2.2 两项「基于测量保持 disabled」的决策，2.3 facts cache 的完整身份/失效/回退语义，3.1/3.2 差分门禁与对抗语料回归。命令、数字、证伪与如实边界全部在 [P5 验证记录](../openspec/changes/p5-measured-optimization/verification.md)。本节只做发布：**不引入新测量**，按 `performance-gates` 的 `No universal threshold yet` 只声明**测得范围**与**未决门槛**，不制造预设性能承诺。
+
+**依赖面**：P5 未新增任何第三方依赖（`Cargo.toml`/`Cargo.lock` 零改动）；全部测量复用既有 `UsageSnapshot` 计费维度，未引入 allocator 仪表或新 crate。
+
+### 实测范围（哪些语料、什么配置、测到什么）
+
+**语料**：提交的小样本——`minimal-jar`（659 B 归档）与 `v52-class`（303 B class，ECJ 4.6.1 / 52.0），两者都经 1.1 的 corpus fingerprint 逐字节校验。**配置**：同一台机器（macOS/arm64）、单线程构建（`CARGO_BUILD_JOBS=1`）、单线程执行（`RUST_TEST_THREADS=1`）、`REPEATS=200`/行，每行新的 snapshot 与新的 budget。**不可外推**：这些数字刻画的是该路径在此规模下的形状，不是任何环境下的典型值，也不构成目标。
+
+**耗时**（µs；`first` = 进程内首次运行；来源：P5 验证记录 **1.2 + 1.3 节（提交 `e7f509f`）的「实测基线」耗时表**）：
+
+| 行 | run A: min / median / p90 / max / first | run B: min / median / p90 / max / first |
+| --- | --- | --- |
+| `full-range-xref/minimal-jar` | 122 / **131** / 154 / 274 / 274 | 127 / **141** / 157 / 472 / 472 |
+| `full-range-xref/v52-class` | 129 / **139** / 157 / 200 / 141 | 132 / **147** / 160 / 244 / 160 |
+| `single-member/v52-class` | 120 / **134** / 171 / 537 / 537 | 123 / **141** / 188 / 1825 / 1825 |
+| `cancelled/…minimal-jar` | 19 / **21** / 22 / 54 / 54 | 19 / **22** / 23 / 71 / 57 |
+
+**读取字节、物化范围、内存代理与取消状态**（两次测量**逐字相同**；同一节的「固定量」表）：
+
+| 行 | 读取字节 | 物化范围 | 内存代理 | 状态 |
+| --- | --- | --- | --- | --- |
+| `full-range-xref/minimal-jar` | input=659 entry=627 read=627 out=0 | entries=13 headers=**0** bodies=**0** steps=0 | class=555 attr=174 code=22 ir_items=**0** ir_edges=**0** items=4 | complete |
+| `full-range-xref/v52-class` | input=303 read=**909** out=909 | headers=0 bodies=0 | class=**909** attr=588 code=48 items=1 | complete |
+| `single-member/v52-class` | input=303 read=**303** out=418 | headers=**1** bodies=**1** steps=29 | class=303 attr=120 code=4 ir_items=86 ir_edges=5 | complete |
+| `cancelled/…minimal-jar` | input=659，其余 0 | 全 0 | 全 0 | **cancelled** |
+
+**「内存代理」不是 RSS**：它是 `UsageSnapshot` 的累计计费计数（已物化的 class-file 内容、逐单位分配的派生存储、发布项），无 allocator 开销与碎片，除 `nested_depth`/`dependency_depth` 外**没有高水位**，且包含已释放的临时对象。故这些维度上的 delta 只能支持「这条路径派生/持有的工作单位更多」，**不能**支持「这条路径用了更多内存」；**真峰值 RSS 今天没有第二条路径**（无 allocator 仪表）。
+
+**局部 vs 全范围**（同一 303 B class）：局部行 `class_headers=1`/`method_bodies=1`（该类声明 3 个带体的成员）、`read_bytes=303`；全范围行 `read_bytes=909`、`class_bytes=909`。**两侧计费路径不同轨**：X1 全范围行 `class_headers`/`method_bodies` 恒 0 却物化数百 class bytes（X1 走自己的读取计费，不走 P2 的 header/body demand 路径），故「读了几次 header」在 X1 与 P2/恢复之间**不可直接对照**。
+
+**cache 冷/热**（来源：P5 验证记录 **2.3 节（提交 `2f6754a`）**）：archive 行 `class_bytes` 555 direct / 185 cold / 0 warm，`read_bytes=627` 两侧相同；control 行 555→185→0；matrix 行 `class_bytes −555`、`attribute_bytes −87`、**其余 14 维全 0**；墙钟中位 137→116 µs。**这五项里只有 charge 维度是确定性断言**（`CACHE_BENEFIT_DELTAS` 由测试从两次真跑重算），两个墙钟中位数是**一次机器读数、未阈值化**。
+
+**fuzz smoke 的常驻集**（P5 资源边界，非任务项；来源：P5 验证记录 **「资源边界」节（提交 `819c12a`）**）：等时长 20 s、同机、`-rss_limit_mb=4096` —— `query` 153,509 execs / 188 MB，`artifact_tree` 271,064 execs / **486 MB**，`method_analysis` 194,721 execs / 278 MB。做零 IR 工作的 `artifact_tree` 峰值最高，故数百 MB 是 fuzzer 自身的常驻集与分配器行为，**不是流水线的逐次开销**；CI 守卫据此由 512 提到 **2048**。该测量**未解释到分配点**，也不是引擎内存门禁（引擎边界由预算系统承担）。
+
+### 重复策略（同机、单线程、200 次/行）
+
+- **`REPEATS=200`/行**，重复的是**同一个请求**，每行用新 snapshot 与新 budget；分布规则写在代码里（`median` = 排序后 `len / 2`、`p90` = `len * 9 / 10`，按索引而非插值），故数字可复现。
+- **同机、单线程**：构建 `CARGO_BUILD_JOBS=1`、执行 `RUST_TEST_THREADS=1`。报告自身的时钟是整毫秒，本语料下每次重复都是 0，故分布由 harness 时钟承担。
+- **中位复现性 ~10%**：同一代码两次完整测量的中位数漂移 **+5%~+8%**、前后半差最多 **~12%** —— 即**低于约 10% 的差异在本机这套 harness 上不可区分**；**跨环境比较一律不做**。3.4 门禁再次实跑同一 harness：**固定量逐字复现**，墙钟中位数则随机器状态变化——这正是「不发布阈值」的原因，也是这些中位数**只作读数、不作门槛**的证据。
+- **进程内首次运行可达中位数 13×**（上表 `first` 列即此证据）。
+- `REPEATS` **不是统计阈值**，**没有任何耗时被断言**。被断言的确定性半边是：8 次进程内重复 **+ 三个独立进程**的完整结果 fingerprint（唯一归一化 = 递归删除 `elapsed_millis`）逐字相同，且发布顺序是输入的纯函数。
+
+### 未决阈值：**未定**（决策 5）
+
+发布记录里**没有任何 P95、吞吐、加速倍数或目标**——「多大算值得默认开启」**未定**，且**未编造数字**。重新评估的**可观察条件**（触发条件是「某一行存在」，不是某个收益数值）：
+
+1. 出现能**对一个 snapshot 跑两个请求**的行 → 用同一 harness 量「重叠对 vs 顺序对」（合并 / single-flight）；
+2. 出现一行其**资源报告里每单位份额居首的负载** → 该候选差异须先**越过同机同 harness 的重复带宽**（今天 ~10%）。
+
+### 启用开关：今天默认关闭，逐项如此
+
+| 开关 | 今天的状态 | 理由（均来自上表实测） |
+| --- | --- | --- |
+| facts cache（`Budget::with_facts_cache`，CP/Header 层） | **存在，默认 off**：`Budget::new` 不带 cache，只有显式附上的调用方才会被咨询 | 收益只在 charge 维度上确定（−555 class / −87 attribute bytes）；墙钟 137→116 µs 是**一次机器读数、未阈值化**；门槛未定（决策 5），故按 `performance-gates`「若收益不稳定或正确性对照失败…保留未启用状态并记录原因」 |
+| index 路径 | **不存在** | 无消费者、无第二条路径可比；由源码守卫机械核对（不是一次性 grep） |
+| 并行 / merged / single-flight 路径 | **不存在** | 语料太小、候选收益低于同机重复带宽（~10%），且**没有「一个 snapshot 两个请求」的行**可量 |
+
+**关闭时与之前逐字节相同**（A15 的「关缓存」那一侧）：`Budget::new` 不携带 cache，未被附上的 cache 被断言 `consultations == 0`（`tests/p5_facts_cache.rs::the_default_path_consults_no_cache`），引擎**零 cache 构造点**（`tests/p5_benchmark.rs::the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler` + `crates/` 内 grep）；cache 打开时**结果四平面 status/order/coverage/diagnostics 逐字段相等**、差异只落在 `usage` 的 charge 字段（3.1/3.2 的 off/on 差分）。五个平面里**只有 parse 的 CP/Header parse 会被 cache 答复**（读取、CRC、digest、origin、coverage 与 read evidence 全部照旧产生，命中不 charge 任何计数字段）；X1、resolution、decompile-quality、output-level **一字未改**。
+
+### A15 / A18 的当前判定
+
+- **A15「冷/热/关缓存完整结果一致」：部分通过**（1.1 记录的「未通过」由 2.3 更新）。缓存半的**语义条件**首次有真实第二条路径可比：结果四平面逐字段相等、候选不成为事实（A01）、取消与预算不重置、两个暖运行之间 fingerprint 完全相等。**未成立的一半**是「**整档 fingerprint 相等**」这一读法——整档含 charge 记录，而 `Cold and warm results` 列举的必须相等平面里**没有资源**；3.1 因此把它换成八面逐条比较，**未放宽**（唯一既有调用者仍单独断言暖/暖 fingerprint，整档仍被比较、仍被打印）。
+- **A18「分析期间输入变化」：仍为部分通过**。P0/P1 半（固定字节源、游标与快照绑定、变化即中止）已通过；**P5 补上缓存半**（3.2）：两个持不同内容的快照共用一个 store 时各自等于自己的 direct 运行、同内容不同 origin 的两快照各自发布**自己的**身份、**取消的请求不留任何东西给另一个快照**；**并行半没有对象**——今天没有并行实现，不假装验过。
+
 ## 平台、adapter 与运行边界
 
 | 维度 | 环境/入口 | 状态 | 边界 |
@@ -79,7 +145,7 @@ P4 已交付并归档（**10/10**，归档提交 `88416ab`）；命令、数字�
 | 平台 | 32-bit | NotValidated / Unsupported | noak `lookupswitch` 巨大 `npairs` 等 `usize` 风险未建立支持；P0 限 64-bit。 |
 | Library adapter | `Engine` + `Budget` | Supported | 同步 API；含普通枚举、显式 `enumerate_artifact_tree`、标准 MR 选择与 P1 `query`（`PhysicalScope::SnapshotAll`/`ArtifactTree`），以及显式运行环境下的 `resolve_symbol`/`declaration_references` 与方法分析/恢复的 `analyze_method`/`recover_method`；`CancellationToken` 可由调用方注入，取消为协作式。 |
 | JSON CLI | stdin / `--request FILE` | Supported | 单请求、1 MiB 控制面；接受十八项 limit schema（P0/P1 十一项 + 六个 P2 计数维度 + `dependency_depth`，全部必填、无静默默认值）；暴露 `query`（relation、target、`PhysicalScope` 含 `artifact_tree`、consumers、`max_items`、cursor）并回显它解析出的 snapshot，以及 `analyze_method`（请求同形的 `environment`/`method`/`stages`，结果为 `method_analysis`，薄转发到库入口）和 `recover_method`（同次分析 + 方法体恢复报告），错误码与库一致；`enumerate` 仍只枚举顶层容器；不暴露 cancellation token 注入。 |
-| 测试门禁 | `fuzz/` 独立 workspace + CI `fuzz-smoke` | Validated（test-only、有界） | cargo-fuzz 0.13.2、libfuzzer-sys `=0.4.13`、nightly-2026-07-20；三个 target（`query`、`artifact_tree` 与 P2 的 `method_analysis`）单 worker、`-max_len=65536`、`-rss_limit_mb=512`，本地收口 60 秒、CI 20 秒。只证明有界 smoke 不 panic、不越公开预算、损坏输入不假 Complete 且阶段/质量平面自洽，不是安全或覆盖率证明；该 workspace 的依赖不进入生产树。 |
+| 测试门禁 | `fuzz/` 独立 workspace + CI `fuzz-smoke` | Validated（test-only、有界） | cargo-fuzz 0.13.2、libfuzzer-sys `=0.4.13`、nightly-2026-07-20；三个 target（`query`、`artifact_tree` 与 P2 的 `method_analysis`）单 worker、`-max_len=65536`、`-rss_limit_mb=2048`（P5 资源边界实测：等时长三 target 峰值 188/486/278 MB，512 会把健康会话报成故障），本地收口 60 秒、CI 20 秒。只证明有界 smoke 不 panic、不越公开预算、损坏输入不假 Complete 且阶段/质量平面自洽，不是安全或覆盖率证明；该 workspace 的依赖不进入生产树。 |
 | 未来宿主 adapter | reverse-engine/MCP/backend | NotImplemented | 应由独立 adapter 单向依赖 `jarde`；核心不依赖宿主协议。 |
 | 生产运行 | 离线、无 JVM | Supported | 不执行目标代码，不启动 JVM/反编译器，不联网。 |
 | 测试 oracle | JDK 25 Class-File API | Validated（test-only、显式 ignored） | 只交叉检查 instruction boundaries；固定 runtime 25 与 fixture hash/scope，不证明 verification 或生产 JVM 依赖。 |

@@ -2,11 +2,13 @@
 
 jarde 是纯 Rust、library-first 的 JVM artifact 分析引擎。P0/P1 已完成并归档：有界不可变快照、CLASS/JAR/WAR 读取、嵌套物理视图、MR 选择、Header/bytecode inspection 和 X0/X1 查询已交付。
 
-**当前状态（2026-09-20）**：P2（29/29）与分层（7/7）均已归档；`jarde-java` 已交付 1.1–1.3、1.3d、2.1–2.4 与 3.1–3.3，**P3 12/12**（本片 3.4 是最后一项）。复核出的 P1/P2 缺陷——`return x++` 的旧值重读、被拒 cast 的 producer effect 丢在降级里、branch-local 声明作用域、确定性比较的 elapsed 假红——**均已关闭**；另关闭 P3-R5（`boolean` 参数按描述符定型）、R6（slot 复用按 spec 拆分）与 R7（每条已解码指令必须被块或 `unreachable` 交代）。**新增可重放的编译/执行对照**：`cargo test --test p3_execution_comparison -- --ignored` 把产物包成编译单位后用 `javac --release 8` 编译并执行，CI 的 JDK job 已挂。仍未承诺完整源码或语义等价，也未实现 verifier。现状与证据见 [P3 验证记录](openspec/changes/p3-java8-recovery/verification.md)。
+**当前状态（2026-09-20）**：P2（29/29）与分层（7/7）均已归档；`jarde-java` 已交付 1.1–1.3、1.3d、2.1–2.4 与 3.1–3.3，**P3 已交付并归档（12/12）**。复核出的 P1/P2 缺陷——`return x++` 的旧值重读、被拒 cast 的 producer effect 丢在降级里、branch-local 声明作用域、确定性比较的 elapsed 假红——**均已关闭**；另关闭 P3-R5（`boolean` 参数按描述符定型）、R6（slot 复用按 spec 拆分）与 R7（每条已解码指令必须被块或 `unreachable` 交代）。**新增可重放的编译/执行对照**：`cargo test --test p3_execution_comparison -- --ignored` 把产物包成编译单位后用 `javac --release 8` 编译并执行，CI 的 JDK job 已挂。仍未承诺完整源码或语义等价，也未实现 verifier。现状与证据见 [P3 验证记录](openspec/changes/archive/2026-09-20-p3-java8-recovery/verification.md)。
 
-**P4 现代语义（已归档，10/10，`88416ab`）**：1.1–1.3（release registry，以及 record/sealed/condy/concat 事实与非法 fixture、golden diagnostics）、2.1–2.3（`Engine::runtime_matrix` 的多 profile 物理保留、X2 三态与缺失依赖、有界 X3 反射/ServiceLoader 推断）、3.1–3.2（versioned plugin descriptor 与 `META-INF/services` 只读 fixture）已落地，入口与边界见 [五维支持矩阵](docs/support-matrix.md#现代5371能力与-p4-新增入口2026-09-20)；3.4 尚待把门禁数字与「结构支持 vs 源码恢复独立状态」的结论写进验证记录（本轮 3.3 已实跑 1075 passed / 0 failed / 3 ignored，fmt/clippy 1.98.1 与 `openspec validate --all --strict` 14 passed 干净）。P4 未触碰恢复层：`OutputLevel` 仍只有 `Java8`，类级事实与 `MethodParameters` 仍不在载荷。
+**P4 现代语义（已归档，10/10，`88416ab`）**：1.1–1.3（release registry，以及 record/sealed/condy/concat 事实与非法 fixture、golden diagnostics）、2.1–2.3（`Engine::runtime_matrix` 的多 profile 物理保留、X2 三态与缺失依赖、有界 X3 反射/ServiceLoader 推断）、3.1–3.2（versioned plugin descriptor 与 `META-INF/services` 只读 fixture）已落地，入口与边界见 [五维支持矩阵](docs/support-matrix.md#现代5371能力与-p4-新增入口2026-09-20)；3.4 的门禁数字与「结构支持 vs 源码恢复独立状态」的结论已随归档写进 [P4 验证记录](openspec/changes/archive/2026-09-20-p4-modern-semantics/verification.md)。P4 未触碰恢复层：`OutputLevel` 仍只有 `Java8`，类级事实与 `MethodParameters` 仍不在载荷。
 
-接下来按 [阶段路线](openspec/roadmap.md) 归档已通过出口的 P3，并完成 P4 的 3.4 与 P5；P3 的 12 项已全部落地，仍未做的三处（`MethodParameters`、类级事实、canonical 对「handler 入口即根」的裁决）记录在 [P3 验证记录](openspec/changes/p3-java8-recovery/verification.md)。轻量调用方仍可直接依赖 `jarde-reader`/`jarde-query`。
+**P5 实测优化（`p5-measured-optimization`）**：1.1–3.2 已落地，3.3/3.4 已执行（发布记录与最终门禁）。**已发布的实测范围**是提交的小样本（659 B 归档 / 303 B class，ECJ 4.6.1 与 javac 产物），配置为同机（macOS/arm64）、单线程构建与单线程执行、`REPEATS=200`/行；**重复策略**：中位复现性 ~10%（同一代码两次测量的中位数漂移 +5%~+8%、前后半差最多 ~12%），**低于约 10% 的差异在本机不可区分，跨环境比较一律不做**，进程内首次运行可达中位数 13×。**未决阈值：未定**（决策 5）——发布记录不含任何 P95、吞吐或加速倍数，重新评估的触发条件是「出现能对一个 snapshot 跑两个请求的行」或「某行资源每单位份额居首且差异越过同机带宽」。**今天默认关闭，逐项如此**：facts cache **存在但默认 off**（`Budget::new` 不带 cache，只有显式附上的调用方才会被咨询，关闭时与之前逐字节相同），index 与 并行/merged/single-flight 路径**不存在**；**未新增任何第三方依赖**。**A15 由「未通过」改为「部分通过」**（关缓存/暖缓存的结果四平面 status/order/coverage/diagnostics 逐字段相等、差异只落在 charge 字段；「整档 fingerprint 相等」那一读法不成立，因为规格列举的必须相等平面里没有资源），**A18 仍为部分通过**（P1 半 + 3.2 补的跨快照隔离；并行半没有对象，不假装验过）。P5 **未改变任何既有结果契约**。实测数字、启用开关与逐项边界见 [五维支持矩阵](docs/support-matrix.md#p5-实测边界与启用开关2026-09-20)，命令与证伪见 [P5 验证记录](openspec/changes/p5-measured-optimization/verification.md)。
+
+接下来按 [阶段路线](openspec/roadmap.md) 归档 P5；P3 的 12 项已全部落地，仍未做的三处（`MethodParameters`、类级事实、canonical 对「handler 入口即根」的裁决）记录在 [P3 验证记录](openspec/changes/archive/2026-09-20-p3-java8-recovery/verification.md)。轻量调用方仍可直接依赖 `jarde-reader`/`jarde-query`。
 
 `Engine::query` 保持 physical X0/X1，`references_definition`/`may_dispatch_to` 仍返回 UnsupportedAnalysis；`resolve_symbol`/`declaration_references` 是显式运行环境下的独立入口，回答类/字段/方法的**声明**解析与声明引用，dispatch 报告已知候选与 open-world 证据，不声称完整 JVMS 实现或 runtime selection（契约见主规格 `demand-resolver`）。`Engine::analyze_method` 可调度到 SSA；CLI 的 `analyze_method` 接收同形的 `environment`、`method`、`stages`，返回 `method_analysis`。适配层只提供 `input_path` 打开的单一 snapshot，不重写请求中的身份；方法报告含阶段与结果平面，P2 报告保持 Bytecode 契约；`jarde_jvm::analyze_method_ir` 另以只读 `MethodIr` 交付同次运行的实际表。`Engine::recover_method` 消费该载荷，CLI 同名 operation 返回方法分析与恢复报告，分析不重复执行。
 
@@ -139,7 +141,7 @@ JSON
 - [P1 归档（proposal / design / tasks / verification）](openspec/changes/archive/2026-09-17-p1-query-xref/)
 - [已生效主规格](openspec/specs/)（P0 的 analysis-contracts / artifact-snapshots / classfile-inspection，P1 的 artifact-views / query-api / structural-xref，P2 的 demand-resolver / jvm-ir / conservative-output）
 - [P2 验证记录（含验收映射与 5.4 门禁）](openspec/changes/archive/2026-09-19-p2-jvm-ir/verification.md)
-- [P3 恢复验证记录](openspec/changes/p3-java8-recovery/verification.md)
+- [P3 恢复验证记录](openspec/changes/archive/2026-09-20-p3-java8-recovery/verification.md)
 - [OpenSpec 入口](openspec/README.md)
 - [P0 归档 proposal / design / tasks](openspec/changes/archive/2026-09-17-establish-p0-foundation/)
 - [已生效的 P0 主规格](openspec/specs/)

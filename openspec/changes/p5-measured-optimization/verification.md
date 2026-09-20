@@ -397,3 +397,74 @@ matrix 行:      class_bytes −555、attribute_bytes −87，其余 14 维全 0
 
 **`NO_SECOND_PATH_TODAY` 五条仍无第二条路径**（index/parallel/merged、P4 modern 面、真 RSS）；`KEY_DIMENSIONS` 的 IR/recovery 仍 `Carrier::Absent`；容量仍按 entry 数计。
 **属 3.3**：把「今天默认 off、门槛未定（决策 5）、测得范围与未决阈值」写成发布记录——本片只提供**可执行门禁与实跑数字**（**未阈值化**：十行的墙钟未断言）。**属 3.4**：文档同步与最终门禁归档。
+
+## 2026-09-20 3.3 + 3.4：发布实测范围与最终门禁（提交 `b988350` 前）
+
+### 3.3 发布记录
+
+**落点**（**未新建文档**，按 Skill「每类事实一个权威来源」）：`docs/support-matrix.md` 新增一节 **`## P5 实测边界与启用开关（2026-09-20）`**（+70 行，5 个子节、3 张表）+ `README.md` 当前状态段新增 P5 综述（+6 行）。
+
+| 要发布的 | 数值来源（**逐字抄录，未重编**） |
+| --- | --- |
+| **实测范围**（语料/配置/耗时/固定量/内存代理局限/局部vs全范围/cache 冷热/fuzz 峰值） | **1.2+1.3 节（`e7f509f`）** 与 **2.3 节（`2f6754a`）**、**资源边界节（`819c12a`）** |
+| **重复策略** | `REPEATS=200`/行、同机单线程、中位漂移 +5%~+8%、前后半 ≤12% ⇒ **低于约 10% 不可区分**、进程内首次可达 **13×** |
+| **未决阈值：未定** | 明写**没有任何 P95/吞吐/加速倍数/目标**；触发条件是**「某一行存在」**而非收益数值（2.1 记录的两条） |
+| **启用开关** | 逐项：facts cache **存在但默认 off**；index **不存在**；parallel/merged/single-flight **不存在**——各带实测理由 |
+
+**文档逐条替换**（外科手术式，目标串**全部唯一命中**）：support-matrix 2 处（复核边界句补 P5 状态与链接；`-rss_limit_mb=512` → `2048` 并附三 target 实测峰值 188/486/278 MB）+ 1 处新增整节；README 5 处（P4 状态句中「3.4 尚待…」改为已完成并指向归档验证记录；「接下来…」句改为归档 P5；新增 P5 段）。**实现者一处自纠**：README 初稿把语料写成「ECJ 4.6.1 50.x–52.0」，与事实不符，改为「ECJ 4.6.1 与 javac 产物」。
+
+### 哪些性能数字有守卫、哪些只是散文（**如实**）
+
+| 数字 | 性质 |
+| --- | --- |
+| **cache 的 charge 差分**（`class_bytes −555`、`attribute_bytes −87`） | **有可执行守卫**：`CACHE_BENEFIT_DELTAS` 由用例从两次真跑**重算比对**（下方证伪 ①b 打红） |
+| 固定量（659/627/303/909、class=555/909/303、headers/bodies、ir_items=86/edges=5…） | **部分是断言**（局部行 `headers=1`/`bodies=1` 被断言），其余多为**打印读数** |
+| 「缓存结果 = direct 结果」 | **有守卫**（`the_cached_facts_are_the_facts_the_direct_path_produces` + 八面门禁） |
+| **墙钟中位数、~10% 复现性、13× first、137→116 µs** | **只是散文**——文档与注释都明写「不是统计阈值、没有任何耗时被断言」。**证伪 ① 实测无守卫（预期如此）** |
+| 「默认 off / index、parallel 不存在」 | **有守卫**（下方证伪 ② 全红） |
+
+### 3.4 最终门禁（**全部实跑**）
+
+| 项 | 结果 |
+| --- | --- |
+| 全量 `cargo test --workspace --all-targets --all-features --locked --no-fail-fast` | **1113 passed / 0 failed / 5 ignored**，**60 个 binary**，exit 0（与基线逐字相同） |
+| `p3_execution_comparison -- --ignored` | 2 passed / 0 failed（21.7 s，`javac 23.0.1`） |
+| `p5_benchmark -- --ignored`（**benchmark smoke**） | 1 passed（`p5_repeated_direct_baseline`） |
+| fmt / clippy 1.98.1 `-D warnings` | 干净 / 干净 |
+| MSRV `cargo +1.88.0 check --workspace --all-targets --all-features --locked` | exit 0 |
+| supply-chain **两套**（根 + fuzz，各 `--locked --config deny.toml`） | 均 **advisories/bans/licenses/sources ok** |
+| `cd fuzz && cargo test --locked` | **21 passed** |
+| **fuzz 冒烟**（三 target × 25 s，`/tmp` scratch 语料） | `query` 192,243 execs / **193 MB**；`artifact_tree` 338,399 / **485 MB**；`method_analysis` 247,242 / **268 MB**；三者 exit 0、**tracked 语料 0 改动**；`-rss_limit_mb=2048` 生效且余量 **4.2×** |
+| `openspec validate --all --strict --no-interactive` | **16 passed / 0 failed** |
+| 两个 CI example / 分层 | exit 0 / `jarde-java` **0** 次 |
+| `git diff --check` | 干净；未跟踪文件 **0** |
+
+**5 ignored 构成**（全仓仅此五条）：`jvm_bytecode_oracle`（需 JDK 25，**本机未跑**，环境缺口，CI 的 JDK job 负责）、`p3_execution_comparison` 2 条（本片已显式跑过）、`p5_repeated_direct_baseline`（200 次重复，本片已跑）、`regenerate_corpus_fingerprint`（会**写**清单，**按纪律不得跑**）。
+
+**附带读数（散文，不作阈值）**：`--nocapture` 重跑时四行的**固定量逐字复现**发布记录；但**墙钟中位数**本次为 152/157/294/24/133 µs（1.2 记录为 131/139/134/21），**单成员行高一倍多**——同一 harness 同机的又一次读数，**正是「不发布阈值」的实证**。
+
+### 「本阶段未改变结果契约」逐项依据
+
+| P5 改动 | 影响 | 依据 |
+| --- | --- | --- |
+| 1.x（corpus fingerprint + 测试） | **零** | `crates/`/`src/` 零改动 |
+| 2.1/2.2（决策 + 守卫） | **零** | 同上 |
+| **2.3（facts cache 实现）** | **默认关闭 ⇒ 逐字节相同** | 三条可执行守卫 + **差分门禁**（下方父级证伪 ② 全部打红） |
+| 3.1/3.2（差分门禁与对抗语料） | **零** | 父级复核 `crates/`/`src/`/`Cargo.*` **零改动**（只有两个测试文件） |
+| 资源边界（CI `-rss_limit_mb`） | **零**（不改引擎） | `crates/`/`src/` 零改动 |
+| 3.3/3.4 | **零** | `git diff --name-only` 只有 `.md` |
+
+### 父级独立复核与证伪
+
+- **父级复核**：3.3/3.4 期间 `git status --porcelain -- crates/ src/ tests/ Cargo.toml Cargo.lock` **为空** —— 本片确实只改散文；`openspec validate --all --strict` 16 passed；**95 条**相对链接全部解析成功（见下「链接」）。
+- **父级独立证伪（默认启用状态）**：把 `Budget::new` 的 `facts: None` 改成携带一个 cache → **4 红**：**3.1 门禁** `a_candidate_may_be_enabled_only_while_its_differential_is_equivalent`、`the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler`、`the_cache_path_publishes_the_same_result_and_reports_what_it_saved`、`the_default_path_consults_no_cache`；还原后校验 OK。**即「默认关闭」与「未改变结果契约」是被守卫的，不是声明。**
+- **实现者证伪 ①**（改发布记录里的复现性数字 10%→1%）→ **全绿：无守卫（预期）**，旁证 `grep -rl "support-matrix" tests/` = 0 —— **文档是散文，这正是 `No universal threshold yet` 要求的性质**。
+- **实现者证伪 ①b**（对照，证明哪些数字有守卫）：改 `CACHE_BENEFIT_DELTAS` 的 `ClassBytes −555 → −554` → **恰好 1 红**，消息即「CANDIDATES records a benefit that is not the difference between the two rows」。
+
+### 归档前的链接修复（提交 `b988350`）
+
+P3 归档后留下 **3 处指向已不存在路径的链接**（`README.md` 2 处、`docs/support-matrix.md` 1 处），又有 **7 处 archive 内部**相对链接指向未加日期前缀的旧名（其中 2 处多写了 `archive/` 段，**写成时就是错的**）。父级写了一个**本地链接检查器**（95 条相对链接、72 个文件）逐条核对：**全部 10 处修复后 95/95 解析成功**，且每处替换都在写入前核对了目标文件存在。**修复只动路径，不动任何陈述。**
+
+### 未完成（如实）
+
+`jvm_bytecode_oracle`（JDK 25）**本机未跑**；`regenerate_corpus_fingerprint` 按纪律**不得**跑。`cargo-deny` 的两条 `license-not-encountered` 警告（`BSD-3-Clause`、`Unicode-DFS-2016`）**未处理**——既有状态、非本 change 引入。`NO_SECOND_PATH_TODAY` 五条仍未闭合；`KEY_DIMENSIONS` 的 IR/recovery 仍 `Carrier::Absent`；容量按 entry 数计。
