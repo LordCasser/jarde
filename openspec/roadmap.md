@@ -47,6 +47,19 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 
 [close-recovery-correctness-gaps](changes/archive/2026-09-20-close-recovery-correctness-gaps/tasks.md) 已归档（4/4，`fd0aae8`）。门禁数字与 CI 结果见 [收尾验证](changes/archive/2026-09-20-close-recovery-correctness-gaps/verification.md)。新反例此前在 `cd6f2f0` 基线上成立，因此历史 CI 不构成本次验收：验收以固定提交自身的门禁为准。
 
+## Benchmark 复核后的四个 change（2026-09-20）
+
+[benchmark 复核](benchmark-review.md) 把实测观察收敛成四个各自闭环的 change；建议顺序与当前状态如下，逐项验证后归档。
+
+| 顺序 | Change | 状态 |
+| --- | --- | --- |
+| 1 | [expose-recovery-content](changes/archive/2026-09-20-expose-recovery-content/proposal.md) | 已归档（4/4，`7d095ce`）：产物内容三值分类，评测分母可对账 |
+| 2 | [carry-declaring-class-evidence](changes/carry-declaring-class-evidence/proposal.md) | 实施中：同源 driver class name/flags 交接 |
+| 3 | [bound-container-lookup](changes/bound-container-lookup/proposal.md) | 待实施：定向 container 访问、有界复用与容量核算 |
+| 4 | [bind-prefixed-load-roots](changes/bind-prefixed-load-roots/proposal.md) | 待实施：container+raw prefix 的 root 与 CLI 树枚举 |
+
+它们与已归档的正确性收尾相互独立：R8/R9 不因这些 change 重开，这些 change 也不把基准分布当作修复后的实测。
+
 ## 分开处理的后续范围
 
 | 范围 | 当前边界 | 何时继续 |
