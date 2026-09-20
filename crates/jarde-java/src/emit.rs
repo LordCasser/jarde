@@ -43,7 +43,7 @@
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::model::PhysicalMethodId;
 
-use crate::ast::{Expr, ExprKind, Stmt, StmtKind};
+use crate::ast::{BinaryOp, Expr, ExprKind, Stmt, StmtKind};
 use crate::declaration::Declaration;
 use crate::facts::RecoveryFacts;
 use crate::source_map::{OriginSet, Segment, SourceMap};
@@ -465,15 +465,60 @@ impl<'a> Emitter<'a> {
                 emitter.put("]", at)
             }
             ExprKind::Binary { op, left, right } => {
-                emitter.expr(left)?;
+                emitter.binary_operand(left, *op, Side::Left)?;
                 emitter.put(&format!(" {} ", op.spell()), at)?;
-                emitter.expr(right)
+                emitter.binary_operand(right, *op, Side::Right)
             }
             ExprKind::Not { value } => {
                 emitter.put("!", at)?;
                 emitter.expr(value)
             }
         })
+    }
+
+    /// Appends one operand of a binary expression, in the parentheses Java's own precedence and
+    /// associativity require it to keep the tree's grouping.
+    ///
+    /// The expression tree is the layer's proof; the text is what a caller receives and recompiles,
+    /// and Java groups an unparenthesised text by its own rules. Concatenating the operand's text
+    /// therefore prints **another program** where the operand is a binary expression of looser (or
+    /// equal, on the right) binding: `i * (2 - d * i)` reaches the buffer as `i * 2 - d * i`, which
+    /// is `(i * 2) - (d * i)`. Every binary operator this subset writes is left-associative (JLS
+    /// 15.17, 15.18, 15.20), so one comparison covers every pair: an operand keeps its own grouping
+    /// only if it binds tighter than its parent — and an equal-precedence operand on the *right*
+    /// does not, because the text would read it as part of the parent's own group
+    /// (`a - (b - c)` is not `(a - b) - c`).
+    ///
+    /// The parentheses are written around the operand's own node, which is where they belong: the
+    /// segment table still records the operand's text against the operand's anchors, exactly as it
+    /// records the operator's own spelling, and no node's anchors move.
+    fn binary_operand(
+        &mut self,
+        operand: &Expr,
+        parent: BinaryOp,
+        side: Side,
+    ) -> Result<(), StopReason> {
+        let at = Some(operand.origin.primary().bci());
+        let grouped = match &operand.kind {
+            ExprKind::Binary { op, .. } => {
+                let operand_binding = binding(*op);
+                let parent_binding = binding(parent);
+                operand_binding < parent_binding
+                    || (matches!(side, Side::Right) && operand_binding == parent_binding)
+            }
+            // Every other expression this subset writes binds tighter than every binary operator
+            // (a call, a field read, an array read, a literal or a negation), so none of them can
+            // be regrouped by the text around it.
+            _ => false,
+        };
+        if grouped {
+            self.put("(", at)?;
+        }
+        self.expr(operand)?;
+        if grouped {
+            self.put(")", at)?;
+        }
+        Ok(())
     }
 
     /// The only way text enters the buffer.
@@ -539,6 +584,32 @@ impl<'a> Emitter<'a> {
 /// The indentation of one depth: four spaces, fixed, because this emitter never reflows.
 fn indent_text(indent: usize) -> String {
     "    ".repeat(indent)
+}
+
+/// Which operand of a binary expression is being written.
+///
+/// The side is read for one fact: an operand of the same binding power as its parent is regrouped
+/// by the text only on the right, because Java's binary operators are all left-associative.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum Side {
+    Left,
+    Right,
+}
+
+/// How tightly Java binds one binary operator: a larger value binds tighter.
+///
+/// Only the order matters — the printer compares two of these — and the four values are Java's own
+/// groups (JLS 15.17 multiplicative, 15.18 additive, 15.20 relational then equality). The
+/// comparison is a total rule rather than a table over operator pairs because every operator this
+/// subset writes is left-associative, and the AST's subset carries no assignment, conditional or
+/// boolean-and/or node whose associativity would need a second rule.
+fn binding(op: BinaryOp) -> u8 {
+    match op {
+        BinaryOp::Multiply | BinaryOp::Divide | BinaryOp::Remainder => 3,
+        BinaryOp::Add | BinaryOp::Subtract => 2,
+        BinaryOp::Less | BinaryOp::LessOrEqual | BinaryOp::Greater | BinaryOp::GreaterOrEqual => 1,
+        BinaryOp::Equal | BinaryOp::NotEqual => 0,
+    }
 }
 
 /// One string literal's text, escaped by UTF-16 code unit.
@@ -786,5 +857,81 @@ mod tests {
         );
         assert!(emitted.text.starts_with("// @method sample()V\n"));
         assert!(emitted.text.ends_with("}\n"));
+    }
+
+    /// Grouping writes two parentheses and moves no anchor: the operand's own segment is its own
+    /// text against its own anchors, and the parentheses are bytes of the **parent's** span, exactly
+    /// as the operator between the operands is.
+    ///
+    /// The expression is the shape of the defect (`local1 * (2 - arg0 * local1)`), built here rather
+    /// than recovered so that the assertion is about the printer and not about a run: the inner
+    /// subtraction's segment must not contain the parentheses that put it in its own group, while
+    /// the outer product's span covers them.
+    #[test]
+    fn grouping_writes_parentheses_into_the_parents_span_and_moves_no_anchor() {
+        let inner = Expr::new(
+            ExprKind::Binary {
+                op: BinaryOp::Subtract,
+                left: Box::new(Expr::direct(ExprKind::Integer(2), 3)),
+                right: Box::new(Expr::new(
+                    ExprKind::Binary {
+                        op: BinaryOp::Multiply,
+                        left: Box::new(Expr::direct(ExprKind::Local("arg0".to_string()), 4)),
+                        right: Box::new(Expr::direct(ExprKind::Local("local1".to_string()), 5)),
+                    },
+                    OriginSet::new(Origin::direct(6)).plus_derived(Origin::derived(5)),
+                )),
+            },
+            OriginSet::new(Origin::direct(7)).plus_derived(Origin::derived(3)),
+        );
+        let stmts = vec![Stmt::new(
+            StmtKind::Assign {
+                name: "local1".to_string(),
+                value: Expr::new(
+                    ExprKind::Binary {
+                        op: BinaryOp::Multiply,
+                        left: Box::new(Expr::direct(ExprKind::Local("local1".to_string()), 2)),
+                        right: Box::new(inner),
+                    },
+                    OriginSet::new(Origin::direct(8)).plus_derived(Origin::derived(7)),
+                ),
+            },
+            OriginSet::new(Origin::direct(8)),
+        )];
+        let mut budget = budget_with(1 << 20);
+        let emitted = emit(&stmts, &facts(), None, None, &mut budget).expect("ample");
+        assert!(
+            emitted
+                .text
+                .contains("local1 = local1 * (2 - arg0 * local1);"),
+            "the right operand of the product is a subtraction, so it keeps its own group:\n{}",
+            emitted.text
+        );
+        // One segment per node, in completion order: the five nodes inside the subtraction, the
+        // product, the assignment and its expression's outer product — the parentheses add none.
+        assert_eq!(
+            emitted.source_map.len(),
+            8,
+            "{:#?}",
+            emitted.source_map.segments()
+        );
+        assert_eq!(
+            emitted.source_map.text_of_bci(&emitted.text, 7),
+            vec!["2 - arg0 * local1", "local1 * (2 - arg0 * local1)"],
+            "the operands' own texts, the inner one unparenthesised: the parentheses belong to the \
+             product that needed them"
+        );
+        assert_eq!(
+            emitted.source_map.text_of_bci(&emitted.text, 3),
+            vec!["2", "2 - arg0 * local1"],
+            "the constant is its own node and the subtraction that read it presents that anchor as \
+             derived, exactly as it did before the grouping"
+        );
+        assert_eq!(
+            emitted.source_map.text_of_bci(&emitted.text, 6),
+            vec!["arg0 * local1"],
+            "the inner product answers for the bytecode that produced it, with no parentheses in \
+             its segment"
+        );
     }
 }

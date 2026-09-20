@@ -664,6 +664,76 @@ const REFUSED_CAST: Sample = Sample {
             while a claimed read composed with a deferred call stays written whole",
 };
 
+const NESTED_ARITHMETIC: Sample = Sample {
+    label: "p3-nested-arithmetic/v8 (javac 23.0.1, --release 8 -g:none)",
+    class: "ModLike",
+    bytes: include_bytes!("fixtures/p3-nested-arithmetic/v8/ModLike.class"),
+    classpath: &[],
+    extends: None,
+    scaffold: &[],
+    counter: None,
+    measured: &[],
+    quotes: &[],
+    // Every member of this sample is written whole, so no refusal rests on the original's own
+    // behaviour; the driver is here because the *positive* comparison's inputs are the original's
+    // too, and `inverse32(-1)` is the input the defect was measured on.
+    baseline: Some(Baseline {
+        class: "Baseline",
+        source: include_str!("fixtures/p3-nested-arithmetic/Baseline.java"),
+        lines: &[
+            "inverse32(-1)=-1",
+            "inverse32(7)=-1227133513",
+            "inverse32(0)=0",
+            "scaledDifference(3, 5)=-39",
+            "nestedDifference(10, 4, 7)=13",
+            "nestedQuotient(20, 3, 4)=1",
+            "differenceOfSum(10, 3)=2",
+            "productOfSum(2, 3, 4)=20",
+            "sumOfProducts(2, 3, 4)=14",
+            "leftNestedSum(2, 3, 4)=9",
+        ],
+    }),
+    members: &[
+        Member {
+            name: "inverse32",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "scaledDifference",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "nestedDifference",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "nestedQuotient",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "differenceOfSum",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "productOfSum",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "sumOfProducts",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "leftNestedSum",
+            expect: Expect::Executed,
+        },
+    ],
+    point: "the printer's grouping: every arithmetic operand is printed so that the text parses \
+            back into the tree it was printed from, so the original and the generated body return \
+            the same value for every input — `inverse32(-1)` is -1 on both sides, where the text \
+            that lost its group answered -81 — while the two shapes Java's own precedence and \
+            associativity already state (`a + b * c`, `(a + b) + c`) gain no parentheses",
+};
+
 const REQUIRED: &[&Sample] = &[
     &LOCAL_REWRITE,
     &SCOPE_NO_DEBUG,
@@ -672,6 +742,7 @@ const REQUIRED: &[&Sample] = &[
     &ECJ_V52,
     &NESTED_EVAL,
     &REFUSED_CAST,
+    &NESTED_ARITHMETIC,
 ];
 
 const CORPUS: &[&Sample] = &[

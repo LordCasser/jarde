@@ -10194,7 +10194,7 @@ mod tests {
     /// rules must not reject real code, and real historical subroutines must go through
     /// the same target checks.
     ///
-    /// The counts are the measured population — 43 classes, 159 bodies, 44 exception table
+    /// The counts are the measured population — 44 classes, 168 bodies, 44 exception table
     /// records, 86 branch/switch targets, 8 `jsr`/`jsr_w` instructions (the ECJ 4.6.1 45–48
     /// `finally` codegen; neither the P3 samples nor the P4 modern samples contain a
     /// subroutine) — so a fixture that silently stops being visited, or a body that stops
@@ -10215,6 +10215,11 @@ mod tests {
     /// `Holder` a constructor, an instance method, a static method and a `<clinit>` — bodies javac
     /// 23.0.1 compiles straight-line, with no exception table, no branch and, like every other P3
     /// sample, no subroutine.
+    ///
+    /// The `p3-nested-arithmetic` sample adds its own class and nine bodies (eight `static`
+    /// methods and the default constructor) and moves neither of the last three: every body is
+    /// straight-line arithmetic over parameters and one local, which javac compiles without a
+    /// branch or a handler.
     #[test]
     fn repository_class_fixtures_validate_without_false_target_rejections() {
         let fixtures = class_fixture_paths();
@@ -10294,7 +10299,7 @@ mod tests {
                 branch_targets,
                 subroutines
             ),
-            (43, 159, 44, 86, 8),
+            (44, 168, 44, 86, 8),
             "fixture population changed: re-measure these counts"
         );
     }

@@ -1,11 +1,11 @@
-//! P3 stage A acceptance: the **position** a nested expression's checks are taken at, and the
-//! producers a refused expression owes the answer.
+//! P3 stage A acceptance: the **position** a nested expression's checks are taken at, the producers
+//! a refused expression owes the answer, and the grouping the printed text owes the tree.
 //!
-//! Two review findings are pinned here, both through the entry point the CLI calls
+//! Three findings are pinned here, all through the entry point the CLI calls
 //! ([`Engine::recover_method`]) over **real compiled samples** — the committed javac 23.0.1
-//! `--release 8 -g:none` classes under `tests/fixtures/p3-nested-eval/` and
-//! `tests/fixtures/p3-refused-cast/`, whose own READMEs state the command, the digests and the
-//! bytecode of every member:
+//! `--release 8 -g:none` classes under `tests/fixtures/p3-nested-eval/`,
+//! `tests/fixtures/p3-refused-cast/` and `tests/fixtures/p3-nested-arithmetic/`, whose own READMEs
+//! state the command, the digests and the bytecode of every member:
 //!
 //! * **P3-R8.** `nestedLocal(I)I` is `iload_0; iconst_1; iadd; iinc 0,1; iload_0; iadd; ireturn`: the
 //!   outer `iadd` reads a value the `iload_0` at BCI **0** produced, and the `iinc` at BCI 3 writes
@@ -29,13 +29,26 @@
 //!   areturn`, whose read can throw (`instanceCast(null)`), and `chainCast` is `getstatic
 //!   External.holder; getfield Holder.value; checkcast; areturn`, where the walk must not stop at
 //!   the first read: the `getfield`'s own producer, the `getstatic` at BCI 0, is named too.
+//! * **Grouping.** The expression tree is the layer's proof and the text is what a caller
+//!   receives, so the printer has to state the tree's grouping: `ModLike.inverse32(I)I` is
+//!   `iload_1; iconst_2; iload_0; iload_1; imul; isub; imul; istore_1` four times, whose tree is
+//!   `local1 * (2 - arg0 * local1)`. Printed by concatenating the operands it came out as
+//!   `local1 = local1 * 2 - arg0 * local1;` — `(local1 * 2) - (arg0 * local1)`, another program —
+//!   while the run reported `Java`/`Structured`/`contains_statements` and no diagnostic; the
+//!   compiled text answered `-81` for `inverse32(-1)` where the class answers `-1`. The four
+//!   shapes of the fixture (a product of a subtraction, a subtraction of a subtraction, a
+//!   quotient of a product, a difference of a scaled sum) and the two controls whose tree Java's
+//!   defaults already state are asserted below by **exact text**, with the executed comparison in
+//!   `tests/p3_execution_comparison.rs` as the value evidence.
 //!
-//! The controls are what keep the fix from being "refuse every nested expression" and "quote every
-//! field read":
+//! The controls are what keep the fix from being "refuse every nested expression", "quote every
+//! field read" and "parenthesise everything":
 //!
 //! * `nestedPlain(I)I` is `(x + 1) + (x + 2)`: the same nested-arithmetic shape with **no write
 //!   between the loads and the sum**, so both loads still hold their values where the text is
-//!   evaluated and the whole body must stay `Java`/`Structured` with the slot names;
+//!   evaluated and the whole body must stay `Java`/`Structured` with the slot names (its right
+//!   operand keeps its group — `arg0 + 1 + (arg0 + 2)` — because a left-associative
+//!   `arg0 + 1 + arg0 + 2` parses back into a different tree);
 //! * `leftRead()` and `rightRead()` read a claimed static field and call once, in either order
 //!   (`External.count + tick()` and `tick() + External.count`): a field read composed with a
 //!   deferred call is presented, not quoted, and `tick` appears exactly once in each text — the
@@ -53,6 +66,9 @@ use std::slice;
 const NESTED: &[u8] = include_bytes!("fixtures/p3-nested-eval/v8/NestedEval.class");
 /// The committed sample of P3-R9, compiled the same way (see the fixture's README).
 const REFUSED: &[u8] = include_bytes!("fixtures/p3-refused-cast/v8/RefusedCast.class");
+/// The committed sample of the nested-arithmetic grouping defect, compiled the same way (see the
+/// fixture's README).
+const NESTED_ARITHMETIC: &[u8] = include_bytes!("fixtures/p3-nested-arithmetic/v8/ModLike.class");
 
 fn limits() -> Limits {
     Limits {
@@ -219,11 +235,14 @@ fn a_nested_expression_that_crosses_no_write_is_still_written() {
     let nested = fixture(&engine, NESTED);
 
     // The control: the same left-nested `+` shape with no write between the two loads and the sum.
-    // Both loads still hold what they read where the text is evaluated, so nothing is refused.
+    // Both loads still hold what they read where the text is evaluated, so nothing is refused. The
+    // parentheses are the printer's grouping and not a refusal: the tree is `Add(Add(x, 1),
+    // Add(x, 2))`, and the left-associative text `arg0 + 1 + arg0 + 2` parses back as
+    // `((arg0 + 1) + arg0) + 2` — a different tree — so the right operand keeps its own group.
     let report = recover(&engine, &nested, b"nestedPlain", b"(I)I");
     let text = &report.text;
     assert!(
-        text.contains("return arg0 + 1 + arg0 + 2;"),
+        text.contains("return arg0 + 1 + (arg0 + 2);"),
         "nestedPlain is `(x + 1) + (x + 2)` and the slot still holds what each load read where the \
          sum is evaluated, so the names are the right expressions:\n{text}"
     );
@@ -710,5 +729,142 @@ fn a_recursion_that_re_enters_its_own_loop_stops_instead_of_aborting() {
     assert_eq!(
         std::mem::discriminant(&again.execution),
         std::mem::discriminant(&report.execution)
+    );
+}
+
+// ---------------------------------------------------------------------------------------------
+// `fix-nested-arithmetic-value`: the printer's grouping, on the committed shapes
+// ---------------------------------------------------------------------------------------------
+
+/// One shape of the grouping fixture: the member, its descriptor, the statement the text must hold,
+/// how many times it must hold it, and the ungrouped statement the same tree used to be printed as
+/// (empty for the two shapes whose tree Java's own precedence and associativity already state).
+type Shape = (
+    &'static [u8],
+    &'static [u8],
+    &'static str,
+    usize,
+    &'static str,
+);
+
+#[test]
+fn the_printed_text_keeps_the_arithmetic_tree() {
+    let engine = Engine::new();
+    let sample = fixture(&engine, NESTED_ARITHMETIC);
+
+    // Each shape: the member, its descriptor, the statement the text must hold, and how many times
+    // (a body whose four rounds are one expression, like `inverse32`, states the same line four
+    // times), then the ungrouped statement the same tree used to be printed as. The ungrouped text
+    // is not merely ugly: `local1 * 2 - arg0 * local1` is `(local1 * 2) - (arg0 * local1)`, a
+    // different program, and `inverse32(-1)` answers -1 with the tree and -81 with the text.
+    let shapes: &[Shape] = &[
+        (
+            b"inverse32",
+            b"(I)I",
+            "local1 = local1 * (2 - arg0 * local1);",
+            4,
+            "local1 = local1 * 2 - arg0 * local1;",
+        ),
+        (
+            b"scaledDifference",
+            b"(II)I",
+            "return arg0 * (2 - arg1 * arg0);",
+            1,
+            "return arg0 * 2 - arg1 * arg0;",
+        ),
+        (
+            b"nestedDifference",
+            b"(III)I",
+            "return arg0 - (arg1 - arg2);",
+            1,
+            "return arg0 - arg1 - arg2;",
+        ),
+        (
+            b"nestedQuotient",
+            b"(III)I",
+            "return arg0 / (arg1 * arg2);",
+            1,
+            "return arg0 / arg1 * arg2;",
+        ),
+        (
+            b"differenceOfSum",
+            b"(II)I",
+            "return arg0 - (arg1 + 1) * 2;",
+            1,
+            "return arg0 - arg1 + 1 * 2;",
+        ),
+        (
+            b"productOfSum",
+            b"(III)I",
+            "return (arg0 + arg1) * arg2;",
+            1,
+            // The same text `sumOfProducts` must keep: a sum on the left of a multiplication binds
+            // looser than the multiplication, so `arg0 + arg1 * arg2` is `arg0 + (arg1 * arg2)` —
+            // a different tree than `(a + b) * c`.
+            "return arg0 + arg1 * arg2;",
+        ),
+        // The two shapes Java's own precedence and associativity already state: they carry no
+        // parentheses today and must not gain any (the fix is grouping, not decoration).
+        (
+            b"sumOfProducts",
+            b"(III)I",
+            "return arg0 + arg1 * arg2;",
+            1,
+            "",
+        ),
+        (
+            b"leftNestedSum",
+            b"(III)I",
+            "return arg0 + arg1 + arg2;",
+            1,
+            "",
+        ),
+    ];
+
+    let mut problems = Vec::new();
+    for (member, descriptor, statement, times, ungrouped) in shapes {
+        let name = String::from_utf8_lossy(member);
+        let report = recover(&engine, &sample, member, descriptor);
+        let text = &report.text;
+        // The evidence is the exact text, because the text is what a caller receives and
+        // recompiles. `representation`/`quality` are stated after it as facts about the run; they
+        // are structural planes and are no evidence that the text computes what its bytecode does.
+        let found = text.matches(statement).count();
+        if found != *times {
+            problems.push(format!(
+                "{name}: the text must state `{statement}` exactly {times} time(s), and it states \
+                 it {found}:\n{text}"
+            ));
+        }
+        if !ungrouped.is_empty() && text.contains(ungrouped) {
+            problems.push(format!(
+                "{name}: the text still holds `{ungrouped}`, which parses back into a different \
+                 tree:\n{text}"
+            ));
+        }
+        let quoted = quoted_bcis(text);
+        if !quoted.is_empty() {
+            problems.push(format!(
+                "{name}: this nest is provable, so the body may not be quoted: {quoted:?}\n{text}"
+            ));
+        }
+        if report.representation != Representation::Java {
+            problems.push(format!(
+                "{name}: the body must stay written whole, and the run states {:?}",
+                report.representation
+            ));
+        }
+        if report.quality != Quality::Structured {
+            problems.push(format!(
+                "{name}: the body must stay structured, and the run states {:?}",
+                report.quality
+            ));
+        }
+    }
+    assert!(
+        problems.is_empty(),
+        "an arithmetic operand retains its own value only if the printed text parses back into the \
+         tree it was printed from:\n{}",
+        problems.join("\n")
     );
 }

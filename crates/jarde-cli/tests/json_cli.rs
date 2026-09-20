@@ -1569,7 +1569,7 @@ fn the_nested_eval_sample_crosses_the_wire_field_by_field() {
         .as_str()
         .expect("the report carries its text");
     assert!(
-        text.contains("return arg0 + 1 + arg0 + 2;"),
+        text.contains("return arg0 + 1 + (arg0 + 2);"),
         "both loads still denote what they read where the sum is evaluated:\n{text}"
     );
     assert!(

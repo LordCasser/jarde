@@ -1146,6 +1146,21 @@
       "path": "tests/fixtures/p3-local-rewrite/v8/LocalRewrite.class"
     },
     {
+      "blake3": "ee36847132f64228405e4c2d55d43045900829f48b272c966963968e39630711",
+      "bytes": 1560,
+      "path": "tests/fixtures/p3-nested-arithmetic/Baseline.java"
+    },
+    {
+      "blake3": "9ea9ac1da6913e0f446035f8cadc697d5b527c083c5eb3109a4dc352b9434f1f",
+      "bytes": 2191,
+      "path": "tests/fixtures/p3-nested-arithmetic/ModLike.java"
+    },
+    {
+      "blake3": "a603a3884e18c4ebe36ccd7e0fa0bd7b22046f8a0446e8c52287e0297d62708a",
+      "bytes": 568,
+      "path": "tests/fixtures/p3-nested-arithmetic/v8/ModLike.class"
+    },
+    {
       "blake3": "9b85caadf1fbf095ec0cfb075b3f0c59a046300f06df106d7939e60438852edb",
       "bytes": 644,
       "path": "tests/fixtures/p3-nested-eval/Baseline.java"
