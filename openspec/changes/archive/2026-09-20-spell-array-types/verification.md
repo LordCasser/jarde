@@ -73,6 +73,8 @@ _ => Some(descriptor.replace('/', ".")),
 | `cargo test --test p5_corpus_fingerprint --locked` | 5 passed / 1 ignored |
 | `openspec validate --all --strict --no-interactive` | 20 passed / 0 failed（归档前） |
 
+| 该次 Push 的 CI（实现提交 `66bd2d0` 随归档提交 `8807fa5` 一起推送） | [run 35516767173](https://github.com/LordCasser/jarde/actions/runs/35516767173) **四 job success**：stable（fmt、clippy `-D warnings`、两轮固定 seed 全量测试、JDK 25 oracle、P3 编译执行对照、依赖边界、OpenSpec strict、`git diff --exit-code`）、MSRV 1.88.0、supply chain、fuzz smoke。run 挂在归档提交上（GitHub 只为 push 的 head 建 run），其树包含 `66bd2d0`。 |
+
 ## 偏差与记录在案的边界
 
 1. **计划 2.2 的前提在两个位置上不成立**：`ExprKind::Path` 与 `ExprKind::New` **可以**从手工字节收到数组 descriptor（`getstatic` 的 class 为 `[I` → `return int[].value;`；`new [#]/<init>` → `return new int[]();`），两者都报 `Java/Structured` 而 javac 拒绝（`class expected`、`array dimension missing`）。**这是位置的既有边界，不是本 change 引入**：修正前这两个位置的文本（`[I.value`、`new [I()`）同样非法；JVMS 4.4.2 下没有合法 class 文件能表达它（数组不声明字段、也不声明 `<init>`）。按计划保持"这些位置照旧拼名字、不新增拒绝规则"，并把边界**永久记录**在 `tests/p3_array_types.rs`（带"记录边界、非验收"注释）与 fixture README 的位置表里。若复核者要更强的规则（"数组类型不得占据这些位置 → 拒绝"），那是一条小且独立的后续，本 change 未取。

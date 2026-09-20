@@ -71,6 +71,14 @@ ignored 对照（`p3_execution_comparison`，新增样本 `p3-nested-arithmetic/
 | source-map 与 accessor 回归（`-p jarde-java --lib`、`p3_accessor_edges`） | 58 / 4 passed |
 | `openspec validate --all --strict --no-interactive` | 21 passed / 0 failed（归档前） |
 
+## CI 覆盖说明（2026-09-20 回填时核对）
+
+本次 push（实现 `445a277` + 归档 `a4dcd96`）**没有产生 CI run**：`gh api .../runs?head_sha=<a4dcd96>` 返回 `total_count: 0`，而前后相邻的 push（`2d2d4df`、`8b57f94`）都有 run。原因未能确定，按事实记录。
+
+该树并非未经验证：`a4dcd96` 是后续多个提交的祖先，其中 `2c3599a`、`b5557f6` 及之后每个提交的 run 都是**四 job success**，那些树都包含本 change 的代码。因此本 change 的代码状态有 CI 覆盖，缺失的只是"以它自己的 SHA 命名的那个 run"。
+
+与前一族相同的一点值得写下来一次：GitHub 只为一次 push 的 head 提交建 run，所以**实现提交自身通常没有 run**，run 挂在随它一起推送的归档提交上。
+
 ## 边界
 
 - **拒绝分支未触发**：所有形状都可证明，分组即足够，没有形状需要走拒绝词汇。已检查本来可能需要它的形状：二元之下的比较（同一规则加括号）、负字面量操作数（`a - -1` 合法为两个 token）、`Not`（其子式在本子集里恒为 boolean 参数的 `Local`，故 `!` 今天不可能包住二元式）。拒绝路径本身未改，仍由既有 `nestedLocal`/`nestedCall` 用例覆盖。
