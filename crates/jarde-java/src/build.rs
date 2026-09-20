@@ -279,10 +279,15 @@ fn declarations(
         // call's or a `Z` field's, and the type the frame states otherwise. A variable neither fact
         // types keeps the write's own fallback.
         let evidence = first.stored.unwrap_or(value);
-        let Some(ty) = boolean_proof(ssa, operations, parameter_types, fields, evidence)
-            .then_some(Type::Boolean)
-            .or_else(|| value_type(ssa.value(value).ty()))
-        else {
+        let stated = if boolean_proof(ssa, operations, parameter_types, fields, evidence) {
+            Ok(Some(Type::Boolean))
+        } else {
+            value_type(ssa.value(value).ty())
+        };
+        // A frame entry that states no type leaves the variable to the write's own declaration; one
+        // that states a name this layer cannot spell as a Java type (`spell_reference`) does the
+        // same, and the write that fills the variable refuses the declaration with that reason.
+        let Ok(Some(ty)) = stated else {
             continue;
         };
         plan.at_region
@@ -895,10 +900,18 @@ impl Builder<'_> {
         // from the value it **read**: the store itself is not an expression, and rendering its own
         // write would ask the store to produce one.
         let ty = match value_type(self.ssa.value(value).ty()) {
-            Some(Type::Reference(name)) if name != "Object" => Type::Reference(name),
-            _ => {
+            Ok(Some(Type::Reference(name))) if name != "Object" => Type::Reference(name),
+            Ok(_) => {
                 return Err(format!(
                     "the resource at BCI {} holds a value the frames name as no reference type, so the header cannot declare it",
+                    store.bci()
+                ));
+            }
+            // A name the frames state that cannot be spelled as a Java type: the header has no
+            // declaration to write, and the fact that stopped it is the reason.
+            Err(name) => {
+                return Err(format!(
+                    "the resource at BCI {} holds a value the frames name `{name}`, which is a descriptor this layer cannot spell as a Java type, so the header cannot declare it",
                     store.bci()
                 ));
             }
@@ -1631,19 +1644,37 @@ impl Builder<'_> {
         // comparison stops on `scope(Z)I is a body the run writes whole, and this run states Mixed`.
         // Everything else keeps the frame's evidence.
         let boolean = self.boolean_evidence(stored) || self.boolean_local(stored, at);
-        let Some(ty) = boolean
-            .then_some(Type::Boolean)
-            .or_else(|| value_type(self.ssa.value(written).ty()))
-        else {
-            self.fallback(
-                vec![at],
-                &format!(
-                    "local {} has no frame entry stating its type",
-                    variable.slot()
-                ),
-                at,
-            )?;
-            return Ok(None);
+        let stated = if boolean {
+            Ok(Some(Type::Boolean))
+        } else {
+            value_type(self.ssa.value(written).ty())
+        };
+        let ty = match stated {
+            Ok(Some(ty)) => ty,
+            // A frame entry that states no type and one that states a name this layer cannot spell
+            // as a Java type (`spell_reference`) both stop the declaration — at the write that would
+            // have carried it, with the fact that stopped it as the reason.
+            Ok(None) => {
+                self.fallback(
+                    vec![at],
+                    &format!(
+                        "local {} has no frame entry stating its type",
+                        variable.slot()
+                    ),
+                    at,
+                )?;
+                return Ok(None);
+            }
+            Err(name) => {
+                self.fallback(
+                    vec![at],
+                    &format!(
+                        "the local written at BCI {at} holds a value the frames name `{name}`, which is a descriptor this layer cannot spell as a Java type, so the declaration is refused instead of writing it"
+                    ),
+                    at,
+                )?;
+                return Ok(None);
+            }
         };
         self.declared.insert(variable);
         if boolean {
@@ -1912,7 +1943,16 @@ impl Builder<'_> {
                             // reads answer to the position its value is consumed at (P3-R8).
                             Some(value) => self.render_value(value, at, depth + 1)?,
                             None => {
-                                Expr::direct(ExprKind::Path(spell_reference(&evidence.owner)), bci)
+                                // A static read's receiver is the owner type itself, and the owner
+                                // is the pool's own name: one this layer cannot spell as a Java type
+                                // has no expression to be, and is refused where it would be written.
+                                let owner = spell_reference(&evidence.owner).ok_or_else(|| {
+                                    format!(
+                                        "the field read at BCI {bci} names the owner `{}`, which this layer cannot spell as a Java type",
+                                        evidence.owner
+                                    )
+                                })?;
+                                Expr::direct(ExprKind::Path(owner), bci)
                             }
                         };
                         Ok(Expr::new(
@@ -2197,7 +2237,12 @@ impl Builder<'_> {
             );
         Ok(Expr::new(
             ExprKind::New {
-                ty: spell_reference(&site.class),
+                ty: spell_reference(&site.class).ok_or_else(|| {
+                    format!(
+                        "the construction at BCI {} names the class `{}`, which this layer cannot spell as a Java type",
+                        site.constructor, site.class
+                    )
+                })?,
                 args,
             },
             origin,
@@ -2269,7 +2314,22 @@ impl Builder<'_> {
                     return self.fallback(bcis, &reason, at);
                 }
             },
-            None => Expr::direct(ExprKind::Path(spell_reference(&evidence.owner)), at),
+            None => match spell_reference(&evidence.owner) {
+                Some(owner) => Expr::direct(ExprKind::Path(owner), at),
+                // A static write's receiver is the owner type itself: a name this layer cannot
+                // spell as a Java type has no receiver to be, and the write is quoted.
+                None => {
+                    let bcis = self.quoted_bcis(at);
+                    return self.fallback(
+                        bcis,
+                        &format!(
+                            "the field write at BCI {at} names the owner `{}`, which this layer cannot spell as a Java type",
+                            evidence.owner
+                        ),
+                        at,
+                    );
+                }
+            },
         };
         let Some(value) = shape.value else {
             return self.fallback(
@@ -2566,7 +2626,12 @@ impl Builder<'_> {
             .map(|(_, value)| {
                 (
                     self.value_bci(*value),
-                    value_type(self.ssa.value(*value).ty()),
+                    // A capture whose frame fact is a descriptor with no Java spelling is a value
+                    // this layer cannot state a type for, and `lambda::plan` refuses a site with an
+                    // unstated capture type under its own preconditions: the site is refused with
+                    // its record and the capture's BCI, which is the answer a spelling failure gets
+                    // here rather than a second refusal vocabulary.
+                    value_type(self.ssa.value(*value).ty()).ok().flatten(),
                 )
             })
             .collect();
@@ -2685,7 +2750,7 @@ impl Builder<'_> {
                 let qualifier = match (plan.reach, captures_rendered.first()) {
                     (Reach::Receiver, Some(receiver)) => receiver.clone(),
                     _ => Expr::new(
-                        ExprKind::Path(spell_reference(plan.implementation.owner())),
+                        ExprKind::Path(implementation_owner(&plan, bci)?),
                         site_origin.clone(),
                     ),
                 };
@@ -2708,7 +2773,7 @@ impl Builder<'_> {
                 let body = match plan.reach {
                     Reach::Constructor => Expr::new(
                         ExprKind::New {
-                            ty: spell_reference(plan.implementation.owner()),
+                            ty: implementation_owner(&plan, bci)?,
                             args: bound,
                         },
                         origin.clone(),
@@ -2716,7 +2781,7 @@ impl Builder<'_> {
                     Reach::Static => Expr::new(
                         ExprKind::Call {
                             receiver: Some(Box::new(Expr::new(
-                                ExprKind::Path(spell_reference(plan.implementation.owner())),
+                                ExprKind::Path(implementation_owner(&plan, bci)?),
                                 site_origin.clone(),
                             ))),
                             name: plan.implementation.name().to_string(),
@@ -3333,36 +3398,138 @@ fn parameter_boolean(
     matches!(parameter_types.get(slot), Some(Type::Boolean))
 }
 
+/// The class name one dynamic site's implementation handle states, spelled as Java source.
+///
+/// The handle's owner is the class the implementation member lives in: the qualifier of a `::`
+/// reference, the type a constructor's `new` states, the receiver of a static call. One shape names
+/// it in three places, so it is spelled once here — and a class name this layer cannot spell as a
+/// Java type refuses the site instead of being written as the pool spells it ([`spell_reference`]).
+fn implementation_owner(plan: &lambda::Plan, bci: u32) -> Result<String, String> {
+    spell_reference(plan.implementation.owner()).ok_or_else(|| {
+        format!(
+            "the dynamic site at BCI {bci} implements `{}` in the class `{}`, which this layer cannot spell as a Java type",
+            plan.implementation.name(),
+            plan.implementation.owner()
+        )
+    })
+}
+
 /// The declared type of a local, when the frames state one.
 ///
 /// A reference the frames *name* carries the descriptor form the class file states
-/// (`Ljava/lang/Runnable;`) — that is the fact the frame pass read and kept — so this is where it is
-/// spelled as Java source (`java.lang.Runnable`). An array descriptor is still spelled as the
-/// descriptor says; widening the spelling of arrays is a 3.x presentation question with its own
-/// evidence, and no shape of this layer declares one.
-fn value_type(value: &Value) -> Option<Type> {
-    match value {
+/// (`Ljava/lang/Runnable;`, and every array as its own descriptor: `[B`, `[[Ljava/lang/String;`) —
+/// that is the fact the frame pass read and kept — so this is where it is spelled as Java source
+/// (`java.lang.Runnable`, `byte[]`, `java.lang.String[][]`).
+///
+/// `Err` carries the fact that has no spelling: the reference name the frames state, which
+/// [`spell_reference`] refused as a descriptor with no Java type to be (`[`, `[Lfoo`, `L;`). The
+/// caller states the position that would have carried it and refuses that position — never the
+/// name, and never a placeholder type in its place.
+fn value_type(value: &Value) -> Result<Option<Type>, String> {
+    Ok(match value {
         Value::Int => Some(Type::Int),
         Value::Long => Some(Type::Long),
         Value::Float => Some(Type::Float),
         Value::Double => Some(Type::Double),
-        Value::Ref(RefType::Named { name, .. }) => Some(Type::Reference(spell_reference(
-            &String::from_utf8_lossy(name),
-        ))),
+        Value::Ref(RefType::Named { name, .. }) => {
+            let name = String::from_utf8_lossy(name).into_owned();
+            Some(Type::Reference(spell_reference(&name).ok_or(name)?))
+        }
         Value::Ref(_) | Value::Null => Some(Type::Reference("Object".to_string())),
         _ => None,
+    })
+}
+
+/// One reference type as the frames and the class file state it, spelled as Java source.
+///
+/// Published to the crate because four rules write a type name from a class-file fact — a
+/// declaration's class, a construction's class, a static field's owner, a dynamic site's
+/// implementation class — and a second spelling of "internal form to source form" is exactly the
+/// kind of duplicate that drifts.
+///
+/// Three forms reach this entry point, and `None` is the answer for a form that states no Java type:
+///
+/// * a **field descriptor** — the frames state a named reference this way (`Ljava/lang/Runnable;`),
+///   and so does every array (`[B`, `[[I`, `[[Ljava/lang/String;`). What a descriptor describes is a
+///   type, so it must be spelled as one: the `L…;` wrapping comes off, `/` becomes `.`, and an array
+///   is spelled from the element outwards with one `[]` per dimension. The array spelling itself is
+///   [`crate::lambda::parse_type`]'s, reused rather than copied, so a declaration here and a lambda
+///   parameter there cannot drift. A descriptor that cannot be read as a type — a truncated array
+///   (`[`, `[V`, `[Lfoo`), a class type with no name (`L;`) — has no Java spelling to publish and is
+///   `None`.
+/// * a **method descriptor** (`(I)V`) is not a type at all: `None`.
+/// * an **internal name** (`java/lang/Math`, the pool's own spelling of a class) is not a descriptor
+///   and keeps the historical reading, `/` → `.`. A bare name is never interpreted as one: a class
+///   may be called `Lfoo`, so a name that merely looks like a truncated descriptor stays a name.
+pub(crate) fn spell_reference(descriptor: &str) -> Option<String> {
+    match descriptor.as_bytes().first()? {
+        // An array descriptor is read by the one descriptor parser of this crate: the elements it
+        // spells are the object-name rule below, applied to the element the descriptor states.
+        b'[' => match crate::lambda::parse_type(descriptor.as_bytes(), 0) {
+            Some((Type::Reference(spelled), end)) if end == descriptor.len() => Some(spelled),
+            _ => None,
+        },
+        b'(' => None,
+        b'L' => match descriptor
+            .strip_prefix('L')
+            .and_then(|rest| rest.strip_suffix(';'))
+        {
+            // The object-descriptor form: its interior is the class name, which is never empty and
+            // never carries the `;` that would end it.
+            Some(internal) if !internal.is_empty() && !internal.contains(';') => {
+                Some(internal.replace('/', "."))
+            }
+            Some(_) => None,
+            // No `L…;` wrapping to take off: the pool's own spelling of a class, kept as it is.
+            None => Some(descriptor.replace('/', ".")),
+        },
+        _ => Some(descriptor.replace('/', ".")),
     }
 }
 
-/// One reference type as the frames state it, spelled as Java source.
-///
-/// Published to the crate because three rules write a type name from a pool fact — a construction's
-/// class, a static field's owner, a declaration's class — and a second spelling of "internal form to
-/// source form" is exactly the kind of duplicate that drifts.
-pub(crate) fn spell_reference(descriptor: &str) -> String {
-    let internal = descriptor
-        .strip_prefix('L')
-        .and_then(|rest| rest.strip_suffix(';'))
-        .unwrap_or(descriptor);
-    internal.replace('/', ".")
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_descriptor_that_states_a_type_is_spelled_as_java_source() {
+        // The object form, spelled exactly as it always was: the `L…;` wrapping comes off and the
+        // separators become dots.
+        assert_eq!(
+            spell_reference("Ljava/lang/String;").as_deref(),
+            Some("java.lang.String")
+        );
+        // A pool's own internal name (no wrapping to take off) keeps the same reading, which is what
+        // keeps the class-name positions and the declarations spelling the same class the same way.
+        assert_eq!(
+            spell_reference("java/lang/String").as_deref(),
+            Some("java.lang.String")
+        );
+        // An array descriptor is a type: the element is spelled first, with the object-name rule
+        // above, and one `[]` follows per dimension.
+        assert_eq!(spell_reference("[B").as_deref(), Some("byte[]"));
+        assert_eq!(spell_reference("[Z").as_deref(), Some("boolean[]"));
+        assert_eq!(
+            spell_reference("[Ljava/lang/String;").as_deref(),
+            Some("java.lang.String[]")
+        );
+        assert_eq!(spell_reference("[[I").as_deref(), Some("int[][]"));
+        assert_eq!(
+            spell_reference("[[Ljava/lang/String;").as_deref(),
+            Some("java.lang.String[][]")
+        );
+    }
+
+    #[test]
+    fn a_name_that_states_no_java_type_is_refused_rather_than_written() {
+        // The empty string and a method descriptor are not types.
+        assert_eq!(spell_reference(""), None);
+        assert_eq!(spell_reference("(I)V"), None);
+        // A class type whose name is missing or carries the `;` that would end it earlier.
+        assert_eq!(spell_reference("L;"), None);
+        assert_eq!(spell_reference("Lfoo;bar;"), None);
+        // A bare name is a name and not a descriptor: a class may be called `Lfoo`, so the forms
+        // only a truncated descriptor could have are still read as the pool's own spelling.
+        assert_eq!(spell_reference("Lfoo").as_deref(), Some("Lfoo"));
+    }
 }

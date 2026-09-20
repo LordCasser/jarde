@@ -991,6 +991,74 @@ const BOOLEAN_CONTEXTS: Sample = Sample {
             `intLocal`, whose `0`/`1` stores stay `int`) keep the text they had",
 };
 
+const ARRAY_TYPES: Sample = Sample {
+    label: "p3-array-types/v8 (javac 23.0.1, --release 8 -g:none)",
+    class: "ArrayTypes",
+    bytes: include_bytes!("fixtures/p3-array-types/v8/ArrayTypes.class"),
+    classpath: &[],
+    // `echoed` calls the sample's own `copy`, so the scratch class extends the sample (which is not
+    // `final`) and that name resolves to the committed class's member.
+    extends: Some("ArrayTypes"),
+    scaffold: &[],
+    counter: None,
+    measured: &[],
+    // Every array parameter's default value is `null` (`sample_values`' fallback), which both sides
+    // answer as `null`: the declaration is what this sample is about, and a `byte[]` argument is
+    // stated here so that the one array whose result a trace can compare (`show` states a `byte[]`
+    // by its class, where an `Object[]` would print a hash) is executed with a real value.
+    inputs: Some(&[("echoed", &[&["new byte[] {1, 2}"]])]),
+    quotes: &[],
+    // The original class's own answers for that same input set, executed by the committed driver:
+    // the positive comparison's side of the finding, measured rather than assumed.
+    baseline: Some(Baseline {
+        class: "Baseline",
+        source: include_str!("fixtures/p3-array-types/Baseline.java"),
+        lines: &[
+            "copy(null)=null",
+            "echoed({1, 2})=[1, 2]",
+            "named(null)=null",
+            "grid(null)=null",
+            "table(null)=null",
+            "text(\"r\")=r",
+            "text(null)=null",
+        ],
+    }),
+    members: &[
+        Member {
+            name: "copy",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "echoed",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "named",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "grid",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "table",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "text",
+            expect: Expect::Executed,
+        },
+    ],
+    point: "a type position is spelled as a Java type: a local declared from an array-typed parameter \
+            or from a call returning one is `byte[]`, `java.lang.String[]`, `int[][]` and \
+            `java.lang.String[][]` under the declaration this file derives from the run's own \
+            descriptor — where the pre-fix text published the frames' own `[B local1 = copy(arg0);`, \
+            `[Ljava.lang.String; local1 = arg0;`, `[[I local1 = arg0;` and \
+            `[[Ljava.lang.String; local1 = arg0;`, which javac refuses (`illegal start of \
+            expression`) — while the object-type control (`text`) keeps the declaration it always \
+            had",
+};
+
 const REQUIRED: &[&Sample] = &[
     &LOCAL_REWRITE,
     &SCOPE_NO_DEBUG,
@@ -1002,6 +1070,7 @@ const REQUIRED: &[&Sample] = &[
     &NESTED_ARITHMETIC,
     &RECEIVER_GROUPING,
     &BOOLEAN_CONTEXTS,
+    &ARRAY_TYPES,
 ];
 
 const CORPUS: &[&Sample] = &[
@@ -1773,9 +1842,16 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
         // The run's own parameter-type fact must state what the descriptor states: a `boolean`
         // parameter is spelled `boolean` because that fact says so, and a disagreement here would
         // mean this file is wrapping a different signature than the run wrote for.
+        //
+        // An **array** parameter is the shape that fact deliberately does not spell: it answers the
+        // boolean question, and its `[` branch is the conservative `Object` a value of an array type
+        // may not be called a boolean through ([`MethodFacts::parameter_types`]), not a name. The
+        // wrapper's own spelling of it is the descriptor's (`byte[]`, `java.lang.String[][]`), it is
+        // the declaration witness below that checks it, and `tests/p3_array_types.rs` is what pins
+        // the declaration the text publishes against it.
         let stated = method.parameter_types();
         for (slot, spelling, primitive) in &described {
-            if !primitive {
+            if !primitive || spelling.ends_with("[]") {
                 continue;
             }
             let slot = slot.saturating_add(if receiver { 1 } else { 0 });

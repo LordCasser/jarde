@@ -858,7 +858,11 @@ pub(crate) fn parse_method(descriptor: &str) -> Option<(Vec<Type>, Option<Type>)
 }
 
 /// One type of a descriptor, and where the next one starts.
-fn parse_type(bytes: &[u8], at: usize) -> Option<(Type, usize)> {
+///
+/// Published to the crate because this is the repository's one descriptor→Java type spelling:
+/// [`crate::build::spell_reference`] reads the frames' own array descriptors through it, so a
+/// declaration and a lambda parameter cannot spell `[[Ljava/lang/String;` two different ways.
+pub(crate) fn parse_type(bytes: &[u8], at: usize) -> Option<(Type, usize)> {
     match bytes.get(at)? {
         b'Z' => Some((Type::Boolean, at + 1)),
         b'B' => Some((Type::Byte, at + 1)),
@@ -871,6 +875,12 @@ fn parse_type(bytes: &[u8], at: usize) -> Option<(Type, usize)> {
         b'L' => {
             let end = bytes[at + 1..].iter().position(|byte| *byte == b';')? + at + 1;
             let name = std::str::from_utf8(&bytes[at + 1..end]).ok()?;
+            // A class type with no name states no class: `L;` and `[L;` are descriptors of a type
+            // this layer cannot spell, and `None` says so here rather than letting an empty name
+            // reach a type position (`[]` is no Java type either).
+            if name.is_empty() {
+                return None;
+            }
             Some((Type::Reference(source_name(name)), end + 1))
         }
         b'[' => {
@@ -945,6 +955,48 @@ mod tests {
         assert_eq!(parse_method("(I)V)"), None, "trailing bytes");
         assert_eq!(parse_method("(Q)V"), None, "an unknown type code");
         assert_eq!(parse_method("(Ljava/lang/String)V"), None, "no terminator");
+        assert_eq!(parse_method("(L;)V"), None, "a class type with no name");
+    }
+
+    #[test]
+    fn the_declaration_spelling_reuses_this_parser_and_the_two_agree() {
+        // `spell_reference` reads the frames' array descriptors through `parse_type`, so the two
+        // spellings of "descriptor → Java type" are one implementation: what this parser reads is
+        // what a declaration is written with, for every shape an array can take.
+        for descriptor in [
+            "[B",
+            "[C",
+            "[D",
+            "[F",
+            "[I",
+            "[J",
+            "[S",
+            "[Z",
+            "[Ljava/lang/String;",
+            "[[I",
+            "[[Ljava/lang/String;",
+            "[[[B",
+            "[[[[Ljava/lang/Object;",
+        ] {
+            let (ty, end) =
+                parse_type(descriptor.as_bytes(), 0).unwrap_or_else(|| panic!("{descriptor}"));
+            assert_eq!(end, descriptor.len(), "`{descriptor}` is read whole");
+            assert_eq!(
+                crate::build::spell_reference(descriptor).as_deref(),
+                Some(ty.spell()),
+                "`{descriptor}` is spelled the same way by both entries"
+            );
+        }
+        // The forms this parser does not read are the forms the declaration spelling refuses: an
+        // array with no element type, a `void` element, an unterminated class element, and a class
+        // type with no name.
+        for descriptor in ["[", "[V", "[Lfoo", "[L;", "[[", "[[L;"] {
+            assert_eq!(
+                crate::build::spell_reference(descriptor),
+                None,
+                "`{descriptor}` states no Java type"
+            );
+        }
     }
 
     #[test]

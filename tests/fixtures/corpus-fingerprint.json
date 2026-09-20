@@ -1051,6 +1051,21 @@
       "path": "tests/fixtures/p2-golden/wide-switch.json"
     },
     {
+      "blake3": "5d11b9f1fbdb940e39c7819a2a9058540f10f288fddfcb98ae5f19aa3ac9869f",
+      "bytes": 691,
+      "path": "tests/fixtures/p3-array-types/ArrayTypes.java"
+    },
+    {
+      "blake3": "3ab2fa2ad05ffeebfa534de7bff2b34ef101932c3993fabad6001b2e749b6543",
+      "bytes": 1471,
+      "path": "tests/fixtures/p3-array-types/Baseline.java"
+    },
+    {
+      "blake3": "69bcd9b9dcf040a51b03c9787fda205180f04aede328d0143d293f48eb2e40e7",
+      "bytes": 511,
+      "path": "tests/fixtures/p3-array-types/v8/ArrayTypes.class"
+    },
+    {
       "blake3": "b6d4c2c17514025a3826305fc306048531a32b14c3a27b54235fcf908b707d18",
       "bytes": 2695,
       "path": "tests/fixtures/p3-boolean-contexts/Baseline.java"
