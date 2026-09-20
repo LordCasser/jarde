@@ -1300,6 +1300,141 @@ const HOISTED_BOOLEAN: Sample = Sample {
             refused with the bytecode quoted instead of being published",
 };
 
+const CONCAT_CONVERSION: Sample = Sample {
+    label: "p3-concat-conversion/v8 (javac 23.0.1, --release 8 -g:none)",
+    class: "ConcatConversion",
+    bytes: include_bytes!("fixtures/p3-concat-conversion/v8/ConcatConversion.class"),
+    classpath: &[],
+    // The observable members call the sample's own helpers (`markA`, `markB`, `div`), and the
+    // counter the trace prints belongs to the sample's own class: extending the sample resolves
+    // those names to the committed bodies, so the generated side calls the *same* helpers the
+    // original does and the two counters are one field.
+    extends: Some("ConcatConversion"),
+    scaffold: &[],
+    counter: Some("ConcatConversion.calls"),
+    measured: &[],
+    // The finding's own inputs come first: `(1, 2)` is the pair the class answers `"12!"` for and the
+    // pre-fix text answered `"3!"` for. The controls are called with the values that separate a
+    // converted part from an unconverted one (`null`, an empty string, a zero), and the observable
+    // members are called with the input that moves the counter and with the one that throws.
+    inputs: Some(&[
+        (
+            "twoIntsThenString",
+            &[&["1", "2"], &["7", "0"], &["0", "-1"]],
+        ),
+        ("onePartIsASum", &[&["1", "2"], &["7", "0"]]),
+        (
+            "numericLast",
+            &[&["\"a\"", "1"], &["\"\"", "0"], &["null", "2"]],
+        ),
+        (
+            "allStrings",
+            &[&["\"a\"", "\"b\""], &["\"\"", "\"x\""], &["null", "\"x\""]],
+        ),
+        ("booleanLiteral", &[&[]]),
+        ("booleanParameter", &[&["true"], &["false"]]),
+        ("nullPart", &[&[]]),
+        ("objectPart", &[&["\"o\""], &["null"]]),
+        ("marked", &[&[]]),
+        ("failing", &[&["2"], &["0"]]),
+    ]),
+    quotes: &[],
+    baseline: Some(Baseline {
+        class: "Baseline",
+        source: include_str!("fixtures/p3-concat-conversion/Baseline.java"),
+        lines: &[
+            "twoIntsThenString(1, 2)=12!",
+            "twoIntsThenString(7, 0)=70!",
+            "twoIntsThenString(0, -1)=0-1!",
+            "onePartIsASum(1, 2)=3!",
+            "onePartIsASum(7, 0)=7!",
+            "numericLast(\"a\", 1)=a1",
+            "numericLast(\"\", 0)=0",
+            "numericLast(null, 2)=null2",
+            "allStrings(\"a\", \"b\")=ab",
+            "allStrings(\"\", \"x\")=x",
+            "allStrings(null, \"x\")=nullx",
+            "booleanLiteral()=true!",
+            "booleanParameter(true)=true!",
+            "booleanParameter(false)=false!",
+            "nullPart()=null!",
+            "objectPart(\"o\")=o!",
+            "objectPart(null)=null!",
+            "marked()=12! calls=0->2",
+            "failing(2)=150! calls=2->3",
+            "failing(0)=java.lang.ArithmeticException: / by zero calls=3->4",
+            "markA()=1 markB()=2 calls=6",
+            "div(7, 7)=1 div(-1, -1)=1",
+        ],
+    }),
+    members: &[
+        Member {
+            name: "twoIntsThenString",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "onePartIsASum",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "numericLast",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "allStrings",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "booleanLiteral",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "booleanParameter",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "nullPart",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "objectPart",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "marked",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "failing",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "markA",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "markB",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "div",
+            expect: Expect::Executed,
+        },
+    ],
+    point: "a presented concatenation keeps each `append`'s own conversion, in the part that \
+            performs it (`concat@1`, T4): `twoIntsThenString(1, 2)` is `\"\" + arg0 + arg1 + \"!\"` \
+            and answers `\"12!\"` where the pre-fix text `arg0 + arg1 + \"!\"` answered `\"3!\"`; \
+            `onePartIsASum(1, 2)` is `\"\" + (arg0 + arg1) + \"!\"` and answers the class's `\"3!\"` \
+            — the two members are the same *text* before the fix and two different programs after \
+            it; `booleanLiteral()` is `\"\" + true + \"!\"` where the pre-fix `1 + \"!\"` answered \
+            `\"1!\"`; `nullPart()` and `objectPart` keep `String.valueOf`'s conversion; `marked()` \
+            shows the two parts evaluated once each in the bytecode's order (its counter moves twice \
+            and its value is `\"12!\"`); `failing(0)` shows the observable part *before* the throwing \
+            one running and no later part running (the counter moves once and the trace carries the \
+            `ArithmeticException`); and the two controls — `numericLast` and `allStrings` — keep \
+            their text byte for byte",
+};
+
 const REQUIRED: &[&Sample] = &[
     &LOCAL_REWRITE,
     &SCOPE_NO_DEBUG,
@@ -1314,6 +1449,7 @@ const REQUIRED: &[&Sample] = &[
     &INT_COMPARISONS,
     &ARRAY_TYPES,
     &HOISTED_BOOLEAN,
+    &CONCAT_CONVERSION,
 ];
 
 const CORPUS: &[&Sample] = &[

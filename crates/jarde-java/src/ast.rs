@@ -178,6 +178,29 @@ pub enum ExprKind {
         left: Box<Expr>,
         right: Box<Expr>,
     },
+    /// A verified concatenation chain: one [`ConcatPart`] per `append`, in the order the chain
+    /// calls them (`concat@1`).
+    ///
+    /// This node exists because a chain's presentation is **not** a nesting of `Binary` nodes: the
+    /// parts are a sequence, and the conversion each `append` performs belongs to the part it read
+    /// (see [`ConcatPart`]). Two consequences are the reason the node is shaped this way:
+    ///
+    /// * adding one part grows a `Vec` and nothing else — the constructor, the printer, `Clone` and
+    ///   `Drop` iterate the sequence, so a chain of any length costs what the chain of that length
+    ///   costs and no stack depth per part. A left-deep `Binary` chain has the length *itself* as
+    ///   the depth of all four paths, which is what the report's deep-chain finding measured
+    ///   (`new StringBuilder().append(s)` repeated 1536/2048 times aborted the process in the
+    ///   printer);
+    /// * a text printed by concatenating `+` and its operands cannot distinguish `append(a).append(b)`
+    ///   from `append(a + b)`: the former is `"" + a + b` (two conversions) and the latter is
+    ///   `"" + (a + b)` (one addition, then one conversion), and the parts keep that distinction
+    ///   because each part's own expression keeps its own grouping.
+    ///
+    /// The head of the text is the chain's first `+`, and it is a **string** concatenation: when the
+    /// first part is not already a `String`, the printer writes the empty string javac lowers
+    /// `"" + a` with in front of it (see [`ConcatPart::is_a_string`]), so the first part's
+    /// conversion happens where the chain converts it.
+    Concat { parts: Vec<ConcatPart> },
     /// `!value` — the negation of a **boolean** value.
     ///
     /// This node exists for one fact the frames cannot state: a `boolean` parameter and an `int`
@@ -223,6 +246,49 @@ pub struct LambdaParam {
     /// does not name a lambda's parameters, so the name is derived and guaranteed not to collide
     /// with any name the body's own locals carry.
     pub name: String,
+}
+
+/// One `append` of a presented concatenation chain: the value it read, and the parameter type its
+/// own pool reference declares.
+///
+/// The parameter type is the part's **target position**, and it is what makes the part's text the
+/// text of *that* `append` rather than of a `+` on the value's own type: `"" + value` writes what
+/// `append` writes only while the descriptor says the two conversions are the same one
+/// ([`crate::concat`] accepts exactly those overloads), and `boolean` is the one conversion whose
+/// text the value does not already carry — a `boolean` is pushed as the `int`-shaped `0`/`1`
+/// (`append(true)`'s `iconst_1`), so `true`/`false` is a spelling only the descriptor's `Z` states.
+/// [`crate::build`] applies that conversion where the descriptor and the value's own evidence meet,
+/// and the printer consults the parameter for the one text decision that is the chain's own: whether
+/// the first `+` is already a string concatenation ([`Self::is_a_string`]).
+///
+/// The part's anchors are on `value`: the value's own producers as its direct anchors, and the
+/// `append` that converted it as a presented one — one part per `append`, in the bytecode's order.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ConcatPart {
+    /// The parameter type the `append` instruction's own pool reference states, as the chain's own
+    /// rule read it out of the pool (`crate::concat::Chain::appends`).
+    pub parameter: Type,
+    /// The value it read, written where the chain converts it (`crate::build::concat_expr`).
+    pub value: Expr,
+}
+
+impl ConcatPart {
+    /// One part from its `append`'s parameter type and the value it read.
+    pub fn new(parameter: Type, value: Expr) -> Self {
+        Self { parameter, value }
+    }
+
+    /// Whether this part is **already** a `String`, so that a `+` starting at it is a string
+    /// concatenation without any decoration.
+    ///
+    /// This is the whole string-context rule: the text of a chain whose first part is a `String`
+    /// gains nothing, and one whose first part needs `String.valueOf` starts from the empty string
+    /// instead of adding that part as a number. An `append` whose parameter is `Object` while the
+    /// value it read is proven to be a `String` is *not* a string part: its descriptor is `Object`,
+    /// and the empty string it starts from is the identity the conversion it stands for has.
+    pub fn is_a_string(&self) -> bool {
+        matches!(&self.parameter, Type::Reference(name) if name == "java.lang.String")
+    }
 }
 
 /// One expression and the anchors behind its text.

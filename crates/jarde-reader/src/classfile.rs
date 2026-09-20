@@ -10194,7 +10194,7 @@ mod tests {
     /// rules must not reject real code, and real historical subroutines must go through
     /// the same target checks.
     ///
-    /// The counts are the measured population — 49 classes, 222 bodies, 44 exception table
+    /// The counts are the measured population — 50 classes, 236 bodies, 44 exception table
     /// records, 125 branch/switch targets, 8 `jsr`/`jsr_w` instructions (the ECJ 4.6.1 45–48
     /// `finally` codegen; neither the P3 samples nor the P4 modern samples contain a
     /// subroutine) — so a fixture that silently stops being visited, or a body that stops
@@ -10238,6 +10238,11 @@ mod tests {
     /// `swapped`) differs from another only in which arm runs first. No body declares an exception
     /// table and, like every other P3 sample, none is a subroutine, so the third and fifth counts stay
     /// where they are.
+    ///
+    /// The `p3-concat-conversion` sample adds its own class and fourteen bodies (thirteen `static`
+    /// methods and the default constructor) and moves neither of the last three: every one of its
+    /// members is a straight-line `StringBuilder` chain or a one-line helper, so no body declares an
+    /// exception table, branches, or — like every other P3 sample — a subroutine.
     #[test]
     fn repository_class_fixtures_validate_without_false_target_rejections() {
         let fixtures = class_fixture_paths();
@@ -10317,7 +10322,7 @@ mod tests {
                 branch_targets,
                 subroutines
             ),
-            (49, 222, 44, 125, 8),
+            (50, 236, 44, 125, 8),
             "fixture population changed: re-measure these counts"
         );
     }

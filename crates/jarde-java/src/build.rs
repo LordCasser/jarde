@@ -42,8 +42,8 @@ use jarde_reader::classfile::{BootstrapMethodFacts, CpEntryFacts};
 
 use crate::accessor::{self, AccessorRecord, AccessorShape};
 use crate::ast::{
-    BinaryOp, ConstructorTarget, Expr, ExprKind, LambdaParam, ResourceDecl, Stmt, StmtKind,
-    SwitchArm, Type,
+    BinaryOp, ConcatPart, ConstructorTarget, Expr, ExprKind, LambdaParam, ResourceDecl, Stmt,
+    StmtKind, SwitchArm, Type,
 };
 use crate::bridge;
 use crate::concat;
@@ -2844,14 +2844,34 @@ impl Builder<'_> {
         bcis
     }
 
-    /// Renders one verified concatenation chain as the `+` expression it stands for.
+    /// Renders one verified concatenation chain as the parts its `+` expression is made of.
     ///
-    /// The operands are written in the order the chain's `append` calls read them, and each one is
-    /// an expression of its own — anchored where *it* was produced — so an operand that calls
-    /// something calls it once, in the bytecode's order. The `toString` the chain ends in anchors
-    /// the expression, and every BCI the chain owns is kept as a derived anchor of it: one
-    /// concatenation reaches many original instructions, and the table says so rather than keeping
-    /// one of them (P3 2.2, the source-map requirement).
+    /// The parts are written in the order the chain's `append` calls read them, and each one is an
+    /// expression of its own — anchored where *it* was produced — so an operand that calls something
+    /// calls it once, in the bytecode's order. The `toString` the chain ends in anchors the
+    /// expression, and every BCI the chain owns is kept as a derived anchor of it: one concatenation
+    /// reaches many original instructions, and the table says so rather than keeping one of them
+    /// (P3 2.2, the source-map requirement).
+    ///
+    /// The parts are a **sequence** ([`ExprKind::Concat`]) and not a nested `Binary` fold, which is
+    /// what makes one `append` one entry of a `Vec` rather than one more level of a `Box` chain: the
+    /// construction, the printing, the cloning and the release of this node are bounded by the parts'
+    /// own nesting (each part's expression is rendered under the value-nesting bound), never by the
+    /// chain's length. The fold is what this method replaced — it built the tree the printer then had
+    /// to walk level by level, so a chain long enough exhausted the process stack while every
+    /// individual value was well inside `MAX_VALUE_DEPTH`.
+    ///
+    /// Each part keeps its own conversion, and the conversion is applied here, where the `append`'s
+    /// parameter type and the value's own evidence meet:
+    ///
+    /// * every accepted overload's text in a string context is `String.valueOf`'s, which is the
+    ///   value's own text — so nothing about the part changes except the empty string the printer
+    ///   starts the chain from when the first part is not already a `String`;
+    /// * `boolean` is the exception: `append(true)` is `iconst_1`, and only the descriptor's `Z` says
+    ///   that this `1` is a boolean, so a part whose parameter is `boolean` is spelled as the boolean
+    ///   it is (`boolean_spelling`) — the same reading the call-argument, `return` and store paths
+    ///   make of a `Z` position. A `boolean` part whose value has **no** boolean evidence is refused
+    ///   rather than spelled as the integer it would otherwise look like.
     ///
     /// `at` is the position the concatenation is evaluated at — the consumer that renders it, since
     /// the chain's own text lands there — and every piece is checked there for the reason
@@ -2866,8 +2886,8 @@ impl Builder<'_> {
         at: u32,
         depth: usize,
     ) -> Result<Expr, String> {
-        let mut pieces: Vec<Expr> = Vec::with_capacity(chain.appends.len());
-        for (append_bci, _) in &chain.appends {
+        let mut parts: Vec<ConcatPart> = Vec::with_capacity(chain.appends.len());
+        for (append_bci, parameter) in &chain.appends {
             let Some(instruction) = self.instructions.get(append_bci).copied() else {
                 return Err(format!(
                     "no names record for the `append` at BCI {append_bci}"
@@ -2879,32 +2899,30 @@ impl Builder<'_> {
                     "the `append` at BCI {append_bci} appends no value this run states"
                 ));
             };
-            pieces.push(self.render_value(value, at, depth + 1)?);
+            // The value's own expression, anchored where it was produced, presenting the `append`
+            // that converts it: the part and the instruction are one, and the table says which.
+            let rendered = self
+                .render_value(value, at, depth + 1)?
+                .derived_from(*append_bci);
+            let mut part = ConcatPart::new(parameter.clone(), rendered);
+            if part.parameter == Type::Boolean {
+                if !(self.boolean_literal(value) || self.boolean_proven(value, at)) {
+                    return Err(format!(
+                        "the `append` at BCI {append_bci} takes `boolean`, and this layer has no evidence that the value it reads at BCI {at} is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the overload's own conversion rejects"
+                    ));
+                }
+                part.value = boolean_spelling(part.value);
+            }
+            parts.push(part);
         }
-        let mut pieces = pieces.into_iter();
-        let Some(first) = pieces.next() else {
-            return Err("a concatenation chain with no append".to_string());
-        };
-        let mut written = first;
-        for (index, next) in pieces.enumerate() {
-            let (append_bci, _) = chain.appends[index + 1];
-            written = Expr::new(
-                ExprKind::Binary {
-                    op: BinaryOp::Add,
-                    left: Box::new(written),
-                    right: Box::new(next),
-                },
-                OriginSet::new(Origin::direct(append_bci)),
-            );
-        }
-        written.origin = chain
+        let origin = chain
             .owned
             .iter()
             .filter(|bci| **bci != chain.tail)
             .fold(OriginSet::new(Origin::direct(chain.tail)), |set, bci| {
                 set.plus_derived(Origin::derived(*bci))
             });
-        Ok(written)
+        Ok(Expr::new(ExprKind::Concat { parts }, origin))
     }
 
     /// Renders one dynamic call site as a lambda or a method reference — or refuses it and records

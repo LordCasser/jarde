@@ -81,7 +81,12 @@ pub(crate) struct Chain {
     pub(crate) class: String,
     /// One entry per `append`, in the order the chain calls them: its BCI and the parameter type
     /// the same instruction's own pool reference states.
-    pub(crate) appends: Vec<(u32, String)>,
+    ///
+    /// The type is carried as the AST states it rather than as its spelling: it is the **target
+    /// position** of the part the builder writes for this `append` (`crate::ast::ConcatPart`), and
+    /// the conversion that position requires is decided there. The spelled form the report publishes
+    /// is [`Type::spell`], so the record and the presentation read the same pool fact once.
+    pub(crate) appends: Vec<(u32, Type)>,
     /// Every BCI the chain owns: the allocation, the copy, the constructor, every operand's own
     /// instruction, every `append` and the `toString`. An owned instruction produces no statement of
     /// its own — its text is written inside the concatenation and nowhere else.
@@ -281,7 +286,7 @@ fn record_of(chain: &Chain, presented: bool, refusal: Option<ConcatRefusal>) -> 
             .iter()
             .map(|(bci, parameter)| ConcatAppend {
                 bci: *bci,
-                parameter: parameter.clone(),
+                parameter: parameter.spell().to_string(),
             })
             .collect(),
         presented,
@@ -394,7 +399,7 @@ fn verify(
         )));
     }
     let mut owned: BTreeSet<u32> = BTreeSet::from([head, dup.bci(), init.bci()]);
-    let mut appends: Vec<(u32, String)> = Vec::new();
+    let mut appends: Vec<(u32, Type)> = Vec::new();
     let mut previous = init.bci();
     let mut tail: Option<u32> = None;
     for instruction in &block[index + 3..] {
@@ -455,7 +460,7 @@ fn verify(
                         "the value the `append` at BCI {at} appends was produced at BCI {produced}, which is not between the chain's previous instruction (BCI {previous}) and the `append`: writing it as an operand of the concatenation would evaluate it in a different order"
                     )));
                 }
-                appends.push((at, params[0].spell().to_string()));
+                appends.push((at, params[0].clone()));
                 owned.insert(at);
                 // The receiver of every later `append` is what *this* one returned: a chain's
                 // receiver is one instance seen through each call it has already made.

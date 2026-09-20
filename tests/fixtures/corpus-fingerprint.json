@@ -1081,6 +1081,21 @@
       "path": "tests/fixtures/p3-boolean-contexts/v8/BooleanContexts.class"
     },
     {
+      "blake3": "3e4f49ea485c9afc9bd8f69a55874110f73f645c40fb2b5a186d9d01c0808428",
+      "bytes": 3630,
+      "path": "tests/fixtures/p3-concat-conversion/Baseline.java"
+    },
+    {
+      "blake3": "5e57cdde53873c1ebed738975019c68a941af0242b08e9664ccc4daf13d4de51",
+      "bytes": 4993,
+      "path": "tests/fixtures/p3-concat-conversion/ConcatConversion.java"
+    },
+    {
+      "blake3": "00ac14bf1906344fbe8768a3f7c2094707d8b05ac35a9f0f6ea1a3570a366be3",
+      "bytes": 1461,
+      "path": "tests/fixtures/p3-concat-conversion/v8/ConcatConversion.class"
+    },
+    {
       "blake3": "5d86b8fb0e6aeab5b229db3d0416c5738fd10697940b679ec201590bfe42dc93",
       "bytes": 1754,
       "path": "tests/fixtures/p3-corpus/Flags.java"

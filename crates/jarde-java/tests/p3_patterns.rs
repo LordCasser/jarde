@@ -1008,7 +1008,16 @@ fn the_same_shape_on_a_string_buffer_is_presented_with_its_call_in_the_middle() 
     // The class is accepted by name, and the accepted names are exactly the two the design states:
     // the *same* shape on a class this rule does not know is not claimed (see the unit tests of
     // `concat`, which pin the list).
-    assert_eq!(pieces(&report), vec!["value", "f()", "\"x\""]);
+    //
+    // **Changed by the concatenation-conversion fix (was: `["value", "f()", "\"x\""]`).** The
+    // chain's first part is an `int`, so the first `+` is not a string concatenation until the empty
+    // string starts it: `value + f() + "x"` adds nothing numerically *here* (the second operand is
+    // already a `String`), but it is the same shape as `value + other + "x"` on two numeric parts,
+    // where it adds numbers — and one rule for "the text starts in a string context" is what keeps
+    // the two apart. The value is unchanged: `append(int)` is `String.valueOf(int)` exactly as
+    // `"" + value` is. The empty string is written by the chain node, not as a part of its own: the
+    // parts below are the chain's own `append`s, one each.
+    assert_eq!(pieces(&report), vec!["\"\"", "value", "f()", "\"x\""]);
     assert_eq!(
         report.concats[0]
             .appends
@@ -1938,8 +1947,12 @@ fn a_body_that_builds_a_concatenation_out_of_an_accessor_is_presented_as_both() 
     assert!(report.produced(), "{:?}", report.stop());
     assert_eq!(report.representation, Representation::Java);
     assert_eq!(report.quality, Quality::Structured);
+    // **Changed by the concatenation-conversion fix (was: `return self.f + "!";`).** `self.f` is an
+    // `int`, so the chain's first `+` is not a string concatenation: the empty string starts it, and
+    // the field read is converted where `append(int)` converted it. The value is the same (`"" +
+    // self.f` is `String.valueOf(self.f)`), and the accessor is still presented as the field read.
     assert!(
-        report.text.contains("return self.f + \"!\";"),
+        report.text.contains("return \"\" + self.f + \"!\";"),
         "{}",
         report.text
     );

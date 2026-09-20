@@ -477,6 +477,36 @@ impl<'a> Emitter<'a> {
                 emitter.put(&format!(" {} ", op.spell()), at)?;
                 emitter.binary_operand(right, *op, Side::Right)
             }
+            ExprKind::Concat { parts } => {
+                // The parts are written in the chain's own order, each in the position it holds in
+                // the `+` expression: the first one is the left operand of the first `+`, and every
+                // later part is the right operand of the `+` that adds it. Java's `+` is
+                // left-associative, so a part that binds as loosely as `+` keeps its own group on
+                // the right — which is what makes `"" + arg0 + arg1 + "!"` (two parts, two
+                // conversions) and `"" + (arg0 + arg1) + "!"` (one part that is itself an addition)
+                // two different texts of two different programs.
+                let string_context = parts.first().is_some_and(|part| !part.is_a_string());
+                if string_context {
+                    // The empty string the first `+` starts from when the first part is not already
+                    // a `String` — the same `""` javac lowers `"" + a` to. The chain has no
+                    // instruction behind it (no `append` read it and no BCI produced it), so it is
+                    // written by this node and not as a part of its own: the segment that covers it
+                    // is this node's, whose anchors are the chain's own instructions.
+                    emitter.put("\"\"", at)?;
+                }
+                for (index, part) in parts.iter().enumerate() {
+                    if index > 0 || string_context {
+                        emitter.put(" + ", at)?;
+                    }
+                    let side = if index == 0 && !string_context {
+                        Side::Left
+                    } else {
+                        Side::Right
+                    };
+                    emitter.binary_operand(&part.value, BinaryOp::Add, side)?;
+                }
+                Ok(())
+            }
             ExprKind::Not { value } => {
                 // The operand of `!` is at the unary level, so a looser value keeps its own group:
                 // `!a + b` would be `(!a) + b`, another tree than `!(a + b)`.
@@ -640,6 +670,10 @@ fn expression_binding(kind: &ExprKind) -> u8 {
     match kind {
         ExprKind::Lambda { .. } => 0,
         ExprKind::Binary { op, .. } => binary_binding(*op),
+        // A concatenation is an additive expression: the parts are the operands of its `+`s, so it
+        // binds where `+` binds — which is what makes it keep its own group in a receiver, an
+        // argument that binds tighter, and the right-hand position of another `+`.
+        ExprKind::Concat { .. } => binary_binding(BinaryOp::Add),
         ExprKind::Not { .. } => UNARY,
         // A call, `new`, a field read, an array read, a literal, a name, a type name: every one of
         // them is read whole before any suffix or operator applies.
@@ -707,7 +741,7 @@ pub fn comment_text(value: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ast::{BinaryOp, Expr, ExprKind, Stmt, StmtKind};
+    use crate::ast::{BinaryOp, ConcatPart, Expr, ExprKind, Stmt, StmtKind, Type};
     use crate::facts::{MethodFacts, RecoveryFacts};
     use crate::source_map::Origin;
     use jarde_reader::budget::Limits;
@@ -1142,6 +1176,90 @@ mod tests {
             not_receiver.text.contains("(!arg0).f();"),
             "`!a.f()` is `!(a.f())`, so a negation in a receiver position keeps its own group:\n{}",
             not_receiver.text
+        );
+    }
+
+    /// A concatenation chain's parts: the first `+` starts a **string** concatenation when the first
+    /// part is not already a `String`, and a part that is itself an addition keeps its own group in
+    /// the right-hand position — which is what makes two parts and one addition-part two texts.
+    #[test]
+    fn a_concatenation_starts_in_a_string_context_and_keeps_its_parts_groups() {
+        let part = |parameter: Type, value: Expr| ConcatPart::new(parameter, value);
+        let string = || Type::Reference("java.lang.String".to_string());
+        let bang = || Expr::direct(ExprKind::Str("!".to_string()), 15);
+
+        // Two parts that each need conversion, then a `String` part: the empty string starts the
+        // text, so neither part is added to the other as a number.
+        let convertible = emitted_value(Expr::direct(
+            ExprKind::Concat {
+                parts: vec![
+                    part(Type::Int, local_at("arg0", 7)),
+                    part(Type::Int, local_at("arg1", 11)),
+                    part(string(), bang()),
+                ],
+            },
+            20,
+        ));
+        assert!(
+            convertible.text.contains("\"\" + arg0 + arg1 + \"!\";"),
+            "the first `+` is a string concatenation:\n{}",
+            convertible.text
+        );
+
+        // **One** part that is itself an addition: it keeps its own group, so the sum is evaluated
+        // first and converted once — the other program of the same input.
+        let sum_part = emitted_value(Expr::direct(
+            ExprKind::Concat {
+                parts: vec![
+                    part(
+                        Type::Int,
+                        sum_at(local_at("arg0", 7), local_at("arg1", 8), 9),
+                    ),
+                    part(string(), bang()),
+                ],
+            },
+            18,
+        ));
+        assert!(
+            sum_part.text.contains("\"\" + (arg0 + arg1) + \"!\";"),
+            "a part that is an addition keeps its own group:\n{}",
+            sum_part.text
+        );
+
+        // A chain that is already in a string context gains nothing — and an addition part after it
+        // still keeps its group, or `"x" + arg0 + arg1` would be two parts rather than one sum.
+        let already = emitted_value(Expr::direct(
+            ExprKind::Concat {
+                parts: vec![
+                    part(string(), Expr::direct(ExprKind::Str("x".to_string()), 7)),
+                    part(
+                        Type::Int,
+                        sum_at(local_at("arg0", 11), local_at("arg1", 12), 13),
+                    ),
+                ],
+            },
+            14,
+        ));
+        assert!(
+            already.text.contains("\"x\" + (arg0 + arg1);"),
+            "no decoration, and the sum keeps its own group:\n{}",
+            already.text
+        );
+
+        // The all-`String` control: every part is a primary, so the text is the parts and their `+`s.
+        let plain = emitted_value(Expr::direct(
+            ExprKind::Concat {
+                parts: vec![
+                    part(string(), local_at("arg0", 7)),
+                    part(string(), local_at("arg1", 11)),
+                ],
+            },
+            18,
+        ));
+        assert!(
+            plain.text.contains("arg0 + arg1;") && !plain.text.contains("\"\""),
+            "a chain already in a string context gains nothing:\n{}",
+            plain.text
         );
     }
 
