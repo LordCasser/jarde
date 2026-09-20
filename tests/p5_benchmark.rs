@@ -519,6 +519,16 @@ struct Published {
     /// The same document with every `elapsed_millis` removed: the fingerprint's input.
     normalized: Value,
     fingerprint: String,
+    /// The same document with every **charge record** removed as well: the input of the *result*
+    /// comparison between two configurations.
+    ///
+    /// The resource half travels inside the result document — a `usage` snapshot sits beside the
+    /// items it was charged for — and a cache is supposed to move it, so `evidence` and
+    /// `representation` are compared over this form. Only `usage` objects are removed:
+    /// statuses, termination reasons, evidence, coverage and diagnostics stay, because those are
+    /// results (the same split `p5_facts_cache.rs::without_charges` makes).
+    evidence: Value,
+    evidence_fingerprint: String,
 }
 
 fn published<T: serde::Serialize>(report: &T) -> Published {
@@ -532,11 +542,43 @@ fn published<T: serde::Serialize>(report: &T) -> Published {
          measuring what it claims to"
     );
     let fingerprint = fingerprint_of(&normalized);
+    let mut evidence = normalized.clone();
+    let charges = strip_charges(&mut evidence);
+    assert!(
+        charges >= 1,
+        "a published report states what it charged at least once; this one states no charge at all, \
+         so the evidence form is not a form of anything"
+    );
+    let evidence_fingerprint = fingerprint_of(&evidence);
     Published {
         raw,
         normalized,
         fingerprint,
+        evidence,
+        evidence_fingerprint,
     }
+}
+
+/// Delete every `usage` object at any depth, returning how many were deleted.
+fn strip_charges(value: &mut Value) -> usize {
+    let mut removed = 0;
+    match value {
+        Value::Object(map) => {
+            if map.remove("usage").is_some() {
+                removed += 1;
+            }
+            for (_, child) in map.iter_mut() {
+                removed += strip_charges(child);
+            }
+        }
+        Value::Array(entries) => {
+            for child in entries.iter_mut() {
+                removed += strip_charges(child);
+            }
+        }
+        _ => {}
+    }
+    removed
 }
 
 /// Every path at which two documents differ, as `path: left → right`.
@@ -699,6 +741,16 @@ struct RunRecord {
     published: Value,
     document: Value,
     fingerprint: String,
+    /// The published document with every charge record removed, and its digest: the `evidence` and
+    /// `representation` planes are compared over these, because two configurations are *meant* to
+    /// charge differently and may not differ in what they published.
+    evidence: Value,
+    evidence_fingerprint: String,
+    /// Whether this row publishes a **representation** of source (the recovery rows do: text, its
+    /// quality and its representation tag). Recorded per row because the `representation` plane of
+    /// the gate only has an object when a pair publishes one, and a plane that is silently absent
+    /// must read as absent.
+    represents_a_representation: bool,
     /// The harness's own high-resolution clock around the whole run. The report's own clock is
     /// whole milliseconds, so on a corpus this size it is zero in every repeat and cannot carry a
     /// distribution; the harness measures its own while the report's stays the value A15's
@@ -866,6 +918,10 @@ fn run_full_range_with(
         published: form.raw,
         document: form.normalized,
         fingerprint: form.fingerprint,
+        evidence: form.evidence,
+        evidence_fingerprint: form.evidence_fingerprint,
+        // A full-range query publishes items and evidence; no source text is presented on this path.
+        represents_a_representation: false,
         wall_micros,
     }
 }
@@ -949,6 +1005,11 @@ fn run_single_member_with(
         published: form.raw,
         document: form.normalized,
         fingerprint: form.fingerprint,
+        evidence: form.evidence,
+        evidence_fingerprint: form.evidence_fingerprint,
+        // The local row publishes the presentation of one run's payload: its text, its quality and
+        // its representation tag are the plane the gate names `representation`.
+        represents_a_representation: true,
         wall_micros,
     }
 }
@@ -1014,12 +1075,45 @@ fn item_derivations(items: &[XrefItem]) -> BTreeMap<String, usize> {
 // -------------------------------------------------------------------------------------------
 
 /// Every half of two runs the `performance-gates` spec compares, plus the resources.
+///
+/// The list is the gate's own wording — *evidence, coverage, representation, diagnostics,
+/// snapshot/view identity, peak memory proxy, cancellation and budget results* — mapped onto the
+/// values a run really publishes:
+///
+/// | plane | what carries it here |
+/// | --- | --- |
+/// | evidence | `fingerprint`, taken over the whole normalized document (items, their origins and their derivations included) |
+/// | representation | the same document for a row that publishes one (the local row's `RecoveryReport`) |
+/// | coverage | `coverage` |
+/// | diagnostics | `diagnostics` |
+/// | snapshot/view identity | `identity` — the scope, physical view, runtime profile and providers the run named |
+/// | peak memory proxy | `peaks` — the two high-water depths; every other counted dimension is cumulative and lives in `deltas` |
+/// | cancellation | `status`, which distinguishes `cancelled` and `partial` from `complete` |
+/// | budget results | `termination` — the reason the report states — beside `coverage`'s scanned/skipped ranges |
 struct Verdicts {
     status: bool,
+    /// The whole document with the wall clock removed, charges included. Two runs of **one**
+    /// configuration are equal here; two configurations are compared on [`Verdicts::evidence`],
+    /// because the charges are the difference a cache is supposed to make.
     fingerprint: bool,
+    /// The documents with their charge records removed: what each run published about the input.
+    /// This is the result plane, and it is what `equivalent` requires of two configurations.
+    evidence: bool,
     order: bool,
     coverage: bool,
     diagnostics: bool,
+    /// The snapshot/view identity both runs state. A configuration that quietly answered over
+    /// another view would still publish plausible evidence, so this is compared on its own.
+    identity: bool,
+    /// The two **high-water** depths, equal. They are the only peaks a usage snapshot keeps (the
+    /// other counted dimensions are cumulative totals), so this is the peak half of the memory
+    /// proxy; the totals are reported as deltas and cannot be, because a cache is supposed to move
+    /// them.
+    peaks: bool,
+    /// The termination **reason**, equal: `status` says a run stopped, this says why, and
+    /// `Cancellation under pressure` requires the reason to be reported rather than inferred from
+    /// a smaller result.
+    termination: bool,
 }
 
 /// One row of the comparison report: two runs, what they agree on, and what one charged over the
@@ -1037,6 +1131,12 @@ struct Comparison {
     deltas: Vec<(CountedBudgetDimension, i128)>,
     /// `right - left` of the two high-water depths, which are limits rather than charges.
     depths: Vec<(&'static str, i128)>,
+    /// Whether either run publishes a representation (the recovery rows do; the query rows do not),
+    /// which is what decides whether the `representation` plane has anything to compare.
+    representation: bool,
+    /// The paths at which the two runs' charge-free documents differ. The verdicts say *whether* the
+    /// evidence moved; this says *what* moved, which is the half a reviewer needs when it did.
+    evidence_paths: Vec<String>,
     left_status: &'static str,
     right_status: &'static str,
 }
@@ -1052,10 +1152,13 @@ impl Comparison {
     fn equivalent(&self) -> bool {
         let verdicts = &self.verdicts;
         verdicts.status
-            && verdicts.fingerprint
+            && verdicts.evidence
             && verdicts.order
             && verdicts.coverage
             && verdicts.diagnostics
+            && verdicts.identity
+            && verdicts.peaks
+            && verdicts.termination
     }
 }
 
@@ -1067,10 +1170,17 @@ fn compare(left: &RunRecord, right: &RunRecord) -> Comparison {
         verdicts: Verdicts {
             status: left.status == right.status,
             fingerprint: left.fingerprint == right.fingerprint,
+            evidence: left.evidence_fingerprint == right.evidence_fingerprint,
             order: left.order == right.order,
             coverage: left.coverage == right.coverage,
             diagnostics: left.diagnostics == right.diagnostics,
+            identity: identity_of(left) == identity_of(right),
+            peaks: left.usage.nested_depth == right.usage.nested_depth
+                && left.usage.dependency_depth == right.usage.dependency_depth,
+            termination: termination_of(left) == termination_of(right),
         },
+        representation: left.represents_a_representation || right.represents_a_representation,
+        evidence_paths: differing_paths(&left.evidence, &right.evidence),
         deltas,
         depths: vec![
             (
@@ -1084,6 +1194,45 @@ fn compare(left: &RunRecord, right: &RunRecord) -> Comparison {
         ],
         left_status: left.status,
         right_status: right.status,
+    }
+}
+
+/// The snapshot/view identity a row ran under: the scope, the physical view, the runtime profile and
+/// the provider list, as the row's own context states them.
+///
+/// The configuration columns are deliberately **not** in it — `path`, `cache`, `concurrency` and
+/// `premise` describe how the run was made, and two configurations differ in exactly those. What is
+/// compared here is the input the run claims to have been given.
+fn identity_of(row: &RunRecord) -> String {
+    let context = &row.context;
+    format!(
+        "scope {} / view {} / profile {} / providers {}",
+        context.scope, context.view, context.profile, context.providers
+    )
+}
+
+/// The termination reason the run's own report states, `none` for a run that completed.
+///
+/// The query rows publish the execution report at the top level; the local and boundary recovery
+/// rows publish the analysis report that holds it under `analysis`. The status tag is read back
+/// against the record so a document this function misreads is a failure rather than a quiet
+/// "nothing to compare".
+fn termination_of(row: &RunRecord) -> String {
+    let published = &row.published;
+    let execution = if published.get("execution").is_some() {
+        &published["execution"]
+    } else {
+        &published["analysis"]["execution"]
+    };
+    assert_eq!(
+        execution["status"], row.status,
+        "the published document's status tag and the row's recorded status disagree, so this \
+         reading of the termination is not of the run it describes: {}",
+        row.label
+    );
+    match execution.get("reason") {
+        Some(reason) => serde_json::to_string(reason).expect("a reason renders"),
+        None => "none".to_string(),
     }
 }
 
@@ -1105,9 +1254,13 @@ impl Comparison {
                 self.left_status, self.right_status
             ),
             format!("  fingerprint   {}", verdict(self.verdicts.fingerprint)),
+            format!("  evidence      {}", verdict(self.verdicts.evidence)),
             format!("  order         {}", verdict(self.verdicts.order)),
             format!("  coverage      {}", verdict(self.verdicts.coverage)),
             format!("  diagnostics   {}", verdict(self.verdicts.diagnostics)),
+            format!("  identity      {}", verdict(self.verdicts.identity)),
+            format!("  peaks         {}", verdict(self.verdicts.peaks)),
+            format!("  termination   {}", verdict(self.verdicts.termination)),
             format!(
                 "  equivalent    {}",
                 if self.equivalent() {
@@ -1117,6 +1270,12 @@ impl Comparison {
                 }
             ),
         ];
+        if !self.evidence_paths.is_empty() {
+            lines.push(format!(
+                "  evidence paths (right - left): {}",
+                self.evidence_paths.join(", ")
+            ));
+        }
         lines.push("  resources (right - left)".to_string());
         for (dimension, delta) in &self.deltas {
             lines.push(format!(
@@ -1439,6 +1598,26 @@ struct Candidate {
     upgrade: &'static str,
     /// Whether a benefit over the reference path has been measured. Today: no candidate has one.
     benefit: Benefit,
+    /// Whether this candidate's configuration is the one the engine's default path runs.
+    ///
+    /// This is the field `performance-gates`' "任一语义差异 MUST 阻断默认启用" turns on. The rule is
+    /// not held by the label: `a_candidate_may_be_enabled_only_while_its_differential_is_equivalent`
+    /// runs each candidate's differential and refuses `Enabled` for any candidate whose two paths do
+    /// not publish the same result on every plane. Today every candidate is `Disabled`, and the
+    /// reference configuration of the matrix is the cache-off one, so the default path is the direct
+    /// path with no store attached.
+    default_state: DefaultState,
+}
+
+/// Whether a candidate's configuration is the one the engine's default path runs.
+///
+/// `Disabled` is the state a candidate keeps until its differential says the two paths publish the
+/// same result; `Enabled` is a claim the gate re-checks by running that differential rather than by
+/// reading this value.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum DefaultState {
+    Disabled,
+    Enabled,
 }
 
 /// Whether a candidate's benefit has been measured across two configurations.
@@ -1546,6 +1725,7 @@ const CACHE_CANDIDATE_MEDIAN_MICROS: u128 = 116;
 static CANDIDATES: [Candidate; 3] = [
     Candidate {
         id: "merged-queries/single-flight",
+        default_state: DefaultState::Disabled,
         what: "More than one request over one snapshot shares one scan: identical work runs once, and \
                each subscriber gets the same published result with its own budget and its own \
                termination status (design decision 4; the `measured-execution` shared-query \
@@ -1578,6 +1758,7 @@ static CANDIDATES: [Candidate; 3] = [
     },
     Candidate {
         id: "fine-grained-parallel",
+        default_state: DefaultState::Disabled,
         what: "Splitting one request's scanning work across workers and merging their results in \
                stable order (design decision 4), leaving coverage and partial semantics as they are.",
         owner: "P5 2.1 owns the decision; no slice implements a scheduler.",
@@ -1614,6 +1795,7 @@ static CANDIDATES: [Candidate; 3] = [
     },
     Candidate {
         id: "facts-cache/index",
+        default_state: DefaultState::Disabled,
         what: "Reusing facts between requests — CP/header, X1, resolution, IR/source — under a key \
                bound to the semantic inputs of the layer that holds them (design decision 2; the \
                `facts-cache` spec). **Task 2.3 built the CP/Header layer**, disabled by default; the \
@@ -2065,6 +2247,10 @@ fn with_benefit(candidate: &Candidate, benefit: Benefit) -> Candidate {
         ceiling: candidate.ceiling,
         upgrade: candidate.upgrade,
         benefit,
+        // The self-test carries the state of the candidate it copies: what a claim can be is not a
+        // statement about which path the engine runs, and a copy that invented one would let a
+        // refusal test look like a gate.
+        default_state: candidate.default_state,
     }
 }
 
@@ -3569,4 +3755,1732 @@ fn p5_repeated_direct_baseline() {
     for (row, distribution) in rows.iter().zip(&distributions) {
         println!("  {:<40} {}", row.label, distribution.line());
     }
+}
+
+// -------------------------------------------------------------------------------------------
+// 3.1: the differential, as the gate `Correctness and resource regression gates` states it
+// -------------------------------------------------------------------------------------------
+
+/// The planes the requirement names, in its own order.
+///
+/// A list rather than prose, so a later slice cannot quietly drop one: every comparison reports a
+/// verdict for every entry, and a name this file does not carry is a `panic!` rather than a skipped
+/// plane.
+const GATE_PLANES: [&str; 8] = [
+    "evidence",
+    "coverage",
+    "representation",
+    "diagnostics",
+    "snapshot/view identity",
+    "peak memory proxy",
+    "cancellation",
+    "budget results",
+];
+
+/// What one comparison has on one plane.
+enum PlaneComparison {
+    /// Both paths publish a value and they were compared field by field; `equal` is the verdict.
+    Compared(bool),
+    /// Only one path publishes a value today, so there is nothing to compare on this plane.
+    NoObject(&'static str),
+}
+
+impl PlaneComparison {
+    fn equal(&self) -> bool {
+        matches!(self, Self::Compared(true))
+    }
+
+    fn describe(&self) -> String {
+        match self {
+            Self::Compared(true) => "equal".to_string(),
+            Self::Compared(false) => "DIFFERENT".to_string(),
+            Self::NoObject(why) => format!("no comparison object ({why})"),
+        }
+    }
+}
+
+/// One plane of one comparison, read off its verdicts.
+///
+/// Every plane here has two values today, which is not a claim that every *scenario* does: see
+/// [`NO_SECOND_PATH_TODAY`], which names the comparisons the requirement asks for and this
+/// repository cannot make at all.
+fn plane_comparison(plane: &str, comparison: &Comparison) -> PlaneComparison {
+    let verdicts = &comparison.verdicts;
+    match plane {
+        // Evidence is the whole published document with the wall clock removed: the items, the
+        // origins they name, how each was derived and the reads behind them.
+        "evidence" => PlaneComparison::Compared(verdicts.evidence),
+        "coverage" => PlaneComparison::Compared(verdicts.coverage),
+        "representation" if comparison.representation => {
+            PlaneComparison::Compared(verdicts.evidence)
+        }
+        "representation" => PlaneComparison::NoObject(
+            "neither row publishes a representation: the query layer publishes items and no source, \
+             so this plane is carried by the recovery rows only",
+        ),
+        "diagnostics" => PlaneComparison::Compared(verdicts.diagnostics),
+        "snapshot/view identity" => PlaneComparison::Compared(verdicts.identity),
+        // The only peaks a usage snapshot keeps are the two high-water depths; every other counted
+        // dimension is a cumulative total and is reported as a delta, because a cache is *supposed*
+        // to move it.
+        "peak memory proxy" => PlaneComparison::Compared(verdicts.peaks),
+        "cancellation" => PlaneComparison::Compared(verdicts.status && verdicts.termination),
+        "budget results" => PlaneComparison::Compared(verdicts.coverage && verdicts.termination),
+        other => panic!(
+            "the requirement names a plane this comparison does not carry: {other}. A plane nobody \
+             compares is a plane a gate passes by omission."
+        ),
+    }
+}
+
+/// The comparisons the two scenarios name that have **no second value** in this repository today.
+///
+/// Listed rather than implied: each is something the requirement asks to be compared, and a reader of
+/// the gate's output has to see the absence instead of reading a table of green rows as "everything
+/// was compared". None of these is a plane this file skipped — they are paths and instruments that do
+/// not exist yet.
+const NO_SECOND_PATH_TODAY: [(&str, &str); 5] = [
+    (
+        "the index path",
+        "no index exists — `the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler` holds \
+         that by source scan — so `Optimized versus direct path` has one path to run for it",
+    ),
+    (
+        "the parallel path",
+        "no scheduler and no worker exist, so `Reordered parallel results` has no worker order to \
+         hold against the stable publication order",
+    ),
+    (
+        "the merged query path (single-flight)",
+        "one request at a time: no two requests share work, so `Cancelled shared query` has no \
+         subscriber who keeps waiting and no mixed result to refuse",
+    ),
+    (
+        "the modern (P4) facts plane",
+        "every row of this matrix runs the reader, the query layer or the recovery layer; no row asks \
+         for `ModernFacts`, so the cache has no modern answer that could be compared",
+    ),
+    (
+        "true peak RSS",
+        "the harness has no allocator instrumentation: the memory plane is the budget's charge \
+         counters plus the two high-water depths, which support 'this path derived more units' and \
+         not 'this path used more bytes'",
+    ),
+];
+
+/// What one row's own entry published, in the single shape [`RunRecord`] takes.
+///
+/// The three entries of this harness publish three different documents; recording them through one
+/// structure is what lets `compare` and the plane table treat them as rows of one matrix.
+struct Outcome {
+    status: &'static str,
+    report_usage: UsageSnapshot,
+    coverage: Value,
+    diagnostics: Value,
+    order: String,
+    published_items: u64,
+    derivations: BTreeMap<String, usize>,
+    items_without_a_consumer: usize,
+    published: Value,
+    document: Value,
+    fingerprint: String,
+    evidence: Value,
+    evidence_fingerprint: String,
+}
+
+fn outcome_query(report: &QueryReport) -> Outcome {
+    let form = published(report);
+    Outcome {
+        status: status_of(&report.execution),
+        report_usage: usage_of(&report.execution),
+        coverage: serde_json::to_value(&report.coverage).expect("coverage serializes"),
+        diagnostics: serde_json::to_value(&report.diagnostics).expect("diagnostics serialize"),
+        order: item_identities(&report.items),
+        published_items: report.items.len() as u64,
+        derivations: item_derivations(&report.items),
+        items_without_a_consumer: report
+            .items
+            .iter()
+            .filter(|item| item.consumer.is_none())
+            .count(),
+        published: form.raw,
+        document: form.normalized,
+        fingerprint: form.fingerprint,
+        evidence: form.evidence,
+        evidence_fingerprint: form.evidence_fingerprint,
+    }
+}
+
+fn outcome_recovery(recovered: &RecoveredMethod) -> Outcome {
+    let analysis = recovered.analysis();
+    let form = published(recovered);
+    Outcome {
+        status: status_of(&analysis.execution),
+        report_usage: usage_of(&analysis.execution),
+        coverage: serde_json::to_value(&analysis.coverage).expect("coverage serializes"),
+        diagnostics: serde_json::to_value(&analysis.diagnostics).expect("diagnostics serialize"),
+        // A recovery row publishes one payload, not an ordered list of items; its evidence is the
+        // document the fingerprint is taken over.
+        order: "[]".to_string(),
+        published_items: 0,
+        derivations: BTreeMap::new(),
+        items_without_a_consumer: 0,
+        published: form.raw,
+        document: form.normalized,
+        fingerprint: form.fingerprint,
+        evidence: form.evidence,
+        evidence_fingerprint: form.evidence_fingerprint,
+    }
+}
+
+fn outcome_resolution(report: &ResolutionReport) -> Outcome {
+    let form = published(report);
+    Outcome {
+        status: status_of(&report.execution),
+        report_usage: usage_of(&report.execution),
+        coverage: serde_json::to_value(&report.coverage).expect("coverage serializes"),
+        diagnostics: serde_json::to_value(&report.diagnostics).expect("diagnostics serialize"),
+        // The ordered half of a resolution answer is its candidate list; the decision itself
+        // (`state`, `resolved`) is inside the fingerprint.
+        order: serde_json::to_string(&report.candidates).expect("candidates render"),
+        published_items: report.candidates.len() as u64,
+        derivations: BTreeMap::new(),
+        items_without_a_consumer: 0,
+        published: form.raw,
+        document: form.normalized,
+        fingerprint: form.fingerprint,
+        evidence: form.evidence,
+        evidence_fingerprint: form.evidence_fingerprint,
+    }
+}
+
+// -------------------------------------------------------------------------------------------
+// 3.2: the boundary corpora, run through the same differential
+// -------------------------------------------------------------------------------------------
+
+/// The compression methods the fixture writer can state, as the ZIP method codes.
+const STORE: u16 = 0;
+const DEFLATE: u16 = 8;
+
+/// One corpus of the boundary matrix and what is asked of it.
+struct Boundary {
+    /// The label every row over this corpus carries, and the subject the context records.
+    label: &'static str,
+    bytes: Vec<u8>,
+    /// The content sources the request names, as the raw entry name and its bytes.
+    providers: Vec<(&'static [u8], Vec<u8>)>,
+    ask: Ask,
+    /// The budget the request starts from. A row that has to run out of something states the reduced
+    /// dimension here rather than calling the whole budget "small".
+    limits: Limits,
+    /// Whether the token is cancelled after the artifact opens, with this corpus's own work — a
+    /// member to inflate, a body to analyse — still ahead of it.
+    cancel: bool,
+    /// The terminal status the row has to publish. A stopped row may never read as `complete`, and
+    /// which of `partial`/`failed`/`cancelled` a corpus produces is a fact about the entry that
+    /// answers it rather than a preference: the reader's over-limit read is an error, so a scan that
+    /// cannot read its candidate fails with the dimension named.
+    exit: &'static str,
+    /// The spelling the termination reason has to state — the budget dimension the work ran out of,
+    /// or empty when the status is the whole reason (a cancellation).
+    report: &'static str,
+    /// The spellings the published document has to state, for the rows whose corpus is about a shape
+    /// (a refusal code, a resolution state, a representation). Empty for the rows whose point is
+    /// their budget alone — and every row that claims a shape states it here, so a corpus that
+    /// quietly stopped being that shape fails instead of comparing two empty results.
+    states: &'static [&'static str],
+}
+
+/// What one boundary row asks of its corpus.
+enum Ask {
+    /// The full-range structural scan the matrix rows run.
+    FullRange,
+    /// One member of the corpus, presented by the recovery layer.
+    Member {
+        name: &'static [u8],
+        descriptor: &'static [u8],
+    },
+    /// One method symbol, resolved in an environment rooted at this corpus.
+    Resolve {
+        owner: &'static [u8],
+        name: &'static [u8],
+        descriptor: &'static [u8],
+    },
+}
+
+/// The class of the P3 handler corpus, and the class it names as a resource.
+const GUARDED: &[u8] = include_bytes!("fixtures/p3-handlers/v8/Guarded.class");
+const GUARDED_RESOURCE: &[u8] = include_bytes!("fixtures/p3-handlers/v8/Res.class");
+/// The committed container whose member is DEFLATED: the corpus a cancellation arrives over.
+const NESTED: &[u8] = include_bytes!("../fuzz/corpus/artifact_tree/nested.jar");
+
+/// A class file with one bootstrap table and one body, built here rather than taken from a fixture.
+///
+/// The constant-pool writer is deliberately the smallest one that can state the A05 shape: a
+/// `CONSTANT_Dynamic` whose bootstrap argument is another `CONSTANT_Dynamic`, and a bootstrap entry
+/// two of them reach. A cache that stored or replayed a partial condy graph would publish different
+/// facts over these bytes; the graph's own semantics (shared subgraphs, cycles, the derived budgets)
+/// are P4's tests (`p4_modern_facts.rs`), and this row is the differential over such a class.
+#[derive(Default)]
+struct Pool {
+    body: Vec<u8>,
+    count: u16,
+}
+
+impl Pool {
+    fn utf8(&mut self, text: &[u8]) -> u16 {
+        let length = u16::try_from(text.len()).expect("a name fits u16");
+        self.entry(1, |body| {
+            body.extend_from_slice(&length.to_be_bytes());
+            body.extend_from_slice(text);
+        })
+    }
+
+    fn class(&mut self, name: u16) -> u16 {
+        self.pair(7, name, 0)
+    }
+
+    fn string(&mut self, text: u16) -> u16 {
+        self.pair(8, text, 0)
+    }
+
+    fn name_and_type(&mut self, name: u16, descriptor: u16) -> u16 {
+        self.pair(12, name, descriptor)
+    }
+
+    fn method_ref(&mut self, class: u16, name_and_type: u16) -> u16 {
+        self.pair(10, class, name_and_type)
+    }
+
+    fn method_handle(&mut self, kind: u8, reference: u16) -> u16 {
+        self.entry(15, |body| {
+            body.push(kind);
+            body.extend_from_slice(&reference.to_be_bytes());
+        })
+    }
+
+    fn dynamic(&mut self, bootstrap: u16, name_and_type: u16) -> u16 {
+        self.pair(17, bootstrap, name_and_type)
+    }
+
+    fn entry(&mut self, tag: u8, body: impl FnOnce(&mut Vec<u8>)) -> u16 {
+        self.body.push(tag);
+        body(&mut self.body);
+        self.count += 1;
+        self.count
+    }
+
+    /// A pool entry of `tag` whose body is one or two `u16` fields (`Class`, `String`,
+    /// `NameAndType`, `Dynamic`, the three refs); `second` is `0` for the single-field tags, whose
+    /// trailing zero is written and then ignored by the reader.
+    fn pair(&mut self, tag: u8, first: u16, second: u16) -> u16 {
+        self.body.push(tag);
+        self.body.extend_from_slice(&first.to_be_bytes());
+        if SECOND_FIELD_TAGS.contains(&tag) {
+            self.body.extend_from_slice(&second.to_be_bytes());
+        }
+        self.count += 1;
+        self.count
+    }
+
+    /// The `constant_pool_count` this pool declares: one past its last index.
+    fn declared(&self) -> u16 {
+        self.count + 1
+    }
+}
+
+/// The pool tags whose body is two `u16` fields.
+const SECOND_FIELD_TAGS: [u8; 5] = [12, 10, 11, 17, 18];
+
+fn class_bytes_with(
+    pool: &Pool,
+    major: u16,
+    this_class: u16,
+    super_class: u16,
+    methods: &[Member],
+    attributes: &[(u16, Vec<u8>)],
+) -> Vec<u8> {
+    let mut bytes = 0xcafebabe_u32.to_be_bytes().to_vec();
+    bytes.extend_from_slice(&0_u16.to_be_bytes());
+    bytes.extend_from_slice(&major.to_be_bytes());
+    bytes.extend_from_slice(&pool.declared().to_be_bytes());
+    bytes.extend_from_slice(&pool.body);
+    bytes.extend_from_slice(&0x0021_u16.to_be_bytes());
+    bytes.extend_from_slice(&this_class.to_be_bytes());
+    bytes.extend_from_slice(&super_class.to_be_bytes());
+    bytes.extend_from_slice(&0_u16.to_be_bytes()); // interfaces
+    bytes.extend_from_slice(&0_u16.to_be_bytes()); // fields
+    bytes.extend_from_slice(
+        &u16::try_from(methods.len())
+            .expect("members fit u16")
+            .to_be_bytes(),
+    );
+    for member in methods {
+        bytes.extend_from_slice(&member.access.to_be_bytes());
+        bytes.extend_from_slice(&member.name.to_be_bytes());
+        bytes.extend_from_slice(&member.descriptor.to_be_bytes());
+        bytes.extend_from_slice(
+            &u16::try_from(member.attributes.len())
+                .expect("attributes fit u16")
+                .to_be_bytes(),
+        );
+        for (name, content) in &member.attributes {
+            bytes.extend_from_slice(&name.to_be_bytes());
+            bytes.extend_from_slice(
+                &u32::try_from(content.len())
+                    .expect("an attribute fits u32")
+                    .to_be_bytes(),
+            );
+            bytes.extend_from_slice(content);
+        }
+    }
+    bytes.extend_from_slice(
+        &u16::try_from(attributes.len())
+            .expect("attributes fit u16")
+            .to_be_bytes(),
+    );
+    for (name, content) in attributes {
+        bytes.extend_from_slice(&name.to_be_bytes());
+        bytes.extend_from_slice(
+            &u32::try_from(content.len())
+                .expect("an attribute fits u32")
+                .to_be_bytes(),
+        );
+        bytes.extend_from_slice(content);
+    }
+    bytes
+}
+
+struct Member {
+    access: u16,
+    name: u16,
+    descriptor: u16,
+    attributes: Vec<(u16, Vec<u8>)>,
+}
+
+/// A `Code` attribute over `instructions`, with the stack and local shapes the instructions need.
+fn code_body(instructions: &[u8], max_stack: u16, max_locals: u16) -> Vec<u8> {
+    let mut body = Vec::new();
+    body.extend_from_slice(&max_stack.to_be_bytes());
+    body.extend_from_slice(&max_locals.to_be_bytes());
+    body.extend_from_slice(
+        &u32::try_from(instructions.len())
+            .expect("a body fits u32")
+            .to_be_bytes(),
+    );
+    body.extend_from_slice(instructions);
+    body.extend_from_slice(&0_u16.to_be_bytes()); // exception table
+    body.extend_from_slice(&0_u16.to_be_bytes()); // attributes
+    body
+}
+
+/// A `BootstrapMethods` attribute over `(handle, arguments)` entries.
+fn bootstrap_body(entries: &[(u16, Vec<u16>)]) -> Vec<u8> {
+    let mut body = Vec::new();
+    body.extend_from_slice(
+        &u16::try_from(entries.len())
+            .expect("entries fit u16")
+            .to_be_bytes(),
+    );
+    for (handle, arguments) in entries {
+        body.extend_from_slice(&handle.to_be_bytes());
+        body.extend_from_slice(
+            &u16::try_from(arguments.len())
+                .expect("arguments fit u16")
+                .to_be_bytes(),
+        );
+        for argument in arguments {
+            body.extend_from_slice(&argument.to_be_bytes());
+        }
+    }
+    body
+}
+
+/// The `CONSTANT_Dynamic` corpus: a chain into a bootstrap entry two use sites share.
+fn condy_bytes() -> Vec<u8> {
+    let mut pool = Pool::default();
+    let name = pool.utf8(b"p/Condy");
+    let this_class = pool.class(name);
+    let object = pool.utf8(b"java/lang/Object");
+    let super_class = pool.class(object);
+    let use_name = pool.utf8(b"use");
+    let use_descriptor = pool.utf8(b"()V");
+    let code_name = pool.utf8(b"Code");
+    let bootstrap_name = pool.utf8(b"BootstrapMethods");
+    let descriptor = pool.utf8(b"Ljava/lang/Object;");
+    let first_name = pool.utf8(b"condy1");
+    let second_name = pool.utf8(b"condy2");
+    let third_name = pool.utf8(b"condy3");
+    let first_nat = pool.name_and_type(first_name, descriptor);
+    let second_nat = pool.name_and_type(second_name, descriptor);
+    let third_nat = pool.name_and_type(third_name, descriptor);
+    let factory = pool.utf8(b"p/NoSuchFactory");
+    let factory_class = pool.class(factory);
+    let boom = pool.utf8(b"boom");
+    let boom_descriptor = pool.utf8(
+        b"(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;",
+    );
+    let boom_nat = pool.name_and_type(boom, boom_descriptor);
+    let boom_ref = pool.method_ref(factory_class, boom_nat);
+    let handle = pool.method_handle(6, boom_ref);
+    let leaf_text = pool.utf8(b"leaf");
+    let leaf = pool.string(leaf_text);
+    // Entry 0 reaches the third dynamic, entry 1 is the leaf two of them share: the node `leaf` is
+    // reached from two entry points, which is A05's shape.
+    let first = pool.dynamic(0, first_nat);
+    // The second dynamic is an entry point of its own that reaches the shared bootstrap entry
+    // directly; nothing has to name it for the reader to expand it, which is what makes the shared
+    // node reached "from two entry points".
+    pool.dynamic(1, second_nat);
+    let third = pool.dynamic(1, third_nat);
+    let bootstrap = bootstrap_body(&[(handle, vec![third]), (handle, vec![leaf])]);
+    // `ldc_w condy1; pop; return`: one entry point is really used by a body.
+    let mut instructions = vec![0x13];
+    instructions.extend_from_slice(&first.to_be_bytes());
+    instructions.push(0x57);
+    instructions.push(0xb1);
+    class_bytes_with(
+        &pool,
+        55,
+        this_class,
+        super_class,
+        &[Member {
+            access: 0x0009,
+            name: use_name,
+            descriptor: use_descriptor,
+            attributes: vec![(code_name, code_body(&instructions, 1, 0))],
+        }],
+        &[(bootstrap_name, bootstrap)],
+    )
+}
+
+/// The P0 bomb shape, built here: a ZIP whose central directory and local header both declare an
+/// uncompressed size of **one**, while the DEFLATE stream really expands to `BOMB_BYTES`.
+///
+/// The shape is the one the reader's own unit test asserts
+/// (`crates/jarde-reader/src/artifact.rs::named_budgets_cover_declared_actual_read_and_entry_count`):
+/// the declared size cannot be trusted to size the read, so the stream is watched as it inflates and
+/// the request stops at its `entry_bytes` bound **without returning bytes**. A good class is stored
+/// beside it, so the same request also parses a class through the cache.
+fn bomb_archive() -> Vec<u8> {
+    const BOMB_NAME: &[u8] = b"p/Boom.class";
+    const BOMB_BYTES: usize = 8 * 1024;
+    let mut filler = 0xcafebabe_u32.to_be_bytes().to_vec();
+    filler.extend_from_slice(&0_u16.to_be_bytes());
+    filler.extend_from_slice(&55_u16.to_be_bytes());
+    filler.resize(BOMB_BYTES, 0x40);
+    let mut archive = zip_of(&[
+        (b"p/Ok.class".to_vec(), minimal_class(b"p/Ok"), STORE),
+        (BOMB_NAME.to_vec(), filler, DEFLATE),
+    ]);
+    // The declaration the reader believes is the central entry's; the local header is left alone,
+    // because the reader validates it against the central record (`validate_headers`) and a mismatch
+    // there would be caught as a ZIP-structure error instead of being inflated. What is rewritten is
+    // the central entry's two sizes **and** the data descriptor's, so the file stays internally
+    // consistent while both declare a size the stream does not have — the same pair of edits
+    // `named_budgets_cover_declared_actual_read_and_entry_count` makes.
+    let central = entry_offset(&archive, b"PK\x01\x02", BOMB_NAME, 46);
+    let directory = archive
+        .windows(4)
+        .position(|window| window == b"PK\x01\x02")
+        .expect("the fixture archive has a central directory");
+    let descriptor = directory
+        .checked_sub(16)
+        .expect("the bomb entry has a data descriptor");
+    assert_eq!(
+        &archive[descriptor..descriptor + 4],
+        b"PK\x07\x08",
+        "the 16 bytes before the central directory are the bomb entry's data descriptor; this \
+         fixture's writer has changed and the sizes below would be rewritten in the wrong place"
+    );
+    // The **uncompressed** size, in the two records that state it: the central entry and the data
+    // descriptor, which agree with each other and with neither the stream nor the local header (the
+    // local header is only compared when the entry declares no descriptor, and this one does).
+    //
+    // The *compressed* size is deliberately left alone: it is what the reader uses to locate the
+    // data and its descriptor, so a lie there is a broken archive and not an entry whose declared
+    // size understates it. This is exactly the pair of edits
+    // `named_budgets_cover_declared_actual_read_and_entry_count` makes, and it is why the reader's
+    // bound is on the stream rather than on the declaration.
+    for position in [descriptor + 12, central + 24] {
+        archive[position..position + 4].copy_from_slice(&1_u32.to_be_bytes());
+    }
+    archive
+}
+
+/// The offset of the last `signature` in `archive` that is followed by `name` `fixed` bytes later.
+fn entry_offset(archive: &[u8], signature: &[u8], name: &[u8], fixed: usize) -> usize {
+    let window = fixed + name.len();
+    archive
+        .windows(window)
+        .rposition(|candidate| {
+            candidate.starts_with(signature) && &candidate[fixed..fixed + name.len()] == name
+        })
+        .unwrap_or_else(|| {
+            panic!(
+                "the fixture writer did not put `{}` after a {} signature with a {fixed}-byte fixed \
+                 part, so the bomb's declared sizes cannot be rewritten",
+                String::from_utf8_lossy(name),
+                String::from_utf8_lossy(signature)
+            )
+        })
+}
+
+/// One stored ZIP with the given entries, deflated when `method` says so.
+fn zip_of(entries: &[(Vec<u8>, Vec<u8>, u16)]) -> Vec<u8> {
+    let mut output = std::io::Cursor::new(Vec::new());
+    {
+        let mut archive = rawzip::ZipArchiveWriter::new(&mut output);
+        for (name, data, method) in entries {
+            let (mut entry, config) = archive
+                .new_file(rawzip::path::EntryPath::verbatim(name.clone()))
+                .compression_method(rawzip::CompressionMethod::new(*method))
+                .start()
+                .expect("the fixture entry starts");
+            if *method == DEFLATE {
+                let encoder =
+                    flate2::write::DeflateEncoder::new(&mut entry, flate2::Compression::default());
+                let mut writer = config.wrap(encoder);
+                std::io::Write::write_all(&mut writer, data).expect("the entry is writable");
+                let (encoder, descriptor) = writer.finish().expect("the entry closes");
+                encoder.finish().expect("the deflate stream closes");
+                entry.finish(descriptor).expect("the entry finishes");
+            } else {
+                let mut writer = config.wrap(&mut entry);
+                std::io::Write::write_all(&mut writer, data).expect("the entry is writable");
+                let (_, descriptor) = writer.finish().expect("the entry closes");
+                entry.finish(descriptor).expect("the entry finishes");
+            }
+        }
+        archive.finish().expect("the fixture archive finishes");
+    }
+    output.into_inner()
+}
+
+/// The cheapest class this reader accepts, with `this_class` set to `name`.
+fn minimal_class(name: &[u8]) -> Vec<u8> {
+    let mut pool = Vec::new();
+    pool.push(1_u8);
+    pool.extend_from_slice(
+        &u16::try_from(name.len())
+            .expect("a name fits u16")
+            .to_be_bytes(),
+    );
+    pool.extend_from_slice(name);
+    pool.extend_from_slice(&[7, 0, 1]);
+    let object = b"java/lang/Object";
+    pool.push(1_u8);
+    pool.extend_from_slice(
+        &u16::try_from(object.len())
+            .expect("a name fits u16")
+            .to_be_bytes(),
+    );
+    pool.extend_from_slice(object);
+    pool.extend_from_slice(&[7, 0, 3]);
+    let mut bytes = 0xcafebabe_u32.to_be_bytes().to_vec();
+    bytes.extend_from_slice(&0_u16.to_be_bytes());
+    bytes.extend_from_slice(&52_u16.to_be_bytes());
+    bytes.extend_from_slice(&5_u16.to_be_bytes());
+    bytes.extend_from_slice(&pool);
+    bytes.extend_from_slice(&0x0021_u16.to_be_bytes());
+    bytes.extend_from_slice(&2_u16.to_be_bytes());
+    bytes.extend_from_slice(&4_u16.to_be_bytes());
+    for _ in 0..4 {
+        bytes.extend_from_slice(&0_u16.to_be_bytes());
+    }
+    bytes
+}
+
+/// One class with a named superclass (or none, when `super_name` is empty) and one static member with
+/// a body.
+fn class_with_super(name: &[u8], super_name: &[u8], member: &[u8]) -> Vec<u8> {
+    let mut pool = Pool::default();
+    let this_name = pool.utf8(name);
+    let this_class = pool.class(this_name);
+    // `super_class` of zero is JVMS 4.1's "no superclass": the end of a hierarchy a search can reach,
+    // which is what a complete world needs at its top.
+    let super_class = if super_name.is_empty() {
+        0
+    } else {
+        let parent_name = pool.utf8(super_name);
+        pool.class(parent_name)
+    };
+    let member_name = pool.utf8(member);
+    let descriptor = pool.utf8(b"()V");
+    let code_name = pool.utf8(b"Code");
+    class_bytes_with(
+        &pool,
+        52,
+        this_class,
+        super_class,
+        &[Member {
+            access: 0x0009,
+            name: member_name,
+            descriptor,
+            attributes: vec![(code_name, code_body(&[0xb1], 0, 0))],
+        }],
+        &[],
+    )
+}
+
+/// `p/Orphan extends p/Absent`, with `p/Absent` present or absent.
+///
+/// A member search on `foo` has two different answers in the two worlds — `UnresolvedDependency`
+/// when the supertype cannot be read, `Missing` when it can — and `here` answers `Resolved` in both.
+/// The pair is P4's `a_missing_dependency_is_stated_by_name_and_never_as_the_negative_answer`
+/// (`p4_x2_states.rs`) over bytes this file builds, so the differential runs over the same shape.
+fn orphan_world(with_parent: bool) -> Vec<u8> {
+    let orphan = class_with_super(b"p/Orphan", b"p/Absent", b"here");
+    let mut entries = vec![(b"p/Orphan.class".to_vec(), orphan, STORE)];
+    if with_parent {
+        // `p/Absent` is the top of its own hierarchy: a search that reaches it can end, which is
+        // what separates "the search read everything and `foo` is not there" from "a dependency was
+        // missing".
+        entries.push((
+            b"p/Absent.class".to_vec(),
+            class_with_super(b"p/Absent", b"", b"settle"),
+            STORE,
+        ));
+    }
+    zip_of(&entries)
+}
+
+/// The boundary matrix: the corpora the adversarial and shared-invariant scenarios name.
+///
+/// Which existing acceptance each corpus is anchored to, so this file does not become a second
+/// authority for it:
+///
+/// | corpus | its existing acceptance |
+/// | --- | --- |
+/// | the understated-size ZIP | `crates/jarde-reader/src/artifact.rs::named_budgets_cover_declared_actual_read_and_entry_count` (A08/A14) |
+/// | the condy graph | `p4_modern_facts.rs`'s shared-subgraph, cycle and four budget cases (A05) |
+/// | the irreducible CFG | `p3_execution_comparison.rs`'s `suppressedCatching` expectancy (A12/A13) and `p3_guard.rs`'s guarded refusals |
+/// | the missing dependency | `p3-corpus/v8-missing-dep` (A11) and `p4_x2_states.rs`'s unresolved-by-name case |
+/// | cancellation | `p1_query_api.rs::cancellation_is_never_reported_as_complete`, `p1_artifact_tree.rs::budget_and_precancellation_return_non_complete_reliable_prefixes`, `p1_query_bounds.rs::cancellation_at_the_high_fanout_unit_boundary_publishes_nothing` (A14/A18) |
+fn boundary_corpora() -> Vec<Boundary> {
+    let room = limits();
+    let mut corpora = vec![
+        Boundary {
+            label: "zip-bomb/understated-entry",
+            bytes: bomb_archive(),
+            providers: Vec::new(),
+            ask: Ask::FullRange,
+            // The bomb inflates to 8 KiB while both size fields say one byte, so the entry bound is
+            // what stops it — the declared size cannot be used to pre-check it.
+            limits: Limits {
+                entry_bytes: 1024,
+                ..room.clone()
+            },
+            cancel: false,
+            exit: "partial",
+            report: "entry_bytes",
+            states: &[],
+        },
+        Boundary {
+            label: "condy-graph/shared-subgraph",
+            bytes: condy_bytes(),
+            providers: Vec::new(),
+            ask: Ask::FullRange,
+            limits: room.clone(),
+            cancel: false,
+            exit: "complete",
+            report: "",
+            states: &["bootstrap_edge", "bootstrap_argument"],
+        },
+        Boundary {
+            label: "irreducible-cfg/guarded-suppressedCatching",
+            bytes: GUARDED.to_vec(),
+            providers: vec![(b"Res.class", GUARDED_RESOURCE.to_vec())],
+            ask: Ask::Member {
+                name: b"suppressedCatching",
+                descriptor: b"()V",
+            },
+            limits: room.clone(),
+            cancel: false,
+            exit: "complete",
+            report: "",
+            states: &["jre_region_irreducible"],
+        },
+        Boundary {
+            label: "irreducible-cfg/guarded-one",
+            bytes: GUARDED.to_vec(),
+            providers: vec![(b"Res.class", GUARDED_RESOURCE.to_vec())],
+            ask: Ask::Member {
+                name: b"one",
+                descriptor: b"()V",
+            },
+            limits: room.clone(),
+            cancel: false,
+            exit: "complete",
+            report: "",
+            states: &["\"representation\":\"java\""],
+        },
+        // The broken world: `p/Orphan` names a supertype the snapshot does not hold, so a member
+        // search cannot answer for `foo` and states the class it could not read instead of the
+        // negative (A11's `UnresolvedDependency`; `p4_x2_states.rs` owns the state's own cases).
+        Boundary {
+            label: "missing-dependency/unresolved",
+            bytes: orphan_world(false),
+            providers: Vec::new(),
+            ask: Ask::Resolve {
+                owner: b"p/Orphan",
+                name: b"foo",
+                descriptor: b"()V",
+            },
+            limits: room.clone(),
+            cancel: false,
+            exit: "complete",
+            report: "",
+            states: &["unresolved_dependency"],
+        },
+        // The same world with the supertype present, and the same class: one member the search
+        // decides (`here`) and one it decides *negatively* (`foo`). This is A13's shape at the
+        // resolution plane — a normal and a failing member of one class — and the pair is what keeps
+        // `Missing` from being read as "the dependency was missing".
+        Boundary {
+            label: "missing-dependency/resolved",
+            bytes: orphan_world(true),
+            providers: Vec::new(),
+            ask: Ask::Resolve {
+                owner: b"p/Orphan",
+                name: b"here",
+                descriptor: b"()V",
+            },
+            limits: room.clone(),
+            cancel: false,
+            exit: "complete",
+            report: "",
+            states: &["\"state\":\"resolved\""],
+        },
+        Boundary {
+            label: "missing-dependency/negative",
+            bytes: orphan_world(true),
+            providers: Vec::new(),
+            ask: Ask::Resolve {
+                owner: b"p/Orphan",
+                name: b"foo",
+                descriptor: b"()V",
+            },
+            limits: room.clone(),
+            cancel: false,
+            exit: "complete",
+            report: "",
+            states: &["\"state\":\"missing\"", "\"unresolved_dependencies\":[]"],
+        },
+        Boundary {
+            label: "cancelled-under-decompression/nested",
+            bytes: NESTED.to_vec(),
+            providers: Vec::new(),
+            ask: Ask::FullRange,
+            limits: room.clone(),
+            cancel: true,
+            exit: "cancelled",
+            report: "",
+            states: &[],
+        },
+        Boundary {
+            label: "budget-under-ir/guarded-one",
+            bytes: GUARDED.to_vec(),
+            providers: vec![(b"Res.class", GUARDED_RESOURCE.to_vec())],
+            ask: Ask::Member {
+                name: b"one",
+                descriptor: b"()V",
+            },
+            limits: Limits {
+                analysis_steps: 4,
+                ..room.clone()
+            },
+            cancel: false,
+            exit: "partial",
+            report: "analysis_steps",
+            states: &[],
+        },
+        Boundary {
+            label: "cancelled-under-ir/guarded-one",
+            bytes: GUARDED.to_vec(),
+            providers: vec![(b"Res.class", GUARDED_RESOURCE.to_vec())],
+            ask: Ask::Member {
+                name: b"one",
+                descriptor: b"()V",
+            },
+            limits: room,
+            cancel: true,
+            exit: "cancelled",
+            report: "",
+            states: &[],
+        },
+    ];
+    // A row that takes its bytes from a builder still has to be able to say which bytes those are.
+    for corpus in &mut corpora {
+        assert!(
+            !corpus.bytes.is_empty(),
+            "{}: the boundary corpus is empty",
+            corpus.label
+        );
+    }
+    corpora
+}
+
+/// What a row's context states about the request it ran, in the words that request can be asked to
+/// justify: the scope and view it named, the profile it ran under, the content sources it named and
+/// whether the recovery layer was in the path.
+struct RequestFacts {
+    scope: String,
+    view: String,
+    profile: String,
+    providers: String,
+    recovery: String,
+    premise: String,
+}
+
+/// One boundary row's run, recorded in the shape [`compare`] compares.
+///
+/// The snapshot is opened and the providers are opened under the **same** budget the request runs
+/// under, so a provider's read is part of the request that named it — the boundary corpora are the
+/// rows where a request's closure is not its own snapshot.
+fn boundary_run(corpus: &Corpus, boundary: &Boundary, cache: Option<&FactsCache>) -> RunRecord {
+    let engine = Engine::new();
+    let mut budget = match cache {
+        Some(cache) => Budget::new(boundary.limits.clone()).with_facts_cache(cache.clone()),
+        None => Budget::new(boundary.limits.clone()),
+    };
+    let token = budget.cancellation_token();
+    let started = Instant::now();
+    let snapshot = engine
+        .open(ArtifactInput::bytes(boundary.bytes.clone()), &mut budget)
+        .expect("the boundary corpus opens");
+    let providers: Vec<ArtifactSnapshot> = boundary
+        .providers
+        .iter()
+        .map(|(_, bytes)| {
+            engine
+                .open(ArtifactInput::bytes(bytes.clone()), &mut budget)
+                .expect("the provider corpus opens under the same request's budget")
+        })
+        .collect();
+    // The premise: locating the member a recovery row presents is harness work, charged to its own
+    // budget outside the measured section — the exclusion the local matrix row already makes
+    // (`locate_member`). It runs before the cancellation, because a request that has not named its
+    // member yet is not the request this row is about.
+    let target = match &boundary.ask {
+        Ask::Member { name, descriptor } => {
+            let mut premise = Budget::new(limits());
+            Some(locate_target(
+                &engine,
+                &snapshot,
+                &mut premise,
+                name,
+                descriptor,
+            ))
+        }
+        Ask::FullRange | Ask::Resolve { .. } => None,
+    };
+    // The cancellation arrives after the artifact (and its providers) are open and before the work
+    // this row is about: the member the query layer has to inflate, or the body the recovery layer
+    // has to analyse. It is delivered where the engine observes it — between units of work — which
+    // is the only shape a single-threaded harness can make deterministic.
+    if boundary.cancel {
+        token.cancel();
+    }
+    let declared_bodies = target.as_ref().map_or(0, |target| target.declared_bodies);
+    let (outcome, facts) = match &boundary.ask {
+        Ask::FullRange => {
+            let request = full_range_request(&snapshot);
+            let report = engine
+                .query(&snapshot, &request, &mut budget)
+                .expect("a legal query is answered, not raised");
+            (
+                outcome_query(&report),
+                RequestFacts {
+                    scope: serde_json::to_string(&request.physical.scope)
+                        .expect("a scope serializes"),
+                    view: serde_json::to_string(&request.physical).expect("a view serializes"),
+                    profile: "none: this entry takes no environment, so no runtime profile is \
+                              named"
+                        .to_string(),
+                    providers: "none: this entry names no content source".to_string(),
+                    recovery:
+                        "not in this path: `Engine::query` reaches `jarde-query`, which does \
+                               not depend on `jarde-java`"
+                            .to_string(),
+                    premise: "none: the whole measured section is the request".to_string(),
+                },
+            )
+        }
+        Ask::Member { name, descriptor } => {
+            let environment = boundary_environment(&snapshot, &providers, 8);
+            let target = target
+                .as_ref()
+                .expect("a recovery row located its member before the measured section");
+            let request = MethodAnalysisRequest {
+                environment,
+                method: PhysicalMethodId {
+                    owner: PhysicalDefinitionId {
+                        location: PhysicalClassLocation::StandaloneRoot {
+                            snapshot: snapshot.id().clone(),
+                        },
+                        class_bytes: target.owner.clone(),
+                        variant: PhysicalVariant::Base,
+                    },
+                    name: bytes(name),
+                    descriptor: bytes(descriptor),
+                },
+                stages: AnalysisStage::ALL.to_vec(),
+            };
+            let content: Vec<ArtifactSnapshot> = std::iter::once(snapshot.clone())
+                .chain(providers.iter().cloned())
+                .collect();
+            let recovered = engine
+                .recover_method(&content, &request, &mut budget)
+                .expect("a legal request is answered, not raised");
+            (
+                outcome_recovery(&recovered),
+                RequestFacts {
+                    scope: format!(
+                        "single member {}{} of {}",
+                        String::from_utf8_lossy(name),
+                        String::from_utf8_lossy(descriptor),
+                        boundary.label
+                    ),
+                    view: serde_json::to_string(&request.environment.runtime.physical)
+                        .expect("a view serializes"),
+                    profile: serde_json::to_string(&request.environment.runtime.profile)
+                        .expect("a profile serializes"),
+                    providers: format!(
+                        "{} (this request names no additional content source)",
+                        request.environment.providers.len()
+                    ),
+                    recovery: "the presentation of one run's own payload, gated on the profile \
+                               above"
+                        .to_string(),
+                    premise: format!(
+                        "1 header read to locate {} before the measured section, charged to its own \
+                         budget; the class declares {} bodies",
+                        String::from_utf8_lossy(name),
+                        target.declared_bodies
+                    ),
+                },
+            )
+        }
+        Ask::Resolve {
+            owner,
+            name,
+            descriptor,
+        } => {
+            let environment = boundary_environment(&snapshot, &providers, 8);
+            let request = ResolutionRequest {
+                environment,
+                target: SymbolRef::Method {
+                    owner: bytes(owner),
+                    name: bytes(name),
+                    descriptor: bytes(descriptor),
+                },
+                use_kind: ReferenceUse::InvokeStatic,
+                caller: CallerContext {
+                    loader: LoaderId("app".to_string()),
+                    enclosing: None,
+                },
+                dispatch: None,
+            };
+            let content: Vec<ArtifactSnapshot> = std::iter::once(snapshot.clone())
+                .chain(providers.iter().cloned())
+                .collect();
+            let report = engine
+                .resolve_symbol(&content, &request, &mut budget)
+                .expect("a legal request is answered, not raised");
+            (
+                outcome_resolution(&report),
+                RequestFacts {
+                    scope: format!(
+                        "one symbol {}.{}{}",
+                        String::from_utf8_lossy(owner),
+                        String::from_utf8_lossy(name),
+                        String::from_utf8_lossy(descriptor)
+                    ),
+                    view: serde_json::to_string(&request.environment.runtime.physical)
+                        .expect("a view serializes"),
+                    profile: serde_json::to_string(&request.environment.runtime.profile)
+                        .expect("a profile serializes"),
+                    providers: format!(
+                        "{} named content source(s), {} root(s)",
+                        request.environment.providers.len(),
+                        request.environment.runtime.load_domain.roots.len()
+                    ),
+                    recovery: "not in this path: `Engine::resolve_symbol` reaches the resolution \
+                               layer, which does not present source"
+                        .to_string(),
+                    premise: "none: locating the symbol is the request".to_string(),
+                },
+            )
+        }
+    };
+    let wall_micros = started.elapsed().as_micros();
+    let context = Context {
+        corpus_version: corpus.version.clone(),
+        subject: boundary.label,
+        subject_bytes: boundary.bytes.len() as u64,
+        subject_blake3: blake3::hash(&boundary.bytes).to_hex().to_string(),
+        path: "direct",
+        cache: match cache {
+            Some(cache) => cache_context(cache),
+            None => REFERENCE_CACHE.to_string(),
+        },
+        concurrency: REFERENCE_CONCURRENCY,
+        scope: facts.scope,
+        view: facts.view,
+        profile: facts.profile,
+        providers: facts.providers,
+        recovery: facts.recovery,
+        premise: facts.premise,
+        budget: boundary.limits.clone(),
+    };
+    RunRecord {
+        label: boundary.label,
+        context,
+        status: outcome.status,
+        usage: budget.usage(),
+        report_usage: outcome.report_usage,
+        coverage: Some(outcome.coverage),
+        diagnostics: outcome.diagnostics,
+        order: outcome.order,
+        published_items: outcome.published_items,
+        declared_bodies,
+        derivations: outcome.derivations,
+        items_without_a_consumer: outcome.items_without_a_consumer,
+        published: outcome.published,
+        document: outcome.document,
+        fingerprint: outcome.fingerprint,
+        evidence: outcome.evidence,
+        evidence_fingerprint: outcome.evidence_fingerprint,
+        represents_a_representation: matches!(boundary.ask, Ask::Member { .. }),
+        wall_micros,
+    }
+}
+
+/// The environment a boundary row runs under: the corpus's own snapshot, the providers it names and
+/// nothing else.
+fn boundary_environment(
+    snapshot: &ArtifactSnapshot,
+    providers: &[ArtifactSnapshot],
+    release: u16,
+) -> ResolutionEnvironment {
+    let mut roots = vec![LoadRoot::Snapshot {
+        snapshot: snapshot.id().clone(),
+    }];
+    roots.extend(providers.iter().map(|provider| LoadRoot::Snapshot {
+        snapshot: provider.id().clone(),
+    }));
+    let domain = LoadDomain {
+        loader: LoaderId("app".to_string()),
+        parent_loader: None,
+        delegation: DelegationPolicy::ParentFirst,
+        roots,
+        module_mode: ModuleMode::ClassPath,
+        external_override: RuntimeUncertainty::None,
+        runtime_transformation: RuntimeUncertainty::None,
+    };
+    ResolutionEnvironment {
+        runtime: RuntimeView {
+            physical: PhysicalView {
+                snapshot: snapshot.id().clone(),
+                scope: PhysicalScope::SnapshotAll,
+            },
+            profile: RuntimeProfile {
+                java_release: release,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            load_domain: domain.clone(),
+        },
+        domains: vec![domain],
+        providers: providers
+            .iter()
+            .enumerate()
+            .map(|(index, provider)| HeaderProvider {
+                id: ProviderId(format!("boundary-headers-{index}")),
+                roots: vec![LoadRoot::Snapshot {
+                    snapshot: provider.id().clone(),
+                }],
+            })
+            .collect(),
+    }
+}
+
+/// Locate `name`/`descriptor` through the reader's own header entry, under the row's own budget.
+///
+/// This is the same premise the local matrix row runs (`locate_member`), stated for a member the
+/// corpus names: the identity the request is built from is the one the header read located, and the
+/// member has to be declared with a body, so a corpus that stopped declaring it fails here instead
+/// of producing a row about nothing.
+fn locate_target(
+    engine: &Engine,
+    snapshot: &ArtifactSnapshot,
+    budget: &mut Budget,
+    name: &[u8],
+    descriptor: &[u8],
+) -> MemberTarget {
+    let inspected = engine
+        .inspect_header(snapshot, ClassTarget::Root, budget, InspectionMode::Strict)
+        .expect("the boundary corpus's own header is readable");
+    let declared: Vec<Vec<u8>> = inspected
+        .inspection
+        .header
+        .methods
+        .iter()
+        .filter(|member| {
+            member
+                .attributes
+                .iter()
+                .any(|shell| shell.name.raw().0.as_slice() == b"Code")
+        })
+        .filter(|member| {
+            member.name.raw().0.as_slice() == name
+                && member.descriptor.raw().0.as_slice() == descriptor
+        })
+        .map(|member| member.name.raw().0.clone())
+        .collect();
+    assert_eq!(
+        declared.len(),
+        1,
+        "the boundary corpus declares {} member(s) called {}{}, so this row would be about a member \
+         it does not have",
+        declared.len(),
+        String::from_utf8_lossy(name),
+        String::from_utf8_lossy(descriptor)
+    );
+    MemberTarget {
+        owner: inspected.source.class_bytes,
+        declared_bodies: inspected
+            .inspection
+            .header
+            .methods
+            .iter()
+            .filter(|member| {
+                member
+                    .attributes
+                    .iter()
+                    .any(|shell| shell.name.raw().0.as_slice() == b"Code")
+            })
+            .count(),
+    }
+}
+
+/// The 3.2 regression: every boundary corpus, run with the cache off, cold and warm.
+///
+/// The five corpora are the ones the two scenarios name — the understated-size ZIP, the condy graph,
+/// the irreducible CFG, the missing dependency and the cancellation rows — and the differential over
+/// them is the matrix's own: the same three runs, the same planes, the same `compare`. What this test
+/// adds to `Cold and warm results` is the *shape* of the inputs: a corpus whose declared sizes lie, a
+/// corpus whose facts carry a bootstrap graph, a body the recovery layer refuses, a symbol nothing
+/// provides, and two runs whose token is cancelled with decompression or IR work still ahead.
+///
+/// The `A13` rows are here too: `guarded-one` and `guarded-suppressedCatching` are two members of one
+/// class — one presented, one refused — and `missing-dependency/control` beside
+/// `missing-dependency/unresolved` is the same shape in the resolution plane. Each row states the
+/// spelling its corpus is about, so a row that quietly stopped being that shape fails rather than
+/// comparing two empty results.
+#[test]
+fn every_boundary_corpus_publishes_the_same_result_with_and_without_the_cache() {
+    let corpus = corpus();
+    let boundaries = boundary_corpora();
+    for boundary in &boundaries {
+        let store = facts_cache();
+        let reference = boundary_run(&corpus, boundary, None);
+        let cold = boundary_run(&corpus, boundary, Some(&store));
+        let warm = boundary_run(&corpus, boundary, Some(&store));
+
+        println!();
+        println!(
+            "corpus {} ({} bytes, cache off → cold → warm)",
+            boundary.label,
+            boundary.bytes.len()
+        );
+        for (pair, comparison) in [
+            ("reference → cold", compare(&reference, &cold)),
+            ("cold → warm", compare(&cold, &warm)),
+            ("reference → warm", compare(&reference, &warm)),
+        ] {
+            for plane in GATE_PLANES {
+                let verdict = plane_comparison(plane, &comparison);
+                println!("  {:<16} {:<24} {}", pair, plane, verdict.describe());
+                // A plane with no object reads as absent and is printed as such; a plane that was
+                // compared and came out different is the failure.
+                assert!(
+                    verdict.equal() || matches!(verdict, PlaneComparison::NoObject(_)),
+                    "{}: {pair} — the plane `{plane}` is {}, so the cache changed a result on this \
+                     corpus:\n{}",
+                    boundary.label,
+                    verdict.describe(),
+                    comparison.lines().join("\n")
+                );
+                assert_eq!(
+                    matches!(verdict, PlaneComparison::NoObject(_)),
+                    plane == "representation"
+                        && matches!(boundary.ask, Ask::FullRange | Ask::Resolve { .. }),
+                    "{}: the `representation` plane is {} on a row that {} a representation, so the \
+                     plane table is not reporting this row's own shape",
+                    boundary.label,
+                    verdict.describe(),
+                    if matches!(boundary.ask, Ask::Member { .. }) {
+                        "publishes"
+                    } else {
+                        "does not publish"
+                    }
+                );
+            }
+        }
+
+        // The store really was in the loop, and the warm run was really answered by it: a row over a
+        // corpus no request parses would compare two cold runs and prove nothing.
+        if !boundary.cancel {
+            let observed = store.report();
+            assert!(
+                observed.consultations > 0,
+                "{}: the store was never consulted, so this row is not about a cache: {observed:?}",
+                boundary.label
+            );
+            assert!(
+                observed.hits > 0,
+                "{}: the warm run answered nothing from the store: {observed:?}",
+                boundary.label
+            );
+        }
+
+        // The exit the corpus is about: the budget it runs out of, the cancellation it receives, or
+        // a complete run.
+        assert_eq!(
+            warm.status, boundary.exit,
+            "{}: the row publishes `{}` and this corpus's exit is `{}`",
+            boundary.label, warm.status, boundary.exit
+        );
+        let termination = termination_of(&warm);
+        println!(
+            "  exit {}{}",
+            warm.status,
+            if termination == "none" {
+                String::new()
+            } else {
+                format!(" stating {termination}")
+            }
+        );
+        if !boundary.report.is_empty() {
+            assert!(
+                termination.contains(boundary.report),
+                "{}: the stopped row states `{termination}` rather than `{}`",
+                boundary.label,
+                boundary.report
+            );
+        }
+        // "返回已扫描范围和终止原因", and its other half — a run that stopped may not read as
+        // complete. The termination reason is asserted above (the status, with the dimension where
+        // the status carries one); the range is the coverage document, in the engine's own spelling:
+        // a stopped run has at least one dimension that is not `complete_within_schema`, and a
+        // stopped *scan* states the ranges it covered and the ordinals it never established.
+        if boundary.exit != "complete" {
+            let coverage = warm
+                .coverage
+                .clone()
+                .expect("a stopped row publishes the coverage it reached");
+            let dimensions = coverage_dimensions(&coverage);
+            assert!(
+                dimensions
+                    .values()
+                    .any(|dimension| dimension["state"] != "complete_within_schema"),
+                "{}: the run stopped and its coverage claims every dimension was covered: {coverage}",
+                boundary.label
+            );
+            if matches!(boundary.ask, Ask::FullRange) {
+                let stated = dimensions.values().any(|dimension| {
+                    let non_empty = |key: &str| {
+                        dimension
+                            .get(key)
+                            .and_then(Value::as_array)
+                            .is_some_and(|ranges| !ranges.is_empty())
+                    };
+                    non_empty("scanned") || non_empty("skipped")
+                });
+                assert!(
+                    stated,
+                    "{}: a stopped scan reported no scanned and no skipped range: {coverage}",
+                    boundary.label
+                );
+            }
+        }
+
+        let document = serde_json::to_string(&warm.document).expect("a document renders");
+        for spelling in boundary.states {
+            assert!(
+                document.contains(spelling),
+                "{}: the published result does not state `{spelling}`, so this row is not the shape \
+                 it claims to be about: {document}",
+                boundary.label,
+                spelling = spelling
+            );
+        }
+    }
+}
+
+// -------------------------------------------------------------------------------------------
+// The gate: a candidate may stand in the default path only while its differential holds
+// -------------------------------------------------------------------------------------------
+
+/// One candidate's differential: the rows its configuration was compared on, and — when it has none
+/// — the reason there is no second path at all.
+struct CandidateDifferential {
+    candidate: &'static str,
+    configuration: Option<(&'static str, &'static str)>,
+    rows: Vec<(String, Comparison)>,
+    no_second_path: Option<&'static str>,
+}
+
+impl CandidateDifferential {
+    fn has_a_second_path(&self) -> bool {
+        self.no_second_path.is_none() && !self.rows.is_empty()
+    }
+}
+
+/// `Correctness and resource regression gates` as a function: `Ok(())` only while every row of the
+/// differential publishes the same result on every plane, `Err(reason)` — the reason default
+/// enabling is blocked — otherwise.
+///
+/// This is the executable form of "任一语义差异 MUST 阻断默认启用". It is a function rather than a
+/// block inside the gate so the rule itself is testable, exactly like [`check_candidate`]: the
+/// record as it stands has to pass it, and a pair that really differs has to be refused
+/// (`the_enablement_rule_refuses_a_candidate_whose_paths_differ`).
+fn blocking_difference(differential: &CandidateDifferential) -> Option<String> {
+    if let Some(why) = differential.no_second_path {
+        return Some(format!(
+            "{}: no second path exists, so there is nothing to compare: {why}",
+            differential.candidate
+        ));
+    }
+    for (row, comparison) in &differential.rows {
+        for plane in GATE_PLANES {
+            // A plane with no object on a given row is carried by the differential's other rows —
+            // the recovery rows publish the representation, the cancelled rows the cancellation —
+            // and the gate refuses a differential in which no row carries one at all. What blocks
+            // enabling is a plane that was compared and came out different.
+            match plane_comparison(plane, comparison) {
+                PlaneComparison::Compared(true) | PlaneComparison::NoObject(_) => {}
+                PlaneComparison::Compared(false) => {
+                    return Some(format!(
+                        "{}: {row} — the plane `{plane}` is {}, so default enabling is blocked:\n{}",
+                        differential.candidate,
+                        "DIFFERENT",
+                        comparison.lines().join("\n")
+                    ));
+                }
+            }
+        }
+    }
+    None
+}
+
+/// Whether a candidate may stand in the default path: its differential has a second path and every
+/// plane of it is equal.
+fn enablement_allowed(differential: &CandidateDifferential) -> std::result::Result<(), String> {
+    if let Some(reason) = blocking_difference(differential) {
+        return Err(reason);
+    }
+    if !differential.has_a_second_path() {
+        return Err(format!(
+            "{}: there is no second path to compare, so nothing has been shown about enabling it",
+            differential.candidate
+        ));
+    }
+    Ok(())
+}
+
+/// The runner a recorded configuration names, or the reason this harness cannot run it.
+///
+/// The record keeps configurations as text so a candidate can state one that does not exist yet
+/// (2.1's and 2.2's do). This is where that text has to meet a path that can really run: a label with
+/// no runner is not a comparison, and the gate refuses to substitute the reference path for it.
+fn differential_runner(configuration: (&'static str, &'static str)) -> Option<()> {
+    if configuration.0 == CACHE_ON && configuration.1 == REFERENCE_CONCURRENCY {
+        Some(())
+    } else {
+        None
+    }
+}
+
+/// The full differential of one candidate: the matrix's own row for it, the local row, the
+/// cancellation row and every boundary corpus, each run with the cache off, cold and warm.
+fn candidate_differential(
+    candidate: &Candidate,
+    corpus: &Corpus,
+    boundaries: &[Boundary],
+) -> CandidateDifferential {
+    let mut rows: Vec<(String, Comparison)> = Vec::new();
+    let measured = match &candidate.benefit {
+        Benefit::Unmeasured { why } => {
+            return CandidateDifferential {
+                candidate: candidate.id,
+                configuration: None,
+                rows,
+                no_second_path: Some(why),
+            };
+        }
+        Benefit::Measured(measured) => measured,
+    };
+    // A recorded configuration with no runner here is a gap, not a comparison: the gate says so
+    // instead of measuring the reference path twice and calling it the candidate.
+    if differential_runner(measured.configuration).is_none() {
+        return CandidateDifferential {
+            candidate: candidate.id,
+            configuration: Some(measured.configuration),
+            rows,
+            no_second_path: Some(
+                "this harness has no runner for the configuration the record names, so the \
+                 candidate side would have to be simulated; a simulated second path is the \
+                 measurement-shaped claim the design refuses",
+            ),
+        };
+    }
+
+    // (a) The two matrix rows the record's benefit is measured over, as `published_rows` runs them.
+    let matrix = published_rows(corpus);
+    let reference_row = matrix
+        .iter()
+        .find(|row| row.label == measured.reference)
+        .unwrap_or_else(|| {
+            panic!(
+                "the record names `{}`, which the matrix does not run",
+                measured.reference
+            )
+        });
+    let candidate_row = matrix
+        .iter()
+        .find(|row| row.label == measured.candidate)
+        .unwrap_or_else(|| {
+            panic!(
+                "the record names `{}`, which the matrix does not run",
+                measured.candidate
+            )
+        });
+    rows.push((
+        format!(
+            "the matrix row the record names ({} → {})",
+            measured.reference, measured.candidate
+        ),
+        compare(reference_row, candidate_row),
+    ));
+
+    // (b) The local row: the same two configurations over the recovery path, which is the only row
+    // of the matrix that publishes a representation.
+    let class = verified(corpus, &SUBJECTS[1]);
+    let premise = locate_member(&class.content);
+    let store = facts_cache();
+    let local_reference =
+        run_single_member_with(corpus, &class, "single-member/v52-class", &premise, None);
+    let local_cold = run_single_member_with(
+        corpus,
+        &class,
+        "single-member/v52-class",
+        &premise,
+        Some(&store),
+    );
+    let local_warm = run_single_member_with(
+        corpus,
+        &class,
+        "single-member/v52-class",
+        &premise,
+        Some(&store),
+    );
+    rows.push((
+        "single-member/v52-class (reference → warm)".to_string(),
+        compare(&local_reference, &local_warm),
+    ));
+    rows.push((
+        "single-member/v52-class (cold → warm)".to_string(),
+        compare(&local_cold, &local_warm),
+    ));
+
+    // (c) The cancellation row over the matrix's own archive: both configurations have to answer
+    // the same way, and the answer may not be a quieter complete run.
+    let jar = verified(corpus, &SUBJECTS[0]);
+    let cancelled_reference = run_full_range_with(
+        corpus,
+        &jar,
+        "cancelled/full-range-xref/minimal-jar",
+        true,
+        None,
+    );
+    let cancelled_candidate = run_full_range_with(
+        corpus,
+        &jar,
+        "cancelled/full-range-xref/minimal-jar",
+        true,
+        Some(&facts_cache()),
+    );
+    rows.push((
+        "cancelled/full-range-xref/minimal-jar (reference → cache on)".to_string(),
+        compare(&cancelled_reference, &cancelled_candidate),
+    ));
+
+    // (d) Every boundary corpus of 3.2, through the same three runs.
+    for boundary in boundaries {
+        let store = facts_cache();
+        let reference = boundary_run(corpus, boundary, None);
+        let cold = boundary_run(corpus, boundary, Some(&store));
+        let warm = boundary_run(corpus, boundary, Some(&store));
+        rows.push((
+            format!("{}/reference → cold", boundary.label),
+            compare(&reference, &cold),
+        ));
+        rows.push((
+            format!("{}/cold → warm", boundary.label),
+            compare(&cold, &warm),
+        ));
+        rows.push((
+            format!("{}/reference → warm", boundary.label),
+            compare(&reference, &warm),
+        ));
+    }
+    CandidateDifferential {
+        candidate: candidate.id,
+        configuration: Some(measured.configuration),
+        rows,
+        no_second_path: None,
+    }
+}
+
+/// The gate. Every enabled candidate has to clear its own differential, and a difference anywhere in
+/// a measured candidate's differential is a failure of the record — not merely of the candidate —
+/// because `CANDIDATES` claims a measured benefit over exactly those rows.
+///
+/// It is deliberately **not** "if the candidate is enabled, check it": the record of a measured
+/// candidate is checked whatever its state, so a semantic difference between the two paths is red
+/// the day it appears, and `enablement_allowed` is what states whether the state may move.
+#[test]
+fn a_candidate_may_be_enabled_only_while_its_differential_is_equivalent() {
+    let corpus = corpus();
+    let boundaries = boundary_corpora();
+    for candidate in &CANDIDATES {
+        let differential = candidate_differential(candidate, &corpus, &boundaries);
+        println!();
+        println!("candidate {} ({:?})", candidate.id, candidate.default_state);
+        println!("  configuration {:?}", differential.configuration);
+        for (row, comparison) in &differential.rows {
+            println!("  row {row}");
+            for plane in GATE_PLANES {
+                println!(
+                    "    {:<24} {}",
+                    plane,
+                    plane_comparison(plane, comparison).describe()
+                );
+            }
+        }
+        if let Some(why) = differential.no_second_path {
+            println!("  no second path: {why}");
+        }
+        // A **measured** claim is checked whatever the candidate's state: the record says a benefit
+        // was measured over exactly these two paths, so a difference between them falsifies the
+        // record rather than merely blocking the candidate. A candidate with no second path is the
+        // other case, and its state (disabled) is the one `enablement_allowed` refuses.
+        if matches!(candidate.benefit, Benefit::Measured(_)) {
+            if let Some(refusal) = blocking_difference(&differential) {
+                panic!(
+                    "{refusal}\n\nA semantic difference between the two paths of a measured \
+                     candidate blocks default enabling. Fix the path, or move the candidate out of \
+                     `Measured` and record what it is: the one thing the record may not do is stay \
+                     as it is."
+                );
+            }
+        } else {
+            assert!(
+                !differential.has_a_second_path(),
+                "{} records no measured benefit and this harness ran its differential anyway: {}",
+                candidate.id,
+                differential.rows.len()
+            );
+        }
+        assert!(
+            differential.rows.is_empty()
+                || differential
+                    .rows
+                    .iter()
+                    .any(|(_, comparison)| comparison.representation),
+            "{}: no row of this differential publishes a representation, so the `representation` \
+             plane of the gate would be absent on every row without the reason being recorded",
+            candidate.id
+        );
+        if candidate.default_state == DefaultState::Enabled {
+            assert!(
+                enablement_allowed(&differential).is_ok(),
+                "{} is in the default path while its differential does not clear the gate",
+                candidate.id
+            );
+        }
+    }
+
+    println!();
+    for (subject, why) in NO_SECOND_PATH_TODAY {
+        println!("no second value today: {subject} — {why}");
+    }
+
+    // Today's default state, from the three sides that can state it: no candidate is enabled, the
+    // reference configuration of the matrix is the cache-off one, and the budget every caller builds
+    // carries no store.
+    assert!(
+        CANDIDATES
+            .iter()
+            .all(|candidate| candidate.default_state == DefaultState::Disabled),
+        "a candidate stands in the default path: {:?}",
+        CANDIDATES
+            .iter()
+            .map(|candidate| (candidate.id, candidate.default_state))
+            .collect::<Vec<_>>()
+    );
+    assert_eq!(
+        runnable_configurations(&corpus)
+            .iter()
+            .next()
+            .map(|(cache, _)| cache.clone()),
+        Some(REFERENCE_CACHE.to_string()),
+        "the reference configuration of the matrix is no longer the cache-off one, so the default \
+         path is not the one the differentials are measured against"
+    );
+    assert!(
+        Budget::new(limits()).facts_cache().is_none(),
+        "a budget built the way every caller builds one carries a facts cache, so the cache would be \
+         on in the default path"
+    );
+}
+
+/// The gate's rule, on a pair that really differs: a candidate whose two paths disagree may not be
+/// enabled, and the refusal names the plane that moved.
+#[test]
+fn the_enablement_rule_refuses_a_candidate_whose_paths_differ() {
+    let corpus = corpus();
+    let jar = verified(&corpus, &SUBJECTS[0]);
+    let complete = run_full_range(&corpus, &jar, "full-range-xref/minimal-jar", false);
+    let cancelled = run_full_range(&corpus, &jar, "cancelled/full-range-xref/minimal-jar", true);
+    let differing = CandidateDifferential {
+        candidate: "a candidate whose second path stops early",
+        configuration: Some((CACHE_ON, REFERENCE_CONCURRENCY)),
+        rows: vec![(
+            "a cancelled run against a complete one".to_string(),
+            compare(&complete, &cancelled),
+        )],
+        no_second_path: None,
+    };
+    let refusal = enablement_allowed(&differing).expect_err(
+        "a pair that publishes different results is not a differential a candidate may be enabled \
+         on",
+    );
+    assert!(
+        refusal.contains("the plane `evidence`"),
+        "the refusal has to name the plane that moved, and it says: {refusal}"
+    );
+    println!("{refusal}");
+
+    // A candidate with one path is blocked by absence, not carried by a comparison of nothing.
+    let absent = CandidateDifferential {
+        candidate: "a candidate with one path",
+        configuration: None,
+        rows: Vec::new(),
+        no_second_path: Some("nothing to run twice"),
+    };
+    assert!(enablement_allowed(&absent).is_err());
 }

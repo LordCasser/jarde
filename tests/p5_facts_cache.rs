@@ -1768,3 +1768,154 @@ fn a_provider_added_later_is_answered_by_a_fresh_search() {
         report.hits, off_without.state, off_with.state
     );
 }
+
+// ---------------------------------------------------------------------------------------------
+// A18: the cache half of "跨快照 token/缓存隔离"
+// ---------------------------------------------------------------------------------------------
+
+/// The published result of one request over one byte source, with the charge records removed.
+///
+/// This is the form task 3.1's differential compares two configurations in: the planes
+/// `Cold and warm results` names are the result, and the charges beside them are the resource half a
+/// cache is *supposed* to move.
+fn result_of(bytes: Vec<u8>, store: Option<&FactsCache>) -> String {
+    let snapshot = match store {
+        Some(store) => open_with(bytes, store),
+        None => open(bytes),
+    };
+    let request = full_range_request(&snapshot);
+    let report = match store {
+        Some(store) => query_with(&snapshot, &request, store).0,
+        None => query(&snapshot, &request).0,
+    };
+    let mut document = serde_json::to_value(&report).expect("a report serializes");
+    without_charges(&mut document);
+    serde_json::to_string(&document).expect("a document renders")
+}
+
+/// A18's cache half over one store and two snapshots: neither may be answered with the other's facts.
+///
+/// The acceptance is "跨快照 token/缓存隔离", and the P1 half of it (a snapshot stays stable, an old
+/// cursor is rejected) is already accepted (`p1_query_api.rs`). This is the half P5 introduces, and
+/// it is turned into the cases a store that dropped one of its dimensions would **pass**:
+///
+/// * **(a) different content, one store.** Two snapshots holding different classes share one store.
+///   A store keyed by anything but the content digest — one slot, one name, one "the class I read
+///   last" — answers the second snapshot with the first one's facts, and the published result then
+///   differs from that snapshot's own direct run;
+/// * **(b) the same content at two origins.** Content *is* shared, and the hit may not launder an
+///   identity: the entry carries no origin, so the second snapshot still publishes its own entry's
+///   name and its own snapshot. This is the case a store that cached the *read* rather than the
+///   *parse* would pass by publishing the first origin's bytes;
+/// * **(c) what a stop leaves behind.** A cancelled request writes nothing, and the next request —
+///   over the *other* snapshot, on its own budget and its own token — is answered exactly as its
+///   direct run.
+///
+/// Each case asserts equality against the **direct** run of the same bytes, so the test does not
+/// pin a fingerprint this file invented: it pins that the cached path is the direct path.
+#[test]
+fn one_store_serves_two_snapshots_without_answering_either_with_the_other() {
+    let alpha_bytes = class_bytes(b"p/Alpha", 52);
+    let beta_bytes = CONTROL.to_vec();
+    let alpha = zip_of(&[(b"p/Alpha.class", &alpha_bytes)]);
+    let beta = zip_of(&[(b"HistoricalControlFlow.class", &beta_bytes)]);
+
+    // (a) Different content, one store.
+    let alpha_direct = result_of(alpha.clone(), None);
+    let beta_direct = result_of(beta.clone(), None);
+    assert_ne!(
+        alpha_direct, beta_direct,
+        "the two corpora publish the same result, so an answer taken from the other one would not \
+         be visible in this test"
+    );
+    let store = cache(8);
+    let alpha_cold = result_of(alpha.clone(), Some(&store));
+    let alpha_warm = result_of(alpha.clone(), Some(&store));
+    let beta_cold = result_of(beta.clone(), Some(&store));
+    let beta_warm = result_of(beta.clone(), Some(&store));
+    assert_eq!(
+        alpha_cold, alpha_direct,
+        "the first snapshot's cached run differs from its own direct run"
+    );
+    assert_eq!(alpha_warm, alpha_direct);
+    assert_eq!(
+        beta_cold, beta_direct,
+        "the second snapshot was answered with facts read from the first one: the store is not keyed \
+         by the content it holds (A18's cross-snapshot isolation)"
+    );
+    assert_eq!(beta_warm, beta_direct);
+    let observed = store.report();
+    assert_eq!(
+        observed.entries, 2,
+        "two different classes under one store are two entries: {observed:?}"
+    );
+    assert!(
+        observed.hits > 0,
+        "the store answered nothing, so nothing here is about a cache: {observed:?}"
+    );
+
+    // (b) One content, two origins, two snapshots: shared entry, unshared identity.
+    let shared = class_bytes(b"p/Shared", 52);
+    let first = zip_of(&[(b"a/Shared.class", &shared)]);
+    let second = zip_of(&[(b"b/Shared.class", &shared)]);
+    let first_direct = result_of(first.clone(), None);
+    let second_direct = result_of(second.clone(), None);
+    assert_ne!(
+        first_direct, second_direct,
+        "the two snapshots have to publish different origins for this half to be observable"
+    );
+    let store = cache(8);
+    assert_eq!(result_of(first.clone(), Some(&store)), first_direct);
+    assert_eq!(
+        result_of(second, Some(&store)),
+        second_direct,
+        "the second snapshot published the first one's origin or identity, so a hit laundered what \
+         the entry could not hold"
+    );
+    let observed = store.report();
+    assert_eq!(
+        observed.entries, 1,
+        "byte-equal classes at two origins are one content-keyed entry: {observed:?}"
+    );
+    assert!(
+        observed.hits > 0,
+        "the byte-equal class was parsed again instead of being shared: {observed:?}"
+    );
+
+    // (c) A cancelled request leaves nothing for the other snapshot to be answered with.
+    let store = cache(8);
+    let engine = Engine::new();
+    let snapshot = open_with(alpha, &store);
+    let token = CancellationToken::new();
+    token.cancel();
+    let mut budget =
+        Budget::with_cancellation_token(limits(), token).with_facts_cache(store.clone());
+    let cancelled = engine
+        .query(&snapshot, &full_range_request(&snapshot), &mut budget)
+        .expect("a cancelled scan still returns a report");
+    assert!(
+        matches!(cancelled.execution, ExecutionReport::Cancelled { .. }),
+        "the middle run of this case has to be the cancelled one: {:?}",
+        cancelled.execution
+    );
+    assert_eq!(
+        store.report().entries,
+        0,
+        "a cancelled request stored facts, and a later request over another snapshot could be \
+         answered with them: {:?}",
+        store.report()
+    );
+    assert_eq!(
+        result_of(beta, Some(&store)),
+        result_of(
+            zip_of(&[(b"HistoricalControlFlow.class", &beta_bytes)]),
+            None
+        ),
+        "the request after the cancelled one was not answered the way its direct run is"
+    );
+    println!(
+        "one store: {} entries over two snapshots, {} hit(s), and nothing left by the cancelled run",
+        store.report().entries,
+        store.report().hits
+    );
+}
