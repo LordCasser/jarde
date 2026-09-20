@@ -46,6 +46,7 @@
 | `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` | 通过 |
 | `cargo test --test p3_execution_comparison --locked -- --ignored` | 2 passed / 0 failed（17.2 s） |
 | `openspec validate --all --strict --no-interactive` | 20 passed / 0 failed（归档前） |
+| 实现提交的 CI（`8586356`） | [run 35506187596](https://github.com/LordCasser/jarde/actions/runs/35506187596) **四 job success**：stable（fmt、clippy `-D warnings`、两轮固定 seed 全量测试、JDK 25 oracle、P3 编译执行对照、依赖边界、OpenSpec strict、`git diff --exit-code`）、MSRV 1.88.0、supply chain、fuzz smoke |
 
 ## 边界
 
