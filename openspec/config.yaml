@@ -14,6 +14,13 @@ context: |
   recovery correctness gaps (nested-expression evaluation position, fallback producer retention);
   close-recovery-correctness-gaps closed them and is archived with its evidence. Use roadmap.md,
   acceptance.md and the support matrix for the current status. Preserve historical archives.
+  The review of bafdcec (behaviour 85828c4) found task-operation stop propagation gaps;
+  preserve-task-operation-stops fixed and archived them at 8586356. The benchmark campaign
+  then found two engine defects, now tracked as bound-recovery-recursion (process abort,
+  fixed at 4f62e26) and fix-nested-arithmetic-value (expression grouping in the printer,
+  being fixed); a third change, clarify-structural-output-planes, records the read-rule
+  gaps those findings exposed. optimize-demand-workloads remains an unfinished
+  investigation program even though its O1 child bound-container-lookup is archived.
   Query and Decompiler share readers and identities but do not start each other.
   Preserve physical origins and raw facts; distinguish symbolic references,
   definition resolution, dispatch, output quality, coverage and execution state.

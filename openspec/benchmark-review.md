@@ -2,20 +2,24 @@
 
 这次数据最明确地暴露了三个边界：按需请求仍在重复做容器发现；产物存在与含语句缺少可直接消费的区分；物理布局已识别，却无法声明带前缀的加载位置。源码核对另外确认了一个更小的交接缺口：driver Header 已读，恢复入口却拿不到声明类的 name/flags。
 
-处理这些问题不需要全程序模型、新 crate 或并行框架。下面四个 change 各自形成闭环，只有规划工件完成，所有实现任务保持未勾选。
+这是一份基于历史 `cd6f2f0` 测量的架构调查。下面四个 change 现已分别实现并归档，原观察与旧数字保留用于解释动机，不描述当前实现或修正后收益。当前状态以 [完成复核](completion-review.md)、[路线](roadmap.md) 和 [重新测量协议](benchmark-protocol.md) 为准；任务操作停止缺口先独立修正，性能专项仍未完成。
 
 ## Changes
 
 | 建议顺序 | Change | 架构修正 | 核心验收 |
 | --- | --- | --- | --- |
-| 1，可先落地 | [expose-recovery-content](changes/expose-recovery-content/proposal.md) | 给最终交付产物增加内容分类，保留 Produced 的存在语义 | 仅解释/含语句/未产出可对账，停止时不报告未交付 AST |
-| 2，性能主线 | [bound-container-lookup](changes/bound-container-lookup/proposal.md) | 按 container 定向访问；复用权威目录、locator 与 nested backing | 不展开未搜索 sibling；保留期间第二次目录解析/父容器解压为零；完整结果语义不变 |
-| 3，输入能力 | [bind-prefixed-load-roots](changes/bind-prefixed-load-roots/proposal.md) | 用 container+raw prefix 声明加载位置，CLI 补树枚举 | WEB-INF/classes 可绑定，raw origin 不变，root 顺序/重复项/损坏边界保留 |
-| 独立小修，可与 1 先做 | [carry-declaring-class-evidence](changes/carry-declaring-class-evidence/proposal.md) | 同次 Header 的 class name/flags 贯穿只读交接 | 公开入口声明 form 正确，Header/Body 读取不增加 |
+| 1，可先落地 | [expose-recovery-content](changes/archive/2026-09-20-expose-recovery-content/proposal.md) | 给最终交付产物增加内容分类，保留 Produced 的存在语义 | 仅解释/含语句/未产出可对账，停止时不报告未交付 AST |
+| 2，性能主线 | [bound-container-lookup](changes/archive/2026-09-20-bound-container-lookup/proposal.md) | 按 container 定向访问；复用权威目录、locator 与 nested backing | 不展开未搜索 sibling；保留期间第二次目录解析/父容器解压为零；完整结果语义不变 |
+| 3，输入能力 | [bind-prefixed-load-roots](changes/archive/2026-09-20-bind-prefixed-load-roots/proposal.md) | 用 container+raw prefix 声明加载位置，CLI 补树枚举 | WEB-INF/classes 可绑定，raw origin 不变，root 顺序/重复项/损坏边界保留 |
+| 独立小修，可与 1 先做 | [carry-declaring-class-evidence](changes/archive/2026-09-20-carry-declaring-class-evidence/proposal.md) | 同次 Header 的 class name/flags 贯穿只读交接 | 公开入口声明 form 正确，Header/Body 读取不增加 |
 
 前缀 root 与容器优化没有语义硬依赖，但都会改 providers，建议在定向访问稳定后集成前缀迁移。内容分类和声明交接不依赖 cache，也不依赖彼此；评估质量变化时建议先固定内容分类，避免改动前后分母漂移。
 
 既有 R8/R9 修复单独验收。本报告的性能/分布基线来自 `cd6f2f0`；分析期间观察到 `fd0aae8` 提交修复，`7024e0e` 完成其归档，复核时 HEAD 为 `25ed621`。后续实现以实际固定候选 SHA 和归档验证为准，重新建立 direct 基线；不重开旧正确性 change，也不把老 corpus 分布当成修复后实测。
+
+## 历史调查（以下源码形态与数字均为交付前）
+
+四项实现依次为 `7d095ce`（content）、`618de49`（声明交接）、`b22ea04`（定向访问）、`fbcf06b`（prefix roots）。下文“当前/现有”指原调查时点；旧外部原始样本已丢失，不可据此复算，也不可当成新基线。
 
 ## 1. 重复工作发生在哪一层
 

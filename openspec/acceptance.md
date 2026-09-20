@@ -27,6 +27,12 @@ P2/P3/P4/P5 的历史通过证据保留，当前不能把“A01–A18 的旧样�
 
 ## 语料与发布要求
 
+### 2026-09-20 任务链独立复核
+
+对 `bafdcec`（行为 `85828c4`）的 [复核](completion-review.md) 新增两条开放反例：R1/P1 的名称选择丢失搜索停止，使损坏后缀仍 exit 0/Complete 或损坏前缀变成未找到；R2/P2 的 body Partial 未反映到类视图顶层。A07/A14 的任务选择路径、A13/A14 的类视图组合路径**当前未通过这两条反例**。由 [preserve-task-operation-stops](changes/preserve-task-operation-stops/tasks.md) 0/5 跟踪，历史归档和其它已验证路径不改写。
+
+本轮两固定 seed 的 workspace 测试各 1249 passed / 0 failed / 6 ignored，fmt/clippy、两条显式 P3 编译执行对照与两项小型 benchmark smoke 通过。未重新运行本轮 JDK25 oracle/MSRV/supply-chain/fuzz CI，不把历史 CI 写成本轮执行。只有新增反例及其正向对照在修正提交通过后，才能确认本轮任务链完成。
+
 每个 fixture 记录来源、生成命令/编译器版本、输入摘要、目标 dialect、runtime/output profile 和预期能力。真实历史 javac/ECJ 样本与手工构造边界样本分别标记，现代 `--release 8` 不替代历史 codegen。
 
 输入矩阵覆盖 CLASS/JAR/WAR、Boot executable/deployed、MR、ZIP64、STORED/DEFLATED nested、同名/同字节多 origin、45–52 历史版本和 53–71 的逐 feature 注册。对抗矩阵覆盖截断、未知 CP/opcode、switch/wide、过长 attribute、非法索引、循环和超预算。
