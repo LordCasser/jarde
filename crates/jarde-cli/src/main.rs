@@ -1,3 +1,5 @@
+mod task;
+
 use clap::Parser;
 use jarde::{
     AnalysisStage, ArtifactInput, ArtifactTreeReport, Budget, CalleeReadReport, ClassTarget,
@@ -24,6 +26,9 @@ struct Cli {
     /// Read one JSON request from FILE; omit or use '-' for standard input.
     #[arg(long, value_name = "FILE")]
     request: Option<PathBuf>,
+    /// One task-oriented command: friendly parameters over the library's own entries.
+    #[command(subcommand)]
+    command: Option<task::Command>,
 }
 
 #[derive(Deserialize)]
@@ -260,11 +265,17 @@ enum OperationResult {
     },
 }
 
+/// The one failure document both request surfaces write.
+///
+/// A protocol error (the legacy `--request` path) writes it to standard output, because that path's
+/// standard output is the response stream; a task command writes the same document to standard error
+/// and classifies the failure with its exit status, because a task command's standard output carries
+/// a *report* and a failure is not one. The shape is stated once for both.
 #[derive(Serialize)]
-struct ErrorResponse<'a> {
-    status: &'static str,
-    error: &'a Error,
-    usage: &'a UsageSnapshot,
+pub(crate) struct ErrorResponse<'a> {
+    pub(crate) status: &'static str,
+    pub(crate) error: &'a Error,
+    pub(crate) usage: &'a UsageSnapshot,
 }
 
 #[derive(Debug)]
@@ -302,6 +313,19 @@ impl Write for CountingWriter {
 
 fn main() -> ExitCode {
     let cli = Cli::parse();
+    // Two request surfaces, one invocation: `--request` is the JSON control plane and a subcommand
+    // is a task command. Absent subcommand keeps the legacy path exactly as it was — including its
+    // stdin default — and naming both is a usage error rather than a silently elected one.
+    if let Some(command) = cli.command {
+        if cli.request.is_some() {
+            eprintln!(
+                "jarde-cli: `--request` and a task command are two different requests; name one of \
+                 them"
+            );
+            return ExitCode::from(task::EXIT_USAGE);
+        }
+        return task::run(command);
+    }
     let request_bytes = match read_request(cli.request.as_deref()) {
         Ok(bytes) => bytes,
         Err(error) => {

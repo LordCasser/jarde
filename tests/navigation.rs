@@ -690,6 +690,24 @@ fn a_damaged_candidate_ends_the_confirmed_scan_with_a_reliable_prefix() {
     );
 }
 
+/// The same execution plane with the one observed field removed.
+///
+/// Every variant carries the request's usage, so `elapsed_millis` is the field wherever it appears.
+/// A comparison that keeps it is comparing two runs' wall clocks: the determinism requirement
+/// excludes exactly this field, and this file's `Partial` assertions are about the reason and the
+/// counted work, not about how long the machine took to count it.
+fn without_observed_elapsed(execution: &ExecutionReport) -> ExecutionReport {
+    let mut execution = execution.clone();
+    let usage = match &mut execution {
+        ExecutionReport::Complete { usage }
+        | ExecutionReport::Partial { usage, .. }
+        | ExecutionReport::Cancelled { usage }
+        | ExecutionReport::Failed { usage, .. } => usage,
+    };
+    usage.elapsed_millis = 0;
+    execution
+}
+
 /// A budget stop publishes the confirmed prefix and names the dimension that stopped it.
 #[test]
 fn a_budget_stop_keeps_the_confirmed_prefix() {
@@ -714,13 +732,13 @@ fn a_budget_stop_keeps_the_confirmed_prefix() {
         vec!["budget_exceeded_class_headers"]
     );
     assert_eq!(
-        listing.execution,
-        ExecutionReport::Partial {
+        without_observed_elapsed(&listing.execution),
+        without_observed_elapsed(&ExecutionReport::Partial {
             reason: TerminationReason::BudgetExceeded {
                 dimension: BudgetDimension::ClassHeaders
             },
             usage: budget.usage(),
-        },
+        }),
         "the stop names the dimension that ran out and carries the request's whole usage"
     );
     assert_eq!(

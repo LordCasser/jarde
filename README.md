@@ -200,6 +200,54 @@ CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 cargo run -p jarde-cli -- --request app-t
 
 这个形状**替换**了旧的 `snapshot`/`artifact_tree` 两种 root（**BREAKING**，无兼容层、无 schema 适配）：旧 JSON 变体不再能反序列化。前缀只影响 container 目录内的查找 key（`ArchiveNameBytes` 参与环境身份，不进入 container facts cache 的 key），跨 root 优先级仍由声明顺序与 loader 委派决定。**支持边界**：前缀是通用机制，等于 Servlet/Boot 专用加载规则**未实现**——不读 `classpath.idx`、不自动排序 `BOOT-INF/lib`、不执行 launcher，`BOOT-INF/classes/` 只是同一种前缀的受控样本。
 
+### 任务导向命令（`add-task-oriented-cli`）
+
+命令行现在有两个入口：`--request`/stdin 的 JSON 控制面**保持原样**（18 项 limit 逐项必填、既有 6 个 operation、`status`/`result`/`transport` envelope、0/1 退出语义都不变），以及新增的任务链子命令。子命令只做三件事：把 friendly 参数翻成库请求、把库返回的那一份报告渲染成文本或 JSON、按报告自己的平面给出退出状态。
+
+| 命令 | 调用的库入口 | 参数做什么 |
+| --- | --- | --- |
+| `list-classes` | `Engine::list_class_candidates` / `Engine::list_class_declarations`（`--evidence candidates\|declarations`，默认 `declarations`） | 传递 scope 与证据等级 |
+| `list-members` | `Engine::list_members` | 把 `--definition` 的物理身份原样传入（不重拼、不按名字重找） |
+| `references` | `Engine::query` + `ReferenceGrouping::from_query` | 把类名/成员/relation/consumer 交给库的扫描与分组 |
+| `class-view` | `Engine::class_view` | 把类名或定义身份、以及要打开的 `--body` 传入 |
+| `recover` | `Engine::recover_target` | 把 `--method`/`--class-name`、环境策略、profile 与 loader 传入 |
+
+公共参数：`--input PATH`、`--scope JSON`（默认 `{"kind":"snapshot_all"}`，可声明 `artifact_tree` 的真实 container 身份）、`--budget DIMENSION=LIMIT`（可重复；五个可覆盖维度 `output_bytes`/`elapsed_millis`/`result_items`/`class_headers`/`method_bodies`，其余保持有界默认，未知维度或 0 是用法错误）、`--format text|json`（默认 `text`）、`--output FILE`。需要身份或文档的参数（`--definition`、`--method`、`--body-method`、`--scope`、`--root`、`--profile`）接受库自己的 JSON 文档，或 `@FILE`。
+
+**JSON 与文本同源**：`--format json` 写的就是库报告自身的序列化（`OperationOutcome` 连 `outcome` 标签一起），没有 envelope、没有改名、没有 CLI 专有字段，因此可以对同一请求做逐字段对照；`--format text` 是同一份文档的投影，每行都是 `JSON 字段路径 = 值`，可逐项回到 JSON 字段。唯一的正文例外是恢复的 Java 文本：它按 `recovered.recovery.text` 的字段值逐字节写出，所以 `--format text --output A.java` 得到的就是报告里的那段代码。
+
+**诊断与正文分离**：文本模式下正文（或内容字段行）走标准输出/`--output`，`limits`/`usage`/`coverage`/`execution`/`diagnostics` 五个记账平面走标准错误；JSON 模式下它们都是文档里的字段。失败（用法/输入错误、交付失败）不写标准输出，而是把库自己的 `error` + `usage` 文档写到标准错误。`--output` 与标准输出走同一次序列化与同一个 `output_bytes` 检查：收费被拒时**不创建文件**，执行停止时写出的是报告自己的 `partial`/`cancelled` 平面而不是伪装成功的文档。
+
+**退出状态**：
+
+| 状态 | 含义 | 验证用的 fixture |
+| --- | --- | --- |
+| `0` | 报告自己发布的每个执行平面都是 `complete` | `list-classes --input app.jar --format json` |
+| `1` | 文档无法交付（写文件或标准输出失败） | `... --output <不存在的目录>/x.json` |
+| `2` | 用法/输入错误：参数、身份文档、库的请求级拒绝、`output_bytes` 不足以交付文档 | 缺 `--consumer` 的 `references`；`recover --class-name p/Absent` |
+| `3` | 名称歧义，需要调用方选择（库未执行任何操作，候选就是报告） | 两个 origin 的 `class-view --class-name p/Base` |
+| `4` | 执行未完整：`partial`/`cancelled`/`failed`，**即使已交付可靠前缀也不为 0** | `list-classes --evidence declarations --budget class_headers=1` |
+
+**任务链**（每个后续命令吃前一条命令打印的物理身份，不需要手工重拼）：
+
+```sh
+J=app.jar
+# 1. 列类：`items[i].definition` 就是要交给下一条命令的身份
+cargo run -q -p jarde-cli -- list-classes --input $J --evidence declarations --format json
+# 2. 列方法：身份原样传回，`items[i].identity` 是方法身份
+cargo run -q -p jarde-cli -- list-members --input $J --definition @definition.json --format json
+# 3. 看引用：符号（类名 + 成员名 + descriptor）与声明的 consumer 类别
+cargo run -q -p jarde-cli -- references --input $J --class-name p/Base --member method \
+  --member-name foo --descriptor '()V' --consumer invocation --format text
+# 4. 打开代码：方法身份原样传入，环境由调用方声明
+cargo run -q -p jarde-cli -- recover --input $J --method @method.json --policy plain-jar \
+  --format text --output Base.java
+```
+
+`class-view` 是另一条“打开代码”的路径：`--body 'foo()V'` 只为被请求的那个方法计一次 `method_bodies`，同一个类的其他方法不会被读取（`native`/`abstract` 这类无 Body 的成员不计尝试，返回 `not_declared`）；`--body-method` 接受方法身份。
+
+**发现面**：导航命令只用库的列举与显式 `enumerate_artifact_tree`；普通枚举仍不递归（嵌套库只是一个普通 entry），`--scope {"kind":"artifact_tree","root_container":…}` 才进入嵌套 container 的 entries。CLI 不自行解包、不按路径推断 container、不生成 root：加载位置只能由 `--root`（`LoadRoot` 文档）或 `--policy` 显式声明。**不包含**：批处理/整 artifact 恢复、GUI/MCP、交互式 TUI、自动 classpath 推断、配置持久化、颜色/分页、性能承诺；不新增 crate 或依赖。验收见 [`task_cli.rs`](crates/jarde-cli/tests/task_cli.rs)。
+
 ## 规格与验证
 
 - [五维支持矩阵](docs/support-matrix.md)
