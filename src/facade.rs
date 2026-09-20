@@ -8,16 +8,26 @@
 //! that type without publishing the layers behind it or the mutable internals they keep to
 //! themselves.
 
-use jarde_query::query::{QueryReport, QueryRequest};
+use crate::environment::{EnvironmentIdentity, EnvironmentProblem, ResolutionEnvironment};
+use crate::ir::{AnalysisStage, NoBodyKind, Quality};
+use crate::resolver::{
+    DeclarationRefItem, DeclarationRefReport, HeaderRead, ResolutionAnalysis, ResolvedMemberRef,
+};
+use jarde_java::{RecoveryContent, RecoveryReport, StopReason};
+use jarde_query::query::{
+    ConsumerKind, ConsumerSchema, QueryAnalysis, QueryCoverage, QueryPage, QueryRelation,
+    QueryReport, QueryRequest, XrefDerivation, XrefItem,
+};
 use jarde_reader::accounting::with_usage;
 use jarde_reader::artifact::{
     ArtifactInput, ArtifactKind, ArtifactSnapshot, ArtifactTreeReport, EnumerationReport,
     PhysicalEntry, budget_dimension_code,
 };
-use jarde_reader::budget::{Budget, CountedBudgetDimension};
+use jarde_reader::budget::{Budget, CountedBudgetDimension, Limits, UsageSnapshot};
 use jarde_reader::classfile::{
-    ClassMemberFacts, InspectionMode, MemberHeader, MemberTablePhase, MemberTableStop,
-    MethodSelector, class_member_facts,
+    AttributeShell, BytecodeStop, BytecodeStopPhase, ClassMemberFacts, ExceptionHandlerFact,
+    InspectionMode, InstructionFact, MemberHeader, MemberTablePhase, MemberTableStop,
+    MethodSelector, class_member_facts, method_code_coverage, method_code_facts,
 };
 use jarde_reader::error::{Error, Result};
 use jarde_reader::inspect::{
@@ -25,13 +35,17 @@ use jarde_reader::inspect::{
     materialize_root,
 };
 use jarde_reader::model::{
-    ByteSpan, ClassBytesId, Coverage, CoverageDimension, CoverageRange, CoverageState, Diagnostic,
-    DiagnosticSeverity, ExecutionReport, JvmBytes, JvmString, Location, MemberKey,
+    ArchiveNameBytes, ByteSpan, ClassBytesId, ContainerId, ContainerOrigin, Coverage,
+    CoverageDimension, CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity,
+    ExecutionReport, JvmBytes, JvmString, Location, MemberKey, OriginMember, OriginSet,
     PhysicalClassLocation, PhysicalDefinitionId, PhysicalEntryId, PhysicalMemberId,
     PhysicalMethodId, PhysicalVariant, Provenance, SnapshotId, TerminationReason,
     physical_variant_for_path,
 };
-use jarde_reader::view::{PhysicalScope, PhysicalView};
+use jarde_reader::view::{
+    DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode, PhysicalScope,
+    PhysicalView, RuntimeProfile, RuntimeUncertainty, RuntimeView,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -650,114 +664,304 @@ impl Engine {
         query: &NavigationQuery,
         budget: &mut Budget,
     ) -> Result<NavigationReport> {
-        let scan = scan_scope(snapshot, scope, budget)?;
-        let requested = query.class.internal_name();
-        let candidates: Vec<ClassCandidate<'_>> =
-            scope_class_candidates(snapshot.kind(), snapshot.id(), &scan.entries)
-                .into_iter()
-                .filter(|candidate| candidate_states_name(candidate, &requested.0))
-                .collect();
-        let total = to_u64(candidates.len())?;
-        let mut items = Vec::new();
-        let mut diagnostics = scan.diagnostics;
-        let mut execution = scan.execution;
-        let mut searched = 0_u64;
-        for candidate in &candidates {
-            let provenance = candidate_provenance(candidate);
-            if let Err(error) = budget.charge(CountedBudgetDimension::ClassHeaders, 1) {
-                merge_execution(&mut execution, stop_execution(&error, budget));
-                diagnostics.push(stop_diagnostic(&error, provenance));
-                break;
-            }
-            searched = searched.saturating_add(1);
-            match read_class_declaration(snapshot, candidate, budget) {
-                Ok(read) => {
-                    if let Err(error) =
-                        publish_diagnostics(read.diagnostics, &mut diagnostics, budget)
-                    {
-                        merge_execution(&mut execution, stop_execution(&error, budget));
-                        diagnostics.push(stop_diagnostic(&error, provenance));
-                        break;
-                    }
-                    let ClassContentItem::ClassDeclaration(class) = &read.class else {
-                        unreachable!("a class declaration read publishes a class declaration item")
-                    };
-                    if class.declaration.this_class.raw().0 != query.class.internal_name().0 {
-                        if let Err(error) = charge_item(budget) {
-                            merge_execution(&mut execution, stop_execution(&error, budget));
-                            diagnostics.push(stop_diagnostic(&error, provenance));
-                            break;
-                        }
-                        // The finding is about the entry's own path, so it is stated for a candidate
-                        // that has one: a standalone root states no path to contradict.
-                        if let Some(entry) = candidate.location.entry() {
-                            diagnostics.push(path_name_mismatch_diagnostic(
-                                entry,
-                                class.definition.class_bytes.length,
-                                &query.class.internal_name().0,
-                                &class.declaration.this_class,
-                            ));
-                        }
-                        continue;
-                    }
-                    let found = match &query.member {
-                        None => vec![read.class],
-                        Some(filter) => {
-                            let mut found = Vec::new();
-                            for (index, field) in read.facts.fields.iter().enumerate() {
-                                let item = field_item(&class.definition, index, field)?;
-                                if filter.matches(&item) {
-                                    found.push(item);
-                                }
-                            }
-                            for (index, method) in read.facts.methods.iter().enumerate() {
-                                let item = method_item(&class.definition, index, method)?;
-                                if filter.matches(&item) {
-                                    found.push(item);
-                                }
-                            }
-                            found
-                        }
-                    };
-                    let mut refused = false;
-                    for item in found {
-                        if let Err(error) = charge_item(budget) {
-                            merge_execution(&mut execution, stop_execution(&error, budget));
-                            diagnostics.push(stop_diagnostic(&error, provenance.clone()));
-                            refused = true;
-                            break;
-                        }
-                        items.push(item);
-                    }
-                    if refused {
-                        break;
-                    }
-                }
-                Err(error) => {
-                    merge_execution(&mut execution, stop_execution(&error, budget));
-                    diagnostics.push(stop_diagnostic(&error, provenance));
-                    break;
-                }
-            }
-        }
-        let complete = matches!(execution, ExecutionReport::Complete { .. });
+        let search = search_named_classes(
+            snapshot,
+            scope,
+            &query.class,
+            |read| match &query.member {
+                None => Ok(vec![read.class.clone()]),
+                Some(filter) => member_candidates(read, filter),
+            },
+            budget,
+        )?;
         Ok(NavigationReport {
             view: PhysicalView {
                 snapshot: snapshot.id().clone(),
                 scope: scope.clone(),
             },
             query: query.clone(),
-            candidates: items,
-            coverage: listing_coverage(
-                &scan.physical_coverage,
-                "navigation_candidates",
-                searched,
-                total,
-                complete,
-            ),
+            candidates: search.items,
+            coverage: search.coverage,
+            execution: search.execution,
+            diagnostics: search.diagnostics,
+        })
+    }
+
+    /// Answers the class view of one artifact: the class's declaration, its fields and its methods
+    /// from **one** read, and the method bodies the request asked for, on demand (task 3.1).
+    ///
+    /// The class is addressed the task way ([`ClassRef`]): a friendly name searched with the
+    /// navigation rules over this scope, or a physical definition used exactly as given. The read
+    /// that answers a friendly name is the same read the view publishes — one `class_headers`
+    /// attempt, one member walk — and the bodies are decoded out of the very bytes that read
+    /// materialized, one `method_bodies` attempt each, so a view of a class with N requested bodies
+    /// charges one class header, one member listing and N bodies and never re-reads the class per
+    /// method. A member that declares no `Code` is stated as such and charges no body attempt.
+    ///
+    /// Nothing runs the analysis pipeline: no resolver, CFG, SSA, region or Java AST is built, and
+    /// `ir_items`/`ir_edges`/`analysis_steps`/`normalization_clones` stay at zero. What a body read
+    /// publishes is the reader's own decode of that body — its two phases, the instructions, the
+    /// handlers, the coverage of that decode and that decode's own stop.
+    ///
+    /// A request whose name matches more than one physical definition — a class name held at
+    /// several origins, or a body name with several declared descriptors — is answered with
+    /// [`OperationOutcome::Ambiguous`]: every candidate keeps its own physical identity and no body
+    /// is decoded. A body identity that belongs to another class, or a name the class does not
+    /// declare, is an input error (see [`ClassViewReport`]'s own codes).
+    pub fn class_view(
+        &self,
+        snapshot: &ArtifactSnapshot,
+        scope: &PhysicalScope,
+        request: &ClassViewRequest,
+        budget: &mut Budget,
+    ) -> Result<OperationOutcome<ClassViewReport>> {
+        let view = PhysicalView {
+            snapshot: snapshot.id().clone(),
+            scope: scope.clone(),
+        };
+        let mut execution = ExecutionReport::Complete {
+            usage: budget.usage(),
+        };
+        let mut diagnostics = Vec::new();
+        let (read, search_coverage, class_item) = match bind_class(
+            snapshot,
+            scope,
+            &request.class,
+            &mut execution,
+            &mut diagnostics,
+            budget,
+        )? {
+            ClassBinding::Bound(bound) => (bound.read, bound.search_coverage, bound.class_item),
+            ClassBinding::Ambiguous(candidates) => {
+                return Ok(OperationOutcome::Ambiguous(candidates));
+            }
+        };
+        let ClassContentItem::ClassDeclaration(declaration) = &read.class else {
+            unreachable!("a class read publishes a class declaration item")
+        };
+        let definition = declaration.definition.clone();
+        let mut items = Vec::new();
+        if let Some(class_item) = class_item {
+            items.push(class_item);
+        } else {
+            // The search confirmed the class but could not publish its own item (a refused
+            // `result_items` charge): the view keeps the identity and the stop, and publishes no
+            // member either, exactly like the listing entries whose item charge was refused.
+            return Ok(OperationOutcome::Performed(ClassViewReport {
+                view,
+                class: definition,
+                items,
+                bodies: Vec::new(),
+                limits: budget.limits().clone(),
+                usage: budget.usage(),
+                coverage: class_view_coverage(search_coverage.as_ref(), &read.facts, false),
+                execution: with_usage(execution, budget.usage()),
+                diagnostics,
+            }));
+        }
+        let class_provenance = Some(definition_provenance(&definition));
+        // The member items of the same read: fields in declaration order, then methods, each
+        // charged as the item it is, exactly like the member listing that publishes them.
+        let mut refused = false;
+        for (index, field) in read.facts.fields.iter().enumerate() {
+            if let Err(error) = charge_item(budget) {
+                merge_execution(&mut execution, stop_execution(&error, budget));
+                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                refused = true;
+                break;
+            }
+            items.push(field_item(&definition, index, field)?);
+        }
+        if !refused {
+            for (index, method) in read.facts.methods.iter().enumerate() {
+                if let Err(error) = charge_item(budget) {
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    refused = true;
+                    break;
+                }
+                items.push(method_item(&definition, index, method)?);
+            }
+        }
+        // The bodies the request asked for: every reference is resolved against this one listing
+        // before any body is decoded, so a name that matches several descriptors answers with the
+        // candidates and reads nothing, and the published results keep the request's own order.
+        let mut bodies = Vec::new();
+        if !refused {
+            let mut resolutions = Vec::new();
+            for body in &request.bodies {
+                match resolve_body_ref(&read, body)? {
+                    BodyResolution::Method(method, member) => {
+                        resolutions.push(BodyResolution::Method(method, member));
+                    }
+                    BodyResolution::NotReached(stop) => {
+                        resolutions.push(BodyResolution::NotReached(stop));
+                    }
+                    BodyResolution::Ambiguous { query, candidates } => {
+                        return Ok(OperationOutcome::Ambiguous(Box::new(TargetCandidates {
+                            query,
+                            candidates,
+                            limits: budget.limits().clone(),
+                            coverage: class_view_coverage(
+                                search_coverage.as_ref(),
+                                &read.facts,
+                                false,
+                            ),
+                            execution: with_usage(execution, budget.usage()),
+                            diagnostics,
+                        })));
+                    }
+                }
+            }
+            for (position, resolution) in resolutions.into_iter().enumerate() {
+                let reference = request
+                    .bodies
+                    .get(position)
+                    .expect("one resolution per requested body");
+                let body = match resolution {
+                    BodyResolution::Method(method, member) => {
+                        match body_result(
+                            &definition,
+                            &read.bytes,
+                            &method,
+                            &member,
+                            reference,
+                            budget,
+                        ) {
+                            Ok(body) => body,
+                            Err(error) => {
+                                merge_execution(&mut execution, stop_execution(&error, budget));
+                                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                                break;
+                            }
+                        }
+                    }
+                    BodyResolution::NotReached(stop) => ClassViewBody::Refused {
+                        reference: reference.clone(),
+                        method: None,
+                        execution: member_stop_execution(&stop, budget),
+                        diagnostics: vec![member_stop_diagnostic(&definition, &stop)],
+                    },
+                    BodyResolution::Ambiguous { .. } => {
+                        unreachable!("an ambiguity returned before any body was published")
+                    }
+                };
+                if let Err(error) = charge_item(budget) {
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                    break;
+                }
+                bodies.push(body);
+            }
+        }
+        if let Some(stop) = &read.facts.stopped_at {
+            merge_execution(&mut execution, member_stop_execution(stop, budget));
+        }
+        let complete = matches!(execution, ExecutionReport::Complete { .. });
+        Ok(OperationOutcome::Performed(ClassViewReport {
+            view,
+            class: definition,
+            items,
+            bodies,
+            limits: budget.limits().clone(),
+            usage: budget.usage(),
+            coverage: class_view_coverage(search_coverage.as_ref(), &read.facts, complete),
             execution: with_usage(execution, budget.usage()),
             diagnostics,
-        })
+        }))
+    }
+
+    /// Analyzes one method the task way (task 1.2): the target and the environment are the
+    /// request's, the stage set is the operation's own table, and the report publishes both.
+    ///
+    /// The one physical identity is bound by [`bind_method`] — a friendly name searched with the
+    /// navigation rules, or an identity used exactly as given — and the run is
+    /// [`Engine::analyze_method`] with the operation's stage list: the same validation, the same
+    /// schedule, the same stop semantics. The report publishes the stage list it passed, so a
+    /// caller can reproduce the schedule with an explicit
+    /// [`crate::ir::MethodAnalysisRequest`] and read the same stage results.
+    pub fn analyze_target(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &MethodOperationRequest,
+        budget: &mut Budget,
+    ) -> Result<OperationOutcome<MethodOperationReport>> {
+        let operation = MethodOperation::Analysis;
+        let bound = match bind_method(content, request, budget)? {
+            MethodBinding::Bound(bound) => bound,
+            MethodBinding::Ambiguous(candidates) => {
+                return Ok(OperationOutcome::Ambiguous(candidates));
+            }
+        };
+        let BoundMethod {
+            method,
+            environment,
+        } = *bound;
+        let stages = operation.stages().to_vec();
+        let analysis = jarde_jvm::analyze_method(
+            content,
+            &crate::ir::MethodAnalysisRequest {
+                environment,
+                method: method.clone(),
+                stages: stages.clone(),
+            },
+            budget,
+        )?;
+        Ok(OperationOutcome::Performed(MethodOperationReport {
+            operation,
+            method,
+            stages,
+            limits: budget.limits().clone(),
+            usage: budget.usage(),
+            analysis,
+        }))
+    }
+
+    /// Recovers one method the task way (task 1.2, task 3.4): the target and the environment are the
+    /// request's, the stage set is the operation's own table, and the same run's report is presented
+    /// content-first.
+    ///
+    /// The run is [`Engine::recover_method`] under the operation's stage list — one analysis run and
+    /// the presentation of that run's own payload — so the analysis report, the recovery report, the
+    /// on-demand callee evidence and the [`RecoveryPresentation`] all describe one request. The
+    /// report publishes the stage list and the effective configuration beside them.
+    pub fn recover_target(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &MethodOperationRequest,
+        budget: &mut Budget,
+    ) -> Result<OperationOutcome<MethodRecoveryReport>> {
+        let operation = MethodOperation::Recovery;
+        let bound = match bind_method(content, request, budget)? {
+            MethodBinding::Bound(bound) => bound,
+            MethodBinding::Ambiguous(candidates) => {
+                return Ok(OperationOutcome::Ambiguous(candidates));
+            }
+        };
+        let BoundMethod {
+            method,
+            environment,
+        } = *bound;
+        let stages = operation.stages().to_vec();
+        let recovered = self.recover_method(
+            content,
+            &crate::ir::MethodAnalysisRequest {
+                environment,
+                method: method.clone(),
+                stages: stages.clone(),
+            },
+            budget,
+        )?;
+        let presentation = RecoveryPresentation::of(recovered.recovery());
+        Ok(OperationOutcome::Performed(MethodRecoveryReport {
+            operation,
+            method,
+            stages,
+            limits: budget.limits().clone(),
+            usage: budget.usage(),
+            recovered,
+            presentation,
+        }))
     }
 }
 
@@ -1231,15 +1435,18 @@ struct ClassCandidate<'a> {
     record: Option<&'a PhysicalEntry>,
 }
 
-/// One confirmed class read: the class-level item, the member facts the *same* read established, and
-/// the diagnostics that read itself published.
+/// One confirmed class read: the class-level item, the member facts the *same* read established, the
+/// diagnostics that read itself published, and the very bytes it materialized.
 ///
 /// The facts travel with the item because a caller that asks for members derives them from *this*
-/// read — one read of the class per request, never a second opinion about the same bytes.
+/// read — one read of the class per request, never a second opinion about the same bytes. The bytes
+/// travel with both because a class view decodes the bodies it was asked for out of them instead of
+/// reading the same class a second time.
 struct ConfirmedRead {
     class: ClassContentItem,
     facts: ClassMemberFacts,
     diagnostics: Vec<Diagnostic>,
+    bytes: Vec<u8>,
 }
 
 /// Enumerates the entries one declared scope holds, under the reader's own accounting.
@@ -1487,6 +1694,7 @@ fn read_class_declaration(
         class,
         facts,
         diagnostics,
+        bytes,
     })
 }
 
@@ -2249,4 +2457,1789 @@ fn debug_locals(
             )
         })
         .collect()
+}
+
+// ---------------------------------------------------------------------------------------------
+// Task-oriented operations: one target, one bounded budget, one explicit environment
+// ---------------------------------------------------------------------------------------------
+//
+// The layer above the entry points. A caller states *what it wants* — this class, this method,
+// this body, this declaration's references — and the library answers with the physical identity it
+// bound, the stages it really scheduled, the complete configuration it ran under and the report of
+// the run itself. Nothing here re-implements navigation, resolution, analysis or recovery: the
+// selection consumes [`Engine::find_targets`]'s own rules, the budget is the existing [`Budget`]
+// under bounded defaults, and every report publishes the layer's own planes rather than a second
+// copy of them.
+
+/// A class a task-oriented request names: the friendly way, or an identity the caller already holds.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub enum ClassRef {
+    /// One class name in either accepted spelling, matched by the navigation rules over the
+    /// request's scope. Several definitions of the name are all returned, never elected.
+    Name { class: ClassNameQuery },
+    /// The physical definition a listing handed back, used exactly as given: its location, class
+    /// bytes and variant are verified before it is read, and a definition of another snapshot is
+    /// an input error rather than a same-named substitute.
+    Definition { definition: PhysicalDefinitionId },
+}
+
+/// A method a task-oriented request names: the friendly way, or an identity the caller already
+/// holds.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub enum MethodRef {
+    /// A class name plus the member's raw name and, when the caller has one, its raw descriptor.
+    /// Several declared overloads are all returned as candidates; the display name never becomes
+    /// the identity.
+    Name {
+        class: ClassNameQuery,
+        name: JvmBytes,
+        descriptor: Option<JvmBytes>,
+    },
+    /// The physical method identity a listing handed back, used exactly as given.
+    Method { method: PhysicalMethodId },
+}
+
+/// One member body a class view asks for on demand.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub enum BodyRef {
+    /// A raw method name and, when the caller has one, its raw descriptor. The name is resolved
+    /// against the class view's own member listing; every declared descriptor is a candidate until
+    /// one is given.
+    Name {
+        name: JvmBytes,
+        descriptor: Option<JvmBytes>,
+    },
+    /// The physical method identity a member listing handed back.
+    Method { method: PhysicalMethodId },
+}
+
+/// The candidates one friendly name answered with, and the physical basis for choosing between
+/// them.
+///
+/// An ambiguity is an answer, not a failure: the operation that returned this executed nothing —
+/// no body was read, no stage ran — and the caller continues by handing one candidate's own
+/// identity back ([`ClassRef::Definition`], [`MethodRef::Method`], [`BodyRef::Method`]).
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct TargetCandidates {
+    /// The query as the search answered it, spelling included.
+    pub query: NavigationQuery,
+    /// Every physical definition or member the name bound, each with its own identity.
+    pub candidates: Vec<ClassContentItem>,
+    /// The complete effective limits the selection ran under.
+    pub limits: Limits,
+    pub coverage: Coverage,
+    pub execution: ExecutionReport,
+    pub diagnostics: Vec<Diagnostic>,
+}
+
+/// What one task-oriented operation did with its target.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(tag = "outcome", rename_all = "snake_case")]
+pub enum OperationOutcome<T> {
+    /// Exactly one physical identity was bound and the operation ran over it.
+    Performed(T),
+    /// The friendly name matched more than one physical definition: the operation returns them and
+    /// **executed nothing**. Boxed because a candidate list is many items and an outcome of a
+    /// performed operation is not.
+    Ambiguous(Box<TargetCandidates>),
+}
+
+// ---------------------------------------------------------------------------------------------
+// The bounded default budget and its few overrides
+// ---------------------------------------------------------------------------------------------
+
+/// The budget dimensions a task-oriented request may override, by their snake_case names.
+///
+/// The set is deliberately short: it holds the counts a task-level caller tunes in practice —
+/// output size, wall clock and the two read attempts that dominate a view — and every other
+/// dimension keeps its bounded default. A name outside this list is an input error
+/// (`budget_override_dimension_unknown`), never a silently ignored field.
+pub const OVERRIDABLE_BUDGET_DIMENSIONS: [&str; 5] = [
+    "output_bytes",
+    "elapsed_millis",
+    "result_items",
+    "class_headers",
+    "method_bodies",
+];
+
+/// One explicit override of the bounded default budget ([`task_limits`]).
+///
+/// An override replaces exactly one dimension and leaves the others at their defaults. A limit of
+/// zero is rejected (`budget_override_invalid`): a dimension that cannot fund one unit of work
+/// would make every operation stop before its first charge, which is a degenerate request rather
+/// than a tighter budget.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(tag = "dimension", rename_all = "snake_case", deny_unknown_fields)]
+pub enum BudgetOverride {
+    OutputBytes { limit: u64 },
+    ElapsedMillis { limit: u64 },
+    ResultItems { limit: u64 },
+    ClassHeaders { limit: u64 },
+    MethodBodies { limit: u64 },
+}
+
+impl BudgetOverride {
+    /// One override named by its snake_case dimension, checked against the closed set.
+    pub fn new(dimension: &str, limit: u64) -> Result<Self> {
+        let value = match dimension {
+            "output_bytes" => Self::OutputBytes { limit },
+            "elapsed_millis" => Self::ElapsedMillis { limit },
+            "result_items" => Self::ResultItems { limit },
+            "class_headers" => Self::ClassHeaders { limit },
+            "method_bodies" => Self::MethodBodies { limit },
+            other => {
+                return Err(Error::invalid_input(
+                    "budget_override_dimension_unknown",
+                    format!(
+                        "`{other}` is not one of the budget dimensions a task-oriented request may \
+                         override ({}); every other dimension keeps its bounded default",
+                        OVERRIDABLE_BUDGET_DIMENSIONS.join(", ")
+                    ),
+                ));
+            }
+        };
+        value.check_limit()?;
+        Ok(value)
+    }
+
+    /// The snake_case name of the dimension this override replaces.
+    pub const fn dimension_code(self) -> &'static str {
+        match self {
+            Self::OutputBytes { .. } => "output_bytes",
+            Self::ElapsedMillis { .. } => "elapsed_millis",
+            Self::ResultItems { .. } => "result_items",
+            Self::ClassHeaders { .. } => "class_headers",
+            Self::MethodBodies { .. } => "method_bodies",
+        }
+    }
+
+    /// The limit this override states.
+    pub const fn limit(self) -> u64 {
+        match self {
+            Self::OutputBytes { limit }
+            | Self::ElapsedMillis { limit }
+            | Self::ResultItems { limit }
+            | Self::ClassHeaders { limit }
+            | Self::MethodBodies { limit } => limit,
+        }
+    }
+
+    fn check_limit(self) -> Result<()> {
+        if self.limit() == 0 {
+            return Err(Error::invalid_input(
+                "budget_override_invalid",
+                format!(
+                    "the override of `{}` is 0; a dimension that cannot fund one unit of work is \
+                     not a budget — raise the limit or leave the bounded default in place",
+                    self.dimension_code()
+                ),
+            ));
+        }
+        Ok(())
+    }
+}
+
+/// The complete effective limits one task-oriented request runs under: bounded defaults, then the
+/// caller's few explicit overrides.
+///
+/// This is the one place the default set exists, and it is the [`Limits`] a task entry point runs
+/// under (see [`task_budget`]). Every dimension is bounded; no dimension is unbounded and no
+/// override may be unknown or zero — both are input errors, and neither falls back to a default
+/// silently.
+pub fn task_limits(overrides: &[BudgetOverride]) -> Result<Limits> {
+    let mut limits = Limits {
+        input_bytes: 1 << 26,
+        archive_entries: 1 << 16,
+        entry_bytes: 1 << 26,
+        read_bytes: 1 << 26,
+        class_bytes: 1 << 26,
+        attribute_bytes: 1 << 26,
+        code_bytes: 1 << 24,
+        result_items: 1 << 16,
+        output_bytes: 1 << 24,
+        class_headers: 4096,
+        method_bodies: 4096,
+        ir_items: 1 << 22,
+        ir_edges: 1 << 22,
+        analysis_steps: 1 << 22,
+        normalization_clones: 1 << 20,
+        nested_depth: 4,
+        dependency_depth: 8,
+        elapsed_millis: 30_000,
+    };
+    for over in overrides {
+        over.check_limit()?;
+        match over {
+            BudgetOverride::OutputBytes { limit } => limits.output_bytes = *limit,
+            BudgetOverride::ElapsedMillis { limit } => limits.elapsed_millis = *limit,
+            BudgetOverride::ResultItems { limit } => limits.result_items = *limit,
+            BudgetOverride::ClassHeaders { limit } => limits.class_headers = *limit,
+            BudgetOverride::MethodBodies { limit } => limits.method_bodies = *limit,
+        }
+    }
+    Ok(limits)
+}
+
+/// The same effective configuration as the [`Budget`] a task entry point takes.
+///
+/// A caller that wants a cancellation token, a facts cache or a second observation of the same
+/// limits builds its budget from [`task_limits`] with the existing [`Budget`] constructors; this
+/// is the shortcut for the ordinary case.
+pub fn task_budget(overrides: &[BudgetOverride]) -> Result<Budget> {
+    Ok(Budget::new(task_limits(overrides)?))
+}
+
+// ---------------------------------------------------------------------------------------------
+// Environment policies: three explicit shapes, and no inferred classpath
+// ---------------------------------------------------------------------------------------------
+
+/// One explicit environment shape a task-oriented request declares.
+///
+/// Each policy declares its roots, delegation and module mode from the caller's own statement and
+/// nothing else: no Manifest `Class-Path` entry, no nested library and no detected layout ever
+/// generates a root. The built environment is the very declaration [`EnvironmentRequest::build`]
+/// returns, so a caller can validate it with the engine's own
+/// [`crate::environment::validate_environment`] and compare it with a hand-written one.
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub enum EnvironmentPolicy {
+    /// The request's own snapshot is one whole CLASS file: the root is that snapshot, at its own
+    /// declared name, and no container or entry identity is fabricated for it.
+    SingleClass,
+    /// The request's own snapshot is a plain JAR: the root is that snapshot's own root container at
+    /// the container's own root (empty prefix). A nested library the archive happens to hold is
+    /// **not** activated: a class inside it still needs the explicit artifact-tree root that names
+    /// its container.
+    PlainJar,
+    /// The caller's own roots, in the caller's order: the search takes the first position that
+    /// provides a name, so the declaration order decides between same-named definitions and is the
+    /// reason such a lookup is not `Ambiguous`.
+    ExplicitClasspath { roots: Vec<LoadRoot> },
+    /// A container layout this stage is asked to organize roots for. It provides none: a layout
+    /// detection is evidence about paths, not a load policy, and a root set that claimed to equal
+    /// the container's own loading would be a claim this engine cannot make.
+    Layout { mode: LayoutMode },
+}
+
+/// One environment declaration: the physical view it belongs to, the policy that states its roots,
+/// and the runtime profile it runs under.
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EnvironmentRequest {
+    /// The snapshot (and scope) the runtime view names — the artifact this request is about.
+    pub snapshot: SnapshotId,
+    pub scope: PhysicalScope,
+    pub policy: EnvironmentPolicy,
+    pub profile: RuntimeProfile,
+    /// The one loader that owns the one domain this request declares.
+    pub loader: LoaderId,
+}
+
+impl EnvironmentRequest {
+    /// Builds the [`ResolutionEnvironment`] this request declares.
+    ///
+    /// The three provided policies build the same declaration a caller would write by hand for the
+    /// same shapes: one loader, one domain, no parent, `parent_first` delegation, `class_path`
+    /// module mode, no provider, and roots that name exactly the caller's content. `single_class`
+    /// and `plain_jar` check the snapshot's own kind and refuse a mismatch instead of inventing a
+    /// root for bytes of another shape. A root that names content the request did not provide is
+    /// left in the declaration for the existing validator to report
+    /// (`content_not_provided`/`unreadable_root`): a rejected environment keeps its honest
+    /// unavailable state and its original symbols rather than being silently rewritten.
+    ///
+    /// Kind checks are skipped for a snapshot the request did not provide, because the validator
+    /// owns that finding; and a `layout` policy is `environment_policy_layout_not_provided` — an
+    /// explicit unsupported answer, never a set of guessed roots.
+    pub fn build(&self, content: &[ArtifactSnapshot]) -> Result<ResolutionEnvironment> {
+        let provided = content
+            .iter()
+            .find(|candidate| candidate.id() == &self.snapshot);
+        let roots = match &self.policy {
+            EnvironmentPolicy::SingleClass => {
+                require_policy_kind(
+                    provided,
+                    self,
+                    ArtifactKind::StandaloneClass,
+                    "single_class",
+                )?;
+                vec![LoadRoot::StandaloneClass {
+                    snapshot: self.snapshot.clone(),
+                }]
+            }
+            EnvironmentPolicy::PlainJar => {
+                require_policy_kind(provided, self, ArtifactKind::Zip, "plain_jar")?;
+                vec![LoadRoot::Container {
+                    origin: ContainerOrigin {
+                        snapshot: self.snapshot.clone(),
+                        root_container: ContainerId(ROOT_CONTAINER.to_owned()),
+                        steps: Vec::new(),
+                    },
+                    prefix: ArchiveNameBytes(Vec::new()),
+                }]
+            }
+            EnvironmentPolicy::ExplicitClasspath { roots } => roots.clone(),
+            EnvironmentPolicy::Layout { mode } => {
+                return Err(Error::unsupported(
+                    "environment_policy_layout_not_provided",
+                    format!(
+                        "this stage provides no `{}` layout policy: roots are never organized from \
+                         a detected `WEB-INF/classes/` or `BOOT-INF` layout, and a set of roots \
+                         that claimed to equal the container's own loading is not an answer this \
+                         engine may give",
+                        layout_code(mode)
+                    ),
+                ));
+            }
+        };
+        let domain = LoadDomain {
+            loader: self.loader.clone(),
+            parent_loader: None,
+            delegation: DelegationPolicy::ParentFirst,
+            roots,
+            module_mode: ModuleMode::ClassPath,
+            external_override: RuntimeUncertainty::None,
+            runtime_transformation: RuntimeUncertainty::None,
+        };
+        Ok(ResolutionEnvironment {
+            runtime: RuntimeView {
+                physical: PhysicalView {
+                    snapshot: self.snapshot.clone(),
+                    scope: self.scope.clone(),
+                },
+                profile: self.profile.clone(),
+                load_domain: domain.clone(),
+            },
+            domains: vec![domain],
+            providers: Vec::new(),
+        })
+    }
+}
+
+/// One policy's own root shape against the snapshot's actual kind.
+///
+/// `Ok(())` when the snapshot was provided and has the kind the policy names, and also when the
+/// snapshot was not provided at all — that finding belongs to the environment validator, which
+/// reports it as a problem on the same declaration.
+fn require_policy_kind(
+    provided: Option<&ArtifactSnapshot>,
+    request: &EnvironmentRequest,
+    expected: ArtifactKind,
+    policy: &str,
+) -> Result<()> {
+    let Some(snapshot) = provided else {
+        return Ok(());
+    };
+    if snapshot.kind() == expected {
+        return Ok(());
+    }
+    Err(Error::invalid_input(
+        "environment_policy_snapshot_kind_mismatch",
+        format!(
+            "the `{policy}` policy is declared over snapshot `{}`, whose kind is not the one the \
+             policy names; a root is never invented for another kind of bytes",
+            request.snapshot.0
+        ),
+    ))
+}
+
+/// The snake_case name of one declared layout mode.
+fn layout_code(mode: &LayoutMode) -> String {
+    match mode {
+        LayoutMode::Generic => "generic".to_owned(),
+        LayoutMode::War => "war".to_owned(),
+        LayoutMode::SpringBoot => "spring_boot".to_owned(),
+        LayoutMode::Custom { id } => format!("custom ({id})"),
+        LayoutMode::Unknown => "unknown".to_owned(),
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// The class view: one class read, one member listing, on-demand bodies
+// ---------------------------------------------------------------------------------------------
+
+/// One class view request.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ClassViewRequest {
+    /// The class to view: a friendly name or an identity the caller holds.
+    pub class: ClassRef,
+    /// The method bodies to read on demand, in request order. Empty reads no body at all, and the
+    /// whole request still charges exactly one class header and one member walk.
+    pub bodies: Vec<BodyRef>,
+}
+
+/// The class one view read, its members and the bodies it decoded on demand.
+///
+/// `items` is the same vocabulary a member listing publishes — the class-level item first, then its
+/// fields, then its methods, each charged as one result item — and `bodies` holds one entry per
+/// requested body, in request order. `class` is the identity the view bound: the definition the
+/// name search confirmed, or the identity the caller gave, verified against this snapshot's bytes.
+///
+/// The planes are this view's own: `limits` is the complete effective configuration the request ran
+/// under and `usage` is what that configuration was charged, `coverage` states the candidate search
+/// (when the class was named) beside the member tables under their own labels, and `execution`
+/// merges the search, the class read and every body-level stop. Nothing here is a resolution, a
+/// recovery or a verification statement, and no analysis plane (`ir_items`, `ir_edges`,
+/// `analysis_steps`, `normalization_clones`) moves.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ClassViewReport {
+    pub view: PhysicalView,
+    /// The physical definition this view is of.
+    pub class: PhysicalDefinitionId,
+    pub items: Vec<ClassContentItem>,
+    pub bodies: Vec<ClassViewBody>,
+    pub limits: Limits,
+    pub usage: UsageSnapshot,
+    pub coverage: Coverage,
+    pub execution: ExecutionReport,
+    pub diagnostics: Vec<Diagnostic>,
+}
+
+impl ClassViewReport {
+    /// The class-level facts of this view, when the item itself was published.
+    pub fn declaration(&self) -> Option<&ClassDeclarationItem> {
+        self.items.iter().find_map(|item| match item {
+            ClassContentItem::ClassDeclaration(class) => Some(class),
+            ClassContentItem::Field(_) | ClassContentItem::Method(_) => None,
+        })
+    }
+
+    /// The field records this view published, in declaration order.
+    pub fn fields(&self) -> impl Iterator<Item = &FieldItem> {
+        self.items.iter().filter_map(|item| match item {
+            ClassContentItem::Field(field) => Some(field),
+            ClassContentItem::ClassDeclaration(_) | ClassContentItem::Method(_) => None,
+        })
+    }
+
+    /// The method records this view published, in declaration order.
+    pub fn methods(&self) -> impl Iterator<Item = &MethodItem> {
+        self.items.iter().filter_map(|item| match item {
+            ClassContentItem::Method(method) => Some(method),
+            ClassContentItem::ClassDeclaration(_) | ClassContentItem::Field(_) => None,
+        })
+    }
+
+    /// The body read of one requested method, when the request asked for it.
+    pub fn body(&self, method: &PhysicalMethodId) -> Option<&ClassViewBody> {
+        self.bodies
+            .iter()
+            .find(|body| body.method() == Some(method))
+    }
+
+    /// The body result of one requested reference, when the request asked for it.
+    pub fn reference_body(&self, reference: &BodyRef) -> Option<&ClassViewBody> {
+        self.bodies
+            .iter()
+            .find(|body| &body.reference() == reference)
+    }
+}
+
+/// One on-demand method body of a class view.
+///
+/// Every variant keeps the member's identity, so a body result is bound to exactly one member of
+/// the class the view read. A member-level failure is isolated to its own variant and does not
+/// erase the class, the members or the other bodies (A13).
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+#[allow(
+    clippy::large_enum_variant,
+    reason = "a report value built once per request, where boxing a variant would only move the \
+              body's own fields behind a pointer for pattern matches to undo"
+)]
+pub enum ClassViewBody {
+    /// The member's own `Code` attribute was decoded, out of the very bytes the view's one class
+    /// read materialized. `stages` are that decode's own two phases, `coverage` is that decode's
+    /// plane and `execution` its stop or completion — none of them is an analysis stage result.
+    Read {
+        method: PhysicalMethodId,
+        stages: Vec<BodyStageResult>,
+        max_stack: u16,
+        max_locals: u16,
+        code_span: ByteSpan,
+        instructions: Vec<InstructionFact>,
+        exception_handlers: Vec<ExceptionHandlerFact>,
+        exception_handler_count: u32,
+        stopped_at: Option<BytecodeStop>,
+        coverage: Coverage,
+        execution: ExecutionReport,
+        diagnostics: Vec<Diagnostic>,
+    },
+    /// The member declares no `Code` attribute. `no_body_kind` is `Some` exactly when the member's
+    /// own flags declare it `abstract` or `native`; it is `None` for a member that carries neither
+    /// flag and still declares no body, which this value states as the bytes state it. No empty
+    /// body is invented and no `method_bodies` attempt is charged.
+    NotDeclared {
+        method: PhysicalMethodId,
+        no_body_kind: Option<NoBodyKind>,
+    },
+    /// One member-level refusal, isolated to this member: a read that failed after the reference
+    /// resolved, or a member the class's member walk did not reach because a damaged record stopped
+    /// it. The other bodies and the class declaration keep their own results (A13).
+    ///
+    /// `reference` is the request's own reference as it was made, and `method` is the identity it
+    /// resolved to when it resolved at all: a member the walk never reached has no identity this
+    /// layer may state, so none is invented for it.
+    Refused {
+        reference: BodyRef,
+        method: Option<PhysicalMethodId>,
+        execution: ExecutionReport,
+        diagnostics: Vec<Diagnostic>,
+    },
+}
+
+impl ClassViewBody {
+    /// The member identity this body result is bound to, when it has one: every read, every
+    /// no-body declaration, and a refusal whose reference resolved before the read failed.
+    pub fn method(&self) -> Option<&PhysicalMethodId> {
+        match self {
+            Self::Read { method, .. } | Self::NotDeclared { method, .. } => Some(method),
+            Self::Refused { method, .. } => method.as_ref(),
+        }
+    }
+
+    /// The request's own body reference, exactly as it was made.
+    pub fn reference(&self) -> BodyRef {
+        match self {
+            Self::Read { method, .. } | Self::NotDeclared { method, .. } => BodyRef::Method {
+                method: method.clone(),
+            },
+            Self::Refused { reference, .. } => reference.clone(),
+        }
+    }
+}
+
+/// One phase of a body read, in the reader's own two-phase order: the exception handlers are read
+/// before the instruction stream.
+///
+/// This is the reader's phase vocabulary of a single body decode, not the analysis pipeline's
+/// [`AnalysisStage`]: a class view decodes bodies and never runs the pipeline.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct BodyStageResult {
+    pub phase: BytecodeStopPhase,
+    pub state: BodyStageState,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
+pub enum BodyStageState {
+    /// The earlier phase stopped, so this one was never entered.
+    NotReached,
+    /// The phase ran to the end of its own range.
+    Completed,
+    /// The phase stopped under the reader's own code.
+    Stopped { code: String },
+}
+
+// ---------------------------------------------------------------------------------------------
+// Task-oriented method operations: the operation picks its stages and publishes them
+// ---------------------------------------------------------------------------------------------
+
+/// The task-oriented method operations, each with its own fixed stage table.
+///
+/// The caller states the operation, never a stage list: the table below is the library's, it is
+/// published in the report the request produced, and the same list passed explicitly to
+/// [`Engine::analyze_method`] reproduces the same schedule. The explicit stage list stays the
+/// low-level control, with its own validation and stop semantics, unchanged.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MethodOperation {
+    /// The method analysis alone: the run's own report, payload not presented.
+    Analysis,
+    /// The method analysis and the presentation of the same run's payload.
+    Recovery,
+}
+
+impl MethodOperation {
+    pub const ALL: [Self; 2] = [Self::Analysis, Self::Recovery];
+
+    /// The stages this operation schedules, in the fixed phase order.
+    ///
+    /// Both operations of today's table schedule the whole fixed pipeline: the recovery layer reads
+    /// the canonical, SSA and code tables of the payload and the analysis operation hands the same
+    /// payload out, so neither can stop short of `ssa`. An operation whose answer needed a shorter
+    /// prefix declares its own set here; the entry points never take a stage list from the caller.
+    pub fn stages(self) -> &'static [AnalysisStage] {
+        &AnalysisStage::ALL
+    }
+
+    /// The snake_case name of this operation.
+    pub const fn code(self) -> &'static str {
+        match self {
+            Self::Analysis => "analysis",
+            Self::Recovery => "recovery",
+        }
+    }
+}
+
+/// One task-oriented method request: the target and the environment it runs under.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MethodOperationRequest {
+    pub method: MethodRef,
+    pub environment: EnvironmentRequest,
+}
+
+/// One analysis run performed by a task-oriented operation, with the configuration it ran under.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MethodOperationReport {
+    pub operation: MethodOperation,
+    /// The physical identity the operation bound and ran over.
+    pub method: PhysicalMethodId,
+    /// The stages this operation's table scheduled, in phase order — the very list the run was
+    /// asked for explicitly.
+    pub stages: Vec<AnalysisStage>,
+    /// The complete effective limits of this request.
+    pub limits: Limits,
+    pub usage: UsageSnapshot,
+    pub analysis: crate::ir::MethodAnalysisReport,
+}
+
+/// One recovery run performed by a task-oriented operation: the same run's analysis, presentation
+/// and on-demand callee evidence, beside the configuration and stages they ran under.
+#[derive(Clone, Debug, Serialize)]
+pub struct MethodRecoveryReport {
+    pub operation: MethodOperation,
+    pub method: PhysicalMethodId,
+    pub stages: Vec<AnalysisStage>,
+    pub limits: Limits,
+    pub usage: UsageSnapshot,
+    pub recovered: RecoveredMethod,
+    /// The presentation of [`Self::recovered`]'s own recovery report, content first.
+    pub presentation: RecoveryPresentation,
+}
+
+// ---------------------------------------------------------------------------------------------
+// Reference results: organised by owning method, derivation classes kept apart
+// ---------------------------------------------------------------------------------------------
+
+/// The derivation class one reference finding was produced under.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ReferenceFindingClass {
+    /// A constant-pool occurrence no consumer used: a candidate, never a call.
+    ConstantPoolCandidate,
+    /// A use-site a consumer really used, or a bootstrap edge of one; the raw symbol stays.
+    StructuralReference,
+    /// A use-site resolved to the declaration the caller named, under the stated environment.
+    ResolvedDeclaration,
+}
+
+/// One reference finding, keeping the shape the scan that produced it published.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum ReferenceFinding {
+    /// From a [`QueryReport`]: a constant-pool occurrence with no consumer.
+    ConstantPoolCandidate { item: XrefItem },
+    /// From a [`QueryReport`]: a use-site a consumer really used, or a bootstrap edge. The item's
+    /// own `derivation` still tells the two apart.
+    StructuralReference { item: XrefItem },
+    /// From a [`DeclarationRefReport`]: a use-site that resolved to the requested declaration under
+    /// the scan's explicit environment, with its own `state` and `resolved` evidence untouched.
+    ResolvedDeclaration { item: DeclarationRefItem },
+}
+
+impl ReferenceFinding {
+    /// The derivation class of this finding.
+    pub fn class(&self) -> ReferenceFindingClass {
+        match self {
+            Self::ConstantPoolCandidate { .. } => ReferenceFindingClass::ConstantPoolCandidate,
+            Self::StructuralReference { .. } => ReferenceFindingClass::StructuralReference,
+            Self::ResolvedDeclaration { .. } => ReferenceFindingClass::ResolvedDeclaration,
+        }
+    }
+
+    /// The physical origin this finding keeps: a use-site provenance for a query item, the scan's
+    /// own origin set for a declaration item.
+    pub fn bci(&self) -> Option<u32> {
+        match self {
+            Self::ConstantPoolCandidate { item } | Self::StructuralReference { item } => {
+                item.evidence.bci
+            }
+            Self::ResolvedDeclaration { item } => {
+                item.origin.members.iter().find_map(|member| match member {
+                    OriginMember::MethodPoint { bci, .. } => Some(*bci),
+                    OriginMember::ClassFile { .. } | OriginMember::ClassRange { .. } => None,
+                })
+            }
+        }
+    }
+}
+
+/// The findings one owning method holds, in first-appearance order.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MethodReferences {
+    /// The physical method that owns every finding in this group.
+    pub method: PhysicalMethodId,
+    pub findings: Vec<ReferenceFinding>,
+}
+
+/// The planes of the scan a [`ReferenceGrouping`] organises, exactly as the scan published them.
+///
+/// One report is one source: a grouping never merges two scans and never re-derives a plane. The
+/// item list is the only thing the grouping restructures, and every item it moved is here complete
+/// — including an unresolved candidate's count and diagnostics, which stay with the declaration
+/// source and are never completed by a group.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+#[allow(
+    clippy::large_enum_variant,
+    reason = "one source report per grouping; a wire-shaped document whose variants carry their \
+              scan's own planes, with nothing to gain from indirection"
+)]
+pub enum ReferenceSource {
+    Query {
+        physical: PhysicalView,
+        relation: QueryRelation,
+        consumers: ConsumerSchema,
+        analysis: QueryAnalysis,
+        page: QueryPage,
+        coverage: QueryCoverage,
+        execution: ExecutionReport,
+        diagnostics: Vec<Diagnostic>,
+    },
+    Declaration {
+        environment_identity: EnvironmentIdentity,
+        environment_problems: Vec<EnvironmentProblem>,
+        declaration: ResolvedMemberRef,
+        scope: PhysicalScope,
+        consumers: ConsumerSchema,
+        unsupported_categories: Vec<ConsumerKind>,
+        analysis: ResolutionAnalysis,
+        unresolved_candidates: u64,
+        has_more: bool,
+        returned_items: u64,
+        reads: Vec<HeaderRead>,
+        coverage: Coverage,
+        execution: ExecutionReport,
+        diagnostics: Vec<Diagnostic>,
+    },
+}
+
+/// One reference result set organised by the method that owns each hit.
+///
+/// A hit whose position is inside a method body is grouped under that method's physical identity,
+/// with its BCI and its own evidence; a class-level or entry/resource position keeps its own place
+/// and is assigned to no method. No item is renamed, no derivation class is flattened and no
+/// finding is dropped: [`Self::source`] holds the scan's own planes and every item the scan
+/// published appears exactly once across the groups.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ReferenceGrouping {
+    pub source: ReferenceSource,
+    /// Body hits, grouped by owning method, in first-appearance order.
+    pub methods: Vec<MethodReferences>,
+    /// Class-level hits, in source order; no method owns them.
+    pub class_level: Vec<ReferenceFinding>,
+    /// Entry and resource hits, in source order; no method owns them.
+    pub resources: Vec<ReferenceFinding>,
+}
+
+impl ReferenceGrouping {
+    /// Organises one query report by owning method.
+    pub fn from_query(report: QueryReport) -> Self {
+        let QueryReport {
+            physical,
+            relation,
+            consumers,
+            analysis,
+            items,
+            page,
+            coverage,
+            execution,
+            diagnostics,
+        } = report;
+        let mut methods = Vec::new();
+        let mut class_level = Vec::new();
+        let mut resources = Vec::new();
+        for item in items {
+            let owner = owner_of_location(&item.source.location);
+            let finding = match item.derivation {
+                XrefDerivation::ConstantPoolCandidate => {
+                    ReferenceFinding::ConstantPoolCandidate { item }
+                }
+                XrefDerivation::StructuralConsumer | XrefDerivation::BootstrapEdge => {
+                    ReferenceFinding::StructuralReference { item }
+                }
+            };
+            place_finding(
+                &mut methods,
+                &mut class_level,
+                &mut resources,
+                owner,
+                finding,
+            );
+        }
+        Self {
+            source: ReferenceSource::Query {
+                physical,
+                relation,
+                consumers,
+                analysis,
+                page,
+                coverage,
+                execution,
+                diagnostics,
+            },
+            methods,
+            class_level,
+            resources,
+        }
+    }
+
+    /// Organises one declaration-reference report by owning method.
+    pub fn from_declaration(report: DeclarationRefReport) -> Self {
+        let DeclarationRefReport {
+            environment_identity,
+            environment_problems,
+            declaration,
+            scope,
+            consumers,
+            unsupported_categories,
+            analysis,
+            items,
+            unresolved_candidates,
+            has_more,
+            returned_items,
+            reads,
+            coverage,
+            execution,
+            diagnostics,
+        } = report;
+        let mut methods = Vec::new();
+        let mut class_level = Vec::new();
+        let mut resources = Vec::new();
+        for item in items {
+            let owners = origin_owners(&item.origin);
+            let finding = ReferenceFinding::ResolvedDeclaration { item };
+            for owner in owners {
+                place_finding(
+                    &mut methods,
+                    &mut class_level,
+                    &mut resources,
+                    owner,
+                    finding.clone(),
+                );
+            }
+        }
+        Self {
+            source: ReferenceSource::Declaration {
+                environment_identity,
+                environment_problems,
+                declaration,
+                scope,
+                consumers,
+                unsupported_categories,
+                analysis,
+                unresolved_candidates,
+                has_more,
+                returned_items,
+                reads,
+                coverage,
+                execution,
+                diagnostics,
+            },
+            methods,
+            class_level,
+            resources,
+        }
+    }
+
+    /// How many findings the grouping holds, across every group and both unowned lists.
+    pub fn finding_count(&self) -> usize {
+        self.methods
+            .iter()
+            .map(|group| group.findings.len())
+            .sum::<usize>()
+            + self.class_level.len()
+            + self.resources.len()
+    }
+}
+
+/// Which method owns one position, or that none does.
+enum FindingOwner {
+    /// Boxed because one owner alternative is one physical identity and the other two carry none.
+    Method(Box<PhysicalMethodId>),
+    ClassLevel,
+    Resource,
+}
+
+fn owner_of_location(location: &Location) -> FindingOwner {
+    match location {
+        Location::Code { method, .. } => FindingOwner::Method(Box::new(method.clone())),
+        Location::ClassOffset { .. } | Location::Attribute { .. } => FindingOwner::ClassLevel,
+        Location::Entry { .. } | Location::Resource { .. } | Location::Container { .. } => {
+            FindingOwner::Resource
+        }
+    }
+}
+
+/// The owners one origin set names: every distinct method point in order, or the class level when
+/// only class-file coordinates are there, or the resource side when there is nothing narrower.
+fn origin_owners(origin: &OriginSet) -> Vec<FindingOwner> {
+    let mut methods: Vec<PhysicalMethodId> = Vec::new();
+    let mut class_level = false;
+    for member in &origin.members {
+        match member {
+            OriginMember::MethodPoint { method, .. } => {
+                if !methods.contains(method) {
+                    methods.push(method.clone());
+                }
+            }
+            OriginMember::ClassFile { .. } | OriginMember::ClassRange { .. } => class_level = true,
+        }
+    }
+    if !methods.is_empty() {
+        methods
+            .into_iter()
+            .map(|method| FindingOwner::Method(Box::new(method)))
+            .collect()
+    } else if class_level {
+        vec![FindingOwner::ClassLevel]
+    } else {
+        vec![FindingOwner::Resource]
+    }
+}
+
+fn place_finding(
+    methods: &mut Vec<MethodReferences>,
+    class_level: &mut Vec<ReferenceFinding>,
+    resources: &mut Vec<ReferenceFinding>,
+    owner: FindingOwner,
+    finding: ReferenceFinding,
+) {
+    match owner {
+        FindingOwner::Method(method) => {
+            if let Some(group) = methods.iter_mut().find(|group| group.method == *method) {
+                group.findings.push(finding);
+            } else {
+                methods.push(MethodReferences {
+                    method: *method,
+                    findings: vec![finding],
+                });
+            }
+        }
+        FindingOwner::ClassLevel => class_level.push(finding),
+        FindingOwner::Resource => resources.push(finding),
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Recovery presentation: content first, then quality, then any stop
+// ---------------------------------------------------------------------------------------------
+
+/// The presentation order of one recovery report.
+///
+/// Every value is read from the report's own committed fields — [`RecoveryReport::content`],
+/// [`RecoveryReport::quality`], [`RecoveryReport::outcome`] and [`RecoveryReport::execution`] — and
+/// nothing here reads [`RecoveryReport::text`]: no comment is stripped, no token is counted and no
+/// text is parsed, so a message that spells `return` changes nothing. The presentation keeps the
+/// existing contracts as they are: `content` is not a claim of completeness, compilability or
+/// semantic equivalence, and the representation, syntax, compile, semantic and verification planes
+/// stay the recovery report's own.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct RecoveryPresentation {
+    /// What the delivered artifact holds, from [`RecoveryReport::content`].
+    pub content: RecoveryContent,
+    /// How strong the produced structure is, from [`RecoveryReport::quality`].
+    pub quality: Quality,
+    /// Why the run stopped before delivering an artifact, from [`RecoveryReport::outcome`]; `None`
+    /// exactly when an artifact was delivered.
+    pub stop: Option<StopReason>,
+    /// The execution plane of the same report, echoed.
+    pub execution: ExecutionReport,
+}
+
+impl RecoveryPresentation {
+    /// Reads one recovery report's own fields; nothing is re-analysed.
+    pub fn of(report: &RecoveryReport) -> Self {
+        Self {
+            content: report.content.clone(),
+            quality: report.quality,
+            stop: report.outcome.stop().cloned(),
+            execution: report.execution.clone(),
+        }
+    }
+
+    /// The parts in the order a host presents them: content, then quality, then the stop when there
+    /// is one.
+    pub fn parts(&self) -> Vec<RecoveryPresentationPart> {
+        let mut parts = vec![
+            RecoveryPresentationPart::Content {
+                content: self.content.clone(),
+            },
+            RecoveryPresentationPart::Quality {
+                quality: self.quality,
+            },
+        ];
+        if let Some(stop) = &self.stop {
+            parts.push(RecoveryPresentationPart::Stop { stop: stop.clone() });
+        }
+        parts
+    }
+}
+
+/// One ordered part of a [`RecoveryPresentation`].
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(tag = "part", rename_all = "snake_case", deny_unknown_fields)]
+pub enum RecoveryPresentationPart {
+    Content { content: RecoveryContent },
+    Quality { quality: Quality },
+    Stop { stop: StopReason },
+}
+
+// ---------------------------------------------------------------------------------------------
+// The one name search both the navigation entry and the class view bind through
+// ---------------------------------------------------------------------------------------------
+
+/// One named-class search over a scope: the reads that confirmed the requested name, the items the
+/// search published for them, and every plane it stated.
+///
+/// This is the one implementation of the friendly-name rules — the raw-path boundary test, the
+/// declaration confirmation, the path/declaration mismatch, the item charges and the stop — so the
+/// navigation entry and a task-oriented operation cannot answer "which definition" differently.
+struct NamedClassSearch {
+    matches: Vec<ConfirmedRead>,
+    items: Vec<ClassContentItem>,
+    total: u64,
+    searched: u64,
+    coverage: Coverage,
+    execution: ExecutionReport,
+    diagnostics: Vec<Diagnostic>,
+}
+
+/// The members one confirmed read contributes to a navigation query's item list.
+///
+/// The class-level item for a query that asks for the class itself, and the field/method records
+/// the filter admits for a query that names a member; each is built from the same read that
+/// confirmed the class.
+fn member_candidates(read: &ConfirmedRead, filter: &MemberQuery) -> Result<Vec<ClassContentItem>> {
+    let ClassContentItem::ClassDeclaration(class) = &read.class else {
+        unreachable!("a class declaration read publishes a class declaration item")
+    };
+    let mut found = Vec::new();
+    for (index, field) in read.facts.fields.iter().enumerate() {
+        let item = field_item(&class.definition, index, field)?;
+        if filter.matches(&item) {
+            found.push(item);
+        }
+    }
+    for (index, method) in read.facts.methods.iter().enumerate() {
+        let item = method_item(&class.definition, index, method)?;
+        if filter.matches(&item) {
+            found.push(item);
+        }
+    }
+    Ok(found)
+}
+
+fn search_named_classes<F>(
+    snapshot: &ArtifactSnapshot,
+    scope: &PhysicalScope,
+    class: &ClassNameQuery,
+    mut select: F,
+    budget: &mut Budget,
+) -> Result<NamedClassSearch>
+where
+    F: FnMut(&ConfirmedRead) -> Result<Vec<ClassContentItem>>,
+{
+    let scan = scan_scope(snapshot, scope, budget)?;
+    let requested = class.internal_name();
+    let candidates: Vec<ClassCandidate<'_>> =
+        scope_class_candidates(snapshot.kind(), snapshot.id(), &scan.entries)
+            .into_iter()
+            .filter(|candidate| candidate_states_name(candidate, &requested.0))
+            .collect();
+    let total = to_u64(candidates.len())?;
+    let mut matches = Vec::new();
+    let mut items = Vec::new();
+    let mut diagnostics = scan.diagnostics;
+    let mut execution = scan.execution;
+    let mut searched = 0_u64;
+    for candidate in &candidates {
+        let provenance = candidate_provenance(candidate);
+        if let Err(error) = budget.charge(CountedBudgetDimension::ClassHeaders, 1) {
+            merge_execution(&mut execution, stop_execution(&error, budget));
+            diagnostics.push(stop_diagnostic(&error, provenance));
+            break;
+        }
+        searched = searched.saturating_add(1);
+        match read_class_declaration(snapshot, candidate, budget) {
+            Ok(mut read) => {
+                if let Err(error) = publish_diagnostics(
+                    std::mem::take(&mut read.diagnostics),
+                    &mut diagnostics,
+                    budget,
+                ) {
+                    merge_execution(&mut execution, stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, provenance));
+                    break;
+                }
+                let ClassContentItem::ClassDeclaration(item) = &read.class else {
+                    unreachable!("a class declaration read publishes a class declaration item")
+                };
+                if item.declaration.this_class.raw().0 != requested.0 {
+                    if let Err(error) = charge_item(budget) {
+                        merge_execution(&mut execution, stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, provenance));
+                        break;
+                    }
+                    // The finding is about the entry's own path, so it is stated for a candidate
+                    // that has one: a standalone root states no path to contradict.
+                    if let Some(entry) = candidate.location.entry() {
+                        diagnostics.push(path_name_mismatch_diagnostic(
+                            entry,
+                            item.definition.class_bytes.length,
+                            &requested.0,
+                            &item.declaration.this_class,
+                        ));
+                    }
+                    continue;
+                }
+                let found = select(&read)?;
+                let mut refused = false;
+                for found_item in found {
+                    if let Err(error) = charge_item(budget) {
+                        merge_execution(&mut execution, stop_execution(&error, budget));
+                        diagnostics.push(stop_diagnostic(&error, provenance.clone()));
+                        refused = true;
+                        break;
+                    }
+                    items.push(found_item);
+                }
+                matches.push(read);
+                if refused {
+                    break;
+                }
+            }
+            Err(error) => {
+                merge_execution(&mut execution, stop_execution(&error, budget));
+                diagnostics.push(stop_diagnostic(&error, provenance));
+                break;
+            }
+        }
+    }
+    let complete = matches!(execution, ExecutionReport::Complete { .. });
+    Ok(NamedClassSearch {
+        matches,
+        items,
+        total,
+        searched,
+        coverage: listing_coverage(
+            &scan.physical_coverage,
+            "navigation_candidates",
+            searched,
+            total,
+            complete,
+        ),
+        execution: with_usage(execution, budget.usage()),
+        diagnostics,
+    })
+}
+
+// ---------------------------------------------------------------------------------------------
+// Binding the class view and the method operations to one physical identity
+// ---------------------------------------------------------------------------------------------
+
+/// What one class-level selection bound, or the candidates that refuse to be one.
+enum ClassBinding {
+    Bound(Box<BoundClass>),
+    Ambiguous(Box<TargetCandidates>),
+}
+
+/// One bound class: the read that confirmed it, the search plane that found it (when it was named)
+/// and the class item that read published as this view's own.
+struct BoundClass {
+    read: ConfirmedRead,
+    search_coverage: Option<Coverage>,
+    class_item: Option<ClassContentItem>,
+}
+
+/// One bound method: the identity the operation runs over and the environment it runs in.
+struct BoundMethod {
+    method: PhysicalMethodId,
+    environment: ResolutionEnvironment,
+}
+
+/// What one method-level selection bound, or the candidates that refuse to be one.
+enum MethodBinding {
+    Bound(Box<BoundMethod>),
+    Ambiguous(Box<TargetCandidates>),
+}
+
+/// Binds one class reference to exactly one confirmed read.
+///
+/// The identity path verifies that the definition belongs to this snapshot and then reads exactly
+/// those bytes — a definition of another artifact is `operation_target_snapshot_mismatch` and is
+/// never replaced by a same-named class this snapshot happens to hold. The name path reuses the
+/// navigation search, so "which definitions of this name exist", "which of them declares it" and
+/// "which paths disagree" are answered by the one implementation.
+fn bind_class(
+    snapshot: &ArtifactSnapshot,
+    scope: &PhysicalScope,
+    class: &ClassRef,
+    execution: &mut ExecutionReport,
+    diagnostics: &mut Vec<Diagnostic>,
+    budget: &mut Budget,
+) -> Result<ClassBinding> {
+    match class {
+        ClassRef::Definition { definition } => {
+            require_definition_snapshot(snapshot, definition)?;
+            budget.charge(CountedBudgetDimension::ClassHeaders, 1)?;
+            let read = read_definition(snapshot, definition, budget)?;
+            let provenance = Some(definition_provenance(definition));
+            let class_item = match charge_item(budget) {
+                Ok(()) => {
+                    if let ClassContentItem::ClassDeclaration(item) = &read.class
+                        && let Some(diagnostic) = item_path_mismatch_diagnostic(item)
+                    {
+                        diagnostics.push(diagnostic);
+                    }
+                    Some(read.class.clone())
+                }
+                Err(error) => {
+                    merge_execution(execution, stop_execution(&error, budget));
+                    diagnostics.push(stop_diagnostic(&error, provenance.clone()));
+                    None
+                }
+            };
+            if let Err(error) = publish_diagnostics(read.diagnostics.clone(), diagnostics, budget) {
+                merge_execution(execution, stop_execution(&error, budget));
+                diagnostics.push(stop_diagnostic(&error, provenance));
+            }
+            Ok(ClassBinding::Bound(Box::new(BoundClass {
+                read,
+                search_coverage: None,
+                class_item,
+            })))
+        }
+        ClassRef::Name { class } => {
+            let search = search_named_classes(
+                snapshot,
+                scope,
+                class,
+                |read| Ok(vec![read.class.clone()]),
+                budget,
+            )?;
+            match search.matches.len() {
+                0 => Err(Error::invalid_input(
+                    "operation_target_not_found",
+                    format!(
+                        "no class in this scope declares `{}`; the search examined {} of {} \
+                         candidate(s) before it answered",
+                        class.spelling(),
+                        search.searched,
+                        search.total
+                    ),
+                )),
+                1 => {
+                    let NamedClassSearch {
+                        mut matches,
+                        mut items,
+                        coverage,
+                        execution: search_execution,
+                        diagnostics: search_diagnostics,
+                        ..
+                    } = search;
+                    let read = matches.remove(0);
+                    let class_item = if items.is_empty() {
+                        None
+                    } else {
+                        Some(items.remove(0))
+                    };
+                    merge_execution(execution, search_execution);
+                    diagnostics.extend(search_diagnostics);
+                    Ok(ClassBinding::Bound(Box::new(BoundClass {
+                        read,
+                        search_coverage: Some(coverage),
+                        class_item,
+                    })))
+                }
+                _ => Ok(ClassBinding::Ambiguous(Box::new(TargetCandidates {
+                    query: NavigationQuery {
+                        class: class.clone(),
+                        member: None,
+                    },
+                    candidates: search.items,
+                    limits: budget.limits().clone(),
+                    coverage: search.coverage,
+                    execution: search.execution,
+                    diagnostics: search.diagnostics,
+                }))),
+            }
+        }
+    }
+}
+
+/// Binds one method reference to exactly one physical identity and the environment it runs under.
+fn bind_method(
+    content: &[ArtifactSnapshot],
+    request: &MethodOperationRequest,
+    budget: &mut Budget,
+) -> Result<MethodBinding> {
+    // The identity the caller gave is checked against the request's own physical view before the
+    // environment is built: a foreign identity is an input error of the request, and it must not be
+    // hidden behind a policy problem of a declaration the caller would then fix for nothing.
+    let snapshot_id = request.environment.snapshot.clone();
+    if let MethodRef::Method { method } = &request.method
+        && method.owner.snapshot() != &snapshot_id
+    {
+        return Err(Error::invalid_input(
+            "operation_target_snapshot_mismatch",
+            format!(
+                "the method identity names snapshot `{}` while this request runs over `{}`; an \
+                 identity of another artifact is never replaced by a same-named method of this one",
+                method.owner.snapshot().0,
+                snapshot_id.0
+            ),
+        ));
+    }
+    let environment = request.environment.build(content)?;
+    let provided = content
+        .iter()
+        .find(|candidate| candidate.id() == &snapshot_id);
+    match &request.method {
+        MethodRef::Method { method } => {
+            if provided.is_none() {
+                return Err(snapshot_not_provided(&snapshot_id));
+            }
+            Ok(MethodBinding::Bound(Box::new(BoundMethod {
+                method: method.clone(),
+                environment,
+            })))
+        }
+        MethodRef::Name {
+            class,
+            name,
+            descriptor,
+        } => {
+            let Some(snapshot) = provided else {
+                return Err(snapshot_not_provided(&snapshot_id));
+            };
+            let query = NavigationQuery {
+                class: class.clone(),
+                member: Some(MemberQuery {
+                    name: name.clone(),
+                    descriptor: descriptor.clone(),
+                    kind: MemberQueryKind::Methods,
+                }),
+            };
+            let report = self_find_targets(
+                snapshot,
+                &environment.runtime.physical.scope,
+                &query,
+                budget,
+            )?;
+            match report.candidates.len() {
+                0 => Err(Error::invalid_input(
+                    "operation_target_not_found",
+                    format!(
+                        "no method `{}` of class `{}` matches this request in the requested scope; \
+                         a descriptor narrows the overloads, and a name with several declared \
+                         descriptors is answered with every candidate",
+                        String::from_utf8_lossy(&name.0),
+                        class.spelling()
+                    ),
+                )),
+                1 => Ok(MethodBinding::Bound(Box::new(BoundMethod {
+                    method: method_identity_of(&report.candidates[0]),
+                    environment,
+                }))),
+                _ => Ok(MethodBinding::Ambiguous(Box::new(TargetCandidates {
+                    query,
+                    candidates: report.candidates,
+                    limits: budget.limits().clone(),
+                    coverage: report.coverage,
+                    execution: report.execution,
+                    diagnostics: report.diagnostics,
+                }))),
+            }
+        }
+    }
+}
+
+/// The navigation entry as the method binding calls it.
+///
+/// A free function rather than a method call keeps this helper usable outside the `Engine` impl
+/// block while still going through the very same public entry the caller would.
+fn self_find_targets(
+    snapshot: &ArtifactSnapshot,
+    scope: &PhysicalScope,
+    query: &NavigationQuery,
+    budget: &mut Budget,
+) -> Result<NavigationReport> {
+    Engine::new().find_targets(snapshot, scope, query, budget)
+}
+
+fn snapshot_not_provided(snapshot: &SnapshotId) -> Error {
+    Error::invalid_input(
+        "resolution_snapshot_mismatch",
+        format!(
+            "request snapshot `{}` is not provided by the request content",
+            snapshot.0
+        ),
+    )
+}
+
+/// The physical identity of one published navigation item.
+///
+/// A method search filters for method records, so this is the one shape that can appear here: a
+/// class item or a field record would mean the filter and the publication disagreed about what
+/// was asked for.
+fn method_identity_of(item: &ClassContentItem) -> PhysicalMethodId {
+    match item {
+        ClassContentItem::Method(method) => method.identity.clone(),
+        ClassContentItem::ClassDeclaration(_) | ClassContentItem::Field(_) => {
+            unreachable!("a method search publishes method records")
+        }
+    }
+}
+
+/// One class reference's own snapshot must be this snapshot: anything else is a caller error.
+fn require_definition_snapshot(
+    snapshot: &ArtifactSnapshot,
+    definition: &PhysicalDefinitionId,
+) -> Result<()> {
+    if definition.snapshot() == snapshot.id() {
+        return Ok(());
+    }
+    Err(Error::invalid_input(
+        "operation_target_snapshot_mismatch",
+        format!(
+            "the definition names snapshot `{}` while this request reads `{}`; an identity of \
+             another artifact is never replaced by a same-named definition of this one",
+            definition.snapshot().0,
+            snapshot.id().0
+        ),
+    ))
+}
+
+/// Reads one class by the physical identity a caller holds, under the same read a listing performs.
+///
+/// The bytes are verified against the definition's own digest, length and variant before anything
+/// is parsed — a definition that does not match the bytes at its location is the reader's own
+/// input error — so the identity this returns is the identity the caller gave.
+fn read_definition(
+    snapshot: &ArtifactSnapshot,
+    definition: &PhysicalDefinitionId,
+    budget: &mut Budget,
+) -> Result<ConfirmedRead> {
+    let (bytes, source) = materialize_definition(snapshot, definition, budget)?;
+    let facts = class_member_facts(&bytes, budget)?;
+    let resolved = definition_of(&source);
+    let binding = class_name_binding(&source, &facts.this_class);
+    let diagnostics = facts
+        .stopped_at
+        .as_ref()
+        .map(|stop| vec![member_stop_diagnostic(&resolved, stop)])
+        .unwrap_or_default();
+    let class = ClassContentItem::ClassDeclaration(ClassDeclarationItem {
+        definition: resolved,
+        declaration: declaration_facts(
+            &facts.this_class,
+            facts.access_flags,
+            &facts.super_class,
+            &facts.interfaces,
+        ),
+        binding,
+        member_table: facts.stopped_at.clone(),
+    });
+    Ok(ConfirmedRead {
+        class,
+        facts,
+        diagnostics,
+        bytes,
+    })
+}
+
+// ---------------------------------------------------------------------------------------------
+// The class view's bodies
+// ---------------------------------------------------------------------------------------------
+
+/// How one body reference resolved against the class view's own member listing.
+#[allow(
+    clippy::large_enum_variant,
+    reason = "a resolution held for the length of one request, where boxing the bound member would \
+              only move the header a read is about to borrow behind a pointer"
+)]
+enum BodyResolution {
+    /// Exactly one declared method matched, with its own member header for the read.
+    Method(PhysicalMethodId, MemberHeader),
+    /// The member table stopped before the reference could be decided: the member may or may not be
+    /// declared beyond the stop, and nothing is claimed about it (A13).
+    NotReached(MemberTableStop),
+    /// Several declared descriptors matched: every candidate, and nothing read.
+    Ambiguous {
+        query: NavigationQuery,
+        candidates: Vec<ClassContentItem>,
+    },
+}
+
+fn resolve_body_ref(read: &ConfirmedRead, body: &BodyRef) -> Result<BodyResolution> {
+    let ClassContentItem::ClassDeclaration(class) = &read.class else {
+        unreachable!("a class read publishes a class declaration item")
+    };
+    let definition = &class.definition;
+    match body {
+        BodyRef::Method { method } => {
+            if &method.owner != definition {
+                return Err(Error::invalid_input(
+                    "class_view_body_foreign_owner",
+                    format!(
+                        "the body identity names a member of another definition while this view \
+                         reads `{}`; an identity of another physical definition is never replaced \
+                         by a same-named member of this one",
+                        String::from_utf8_lossy(&class.declaration.this_class.raw().0)
+                    ),
+                ));
+            }
+            match declared_method(read, &method.name, &method.descriptor) {
+                Some(member) => Ok(BodyResolution::Method(method.clone(), member.clone())),
+                None => not_reached_or_missing(
+                    read,
+                    &format!(
+                        "`{}` `{}`",
+                        String::from_utf8_lossy(&method.name.0),
+                        String::from_utf8_lossy(&method.descriptor.0)
+                    ),
+                ),
+            }
+        }
+        BodyRef::Name { name, descriptor } => {
+            let matched: Vec<(usize, &MemberHeader)> = read
+                .facts
+                .methods
+                .iter()
+                .enumerate()
+                .filter(|(_, member)| {
+                    member.name.raw().0 == name.0
+                        && descriptor
+                            .as_ref()
+                            .is_none_or(|descriptor| member.descriptor.raw().0 == descriptor.0)
+                })
+                .collect();
+            match matched.as_slice() {
+                [] => not_reached_or_missing(
+                    read,
+                    &match descriptor {
+                        Some(descriptor) => format!(
+                            "`{}` `{}`",
+                            String::from_utf8_lossy(&name.0),
+                            String::from_utf8_lossy(&descriptor.0)
+                        ),
+                        None => format!(
+                            "`{}` (any declared descriptor)",
+                            String::from_utf8_lossy(&name.0)
+                        ),
+                    },
+                ),
+                [(_, member)] => Ok(BodyResolution::Method(
+                    member_identity(definition, member),
+                    (*member).clone(),
+                )),
+                many => {
+                    let mut candidates = Vec::new();
+                    for (index, member) in many {
+                        candidates.push(method_item(definition, *index, member)?);
+                    }
+                    Ok(BodyResolution::Ambiguous {
+                        query: NavigationQuery {
+                            class: ClassNameQuery::internal(
+                                String::from_utf8_lossy(&class.declaration.this_class.raw().0)
+                                    .into_owned(),
+                            ),
+                            member: Some(MemberQuery {
+                                name: name.clone(),
+                                descriptor: descriptor.clone(),
+                                kind: MemberQueryKind::Methods,
+                            }),
+                        },
+                        candidates,
+                    })
+                }
+            }
+        }
+    }
+}
+
+/// The member table stopped before this reference could be decided, or the whole table was read and
+/// declares no such method — the first is a member-level refusal, the second a caller error.
+fn not_reached_or_missing(read: &ConfirmedRead, requested: &str) -> Result<BodyResolution> {
+    match &read.facts.stopped_at {
+        Some(stop) => Ok(BodyResolution::NotReached(stop.clone())),
+        None => Err(Error::invalid_input(
+            "class_view_body_not_found",
+            format!(
+                "the class declares no method {requested}; the whole member table was read, and no \
+                 empty body is invented for a member that is not there"
+            ),
+        )),
+    }
+}
+
+fn declared_method<'a>(
+    read: &'a ConfirmedRead,
+    name: &JvmBytes,
+    descriptor: &JvmBytes,
+) -> Option<&'a MemberHeader> {
+    read.facts
+        .methods
+        .iter()
+        .find(|member| member.name.raw().0 == name.0 && member.descriptor.raw().0 == descriptor.0)
+}
+
+fn member_identity(definition: &PhysicalDefinitionId, member: &MemberHeader) -> PhysicalMethodId {
+    PhysicalMethodId {
+        owner: definition.clone(),
+        name: member.name.raw().clone(),
+        descriptor: member.descriptor.raw().clone(),
+    }
+}
+
+/// The `Code` attribute shell one member's own declaration carries, when it has one.
+fn code_shell(member: &MemberHeader) -> Option<&AttributeShell> {
+    member
+        .attributes
+        .iter()
+        .find(|shell| shell.name.raw().0 == b"Code")
+}
+
+/// Reads one member's body out of the class bytes the view already holds.
+///
+/// One `method_bodies` attempt is charged before a body that is there; a member that declares no
+/// `Code` is answered as such and charges none. A decode that fails is answered with the member's
+/// own refusal value rather than ending the view: the class, the members and the other bodies stay
+/// published (A13).
+fn body_result(
+    definition: &PhysicalDefinitionId,
+    bytes: &[u8],
+    method: &PhysicalMethodId,
+    member: &MemberHeader,
+    reference: &BodyRef,
+    budget: &mut Budget,
+) -> Result<ClassViewBody> {
+    if code_shell(member).is_none() {
+        return Ok(ClassViewBody::NotDeclared {
+            method: method.clone(),
+            no_body_kind: no_body_kind(member.access_flags),
+        });
+    }
+    budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
+    match method_code_facts(bytes, member, budget) {
+        Ok(facts) => {
+            let coverage = method_code_coverage(
+                facts.code_span.length,
+                &facts.instructions,
+                facts.exception_handlers.len(),
+                facts.exception_handler_count,
+                &facts.execution,
+                facts.stopped_at.as_ref(),
+            )?;
+            Ok(ClassViewBody::Read {
+                method: method.clone(),
+                stages: body_stages(facts.stopped_at.as_ref()),
+                max_stack: facts.max_stack,
+                max_locals: facts.max_locals,
+                code_span: facts.code_span.clone(),
+                instructions: facts.instructions.clone(),
+                exception_handlers: facts.exception_handlers.clone(),
+                exception_handler_count: facts.exception_handler_count,
+                stopped_at: facts.stopped_at.clone(),
+                coverage,
+                execution: facts.execution.clone(),
+                diagnostics: Vec::new(),
+            })
+        }
+        Err(error) => Ok(ClassViewBody::Refused {
+            reference: reference.clone(),
+            method: Some(method.clone()),
+            execution: stop_execution(&error, budget),
+            diagnostics: vec![stop_diagnostic(
+                &error,
+                Some(definition_provenance(definition)),
+            )],
+        }),
+    }
+}
+
+/// The two phases of one body decode, in the reader's own order, from that decode's own stop.
+///
+/// A handler-phase stop leaves the instruction phase unentered — the reader decodes handlers first —
+/// and an instruction-phase stop leaves the handler phase completed. Nothing is re-analysed: the
+/// states are a reading of [`MethodCodeFacts::stopped_at`].
+fn body_stages(stopped_at: Option<&BytecodeStop>) -> Vec<BodyStageResult> {
+    let completed = |phase| BodyStageResult {
+        phase,
+        state: BodyStageState::Completed,
+    };
+    let not_reached = |phase| BodyStageResult {
+        phase,
+        state: BodyStageState::NotReached,
+    };
+    let stopped = |phase, code: &str| BodyStageResult {
+        phase,
+        state: BodyStageState::Stopped {
+            code: code.to_owned(),
+        },
+    };
+    match stopped_at {
+        None => vec![
+            completed(BytecodeStopPhase::ExceptionHandlers),
+            completed(BytecodeStopPhase::Instructions),
+        ],
+        Some(BytecodeStop::ExceptionHandlers { code, .. }) => vec![
+            stopped(BytecodeStopPhase::ExceptionHandlers, code),
+            not_reached(BytecodeStopPhase::Instructions),
+        ],
+        Some(BytecodeStop::Instructions { code, .. }) => vec![
+            completed(BytecodeStopPhase::ExceptionHandlers),
+            stopped(BytecodeStopPhase::Instructions, code),
+        ],
+    }
+}
+
+/// The `abstract`/`native` kind a member's own flags declare, when they declare one.
+fn no_body_kind(access_flags: u16) -> Option<NoBodyKind> {
+    const ACC_ABSTRACT: u16 = 0x0400;
+    const ACC_NATIVE: u16 = 0x0100;
+    if access_flags & ACC_ABSTRACT != 0 {
+        Some(NoBodyKind::Abstract)
+    } else if access_flags & ACC_NATIVE != 0 {
+        Some(NoBodyKind::Native)
+    } else {
+        None
+    }
+}
+
+/// The coverage of one class view: the candidate search's own ranges (when the class was named)
+/// beside the member tables of the class the view read, each under its own label.
+fn class_view_coverage(
+    search: Option<&Coverage>,
+    facts: &ClassMemberFacts,
+    complete: bool,
+) -> Coverage {
+    let mut coverage = member_coverage(facts, complete);
+    if let Some(search) = search {
+        let mut scanned = search.artifact_structural.scanned.clone();
+        scanned.append(&mut coverage.artifact_structural.scanned);
+        coverage.artifact_structural.scanned = scanned;
+        let mut skipped = search.artifact_structural.skipped.clone();
+        skipped.append(&mut coverage.artifact_structural.skipped);
+        coverage.artifact_structural.skipped = skipped;
+        coverage.artifact_structural.uninterpreted_extensions =
+            search.artifact_structural.uninterpreted_extensions.clone();
+        if search.artifact_structural.state != CoverageState::CompleteWithinSchema {
+            coverage.artifact_structural.state = CoverageState::Partial;
+        }
+    }
+    coverage
 }

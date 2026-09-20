@@ -57,6 +57,28 @@ CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 \
 
 **列举只读 Header**：它不解析声明、不加载、不构建 CFG/SSA/Region/Java AST，不推断 WAR/Boot 布局或 classpath 前缀，不给 MR 选择结论，也不证明类可加载、可链接或已验证。要版本与 dialect 平面用 `Engine::inspect_header`；要方法体用方法请求或 `Engine::recover_method`。摘要见 [五维支持矩阵](docs/support-matrix.md#导航列举与身份交接add-artifact-navigation2026-09-20)。
 
+### 任务导向操作：一个目标、一个有界预算、一个显式环境
+
+[`examples/task_operations.rs`](examples/task_operations.rs) 是可编译检查的任务级示例，接受 standalone CLASS：
+
+```sh
+CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 \
+  cargo run --example task_operations -- \
+  tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class
+```
+
+它不再要求宿主拼装 P2 请求，而是把「给 artifact 与一个目标 → 得到结果」收进库内：
+
+1. **一个目标选择**：`ClassRef`/`MethodRef`/`BodyRef` 接受 friendly 名称（点分隔/内部类名、成员名与可选 descriptor）或调用方已有的物理身份，两者收敛到同一 `PhysicalDefinitionId`/`PhysicalMethodId`；名称路径复用导航匹配与歧义规则。歧义不是失败：操作返回 `OperationOutcome::Ambiguous`（候选 + 生效 `limits` + `coverage`/`execution`/`diagnostics`）且**不执行任何分析**，调用方回传候选自带身份后才继续；身份不属于本次 artifact 是 `operation_target_snapshot_mismatch`，不会被同名定义替换。
+2. **操作自选 stage**：`MethodOperation::{Analysis, Recovery}` 各有固定 stage 表（`MethodOperation::stages()`，今天是整条 P2 前缀），`Engine::analyze_target`/`Engine::recover_target` 不接受调用方的 stage 列表，并在报告里发布实际集合（`stages`）；把同一列表显式交给 `Engine::analyze_method` 得到同一调度与同一 stage 结果，底层入口的 `analysis_no_stages` 与 `ir_pass_*` 校验保持原语义。
+3. **有界默认预算 + 少量覆盖**：`task_limits(&overrides)`/`task_budget(&overrides)` 是默认集的唯一来源，`OVERRIDABLE_BUDGET_DIMENSIONS` 只列 5 个高频维度（`output_bytes`、`elapsed_millis`、`result_items`、`class_headers`、`method_bodies`）；未知维度是 `budget_override_dimension_unknown`，0 是 `budget_override_invalid`，都不静默取默认。报告发布生效的完整 `Limits`（`report.limits`）与 `UsageSnapshot`（`report.usage`）；覆盖真的截断工作时得到真实 `Partial`/`Cancelled` 并带终止维度。
+4. **三种显式环境策略**：`EnvironmentRequest::build` 按 `EnvironmentPolicy::{SingleClass, PlainJar, ExplicitClasspath}` 组装既有 validator 能校验的声明（roots + `parent_first` delegation + `class_path` module mode，一个 loader、一个 domain、无 provider）。它**不推断**：Manifest `Class-Path`、WAR/Boot 布局检出、嵌套库都不生成 roots（后两者需要调用方显式声明的 root）；`EnvironmentPolicy::Layout` 在本阶段是明确的 `environment_policy_layout_not_provided`，不返回一组声称等价于容器加载的 roots。
+5. **类视图**：`Engine::class_view(snapshot, scope, request, budget)` 一次类 Header 读取 + 一次成员列举 + 按需方法 Body，全部共享一个总预算；每请求的 `class_headers` 恰好 1（不会逐方法重读），`method_bodies` 只在真的请求了带 `Code` 的成员时 +1。`abstract`/`native` 以 `ClassViewBody::NotDeclared` 如实陈述（不伪造空 body），损坏成员记录只停它自己的记录：类、前缀成员与其它 body 仍然发布（A13），未走到或读取失败的成员以 `ClassViewBody::Refused` 隔离。
+6. **引用按 owning method 组织**：`ReferenceGrouping::{from_query, from_declaration}` 只重组 item 列表，把方法体内命中按物理方法身份分组并保留 BCI/evidence，类级与 resource 命中留在 `class_level`/`resources`（不分配给任何方法）；`ReferenceFinding::class()` 区分常量池候选、结构 use-site 与 `ResolvedDeclaration` 三类，扫描自身的 `coverage`/`execution`/`diagnostics`/未决候选计数原样保留（不补全候选、不改变解析状态）。
+7. **恢复呈现先给交付内容**：`RecoveryPresentation::of(&RecoveryReport)` 只读报告既有字段（`content`、`quality`、`outcome`、`execution`），`parts()` 按 content → quality → 停止原因排序；它不读 `text`、不剥注释、不数 token，因此说明文本里出现 `return` 之类字面量不改变呈现。
+
+**明文边界**：本层不新增 crate、依赖、持久状态或后台服务，不发明 `Session`/`Workspace`/`Project`，不做自动 classpath 推断、依赖下载、批量/整 artifact 恢复，也不承诺性能。WAR 布局策略依赖 `bind-prefixed-load-roots`，跨请求复用依赖 `bound-container-lookup`：两者落地前不实现、不验收重叠部分。摘要见 [五维支持矩阵](docs/support-matrix.md#任务导向操作add-task-oriented-operations2026-09-20)。
+
 ## JSON CLI quickstart
 
 CLI 从 stdin（或 `--request FILE`）读取一个不超过 1 MiB 的 JSON 请求。下面检查已提交的 ECJ 4.6.1 / classfile 52.0 fixture 中 `finallyPath(I)I`；方法名和 descriptor 按 JVM 原始字节数组传递：

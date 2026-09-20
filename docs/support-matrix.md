@@ -68,6 +68,26 @@ P3 当前边界分别验收：方法声明事实（access_flags/descriptor/recei
 - **计费**：每次读取尝试前计一次 `class_headers`；列举自身发布的每条 item/诊断计一次 `ResultItems`（枚举已按其自身口径计过它读到的 entry 记录）；`method_bodies`/`code_bytes` 与 IR 构造维度恒为 0。停止（预算、取消、损坏）保留可靠前缀、显式标出未扫描范围并报非 Complete execution。
 - **证据**：`tests/navigation.rs`（19 项：候选/确认两级、同名同字节两 origin、路径名不一致、损坏候选、预算/取消停止、成员前缀、身份回传、两写法对照、重载、空匹配、顺序稳定性、scope 形状），reader 侧 `class_member_facts` 与整结构读取在 43 个已提交 class fixture 上逐项一致（`classfile::tests::repository_class_fixtures_validate_without_false_target_rejections`）。公共示例：`cargo run --example navigate_artifact [path]`。
 
+### 任务导向操作（`add-task-oriented-operations`，2026-09-20）
+
+把宿主一直重复的装配收回库内：目标选择、有界预算、环境策略、类视图、引用组织与恢复呈现。全部建立在既有 `Engine`/`ArtifactSnapshot`/身份类型/`Budget`/导航/查询/恢复报告之上；不新增 crate、依赖、持久状态或 `Session` 类抽象。
+
+| 入口 | 声明什么 | 发布什么 | 不证明什么 |
+| --- | --- | --- | --- |
+| `ClassRef`/`MethodRef`/`BodyRef` + `OperationOutcome<T>` | 目标可以是 friendly 名称（点分隔/内部类名、成员名、可选 descriptor）或已有物理身份 | `OperationOutcome::Performed` 内的报告带绑定身份；名称不唯一时 `Ambiguous` 带全部候选与选择依据且**不执行分析** | 显示名不是身份；`Performed` 不表示目标合法、可加载或可解析 |
+| `Engine::class_view(snapshot, scope, request, budget)` | 一个类的视图：声明 + 字段 + 方法列表 + 按需 body | `ClassViewReport`：`class`（绑定的 `PhysicalDefinitionId`）、`items`（`ClassContentItem`，与成员列举同一词汇）、`bodies`（`Read`/`NotDeclared`/`Refused`）、`limits`/`usage`/`coverage`/`execution`/`diagnostics`；一次请求 `class_headers` = 1，`method_bodies` = 请求到的带 `Code` 成员数，`ir_*` 恒为 0 | body 是 reader 解码（两个 phase + 指令/处理器 + 该解码自己的 coverage/stop），不是 P2 阶段结果、不是恢复，也不运行 verifier |
+| `Engine::analyze_target`/`recover_target(content, request, budget)` | `MethodOperationRequest`：目标 + `EnvironmentRequest`（根由策略给出） | `MethodOperationReport`（`operation`/`method`/`stages`/`limits`/`usage`/`analysis`）与 `MethodRecoveryReport`（同一 run 的 `RecoveredMethod` + `RecoveryPresentation`） | 不执行目标代码、不下载依赖；`verification` 仍为 `NotPerformed`，stage 完成不等于语义等价 |
+| `EnvironmentPolicy` + `EnvironmentRequest::build(content)` | `SingleClass`/`PlainJar`/`ExplicitClasspath`（roots 按调用方顺序）/`Layout`（本阶段不提供） | 可由 `validate_environment` 校验、与手写等价的 `ResolutionEnvironment`（一个 loader、一个 domain、`parent_first`、`class_path`、无 provider） | 不读 Manifest `Class-Path`、不从布局检出或嵌套库推断 roots、不激活依赖、不声称等价于容器加载 |
+| `ReferenceGrouping::{from_query, from_declaration}` | 一份既有扫描报告（`QueryReport` 或 `DeclarationRefReport`） | `source`（扫描自身 planes + item 计数原样）、`methods`（按 owning method 分组、带 BCI/evidence）、`class_level`/`resources`（保留自身位置、不归入方法），`ReferenceFinding::class()` 区分三类 | 不新增统一 reference 类型、不压平三类、不补全未决候选、不改变 coverage/execution/诊断/解析状态 |
+| `RecoveryPresentation::of(&RecoveryReport)` + `parts()` | 只读报告字段（`content`/`quality`/`outcome`/`execution`） | 按 content → quality → 停止原因排序的 parts | 不读 `text`、不剥注释、不数 token；`contains_statements` 不代表完整恢复、可编译或语义等价 |
+
+- **默认预算与覆盖**：`task_limits(&overrides)`/`task_budget(&overrides)` 是默认集唯一来源；`OVERRIDABLE_BUDGET_DIMENSIONS` 只列 `output_bytes`、`elapsed_millis`、`result_items`、`class_headers`、`method_bodies`。未知维度 = `budget_override_dimension_unknown`，0 = `budget_override_invalid`；二者都不静默取默认。覆盖造成的停止是真 `Partial`/`Cancelled` 并带终止维度。
+- **stage 发布**：`MethodOperation::stages()` 今天是整条固定 pass 前缀（六项），操作把它写进报告；同一列表显式交给 `Engine::analyze_method` 得到同一调度与同一 stage 结果，`analysis_no_stages` 与 `ir_pass_prerequisite_missing`/`ir_pass_order_invalid` 等既有校验未改。
+- **新输入错误码**：`operation_target_snapshot_mismatch`、`operation_target_not_found`、`class_view_body_foreign_owner`、`class_view_body_not_found`、`budget_override_dimension_unknown`、`budget_override_invalid`、`environment_policy_snapshot_kind_mismatch`，以及 `environment_policy_layout_not_provided`（`Unsupported`）。被 validator 拒绝的环境仍沿用既有 `environment_problems` 与 `NotPerformed` 状态，不改原始符号。
+- **计费**：类视图一次 `class_headers`、每请求 body 一次 `method_bodies`；操作报告发布完整 `Limits` 与 `UsageSnapshot`。逐方法重读 Header 或重复列举会让 `tests/task_operations.rs` 的读取计数断言变红（两种变异已实测）。
+- **证据**：`tests/task_operations.rs`（29 项，覆盖 1.1–3.4）与既有回归（`tests/navigation.rs`、`tests/p1_query_api.rs`、`tests/p2_resolution.rs`、`tests/p2_declaration_refs.rs`、`tests/p3_*.rs`）。公共示例：`cargo run --example task_operations [standalone.class]`。
+- **未实现（明文）**：WAR/Boot 布局策略（依赖 `bind-prefixed-load-roots`，本阶段 `Layout` 策略答 unsupported）；跨请求复用按 `bound-container-lookup` 的容量与开关边界，本 change 未新增缓存层或索引；无 GUI/MCP、批处理、整 artifact 或批量恢复、自动 classpath 推断与依赖下载。
+
 
 P4 已交付并归档（**10/10**，归档提交 `88416ab`）；命令、数字与证伪见 [P4 验证记录](../openspec/changes/archive/2026-09-20-p4-modern-semantics/verification.md)。下表按本页既有的五个平面分开记录；没有列出的能力就是没有，不是待兑现的承诺。
 
@@ -169,8 +189,8 @@ P5（`p5-measured-optimization`，**已交付并归档 10/10**，归档提交 `c
 
 ### A15 / A18 的当前判定
 
-- **A15：已实现路径通过。** CP/Header facts cache 的 direct/cold/warm 语义、identity/origin、顺序、coverage、diagnostics 对照通过；实际 usage 节省单独报告并校验资源/取消，不能把整档资源 fingerprint 不同解释为语义不通过。暖/暖仍须确定。index/parallel/merged 不存在，标为不适用。
-- **A18：已实现路径通过。** 固定字节源、cursor/token 绑定、不同内容/相同内容不同 origin 的跨快照 cache 隔离和取消请求隔离已验证；并行/single-flight 不存在，标为不适用，不声称验过。
+- **A15：已实现路径通过。** CP/Header facts cache 的 direct/cold/warm 语义、identity/origin、顺序、coverage、diagnostics 对照通过；实际 usage 节省单独报告并校验资源/取消，不能把整档资源 fingerprint 不同解释为语义不通过。暖/暖仍须确定。index/parallel/merged 不存在，标为不适用。任务导向路径上的复用启用/未启用对照（同一 `FactsCache` 句柄、同一恢复请求，两侧 facts/身份/coverage/execution 逐字段相等，且 `FactsReport::consultations > 0`）由 `tests/task_operations.rs::repeated_operations_over_one_snapshot_are_identical` 补充，仍属 A15 的**已实现路径**。
+- **A18：已实现路径通过。** 固定字节源、cursor/token 绑定、不同内容/相同内容不同 origin 的跨快照 cache 隔离和取消请求隔离已验证；并行/single-flight 不存在，标为不适用，不声称验过。同一不可变 snapshot 上重复的任务操作（类视图与恢复）给出相同 facts、身份、顺序、coverage 与 execution，由 `tests/task_operations.rs` 的同名用例逐字段对照（仅 `elapsed_millis` 归一）。
 
 P5 归档的“部分通过”保留为历史判断；本轮按主规格的条件场景校正。差分两侧相等不证明两侧都正确，这正是 R8/R9 走到独立反例的原因，两条现已在 `fd0aae8` 关闭（见 [收尾验证](../openspec/changes/archive/2026-09-20-close-recovery-correctness-gaps/verification.md)）。
 
@@ -182,7 +202,7 @@ P5 归档的“部分通过”保留为历史判断；本轮按主规格的条�
 | 平台 | macOS arm64 | Validated（本轮限定回归） | OpenJDK 23.0.1；1122 常规测试、两条显式编译执行对照、benchmark smoke、fmt 与 clippy `-D warnings` 通过，固定提交 `fd0aae8` 的 CI 另跑 MSRV/supply-chain/JDK25 oracle/fuzz smoke。 |
 | 平台 | Linux aarch64 | Supported（当前实际本地证据） | Fedora-like，kernel `7.1.0-rc3-gaokun3+`；证据版本见 verification。 |
 | 平台 | 32-bit | NotValidated / Unsupported | noak `lookupswitch` 巨大 `npairs` 等 `usize` 风险未建立支持；P0 限 64-bit。 |
-| Library adapter | `Engine` + `Budget` | Supported | 同步 API；含普通枚举、显式 `enumerate_artifact_tree`、标准 MR 选择与 P1 `query`（`PhysicalScope::SnapshotAll`/`ArtifactTree`），以及显式运行环境下的 `resolve_symbol`/`declaration_references` 与方法分析/恢复的 `analyze_method`/`recover_method`；`CancellationToken` 可由调用方注入，取消为协作式。 |
+| Library adapter | `Engine` + `Budget` | Supported | 同步 API；含普通枚举、显式 `enumerate_artifact_tree`、标准 MR 选择与 P1 `query`（`PhysicalScope::SnapshotAll`/`ArtifactTree`），以及显式运行环境下的 `resolve_symbol`/`declaration_references` 与方法分析/恢复的 `analyze_method`/`recover_method`；任务导向层增加 `class_view`/`analyze_target`/`recover_target`（目标选择 + 有界默认预算 + 显式环境策略 + stage 发布，见上一节）；`CancellationToken` 可由调用方注入，取消为协作式。 |
 | JSON CLI | stdin / `--request FILE` | Supported | 单请求、1 MiB 控制面；接受十八项 limit schema（P0/P1 十一项 + 六个 P2 计数维度 + `dependency_depth`，全部必填、无静默默认值）；暴露 `query`（relation、target、`PhysicalScope` 含 `artifact_tree`、consumers、`max_items`、cursor）并回显它解析出的 snapshot，`enumerate_artifact_tree`（无参数、薄转发到 facade 入口，返回库自己的 containers/entries/layout/coverage/execution/diagnostics，不声明或推导 root/classpath），以及 `analyze_method`（请求同形的 `environment`/`method`/`stages`，结果为 `method_analysis`，薄转发到库入口）和 `recover_method`（同次分析 + 方法体恢复报告），错误码与库一致；`enumerate` 仍只枚举顶层容器；不暴露 cancellation token 注入。 |
 | 测试门禁 | `fuzz/` 独立 workspace + CI `fuzz-smoke` | Validated（test-only、有界） | cargo-fuzz 0.13.2、libfuzzer-sys `=0.4.13`、nightly-2026-07-20；三个 target（`query`、`artifact_tree` 与 P2 的 `method_analysis`）单 worker、`-max_len=65536`、`-rss_limit_mb=2048`（P5 资源边界实测：等时长三 target 峰值 188/486/278 MB，512 会把健康会话报成故障），本地收口 60 秒、CI 20 秒。只证明有界 smoke 不 panic、不越公开预算、损坏输入不假 Complete 且阶段/质量平面自洽，不是安全或覆盖率证明；该 workspace 的依赖不进入生产树。 |
 | 未来宿主 adapter | reverse-engine/MCP/backend | NotImplemented | 应由独立 adapter 单向依赖 `jarde`；核心不依赖宿主协议。 |
