@@ -1,9 +1,4 @@
-# recovery-validation Specification
-
-## Purpose
-建立以语料、重编译和受控行为对照为基础的 Java 8 recovery 质量门槛，明确语法、验证、可读性和语义等不同承诺。
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Separate representation and validation statuses
 
@@ -39,11 +34,3 @@
 - **WHEN** 生成结果降级且原方法包含未呈现的可观察生产者
 - **THEN** 验收 SHALL 核对该生产者确实出现在产物的可靠语句或低级引用中，并有对应物理 origin；仅证明原指令属于 CFG block，或字段识别记录中存在该 BCI，不能替代此项检查
 
-### Requirement: Published Java 8 support matrix
-
-项目 SHALL 按 parse、X1、resolution、decompile-quality、output-level 发布 Java 8/历史 45–52 的支持矩阵，并明确代表性 javac/ECJ 与缺失依赖、混淆、无 debug、不可约 CFG 的降级。
-
-#### Scenario: Unsupported compiler dialect
-
-- **WHEN** 输入来自未验证的 Kotlin、Scala、Groovy、AspectJ、JSP 或字节码生成器模式
-- **THEN** 使用 generic JVM/fallback 状态并注明 rule/profile，不根据 major 猜测唯一源码语言

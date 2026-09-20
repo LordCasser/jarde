@@ -1,28 +1,29 @@
 # OpenSpec 规划入口
 
-P0/P1、P2（29/29）和分层（7/7）均已归档，P2/分层归档提交为 `7a5f994`。P3 已交付并归档（**12/12**，归档提交 `250fe1f`，归档目录 `changes/archive/2026-09-20-p3-java8-recovery/`）。已有 Java 方法体、if/loop/switch、lambda 及部分拼接/bridge/accessor 呈现，仍受公开入口和语义边界约束；P4/P5 未实施。 见 [当前恢复复核](changes/archive/2026-09-20-p3-java8-recovery/verification.md#review-2026-09-19-recovery)；历史完成项保留，新问题单列修正。
+P0–P5 与分层已按各阶段范围归档：P2 29/29、分层 7/7、P3 12/12、P4 10/10、P5 10/10；主规格现为 **18 份**。2026-09-20 对 `cd6f2f0` 的独立复核确认的两条 P1——嵌套表达式旧值重算（P3-R8）与字段生产者在 fallback 中丢失（P3-R9）——已由 `close-recovery-correctness-gaps`（4/4，`fd0aae8`）关闭并归档，历史归档记录保留。见 [收尾验证](changes/archive/2026-09-20-close-recovery-correctness-gaps/verification.md)。
 
-- [架构基线](../JVM_Rust_Engine_Final_Architecture.md)：产品目标、I1–I12、模型与管线。
-- [阶段路线](roadmap.md)：阶段依赖、范围与进入/出口门槛。
-- [依赖选型](dependencies.md)：可用库、版本/许可证、复用决策与准入测试。
-- [验收映射](acceptance.md)：A01–A18 的负责阶段及需要保留的验证证据。
+- [架构基线](../JVM_Rust_Engine_Final_Architecture.md)：目标、I1–I12、模型与管线。
+- [当前路线](roadmap.md)：已完成范围、正确性收尾和后续覆盖边界。
+- [依赖选型](dependencies.md)：复用决策与准入要求。
+- [验收映射](acceptance.md)：A01–A18 的适用范围与证据。
 
-| 阶段 | 变更文档 | 交付目标 |
+| 阶段 | 记录 | 当前状态 |
 | --- | --- | --- |
-| P0（已归档） | [2026-09-17-establish-p0-foundation](changes/archive/2026-09-17-establish-p0-foundation/proposal.md) | 有界快照、物理 locator、Header、共享指令解码和结果契约 |
-| P1（已归档） | [2026-09-17-p1-query-xref](changes/archive/2026-09-17-p1-query-xref/proposal.md) | 独立 X0/X1、metadata/resource/bootstrap、nested/MR/Boot 和分页 |
-| 分层（7/7，已归档） | [layer-jarde-crates](changes/archive/2026-09-19-layer-jarde-crates/proposal.md) | reader/query/jvm 编译边界、门面与集成门禁已验收 |
-| P2（29/29，已归档） | [p2-jvm-ir](changes/archive/2026-09-19-p2-jvm-ir/proposal.md) | Demand Resolver、raw/canonical CFG、legacy normalization、Frame/SSA 与降级 |
-| P3（12/12，已归档） | [p3-java8-recovery](changes/archive/2026-09-20-p3-java8-recovery/proposal.md) | Java 8 高频恢复、命名、Java 输出和 source maps |
-| P4 | [p4-modern-semantics](changes/archive/2026-09-20-p4-modern-semantics/proposal.md) | 现代语义、RuntimeMatrix、X2/X3 深度与框架插件 |
-| P5 | [p5-measured-optimization](changes/archive/2026-09-20-p5-measured-optimization/proposal.md) | 按实测决定的缓存、并行、索引与性能回归 |
+| P0 | [establish-p0-foundation](changes/archive/2026-09-17-establish-p0-foundation/proposal.md) | 已归档；reader、快照、身份与预算 |
+| P1 | [p1-query-xref](changes/archive/2026-09-17-p1-query-xref/proposal.md) | 已归档；X0/X1 与物理视图 |
+| 分层 | [layer-jarde-crates](changes/archive/2026-09-19-layer-jarde-crates/proposal.md) | 7/7，`7a5f994` 归档 |
+| P2 | [p2-jvm-ir](changes/archive/2026-09-19-p2-jvm-ir/proposal.md) | 29/29，`7a5f994` 归档 |
+| P3 | [p3-java8-recovery](changes/archive/2026-09-20-p3-java8-recovery/proposal.md) | 12/12，`250fe1f` 归档 |
+| P4 | [p4-modern-semantics](changes/archive/2026-09-20-p4-modern-semantics/proposal.md) | 10/10，`88416ab` 归档；结构/推断，不是完整现代源码恢复 |
+| P5 | [p5-measured-optimization](changes/archive/2026-09-20-p5-measured-optimization/proposal.md) | 10/10，`cd6f2f0` 归档；cache 默认 off，性能阈值未定 |
+| 收尾 | [close-recovery-correctness-gaps](changes/archive/2026-09-20-close-recovery-correctness-gaps/proposal.md) | 4/4，`fd0aae8` 归档；R8/R9 关闭，反例与正向对照进入永久语料 |
 
-本仓库使用 OpenSpec 1.11.0 的 `spec-driven` schema。`changes/*/specs` 是拟议规格；`specs/` 当前包含 P0 归档的 `analysis-contracts`、`artifact-snapshots`、`classfile-inspection` 、P1 的 `artifact-views`、`query-api`、`structural-xref`，以及 P2 的 `demand-resolver`、`jvm-ir`、`conservative-output`，共九份主规格。CLI 的 `isPlanningComplete` 只表示规划工件齐全，不能解释为实现完成；实施状态以 tasks、代码和实际验收记录为准。
+本仓库使用 OpenSpec 1.11.0 的 `spec-driven` schema。`specs/` 包含 P0–P5 的 18 份主规格；收尾 change 的两份 delta 已随归档并入 `java8-recovery` 与 `recovery-validation`（各保留原有 scenario，并各补两条反例/验收 scenario）。`isPlanningComplete`（旧字段 `isComplete`）只表示规划工件齐全，实施以 tasks、代码和验证为准。
 
 ```sh
 openspec list
-openspec status --change p3-java8-recovery
 openspec validate --all --strict --no-interactive
+openspec validate --archived --strict --no-interactive
 ```
 
-P0 归档记录及最终验证位于 `changes/archive/2026-09-17-establish-p0-foundation/`，P1 位于 `changes/archive/2026-09-17-p1-query-xref/`（两者都按各自 tasks 逐项实现并有 verification 记录，最终候选 CI 通过后才归档并同步主规格）。P2 与分层已在 `7a5f994` 归档，当前继续 `p3-java8-recovery`，执行顺序与闸口见 [阶段路线](roadmap.md) 和 [任务清单](changes/archive/2026-09-20-p3-java8-recovery/tasks.md)。已有 `.agents/skills` 为 OpenSpec 生成的工作流文档，不属于引擎代码；当前不发布 crate。
+A15/A18 的已实现路径通过；不存在的 index/parallel/merged 为不适用，不因此重做 P5。R8/R9 已关闭并归档；剩余的是单独记录的覆盖边界（MethodParameters、类级事实、handler 根策略、现代源码输出、容量与规模语料），需要时各自开 change。当前不发布 crate。

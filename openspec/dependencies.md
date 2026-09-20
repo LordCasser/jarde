@@ -4,11 +4,13 @@
 
 ## 技术栈边界
 
-生产核心使用 Rust 2024，MSRV 1.88。当前 workspace 已有 reader/query/jvm/java、根门面、CLI 六包；P2 与分层均已归档。`jarde-java` 已实际交付，不再列为未来空壳；本轮不调整第三方版本、features 或新增依赖。
+生产核心使用 Rust 2024，MSRV 1.88。当前 workspace 已有 reader/query/jvm/java、根门面、CLI 六包；P0–P5 与分层均已归档；当前收尾只修恢复正确性。`jarde-java` 已实际交付，不再列为未来空壳；本轮不调整第三方版本、features 或新增依赖。
 
 生产依赖为 query→reader、jvm→reader+query、java→jvm+reader、facade→四包、CLI→facade。noak/rawzip/flate2 归 reader；jvm 的 CFG 与 java 的正常流投影直接使用同版本/std-only petgraph，query 不依赖 jvm/java/petgraph。blake3 继续按 reader/query/jvm 的实际摘要语义声明，共享 Digest 身份不变；不新增同义散列接口或 common/core。
 
 reader/query 独立消费、测试依赖闭包、单一身份/预算和 A17/fuzz/CI 是实际验收项；不因拆包升级第三方版本/features，不提前宣称编译提速。已准入 noak/petgraph 继续复用，SSA 的复用取舍沿用 P2 design §6.1，未重新进行上游版本选型。
+
+P5 只在既有 reader 加入默认关闭的内存 CP/Header facts cache，未引入第三方包、落盘、索引或并行。2026-09-20 的恢复收尾（`close-recovery-correctness-gaps`）复用既有 SSA/effect/AST/emitter，未重新选型也未新增依赖；容量权重、规模语料与高级缓存 key 仍是后续边界。
 
 公共 API 同步、可取消，不强制 Tokio、线程池或数据库。CLASS/JAR/WAR 为必需输入；目标代码、bootstrap、JNI 和 launcher 均不执行。JDK、javap、其他反编译器只用于受控测试 oracle，用户依赖不自动联网下载。纯 Rust 要求覆盖生产依赖链，不能只检查顶层 crate 名称。
 

@@ -132,7 +132,7 @@ two findings are marked **closed** below; every other row is the earlier run's o
 | `p3-scope/v8` (javac, `--release 8 -g:none`) | `scope(Z)I` (R3+R5) | Java/Structured | compiles (`if (arg0)` over a `boolean`) | executed: traces identical |
 | | `simple`, `armOnly`, `reuse`, `after`, `reassign`, `receiver` | Java/Structured | compiles | executed: traces identical |
 | `p3-scope/v8-debug` (javac, `--release 8 -g`) | the same seven | Java/Structured | compiles with the class file's own names (`b`, `seed`, `a`) | executed: traces identical |
-| `p3-handlers/v8` (javac, `--release 8 -g:none`) | `body`, `tail`, `one`, `two`, `three`, `suppressed`, `secondInitFails`, `sync`, `syncThrows`, `main` | Java/Structured | compiles | executed: traces identical (70 lines, incl. the reverse close order of `two`/`three` and `boom \| suppressed close-r`) |
+| `p3-handlers/v8` (javac, `--release 8 -g:none`) | `body`, `tail`, `one`, `two`, `three`, `suppressed`, `secondInitFails`, `sync`, `syncThrows`, `main` | Java/Structured | compiles | executed: traces identical (78 lines, incl. the reverse close order of `two`/`three` and `boom \| suppressed close-r`) |
 | | `open`, `openFailing` | Java/Structured | compiles | executed: traces identical (**closed**: see finding (i)) |
 | | `syncBody`, `fail`, `boom` | Mixed/Fallback | compiles (quoted body) | boundary: the run wrote no body to execute |
 | | `withCatch` (`jre_guard_unexplained_row`), `branching` (`jre_guard_body`), `fin`, `catchFinally` (`jre_guard_finally_copy`), `syncThrowsCatching`, `secondInitFailsCatching` (`jre_guard_resource_init`), `suppressedCatching` (`jre_region_irreducible`) | Mixed/Fallback | compiles (quoted) | boundary: every BCI of every refused region is quoted, and every quoted BCI is anchored |

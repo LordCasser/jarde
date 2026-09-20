@@ -111,7 +111,7 @@ flowchart TD
 
 ### 3.1 建议模块
 
-下表是逻辑边界；第一阶段可合并为少量 workspace crates，不必为每层提前建立独立发布包。
+下表是逻辑边界，不按每个模块建立独立发布包。当前已形成 reader/query/jvm/java、根门面与 CLI 六包；实际归属和后续交接见 3.3。
 
 | 模块 | 责任 | 不承担的责任 |
 | --- | --- | --- |
@@ -133,6 +133,21 @@ flowchart TD
 JADX 的公开 API 实现存在 RootNode、加载阶段和后续反编译调度等组织方式；本项目借鉴阶段划分和算法问题分解，不复制以全局可变节点为核心的对象图。[JADX API 实现](https://github.com/skylot/jadx/blob/master/jadx-core/src/main/java/jadx/api/JadxDecompiler.java)
 
 JVM 是操作数栈模型，不能把 DEX 的寄存器模型直接当输入 IR。必须先处理 JVM Frame、异常边、构造器未初始化值、category-2 值和历史子程序，再进入统一的值/控制流分析。
+
+### 3.3 Workspace crate 分层（2026-09-20，六包已落地）
+
+reader/query/jvm 与根门面的分层已按 7/7 归档；`jarde-java` 已随 P3 加入。MethodIr 已交接同次三表、code/CP/bootstrap、声明/receiver/debug 与物理方法身份，门面/CLI 已接通恢复和按需同类 callee；见 [P3 归档设计](openspec/changes/archive/2026-09-20-p3-java8-recovery/design.md)。R8/R9 是恢复产物正确性缺口，已由 [收尾 change](openspec/changes/archive/2026-09-20-close-recovery-correctness-gaps/design.md) 关闭。
+
+| crate | 归属 | 项目内生产依赖 |
+| --- | --- | --- |
+| `jarde-reader` | artifact、唯一 classfile reader、共享身份/预算/错误、声明式 view、MR 选择与检查入口 | 无 |
+| `jarde-query` | X0/X1、query+xref、候选扫描与报告 | reader |
+| `jarde-jvm` | 环境/providers/resolver/dispatch、CFG/normalization/Frame/SSA/effects、pass 与方法 driver | reader、query（声明引用候选复用） |
+| `jarde` | 统一 Engine 门面与选定再导出，不留分析循环 | reader、query、jvm、java |
+| `jarde-cli` | 参数与 JSON 适配 | jarde |
+| `jarde-java`（已创建） | Region、recovery AST、命名、source map 与输出 | jvm、reader；复用 petgraph；由 jarde 聚合 |
+
+轻量调用方直接依赖 reader/query；query 的生产依赖闭包不得出现 resolver/IR/Java 恢复。`jarde-jvm → jarde-query` 不授权单方法分析隐式全局扫描。中端内部模块保持私有，向恢复层提供所需的只读 facts；不能因拆包把全部内部结构改成 public。共用同一身份和预算，不新增 speculative core/common 包或跨项目通用 IR。P2/分层已完成归档；P3–P5 也已按各自范围归档；当前只修嵌套求值与 fallback 生产者保留，不重复拆包、作用域或跨方法接线。
 
 <a id="s04"></a>
 ## 4. 版本体系与 Java 8 兼容基线
@@ -751,6 +766,8 @@ Pass 输入尽量不可变，输出新 IR 或受控 rewrite transaction；提交
 
 复用成熟的 Rust ZIP、压缩、哈希等底层组件时，按本项目的恶意输入和预算需求评估其边界。Classfile/IR 核心不通过外部 Java 进程绕过独立实现目标。
 
+对 ASC/droidsaw 的固定版本源码核对见 [P2 design §6.1](openspec/changes/archive/2026-09-19-p2-jvm-ir/design.md)。当前继续使用已准入的 reader/图算法库，JVM SSA 与区域恢复保持项目内实现，吸收名字分配与指令语义分离、Region 与 emitter 分离和独立小图对照；不直接引入整个 droidsaw-common，也不把 stack/register 差异当作通用 SSA 无法复用的理由。若薄适配能通过异常/origin/effect/资源停止契约且维护成本更低，再重评直接依赖，不把自研当成质量优势的证据。
+
 JADX、其他反编译器和 JDK 工具可作为算法参考及测试 oracle；不存在唯一 oracle。若移植具体源码，按其许可证处理来源与义务；默认实现基于规范和独立设计，不把“参考算法”等同于直接复制代码。
 
 <a id="s15"></a>
@@ -1040,6 +1057,8 @@ Bloom/摘要等 negative filter 必须绑定正确版本、范围和快照；疑
 <a id="s21"></a>
 ## 21. 实施阶段与依赖顺序
 
+下列阶段描述保留架构目标与依赖，不等于所有覆盖面已经实现。P0–P5 的阶段归档已完成；实际支持范围、剩余缺口与当前完成判断以 [支持矩阵](docs/support-matrix.md) 和 [当前路线](openspec/roadmap.md) 为准。
+
 ### P0：事实和边界
 
 完成 Artifact snapshots、CLASS/JAR/WAR locator、容器预算、Identity/Evidence/Coverage、Reader、instruction cursor 和 Registry 框架。以 Java 8/历史链建立测试，同时使 CP/attribute dispatch 能容纳现代版本。
@@ -1058,9 +1077,13 @@ Bloom/摘要等 negative filter 必须绑定正确版本、范围和快照；疑
 
 Java 8 Runtime Profile 下的 45–52 历史输入纳入可靠处理基线：可正确处理的恢复，不可可靠规范化的明确 fallback。`jsr/ret` 不能延迟到“核心 SSA 全部写完以后再补”。
 
+当前状态（2026-09-20，`fd0aae8`）：P0–P5 与分层已归档，18 份主规格已同步；独立反例 R8/R9 已关闭——嵌套值按生成文本的实际求值位置校验，fallback 保留被拒表达式依赖的字段生产者与 origin，两者都进入永久语料与库/CLI 验收。本次收尾（`close-recovery-correctness-gaps`）已归档；剩余为各自单独记录的覆盖边界，见 [收尾验证](openspec/changes/archive/2026-09-20-close-recovery-correctness-gaps/verification.md) 与 [路线](openspec/roadmap.md)。
+
 ### P3：Java 8 质量收敛
 
 完成高频 Java 区域恢复、lambda、synthetic accessor、StringBuilder concat、inner/capture、bridge、enum、TWR、default/static interface methods、变量恢复和 source maps。
+
+先在 `jarde-java` 打通普通控制流 → AST → Java 文本、最小命名/source map 与明确 fallback 的真实单方法闭环，再增量增加语法糖及完整映射。通用输出不等待全部模式识别完成，未命中模式不能直接等于无法输出。
 
 交付：代表性 Java 8 生产 JAR/WAR 的高质量恢复；根据语料与验收表确定 release 门槛。
 

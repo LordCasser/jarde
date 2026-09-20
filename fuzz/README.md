@@ -219,4 +219,4 @@ root audit alone cannot cover this independent fuzz workspace. Local command res
 remote CI run results are recorded separately in
 [`harden-p1-validation`](../openspec/changes/archive/2026-09-17-harden-p1-validation/verification.md);
 the P2 target's local 60-second run and its first CI smoke step are recorded in
-[`p2-jvm-ir`](../openspec/changes/p2-jvm-ir/verification.md).
+[`p2-jvm-ir`](../openspec/changes/archive/2026-09-19-p2-jvm-ir/verification.md).
