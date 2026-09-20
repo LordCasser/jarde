@@ -44,7 +44,7 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 | 顺序 | 范围 | 完成条件 |
 | --- | --- | --- |
 | 已关闭 | 停止传播、指定递归 abort、`inverse32` 二元分组、Produced/content 读法 | 分别由 `8586356`、`4f62e26`、`445a277` 及契约归档交付；不推广为任意输入安全或完整源码恢复 |
-| 1 | [group-call-receivers](changes/group-call-receivers/proposal.md)，实施中 | `(a + b).substring(1)` 输入 `("a", "bc")` 的恢复值须为 `"bc"`，不能为 `"ac"`；补齐实际可达上下文及编译/行为对照，保留 origin 与求值次数 |
+| 已关闭 | 调用 receiver 分组（`fa6dc6e` 实现，见其归档验证） | `(a + b).substring(1)` 现恢复为分组文本，执行对照 `("a","bc")` 得 `bc`；位置枚举覆盖 printer 每个写入点，javac 不可达位置由单测见证 | `(a + b).substring(1)` 输入 `("a", "bc")` 的恢复值须为 `"bc"`，不能为 `"ac"`；补齐实际可达上下文及编译/行为对照，保留 origin 与求值次数 |
 | 2 | [type-boolean-contexts](changes/type-boolean-contexts/proposal.md)，已规划 | 以 descriptor 和本次值证据定型；`isSCSV` 不返回 int，boolean 调用结果不与 0 比较；无足够证据时可靠拒绝，不一揽子改写类型系统 |
 | 3 | [spell-array-types](changes/spell-array-types/proposal.md)，已规划 | `[B`、引用数组与多维数组在类型位置写合法 Java 或明确拒绝；固定 `hash2FieldElement` 及受控声明样例，不把 descriptor 直接输出 |
 | 核实 | 历史 clone/toString 报错 | 逐条保存 opcode、owner、descriptor 和包装器上下文；`ArrayUtils.removeElement` 是静态 helper 正向对照，不作为丢 receiver 反例 |

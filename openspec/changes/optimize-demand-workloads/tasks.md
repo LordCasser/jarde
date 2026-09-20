@@ -1,8 +1,8 @@
-当前实施状态：**0/22**。O1 的独立子交付 `bound-container-lookup` 已归档（8/8，`b22ea04`），但下列任务还要求专项工作负载、归因、原始样本及调查处置，不能仅凭子 change 归档勾选。`preserve-task-operation-stops` 是当前正确性前置，实施不归本专项。
+当前实施状态：**0/22**。O1 的独立子交付 `bound-container-lookup` 已归档（8/8，`b22ea04`），但下列任务还要求专项工作负载、归因、原始样本及调查处置，不能仅凭子 change 归档勾选。`preserve-task-operation-stops` 已在 `8586356` 完成；后续恢复修正与开放缺口见[当前复测](../../completion-review.md)，其实现继续独立于本专项。
 
 ## 1. G0 固定基线与测量入口
 
-- [ ] 1.1 在 `preserve-task-operation-stops` 的固定提交验收后，冻结 baseline revision、构建参数及 fixture 摘要，复核 design 的源码观察；登记 `85828c4` 仅为历史比较臂及其已知反例，在实施期 verification 中区分仍存在、已修复和未确认项，验证未混入其它 change 的行为差异（A13/A14/A18）。
+- [ ] 1.1 冻结 baseline revision、构建参数及 fixture 摘要，复核 design 的源码观察；登记 `85828c4`、`8586356` 的历史行为边界及后续递归/二元分组修正，在实施期 verification 中分别记录 receiver 分组、boolean/数组类型的开放反例和 clone/toString 的待核实条目。正式候选按声明工作负载验收，区分仍存在、已修复和未确认项，验证未混入其它 change 的行为差异（A13/A14/A18）。
 - [ ] 1.2 扩展现有 P5 harness 的 W1–W5 固定工作负载与序列，登记 W6 的宿主需求或缺失理由；验证启动/open/准备/请求/输出与序列总成本口径可独立复现，不依赖临时 benchmark 目录。
 - [ ] 1.3 增加需要的工作计数及外部互斥阶段计时，分开使用量、cache 驻留和进程 RSS；用仪表开/关及嵌套阶段样例验证无重复归因，阶段时间不进入领域报告 fingerprint（A15）。
 - [ ] 1.4 为每组登记主指标、退化/内存界限、样本量与统计方法，保存至少 10 个独立基线样本及原始数据；验证可按同一配置重跑，尾延迟证据不足明确标记而非推广经验 p95。

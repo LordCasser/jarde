@@ -7,7 +7,7 @@
 
 ### Requirement: Evidence-gated Java 8 recovery
 
-系统 SHALL 仅在对应 IR、descriptor、异常/effect 和编译器模式前置条件满足时启用 Structured recovery；证据不足时 MUST 返回 representation=Mixed/Bytecode、quality=Conservative/Fallback，并说明缺失条件。值的正确性 SHALL 按生成代码实际求值的位置与顺序验证，嵌套表达式不能以其原始生产位置代替当前求值位置；当一个算术的结果作为另一个算术的操作数时，呈现 MUST 使用该操作数自己的值并保留这一嵌套，MUST NOT 省略外层运算、也不得把某个操作数改写成另一种运算（例如把 `i * (2 - d * i)` 写成 `i * 2 - d * i`）。**该嵌套也 MUST 体现在输出文本的分组上**：表达式树到文本的转换 MUST 按运算优先级与结合性补足括号（或写成不依赖默认结合的形式），使文本解析回同一棵树；仅凭「树是对的」不满足本要求，因为调用方收到的是文本。层不能证明某操作数的值或求值点时 MUST 拒绝该区域而不是呈现，并保留被拒区域的 bytecode 与 origin；quality、content、execution 等结构性平面 MUST NOT 代替这一证据。fallback MUST 保留被省略表达式所依赖的可观察生产者及其物理 origin，包括字段读取、类初始化与可能抛异常的操作。
+系统 SHALL 仅在对应 IR、descriptor、异常/effect 和编译器模式前置条件满足时启用 Structured recovery；证据不足时 MUST 返回 representation=Mixed/Bytecode、quality=Conservative/Fallback，并说明缺失条件。值的正确性 SHALL 按生成代码实际求值的位置与顺序验证，嵌套表达式不能以其原始生产位置代替当前求值位置；当一个算术的结果作为另一个算术的操作数时，呈现 MUST 使用该操作数自己的值并保留这一嵌套，MUST NOT 省略外层运算、也不得把某个操作数改写成另一种运算（例如把 `i * (2 - d * i)` 写成 `i * 2 - d * i`）。**该嵌套也 MUST 体现在输出文本的分组上**：表达式树到文本的转换 MUST 按运算优先级与结合性补足括号（或写成不依赖默认结合的形式），使文本解析回同一棵树；仅凭「树是对的」不满足本要求，因为调用方收到的是文本。分组 MUST 按子表达式所在的**语法位置**判定，而不只按它的父运算符：同一个子表达式写在调用或字段读取的 receiver、方法引用限定符、一元操作数与数组位置时 MUST 同样保持自己的分组（例如 `return (a + b).substring(1);` 的接收者），而 Java 语法已经界定该子表达式的位置（调用/构造实参、下标、lambda 体）MUST NOT 增加无谓括号。层不能证明某操作数的值或求值点时 MUST 拒绝该区域而不是呈现，并保留被拒区域的 bytecode 与 origin；quality、content、execution 等结构性平面 MUST NOT 代替这一证据。fallback MUST 保留被省略表达式所依赖的可观察生产者及其物理 origin，包括字段读取、类初始化与可能抛异常的操作。
 
 #### Scenario: Java 8 lambda and method reference
 
@@ -73,6 +73,21 @@
 
 - **WHEN** 表达式树把一个优先级更低或结合方向不同的子表达式放在某个运算的操作数位置，例如 `a * (2 - b * a)`、`a - (b - c)`、`a / (b * c)`、`a - (b + 1) * 2`
 - **THEN** 呈现文本 MUST 保持该树的分组：打印时按运算优先级与结合性补足括号（或等价地写成不依赖默认结合的方式），使文本按 Java 语法解析回同一棵树；MUST NOT 依赖默认优先级与结合性直接拼接子表达式。四个形状中的每一个都必须解析回原树，且以受控执行对照验收（`a * (2 - b * a)` 已实测被打印成 `arg0 * 2 - arg1 * arg0`，其余三个同样丢失分组）
+
+#### Scenario: A receiver keeps its own grouping
+
+- **WHEN** 呈现把某个子表达式写在调用或字段读取的 receiver 位置，例如受控样本 `return (a + b).substring(1);`（receiver 是拼接链构造的加法表达式）
+- **THEN** 文本 MUST 保持该 receiver 自己的分组，输出 `return (arg0 + arg1).substring(1);`；MUST NOT 直接拼接成 `return arg0 + arg1.substring(1);`——后者按 Java 语法解析为 `arg0 + (arg1.substring(1))`，是与字节码不同的程序（已实测：该文本编译执行后在 `("a", "bc")` 上返回 `"ac"`）
+
+#### Scenario: Grouping is decided per position
+
+- **WHEN** 打印机把子表达式写入任意位置（二元操作数、调用与构造实参、调用 receiver、字段 receiver、方法引用限定符、数组与下标、一元操作数、lambda 体）
+- **THEN** 该位置需要分组时才补括号，Java 语法已经界定该子表达式的位置 MUST NOT 增加括号；判定 MUST 按位置作出，不能只看父运算符是哪种二元运算，也不能因为某个位置由同一个打印臂写出就认为它已受检
+
+#### Scenario: A receiver's text is executed, not inferred
+
+- **WHEN** receiver 受控样本的原 class 与呈现文本在各自正确签名下分别编译执行，输入为 `("a", "bc")`
+- **THEN** 两侧返回值 MUST 相同：原 class 返回 `"bc"`，呈现文本 MUST NOT 返回 `"ac"`；呈现被拒绝时改由拒绝边界验收（拒绝范围、被引用 BCI 与物理方法映射），不给「未生成 Java」留通过路径
 
 ### Requirement: Historical and Java 8 compiler patterns
 

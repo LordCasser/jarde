@@ -168,5 +168,5 @@
 
 #### Scenario: A frozen candidate has an independently reproduced correctness gap
 
-- **WHEN** 已冻结候选被反例证明会丢失搜索停止证据或误报完整结果
+- **WHEN** 已冻结候选在声明的目标工作负载中被反例证明会丢失搜索停止证据、误报完整结果，或输出类型非法/行为不等价的代码
 - **THEN** 保留该提交作为注明缺口的历史比较臂，由独立正确性 change 修复并验收后重新冻结当前候选；性能专项不得降低行为契约或删除失败样本以通过准入

@@ -25,7 +25,7 @@ jarde 已具备按需读取、查询和方法恢复的基础；定向容器访�
 
 ## Impact
 
-前提为已归档 P0–P5 的读取、查询、方法分析、物理身份、预算及测量能力；现有性能数据来自历史提交，只用于选择调查入口。`85828c4` 已包含七项后续交付，但独立复核发现任务操作停止语义缺口，先由 [preserve-task-operation-stops](../archive/2026-09-20-preserve-task-operation-stops/proposal.md) 修正，再冻结覆盖该修正的新基线。历史测量与非依赖调查可保留，不能把未修正的路径作为已验收的完整任务链。
+前提为已归档 P0–P5 的读取、查询、方法分析、物理身份、预算及测量能力；历史性能数据只用于选择调查入口。`85828c4` 的任务操作停止语义缺口已由 [preserve-task-operation-stops](../archive/2026-09-20-preserve-task-operation-stops/proposal.md) 在 `8586356` 关闭。后续 `4f62e26` 修正指定递归崩溃，`445a277` 修正二元表达式分组；[当前复测](../../completion-review.md) 仍确认 receiver 分组、boolean 上下文与数组类型缺口。新正式候选必须登记这些差异与目标工作负载的验收范围，不把旧冻结提交当作包含后续修正，也不把结构性平面当作行为正确证据。历史测量与独立调查可继续保留；正确性修正由独立 change 负责，专项保持 0/22。
 
 本专项直接影响 P5 harness、优化证据和交付流程。调查涉及 `jarde-reader`、`jarde-query`、`jarde-jvm`、根库门面与 `jarde-cli`；具体代码影响、依赖复用及任何 **BREAKING** API 调整由各实施 change 明确，不保留平行兼容框架。
 
