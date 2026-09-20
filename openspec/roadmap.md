@@ -49,7 +49,7 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 | 原反例已关闭 | 数组类型拼写（`66bd2d0`） | `byte[]`、引用数组及多维数组原样例通过；既有记录边界保留，本轮未确认新的正常数组声明回归 |
 | 1 / T1 | 深拼接的递归发射，待独立修正 | 当前 debug 的 2048 次 append 必须返回产物或明确停止报告，不得 SIGABRT；同时验证构建、发射和释放，不用增大线程栈替代界限。debug/release 分别记录 |
 | 已关闭 | 整数二元比较回归（`f4d1044` 实现，见其归档验证） | `1 == n`、`0 < n`、`1 < n` 保持整数文本，覆盖常量左右位置与比较方向；boolean 原反例仍通过 |
-| 3 / T3 | 提升声明的 boolean 证据，待独立修正 | 已声明 boolean 局部跨分支复制后仍按一致证据定型，或可靠拒绝；不得生成 `int local3` 再赋入 boolean 的矛盾文本 |
+| 已关闭 | 局部类型一次性决定（`2895bc4` 实现，见其归档验证） | 已声明 boolean 局部跨分支复制后仍按一致证据定型，或可靠拒绝；不得生成 `int local3` 再赋入 boolean 的矛盾文本 |
 | 4 / T4 | concat 数值前缀转换，待独立修正 | `append(1).append(2).append("!")` 的恢复执行结果为 `"12!"`；保留 append 转换和求值顺序，不能仅补括号 |
 | 核实 | 历史 clone/toString 报错 | 逐条保存 opcode、owner、descriptor 和包装器上下文；`ArrayUtils.removeElement` 是静态 helper 正向对照，不作为丢 receiver 反例 |
 | 5 | 重新冻结 benchmark 候选 | 保留历史版本身份；新候选登记 T1–T4 的处置、构建与输入摘要，不把不同版本/构建配置结果相互替代 |
