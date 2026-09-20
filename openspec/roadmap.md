@@ -65,7 +65,7 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 | 顺序 | Change | 状态 |
 | --- | --- | --- |
 | 1 | [add-artifact-navigation](changes/archive/2026-09-20-add-artifact-navigation/proposal.md) | 已归档（8/8，`e0c83b6`）：候选/确认两级类列举、成员列举与 `PhysicalMethodId` 交接、歧义候选 |
-| 2 | [add-task-oriented-operations](changes/add-task-oriented-operations/proposal.md) | 待实施：库内目标选择、阶段调度、有界默认预算与环境策略 |
+| 2 | [add-task-oriented-operations](changes/archive/2026-09-20-add-task-oriented-operations/proposal.md) | 已归档（11/11，`2428752`）：库内目标选择/阶段调度/有界预算/三种环境策略、类视图与引用组织、恢复呈现顺序 |
 | 3 | [add-task-oriented-cli](changes/add-task-oriented-cli/proposal.md) | 待实施：薄命令、text/JSON、诊断分离与显式退出状态 |
 
 三者依赖顺序固定；WAR 布局策略与更广的树发现边界重叠部分以已归档的 `bind-prefixed-load-roots` 为前提。
