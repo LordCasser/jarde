@@ -72,7 +72,7 @@ P4 已交付并归档（**10/10**，归档提交 `88416ab`）；命令、数字�
 
 ## P5 实测边界与启用开关（2026-09-20）
 
-P5（`p5-measured-optimization`）已交付 1.1–3.2：1.1 语料 fingerprint，1.2/1.3 benchmark 与结果 fingerprint，2.1/2.2 两项「基于测量保持 disabled」的决策，2.3 facts cache 的完整身份/失效/回退语义，3.1/3.2 差分门禁与对抗语料回归。命令、数字、证伪与如实边界全部在 [P5 验证记录](../openspec/changes/p5-measured-optimization/verification.md)。本节只做发布：**不引入新测量**，按 `performance-gates` 的 `No universal threshold yet` 只声明**测得范围**与**未决门槛**，不制造预设性能承诺。
+P5（`p5-measured-optimization`，**已交付并归档 10/10**，归档提交 `2b491ce`）：1.1 语料 fingerprint，1.2/1.3 benchmark 与结果 fingerprint，2.1/2.2 两项「基于测量保持 disabled」的决策，2.3 facts cache 的完整身份/失效/回退语义，3.1/3.2 差分门禁与对抗语料回归。命令、数字、证伪与如实边界全部在 [P5 验证记录](../openspec/changes/archive/2026-09-20-p5-measured-optimization/verification.md)。本节只做发布：**不引入新测量**，按 `performance-gates` 的 `No universal threshold yet` 只声明**测得范围**与**未决门槛**，不制造预设性能承诺。
 
 **依赖面**：P5 未新增任何第三方依赖（`Cargo.toml`/`Cargo.lock` 零改动）；全部测量复用既有 `UsageSnapshot` 计费维度，未引入 allocator 仪表或新 crate。
 

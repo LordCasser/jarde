@@ -46,4 +46,4 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 | 2.3 → 2.4 | inner/enum/构造器等模式 → TWR/monitor/finally | 依赖修正后的值、作用域、origin 与异常/effect；不在每条语法糖里补一套值流规则 |
 | 3.3 → 3.4 | 独立重编译/行为语料与发布 | 先纳入本轮固定反例；消除 elapsed 假红；库/CLI/主规格/支持矩阵、两个 workspace 门禁和精确 CI 同步 |
 
-当前公开 `recover_method` 返回方法体文本和段表，编译/语义验证尚未执行；不能把 Java/Structured 当成完整源码或已证明等价。2.2 的 accessor 成功主要在低层 API，公开交接仍属 3.1/3.2。P4 已按该边界交付并归档（10/10，`88416ab`）；P5 仍只针对已有测量基线，不吞入正确性修复。
+当前公开 `recover_method` 返回方法体文本和段表，编译/语义验证尚未执行；不能把 Java/Structured 当成完整源码或已证明等价。2.2 的 accessor 成功主要在低层 API，公开交接仍属 3.1/3.2。P4 已按该边界交付并归档（10/10，`88416ab`）；P5 已按该边界交付并归档（10/10，`2b491ce`），只针对已有测量基线，未吞入正确性修复。
