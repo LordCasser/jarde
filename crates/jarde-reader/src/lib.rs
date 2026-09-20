@@ -16,6 +16,11 @@ pub mod artifact;
 pub mod budget;
 pub mod classfile;
 pub mod error;
+// The facts cache (P5 2.3) is opt-in state a caller attaches to a budget; it is a module of its own
+// because it owns an identity, a store and a report, and because the entry points that consult it
+// (`classfile::class_facts`, `classfile::inspect_header`) must not be the place that decides what a
+// cache is keyed by.
+pub mod facts_cache;
 pub mod inspect;
 pub mod model;
 pub mod modern;

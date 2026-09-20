@@ -1,4 +1,5 @@
 use crate::error::{Error, Result};
+use crate::facts_cache::FactsCache;
 use serde::{Deserialize, Serialize};
 use std::sync::{
     Arc,
@@ -347,6 +348,7 @@ pub struct Budget {
     usage: UsageSnapshot,
     cancellation: CancellationToken,
     started_at: Instant,
+    facts: Option<FactsCache>,
 }
 
 impl Budget {
@@ -360,7 +362,26 @@ impl Budget {
             usage: UsageSnapshot::default(),
             cancellation,
             started_at: Instant::now(),
+            facts: None,
         }
+    }
+
+    /// The same lifecycle with a facts cache this request may consult.
+    ///
+    /// A budget is the one handle every read path already holds — the artifact reads, the query
+    /// scan and the resolver all thread `&mut Budget` and nothing else — so it is where an opt-in
+    /// cache is declared rather than a signature that every entry point and every caller would have
+    /// to grow. `Budget::new` attaches none, so a caller that says nothing keeps today's byte-for-
+    /// byte path; a caller that attaches one shares those facts with every other budget holding the
+    /// same handle, which is what a cache is for.
+    pub fn with_facts_cache(mut self, cache: FactsCache) -> Self {
+        self.facts = Some(cache);
+        self
+    }
+
+    /// The facts cache this request may consult, if a caller attached one.
+    pub fn facts_cache(&self) -> Option<&FactsCache> {
+        self.facts.as_ref()
     }
 
     pub fn limits(&self) -> &Limits {

@@ -539,6 +539,64 @@ fn published<T: serde::Serialize>(report: &T) -> Published {
     }
 }
 
+/// Every path at which two documents differ, as `path: left → right`.
+///
+/// Task 1.3's fingerprint answers *whether* two runs published the same result. This answers *what*
+/// moved, which is the half a comparison between two configurations needs: the `Cold and warm
+/// results` scenario allows a partial subset to be affected by scheduling, and what it may never
+/// hide is a change of the result. Every difference the cache-on comparison finds has to be a
+/// charge ([`fn is_a_charge_path`]) — that is the claim, and this is how it is checked instead of
+/// asserted.
+fn differing_paths(left: &Value, right: &Value) -> Vec<String> {
+    let mut paths = Vec::new();
+    collect_differences("", left, right, &mut paths);
+    paths
+}
+
+fn collect_differences(path: &str, left: &Value, right: &Value, into: &mut Vec<String>) {
+    match (left, right) {
+        (Value::Object(left), Value::Object(right)) => {
+            let mut keys: BTreeSet<&String> = left.keys().collect();
+            keys.extend(right.keys());
+            for key in keys {
+                let child = if path.is_empty() {
+                    key.clone()
+                } else {
+                    format!("{path}.{key}")
+                };
+                match (left.get(key), right.get(key)) {
+                    (Some(left), Some(right)) => collect_differences(&child, left, right, into),
+                    (Some(left), None) => into.push(format!("{child}: {left} → absent")),
+                    (None, Some(right)) => into.push(format!("{child}: absent → {right}")),
+                    (None, None) => {}
+                }
+            }
+        }
+        (Value::Array(left), Value::Array(right)) => {
+            if left.len() != right.len() {
+                into.push(format!(
+                    "{path}: {} entries → {} entries",
+                    left.len(),
+                    right.len()
+                ));
+                return;
+            }
+            for (index, (left, right)) in left.iter().zip(right).enumerate() {
+                collect_differences(&format!("{path}[{index}]"), left, right, into);
+            }
+        }
+        (left, right) if left == right => {}
+        (left, right) => into.push(format!("{path}: {left} → {right}")),
+    }
+}
+
+/// Whether a differing path is a **charge**: a counter inside a usage snapshot, which is the
+/// resource half task 1.3's report keeps beside the result and `performance-gates` compares
+/// separately.
+fn is_a_charge_path(path: &str) -> bool {
+    path.split('.').any(|segment| segment == "usage")
+}
+
 // -------------------------------------------------------------------------------------------
 // The measurement context and one run's record
 // -------------------------------------------------------------------------------------------
@@ -559,7 +617,10 @@ struct Context {
     /// The measured path. `direct` is the only one that exists (`design.md` decision 3 makes it the
     /// comparable reference); the absent ones are named below rather than simulated.
     path: &'static str,
-    cache: &'static str,
+    /// The cache state the run really ran in. It is a `String` rather than a constant because a row
+    /// that attaches a cache reads the label off the handle it attached ([`cache_context`]), so the
+    /// record cannot describe a configuration the run did not use.
+    cache: String,
     concurrency: &'static str,
     /// The scope actually requested, as the request states it.
     scope: String,
@@ -732,8 +793,27 @@ fn run_full_range(
     label: &'static str,
     cancelled: bool,
 ) -> RunRecord {
+    run_full_range_with(corpus, verified, label, cancelled, None)
+}
+
+/// The same row with the P5 2.3 facts cache attached, when the caller names one.
+///
+/// The request, the snapshot, the budget and the measured section do not move: the cache is a
+/// declaration on the budget the row already builds, and everything the row charges for reading,
+/// enumerating and publishing stays where it was. What the row's context records as its cache state
+/// is read from the handle itself, so a record cannot describe a configuration the run did not use.
+fn run_full_range_with(
+    corpus: &Corpus,
+    verified: &Verified,
+    label: &'static str,
+    cancelled: bool,
+    cache: Option<&FactsCache>,
+) -> RunRecord {
     let engine = Engine::new();
-    let mut budget = Budget::new(limits());
+    let mut budget = match cache {
+        Some(cache) => Budget::new(limits()).with_facts_cache(cache.clone()),
+        None => Budget::new(limits()),
+    };
     let token = budget.cancellation_token();
     let started = Instant::now();
     let snapshot = engine
@@ -749,6 +829,10 @@ fn run_full_range(
     let wall_micros = started.elapsed().as_micros();
     let form = published(&report);
     let mut context = context_of(corpus, verified);
+    context.cache = match cache {
+        Some(cache) => cache_context(cache),
+        None => REFERENCE_CACHE.to_string(),
+    };
     context.scope = serde_json::to_string(&request.physical.scope).expect("a scope serializes");
     context.view = serde_json::to_string(&request.physical).expect("a view serializes");
     context.profile =
@@ -793,8 +877,24 @@ fn run_single_member(
     label: &'static str,
     premise: &MemberTarget,
 ) -> RunRecord {
+    run_single_member_with(corpus, verified, label, premise, None)
+}
+
+/// The same row with the P5 2.3 facts cache attached: the local path reads the same class header
+/// through the same reader entry, so a cache attached to the budget serves this row exactly as it
+/// serves the full-range one.
+fn run_single_member_with(
+    corpus: &Corpus,
+    verified: &Verified,
+    label: &'static str,
+    premise: &MemberTarget,
+    cache: Option<&FactsCache>,
+) -> RunRecord {
     let engine = Engine::new();
-    let mut budget = Budget::new(limits());
+    let mut budget = match cache {
+        Some(cache) => Budget::new(limits()).with_facts_cache(cache.clone()),
+        None => Budget::new(limits()),
+    };
     let started = Instant::now();
     let snapshot = engine
         .open(ArtifactInput::bytes(verified.content.clone()), &mut budget)
@@ -806,6 +906,10 @@ fn run_single_member(
     let wall_micros = started.elapsed().as_micros();
     let form = published(&recovered);
     let mut context = context_of(corpus, verified);
+    context.cache = match cache {
+        Some(cache) => cache_context(cache),
+        None => REFERENCE_CACHE.to_string(),
+    };
     context.scope = format!("single member add(II)I of {}", verified.subject.path);
     context.view =
         serde_json::to_string(&request.environment.runtime.physical).expect("a view serializes");
@@ -856,9 +960,10 @@ fn context_of(corpus: &Corpus, verified: &Verified) -> Context {
         subject_bytes: verified.bytes,
         subject_blake3: verified.blake3.clone(),
         // `direct` is the reference path of `design.md` decision 3: the scan every other path has to
-        // agree with. The other two columns of the matrix have no implementation to run.
+        // agree with. The concurrency column still has no implementation to run; the cache column
+        // has one as of task 2.3, and it is off unless a row attaches it.
         path: "direct",
-        cache: REFERENCE_CACHE,
+        cache: REFERENCE_CACHE.to_string(),
         concurrency: REFERENCE_CONCURRENCY,
         scope: String::new(),
         view: String::new(),
@@ -1087,7 +1192,7 @@ fn repeats(label: &'static str, count: usize, mut run: impl FnMut() -> RunRecord
         subject_bytes: first.context.subject_bytes,
         subject_blake3: first.context.subject_blake3.clone(),
         path: first.context.path,
-        cache: first.context.cache,
+        cache: first.context.cache.clone(),
         concurrency: first.context.concurrency,
         scope: first.context.scope.clone(),
         view: first.context.view.clone(),
@@ -1381,10 +1486,61 @@ impl MeasuredBenefit {
 /// once, so the rows and the decision record cannot describe the harness differently. A benefit
 /// claim's candidate side is refused if it carries these values: that would be the reference path
 /// measured twice.
-const REFERENCE_CACHE: &str = "absent: no cache or index exists in this repository (P5 2.2 owns \
-                               one), so no run can be labelled cache-on";
+///
+/// It is still the row that runs with **no cache attached**. Task 2.3 built the cache this label
+/// used to say did not exist, and built it disabled: a reference row attaches nothing
+/// ([`Budget::new`]), and `the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler` holds
+/// that from the other side. The label sorts before [`CACHE_ON`], so the reference configuration of
+/// the matrix stays this one — the assertion is in
+/// `the_cache_path_publishes_the_same_result_and_reports_what_it_saved`.
+const REFERENCE_CACHE: &str = "off: the facts cache exists and is disabled by default, so a \
+                               reference row runs the direct path with no cache attached";
 const REFERENCE_CONCURRENCY: &str = "1: no parallel scheduler exists (P5 2.x owns one), so every \
                                       row is one sequential scan";
+
+/// The configuration the cache-on row really runs in: the label is this literal, and the test that
+/// compares the two paths asserts it equals the label the handle itself describes
+/// ([`cache_context`]). The entry count is the row's own capacity, and the identity is this build's.
+const CACHE_ON: &str = "on: facts cache (registry 71 entry format 1), capacity 64 entries";
+
+/// The entries a cache-on row is allowed to hold. Every class of the corpus fits; the bound is
+/// declared rather than convenient, because an unbounded store is the state a benchmark would grow
+/// into without saying so.
+const CACHE_CAPACITY: usize = 64;
+
+/// A fresh cache for one row, under this build's identity.
+fn facts_cache() -> FactsCache {
+    FactsCache::current(CACHE_CAPACITY)
+}
+
+/// The cache state a context records, read from the handle the run attached.
+fn cache_context(cache: &FactsCache) -> String {
+    format!("on: {}", cache.describe())
+}
+
+/// The measured difference of the cache-on row over its reference, by counted dimension, exactly as
+/// [`compare`] reports it for the two rows (`candidate - reference`).
+///
+/// Every entry is **recomputed** by `the_cache_path_publishes_the_same_result_and_reports_what_it_saved`
+/// from the two rows themselves and compared against this slice, so the record cannot drift from
+/// what the harness measures; the medians below are one measurement on one machine, printed beside
+/// the sample by the repeated run, and no test asserts them.
+static CACHE_BENEFIT_DELTAS: [(CountedBudgetDimension, i128); 2] = [
+    (CountedBudgetDimension::ClassBytes, -555),
+    (CountedBudgetDimension::AttributeBytes, -87),
+];
+
+/// Wall-clock medians of the two rows, in microseconds, from one run of the repeated measurement on
+/// the machine task 1.2 recorded (200 repeats, single-threaded, `minimal-jar`).
+///
+/// They are recorded because a measured benefit has to state what it compared — the reference row's
+/// median was **137 µs** (min 124, p90 148, halves 136/141) and the cache-on row's **116 µs**
+/// (min 106, p90 121, halves 115/118), a difference larger than the spread between the halves of
+/// either row — and they are **not** asserted: the deterministic half of the claim is
+/// [`CACHE_BENEFIT_DELTAS`], and a wall-clock assertion on a shared machine is a flake. One machine,
+/// one corpus of hundreds of bytes: this is a reading, not a threshold (design decision 5).
+const CACHE_REFERENCE_MEDIAN_MICROS: u128 = 137;
+const CACHE_CANDIDATE_MEDIAN_MICROS: u128 = 116;
 
 /// Task 2.1's candidates and task 2.2's, all disabled, each with what would reopen it.
 static CANDIDATES: [Candidate; 3] = [
@@ -1442,9 +1598,9 @@ static CANDIDATES: [Candidate; 3] = [
                   reported as a gain at all). No threshold for 'worth enabling' is fixed here \
                   (design decision 5).",
         ceiling: "Single-threaded: no thread is spawned anywhere in the engine (guarded by \
-                  `the_engine_has_no_cache_index_or_scheduler_to_extend`), so one request is one \
-                  core; and the first run in a process reaches 13× the median, which is larger than \
-                  anything this corpus could show for a scheduling change.",
+                  `the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler`), so one \
+                  request is one core; and the first run in a process reaches 13× the median, which \
+                  is larger than anything this corpus could show for a scheduling change.",
         upgrade: "A parallel scan has to publish byte-identical results and keep the origin order \
                   (`compare` requires order equality, not a stable permutation), and it has to hold \
                   `Cancellation under pressure` — which needs the pressure corpus of task 3.2: ZIP \
@@ -1460,36 +1616,55 @@ static CANDIDATES: [Candidate; 3] = [
         id: "facts-cache/index",
         what: "Reusing facts between requests — CP/header, X1, resolution, IR/source — under a key \
                bound to the semantic inputs of the layer that holds them (design decision 2; the \
-               `facts-cache` spec).",
-        owner: "P5 2.2 owns the decision; 2.3 owns invalidation and the direct-path fallback.",
-        basis: "There is no cache and no index to extend (guarded). What a key would have to separate \
-                is visible in the rows already: the same 303 B class is charged 303 read bytes by the \
-                local row and 909 by the full-range row, and the full-range rows materialize 555 and \
-                909 class bytes while charging no header and no body at all — a key that missed the \
-                scope or the layer would hand one row the other's answer.",
-        missing: "A second path, and with it the per-layer dependency sets of `facts-cache`: which \
-                  inputs a layer's answer really depends on is settled by comparing a cached run \
-                  against a direct one (A15's cache half), and two dimensions of the key record below \
-                  have no identity in the code at all.",
-        trigger: "When repeated requests over one snapshot are a real caller's dominant cost — \
-                  observable as rows in this harness whose charged dimensions repeat and whose wall \
-                  clock is the largest term — and every dimension of the key record below has a \
-                  carrier: build it behind a disabled-by-default switch and measure it row by row \
-                  against the direct path.",
-        ceiling: "Every request re-reads and re-materializes what it needs, and nothing survives a \
-                  request. The key contract is recorded but no key exists, so the dimensions without \
-                  a version identity (IR, recovery) cannot even be expressed yet.",
-        upgrade: "An entry has to bind its layer's semantic inputs, keep physical origins separate, \
-                  never let an incomplete entry stand in for a complete one, and fall back to the \
-                  direct path inside the remaining budget (`facts-cache`; design decision 3). `Cold \
-                  and warm results` (A15) and `Optimized versus direct path` are the gates, and \
-                  `Index candidate requires verification` is where A01 returns: a hit is a candidate, \
-                  and a consumer or a definition still has to verify it.",
-        benefit: Benefit::Unmeasured {
-            why: "No cache exists, so there is no cached run to compare against a direct one; and two \
-                  of the key's dimensions have no identity to bind, so the entry cannot state what it \
-                  depends on (see `KEY_DIMENSIONS`).",
-        },
+               `facts-cache` spec). **Task 2.3 built the CP/Header layer**, disabled by default; the \
+               three layers above it are still not built.",
+        owner: "P5 2.2 owns the decision; 2.3 built the CP/Header layer, its invalidation and the \
+                direct-path fallback; the slices above it own their own layers.",
+        basis: "A facts cache exists as of 2.3 and is **attached by a caller, never enabled by the \
+                engine** (`the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler`; \
+                `p5_facts_cache.rs` holds its identity, invalidation and fallback). What it answers \
+                is the CP/header parse: one request re-reads and re-parses the same class once per \
+                consumer stream, which is what the rows show — the full-range archive row charges \
+                555 class bytes for a 185-byte class (three parses of one class) and the local row \
+                charges 303 for one, while the cache-on row charges no class byte for the same \
+                result. The reads, the enumeration, the origins, the coverage and the diagnostics \
+                are untouched by it, because the read still happens and only the parse is answered \
+                from the store: the warm row still charges 627 read bytes, and the attribute bytes \
+                the scan reads per consumer are still charged — only the parse's own share of them \
+                is gone (87 of 174 on this row). The warm row's median is 116 µs against the \
+                reference's 137 µs in the repeated measurement that recorded them: one machine, one \
+                corpus of hundreds of bytes, no threshold fixed.",
+        missing: "The layers above CP/Header: X1's class/resource digest and consumer schema, \
+                  resolution's symbol/source context with view/domain/platform and the provider \
+                  snapshot, and IR/source's method content with the analysis/recovery versions, the \
+                  output level and the naming configuration. Two of those (IR, recovery) still have \
+                  no version identity in the code at all, so an entry above this layer could not yet \
+                  state what it depends on.",
+        trigger: "When the layer above is the dominant cost of repeated requests over one snapshot — \
+                  observable as rows in this harness whose charged dimensions repeat above the \
+                  CP/header parse — and every dimension of the key record below that layer has a \
+                  carrier: build that layer behind its own disabled switch and measure it row by row \
+                  against the direct path. This layer's own trigger is met and recorded here: its \
+                  dimensions all had carriers, and the comparison is measured.",
+        ceiling: "One layer is built and every layer above still re-reads and re-materializes what it \
+                  needs; nothing above the CP/header parse survives a request. The dimensions without \
+                  a version identity (IR, recovery) cannot even be expressed yet, so the upper layers \
+                  cannot be keyed completely.",
+        upgrade: "An entry above this layer has to bind its layer's semantic inputs, keep physical \
+                  origins separate, never let an incomplete entry stand in for a complete one, and \
+                  fall back to the direct path inside the remaining budget (`facts-cache`; design \
+                  decision 3) — the mechanism 2.3 built once, per layer. `Cold and warm results` \
+                  (A15) and `Optimized versus direct path` are the gates, and `Index candidate \
+                  requires verification` is where A01 returns: a hit is a candidate, and a consumer \
+                  or a definition still has to verify it.",
+        benefit: Benefit::Measured(MeasuredBenefit {
+            reference: "full-range-xref/minimal-jar",
+            candidate: "cache-on-warm/full-range-xref/minimal-jar",
+            configuration: (CACHE_ON, REFERENCE_CONCURRENCY),
+            deltas: &CACHE_BENEFIT_DELTAS,
+            reference_median_micros: CACHE_REFERENCE_MEDIAN_MICROS,
+            candidate_median_micros: CACHE_CANDIDATE_MEDIAN_MICROS,
+        }),
     },
 ];
 
@@ -1732,36 +1907,46 @@ fn collect_sources(directory: &Path, into: &mut Vec<EngineSource>) {
     }
 }
 
-/// The needles that would mean a candidate has been wired into the engine: a cache or index module,
-/// a type declared as a cache, or a thread spawned to scan alongside the caller.
+/// The machinery that has to stay **absent** from the engine: an index, a scheduler, a thread.
 ///
-/// What they catch and what they miss is stated rather than discovered later. They catch a
-/// `cache`/`index`/`facts_cache` module, a type whose declaration begins with `Cache`, and the ways
-/// a Rust program spawns work. They do not catch a cache under another name (`Memo`, `IndexTable`),
-/// a memo table kept in a local variable or a field, anything reached through a dependency, or any
-/// file outside `crates/*/src` and `src/`. `Index…` is deliberately not a name prefix: this
+/// These five needles are task 2.1's and task 2.2's, unchanged, and their scope is unchanged too:
+/// they catch a module or a spawn site in `crates/*/src` and `src/`, and they do not catch an index
+/// under another name (`IndexTable`), one kept in a local variable, anything reached through a
+/// dependency, or any file outside those trees. `Index…` is deliberately not a name prefix: this
 /// repository already declares `pub struct IndexCall` in the recovery layer — a dispatch-table read,
 /// not an index — and a rule that refused that line would be a rule about spelling rather than about
 /// machinery.
-const MACHINERY: [&str; 11] = [
-    "mod cache",
+///
+/// What changed with task 2.3 is not this list but the claim beside it. 2.1/2.2 asserted that **no
+/// cache existed**; 2.3 built one, so the cache half of that claim is now made of three facts this
+/// test can hold — the store is declared in one module, **nothing in the engine constructs one**, and
+/// the budget every existing entry point builds carries none — while the index and the scheduler are
+/// still asserted absent exactly as before.
+const MACHINERY: [&str; 5] = [
     "mod index",
-    "mod facts_cache",
-    "struct Cache",
-    "enum Cache",
-    "struct FactsCache",
-    "enum FactsCache",
     "thread::spawn",
     "thread::scope",
     "rayon",
     "spawn_blocking",
 ];
 
-/// The lines of `text` that name machinery, as `line: needle`.
-fn machinery_hits(text: &str) -> Vec<String> {
+/// The tokens that would mean the engine itself switches the facts cache on.
+///
+/// A cache a caller attaches is the disabled-by-default state; a cache the engine constructs is a
+/// cache in the default path, whatever the switch is called. The needles name the three ways one is
+/// built, so a later slice that wires one into the CLI, the facade or a default budget fails here
+/// and has to move the record with it — the same shape as 2.1/2.2's rule for a second path.
+const CACHE_CONSTRUCTIONS: [&str; 3] = [
+    "FactsCache::new(",
+    "FactsCache::current(",
+    "FactsCache::over(",
+];
+
+/// The lines of `text` that name a needle, as `line: needle`.
+fn machinery_hits(text: &str, needles: &[&str]) -> Vec<String> {
     let mut hits = Vec::new();
     for (number, line) in text.lines().enumerate() {
-        for needle in MACHINERY {
+        for needle in needles {
             if line.contains(needle) {
                 hits.push(format!("{}: {needle}", number + 1));
             }
@@ -2067,7 +2252,13 @@ fn move_charge(document: &mut Value) -> u64 {
 }
 
 /// One run of every row that publishes a result, in a fixed order: the three `direct` rows the
-/// ordering and comparison claims are stated over.
+/// ordering and comparison claims are stated over, and the cache-on row task 2.3 added.
+///
+/// The cache-on row is the second `(cache, concurrency)` configuration the matrix can run, which is
+/// what task 2.1's rule was written for: the day a second path appears, the record has to carry a
+/// measured comparison beside it (`every_benefit_claim_needs_a_second_runnable_path`). It is a
+/// **warm** row, and the priming run is its recorded premise rather than part of the measured
+/// section, because a cache that has answered nothing yet is the direct path with extra steps.
 fn published_rows(corpus: &Corpus) -> Vec<RunRecord> {
     let jar = verified(corpus, &SUBJECTS[0]);
     let class = verified(corpus, &SUBJECTS[1]);
@@ -2076,7 +2267,48 @@ fn published_rows(corpus: &Corpus) -> Vec<RunRecord> {
         run_full_range(corpus, &jar, "full-range-xref/minimal-jar", false),
         run_full_range(corpus, &class, "full-range-xref/v52-class", false),
         run_single_member(corpus, &class, "single-member/v52-class", &premise),
+        run_full_range_warm(
+            corpus,
+            &jar,
+            "cache-on-warm/full-range-xref/minimal-jar",
+            &facts_cache(),
+        ),
     ]
+}
+
+/// The cache-on row: one priming run through the cache, then the measured one.
+///
+/// The premise is the same kind of exclusion the local row's header read is, and it is stated as
+/// one: the warm-up is real work, it is charged to its own budget, and it is recorded beside the row
+/// so the numbers cannot be read as "one request paid for all of this".
+fn run_full_range_warm(
+    corpus: &Corpus,
+    verified: &Verified,
+    label: &'static str,
+    cache: &FactsCache,
+) -> RunRecord {
+    let priming = run_full_range_with(
+        corpus,
+        verified,
+        "cache-on-warm-up/full-range-xref/minimal-jar",
+        false,
+        Some(cache),
+    );
+    let mut row = run_full_range_with(corpus, verified, label, false, Some(cache));
+    row.context.premise = format!(
+        "one priming run of the same request through the same cache, measured nowhere (it charged \
+         {}); the row below is the second request over the same bytes",
+        charges_line(&priming.usage, &CountedBudgetDimension::ALL)
+    );
+    assert!(
+        priming.fingerprint == row.fingerprint
+            || priming.usage.class_bytes != row.usage.class_bytes,
+        "the priming run answered nothing the measured run had to parse, so the row is not warm: \
+         priming charged {} and the row charged {}",
+        charges_line(&priming.usage, &CountedBudgetDimension::ALL),
+        charges_line(&row.usage, &CountedBudgetDimension::ALL)
+    );
+    row
 }
 
 /// The marker a child process prints for each row it measured: the label, the result fingerprint,
@@ -2210,10 +2442,10 @@ fn marker_lines_in_a_child_process() -> Vec<String> {
         .collect();
     assert_eq!(
         lines.len(),
-        3,
-        "the child process printed {} marker lines for the three published rows; if `{MARKER_TEST}` \
-         no longer names a test in this binary the child ran nothing, which is not a comparison:\n\
-         {stdout}",
+        4,
+        "the child process printed {} marker lines for the four published rows (the three direct \
+         rows of task 1.3 and the cache-on row task 2.3 added); if `{MARKER_TEST}` no longer names a \
+         test in this binary the child ran nothing, which is not a comparison:\n{stdout}",
         lines.len()
     );
     lines
@@ -2327,6 +2559,217 @@ fn the_local_and_the_full_range_runs_are_compared_field_by_field() {
     }
 }
 
+/// A15's cache half, in the shape task 1.3's report can state it: the cold and the warm path over
+/// the same bytes, compared field by field.
+///
+/// Three comparisons are needed, because they fail differently:
+///
+/// * **direct versus warm** — the result planes (status, order, coverage, diagnostics) are equal, so
+///   answering a parse from the store published nothing else.
+/// * **cold versus warm** — the same four planes are equal, and **every difference in the published
+///   document is a charge**. That is the whole content of "transparent" here: 1.3's fingerprint
+///   normalizes the wall clock and nothing else, so a run that paid for one parse less has a
+///   different fingerprint — by exactly the counters of the parse it did not run, and by nothing
+///   else. The test states that instead of hiding it behind a second normalization.
+/// * **warm versus warm** — *all five* verdicts equal, fingerprint included: the warm path is a
+///   function of its input alone, and a second warm request pays exactly what the first warm one
+///   paid.
+///
+/// The record is cross-checked at the end: the two rows of the matrix are compared, and the
+/// difference between them has to be the one `CANDIDATES` carries, so the benefit a later slice
+/// reads is the one the harness measures.
+#[test]
+fn the_cache_path_publishes_the_same_result_and_reports_what_it_saved() {
+    let corpus = corpus();
+    let jar = verified(&corpus, &SUBJECTS[0]);
+    let class = verified(&corpus, &SUBJECTS[1]);
+    let premise = locate_member(&class.content);
+
+    // The configuration label of the second path is the handle's own description, and the reference
+    // configuration of the matrix is still the cache-off one (the rule in
+    // `every_benefit_claim_needs_a_second_runnable_path` reads the *first* configuration as the
+    // reference).
+    let probe = facts_cache();
+    assert_eq!(
+        cache_context(&probe),
+        CACHE_ON,
+        "the cache-on label this file records is not the one the handle describes, so the record and \
+         the run describe different configurations"
+    );
+    let configurations = runnable_configurations(&corpus);
+    assert_eq!(
+        configurations.iter().next().map(|(cache, _)| cache.clone()),
+        Some(REFERENCE_CACHE.to_string()),
+        "the reference configuration of the matrix is no longer the cache-off one: {configurations:?}"
+    );
+    assert_eq!(
+        configurations.len(),
+        2,
+        "the matrix runs {} configuration(s); task 2.3 added exactly one (the cache-on one): \
+         {configurations:?}",
+        configurations.len()
+    );
+
+    #[derive(Clone, Copy)]
+    enum Row {
+        FullRange,
+        SingleMember,
+    }
+    let run = |row: Row, cache: Option<&FactsCache>| match row {
+        Row::FullRange => {
+            run_full_range_with(&corpus, &jar, "full-range-xref/minimal-jar", false, cache)
+        }
+        Row::SingleMember => {
+            run_single_member_with(&corpus, &class, "single-member/v52-class", &premise, cache)
+        }
+    };
+    let verdict = |equal: bool| if equal { "equal" } else { "different" };
+
+    for (name, row) in [
+        ("the archive", Row::FullRange),
+        ("the control class", Row::SingleMember),
+    ] {
+        let direct = run(row, None);
+        let store = facts_cache();
+        let cold = run(row, Some(&store));
+        let warm = run(row, Some(&store));
+        let warm_again = run(row, Some(&store));
+        assert_eq!(
+            direct.status, "complete",
+            "{name}: the reference run did not complete, so there is no baseline"
+        );
+
+        let first = compare(&direct, &warm);
+        assert!(
+            first.verdicts.status
+                && first.verdicts.order
+                && first.verdicts.coverage
+                && first.verdicts.diagnostics,
+            "{name}: answering a parse from the store changed a result plane:\n{}",
+            first.lines().join("\n")
+        );
+        println!();
+        println!("row {name}");
+        println!(
+            "  direct → warm fingerprint {}",
+            verdict(first.verdicts.fingerprint)
+        );
+
+        let cold_warm = compare(&cold, &warm);
+        assert!(
+            cold_warm.verdicts.status
+                && cold_warm.verdicts.order
+                && cold_warm.verdicts.coverage
+                && cold_warm.verdicts.diagnostics,
+            "{name}: the warm run published a different result than the cold one:\n{}",
+            cold_warm.lines().join("\n")
+        );
+        let moved = differing_paths(&cold.document, &warm.document);
+        let non_charge: Vec<&String> = moved
+            .iter()
+            .filter(|path| !is_a_charge_path(path))
+            .collect();
+        assert!(
+            non_charge.is_empty(),
+            "{name}: the cold and the warm run differ outside the charge records, so 1.3's \
+             fingerprint difference is not only the resources: {non_charge:?}"
+        );
+        // The publication order is required to be equal, not merely stable, so the *only* thing the
+        // cold/warm pair may move is what each run paid.
+        for line in cold_warm.lines() {
+            println!("  {line}");
+        }
+        println!("  differing paths (all charges): {moved:?}");
+
+        let warm_pair = compare(&warm, &warm_again);
+        assert!(
+            warm_pair.verdicts.fingerprint,
+            "{name}: two warm runs over the same bytes published different documents:\n{}",
+            warm_pair.lines().join("\n")
+        );
+        assert!(
+            warm_pair.equivalent(),
+            "{name}: two warm runs do not compare equivalent:\n{}",
+            warm_pair.lines().join("\n")
+        );
+        assert!(
+            store.report().hits > 0,
+            "{name}: no parse was answered from the store, so the comparison is not about a cache: \
+             {:?}",
+            store.report()
+        );
+        println!(
+            "  warm → warm again fingerprint {} after {} hit(s) over the request",
+            verdict(warm_pair.verdicts.fingerprint),
+            store.report().hits
+        );
+    }
+
+    // The record: the two rows of the matrix, the difference between them, and the benefit
+    // `CANDIDATES` carries. A benefit claim that no row measures any more is a claim about nothing.
+    let rows = published_rows(&corpus);
+    let reference = rows
+        .iter()
+        .find(|row| row.label == "full-range-xref/minimal-jar")
+        .expect("the reference row is in the matrix");
+    let candidate = rows
+        .iter()
+        .find(|row| row.label == "cache-on-warm/full-range-xref/minimal-jar")
+        .expect("the cache-on row is in the matrix");
+    assert_eq!(
+        (
+            reference.context.cache.as_str(),
+            candidate.context.cache.as_str()
+        ),
+        (REFERENCE_CACHE, CACHE_ON),
+        "the two rows do not run the two configurations their contexts state"
+    );
+    let recorded = compare(reference, candidate);
+    assert!(
+        recorded.verdicts.status
+            && recorded.verdicts.order
+            && recorded.verdicts.coverage
+            && recorded.verdicts.diagnostics,
+        "the cache-on row of the matrix publishes a different result than its reference:\n{}",
+        recorded.lines().join("\n")
+    );
+    let measured: Vec<(CountedBudgetDimension, i128)> = recorded
+        .deltas
+        .iter()
+        .copied()
+        .filter(|(_, delta)| *delta != 0)
+        .collect();
+    assert_eq!(
+        measured,
+        CACHE_BENEFIT_DELTAS.to_vec(),
+        "`CANDIDATES` records a benefit that is not the difference between the two rows:\n{}",
+        recorded.lines().join("\n")
+    );
+    let facts_cache_candidate = CANDIDATES
+        .iter()
+        .find(|candidate| candidate.id == "facts-cache/index")
+        .expect("the facts-cache candidate is in the record");
+    assert!(
+        matches!(
+            &facts_cache_candidate.benefit,
+            Benefit::Measured(measured) if measured.configuration.0 == CACHE_ON
+                && measured.configuration.1 == REFERENCE_CONCURRENCY
+        ),
+        "the facts-cache candidate does not record the configuration the cache-on row runs in"
+    );
+    println!();
+    for line in recorded.lines() {
+        println!("{line}");
+    }
+    println!(
+        "  recorded in `CANDIDATES`: {} dimension(s) moved, candidate {} µs over reference {} µs \
+         (one machine, one run of the repeated measurement)",
+        measured.len(),
+        CACHE_CANDIDATE_MEDIAN_MICROS,
+        CACHE_REFERENCE_MEDIAN_MICROS
+    );
+}
+
 /// The cancellation row: a run whose token is cancelled before the entry publishes a terminal
 /// cancellation, and the comparison says so instead of reading it as a small complete run.
 #[test]
@@ -2379,17 +2822,30 @@ fn a_cancelled_direct_run_is_never_published_as_complete() {
     println!("cancelled diagnostics {}", cancelled.diagnostics);
 }
 
-/// The premise both decisions rest on, machine-checked: there is no cache, no index and no scheduler
-/// in the engine for a candidate to extend.
+/// The premise both decisions rest on, machine-checked: the engine has **one** facts cache — the
+/// CP/Header layer task 2.3 built — and nothing enables it, and there is still no index and no
+/// scheduler.
+///
+/// This test used to assert that no cache existed at all. That claim is false now, and replacing it
+/// with a weaker one would be worse than deleting it, so it is replaced by three claims that are
+/// together stronger than the old absence:
+///
+/// * the index and the scheduler are still absent, in exactly the needles 2.1/2.2 fixed;
+/// * the cache is declared in **one** module, and the only other engine files that name it are the
+///   crate root that declares the module and the budget that carries a handle — so a second cache
+///   cannot appear quietly;
+/// * **nothing in the engine constructs one** ([`CACHE_CONSTRUCTIONS`]), which is what
+///   disabled-by-default means as a structural fact, and [`Budget::new`] — the constructor every
+///   existing entry point already uses — carries none.
 ///
 /// The guard is deliberately coarse and its blind spots are stated rather than discovered later: it
-/// finds a cache or index *module or type* and a spawned thread, and it does not find a memo table
-/// kept in a local variable, anything reached through a dependency, or any file outside
-/// `crates/*/src` and `src/`. That is the same kind of boundary P2's A17 guard states for the
+/// finds a cache or index *module or type*, a construction site and a spawned thread, and it does not
+/// find a memo table kept in a local variable, anything reached through a dependency, or any file
+/// outside `crates/*/src` and `src/`. That is the same kind of boundary P2's A17 guard states for the
 /// modules outside its guarded set: a guard is a supplement, and the sentence it backs says which
 /// half it covers.
 #[test]
-fn the_engine_has_no_cache_index_or_scheduler_to_extend() {
+fn the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler() {
     let sources = engine_sources();
     assert!(
         sources.len() > 10,
@@ -2397,49 +2853,126 @@ fn the_engine_has_no_cache_index_or_scheduler_to_extend() {
          the working directory is wrong, and an empty scan would make the assertions below vacuous",
         sources.len()
     );
-    let mut hits = Vec::new();
+
+    // (1) The index and the scheduler, in the spellings 2.1 and 2.2 fixed: still nothing.
+    let mut absent = Vec::new();
     for source in &sources {
         assert!(
             !source.text.trim().is_empty(),
             "{} is empty, so it proves nothing",
             source.path
         );
-        for hit in machinery_hits(&source.text) {
-            hits.push(format!("{}:{hit}", source.path));
+        for hit in machinery_hits(&source.text, &MACHINERY) {
+            absent.push(format!("{}:{hit}", source.path));
         }
     }
     assert!(
-        hits.is_empty(),
+        absent.is_empty(),
         "the engine now declares machinery that P5 tasks 2.1 and 2.2 decided not to build: \
-         {hits:?}\nBoth decisions in this file are recorded against its absence — there is no cache \
-         or index to extend and one request is one sequential scan. If the machinery is real, \
-         measure it through this harness and move the decision with it: a candidate whose second \
-         path runs has to carry a measured comparison before it may stay enabled. If it is not, the \
-         record is out of date."
+         {absent:?}\nEvery decision in this file is recorded against its absence — an index to \
+         extend, a scheduler to split one request with. If the machinery is real, measure it through \
+         this harness and move the decision with it: a candidate whose second path runs has to carry \
+         a measured comparison before it may stay enabled. If it is not, the record is out of date."
     );
+
+    // (2) One cache, one module: the store is declared once and the files that may name it are the
+    // module itself, the crate root that declares it and the budget that carries a handle.
+    let declaring: Vec<&str> = sources
+        .iter()
+        .filter(|source| source.text.contains("struct FactsCache"))
+        .map(|source| source.path.as_str())
+        .collect();
+    assert_eq!(
+        declaring,
+        ["crates/jarde-reader/src/facts_cache.rs"],
+        "the engine declares a facts cache in {declaring:?}; P5 2.3 built exactly one, in the \
+         reader's `facts_cache` module, and a second one would be a second key, a second fallback \
+         and a second thing to invalidate"
+    );
+    let naming: Vec<&str> = sources
+        .iter()
+        .filter(|source| source.text.contains("facts_cache"))
+        .map(|source| source.path.as_str())
+        .collect();
+    assert_eq!(
+        naming,
+        [
+            "crates/jarde-reader/src/budget.rs",
+            "crates/jarde-reader/src/classfile.rs",
+            "crates/jarde-reader/src/lib.rs",
+            "src/lib.rs",
+        ],
+        "the cache is named in {naming:?}, which is not the budget that carries a handle, the two \
+         read entries that consult it, the module declaration and the facade's re-export: a file \
+         outside that set has grown a second path into the cache. (The module that declares it names \
+         no module path, which is why it is not in this list: the declaration is checked above.)"
+    );
+
+    // (3) Nothing in the engine switches it on.
+    let mut constructions = Vec::new();
+    for source in &sources {
+        for hit in machinery_hits(&source.text, &CACHE_CONSTRUCTIONS) {
+            constructions.push(format!("{}:{hit}", source.path));
+        }
+    }
+    assert!(
+        constructions.is_empty(),
+        "an engine source constructs a facts cache: {constructions:?}\nP5 2.3 keeps the cache \
+         disabled by default: a caller may attach one to a budget, and the engine may not build one \
+         for anybody. If a slice really wants one in a default path, that is a decision this harness \
+         measures — a cache-on configuration has to be a row with a measured comparison beside it, \
+         and `CANDIDATES` has to carry it."
+    );
+
+    // (4) And the constructor every existing entry point uses carries none: the behavioural half of
+    //     "disabled by default", which no source scan can state.
+    assert!(
+        Budget::new(limits()).facts_cache().is_none(),
+        "`Budget::new` now carries a facts cache, so every existing caller's path has one"
+    );
+
     // The scan is not vacuous: it catches the shapes it looks for, in the spellings a real one would
     // use, and it leaves alone the line that made the `Index…` prefix rule impossible. That is what
-    // makes the empty result above a statement about the sources rather than about a pattern that
-    // never matches.
-    assert_eq!(machinery_hits("pub mod cache;").len(), 1);
-    assert_eq!(machinery_hits("mod facts_cache;").len(), 1);
+    // makes the results above statements about the sources rather than about patterns that never
+    // match.
     assert_eq!(
-        machinery_hits("pub struct CacheEntry { table: Vec<u8> }").len(),
-        1
+        machinery_hits("pub mod index;", &MACHINERY),
+        vec!["1: mod index".to_string()]
     );
     assert_eq!(
-        machinery_hits("let workers = std::thread::scope(|scope| scope);").len(),
-        1
+        machinery_hits(
+            "let workers = std::thread::scope(|scope| scope);",
+            &MACHINERY
+        ),
+        vec!["1: thread::scope".to_string()]
     );
     assert_eq!(
-        machinery_hits("pub struct IndexCall { bci: u32 }").len(),
-        0,
-        "the recovery layer's dispatch-table read is not a cache, and the needles may not read it as \
-         one"
+        machinery_hits("pub struct IndexCall { bci: u32 }", &MACHINERY),
+        Vec::<String>::new(),
+        "the recovery layer's dispatch-table read is not an index, and the needles may not read it \
+         as one"
+    );
+    assert_eq!(
+        machinery_hits(
+            "pub struct FactsCache { shared: Arc<Mutex<Shared>> }",
+            &CACHE_CONSTRUCTIONS
+        ),
+        Vec::<String>::new(),
+        "a declaration is not a construction, and the needle may not read it as one"
+    );
+    assert_eq!(
+        machinery_hits(
+            "let cache = FactsCache::current(CACHE_CAPACITY);",
+            &CACHE_CONSTRUCTIONS
+        ),
+        vec!["1: FactsCache::current(".to_string()],
+        "a construction site is exactly what this needle has to catch, in the spelling a caller would \
+         use"
     );
     println!(
-        "engine sources scanned: {} files under `crates/*/src` and `src/` — no cache or index module \
-         or type, no thread spawn",
+        "engine sources scanned: {} files under `crates/*/src` and `src/` — one facts cache declared \
+         in `crates/jarde-reader/src/facts_cache.rs`, constructed nowhere in the engine, `Budget::new` \
+         carrying none; no index module and no thread spawn",
         sources.len()
     );
 }
@@ -2646,6 +3179,121 @@ fn the_benefit_rule_refuses_a_claim_the_matrix_cannot_back() {
     );
 }
 
+/// The built layer against the recorded contract: every key dimension the record binds to the
+/// CP/Header layer is carried by the cache task 2.3 built, and no dimension the record binds to
+/// another layer is smuggled into it.
+///
+/// This is where 2.2's record and 2.3's code are held together. The record says which dimensions a
+/// layer's entries must include; the built identity is the answer for one layer, and it is checked
+/// rather than described: the record's CP/Header list is read out of `KEY_DIMENSIONS`, the identity
+/// is asked for its own fields, and the one dimension that is a *rule* rather than a value — the
+/// budget, which the record binds to all four layers — is checked by running the case it forbids: a
+/// parse a budget stops stores nothing.
+#[test]
+fn the_built_layer_carries_the_dimensions_the_record_binds_to_it() {
+    let cache = facts_cache();
+    let identity = cache.identity();
+    assert_eq!(
+        identity.registry, HIGHEST_REGISTERED_MAJOR,
+        "the cache's parser version is not the release registry's, which is the carrier the record \
+         names for the `registry` dimension"
+    );
+    assert_eq!(
+        identity.format, FACTS_FORMAT,
+        "the entry format the cache reads under is not the one this build writes"
+    );
+
+    // The record's own list for this layer, read out of the record.
+    let bound: Vec<&str> = KEY_DIMENSIONS
+        .iter()
+        .filter(|dimension| {
+            dimension
+                .layers
+                .split('+')
+                .any(|layer| layer == "cp-header")
+        })
+        .map(|dimension| dimension.name)
+        .collect();
+    assert_eq!(
+        bound,
+        ["snapshot", "registry", "budget"],
+        "the record binds {bound:?} to the CP/Header layer, and this layer was built against that \
+         list: a dimension added to it has to reach the key, and one removed has to leave it"
+    );
+    // How this layer carries each of them, stated once. `snapshot` is the content identity: the key
+    // is the class bytes' digest and length, so two origins of equal bytes share one entry and no
+    // origin is in the key. `registry` and the entry format are the two fields of the identity.
+    let carried: Vec<(&str, String)> = vec![
+        (
+            "snapshot",
+            format!(
+                "the class content digest and length in the entry key ({} declared field(s) hold \
+                 no origin)",
+                serde_json::to_value(identity)
+                    .expect("an identity serializes")
+                    .as_object()
+                    .expect("an identity is an object")
+                    .len()
+            ),
+        ),
+        (
+            "registry",
+            format!("identity.registry = {}", identity.registry),
+        ),
+        (
+            "budget",
+            "an entry is written only by a parse that ran to the end".to_string(),
+        ),
+    ];
+    assert_eq!(
+        carried.iter().map(|(name, _)| *name).collect::<Vec<_>>(),
+        bound,
+        "the record's list and the carriers this test states are not the same dimensions"
+    );
+    for (name, how) in &carried {
+        assert!(
+            !how.trim().is_empty(),
+            "{name} has no carrier in this layer"
+        );
+    }
+
+    // The budget dimension is the one that is a rule, so it is checked by its case: a parse the
+    // budget stops must leave the store empty — otherwise an incomplete answer would stand in for a
+    // complete one the moment a later request could afford it.
+    let bytes = verified(&corpus(), &SUBJECTS[0]).content;
+    let mut tight = limits();
+    tight.class_bytes = 1;
+    let store = facts_cache();
+    let mut budget = Budget::new(tight).with_facts_cache(store.clone());
+    assert!(
+        class_facts(&bytes, &mut budget).is_err(),
+        "one class byte cannot pay for the whole class, so this check has nothing to refuse"
+    );
+    assert_eq!(
+        store.report().entries,
+        0,
+        "a parse the budget stopped was stored: the `budget` dimension is not carried, and an \
+         incomplete entry would stand in for a complete one: {:?}",
+        store.report()
+    );
+
+    // And the layers above are still unbuilt: every dimension the record binds to one of them and
+    // *not* to this one is asserted absent from the identity, because a cache that took one of them
+    // would miss for a reason that cannot change its answer.
+    let others = ["view", "platform", "query", "IR", "recovery", "pass"];
+    for name in others {
+        assert!(
+            !bound.contains(&name),
+            "{name} is bound to another layer and this layer's identity took it in"
+        );
+    }
+    println!(
+        "the built layer carries {bound:?}: identity registry {} format {}, the content in the key, \
+         and completeness on the way in; {:?} stay with the layers above",
+        identity.registry, identity.format, others
+    );
+}
+
 /// The key dimensions of task 2.2: the ones `design.md` decision 2 names, once each, each bound to
 /// the layers that have to include it and to the token that carries it in the code.
 ///
@@ -2838,8 +3486,8 @@ fn p5_repeated_direct_baseline() {
     let class = verified(&corpus, &SUBJECTS[1]);
     let premise = locate_member(&class.content);
     println!(
-        "P5 1.2 baseline: the direct path only (no cache, no parallel scheduler), one machine, \
-         RUST_TEST_THREADS=1, single-threaded build, {REPEATS} repeats per row"
+        "P5 baseline: the direct path and the cache-on path (P5 2.3), no parallel scheduler, one \
+         machine, RUST_TEST_THREADS=1, single-threaded build, {REPEATS} repeats per row"
     );
     println!(
         "corpus fingerprint {} : {} files, {} — the manifest is read and every subject's digest is \
@@ -2862,6 +3510,35 @@ fn p5_repeated_direct_baseline() {
         repeats("cancelled/full-range-xref/minimal-jar", REPEATS, || {
             run_full_range(&corpus, &jar, "cancelled/full-range-xref/minimal-jar", true)
         }),
+        // The cache-on row task 2.3 added: one shared handle and one priming run, so every repeat
+        // measures the **warm** path. The priming run is not part of the sample.
+        {
+            let cache = facts_cache();
+            let warm_up = run_full_range_with(
+                &corpus,
+                &jar,
+                "cache-on warm-up/full-range-xref/minimal-jar",
+                false,
+                Some(&cache),
+            );
+            println!(
+                "cache-on warm-up (not part of the sample): {}",
+                charges_line(&warm_up.usage, &CountedBudgetDimension::ALL)
+            );
+            repeats(
+                "cache-on-warm/full-range-xref/minimal-jar",
+                REPEATS,
+                move || {
+                    run_full_range_with(
+                        &corpus,
+                        &jar,
+                        "cache-on-warm/full-range-xref/minimal-jar",
+                        false,
+                        Some(&cache),
+                    )
+                },
+            )
+        },
     ];
 
     let mut distributions = Vec::new();
@@ -2878,6 +3555,9 @@ fn p5_repeated_direct_baseline() {
         compare(&rows[1].repeats[0], &rows[2].repeats[0]),
         compare(&rows[0].repeats[0], &rows[0].repeats[REPEATS - 1]),
         compare(&rows[0].repeats[0], &rows[3].repeats[0]),
+        // The reference row against the cache-on row over the same bytes: the measurement
+        // `CANDIDATES` records a benefit from.
+        compare(&rows[0].repeats[0], &rows[4].repeats[0]),
     ];
     for comparison in &comparisons {
         for line in comparison.lines() {

@@ -462,7 +462,41 @@ pub(crate) fn probe_minimal_header(
 /// Attribute content, attribute and flag legality, instructions, and JVM verification are never
 /// performed here: the registry states those constraints, and the passes that read the facts apply
 /// them.
+///
+/// # The facts cache (P5 2.3)
+///
+/// Under a budget that carries one, this entry consults the cache under the class content digest and
+/// the **parse policy** — `mode` is part of the key, because a `Strict` read refuses a release the
+/// registry does not validate while a `Forensic` read of the same bytes answers with the dialect. A
+/// strict request is therefore never served a forensic entry that a strict read would have refused,
+/// and vice versa. A hit bills the diagnostics it publishes exactly as the direct read bills them
+/// ([`CountedBudgetDimension::ResultItems`]), and a refusal writes nothing: the gate is applied by
+/// the direct read, so a version this build refuses is never stored as an answer.
 pub fn inspect_header(
+    bytes: &[u8],
+    budget: &mut Budget,
+    mode: InspectionMode,
+) -> Result<HeaderInspection> {
+    let Some(cache) = budget.facts_cache().cloned() else {
+        return read_header_inspection(bytes, budget, mode);
+    };
+    if let Some(inspection) = cache.header(bytes, mode, budget)? {
+        // The published diagnostics are the same diagnostics, and publishing them is billed
+        // wherever they come from.
+        budget.charge(
+            CountedBudgetDimension::ResultItems,
+            to_u64(inspection.diagnostics.len())?,
+        )?;
+        return Ok(inspection);
+    }
+    let inspection = read_header_inspection(bytes, budget, mode)?;
+    cache.remember_header(bytes, mode, &inspection);
+    Ok(inspection)
+}
+
+/// The direct read of [`inspect_header`]: the structure, the version gate under `mode`, and the
+/// diagnostics the gate's classification produces.
+fn read_header_inspection(
     bytes: &[u8],
     budget: &mut Budget,
     mode: InspectionMode,
@@ -2102,8 +2136,33 @@ pub struct BootstrapMethodFacts {
 /// trailing-byte rejection) are the same ones the `inspect_*` owners run, so a
 /// class accepted here is accepted there. Attribute content and instructions are
 /// not decoded: callers ask for those per attribute or per method.
+///
+/// # The facts cache (P5 2.3)
+///
+/// When the request's budget carries a cache ([`Budget::with_facts_cache`]), this entry consults it
+/// under the class content digest and the structural parse policy, and a hit returns the facts an
+/// earlier read of **these bytes** produced. Everything else is unchanged: the read that produced
+/// the bytes happened and was charged by the caller, a hit charges nothing because this read decodes
+/// nothing, the budget is polled first so a cancelled request still terminates, and any failure —
+/// budget, cancellation, an undecodable structure — propagates without writing anything, so an
+/// incomplete read can never become the answer a later request receives. With no cache attached the
+/// body below is the whole function, as it was before this layer existed.
 #[allow(dead_code)]
 pub fn class_facts(bytes: &[u8], budget: &mut Budget) -> Result<ClassFacts> {
+    let Some(cache) = budget.facts_cache().cloned() else {
+        return read_class_facts(bytes, budget);
+    };
+    if let Some(facts) = cache.structure(bytes, budget)? {
+        return Ok(facts);
+    }
+    let facts = read_class_facts(bytes, budget)?;
+    cache.remember_structure(bytes, &facts);
+    Ok(facts)
+}
+
+/// The direct read of [`class_facts`]: what the engine did before a cache could answer it, and what
+/// it still does whenever no cache answers.
+fn read_class_facts(bytes: &[u8], budget: &mut Budget) -> Result<ClassFacts> {
     budget.poll()?;
     budget.charge(CountedBudgetDimension::ClassBytes, to_u64(bytes.len())?)?;
     validate_constant_pool_slots(bytes, budget)?;

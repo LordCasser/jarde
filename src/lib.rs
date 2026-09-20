@@ -74,6 +74,11 @@ pub use environment::*;
 pub use error::{Error, Result};
 pub use facade::*;
 pub use inspect::{ClassSource, ClassTarget, EngineBytecodeReport, EngineHeaderReport};
+// The facts cache (P5 2.3) crosses as the three names a caller needs to switch it on and read what
+// it did: the handle a budget is given, the identity a store is read under, and the report that says
+// how many lookups were answered, discarded or refused. It is disabled by default and nothing in the
+// engine constructs one — `crates/jarde-reader/src/facts_cache.rs` owns the whole mechanism, and the
+// guard in `tests/p5_benchmark.rs` holds that split.
 pub use ir::*;
 pub use jarde_query::query::{
     BootstrapVia, ConsumerKind, ConsumerSchema, LiteralValue, QUERY_ENGINE_SCHEMA, QueryAnalysis,
@@ -81,6 +86,7 @@ pub use jarde_query::query::{
     QueryResolution, QueryTarget, XrefCertainty, XrefDerivation, XrefEvidence, XrefItem,
     XrefOperation, XrefTarget,
 };
+pub use jarde_reader::facts_cache::{FACTS_FORMAT, FactsCache, FactsIdentity, FactsReport};
 // The versioned plugin plane (P4 3.1) crosses the same way the query layer does: as its product
 // types and its registry functions, never as the query layer's module path — the entry point that
 // performs a request (`plugin::execute`) stays below and is reached through
@@ -118,9 +124,10 @@ pub use jarde_reader::modern::{
 };
 pub use jarde_reader::release_registry::{
     AttributePlacement, AttributeRule, ClassfileLocation, ConstantPoolTagRule,
-    ConstantPoolTagStatus, FeatureRegistry, FlagPlacement, FlagRule, IntroducedConstraints,
-    Java8RuntimeRule, MinorForm, OpcodeConstraint, OpcodeRule, OpcodeStatus, Placement,
-    PreviewRule, ReleaseBand, ReleaseLookup, ReleaseRecord, ReleaseRegistration, feature_registry,
+    ConstantPoolTagStatus, FeatureRegistry, FlagPlacement, FlagRule, HIGHEST_REGISTERED_MAJOR,
+    IntroducedConstraints, Java8RuntimeRule, MinorForm, OpcodeConstraint, OpcodeRule, OpcodeStatus,
+    Placement, PreviewRule, ReleaseBand, ReleaseLookup, ReleaseRecord, ReleaseRegistration,
+    feature_registry,
 };
 pub use model::*;
 pub use multi_release::*;
