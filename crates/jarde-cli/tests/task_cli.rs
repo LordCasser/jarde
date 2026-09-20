@@ -2446,3 +2446,198 @@ fn the_legacy_operations_remain_their_own_surface() {
     );
     assert!(both.stdout.is_empty());
 }
+
+// ---------------------------------------------------------------------------------------------
+// `bound-recovery-recursion`: a request that used to abort the process answers with a report
+// ---------------------------------------------------------------------------------------------
+
+/// One hand-assembled class whose only method drives the region walk's own cycle.
+///
+/// This is the process-level half of `bound-recovery-recursion`'s controlled fixture: the same
+/// bytes `tests/p3_eval_context.rs`'s `recursion_fixture` writes (the two writers produce the same
+/// 170 bytes; the SHA-256 is recorded in the change's verification), so the library entry and the
+/// process entry answer for one input rather than for two lookalikes.
+///
+/// The shape is the one the change's localization found on the real repro — an inner loop whose
+/// `goto` ends the outer loop's header block, with the outer latch in a block of its own. Before
+/// the guard existed, this member's walk re-entered its own header without a bound and the process
+/// died with `fatal runtime error: stack overflow, aborting`; the point of this case is that the
+/// entry now answers, so it asserts the *report*, never the absence of a crash message.
+///
+/// The body is the bytecode `javac 23.0.1 --release 8 -g:none` emits for
+/// `int x = 0; int i; do { for (i = 0; i < 3; i = i + 1) { x = x + 1; } } while (x < 5);`, with the
+/// same `StackMapTable` (an `append_frame` at BCI 2, one at BCI 4, a `same_frame` at BCI 20) — a
+/// version-52 body with a back edge has to declare the frames its verifier starts blocks with.
+fn recursion_fixture() -> Vec<u8> {
+    /// `int x = 0; int i; do { for (i = 0; i < 3; i = i + 1) { x = x + 1; } } while (x < 5);`
+    const BODY: &[u8] = &[
+        0x03, // 0: iconst_0
+        0x3b, // 1: istore_0
+        0x03, // 2: iconst_0      ← H: the outer loop's header and its back edge's target
+        0x3c, // 3: istore_1
+        0x1b, // 4: iload_1       ← the inner loop's header (the `goto` target):
+        0x06, // 5: iconst_3      its own block is what ends H's
+        0xa2, 0x00, 0x0e, // 6: if_icmpge 20
+        0x1a, // 9: iload_0
+        0x04, // 10: iconst_1
+        0x60, // 11: iadd
+        0x3b, // 12: istore_0
+        0x1b, // 13: iload_1
+        0x04, // 14: iconst_1
+        0x60, // 15: iadd
+        0x3c, // 16: istore_1
+        0xa7, 0xff, 0xf3, // 17: goto 4
+        0x1a, // 20: iload_0      ← L: the latch, a block of its own
+        0x08, // 21: iconst_5
+        0xa1, 0xff, 0xec, // 22: if_icmplt 2
+        0xb1, // 25: return
+    ];
+    /// The frames javac declares for `BODY`: two `append_frame`s and a `same_frame`.
+    const FRAMES: &[u8] = &[
+        0x00, 0x03, // number_of_entries
+        0xfc, 0x00, 0x02, 0x01, // append_frame: BCI 2, +[int]
+        0xfc, 0x00, 0x01, 0x01, // append_frame: BCI 4, +[int]
+        0x0f, // same_frame: BCI 20 (delta 15)
+    ];
+
+    fn u16b(bytes: &mut Vec<u8>, value: u16) {
+        bytes.extend_from_slice(&value.to_be_bytes());
+    }
+    fn u32b(bytes: &mut Vec<u8>, value: u32) {
+        bytes.extend_from_slice(&value.to_be_bytes());
+    }
+    fn utf8(pool: &mut Vec<u8>, text: &[u8]) {
+        pool.push(1);
+        u16b(
+            pool,
+            u16::try_from(text.len()).expect("fixture name fits u16"),
+        );
+        pool.extend_from_slice(text);
+    }
+
+    let mut pool: Vec<u8> = Vec::new();
+    utf8(&mut pool, b"p/Recursive"); // 1
+    pool.push(7); // 2: Class 1
+    u16b(&mut pool, 1);
+    utf8(&mut pool, b"java/lang/Object"); // 3
+    pool.push(7); // 4: Class 3
+    u16b(&mut pool, 3);
+    utf8(&mut pool, b"method"); // 5
+    utf8(&mut pool, b"()V"); // 6
+    utf8(&mut pool, b"Code"); // 7
+    utf8(&mut pool, b"StackMapTable"); // 8
+
+    let mut output = 0xcafe_babe_u32.to_be_bytes().to_vec();
+    u16b(&mut output, 0); // minor
+    u16b(&mut output, 52); // major: Java 8
+    u16b(&mut output, 9); // constant_pool_count
+    output.extend_from_slice(&pool);
+    u16b(&mut output, 0x0021); // public super
+    u16b(&mut output, 2); // this_class
+    u16b(&mut output, 4); // super_class
+    u16b(&mut output, 0); // interfaces
+    u16b(&mut output, 0); // fields
+    u16b(&mut output, 1); // methods
+    u16b(&mut output, 0x0009); // public static
+    u16b(&mut output, 5); // name → "method"
+    u16b(&mut output, 6); // descriptor → "()V"
+    u16b(&mut output, 1); // attributes
+    u16b(&mut output, 7); // "Code"
+    let mut code = Vec::new();
+    u16b(&mut code, 2); // max_stack
+    u16b(&mut code, 2); // max_locals
+    u32b(
+        &mut code,
+        u32::try_from(BODY.len()).expect("fixture body fits u32"),
+    );
+    code.extend_from_slice(BODY);
+    u16b(&mut code, 0); // exception table
+    u16b(&mut code, 1); // code attributes
+    u16b(&mut code, 8); // "StackMapTable"
+    u32b(
+        &mut code,
+        u32::try_from(FRAMES.len()).expect("fixture frames fit u32"),
+    );
+    code.extend_from_slice(FRAMES);
+    u32b(
+        &mut output,
+        u32::try_from(code.len()).expect("fixture attribute fits u32"),
+    );
+    output.extend_from_slice(&code);
+    u16b(&mut output, 0); // class attributes
+    output
+}
+
+/// The process entry answers for the input that used to abort it: exit 4, a JSON report on standard
+/// output, and a stop whose plane and diagnostic say what happened.
+///
+/// `status` is the signal assertion as well as the status one: it panics when the process ended on a
+/// signal instead of with a status, so a regression that aborts again fails here rather than passing
+/// on a non-zero code — and a report is required on standard output, which a dying process cannot
+/// write.
+#[test]
+fn a_recovery_that_used_to_abort_the_process_exits_with_a_report() {
+    let temp = TempDir::new();
+    let fixture = recursion_fixture();
+    assert_eq!(
+        fixture.len(),
+        170,
+        "the fixture is the same class `tests/p3_eval_context.rs` builds"
+    );
+    let path = temp.write("Recursive.class", &fixture);
+
+    let output = run(&[
+        "recover",
+        "--input",
+        path_of(&path),
+        "--policy",
+        "single-class",
+        "--class-name",
+        "p/Recursive",
+        "--method-name",
+        "method",
+        "--descriptor",
+        "()V",
+        "--format",
+        "json",
+    ]);
+    assert_eq!(
+        status(&output),
+        EXIT_INCOMPLETE,
+        "a stopped recovery is never success: {}",
+        stderr_text(&output)
+    );
+    let document = stdout_json(&output);
+    let recovery = &document["recovered"]["recovery"];
+    assert_eq!(
+        recovery["outcome"]["stopped"]["interrupted"]["code"],
+        json!("jre_recursion_reentry"),
+        "the walk re-entered its own loop's header: {document}"
+    );
+    assert_eq!(
+        recovery["outcome"]["stopped"]["interrupted"]["at"],
+        json!(2),
+        "and the stop names the block it was about to re-enter: {document}"
+    );
+    assert_eq!(
+        recovery["execution"]["status"],
+        json!("partial"),
+        "a stop is a non-Complete execution plane: {document}"
+    );
+    assert_eq!(recovery["content"], json!("not_produced"));
+    assert_eq!(recovery["text"], json!(""), "a stop hands out no artifact");
+    let diagnostic = recovery["diagnostics"]
+        .as_array()
+        .expect("the stop carries diagnostics")
+        .iter()
+        .find(|diagnostic| diagnostic["code"] == json!("jre_recursion_reentry"))
+        .unwrap_or_else(|| panic!("the stop states its reason: {document}"));
+    assert_eq!(diagnostic["severity"], json!("error"));
+    let message = diagnostic["message"]
+        .as_str()
+        .expect("a diagnostic states a message");
+    assert!(
+        message.contains("BCI 2") && message.contains("re-entered"),
+        "the diagnosis names the block and the fact that it re-entered it: {message}"
+    );
+}

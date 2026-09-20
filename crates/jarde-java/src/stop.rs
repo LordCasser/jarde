@@ -42,9 +42,31 @@ pub enum StopReason {
     /// The run's cancellation token was set.
     Cancelled { at: Option<u32> },
     /// The budget refused to continue for a reason that is neither the output bound nor a flagged
-    /// cancellation (elapsed time, for instance).
+    /// cancellation (elapsed time, for instance), or the recovery recursion refused to descend any
+    /// further: `code` is the stable name of what interrupted the run — `jre_budget_interrupted`,
+    /// [`RECURSION_BOUND_CODE`] or [`RECURSION_REENTRY_CODE`] — and `at` is the node it stopped on.
     Interrupted { code: &'static str, at: Option<u32> },
 }
+
+/// The code of a run a budget poll interrupted without a flagged cancellation: the elapsed bound
+/// running out, for instance. It keeps its own code and its own wording — [`RECURSION_BOUND_CODE`]
+/// and [`RECURSION_REENTRY_CODE`] are different reasons for the same plane.
+pub(crate) const BUDGET_INTERRUPTED_CODE: &str = "jre_budget_interrupted";
+
+/// The code of a run stopped because the recovery recursion reached its explicit depth bound
+/// (`region.rs`'s `MAX_REGION_DEPTH`).
+///
+/// The bound is checked before the walk descends, never after: the process stack cannot be
+/// recovered once it is gone, so the run has to refuse to go deeper while it still can.
+pub(crate) const RECURSION_BOUND_CODE: &str = "jre_recursion_bound";
+
+/// The code of a run stopped because the recovery recursion re-entered a state this run had already
+/// entered — the same block of the same structure — and so cannot prove that recursion completes.
+///
+/// This is deliberately not [`RECURSION_BOUND_CODE`]: "the input nests too deeply" and "the walk is
+/// back inside a structure it is already building" are different facts about the run, and a
+/// diagnosis that called one the other would name a cause that did not stop it.
+pub(crate) const RECURSION_REENTRY_CODE: &str = "jre_recursion_reentry";
 
 impl StopReason {
     /// The node the run stopped at, when it stopped inside one.
@@ -96,7 +118,7 @@ pub(crate) fn poll(budget: &Budget, at: Option<u32>) -> Result<(), StopReason> {
     }
     if budget.poll().is_err() {
         return Err(StopReason::Interrupted {
-            code: "jre_budget_interrupted",
+            code: BUDGET_INTERRUPTED_CODE,
             at,
         });
     }

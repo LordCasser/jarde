@@ -1202,7 +1202,7 @@ impl Builder<'_> {
                     }
                     return Ok(());
                 }
-                let call = match self.call_expr(at, instruction, target, at) {
+                let call = match self.call_expr(at, instruction, target, at, 0) {
                     Ok(call) => call,
                     Err(reason) => {
                         let bcis = self.quoted_bcis(at);
@@ -1660,12 +1660,12 @@ impl Builder<'_> {
                         // concatenation: the expression is written here, where its value is read,
                         // and every original BCI of the chain stays in the table as an anchor.
                         if let Some(chain) = self.chains.value_at(bci) {
-                            return self.concat_expr(chain, at);
+                            return self.concat_expr(chain, at, depth);
                         }
                         // The call is written where its value is consumed, so its receiver and its
                         // arguments are evaluated *there* and are checked at `at` — not at the
                         // call's own BCI, which nothing in the text rewinds to (P3-R8's call half).
-                        self.invoke_expr(bci, instruction, target, at)
+                        self.invoke_expr(bci, instruction, target, at, depth)
                     }
                     Operation::CheckCast { .. } => {
                         let Some(instruction) = self.instructions.get(&bci).copied() else {
@@ -1782,12 +1782,18 @@ impl Builder<'_> {
     /// the same for the statement a call writes of its own ([`Self::call_statement`]), and they
     /// differ where the call is written where its *value* is consumed: a nested `tick(x)` inside
     /// `tick(x) + ++x` reads its argument where the sum runs, after the increment (P3-R8).
+    ///
+    /// `depth` is the value-nesting depth the call is rendered at. It is passed **through** the
+    /// call rather than restarted at it: a receiver or an argument is one more level of the same
+    /// expression, and a recursion that does not count those levels is a native-stack recursion
+    /// this layer has no bound on (the abort this change fixes).
     fn call_expr(
         &mut self,
         bci: u32,
         instruction: &SsaInstruction,
         target: &CallTarget,
         at: u32,
+        depth: usize,
     ) -> Result<Expr, String> {
         let operands = stack_operands(instruction);
         let (receiver, args) = match target.kind() {
@@ -1799,12 +1805,15 @@ impl Builder<'_> {
                 // The receiver is a value the call reads; when the subset cannot render it (an
                 // uninitialized `new`, an operation it does not model) the call falls back rather
                 // than naming the owner type in its place.
-                (Some(Box::new(self.render_value(receiver.1, at, 0)?)), args)
+                (
+                    Some(Box::new(self.render_value(receiver.1, at, depth + 1)?)),
+                    args,
+                )
             }
         };
         let mut arguments = Vec::with_capacity(args.len());
         for (_, value) in args {
-            arguments.push(self.render_value(*value, at, 0)?);
+            arguments.push(self.render_value(*value, at, depth + 1)?);
         }
         let arguments = typed_arguments(target.descriptor(), arguments);
         Ok(Expr::direct(
@@ -1833,6 +1842,7 @@ impl Builder<'_> {
         instruction: &SsaInstruction,
         target: &CallTarget,
         at: u32,
+        depth: usize,
     ) -> Result<Expr, String> {
         if let accessor::Verdict::Accessor { evidence, shape } =
             accessor::verify(target, self.members, self.pool)
@@ -1842,7 +1852,7 @@ impl Builder<'_> {
                 .first()
                 .copied()
                 .map(|(_, value)| value);
-            match receiver.map(|receiver| self.render_value(receiver, at, 0)) {
+            match receiver.map(|receiver| self.render_value(receiver, at, depth + 1)) {
                 Some(Ok(receiver)) => {
                     let origin = OriginSet::new(Origin::direct(bci))
                         .plus_derived(Origin::derived(shape.field_bci).in_method(&shape.method));
@@ -1872,7 +1882,7 @@ impl Builder<'_> {
                 }
             }
         }
-        self.call_expr(bci, instruction, target, at)
+        self.call_expr(bci, instruction, target, at, depth)
     }
 
     /// Presents one verified write accessor's call site as the assignment it performs.
@@ -1940,7 +1950,7 @@ impl Builder<'_> {
         instruction: &SsaInstruction,
         target: &CallTarget,
     ) -> Result<(), StopReason> {
-        let call = match self.call_expr(at, instruction, target, at) {
+        let call = match self.call_expr(at, instruction, target, at, 0) {
             Ok(call) => call,
             Err(reason) => return self.fallback(vec![at], &reason, at),
         };
@@ -2290,7 +2300,16 @@ impl Builder<'_> {
     /// `at` is the position the concatenation is evaluated at — the consumer that renders it, since
     /// the chain's own text lands there — and every piece is checked there for the reason
     /// [`Self::render_value`] takes `at` at all (P3-R8).
-    fn concat_expr(&mut self, chain: &concat::Chain, at: u32) -> Result<Expr, String> {
+    ///
+    /// `depth` is the value-nesting depth the chain is rendered at, passed through to every piece:
+    /// a concatenation inside an argument is one more level of the same native recursion, and the
+    /// bound has to see it.
+    fn concat_expr(
+        &mut self,
+        chain: &concat::Chain,
+        at: u32,
+        depth: usize,
+    ) -> Result<Expr, String> {
         let mut pieces: Vec<Expr> = Vec::with_capacity(chain.appends.len());
         for (append_bci, _) in &chain.appends {
             let Some(instruction) = self.instructions.get(append_bci).copied() else {
@@ -2304,7 +2323,7 @@ impl Builder<'_> {
                     "the `append` at BCI {append_bci} appends no value this run states"
                 ));
             };
-            pieces.push(self.render_value(value, at, 0)?);
+            pieces.push(self.render_value(value, at, depth + 1)?);
         }
         let mut pieces = pieces.into_iter();
         let Some(first) = pieces.next() else {

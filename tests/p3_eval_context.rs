@@ -492,3 +492,223 @@ fn every_presented_field_read_is_accounted_for_by_its_artifact() {
         presented_reads_are_accounted_for(&String::from_utf8_lossy(name), &report);
     }
 }
+
+// ---------------------------------------------------------------------------------------------
+// `bound-recovery-recursion`: the region walk's own recursion, and the stop that now answers it
+// ---------------------------------------------------------------------------------------------
+
+/// The body of [`recursion_fixture`]: a latch-tested loop whose body starts at its own header.
+///
+/// The instructions, with the blocks the canonical graph makes of them — an inner loop's back edge
+/// is what ends the outer header's block:
+///
+/// ```text
+///   0: iconst_0          ◄ the prologue
+///   1: istore_0
+///   2: iconst_0          ◄ H — the outer loop's header *and* its back edge's target (22 → 2)
+///   3: istore_1          (i = 0)
+///   4: iload_1           ← the inner loop's header, and the target of its own `goto` (17 → 4)
+///   5: iconst_3
+///   6: if_icmpge 20
+///   9: iload_0; iconst_1; iadd; istore_0       (x = x + 1)
+///  13: iload_1; iconst_1; iadd; istore_1       (i = i + 1)
+///  17: goto 4
+///  20: iload_0           ◄ L — the latch, a *separate* block whose whole test is loads and a branch
+///  21: iconst_5
+///  22: if_icmplt 2       (22 + (−20) = 2: the back edge)
+///  25: return
+/// ```
+///
+/// The bytes are the ones `javac 23.0.1 --release 8 -g:none` emits for
+/// `int x = 0; int i; do { for (i = 0; i < 3; i = i + 1) { x = x + 1; } } while (x < 5);` — written
+/// out here rather than compiled at run time, with the same `StackMapTable` javac declares (see
+/// [`recursion_fixture`]).
+const RECURSION_BODY: &[u8] = &[
+    0x03, // 0: iconst_0
+    0x3b, // 1: istore_0
+    0x03, // 2: iconst_0      ← H
+    0x3c, // 3: istore_1
+    0x1b, // 4: iload_1       ← the inner loop's header
+    0x06, // 5: iconst_3
+    0xa2, 0x00, 0x0e, // 6: if_icmpge 20
+    0x1a, // 9: iload_0
+    0x04, // 10: iconst_1
+    0x60, // 11: iadd
+    0x3b, // 12: istore_0
+    0x1b, // 13: iload_1
+    0x04, // 14: iconst_1
+    0x60, // 15: iadd
+    0x3c, // 16: istore_1
+    0xa7, 0xff, 0xf3, // 17: goto 4
+    0x1a, // 20: iload_0      ← L
+    0x08, // 21: iconst_5
+    0xa1, 0xff, 0xec, // 22: if_icmplt 2
+    0xb1, // 25: return
+];
+
+/// One hand-assembled class whose only method drives the region walk's own cycle.
+///
+/// This is the controlled fixture of `bound-recovery-recursion` (its task 3.1), and the shape is
+/// the one that change's localization found on the real repro — `javassist/bytecode/CodeAnalyzer`'s
+/// `computeMaxStack()I` from `S2-007.war`, whose recovery aborted the process with
+/// `fatal runtime error: stack overflow, aborting` before the guard existed. What it mirrors is the
+/// **driver**, not the vendor's bytes:
+///
+/// * the loop is **latch-tested**: its header H is not itself a test block (so `header_tested_loop`
+///   finds nothing and `latch_tested_loop` is the shape that applies), and its latch L is a
+///   *different* block. H's block ends where the inner loop's `goto` target begins, which is what
+///   the real driver's header does too — an inner loop's back edge, not a second test;
+/// * the body walk of that shape starts **at H** (`latch_tested_loop` walks from the header), and a
+///   walk that starts at the header of the loop whose body it is walking is inside the state it is
+///   already in: `loop_region` would take the same decisions — none of them reads the frame — and
+///   come back to the same call, which is what ran the stack out.
+///
+/// The bytes are written here rather than committed, and no compiler runs: the fixture has to be a
+/// class whose *walk* cycles, and committing a vendor's bytes for that would tie the regression to
+/// an artifact this repository does not own. The pre-fix behaviour of exactly these bytes is
+/// recorded once in the change's verification instead of being asserted here (`exit 134` and
+/// `fatal runtime error: stack overflow, aborting` for the file this generator writes); what the
+/// test below asserts is the bound's answer, not a crash. The class is built the way
+/// `crates/jarde-cli/tests/task_cli.rs`'s writer builds the same member, so this change's two
+/// acceptance entries — the library's and the process's — run on the *same* bytes.
+///
+/// The `StackMapTable` is not decoration: a version-52 class whose code has a back edge declares
+/// the frames the verifier starts its blocks with, and without them this engine's frame pass
+/// refuses to derive the body (the recovery then stops on `jre_ir_table_missing`, a different
+/// stop). The two frames here are the ones javac declares for the same shape: an `append_frame`
+/// at BCI 2 (locals `[]` + `[int]`), an `append_frame` at BCI 4 (locals `[int, int]`) and a
+/// `same_frame` at BCI 20 (its delta is 15).
+fn recursion_fixture() -> Vec<u8> {
+    fn u16b(bytes: &mut Vec<u8>, value: u16) {
+        bytes.extend_from_slice(&value.to_be_bytes());
+    }
+    fn u32b(bytes: &mut Vec<u8>, value: u32) {
+        bytes.extend_from_slice(&value.to_be_bytes());
+    }
+    fn utf8(pool: &mut Vec<u8>, text: &[u8]) {
+        pool.push(1);
+        u16b(
+            pool,
+            u16::try_from(text.len()).expect("fixture name fits u16"),
+        );
+        pool.extend_from_slice(text);
+    }
+
+    let mut pool: Vec<u8> = Vec::new();
+    utf8(&mut pool, b"p/Recursive"); // 1
+    pool.push(7); // 2: Class 1
+    u16b(&mut pool, 1);
+    utf8(&mut pool, b"java/lang/Object"); // 3
+    pool.push(7); // 4: Class 3
+    u16b(&mut pool, 3);
+    utf8(&mut pool, b"method"); // 5
+    utf8(&mut pool, b"()V"); // 6
+    utf8(&mut pool, b"Code"); // 7
+    utf8(&mut pool, b"StackMapTable"); // 8
+
+    let mut output = 0xcafe_babe_u32.to_be_bytes().to_vec();
+    u16b(&mut output, 0); // minor
+    u16b(&mut output, 52); // major: Java 8
+    u16b(&mut output, 9); // constant_pool_count
+    output.extend_from_slice(&pool);
+    u16b(&mut output, 0x0021); // public super
+    u16b(&mut output, 2); // this_class
+    u16b(&mut output, 4); // super_class
+    u16b(&mut output, 0); // interfaces
+    u16b(&mut output, 0); // fields
+    u16b(&mut output, 1); // methods
+    u16b(&mut output, 0x0009); // public static
+    u16b(&mut output, 5); // name → "method"
+    u16b(&mut output, 6); // descriptor → "()V"
+    u16b(&mut output, 1); // attributes
+    u16b(&mut output, 7); // "Code"
+    let mut code = Vec::new();
+    u16b(&mut code, 2); // max_stack
+    u16b(&mut code, 2); // max_locals
+    u32b(
+        &mut code,
+        u32::try_from(RECURSION_BODY.len()).expect("fixture body fits u32"),
+    );
+    code.extend_from_slice(RECURSION_BODY);
+    u16b(&mut code, 0); // exception table
+    u16b(&mut code, 1); // code attributes
+    u16b(&mut code, 8); // "StackMapTable"
+    let frames: [u8; 11] = [
+        0x00, 0x03, // number_of_entries
+        0xfc, 0x00, 0x02, 0x01, // append_frame: BCI 2, +[int]
+        0xfc, 0x00, 0x01, 0x01, // append_frame: BCI 4, +[int]
+        0x0f, // same_frame: BCI 20 (delta 15)
+    ];
+    u32b(
+        &mut code,
+        u32::try_from(frames.len()).expect("fixture frames fit u32"),
+    );
+    code.extend_from_slice(&frames);
+    u32b(
+        &mut output,
+        u32::try_from(code.len()).expect("fixture attribute fits u32"),
+    );
+    output.extend_from_slice(&code);
+    u16b(&mut output, 0); // class attributes
+    output
+}
+
+/// The recursion that used to abort answers with a published stop instead.
+///
+/// The stop is the *existing* stop shape — `outcome = Stopped`, a non-`Complete` execution plane, a
+/// diagnostic that names the reason and the position, `content = not_produced`, no text and no
+/// segment table — and the reason is a re-entry, not "the input nests too deeply": the walk was
+/// about to enter the header of the loop whose body it is walking, which this run has already
+/// entered. The same request is run twice here: the stop the bound publishes is decided by the
+/// blocks, not by the stack or by the order the tests happen to run in.
+#[test]
+fn a_recursion_that_re_enters_its_own_loop_stops_instead_of_aborting() {
+    let engine = Engine::new();
+    let fixture = fixture(&engine, &recursion_fixture());
+
+    let report = recover(&engine, &fixture, b"method", b"()V");
+    assert_eq!(
+        report.outcome,
+        RecoveryOutcome::Stopped(StopReason::Interrupted {
+            code: "jre_recursion_reentry",
+            at: Some(2),
+        }),
+        "the walk re-entered the header at BCI 2, and the report says so: {report:?}"
+    );
+    match &report.execution {
+        ExecutionReport::Partial {
+            reason: TerminationReason::Error { code },
+            ..
+        } => assert_eq!(
+            code, "jre_recursion_reentry",
+            "a stop is a non-Complete execution plane, never a Complete one: {report:?}"
+        ),
+        other => panic!("a stop is a partial execution, not {other:?}"),
+    }
+    assert_eq!(report.content, RecoveryContent::NotProduced);
+    assert_eq!(report.text, "", "a stop hands out no artifact");
+    assert_eq!(report.source_map.len(), 0, "and no segment table");
+    assert!(report.regions.is_empty() && report.fallbacks.is_empty());
+    assert_eq!(report.representation, Representation::Bytecode);
+    assert!(!report.produced());
+    let diagnostic = report
+        .diagnostics
+        .iter()
+        .find(|diagnostic| diagnostic.code == "jre_recursion_reentry")
+        .unwrap_or_else(|| panic!("the stop states its reason: {report:?}"));
+    assert_eq!(diagnostic.severity, DiagnosticSeverity::Error);
+    assert!(
+        diagnostic.message.contains("BCI 2") && diagnostic.message.contains("re-entered"),
+        "the diagnosis names the block it re-entered and the fact that it re-entered it: {}",
+        diagnostic.message
+    );
+
+    // The same input, again: the stop is decided by the walk's own state, so it is the same stop.
+    let again = recover(&engine, &fixture, b"method", b"()V");
+    assert_eq!(again.outcome, report.outcome);
+    assert_eq!(again.diagnostics, report.diagnostics);
+    assert_eq!(
+        std::mem::discriminant(&again.execution),
+        std::mem::discriminant(&report.execution)
+    );
+}

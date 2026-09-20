@@ -927,10 +927,29 @@ fn stopped(
             "the run was cancelled{}",
             at.map_or(String::new(), |bci| format!(" at BCI {bci}"))
         ),
-        StopReason::Interrupted { code, at } => format!(
-            "the budget interrupted the run ({code}) at {}",
-            at.map_or("no node".to_string(), |bci| format!("BCI {bci}"))
-        ),
+        StopReason::Interrupted { code, at } => match *code {
+            // The three ways this run can be interrupted at a node are different facts about it —
+            // "the input went deeper than the bound", "the walk was back inside a structure it is
+            // already building" and "a budget poll refused" — and the message names which one
+            // stopped it, at which node. The budget's own wording is the one it always had.
+            crate::stop::RECURSION_REENTRY_CODE => format!(
+                "the recovery recursion re-entered a block this run had already entered and cannot \
+                 complete it: the run stopped at the recursion bound ({code}) at {}",
+                at.map_or("no node".to_string(), |bci| format!("BCI {bci}"))
+            ),
+            crate::stop::RECURSION_BOUND_CODE => format!(
+                "the recovery recursion reached its explicit depth bound ({code}) at {}",
+                at.map_or("no node".to_string(), |bci| format!("BCI {bci}"))
+            ),
+            crate::stop::BUDGET_INTERRUPTED_CODE => format!(
+                "the budget interrupted the run ({code}) at {}",
+                at.map_or("no node".to_string(), |bci| format!("BCI {bci}"))
+            ),
+            _ => format!(
+                "the run was interrupted ({code}) at {}",
+                at.map_or("no node".to_string(), |bci| format!("BCI {bci}"))
+            ),
+        },
     };
     RecoveryReport {
         method,

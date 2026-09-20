@@ -646,6 +646,7 @@ pub(crate) fn recover(
         profile,
         budget,
         visited: BTreeSet::new(),
+        depth: 0,
     };
     let mut regions = Vec::new();
     // The canonical graph publishes the method entry first: the normalization creates a node for
@@ -833,11 +834,15 @@ struct Frame {
     /// The nodes the region may claim, when it is a loop's body. A node outside the scope ends the
     /// run exactly like the boundary does — it is the code after the loop.
     scope: Option<BTreeSet<usize>>,
+    /// The header of the loop this frame is the body of. A body walk that arrives back at its own
+    /// header is inside the structure it is building, which is a state it has already entered — not
+    /// a nested loop — and the walk must not read it as one (see [`Walker::region_at`]).
+    own_loop: Option<usize>,
 }
 
 impl Frame {
     /// The frame of one loop body: the blocks that iterate, ending where the loop tests.
-    fn loop_body(&self, blocks: &BTreeSet<usize>, boundary: usize) -> Self {
+    fn loop_body(&self, blocks: &BTreeSet<usize>, boundary: usize, header: usize) -> Self {
         // A loop inside a loop may not claim a block the enclosing loop's body does not hold: the
         // scope of a body is the intersection, so a nesting cannot widen it.
         let scope = match &self.scope {
@@ -847,14 +852,20 @@ impl Frame {
         Self {
             boundary: Some(boundary),
             scope: Some(scope),
+            own_loop: Some(header),
         }
     }
 
     /// The frame of one arm of a branch: everything the enclosing frame allowed, ending at the join.
+    ///
+    /// The arm is no longer the loop body's own walk: an arm that jumps back to the enclosing loop's
+    /// test is an ordinary continuation of the body (a `continue`), and reading it as "the walk
+    /// re-entered the loop it is building" would refuse a shape this layer has always answered.
     fn arm(&self, join: Option<usize>) -> Self {
         Self {
             boundary: join,
             scope: self.scope.clone(),
+            own_loop: None,
         }
     }
 
@@ -881,7 +892,35 @@ struct Walker<'a> {
     profile: &'a crate::pass::RecoveryProfile,
     budget: &'a mut Budget,
     visited: BTreeSet<usize>,
+    /// How many [`Walker::region_at`] calls are on the stack: the region walk's own recursion
+    /// depth, checked against [`MAX_REGION_DEPTH`] before the walk descends.
+    depth: usize,
 }
+
+/// The bound on the region walk's own recursion.
+///
+/// The walk is recursive by structure — an `if`'s arms, a loop's body and every switch arm are
+/// regions of their own ([`Walker::region_at`]) — and one cycle in that recursion used to run the
+/// process stack out before any stop could be published. This constant is the *evidence-backed*
+/// bound that check is taken against, and it is deliberately not the value bound
+/// (`build.rs`'s `MAX_VALUE_DEPTH`): that one bounds the nesting of a *value*, not how deep the
+/// walk itself may go.
+///
+/// The number comes from measurements, not from a guess:
+///
+/// * every recovery in the committed corpus stays at **1–2** levels (the walk's depth is structural
+///   nesting, and the corpus' methods are small);
+/// * a sweep of a real artifact — every method of every class of `javassist-3.11.0.GA.jar` from
+///   `S2-007.war` (347 classes, 3398 methods, 3277 completed walks) — reaches **17** at its
+///   deepest, with 20 of those walks at 10 levels or more;
+/// * each level costs ~26 KiB of stack in a debug build (the abort's backtrace advances the frame
+///   pointer by `0x6620` per three-frame cycle), so 32 levels is ~850 KiB — under the 2 MiB a test
+///   thread is given and far under the 8 MiB of the main thread, while release builds are smaller
+///   still.
+///
+/// So the bound is twice the deepest nesting a real artifact was measured to need, and a run that
+/// exceeds it is refused before it descends rather than after the stack is gone.
+const MAX_REGION_DEPTH: usize = 32;
 
 impl Walker<'_> {
     /// The region that starts at one block, and the block the run continues at afterwards.
@@ -889,7 +928,48 @@ impl Walker<'_> {
     /// `frame` says where this region may go: the join it ends at, and — when it is a loop's body —
     /// the blocks that iterate. Arriving anywhere the frame does not allow ends the run instead of
     /// claiming the block, which is what keeps a loop's body from absorbing the code after it.
+    ///
+    /// This is the whole recursion family's one entry — the arms, the two loop bodies and every
+    /// switch arm all come back through it — so the recursion's two bounds are checked here,
+    /// **before** the walk descends, and a run that cannot continue ends as a published stop rather
+    /// than as a signal:
+    ///
+    /// * how **deep** the walk may go, one level per entry ([`MAX_REGION_DEPTH`]);
+    /// * that it may not **re-enter** the structure it is already inside. A frame whose `own_loop`
+    ///   is the block this entry starts at is the body of that loop, and the walk is back at its
+    ///   header: the state it is building, already entered. `loop_region` would take the same shape
+    ///   decisions for it — none of them reads the frame — and arrive back here, which is the cycle
+    ///   that drove the reported abort.
     fn region_at(
+        &mut self,
+        start: &CanonicalBlockId,
+        frame: &Frame,
+    ) -> Result<(Region, Option<CanonicalBlockId>), StopReason> {
+        let reentered = self
+            .view
+            .index_of(start)
+            .is_some_and(|node| frame.own_loop == Some(node));
+        if self.depth >= MAX_REGION_DEPTH || reentered {
+            // Which of the two refused the entry is part of the diagnosis: "the input nests too
+            // deeply" and "the walk is back inside a structure it is already building" are
+            // different facts about the run, and a stop must not name the one that did not happen.
+            return Err(StopReason::Interrupted {
+                code: if reentered {
+                    crate::stop::RECURSION_REENTRY_CODE
+                } else {
+                    crate::stop::RECURSION_BOUND_CODE
+                },
+                at: Some(start.bci()),
+            });
+        }
+        self.depth += 1;
+        let walked = self.region_at_inner(start, frame);
+        self.depth -= 1;
+        walked
+    }
+
+    /// The walk [`Self::region_at`] bounds: one region of the body, from one block on.
+    fn region_at_inner(
         &mut self,
         start: &CanonicalBlockId,
         frame: &Frame,
@@ -1460,7 +1540,7 @@ impl Walker<'_> {
         } else {
             Continuation::FallThrough
         };
-        let body_frame = frame.loop_body(blocks, header_node);
+        let body_frame = frame.loop_body(blocks, header_node, header_node);
         let (body, _) = self.region_at(&inside, &body_frame)?;
         self.visited.insert(header_node);
         let mut expected = blocks.clone();
@@ -1597,7 +1677,7 @@ impl Walker<'_> {
         } else {
             Continuation::FallThrough
         };
-        let body_frame = frame.loop_body(blocks, latch_node);
+        let body_frame = frame.loop_body(blocks, latch_node, header_node);
         let (body, _) = self.region_at(header, &body_frame)?;
         self.visited.insert(latch_node);
         let mut expected = blocks.clone();
