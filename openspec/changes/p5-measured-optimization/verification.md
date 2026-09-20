@@ -238,3 +238,66 @@
 
 **2.3（cache 损坏/依赖补齐/profile 变化的失效与直接路径回退）在 2.1/2.2 之后曾标注「无 cache 可做」**；父级据 `facts-cache`（本 change 的 ADDED 能力）与 `design.md` 的「**disabled-by-default 实验开关**」裁决：**disabled 约束的是「启用」而非「存在」**，故 2.3 **实现 in-memory cache 的完整身份/失效/回退语义**（不落盘、不加依赖、保持默认关闭），并由此让 **A15 的缓存半首次可验**、给 3.1 一个真正的第二条路径。**2.2 的「不默认启用」决定不变**，被取代的只是其「连 key 类型都不实现」的推理。
 **属 3.x**：A15 缓存半与 optimized/direct 差分（3.1）；对抗与共享不变量回归（3.2）；发布实测范围与未决门槛（3.3）；fmt/clippy/test/benchmark smoke/strict（3.4）。
+
+## 2026-09-20 2.3：facts cache 的完整身份/失效/回退（提交 `2f6754a`）
+
+### 父级裁决的执行（§0）
+
+2.1/2.2 决定「保持 disabled」，而 `facts-cache` 是本 change 的 **ADDED** 能力、2.3 的任务原文是**实现**它。父级据三条规格原文裁决：`facts-cache` 的 Purpose 是「为**已证明有收益的** facts cache…提供身份与失效边界」；`performance-gates` 明写「若收益不稳定…**MUST 保留未启用状态并记录原因**」；`design.md` 的 Migration Plan 明写「**disabled-by-default 实验开关**」——**开关的存在意味着被开的东西存在**；且 3.1 的 `Optimized versus direct path` **需要第二条路径**。
+**结论**：**实现** in-memory cache 的完整语义、**默认关闭**、**不落盘/不加依赖/无并发**。**2.2 的「不默认启用」不变**，被取代的只是其「连 key 类型都不实现」的推理。
+
+### 形状与落点
+
+**层：CP/Header**（`facts-cache` 里代价最高、身份最清晰的一层）。新模块 `crates/jarde-reader/src/facts_cache.rs`（506 行）。
+**落点在真实读取路径**：`Budget` 加手柄（`with_facts_cache`/`facts_cache()`），由**既有**入口咨询——`classfile::class_facts`（被 X1 三路 sub-scan 与 resolution 的 `read_definition_content` 调用）与 `classfile::inspect_header`。**未改任何既有函数签名**，故 `Engine::query`/`resolve_symbol`/`recover_method`/CLI **自动获得**。
+**key = `(blake3 内容摘要 + 长度, registry 版本 HIGHEST_REGISTERED_MAJOR, parse policy)`**；entry 另记 `FactsIdentity { registry, format = 1 }` 用于**丢弃**不兼容项。
+**不变量**：读取仍发生（读/CRC/digest/origin/coverage/read evidence 全由原代码产生）；**命中不 charge 任何计数维度**（只 `poll()`）；**只有跑完的 parse 才写入**；关闭时与今天**逐字节相同**；**引擎任何地方都不构造 cache**（父级独立核对：`jarde-jvm`/`jarde-query` 中 `FactsCache::`/`facts_cache` **零命中**）。
+
+### 失效三条（各可单独翻转）
+
+| scenario | 实现 | 用例 |
+| --- | --- | --- |
+| **依赖补齐** | 本层**不存任何关于 name/依赖的 verdict**（verdict 没有字节，进不了内容键） | `a_provider_added_later_is_answered_by_a_fresh_search`：无 provider → `UnresolvedDependency`；补 provider → `Missing`（依赖清空）；**两者都等于无缓存答案**；补 provider 后**旧环境仍答 negative**（一个 store、两个环境、两个答案） |
+| **RuntimeProfile / parse policy** | policy 进 key；**profile 不进**（本层产品与 profile 无关） | `the_key_binds_content_policy_and_declaration`（**四维各自翻转**：内容/policy/entry format/registry）；`a_strict_request_is_never_answered_with_a_forensic_read`（major 72 先 Forensic 存，**Strict 必须仍 Err**——**policy 掉出 key 就是 fail-open**） |
+| **分层** | 原始层 key 只有内容/registry/policy | `a_raw_layer_entry_survives_the_profile_and_the_recovery_above_it`（profile 8→11 **仍命中**，`reads` 证据逐字节相同）；`the_built_layer_carries_the_dimensions_the_record_binds_to_it`（从 `KEY_DIMENSIONS` 读出 cp-header 维度 = `[snapshot, registry, budget]` 并逐个对上载体） |
+
+### 可选与透明三条
+
+- **损坏/版本不兼容 → 丢弃 + 同预算直接路径 + 报告状态**：`a_discarded_entry_falls_back_under_the_same_budget` 三段数字——① 余量下回退 charge 与无缓存**完全相同**；② `class_bytes=1` 时两次拒绝**同一维度、同一 usage**；③ **整条 query 已先付 `archive_entries=13`/`read_bytes=627`，这些 charge 留在请求里**（父级实跑复现：`archive_entries=13 entry_bytes=627 read_bytes=627 class_bytes=185 … against class_bytes=555`——**即回退没有重置预算**）。
+- **状态报告**经 `FactsCache::report()`（hits/misses/stored/refused_capacity/discarded_format/registry/product），**不进结果文档**——因为 `Cold and warm results` 要求 **diagnostics 相等**，把 cache 状态塞进结果会让每个热运行与冷运行不符。
+- **候选不成为事实（A01）**：`the_cache_removes_repeated_parses_and_changes_nothing_else` 在 cache 路径复现参考形状（`constant_pool_candidate` 探针行 = candidate + `consumer: None`；全范围行 `constant_pool_candidate = 0`）。
+- **取消/耗尽不重置**：预算停止的 parse → `entries 0 / stored 0`；热缓存 + 已取消 token → `Error::Cancelled`，整条 query `cancelled`、0 item、与无缓存取消运行**同一前缀**。命中**仍为「发布」付 `ResultItems`**（`a_hit_still_bills_what_it_publishes`）。
+
+### 冷/热对照与 **A15 判定更新**（父级独立实跑）
+
+```
+the archive 行:  class_bytes 555 direct / 185 cold / 0 warm；read_bytes 627 两侧相同
+  cold→warm: status/order/coverage/diagnostics 全 equal；fingerprint different
+  differing paths: 只有 execution.usage.class_bytes 与 attribute_bytes   ← 只有 charge
+  warm → warm again: fingerprint equal
+the control 行: class_bytes 555→185→0，differing paths 同样只有 usage
+matrix 行:      class_bytes −555、attribute_bytes −87，其余 14 维全 0；中位 137 µs → 116 µs
+```
+- **结果半一致**：status/order/coverage/diagnostics **逐字段相等**，且**逐路径枚举证明 diff 全落在 `usage` 内**；**两个暖运行之间 fingerprint 完全相等**（暖路径是输入的纯函数）。
+- **资源确实更少**且是**确定性**的（charge 维度，非墙钟）：全范围 −185 class −29 attribute；local 行 −303 class −98 attribute；matrix −555/−87。墙钟 137→116 µs 在本语料上大于 halves 散布，但**只有一台机器、一次测量、无阈值**（决策 5）。
+- **A15 判定：由「未通过」改为「部分通过」**。依据：缓存半的**语义条件**首次有真实第二条路径可比——结果四平面相等 + 候选不成为事实 + 取消/预算不重置 + 暖路径自等；**未成立的一半**是「**整档 fingerprint 相等**」这一读法，它要求 cache 什么都不省（或伪造 usage），而 `Cold and warm results` 列举的必须相等平面里**没有资源**。**3.1 的 `Optimized versus direct path` 仍待做**（扩到 X1/resolution/IR 层与 3.2 的压力语料）。
+
+### 父级独立证伪
+
+**让 policy 掉出 key**（`FactsKey::of` 恒用 `ParsePolicy::Structure`）→ **4 红**，含 `a_strict_request_is_never_answered_with_a_forensic_read`（**fail-open** 那一例）、`the_key_binds_content_policy_and_declaration`、`the_cached_facts_are_the_facts_the_direct_path_produces`、`a_hit_still_bills_what_it_publishes`；还原后校验 OK。
+**实现者三组**：① 同上（4 红）；② `unusable()` 恒 `None`（跳过格式/版本校验）→ 2 红；③ 回退时刷新预算生命周期 → 3 红。
+**③ 的方法学记录（如实）**：第一次变异**没有**打红预算用例（回退时尚未 charge 任何东西 → 刷新不可观测）；实现者据此**加强测试**（新增「整条 query 已先付枚举/读取」的第三段）后再跑才红——**这是「测试被证据推翻后补强」的记录**，不是放宽。
+
+### 被修正的既有断言（7 处，无放宽）
+
+① `the_engine_has_no_cache_index_or_scheduler_to_extend` **更名**为 `the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler`；**index/scheduler 五条 needle 逐字未变**，cache 半边由「不存在」改为三条**更强**的事实（只在一个模块声明、**引擎零构造点**、`Budget::new` 不带）——原断言今日为假。② `REFERENCE_CACHE` 文案由 "absent" 改 "off: …disabled by default"。③ `Context.cache: &'static str` → `String`（标签由手柄 `describe()` 派生）。④ 跨进程 marker 行数 3→4（**多覆盖一行** cache-on）。⑤ `CANDIDATES["facts-cache/index"]` 由 `Unmeasured` 改 `Measured`，并**新增测试重算 `compare()` 的 delta 与记录表逐项相等**——记录因此**可被测量证伪**而非散文。⑥ `fine-grained-parallel` 的 ceiling 引用同步。⑦ `published_rows` **追加**第 4 行（warm cache-on），前 3 行仍以 `cache: None` 构造。
+
+### 证据
+
+全量 **1109 passed / 0 failed / 5 ignored**（1095 → **+14** = `p5_facts_cache` 12 + `p5_benchmark` 2；**无既有测试改变结果**）；`p5_facts_cache` 12 passed；fmt 与 clippy 1.98.1 干净；`openspec validate --all --strict` 16 passed；两个 CI example exit 0；分层三包中 `jarde-java` **0** 次；锁文件两条 exit 0 且 **`Cargo.toml`/`Cargo.lock` 零改动（未新增依赖）**。
+**CI**：`2f6754a` → 见下。
+
+### 未完成（如实）
+
+**未实现**（按 §0「选一层做完整语义」）：X1/resolution/IR-source 三层**只有契约**；`KEY_DIMENSIONS` 的 `IR`/`recovery` 仍 `Carrier::Absent`。**容量以 entry 数计，不以字节计**（deferral：触发条件 = 出现比「request 允许读进来的最大 class」更值得约束的内存压力）。**中位数是一次机器读数、未阈值化**，两个中位数**无测试断言**（确定性半边才有）。
+**属 3.1**：全层 evidence/coverage/representation/diagnostic 差分；**属 3.2**：ZIP bomb/condy/不可约 CFG/缺失依赖语料上的同一对照；**属 3.3/3.4**：启用开关的发布记录与全量门槛。
