@@ -654,9 +654,10 @@ impl Engine {
     ///
     /// No match is an answer, not a failure: the candidate list is empty, the coverage states the range
     /// that was searched, the execution is `Complete` when the whole scope was searched, and no
-    /// definition, member or diagnostic is invented. A candidate whose read *fails* is the one case
-    /// that ends the search, with the items it published before it, a diagnostic carrying that entry's
-    /// origin and a non-`Complete` execution.
+    /// definition, member or diagnostic is invented. Two cases end the search early, with the items it
+    /// published before it and a non-`Complete` execution: a candidate whose read *fails* (a diagnostic
+    /// carrying that entry's origin), and — for a query that names a member — a candidate whose own
+    /// member table stopped, whose records past the stop were never read.
     pub fn find_targets(
         &self,
         snapshot: &ArtifactSnapshot,
@@ -668,6 +669,10 @@ impl Engine {
             snapshot,
             scope,
             &query.class,
+            match &query.member {
+                None => SearchSubject::Declaration,
+                Some(_) => SearchSubject::Member,
+            },
             |read| match &query.member {
                 None => Ok(vec![read.class.clone()]),
                 Some(filter) => member_candidates(read, filter),
@@ -706,8 +711,18 @@ impl Engine {
     /// A request whose name matches more than one physical definition — a class name held at
     /// several origins, or a body name with several declared descriptors — is answered with
     /// [`OperationOutcome::Ambiguous`]: every candidate keeps its own physical identity and no body
-    /// is decoded. A body identity that belongs to another class, or a name the class does not
-    /// declare, is an input error (see [`ClassViewReport`]'s own codes).
+    /// is decoded. A friendly name whose *search* did not finish — a candidate that did not read,
+    /// an exhausted dimension, a cancellation — is answered with
+    /// [`OperationOutcome::Incomplete`]: the confirmed prefix (one candidate, or none), the search's
+    /// own planes and nothing decoded, because an unfinished search has shown neither a unique
+    /// definition nor a missing one. A body identity that belongs to another class, or a name the
+    /// class does not declare, is an input error (see [`ClassViewReport`]'s own codes).
+    ///
+    /// The bodies are independent results of one request: a body whose own decode stopped, or that
+    /// the member walk never reached, keeps its own result, coverage and diagnostics while the view
+    /// goes on to the bodies the caller asked for beside it. The one thing that ends the request
+    /// rather than the value is the shared budget: a cancellation or an exhausted dimension stops
+    /// the view from starting any further body, and the prefix it published stays as it is.
     pub fn class_view(
         &self,
         snapshot: &ArtifactSnapshot,
@@ -734,6 +749,9 @@ impl Engine {
             ClassBinding::Bound(bound) => (bound.read, bound.search_coverage, bound.class_item),
             ClassBinding::Ambiguous(candidates) => {
                 return Ok(OperationOutcome::Ambiguous(candidates));
+            }
+            ClassBinding::Incomplete(candidates) => {
+                return Ok(OperationOutcome::Incomplete(candidates));
             }
         };
         let ClassContentItem::ClassDeclaration(declaration) = &read.class else {
@@ -783,6 +801,12 @@ impl Engine {
                 items.push(method_item(&definition, index, method)?);
             }
         }
+        // The class and member planes are complete on their own evidence: the search and the class
+        // read reached their ends and the member table was read to its declared end. Taken here,
+        // before any body runs, so that a body which stopped below cannot rewrite what the member
+        // table really was (A13/A14).
+        let structure_complete = matches!(execution, ExecutionReport::Complete { .. })
+            && read.facts.stopped_at.is_none();
         // The bodies the request asked for: every reference is resolved against this one listing
         // before any body is decoded, so a name that matches several descriptors answers with the
         // candidates and reads nothing, and the published results keep the request's own order.
@@ -851,13 +875,35 @@ impl Engine {
                     diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
                     break;
                 }
+                // The body's own plane joins the view's: a body that stopped makes the view's
+                // execution non-`Complete` while the body keeps its own result, coverage and
+                // diagnostics. A no-body declaration is not a stop and contributes nothing.
+                let stop_ahead = match &body {
+                    ClassViewBody::Read {
+                        execution: body_execution,
+                        ..
+                    }
+                    | ClassViewBody::Refused {
+                        execution: body_execution,
+                        ..
+                    } => {
+                        let stop_ahead = ends_the_request(body_execution);
+                        merge_execution(&mut execution, body_execution.clone());
+                        stop_ahead
+                    }
+                    ClassViewBody::NotDeclared { .. } => false,
+                };
                 bodies.push(body);
+                // A cancellation or an exhausted shared dimension is the request ending: the bodies
+                // after it are never begun, and the prefixes published stay as they are.
+                if stop_ahead {
+                    break;
+                }
             }
         }
         if let Some(stop) = &read.facts.stopped_at {
             merge_execution(&mut execution, member_stop_execution(stop, budget));
         }
-        let complete = matches!(execution, ExecutionReport::Complete { .. });
         Ok(OperationOutcome::Performed(ClassViewReport {
             view,
             class: definition,
@@ -865,7 +911,11 @@ impl Engine {
             bodies,
             limits: budget.limits().clone(),
             usage: budget.usage(),
-            coverage: class_view_coverage(search_coverage.as_ref(), &read.facts, complete),
+            coverage: class_view_coverage(
+                search_coverage.as_ref(),
+                &read.facts,
+                structure_complete,
+            ),
             execution: with_usage(execution, budget.usage()),
             diagnostics,
         }))
@@ -891,6 +941,9 @@ impl Engine {
             MethodBinding::Bound(bound) => bound,
             MethodBinding::Ambiguous(candidates) => {
                 return Ok(OperationOutcome::Ambiguous(candidates));
+            }
+            MethodBinding::Incomplete(candidates) => {
+                return Ok(OperationOutcome::Incomplete(candidates));
             }
         };
         let BoundMethod {
@@ -936,6 +989,9 @@ impl Engine {
             MethodBinding::Bound(bound) => bound,
             MethodBinding::Ambiguous(candidates) => {
                 return Ok(OperationOutcome::Ambiguous(candidates));
+            }
+            MethodBinding::Incomplete(candidates) => {
+                return Ok(OperationOutcome::Incomplete(candidates));
             }
         };
         let BoundMethod {
@@ -2053,6 +2109,23 @@ fn stop_priority(execution: &ExecutionReport) -> u8 {
     }
 }
 
+/// Whether one stop ends the shared request rather than the value it was reading.
+///
+/// A cancellation and an exhausted shared dimension are the *request* ending: everything after it
+/// is work the same budget cannot fund, so a composed operation that has hit one starts nothing
+/// further. A value-level stop — a decode that stopped at the bytes it was reading, an unsupported
+/// construct — is isolated to the result it happened in, and the work the caller asked for beside
+/// it still runs.
+fn ends_the_request(execution: &ExecutionReport) -> bool {
+    match execution {
+        ExecutionReport::Complete { .. } => false,
+        ExecutionReport::Cancelled { .. } => true,
+        ExecutionReport::Partial { reason, .. } | ExecutionReport::Failed { reason, .. } => {
+            matches!(reason, TerminationReason::BudgetExceeded { .. })
+        }
+    }
+}
+
 /// One diagnostic for a step that stopped the work it was part of.
 ///
 /// The code is the failure's own, so one failure has one code wherever this engine reports it, and the
@@ -2519,15 +2592,19 @@ pub enum BodyRef {
 /// The candidates one friendly name answered with, and the physical basis for choosing between
 /// them.
 ///
-/// An ambiguity is an answer, not a failure: the operation that returned this executed nothing —
-/// no body was read, no stage ran — and the caller continues by handing one candidate's own
-/// identity back ([`ClassRef::Definition`], [`MethodRef::Method`], [`BodyRef::Method`]).
+/// A selection that bound several identities and a selection that never finished are both answers,
+/// not failures: the operation that returned this executed nothing — no body was read, no stage ran
+/// — and the caller continues by handing one candidate's own identity back
+/// ([`ClassRef::Definition`], [`MethodRef::Method`], [`BodyRef::Method`]).
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct TargetCandidates {
     /// The query as the search answered it, spelling included.
     pub query: NavigationQuery,
-    /// Every physical definition or member the name bound, each with its own identity.
+    /// The physical definitions or members the search confirmed and published, each with its own
+    /// identity. An [`OperationOutcome::Ambiguous`] states every binding the name has; an
+    /// [`OperationOutcome::Incomplete`] states the reliable prefix the search obtained before it
+    /// stopped, which may be empty.
     pub candidates: Vec<ClassContentItem>,
     /// The complete effective limits the selection ran under.
     pub limits: Limits,
@@ -2546,6 +2623,17 @@ pub enum OperationOutcome<T> {
     /// **executed nothing**. Boxed because a candidate list is many items and an outcome of a
     /// performed operation is not.
     Ambiguous(Box<TargetCandidates>),
+    /// The friendly name search did not finish — a damaged candidate, an exhausted dimension or a
+    /// cancellation stopped it — so nothing may be claimed about the target: the operation returns
+    /// the search's own execution, coverage, diagnostics, real usage and the candidates it did
+    /// confirm (zero or more) and **executed nothing**.
+    ///
+    /// This is deliberately not [`OperationOutcome::Ambiguous`]: a search that stopped has not
+    /// shown that the name is ambiguous, and it cannot answer "not found" either, because the
+    /// target may be in the part it never read. To continue, the caller selects a confirmed
+    /// candidate's own physical identity explicitly, or retries under a budget that can finish the
+    /// search.
+    Incomplete(Box<TargetCandidates>),
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -2882,9 +2970,15 @@ pub struct ClassViewRequest {
 /// The planes are this view's own: `limits` is the complete effective configuration the request ran
 /// under and `usage` is what that configuration was charged, `coverage` states the candidate search
 /// (when the class was named) beside the member tables under their own labels, and `execution`
-/// merges the search, the class read and every body-level stop. Nothing here is a resolution, a
-/// recovery or a verification statement, and no analysis plane (`ir_items`, `ir_edges`,
-/// `analysis_steps`, `normalization_clones`) moves.
+/// merges the search, the class read and every body-level stop — a body that stopped makes this
+/// report non-`Complete` even though the class and member planes of the same request did finish.
+/// Each body keeps its own result, coverage and diagnostics, and a [`ClassViewBody::NotDeclared`]
+/// member is a declaration rather than a stop. The class and member structural coverage keeps its
+/// own evidence rather than being rewritten by a body: a member table that really was read to its
+/// declared end stays `complete_within_schema` beside a stopped body, and one that stopped reports
+/// its scanned prefix and skipped remainder under `class_fields`/`class_methods`. Nothing here is a
+/// resolution, a recovery or a verification statement, and no analysis plane (`ir_items`,
+/// `ir_edges`, `analysis_steps`, `normalization_clones`) moves.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct ClassViewReport {
@@ -3505,8 +3599,11 @@ pub enum RecoveryPresentationPart {
 /// search published for them, and every plane it stated.
 ///
 /// This is the one implementation of the friendly-name rules — the raw-path boundary test, the
-/// declaration confirmation, the path/declaration mismatch, the item charges and the stop — so the
-/// navigation entry and a task-oriented operation cannot answer "which definition" differently.
+/// declaration confirmation, the path/declaration mismatch, the member-table stop, the item charges
+/// and the stop — so the navigation entry and a task-oriented operation cannot answer "which
+/// definition" differently. What the search does *not* do is decide between its own answers: a
+/// caller reads [`NamedClassSearch::execution`] to know whether the search finished, and only then
+/// reads the candidate counts as one, zero or many.
 struct NamedClassSearch {
     matches: Vec<ConfirmedRead>,
     items: Vec<ClassContentItem>,
@@ -3542,10 +3639,26 @@ fn member_candidates(read: &ConfirmedRead, filter: &MemberQuery) -> Result<Vec<C
     Ok(found)
 }
 
+/// What one name search is answering with.
+///
+/// The two questions rest on different evidence, and a member table that stopped separates them. A
+/// class declaration is established by the header the read confirmed, so the members beyond a stop
+/// do not change *which* definition the name bound. A member answer *is* a walk over that table: the
+/// records past the stop were never read, so the search cannot claim either a unique match or the
+/// absence of one, and it states the stop instead.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum SearchSubject {
+    /// The class declaration each candidate's own header states.
+    Declaration,
+    /// The member records of the requested name, selected from the candidate's own member table.
+    Member,
+}
+
 fn search_named_classes<F>(
     snapshot: &ArtifactSnapshot,
     scope: &PhysicalScope,
     class: &ClassNameQuery,
+    subject: SearchSubject,
     mut select: F,
     budget: &mut Budget,
 ) -> Result<NamedClassSearch>
@@ -3616,8 +3729,22 @@ where
                     }
                     items.push(found_item);
                 }
+                // A member answer is a walk over exactly this table: when the table stopped, the
+                // records past the stop were never read, so the search ends here with the stop
+                // stated and the confirmed prefix published rather than answering a member
+                // selection the truncated table cannot support.
+                let member_stop = match subject {
+                    SearchSubject::Member => read.facts.stopped_at.clone(),
+                    SearchSubject::Declaration => None,
+                };
+                let definition = item.definition.clone();
                 matches.push(read);
                 if refused {
+                    break;
+                }
+                if let Some(stop) = member_stop {
+                    merge_execution(&mut execution, member_stop_execution(&stop, budget));
+                    diagnostics.push(member_stop_diagnostic(&definition, &stop));
                     break;
                 }
             }
@@ -3654,6 +3781,9 @@ where
 enum ClassBinding {
     Bound(Box<BoundClass>),
     Ambiguous(Box<TargetCandidates>),
+    /// The name search did not finish, so no definition may be elected — and none may be reported
+    /// missing either, because the target may be in the part the search never read.
+    Incomplete(Box<TargetCandidates>),
 }
 
 /// One bound class: the read that confirmed it, the search plane that found it (when it was named)
@@ -3674,6 +3804,9 @@ struct BoundMethod {
 enum MethodBinding {
     Bound(Box<BoundMethod>),
     Ambiguous(Box<TargetCandidates>),
+    /// The name search did not finish, so no method identity may be elected — and none may be
+    /// reported missing either.
+    Incomplete(Box<TargetCandidates>),
 }
 
 /// Binds one class reference to exactly one confirmed read.
@@ -3727,9 +3860,26 @@ fn bind_class(
                 snapshot,
                 scope,
                 class,
+                SearchSubject::Declaration,
                 |read| Ok(vec![read.class.clone()]),
                 budget,
             )?;
+            // The search's own completeness is read before its candidate count: a confirmed prefix
+            // — one candidate, or none — is neither a unique binding nor a missing definition
+            // while the search has not finished.
+            if !matches!(search.execution, ExecutionReport::Complete { .. }) {
+                return Ok(ClassBinding::Incomplete(Box::new(TargetCandidates {
+                    query: NavigationQuery {
+                        class: class.clone(),
+                        member: None,
+                    },
+                    candidates: search.items,
+                    limits: budget.limits().clone(),
+                    coverage: search.coverage,
+                    execution: search.execution,
+                    diagnostics: search.diagnostics,
+                })));
+            }
             match search.matches.len() {
                 0 => Err(Error::invalid_input(
                     "operation_target_not_found",
@@ -3839,6 +3989,19 @@ fn bind_method(
                 &query,
                 budget,
             )?;
+            // The search's own completeness is read before its candidate count: a confirmed prefix
+            // — one candidate, or none — is neither a unique binding nor a missing method while the
+            // search has not finished.
+            if !matches!(report.execution, ExecutionReport::Complete { .. }) {
+                return Ok(MethodBinding::Incomplete(Box::new(TargetCandidates {
+                    query,
+                    candidates: report.candidates,
+                    limits: budget.limits().clone(),
+                    coverage: report.coverage,
+                    execution: report.execution,
+                    diagnostics: report.diagnostics,
+                })));
+            }
             match report.candidates.len() {
                 0 => Err(Error::invalid_input(
                     "operation_target_not_found",

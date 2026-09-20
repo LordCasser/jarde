@@ -25,9 +25,11 @@
 //!
 //! The exit status is the report's own classification rather than a re-derivation of it: a report
 //! whose execution planes are all `Complete` exits 0, an `Ambiguous` outcome (the library bound
-//! several identities and ran nothing) exits 3, and a report that stopped — reliable prefix and all
-//! — exits 4 instead of pretending to be a success. A parameter or request-level refusal exits 2,
-//! and a document that could not be delivered exits 1.
+//! several identities and ran nothing) exits 3, an `Incomplete` outcome (the name search did not
+//! finish, so nothing was bound and nothing ran) exits 4 like any other stopped report, and a
+//! `Performed` report that stopped — reliable prefix and all — exits 4 instead of pretending to be
+//! a success. A parameter or request-level refusal exits 2, and a document that could not be
+//! delivered exits 1.
 //!
 //! Where the chain hands an identity on, the option takes the *inner* identity type the library
 //! publishes (`PhysicalDefinitionId`, `PhysicalMethodId`), so the value a listing printed is
@@ -37,12 +39,12 @@ use crate::ErrorResponse;
 use clap::{ArgAction, Args, Subcommand, ValueEnum};
 use jarde::{
     ArtifactInput, ArtifactSnapshot, BodyRef, Budget, BudgetOverride, ClassNameQuery, ClassRef,
-    ClassViewBody, ClassViewReport, ClassViewRequest, ConsumerKind, ConsumerSchema,
-    CountedBudgetDimension, Engine, EnvironmentPolicy, EnvironmentRequest, Error, ExecutionReport,
-    JvmBytes, LayoutMode, LoadRoot, LoaderId, MethodOperationRequest, MethodRecoveryReport,
-    MethodRef, MultiReleasePolicy, OperationOutcome, PhysicalDefinitionId, PhysicalScope,
-    PhysicalView, QueryRelation, QueryRequest, QueryTarget, ReferenceGrouping, ReferenceSource,
-    RuntimeProfile, SymbolRef, UsageSnapshot, task_budget,
+    ClassViewReport, ClassViewRequest, ConsumerKind, ConsumerSchema, CountedBudgetDimension,
+    Engine, EnvironmentPolicy, EnvironmentRequest, Error, ExecutionReport, JvmBytes, LayoutMode,
+    LoadRoot, LoaderId, MethodOperationRequest, MethodRecoveryReport, MethodRef,
+    MultiReleasePolicy, OperationOutcome, PhysicalDefinitionId, PhysicalScope, PhysicalView,
+    QueryRelation, QueryRequest, QueryTarget, ReferenceGrouping, ReferenceSource, RuntimeProfile,
+    SymbolRef, UsageSnapshot, task_budget,
 };
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -61,7 +63,8 @@ pub const EXIT_DELIVERY: u8 = 1;
 pub const EXIT_USAGE: u8 = 2;
 /// The exit status of a friendly name that bound several physical identities.
 pub const EXIT_AMBIGUOUS: u8 = 3;
-/// The exit status of a report whose execution stopped before its scope did.
+/// The exit status of a report whose execution stopped before its scope did — a performed report
+/// that stopped, or a name selection the search could not finish.
 pub const EXIT_INCOMPLETE: u8 = 4;
 
 /// The JSON path of the one text body a task report carries: the recovery's own Java text.
@@ -480,7 +483,8 @@ impl Answer {
     /// The answer of a command whose library value is an `OperationOutcome`.
     ///
     /// The document is the outcome's own serialization — the `outcome` tag included — so an
-    /// ambiguity is a report a caller reads rather than an error envelope it has to decode.
+    /// ambiguity and an unfinished selection are reports a caller reads rather than error
+    /// envelopes it has to decode.
     fn outcome<T: Serialize>(
         outcome: &OperationOutcome<T>,
         plane: impl FnOnce(&T) -> Plane,
@@ -488,6 +492,7 @@ impl Answer {
         let plane = match outcome {
             OperationOutcome::Performed(report) => plane(report),
             OperationOutcome::Ambiguous(_) => Plane::Ambiguous,
+            OperationOutcome::Incomplete(_) => Plane::Incomplete,
         };
         Ok(Self {
             document: document(outcome)?,
@@ -1017,30 +1022,14 @@ fn plane_of(execution: &ExecutionReport) -> Plane {
     }
 }
 
-/// Every plane one class view published: the view's own read and each requested body's own decode.
+/// The plane one class view ran under: the report's own execution.
 ///
-/// A body-level stop is *not* merged into the view's plane by the library — the view's own
-/// execution stays `Complete` when one body's decode stopped, and a refusal is carried by the body
-/// alone — so the depth of the answer is read from every plane the report publishes rather than
-/// from its first one.
+/// The library merges the search, the class read and every requested body's stop into that one
+/// plane, so a view with a stopped body is already non-`Complete` there. The adapter reads it and
+/// derives nothing: walking `bodies` here would be a second implementation of the library's merge,
+/// and the two would be free to disagree.
 fn class_view_plane(report: &ClassViewReport) -> Plane {
-    let mut incomplete = plane_of(&report.execution) == Plane::Incomplete;
-    for body in &report.bodies {
-        incomplete |= match body {
-            ClassViewBody::Read {
-                execution,
-                stopped_at,
-                ..
-            } => stopped_at.is_some() || plane_of(execution) == Plane::Incomplete,
-            ClassViewBody::Refused { execution, .. } => plane_of(execution) == Plane::Incomplete,
-            ClassViewBody::NotDeclared { .. } => false,
-        };
-    }
-    if incomplete {
-        Plane::Incomplete
-    } else {
-        Plane::Complete
-    }
+    plane_of(&report.execution)
 }
 
 /// The plane one recovery presentation ran under.

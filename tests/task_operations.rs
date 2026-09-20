@@ -74,6 +74,11 @@ fn performed<T>(outcome: OperationOutcome<T>) -> T {
             "expected one bound target, got {} candidate(s) and no execution",
             candidates.candidates.len()
         ),
+        OperationOutcome::Incomplete(candidates) => panic!(
+            "expected one bound target, got an unfinished selection with {} candidate(s) and no \
+             execution",
+            candidates.candidates.len()
+        ),
     }
 }
 
@@ -81,9 +86,30 @@ fn performed<T>(outcome: OperationOutcome<T>) -> T {
 fn ambiguous<T>(outcome: OperationOutcome<T>) -> TargetCandidates {
     match outcome {
         OperationOutcome::Ambiguous(candidates) => *candidates,
+        OperationOutcome::Incomplete(candidates) => panic!(
+            "expected an ambiguous name; the search did not finish with {} candidate(s) instead",
+            candidates.candidates.len()
+        ),
         OperationOutcome::Performed(_) => {
             panic!("expected candidates; the operation executed against a silently chosen target")
         }
+    }
+}
+
+/// The confirmed prefix of an unfinished selection, with a failure when the operation bound one
+/// identity anyway or refused the request.
+fn incomplete<T>(outcome: OperationOutcome<T>) -> TargetCandidates {
+    match outcome {
+        OperationOutcome::Incomplete(candidates) => *candidates,
+        OperationOutcome::Ambiguous(candidates) => panic!(
+            "expected an unfinished selection; the search bound {} candidate(s) as ambiguous \
+             instead",
+            candidates.candidates.len()
+        ),
+        OperationOutcome::Performed(_) => panic!(
+            "expected an unfinished selection; the operation executed against a target an \
+             unfinished search never bound"
+        ),
     }
 }
 
@@ -1142,12 +1168,14 @@ fn a_tight_override_stops_with_the_terminating_dimension() {
     let snapshot = open(two_origin_war(&upper, &nested));
     let scope = tree_scope(&snapshot);
 
-    // One header attempt over a scope with two candidates of the name: the first binds, the second
-    // is refused and the report keeps the reliable prefix with a Partial execution.
+    // One header attempt over a scope with two candidates of the name: the first binds and the
+    // second charge is refused, so the search did not finish. One confirmed candidate is not a
+    // unique target and the zero-or-one rule does not apply: the request answers with that
+    // candidate, the search's own stop and the usage it really cost, and runs nothing.
     let tight = task_limits(&[BudgetOverride::new("class_headers", 1).expect("named")])
         .expect("a legal override");
     let mut tight_budget = Budget::new(tight.clone());
-    let report = performed(
+    let stopped = incomplete(
         engine
             .class_view(
                 &snapshot,
@@ -1162,19 +1190,52 @@ fn a_tight_override_stops_with_the_terminating_dimension() {
             )
             .expect("a stopped request is a report, not an error"),
     );
-    assert_eq!(report.limits, tight);
-    assert_eq!(report.usage.class_headers, 1);
-    assert_eq!(method_names(&report), vec!["upper"]);
+    assert_eq!(stopped.limits, tight);
     assert_eq!(
-        report.execution,
+        stopped.candidates.len(),
+        1,
+        "the confirmed prefix travels with the stop: {:?}",
+        stopped.candidates
+    );
+    assert_eq!(
+        stopped.execution,
         ExecutionReport::Partial {
             reason: TerminationReason::BudgetExceeded {
                 dimension: BudgetDimension::ClassHeaders,
             },
-            usage: execution_usage(&report.execution).clone(),
+            usage: execution_usage(&stopped.execution).clone(),
         }
     );
-    assert!(codes(&report.diagnostics).contains(&"budget_exceeded_class_headers".to_string()));
+    assert_eq!(
+        execution_usage(&stopped.execution).class_headers,
+        1,
+        "the stop carries the usage the search really cost: {:?}",
+        stopped.execution
+    );
+    assert!(codes(&stopped.diagnostics).contains(&"budget_exceeded_class_headers".to_string()));
+    assert_no_analysis("an unfinished class selection", &tight_budget.usage());
+
+    // The confirmed candidate is usable: feeding its own physical identity back reads exactly that
+    // definition, which is how a caller continues from an unfinished search.
+    let ClassContentItem::ClassDeclaration(confirmed) = &stopped.candidates[0] else {
+        panic!("a class search publishes class declarations")
+    };
+    let chosen = performed(
+        engine
+            .class_view(
+                &snapshot,
+                &scope,
+                &ClassViewRequest {
+                    class: ClassRef::Definition {
+                        definition: confirmed.definition.clone(),
+                    },
+                    bodies: Vec::new(),
+                },
+                &mut budget(),
+            )
+            .expect("the confirmed identity reads"),
+    );
+    assert_eq!(method_names(&chosen), vec!["upper"]);
 
     // One body attempt with two bodies asked for: the first is decoded, the second attempt is
     // refused, and the second body is not invented.
@@ -1237,7 +1298,18 @@ fn a_tight_override_stops_with_the_terminating_dimension() {
             .expect("a stopped request is a report, not an error"),
     );
     assert_eq!(report.usage.method_bodies, 1);
-    assert_eq!(report.bodies.len(), 1);
+    assert_eq!(
+        report.bodies.len(),
+        1,
+        "the refusal ends the request: the bodies after it are never started"
+    );
+    assert_eq!(
+        report.bodies[0]
+            .method()
+            .map(|method| method.name.0.clone()),
+        Some(b"one".to_vec()),
+        "the one body that was started is the first requested one"
+    );
     assert!(
         matches!(report.bodies[0], ClassViewBody::Read { .. }),
         "the first body is the read one: {:?}",
@@ -1252,6 +1324,7 @@ fn a_tight_override_stops_with_the_terminating_dimension() {
             usage: execution_usage(&report.execution).clone(),
         }
     );
+    assert!(codes(&report.diagnostics).contains(&"budget_exceeded_method_bodies".to_string()));
 
     // A tight output budget stops the analysis of a standalone class before its body is read, and
     // the report says so instead of claiming a completed run.
@@ -1911,6 +1984,611 @@ fn a_body_reference_outside_this_class_is_an_input_error() {
         )
         .expect_err("a member the class does not declare is an input error");
     assert_eq!(code_of(&error), "class_view_body_not_found");
+}
+
+// ---------------------------------------------------------------------------------------------
+// preserve-task-operation-stops / A07 / A13 / A14 / A16: an unfinished search decides nothing
+// ---------------------------------------------------------------------------------------------
+
+/// A class selection is decided by the search's own completeness, not by how many candidates it
+/// happens to have confirmed: one candidate beside a same-named entry that does not read is not a
+/// unique target, and zero candidates before such an entry is not a missing one.
+///
+/// The three orderings are the independent review's own fixture: the committed `NestedEval.class`
+/// beside an `x/NestedEval.class` entry whose bytes are not a class, in the valid-only, damaged-
+/// last and damaged-first orders.
+#[test]
+fn an_unfinished_name_search_is_neither_a_unique_nor_a_missing_target() {
+    let engine = Engine::new();
+    let broken: &[u8] = b"broken";
+    let valid = open(zip_of(&[(b"NestedEval.class", NESTED_EVAL)]));
+    let damaged_last = open(zip_of(&[
+        (b"NestedEval.class", NESTED_EVAL),
+        (b"x/NestedEval.class", broken),
+    ]));
+    let damaged_first = open(zip_of(&[
+        (b"NestedEval.class", broken),
+        (b"x/NestedEval.class", NESTED_EVAL),
+    ]));
+    let method_request = |snapshot: &ArtifactSnapshot| MethodOperationRequest {
+        method: MethodRef::Name {
+            class: ClassNameQuery::internal("NestedEval"),
+            name: bytes(b"nestedPlain"),
+            descriptor: Some(bytes(b"(I)I")),
+        },
+        environment: environment_request(snapshot, EnvironmentPolicy::PlainJar),
+    };
+    let class_request = || ClassViewRequest {
+        class: ClassRef::Name {
+            class: ClassNameQuery::internal("NestedEval"),
+        },
+        bodies: Vec::new(),
+    };
+
+    // The positive control: the whole scope was searched, one definition declares the name, and the
+    // operation really runs over it.
+    let mut valid_budget = budget();
+    let recovered = performed(
+        engine
+            .recover_target(
+                slice::from_ref(&valid),
+                &method_request(&valid),
+                &mut valid_budget,
+            )
+            .expect("a legal request is answered"),
+    );
+    assert_eq!(recovered.method.name.0, b"nestedPlain");
+    assert!(matches!(
+        recovered.presentation.execution,
+        ExecutionReport::Complete { .. }
+    ));
+    assert_eq!(valid_budget.usage().method_bodies, 1);
+
+    // One candidate confirmed and then a same-named candidate that does not read: the confirmed
+    // method is published as a candidate — not elected — and nothing is analysed or decoded.
+    let mut after_budget = budget();
+    let after = incomplete(
+        engine
+            .recover_target(
+                slice::from_ref(&damaged_last),
+                &method_request(&damaged_last),
+                &mut after_budget,
+            )
+            .expect("a stopped search is a report, not an error"),
+    );
+    assert_eq!(after.query.class.spelling(), "NestedEval");
+    assert_eq!(
+        after.candidates.len(),
+        1,
+        "the confirmed prefix travels with the stop: {:?}",
+        after.candidates
+    );
+    let ClassContentItem::Method(confirmed) = &after.candidates[0] else {
+        panic!("a method search publishes method records")
+    };
+    assert_eq!(confirmed.identity.name.0, b"nestedPlain");
+    assert_eq!(after.limits, limits());
+    assert!(matches!(after.execution, ExecutionReport::Failed { .. }));
+    assert!(
+        codes(&after.diagnostics).contains(&"classfile_decode".to_string()),
+        "the damaged sibling is not hidden: {:?}",
+        after.diagnostics
+    );
+    assert_eq!(
+        execution_usage(&after.execution).class_headers,
+        2,
+        "both candidates were examined: {:?}",
+        after.execution
+    );
+    assert_no_analysis("an unfinished selection", execution_usage(&after.execution));
+    assert_eq!(
+        execution_usage(&after.execution).method_bodies,
+        after_budget.usage().method_bodies,
+        "the stop carries the request's real usage"
+    );
+    // The unfinished outcome is as deterministic as every other report: two runs of the same request
+    // over the same immutable snapshot differ in the wall clock alone.
+    let mut again_budget = budget();
+    let again = incomplete(
+        engine
+            .recover_target(
+                slice::from_ref(&damaged_last),
+                &method_request(&damaged_last),
+                &mut again_budget,
+            )
+            .expect("a stopped search is a report, not an error"),
+    );
+    assert_eq!(facts_json(&after), facts_json(&again));
+
+    // The damaged candidate first: zero confirmed candidates, and still no claim that the name is
+    // missing. The range the search really examined is stated.
+    let mut before_budget = budget();
+    let before = incomplete(
+        engine
+            .recover_target(
+                slice::from_ref(&damaged_first),
+                &method_request(&damaged_first),
+                &mut before_budget,
+            )
+            .expect("a stopped search is a report, not an error"),
+    );
+    assert!(
+        before.candidates.is_empty(),
+        "nothing was confirmed before the stop: {:?}",
+        before.candidates
+    );
+    assert!(matches!(before.execution, ExecutionReport::Failed { .. }));
+    assert!(codes(&before.diagnostics).contains(&"classfile_decode".to_string()));
+    assert_eq!(execution_usage(&before.execution).class_headers, 1);
+    assert_scan_range(&before.coverage, 0, 1, 1, 2);
+    assert_no_analysis(
+        "a stop before any candidate",
+        execution_usage(&before.execution),
+    );
+
+    // The class view answers the same way on the same archives: a named class whose search stopped
+    // is an unfinished selection with the class item it confirmed and no member or body work.
+    let mut view_budget = budget();
+    let view = incomplete(
+        engine
+            .class_view(
+                &damaged_last,
+                &PhysicalScope::SnapshotAll,
+                &class_request(),
+                &mut view_budget,
+            )
+            .expect("a stopped search is a report, not an error"),
+    );
+    assert_eq!(view.candidates.len(), 1);
+    assert_eq!(view_budget.usage().class_headers, 2);
+    assert_eq!(view_budget.usage().method_bodies, 0);
+    assert_no_ir("an unfinished class selection", &view_budget.usage());
+
+    let mut view_budget = budget();
+    let view = incomplete(
+        engine
+            .class_view(
+                &damaged_first,
+                &PhysicalScope::SnapshotAll,
+                &class_request(),
+                &mut view_budget,
+            )
+            .expect("a stopped search is a report, not an error"),
+    );
+    assert!(view.candidates.is_empty());
+    assert_eq!(view_budget.usage().class_headers, 1);
+
+    // A complete miss is still a complete answer, not an unfinished selection: the whole scope was
+    // searched and no definition declares the name.
+    let error = engine
+        .recover_target(
+            slice::from_ref(&valid),
+            &MethodOperationRequest {
+                method: MethodRef::Name {
+                    class: ClassNameQuery::internal("NestedEval"),
+                    name: bytes(b"absent"),
+                    descriptor: None,
+                },
+                environment: environment_request(&valid, EnvironmentPolicy::PlainJar),
+            },
+            &mut budget(),
+        )
+        .expect_err("a name the whole scope searched is an input error");
+    assert_eq!(code_of(&error), "operation_target_not_found");
+
+    // A name that really has two definitions is still ambiguous rather than incomplete: the search
+    // finished and bound both.
+    let upper = class_file(b"p/S", 52, &[], &[MemberSpec::method(b"upper", b"()V")]);
+    let nested = class_file(b"p/S", 52, &[], &[MemberSpec::method(b"nested", b"()V")]);
+    let war = open(two_origin_war(&upper, &nested));
+    let candidates = ambiguous(
+        engine
+            .class_view(
+                &war,
+                &tree_scope(&war),
+                &ClassViewRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal("p/S"),
+                    },
+                    bodies: Vec::new(),
+                },
+                &mut budget(),
+            )
+            .expect("the tree is searched"),
+    );
+    assert_eq!(candidates.candidates.len(), 2);
+    assert!(matches!(
+        candidates.execution,
+        ExecutionReport::Complete { .. }
+    ));
+
+    // An explicit physical identity never searches: the very archive whose name search stopped
+    // answers a definition-addressed view in full.
+    let listing = engine
+        .list_class_declarations(&damaged_last, &PhysicalScope::SnapshotAll, &mut budget())
+        .expect("the confirmed listing keeps the entry it read");
+    let declaration = &listing.items[0];
+    let chosen = performed(
+        engine
+            .class_view(
+                &damaged_last,
+                &PhysicalScope::SnapshotAll,
+                &ClassViewRequest {
+                    class: ClassRef::Definition {
+                        definition: declaration.definition.clone(),
+                    },
+                    bodies: Vec::new(),
+                },
+                &mut budget(),
+            )
+            .expect("an identity is read, not searched"),
+    );
+    assert_eq!(
+        chosen
+            .declaration()
+            .expect("the identity's own class item")
+            .declaration
+            .this_class
+            .raw()
+            .0,
+        b"NestedEval"
+    );
+}
+
+/// The searched and skipped ranges of the candidate search, in its own coordinates.
+fn assert_scan_range(
+    coverage: &Coverage,
+    scanned: u64,
+    scanned_end: u64,
+    skip: u64,
+    skip_end: u64,
+) {
+    let structural = &coverage.artifact_structural;
+    assert!(
+        structural.scanned.contains(&CoverageRange {
+            label: "navigation_candidates".into(),
+            start: scanned,
+            end: scanned_end,
+        }) && structural.skipped.contains(&CoverageRange {
+            label: "navigation_candidates".into(),
+            start: skip,
+            end: skip_end,
+        }),
+        "the search states the range it examined and the one it never reached: {structural:?}"
+    );
+    assert_eq!(structural.state, CoverageState::Partial);
+}
+
+/// A selection can be unfinished with zero candidates or with one — under an exhausted dimension, a
+/// cancellation and a truncated member table — and none of those is a unique target or a missing
+/// one. A member table that stopped leaves a member answer a prefix; a class answer rests on the
+/// header, which the same read confirmed.
+#[test]
+fn a_stopped_selection_publishes_zero_or_more_candidates_and_runs_nothing() {
+    let engine = Engine::new();
+
+    // An exhausted dimension with nothing confirmed: the first candidate's path states the name
+    // while its declaration says another, and the second candidate's header charge is refused.
+    let other = class_file(b"p/Other", 52, &[], &[MemberSpec::method(b"run", b"()V")]);
+    let wanted = class_file(b"p/S", 52, &[], &[MemberSpec::method(b"run", b"()V")]);
+    let snapshot = open(zip_of(&[(b"p/S.class", &other), (b"x/p/S.class", &wanted)]));
+    let request = ClassViewRequest {
+        class: ClassRef::Name {
+            class: ClassNameQuery::internal("p/S"),
+        },
+        bodies: Vec::new(),
+    };
+    let tight = task_limits(&[BudgetOverride::new("class_headers", 1).expect("named")])
+        .expect("a legal override");
+    let mut tight_budget = Budget::new(tight);
+    let stopped = incomplete(
+        engine
+            .class_view(
+                &snapshot,
+                &PhysicalScope::SnapshotAll,
+                &request,
+                &mut tight_budget,
+            )
+            .expect("a stopped search is a report, not an error"),
+    );
+    assert!(
+        stopped.candidates.is_empty(),
+        "no binding was confirmed: {:?}",
+        stopped.candidates
+    );
+    assert_eq!(
+        stopped.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::ClassHeaders,
+            },
+            usage: execution_usage(&stopped.execution).clone(),
+        }
+    );
+    assert_eq!(execution_usage(&stopped.execution).class_headers, 1);
+    assert_eq!(execution_usage(&stopped.execution).method_bodies, 0);
+    assert!(codes(&stopped.diagnostics).contains(&"budget_exceeded_class_headers".to_string()));
+    assert_scan_range(&stopped.coverage, 0, 1, 1, 2);
+    assert_no_analysis(
+        "an exhausted selection",
+        execution_usage(&stopped.execution),
+    );
+
+    // The same request under a cancellation: the stop is the cancellation, and no candidate, header
+    // or body was read.
+    let token = CancellationToken::new();
+    token.cancel();
+    let mut cancelled = Budget::with_cancellation_token(limits(), token);
+    let stopped = incomplete(
+        engine
+            .class_view(
+                &snapshot,
+                &PhysicalScope::SnapshotAll,
+                &request,
+                &mut cancelled,
+            )
+            .expect("a cancelled request is a report, not an error"),
+    );
+    assert!(stopped.candidates.is_empty());
+    assert!(matches!(
+        stopped.execution,
+        ExecutionReport::Cancelled { .. }
+    ));
+    assert_eq!(execution_usage(&stopped.execution).class_headers, 0);
+    assert_eq!(execution_usage(&stopped.execution).method_bodies, 0);
+    assert_no_analysis("a cancelled selection", execution_usage(&stopped.execution));
+
+    // A member selection against a member table that stopped: one match in the prefix is a prefix,
+    // not a unique target, and no match in it is not a missing member.
+    let damaged = class_file(
+        b"p/Damaged",
+        52,
+        &[],
+        &[
+            MemberSpec::method(b"first", b"()V"),
+            MemberSpec::method(b"second", b"()V").damaged(64),
+            MemberSpec::method(b"third", b"()V"),
+        ],
+    );
+    let damaged_snapshot = open(zip_of(&[(b"p/Damaged.class", &damaged)]));
+    let environment = environment_request(&damaged_snapshot, EnvironmentPolicy::PlainJar);
+    let ask = |name: &[u8], budget: &mut Budget| {
+        engine
+            .recover_target(
+                slice::from_ref(&damaged_snapshot),
+                &MethodOperationRequest {
+                    method: MethodRef::Name {
+                        class: ClassNameQuery::internal("p/Damaged"),
+                        name: bytes(name),
+                        descriptor: None,
+                    },
+                    environment: environment.clone(),
+                },
+                budget,
+            )
+            .expect("a stopped member search is a report, not an error")
+    };
+
+    let mut damaged_budget = budget();
+    let one = incomplete(ask(b"first", &mut damaged_budget));
+    assert_eq!(
+        one.candidates.len(),
+        1,
+        "the confirmed prefix is published, never elected: {:?}",
+        one.candidates
+    );
+    assert!(
+        matches!(
+            one.execution,
+            ExecutionReport::Partial {
+                reason: TerminationReason::Error { ref code },
+                ..
+            } if code == "classfile_invalid_attribute_span"
+        ),
+        "{:?}",
+        one.execution
+    );
+    assert!(
+        codes(&one.diagnostics).contains(&"classfile_invalid_attribute_span".to_string()),
+        "the member-table stop is published: {:?}",
+        one.diagnostics
+    );
+    assert_no_analysis(
+        "a member selection over a truncated table",
+        execution_usage(&one.execution),
+    );
+
+    let mut damaged_budget = budget();
+    let none = incomplete(ask(b"third", &mut damaged_budget));
+    assert!(
+        none.candidates.is_empty(),
+        "a member beyond the stop is unread, never missing: {:?}",
+        none.candidates
+    );
+    assert!(matches!(none.execution, ExecutionReport::Partial { .. }));
+    assert_eq!(execution_usage(&none.execution).method_bodies, 0);
+
+    // The same class addressed by name *for its declaration* is a different question: the header
+    // confirmed it, so the view performs with the member prefix and the stop it published.
+    let mut view_budget = budget();
+    let view = performed(
+        engine
+            .class_view(
+                &damaged_snapshot,
+                &tree_scope(&damaged_snapshot),
+                &ClassViewRequest {
+                    class: ClassRef::Name {
+                        class: ClassNameQuery::internal("p/Damaged"),
+                    },
+                    bodies: Vec::new(),
+                },
+                &mut view_budget,
+            )
+            .expect("the class is confirmed by its own header"),
+    );
+    assert_eq!(method_names(&view), vec!["first"]);
+    assert!(
+        view.declaration()
+            .expect("the class item")
+            .member_table
+            .is_some(),
+        "the member stop travels with the declaration"
+    );
+    assert!(!matches!(view.execution, ExecutionReport::Complete { .. }));
+}
+
+/// The independent review's damaged-body case: one illegal opcode at BCI 0 and one healthy body in
+/// the same view. The library's own top-level execution says what its bodies said, the healthy body
+/// keeps its own complete result, and the member table the same read really read stays complete.
+#[test]
+fn a_view_with_one_stopped_body_is_not_complete_and_keeps_the_other_body() {
+    let engine = Engine::new();
+    // The review's mutation: `nestedPlain(I)I`'s first opcode, `0x1a` (`iload_0`), becomes the
+    // illegal `0xff` — a body that stops at BCI 0 and a class whose member table is intact.
+    let mut damaged = NESTED_EVAL.to_vec();
+    assert_eq!(
+        damaged[311], 0x1a,
+        "the fixture's own opcode is the assumption"
+    );
+    damaged[311] = 0xff;
+    let snapshot = open(damaged);
+    let request = ClassViewRequest {
+        class: ClassRef::Name {
+            class: ClassNameQuery::internal("NestedEval"),
+        },
+        bodies: vec![
+            BodyRef::Name {
+                name: bytes(b"nestedPlain"),
+                descriptor: Some(bytes(b"(I)I")),
+            },
+            BodyRef::Name {
+                name: bytes(b"nestedLocal"),
+                descriptor: Some(bytes(b"(I)I")),
+            },
+        ],
+    };
+    let mut view_budget = budget();
+    let report = performed(
+        engine
+            .class_view(
+                &snapshot,
+                &PhysicalScope::SnapshotAll,
+                &request,
+                &mut view_budget,
+            )
+            .expect("the view runs"),
+    );
+
+    // The top-level execution merges the body's own stop, so a library caller reads the depth of
+    // the answer from the report rather than from the bodies.
+    assert_eq!(
+        report.execution,
+        ExecutionReport::Partial {
+            reason: TerminationReason::Error {
+                code: "classfile_instruction_decode".to_string(),
+            },
+            usage: execution_usage(&report.execution).clone(),
+        }
+    );
+
+    // The stopped body keeps its own result, its two phases and its own coverage.
+    let ClassViewBody::Read {
+        stopped_at,
+        stages,
+        coverage,
+        execution,
+        ..
+    } = &report.bodies[0]
+    else {
+        panic!("the damaged body is a read: {:?}", report.bodies[0])
+    };
+    assert_eq!(
+        stopped_at,
+        &Some(BytecodeStop::Instructions {
+            bci: 0,
+            class_offset: 311,
+            code: "classfile_instruction_decode".to_string(),
+        })
+    );
+    assert_eq!(
+        stages,
+        &vec![
+            BodyStageResult {
+                phase: BytecodeStopPhase::ExceptionHandlers,
+                state: BodyStageState::Completed,
+            },
+            BodyStageResult {
+                phase: BytecodeStopPhase::Instructions,
+                state: BodyStageState::Stopped {
+                    code: "classfile_instruction_decode".to_string(),
+                },
+            },
+        ]
+    );
+    assert_eq!(coverage.artifact_structural.state, CoverageState::Partial);
+    assert!(matches!(execution, ExecutionReport::Partial { .. }));
+
+    // The healthy body is untouched: its own complete result and its own complete coverage.
+    let ClassViewBody::Read {
+        stopped_at,
+        coverage,
+        execution,
+        instructions,
+        ..
+    } = &report.bodies[1]
+    else {
+        panic!("the healthy body is a read: {:?}", report.bodies[1])
+    };
+    assert_eq!(stopped_at, &None);
+    assert!(matches!(execution, ExecutionReport::Complete { .. }));
+    assert_eq!(
+        coverage.artifact_structural.state,
+        CoverageState::CompleteWithinSchema
+    );
+    assert!(!instructions.is_empty());
+
+    // The class and member planes keep their own evidence: the member table really was read to its
+    // declared end, so a stopped body does not rewrite it to unscanned.
+    let structural = &report.coverage.artifact_structural;
+    assert_eq!(structural.state, CoverageState::CompleteWithinSchema);
+    assert!(
+        structural.scanned.contains(&CoverageRange {
+            label: "class_methods".into(),
+            start: 0,
+            end: 5,
+        }),
+        "{structural:?}"
+    );
+    assert!(structural.skipped.is_empty(), "{structural:?}");
+    assert_eq!(
+        report.declaration().expect("the class item").member_table,
+        None
+    );
+    assert_eq!(report.usage.method_bodies, 2);
+    assert_no_ir("a view with one stopped body", &view_budget.usage());
+
+    // Two runs of the same request over the same immutable snapshot state the same facts: only the
+    // wall-clock field of the report's own planes may differ.
+    let mut again_budget = budget();
+    let again = performed(
+        engine
+            .class_view(
+                &snapshot,
+                &PhysicalScope::SnapshotAll,
+                &request,
+                &mut again_budget,
+            )
+            .expect("the view runs twice"),
+    );
+    assert_eq!(facts_json(&report), facts_json(&again));
+    let mut first_usage = view_budget.usage();
+    let mut second_usage = again_budget.usage();
+    first_usage.elapsed_millis = 0;
+    second_usage.elapsed_millis = 0;
+    assert_eq!(
+        first_usage, second_usage,
+        "only the wall-clock field of the usage planes may differ between two runs"
+    );
 }
 
 // ---------------------------------------------------------------------------------------------

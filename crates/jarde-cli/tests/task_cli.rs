@@ -22,9 +22,9 @@
 //!   a diagnostic — and this adapter must publish exactly that.
 
 use jarde::{
-    ArtifactInput, ArtifactSnapshot, BodyRef, Budget, BudgetOverride, ClassRef, ClassViewRequest,
-    ConsumerKind, ConsumerSchema, Engine, EnvironmentPolicy, EnvironmentRequest, LayoutMode,
-    Limits, LoadRoot, LoaderId, MethodOperationRequest, MethodRef, MultiReleasePolicy,
+    ArtifactInput, ArtifactSnapshot, BodyRef, Budget, BudgetOverride, ClassNameQuery, ClassRef,
+    ClassViewRequest, ConsumerKind, ConsumerSchema, Engine, EnvironmentPolicy, EnvironmentRequest,
+    LayoutMode, Limits, LoadRoot, LoaderId, MethodOperationRequest, MethodRef, MultiReleasePolicy,
     PhysicalDefinitionId, PhysicalMethodId, PhysicalScope, PhysicalView, QueryRelation,
     QueryRequest, QueryTarget, ReferenceGrouping, RuntimeProfile, SymbolRef, task_budget,
 };
@@ -2031,6 +2031,383 @@ fn navigation_uses_the_library_listings_and_the_caller_declared_scope() {
         "a declaration that names content this request did not provide stays the library's own \
          unavailable position: {recovered}"
     );
+}
+
+// ---------------------------------------------------------------------------------------------
+// preserve-task-operation-stops: an unfinished selection is an incomplete command, not a choice
+// or a missing target
+// ---------------------------------------------------------------------------------------------
+
+/// The independent review's archive: one class whose name search is answerable and one more
+/// candidate of the same name whose bytes are not a class, in the order the entries are stored.
+fn unfinished_search_archive(damaged_first: bool) -> Vec<u8> {
+    let base = base_class();
+    let broken: &[u8] = b"broken";
+    if damaged_first {
+        zip(&[
+            Stored {
+                name: b"p/Base.class",
+                data: broken,
+            },
+            Stored {
+                name: b"x/p/Base.class",
+                data: &base,
+            },
+        ])
+    } else {
+        zip(&[
+            Stored {
+                name: b"p/Base.class",
+                data: &base,
+            },
+            Stored {
+                name: b"x/p/Base.class",
+                data: broken,
+            },
+        ])
+    }
+}
+
+#[test]
+fn an_unfinished_name_selection_exits_four_and_is_the_librarys_own_document() {
+    let temp = TempDir::new();
+    let path = temp.write("unfinished.jar", &unfinished_search_archive(false));
+    let input = path_of(&path);
+
+    // One candidate confirmed and then a same-named entry that does not read: the search did not
+    // finish. The command exits 4 — not 0 (an unfinished search is not a success), not 3 (one
+    // candidate has not been shown to be ambiguous) and not 2 (the name has not been shown to be
+    // missing) — and the document is the library's own outcome.
+    let view = run(&[
+        "class-view",
+        "--input",
+        input,
+        "--class-name",
+        "p/Base",
+        "--format",
+        "json",
+    ]);
+    assert_eq!(status(&view), EXIT_INCOMPLETE, "{}", stderr_text(&view));
+    let document = stdout_json(&view);
+    assert_eq!(document["outcome"], json!("incomplete"));
+    assert_eq!(document["execution"]["status"], json!("failed"));
+    assert_eq!(
+        document["execution"]["reason"]["code"],
+        json!("classfile_decode")
+    );
+    assert_eq!(
+        document["candidates"]
+            .as_array()
+            .expect("the confirmed prefix is published")
+            .len(),
+        1
+    );
+    assert_eq!(
+        document["execution"]["usage"]["method_bodies"],
+        json!(0),
+        "an unfinished selection decodes no body: {document}"
+    );
+    assert_eq!(document["execution"]["usage"]["ir_items"], json!(0));
+    assert!(
+        document.get("bodies").is_none(),
+        "no view is published for a target the search never bound: {document}"
+    );
+
+    // The library's own value for the same request: the JSON above is it, field for field.
+    let (engine, snapshot, mut budget) = open(&path, &[]);
+    let outcome = engine
+        .class_view(
+            &snapshot,
+            &PhysicalScope::SnapshotAll,
+            &ClassViewRequest {
+                class: ClassRef::Name {
+                    class: ClassNameQuery::internal("p/Base"),
+                },
+                bodies: Vec::new(),
+            },
+            &mut budget,
+        )
+        .expect("a stopped search is a report, not an error");
+    assert_same_document("class-view over an unfinished search", &document, &outcome);
+
+    // The same unfinished search on the recovery path: the review's other defect — a confirmed
+    // method beside a damaged candidate was recovered as if it were the unique target.
+    let recover = run(&[
+        "recover",
+        "--input",
+        input,
+        "--class-name",
+        "p/Base",
+        "--method-name",
+        "foo",
+        "--descriptor",
+        "()V",
+        "--policy",
+        "plain-jar",
+        "--format",
+        "json",
+    ]);
+    assert_eq!(
+        status(&recover),
+        EXIT_INCOMPLETE,
+        "{}",
+        stderr_text(&recover)
+    );
+    let recovered = stdout_json(&recover);
+    assert_eq!(recovered["outcome"], json!("incomplete"));
+    assert_eq!(
+        recovered["candidates"]
+            .as_array()
+            .expect("candidates")
+            .len(),
+        1
+    );
+    assert_eq!(recovered["execution"]["usage"]["method_bodies"], json!(0));
+    let (engine, snapshot, mut budget) = open(&path, &[]);
+    let outcome = engine
+        .recover_target(
+            slice::from_ref(&snapshot),
+            &MethodOperationRequest {
+                method: MethodRef::Name {
+                    class: ClassNameQuery::internal("p/Base"),
+                    name: jarde::JvmBytes(b"foo".to_vec()),
+                    descriptor: Some(jarde::JvmBytes(b"()V".to_vec())),
+                },
+                environment: EnvironmentRequest {
+                    snapshot: snapshot.id().clone(),
+                    scope: PhysicalScope::SnapshotAll,
+                    policy: EnvironmentPolicy::PlainJar,
+                    profile: RuntimeProfile {
+                        java_release: 8,
+                        multi_release: MultiReleasePolicy::Disabled,
+                        layout: LayoutMode::Generic,
+                    },
+                    loader: LoaderId("app".to_string()),
+                },
+            },
+            &mut budget,
+        )
+        .expect("a stopped search is a report, not an error");
+    assert_same_document("recover over an unfinished search", &recovered, &outcome);
+
+    // The damaged entry first: zero confirmed candidates, and still the same incomplete command
+    // rather than the missing-target error the count alone would suggest.
+    let before = temp.write("unfinished-before.jar", &unfinished_search_archive(true));
+    let view = run(&[
+        "class-view",
+        "--input",
+        path_of(&before),
+        "--class-name",
+        "p/Base",
+        "--format",
+        "json",
+    ]);
+    assert_eq!(status(&view), EXIT_INCOMPLETE, "{}", stderr_text(&view));
+    let before_document = stdout_json(&view);
+    assert_eq!(before_document["outcome"], json!("incomplete"));
+    assert!(
+        before_document["candidates"]
+            .as_array()
+            .expect("candidates")
+            .is_empty(),
+        "{before_document}"
+    );
+
+    // Text is the same report: every line it prints names a field of the very document above, and
+    // the stop facts the JSON states are among the lines text prints.
+    let text = run(&[
+        "class-view",
+        "--input",
+        input,
+        "--class-name",
+        "p/Base",
+        "--format",
+        "text",
+    ]);
+    assert_eq!(status(&text), EXIT_INCOMPLETE);
+    let content = stdout_text(&text);
+    let bookkeeping = stderr_text(&text);
+    assert_lines_correspond(&document, &content, "content");
+    assert_lines_correspond(&document, &bookkeeping, "bookkeeping");
+    assert!(content.contains("outcome = \"incomplete\""), "{content}");
+    assert!(
+        content.contains("query.class.spelling = \"p/Base\""),
+        "{content}"
+    );
+    assert!(
+        content.contains("candidates.0."),
+        "the confirmed candidate is content: {content}"
+    );
+    for fact in [
+        "execution.status = \"failed\"",
+        "execution.reason.code = \"classfile_decode\"",
+        "diagnostics.0.code = \"classfile_decode\"",
+    ] {
+        assert!(
+            bookkeeping.contains(fact),
+            "the text rendering states `{fact}`: {bookkeeping}"
+        );
+    }
+
+    // The other two statuses stay what they are on the same kind of request: two readable origins
+    // of one name are a choice (3), and a name the whole scope searched is an input error (2).
+    let base = base_class();
+    let two_origins = temp.write(
+        "two-origins.jar",
+        &zip(&[
+            Stored {
+                name: b"p/Base.class",
+                data: &base,
+            },
+            Stored {
+                name: b"WEB-INF/classes/p/Base.class",
+                data: &base,
+            },
+        ]),
+    );
+    let ambiguous = run(&[
+        "class-view",
+        "--input",
+        path_of(&two_origins),
+        "--class-name",
+        "p/Base",
+        "--format",
+        "json",
+    ]);
+    assert_eq!(
+        status(&ambiguous),
+        EXIT_AMBIGUOUS,
+        "{}",
+        stderr_text(&ambiguous)
+    );
+    assert_eq!(stdout_json(&ambiguous)["outcome"], json!("ambiguous"));
+
+    let missing = run(&[
+        "class-view",
+        "--input",
+        input,
+        "--class-name",
+        "p/Absent",
+        "--format",
+        "json",
+    ]);
+    assert_eq!(status(&missing), EXIT_USAGE, "{}", stderr_text(&missing));
+    assert!(
+        stderr_text(&missing).contains("operation_target_not_found"),
+        "{}",
+        stderr_text(&missing)
+    );
+}
+
+/// The library merges a stopped body into the view's own top-level execution, so the adapter reads
+/// the depth of the answer from the report instead of walking the bodies again.
+#[test]
+fn a_stopped_body_is_an_incomplete_view_from_the_librarys_own_plane() {
+    let temp = TempDir::new();
+    // One illegal first opcode at BCI 0 (`0xff` is no instruction of the JVM's table) beside one
+    // healthy body: the member table is intact and only one body's decode stopped.
+    const ILLEGAL: &[u8] = &[0xff];
+    const HEALTHY: &[u8] = &[0xb1];
+    let class = class_file(
+        b"p/Body",
+        b"java/lang/Object",
+        None,
+        &[
+            MethodSpec {
+                name: b"broken",
+                descriptor: b"()V",
+                flags: CLASS_FLAGS,
+                body: Body::Instructions {
+                    bytes: ILLEGAL,
+                    max_stack: 0,
+                    max_locals: 0,
+                },
+            },
+            MethodSpec {
+                name: b"healthy",
+                descriptor: b"()V",
+                flags: CLASS_FLAGS,
+                body: Body::Instructions {
+                    bytes: HEALTHY,
+                    max_stack: 0,
+                    max_locals: 0,
+                },
+            },
+        ],
+    );
+    let path = temp.write(
+        "body.jar",
+        &zip(&[Stored {
+            name: b"p/Body.class",
+            data: &class,
+        }]),
+    );
+    let input = path_of(&path);
+    let view = run(&[
+        "class-view",
+        "--input",
+        input,
+        "--class-name",
+        "p/Body",
+        "--body",
+        "broken()V",
+        "--body",
+        "healthy()V",
+        "--format",
+        "json",
+    ]);
+    assert_eq!(status(&view), EXIT_INCOMPLETE, "{}", stderr_text(&view));
+    let document = stdout_json(&view);
+    assert_eq!(
+        document["execution"]["status"],
+        json!("partial"),
+        "the library's own top level carries the body's stop: {document}"
+    );
+    assert_eq!(
+        document["execution"]["reason"]["code"],
+        json!("classfile_instruction_decode")
+    );
+    let bodies = document["bodies"]
+        .as_array()
+        .expect("both requested bodies are results");
+    assert_eq!(bodies.len(), 2);
+    assert_eq!(bodies[0]["stopped_at"]["phase"], json!("instructions"));
+    assert_eq!(bodies[0]["stopped_at"]["bci"], json!(0));
+    assert_eq!(bodies[0]["execution"]["status"], json!("partial"));
+    assert_eq!(bodies[1]["stopped_at"], Value::Null);
+    assert_eq!(bodies[1]["execution"]["status"], json!("complete"));
+    // The class and member planes are the read's own evidence, not the body's.
+    assert_eq!(
+        document["coverage"]["artifact_structural"]["state"],
+        json!("complete_within_schema")
+    );
+    assert_eq!(document["items"][0]["member_table"], Value::Null);
+
+    // And the library's own outcome for the same request is that document.
+    let (engine, snapshot, mut budget) = open(&path, &[]);
+    let outcome = engine
+        .class_view(
+            &snapshot,
+            &PhysicalScope::SnapshotAll,
+            &ClassViewRequest {
+                class: ClassRef::Name {
+                    class: ClassNameQuery::internal("p/Body"),
+                },
+                bodies: vec![
+                    BodyRef::Name {
+                        name: jarde::JvmBytes(b"broken".to_vec()),
+                        descriptor: Some(jarde::JvmBytes(b"()V".to_vec())),
+                    },
+                    BodyRef::Name {
+                        name: jarde::JvmBytes(b"healthy".to_vec()),
+                        descriptor: Some(jarde::JvmBytes(b"()V".to_vec())),
+                    },
+                ],
+            },
+            &mut budget,
+        )
+        .expect("the view runs");
+    assert_same_document("class-view with one stopped body", &document, &outcome);
 }
 
 // ---------------------------------------------------------------------------------------------

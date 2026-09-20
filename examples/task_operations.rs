@@ -88,6 +88,17 @@ fn run(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
             );
             return Ok(());
         }
+        // A search that did not finish — a damaged candidate, an exhausted dimension, a
+        // cancellation — is neither an election nor a missing name: the operation publishes the
+        // search's own stop beside the candidates it did confirm and executes nothing.
+        OperationOutcome::Incomplete(candidates) => {
+            println!(
+                "the name search did not finish ({} diagnostic(s), {} candidate(s) confirmed); the operation executed nothing",
+                candidates.diagnostics.len(),
+                candidates.candidates.len()
+            );
+            return Ok(());
+        }
     };
     println!(
         "class view of `{}`: {} member(s), class_headers={} method_bodies={}, effective limits published={}",
@@ -128,7 +139,9 @@ fn run(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
             &mut budget,
         )? {
             OperationOutcome::Performed(report) => report,
-            OperationOutcome::Ambiguous(_) => unreachable!("an identity is not ambiguous"),
+            OperationOutcome::Ambiguous(_) | OperationOutcome::Incomplete(_) => {
+                unreachable!("an identity is not searched: nothing can be ambiguous or unfinished")
+            }
         };
         println!(
             "one body of `{}`: class_headers={} method_bodies={}, results={}",
@@ -173,7 +186,9 @@ fn run(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
             &mut budget,
         )? {
             OperationOutcome::Performed(report) => report,
-            OperationOutcome::Ambiguous(_) => unreachable!("an identity is not ambiguous"),
+            OperationOutcome::Ambiguous(_) | OperationOutcome::Incomplete(_) => {
+                unreachable!("an identity is not searched: nothing can be ambiguous or unfinished")
+            }
         };
         let parts: Vec<&'static str> = recovery
             .presentation
