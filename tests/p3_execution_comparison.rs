@@ -991,6 +991,123 @@ const BOOLEAN_CONTEXTS: Sample = Sample {
             `intLocal`, whose `0`/`1` stores stay `int`) keep the text they had",
 };
 
+const INT_COMPARISONS: Sample = Sample {
+    label: "p3-int-comparisons/v8 (javac 23.0.1, --release 8 -g:none)",
+    class: "IntComparisons",
+    bytes: include_bytes!("fixtures/p3-int-comparisons/v8/IntComparisons.class"),
+    classpath: &[],
+    // No member of this sample calls another: the comparison operands are parameters and literals,
+    // and the boolean controls read a parameter, so nothing has to resolve to the committed class.
+    extends: None,
+    scaffold: &[],
+    counter: None,
+    measured: &[],
+    // The comparisons' input set: `0`, `1`, `2` and `-1` reach both arms of every shape — the
+    // constant-on-the-left forms (`1 == n`, `0 < n`, `1 < n`), the constant-on-the-right forms
+    // (`n == 1`, `n > 0`) and the variable comparison (`n != 0`) — so no member is proved right by
+    // a single comparison direction. `isZero` states the predecessor change's own inputs.
+    inputs: Some(&[
+        ("oneFirst", &[&["0"], &["1"], &["2"], &["-1"]]),
+        ("zeroFirst", &[&["0"], &["1"], &["2"], &["-1"]]),
+        ("oneLess", &[&["0"], &["1"], &["2"], &["-1"]]),
+        ("oneLast", &[&["0"], &["1"], &["2"], &["-1"]]),
+        ("zeroLast", &[&["0"], &["1"], &["2"], &["-1"]]),
+        ("nonzero", &[&["0"], &["1"], &["2"], &["-1"]]),
+        ("isZero", &[&["0"], &["1"], &["7"], &["-1"]]),
+    ]),
+    quotes: &[],
+    // The original's own answers for those inputs, executed by the committed driver: both sides of
+    // the comparison return the values the bytecode returns, which is what makes "the text
+    // compiles" also mean "the text answers the same".
+    baseline: Some(Baseline {
+        class: "Baseline",
+        source: include_str!("fixtures/p3-int-comparisons/Baseline.java"),
+        lines: &[
+            "oneFirst(0)=4",
+            "oneFirst(1)=3",
+            "oneFirst(2)=4",
+            "oneFirst(-1)=4",
+            "zeroFirst(0)=4",
+            "zeroFirst(1)=3",
+            "zeroFirst(2)=3",
+            "zeroFirst(-1)=4",
+            "oneLess(0)=4",
+            "oneLess(1)=4",
+            "oneLess(2)=3",
+            "oneLess(-1)=4",
+            "oneLast(0)=4",
+            "oneLast(1)=3",
+            "oneLast(2)=4",
+            "oneLast(-1)=4",
+            "zeroLast(0)=4",
+            "zeroLast(1)=3",
+            "zeroLast(2)=3",
+            "zeroLast(-1)=4",
+            "nonzero(0)=4",
+            "nonzero(1)=3",
+            "nonzero(2)=3",
+            "nonzero(-1)=3",
+            "isZero(0)=true",
+            "isZero(1)=false",
+            "isZero(7)=false",
+            "isZero(-1)=false",
+            "count(true)=1",
+            "count(false)=0",
+            "throughLocal(true)=true",
+            "throughLocal(false)=false",
+        ],
+    }),
+    members: &[
+        Member {
+            name: "oneFirst",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "zeroFirst",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "oneLess",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "oneLast",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "zeroLast",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "nonzero",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "isZero",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "count",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "throughLocal",
+            expect: Expect::Executed,
+        },
+    ],
+    point: "an integer binary comparison keeps the spelling its operands' own evidence states: \
+            `1 == n`, `0 < n` and `1 < n` are written `if (1 == arg0)`, `if (0 < arg0)` and \
+            `if (1 < arg0)` — where `5a8c36a` spelled the left `0`/`1` as a boolean because the \
+            literal is one item of the boolean proof, producing `if (true == arg0)`, \
+            `if (false < arg0)` and `if (true < arg0)`, which javac refuses (`incomparable types: \
+            boolean and int`, `bad operand types for binary operator '<'`) — the same rule holds \
+            with the constant on the right (`if (arg0 == 1)`, `if (arg0 > 0)`) and on the variable \
+            control (`if (arg0 != 0)`), so the comparison's boolean *result* is not read as \
+            evidence about its operands; the predecessor change's shapes in the same bytes are the \
+            control that must not move (`isZero`'s `return true;`/`return false;`, `count`'s \
+            `if (arg0)`, `throughLocal`'s `boolean local1 = arg0;`)",
+};
+
 const ARRAY_TYPES: Sample = Sample {
     label: "p3-array-types/v8 (javac 23.0.1, --release 8 -g:none)",
     class: "ArrayTypes",
@@ -1070,6 +1187,7 @@ const REQUIRED: &[&Sample] = &[
     &NESTED_ARITHMETIC,
     &RECEIVER_GROUPING,
     &BOOLEAN_CONTEXTS,
+    &INT_COMPARISONS,
     &ARRAY_TYPES,
 ];
 

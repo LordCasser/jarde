@@ -10194,8 +10194,8 @@ mod tests {
     /// rules must not reject real code, and real historical subroutines must go through
     /// the same target checks.
     ///
-    /// The counts are the measured population — 45 classes, 177 bodies, 44 exception table
-    /// records, 86 branch/switch targets, 8 `jsr`/`jsr_w` instructions (the ECJ 4.6.1 45–48
+    /// The counts are the measured population — 48 classes, 213 bodies, 44 exception table
+    /// records, 105 branch/switch targets, 8 `jsr`/`jsr_w` instructions (the ECJ 4.6.1 45–48
     /// `finally` codegen; neither the P3 samples nor the P4 modern samples contain a
     /// subroutine) — so a fixture that silently stops being visited, or a body that stops
     /// decoding, fails here instead of quietly shrinking the sweep. The P4 modern samples raise
@@ -10224,6 +10224,12 @@ mod tests {
     /// The `p3-receiver-grouping` sample does the same with its own class and nine bodies (eight
     /// `static` methods and the explicit constructor): every body is straight-line string
     /// concatenation and one call, so the last three counts stay where they are.
+    ///
+    /// The `p3-int-comparisons` sample adds its own class and ten bodies (nine `static` methods and
+    /// the default constructor) and raises the branch/switch targets by eight: the six comparisons
+    /// and the two boolean controls each branch once, every one of them with an `int`-shaped operand
+    /// and no exception table, so the first, second and fourth counts move together and the handler
+    /// and subroutine counts stay where they are.
     #[test]
     fn repository_class_fixtures_validate_without_false_target_rejections() {
         let fixtures = class_fixture_paths();
@@ -10303,7 +10309,7 @@ mod tests {
                 branch_targets,
                 subroutines
             ),
-            (47, 203, 44, 97, 8),
+            (48, 213, 44, 105, 8),
             "fixture population changed: re-measure these counts"
         );
     }

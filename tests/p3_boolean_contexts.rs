@@ -439,6 +439,247 @@ fn every_declared_member_is_covered_by_this_file() {
 }
 
 // -------------------------------------------------------------------------------------------
+// The integer binary comparison: the position decides, and no operand is read as a boolean.
+// -------------------------------------------------------------------------------------------
+
+/// The committed sample of the comparison-context regression: javac 23.0.1, `--release 8 -g:none`
+/// (see `tests/fixtures/p3-int-comparisons/README.md` for the command, the size and the digest).
+const INT_COMPARISONS: &[u8] =
+    include_bytes!("fixtures/p3-int-comparisons/v8/IntComparisons.class");
+
+/// Every member of [`INT_COMPARISONS`] that declares a body, so a renamed fixture fails here
+/// instead of covering less than this file claims.
+const INT_COMPARISONS_DECLARED: [(&[u8], &[u8]); 10] = [
+    (b"<init>", b"()V"),
+    (b"oneFirst", b"(I)I"),
+    (b"zeroFirst", b"(I)I"),
+    (b"oneLess", b"(I)I"),
+    (b"oneLast", b"(I)I"),
+    (b"zeroLast", b"(I)I"),
+    (b"nonzero", b"(I)I"),
+    (b"isZero", b"(I)Z"),
+    (b"count", b"(Z)I"),
+    (b"throughLocal", b"(Z)Z"),
+];
+
+/// The five comparison shapes and the variable-operand control, each with the condition its own
+/// evidence spells. `1 == n`, `0 < n` and `1 < n` are the regression `5a8c36a` introduced; `n == 1`
+/// and `n > 0` are the same rule on the right-hand side and in the other comparison direction.
+const COMPARISONS: [(&[u8], &str, &str); 6] = [
+    (b"oneFirst", "if (1 == arg0) {", "true == arg0"),
+    (b"zeroFirst", "if (0 < arg0) {", "false < arg0"),
+    (b"oneLess", "if (1 < arg0) {", "true < arg0"),
+    (b"oneLast", "if (arg0 == 1) {", "arg0 == true"),
+    (b"zeroLast", "if (arg0 > 0) {", "arg0 > false"),
+    (b"nonzero", "if (arg0 != 0) {", "arg0 != false"),
+];
+
+#[test]
+fn an_integer_comparison_keeps_its_integer_literals_on_either_side() {
+    // The regression this fix corrects, and the reason it is one: `if_icmp*` reads two `int`s, and
+    // the fact that its **result** is a boolean says nothing about them. `condition` asked
+    // `boolean_value` — whose evidence includes the `0`/`1` literal — before it looked at the test's
+    // shape, so `iconst_1; iload_0; if_icmpne` was spelled `if (true == arg0)`, text `javac
+    // --release 8` refuses (`incomparable types: boolean and int`) under the member's own
+    // declaration. `5a8c36a` introduced it; before that (`fa6dc6e`) the same bytes were `1 == arg0`.
+    // The position decides before any operand is spelled, and both sides keep their own evidence.
+    let engine = Engine::new();
+    let fixture = fixture(&engine, INT_COMPARISONS);
+    for (name, expected, refused) in COMPARISONS {
+        let text = whole_body(&engine, &fixture, name, b"(I)I");
+        assert!(
+            text.contains(expected),
+            "`{}` is an integer binary comparison, so its operands keep their integer spelling:\n{text}",
+            String::from_utf8_lossy(name)
+        );
+        assert!(
+            !text.contains(refused) && !text.contains("true") && !text.contains("false"),
+            "the boolean spelling javac refuses may not appear in `{}`:\n{text}",
+            String::from_utf8_lossy(name)
+        );
+    }
+}
+
+#[test]
+fn the_boolean_contexts_of_the_comparison_sample_keep_their_presentation() {
+    // The controls the same bytes carry, so that the fix cannot be "spell every literal as an
+    // integer": a `Z` return of a `0`/`1` literal is still `true`/`false`, a proven boolean
+    // parameter's zero test is still a truth test, and a local a write declared `boolean` still
+    // types its later uses. `p3-boolean-contexts/` is the second copy of this control.
+    let engine = Engine::new();
+    let fixture = fixture(&engine, INT_COMPARISONS);
+
+    let text = whole_body(&engine, &fixture, b"isZero", b"(I)Z");
+    assert!(
+        text.contains("if (arg0 == 0) {")
+            && text.contains("return true;")
+            && text.contains("return false;"),
+        "a `Z` method's `return` of a literal is a boolean, and its `int` operand is not:\n{text}"
+    );
+
+    let text = whole_body(&engine, &fixture, b"count", b"(Z)I");
+    assert!(
+        text.contains("if (arg0) {") && !text.contains("!= 0"),
+        "a zero test on a proven boolean parameter is a truth test:\n{text}"
+    );
+
+    let text = whole_body(&engine, &fixture, b"throughLocal", b"(Z)Z");
+    assert!(
+        text.contains("boolean local1 = arg0;") && text.contains("return local1;"),
+        "a local filled from a `Z` parameter is declared `boolean`:\n{text}"
+    );
+}
+
+#[test]
+fn every_declared_member_of_the_comparison_sample_is_covered() {
+    // The premise: the sample declares every member this file classifies, and each of them is
+    // answered (presented or refused) rather than missed.
+    let engine = Engine::new();
+    let fixture = fixture(&engine, INT_COMPARISONS);
+    for (name, descriptor) in INT_COMPARISONS_DECLARED {
+        let report = recover(&engine, &fixture, name, descriptor);
+        let spelled = format!(
+            "{}{}",
+            String::from_utf8_lossy(name),
+            String::from_utf8_lossy(descriptor)
+        );
+        assert!(
+            report.produced() && !report.text.is_empty(),
+            "`{spelled}`: {:?}\n{}",
+            report.outcome,
+            report.text
+        );
+    }
+}
+
+/// One hand-built class for the boundary the change records and does **not** close: a
+/// `Test::Pair` comparison whose left operand is proven boolean (a call whose callee descriptor
+/// returns `Z`) and whose right operand is the `int` literal `1`. The two bodies are
+/// [`BOUNDARY_MEMBERS`].
+///
+/// `javac` folds `flag() == true` into `flag()`, so no compiler emits this shape, and the rule this
+/// change fixes (each operand of a pair comparison keeps its own evidence) writes it `flag() == 1`,
+/// which `javac --release 8` refuses (`incomparable types: boolean and int`). That was already the
+/// text before the fix and stays the text after it: the boundary is recorded, not closed, and no
+/// general proof is invented for it.
+fn boundary_class() -> Vec<u8> {
+    let mut output = 0xcafebabe_u32.to_be_bytes().to_vec();
+    u16b(&mut output, 0); // minor_version
+    u16b(&mut output, 52); // major_version: Java 8, the profile every request declares
+    u16b(&mut output, 12); // constant_pool_count = 11 entries + 1
+    utf8(&mut output, b"Boundary"); // 1
+    output.push(7);
+    u16b(&mut output, 1); // 2: Class Boundary
+    utf8(&mut output, b"java/lang/Object"); // 3
+    output.push(7);
+    u16b(&mut output, 3); // 4: Class java/lang/Object
+    utf8(&mut output, b"Code"); // 5
+    utf8(&mut output, b"flag"); // 6
+    utf8(&mut output, b"()Z"); // 7
+    utf8(&mut output, b"probe"); // 8
+    utf8(&mut output, b"()I"); // 9
+    output.push(12);
+    u16b(&mut output, 6);
+    u16b(&mut output, 7); // 10: NameAndType flag:()Z
+    output.push(10);
+    u16b(&mut output, 2);
+    u16b(&mut output, 10); // 11: Methodref Boundary.flag:()Z
+
+    u16b(&mut output, 0x21); // access_flags: public super
+    u16b(&mut output, 2); // this_class
+    u16b(&mut output, 4); // super_class
+    u16b(&mut output, 0); // interfaces
+    u16b(&mut output, 0); // fields
+    u16b(
+        &mut output,
+        u16::try_from(BOUNDARY_MEMBERS.len()).expect("member count fits u16"),
+    );
+    for member in BOUNDARY_MEMBERS {
+        let name_index = match member.name {
+            "flag" => 6,
+            "probe" => 8,
+            other => panic!("no pool entry for `{other}`"),
+        };
+        let descriptor_index = match member.descriptor {
+            "()Z" => 7,
+            "()I" => 9,
+            other => panic!("no pool entry for `{other}`"),
+        };
+        u16b(&mut output, 0x0009); // public static
+        u16b(&mut output, name_index);
+        u16b(&mut output, descriptor_index);
+        u16b(&mut output, 1); // one attribute: Code
+        u16b(&mut output, 5); // "Code"
+        let mut attribute = Vec::new();
+        u16b(&mut attribute, member.max_stack);
+        u16b(&mut attribute, member.max_locals);
+        u32b(
+            &mut attribute,
+            u32::try_from(member.code.len()).expect("fixture code length fits u32"),
+        );
+        attribute.extend_from_slice(member.code);
+        u16b(&mut attribute, 0); // exception_table_length
+        u16b(&mut attribute, 0); // attributes_count of the Code attribute
+        u32b(
+            &mut output,
+            u32::try_from(attribute.len()).expect("attribute length fits u32"),
+        );
+        output.extend_from_slice(&attribute);
+    }
+    u16b(&mut output, 0); // class attributes
+    output
+}
+
+/// The two members of the hand-built [`boundary_class`], with the bytecode of each:
+///
+/// ```text
+/// flag()Z    0: iconst_1; 1: ireturn          (`04 ac`)
+/// probe()I   0: invokestatic flag:()Z; 3: iconst_1; 4: if_icmpne 9; 7: iconst_1; 8: ireturn;
+///            9: iconst_0; 10: ireturn        (`b8 00 0b 04 a0 00 05 04 ac 03 ac`)
+/// ```
+const BOUNDARY_MEMBERS: &[HandMember] = &[
+    HandMember {
+        name: "flag",
+        descriptor: "()Z",
+        code: &[0x04, 0xac],
+        max_stack: 1,
+        max_locals: 0,
+    },
+    HandMember {
+        name: "probe",
+        descriptor: "()I",
+        code: &[
+            0xb8, 0x00, 0x0b, 0x04, 0xa0, 0x00, 0x05, 0x04, 0xac, 0x03, 0xac,
+        ],
+        max_stack: 2,
+        max_locals: 0,
+    },
+];
+
+#[test]
+fn a_proven_boolean_operand_beside_an_int_literal_is_a_recorded_boundary() {
+    // Decision 3 of the change: a `Test::Pair` comparison that mixes a proven boolean with an `int`
+    // literal is **not** closed here. The rule this change fixes keeps each operand's own evidence,
+    // so this shape is written `flag() == 1` — text `javac --release 8` refuses (`incomparable
+    // types: boolean and int`) — and it was already written that way before the fix. The assertion
+    // pins the boundary and the two directions a fix must not take: the proven call is not spelled
+    // as a boolean comparison, and the literal is not spelled `true` to make the text look
+    // boolean-typed.
+    let engine = Engine::new();
+    let bytes = boundary_class();
+    let fixture = fixture(&engine, &bytes);
+    let text = whole_body(&engine, &fixture, b"probe", b"()I");
+    assert!(
+        text.contains("if (flag() == 1) {"),
+        "the boundary stands as recorded: `flag() == 1`, refused by javac, not closed here:\n{text}"
+    );
+    assert!(
+        !text.contains("flag() == true") && !text.contains("true == flag()"),
+        "the fix may not invent a boolean spelling for the int literal to hide the boundary:\n{text}"
+    );
+}
+
+// -------------------------------------------------------------------------------------------
 // The shapes no compiler emits: a proof the layer does not have is a refusal, never a guess.
 // -------------------------------------------------------------------------------------------
 

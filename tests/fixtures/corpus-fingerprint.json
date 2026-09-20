@@ -1166,6 +1166,21 @@
       "path": "tests/fixtures/p3-handlers/v8/Res.class"
     },
     {
+      "blake3": "4ae4615332bb605169ffbcc99efb5b5a852ca61c8483d15f6525b3e0f2eed216",
+      "bytes": 2924,
+      "path": "tests/fixtures/p3-int-comparisons/Baseline.java"
+    },
+    {
+      "blake3": "31df2eb516d0607e890b7834ee4e1bcec639a47ae6ca776c5c7a25a465467d44",
+      "bytes": 1486,
+      "path": "tests/fixtures/p3-int-comparisons/IntComparisons.java"
+    },
+    {
+      "blake3": "4b1362ac75fadf6e81eeebcc80f272fcd7b6b53ff5f5325252793f8728659303",
+      "bytes": 647,
+      "path": "tests/fixtures/p3-int-comparisons/v8/IntComparisons.class"
+    },
+    {
       "blake3": "c3575914b083b65295da29bcef50f36ab0207ee70ff32d408b8fd29f0dcf73b3",
       "bytes": 2368,
       "path": "tests/fixtures/p3-local-rewrite/LocalRewrite.java"

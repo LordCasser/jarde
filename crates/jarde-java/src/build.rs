@@ -3261,21 +3261,25 @@ fn condition(
             operands.len()
         ));
     }
-    // A zero test whose operand is **proven boolean** is not a comparison (P3-R5). The frames state
-    // one slot shape for the four int-sized primitives, so the fact that decides the text here is a
-    // descriptor: `ifeq` on a `boolean` parameter is `!b`, `ifne` is `b`, and any other zero test on
-    // it (`iflt`, `ifgt`, …) has no Java spelling at all — the signature would refuse it — so the
-    // region is refused rather than written as an int comparison. An operand the layer cannot prove
-    // boolean keeps the integer comparison it has always had: that is not a defect, and refusing it
-    // would trade the two shapes this rule is about for a layer that refuses every `int` branch.
-    let boolean = builder.boolean_value(operands[0].1, branch_bci);
-    let left = builder.render_value(operands[0].1, branch_bci, 0)?;
-    let left = if boolean {
-        boolean_spelling(left)
-    } else {
-        left
-    };
-    let anchor = left.origin.primary().bci();
+    // Whether this **position** requires a boolean is decided before any operand is spelled, and
+    // from the shape of the test rather than from the shape of a value. A zero test whose operand is
+    // **proven boolean** is not a comparison (P3-R5): the frames state one slot shape for the four
+    // int-sized primitives, so the fact that decides the text there is a descriptor — `ifeq` on a
+    // `boolean` parameter is `!b`, `ifne` is `b`, and any other zero test on it (`iflt`, `ifgt`, …)
+    // has no Java spelling at all — the signature would refuse it — so the region is refused rather
+    // than written as an int comparison. An integer binary comparison (`if_icmp*`) has no such
+    // requirement: it reads two `int`s, and the fact that its *result* is a boolean says nothing
+    // about its operands, so both keep the spelling their own evidence states. An operand the layer
+    // cannot prove boolean keeps the integer comparison it has always had: that is not a defect, and
+    // refusing it would trade the two shapes this rule is about for a layer that refuses every `int`
+    // branch.
+    //
+    // The order is the regression this rule corrects. `boolean_value` counts the `0`/`1` literal as
+    // one item of the proof, and a literal is a boolean only where the position already requires
+    // one: reading it before the test's shape was known spelled the left operand of
+    // `iconst_1; iload_0; if_icmpne` as `true` (`5a8c36a`), text javac refuses
+    // (`incomparable types: boolean and int`), where the same bytes had been `1 == arg0`.
+    //
     // The operator the *sense* states, and the operator its negation states.
     let (positive, negative) = match op {
         CompareOp::JumpIfZero => (Test::Zero(BinaryOp::Equal), Test::Zero(BinaryOp::NotEqual)),
@@ -3318,9 +3322,18 @@ fn condition(
         ),
     };
     let test = if taken { positive } else { negative };
+    // The position's requirement, and only it, is what may read the literal proof: a boolean is
+    // required here exactly where the test is a zero test on a value the evidence owns. The operands
+    // are rendered **after** this decision, and each keeps its own evidence: `render_value` spells a
+    // `Test::Pair` operand as the `int` it is, and `boolean_spelling` — the `0`/`1` to `false`/`true`
+    // adaptation — happens inside the truth-test branch below and nowhere else.
+    let boolean = matches!(test, Test::Zero(_)) && builder.boolean_value(operands[0].1, branch_bci);
+    let left = builder.render_value(operands[0].1, branch_bci, 0)?;
+    let anchor = left.origin.primary().bci();
     if let Test::Zero(op) = test
         && boolean
     {
+        let left = boolean_spelling(left);
         return match op {
             BinaryOp::NotEqual => Ok(left),
             BinaryOp::Equal => Ok(Expr::new(
