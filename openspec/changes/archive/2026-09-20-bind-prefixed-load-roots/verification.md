@@ -52,6 +52,7 @@ pub enum LoadRoot {
 | `cargo test --test p3_execution_comparison --locked -- --ignored` | 2 passed / 0 failed（17.8 s） |
 | `openspec validate --all --strict --no-interactive` | 23 passed / 0 failed（归档前） |
 | `cd fuzz && cargo check --all-targets` | 通过（fuzz 是独立 workspace） |
+| 实现提交的 CI（`fbcf06b`） | [run 35497694448](https://github.com/LordCasser/jarde/actions/runs/35497694448) **四 job success**：stable（fmt、clippy `-D warnings`、两轮固定 seed 全量测试、JDK 25 oracle、P3 编译执行对照、依赖边界、OpenSpec strict、`git diff --exit-code`）、MSRV 1.88.0、supply chain、fuzz smoke |
 
 未新增 crate、依赖或 manifest 改动；除枚举变体与 `EnvironmentProblemCode::InvalidRootPrefix`（+`ALL`）外，其余新增符号均 crate 私有。未新增 fixture 文件、未调用编译器（全部内存构造）。
 
