@@ -6,8 +6,8 @@
 
 ## 2. Data reuse candidates
 
-- [ ] 2.1 基于测量选择是否需要多查询合并或细粒度并行，并验证 single-flight、取消和稳定发布满足 A14/A15
-- [ ] 2.2 基于测量选择 cache/index 范围与 key 维度；在未证明收益前保持 disabled，并验证 A01 candidate 不直接成为事实
+- [x] 2.1 基于测量选择是否需要多查询合并或细粒度并行，并验证 single-flight、取消和稳定发布满足 A14/A15（2026-09-20 完成，提交 `170ea20`。**决策：保持 disabled**——依据全部来自 1.2/1.3 实测：小语料、direct 中位 131–147 µs、**本机重复带宽 ~10%**（两次测量漂移 +5%~+8%、前后半 ≤12%）、**进程内首次可达 13× 中位**，低于该带宽的调度收益**不可区分**；且**无第二路径可比**（现由源码守卫机械核对，非一次性 grep）。**触发条件**写进记录且**未编造阈值**：出现「一个 snapshot 两个请求」的行、或某行资源每单位份额居首且差异越过同机带宽；ceiling/upgrade path 同记录。**A14 如实判定**：验到「入口前取消 → cancelled、零 items、诊断非空」+ 新补「取消是**每请求**的，后续同字节请求重新发布基线 fingerprint」——**这是 single-flight 今天唯一能验的形状**。**single-flight：无对象可验**（无共享请求，不假装验过）。**A15 维持「未通过」**。**父级独立证伪**：让矩阵谎称有一个未跑过的第二配置 → **恰好 1 红**，失败消息即设计拒绝语；实现者另三组（收益声明改「已证明」/carrier token 改名/植入 `CacheEntry` 类型）各自红。**证据**：1095 passed / 0 failed / 5 ignored；fmt/clippy 1.98.1 干净；**既有断言 0 改动**）
+- [x] 2.2 基于测量选择 cache/index 范围与 key 维度；在未证明收益前保持 disabled，并验证 A01 candidate 不直接成为事实（2026-09-20 完成，提交 `170ea20`。**决策：cache/index 保持 disabled**；**key 以「记录」形状定义**（无 key 类型、无落盘、无索引布局）。**理由三条是仓库事实**：key 无消费者；**IR 与 recovery 两维今天根本没有 version 身份**（全 grep 无 schema/version 标识），实现 key 等于**先凭空造出它要 hash 的版本**；key 只能靠 cached-vs-direct 对照验证，今天钉住的是猜测且**会被读成「已验证」**。**key 维度记录**：`KEY_DIMENSIONS` **10 条**（决策 2 的 9 条 + `dependency-snapshot`），每条带 layers/source/carrier；`Present` **锚定源码 token**、`Absent` 必须写 why 与谁关闭；测试钉住「九条各恰好一次」「**Present 的 token 必须在引擎源码中存在**」。**A01 已覆盖不重做**：`unused_constant_pool_entries_are_candidates_but_never_calls` 等；**cache 语境下补一条** `the_reference_path_publishes_no_pool_candidate_as_an_item`（参考路径 derivations 只有 `structural_consumer`，`constant_pool_candidate` **0**）——**这就是任何 cache/index 路径必须复现的形状**。**如实记录**：实现者自查发现收益字段原为可变 `Vec` 而候选表是 `static`，**「候选带实测收益」这一状态永远构造不出来**（守卫写在它看不见的形状外），已改为静态切片后重跑。**守卫盲区**（与 A17 同口径）：只抓模块名/以 `Cache` 开头的类型声明/线程派生，**不抓**局部 memo 与别名缓存——补充而非替代。**证据**：1095 passed / 0 failed / 5 ignored；**既有断言 0 改动**）
 - [ ] 2.3 实现 cache 损坏、依赖补齐、profile/output/registry 变化的失效和直接路径回退，覆盖 facts-cache spec
 
 ## 3. Release gates

@@ -190,3 +190,51 @@
 ### 未完成（如实）
 
 **A15 的缓存半**属 2.2（cache/index）+ 3.1（optimized/direct 差分）——今天无第二条路径可测；**cache/parallel 的实测量与对照**属 2.x（本片只预留 `compare()` 机制与 context 字段）；**取消压力**（并发/解压/IR 内取消）属 3.2（本片只覆盖「入口前取消」的确定性变体）；**ZIP bomb/condy 图/不可约 CFG/缺失依赖语料上的优化回归**属 3.2。1.1 的 `known_gaps` 五条**未闭合**，本片未动。
+
+## 2026-09-20 2.1 + 2.2：两项「基于测量」的决策（提交 `170ea20`）
+
+### 2.1：多查询合并 / 细粒度并行 / single-flight —— **决策：保持 disabled**
+
+**依据（全部来自 1.2/1.3 的实测，或由本片新增守卫机械核对）**：
+- **收益证据不存在**：语料 659 B 归档 / 303 B class；direct 中位 **131–147 µs**；本机中位复现性 **~10%**（两次测量漂移 +5%~+8%、前后半最多 ~12%），**进程内首次可达 13× 中位**。低于该带宽的调度收益在本机**不可区分**。
+- **没有第二路径可比**：仓库无 cache/index/并行实现——现由**源码守卫** `the_engine_has_no_cache_index_or_scheduler_to_extend` **机械核对**（而非一次性 grep）。
+- **行级资源形状也不支持**：局部行 1 body（303 B、29 steps、86 IR items，类声明 3 个 body）；两条全范围行 **`class_headers=0`/`method_bodies=0`** 却物化 555 与 909 class bytes；worker 的**固定成本（spawn/交接/有序合并）在本 harness 里从未测过**。
+
+**触发条件（写进记录，未编造阈值）**：(a) 某个入口或 benchmark 行能**对一个 snapshot 跑两个请求** → 用本 harness 量「重叠对 vs 顺序对」，**触发条件是「该行存在」而非某个收益数值**；(b) 若出现一行其资源报告里**每单位份额占首位的负载** → 候选差异须先越过**同机同 harness 的重复带宽**（今天 ~10%）；**「多大算值得默认开启」未定**（决策 5）。
+**ceiling 与 upgrade path 同记录**：共享请求只改调度、不得重置预算、取消订阅者状态相互隔离；并行需 `compare()` 的顺序**相等**与 3.2 的压力语料。
+
+**A14 的如实判定**：今天成立且被验的是「入口前取消 → `cancelled`、零 items、诊断非空」（既有 `a_cancelled_direct_run_is_never_published_as_complete`），加本片新补 **`a_cancelled_request_does_not_reach_a_later_one_over_the_same_bytes`**——取消是**每请求**的，取消后的下一个同字节请求**重新发布基线 fingerprint**（`7603cd8c…`）。**这是 single-flight 那条规则今天唯一能验的形状**：会「取消这批字节的工作」而不是「取消这个订阅者」的实现会先在这里红。
+**single-flight：无对象可验**——没有任何共享请求，spec 的「一个订阅者取消而另一个继续等待」**没有主体**，**不假装验过**。
+**A15 判定维持「未通过」**（缓存半）；A18 的缓存/并行半同理未动。
+
+### 2.2：cache/index 范围与 key 维度 —— **决策：保持 disabled；key 以「记录」形状定义**
+
+**理由三条（本仓库的事实而非偏好）**：① key **没有消费者**——没人读 key，形状只能靠猜；② **两维今天根本没有身份**：IR 与 recovery **没有任何 version 常量/字段**（全 grep 无 schema/version 标识），实现 key 意味着**先凭空造出它要 hash 的版本**，正是 Non-Goal 拒绝预设的东西；③ key 只能靠 **cached vs direct 对照**验证（A15 的缓存半），今天钉住的是猜测，且**会被后人误读为「已验证」**。
+
+**key 维度记录**（`KEY_DIMENSIONS`，**10 条** = 决策 2 的 9 条 + `facts-cache` 决议层单列的 `dependency-snapshot`）：每条带 `name`/`layers`（`cp-header`/`x1`/`resolution`/`ir-source`）/`source`/`carrier`。`Carrier::Present` **锚定到源码 token**（`ArtifactSnapshot`、`PhysicalView`、`RuntimeProfile`、`HIGHEST_REGISTERED_MAJOR`、`QUERY_ENGINE_SCHEMA`、`providers`、`PASSES`、`Limits`），`Absent{why, closed_by}` 用于 IR 与 recovery。
+**测试钉住**：决策 2 的九条**各恰好一次**、层名合法、**Present 的 token 必须在引擎源码中存在**、**Absent 必须写清 why 与谁关闭**。
+
+**A01 的验证结论：已覆盖，不重做** —— `p1_xref_code.rs::unused_constant_pool_entries_are_candidates_but_never_calls`（X0 候选带 CP index、`consumer: None`、无 BCI/opcode；同一 target 的 `mentions_symbol` **零 items**、`scanned_items=0`），配套 `p1_xref_metadata.rs::metadata_only_types_hit_only_their_requested_category`、`p2_declaration_refs.rs::an_unconsumed_pool_entry_is_not_a_candidate`。
+**cache 语境下补了一条**：`the_reference_path_publishes_no_pool_candidate_as_an_item`——参考路径两条 X1 行的 derivations **只有 `structural_consumer`**（各 1 条），`constant_pool_candidate` **0**、**无 consumer 的 item 0**。**这就是任何 cache/index 路径必须复现的形状**：命中一旦被当事实发布，`compare()` 的 fingerprint 差分**立即红**。
+
+### 实现了什么 vs 只定义了契约
+
+**已实现**（`tests/p5_benchmark.rs` 决策记录段 + 6 条测试）：候选记录（`Candidate`/`Benefit`/`MeasuredBenefit`）与**规则** `check_candidate`——「矩阵能跑的第二配置必须带一份实测对照」「收益声明不得留在参考配置」「不得只测一次」「必须指向某个变小的事实」；`runnable_configurations` **从行本身推导**矩阵可跑配置；源码守卫；`RunRecord` 两个新字段（`derivations`、`items_without_a_consumer`）。
+**仅契约**：key 维度表（**无 key 类型、无落盘、无索引布局**）。
+**未实现**：cache/index/并行/single-flight 本体；触发条件与 upgrade path 已逐条记录。
+
+### 父级独立证伪与证据
+
+- 全量 **1095 passed / 0 failed / 5 ignored**（基线 1089 → **+6**，即 6 条新测试；无既有用例改红/改绿）；`p5_benchmark` **13 passed / 1 ignored**；fmt 与 clippy 1.98.1 干净。
+- **父级独立证伪**：让 `runnable_configurations` **谎称**矩阵有一个并未跑过的第二配置（`enabled`/`parallel`）→ **恰好 1 红**：`every_benefit_claim_needs_a_second_runnable_path`，失败消息正是设计拒绝的那句话——「**要么它是第二条代码路径（那就量它并记进 `CANDIDATES`），要么它是参考路径戴了第二个标签，而 P5 的设计（5）与 `performance-gates` 规格拒绝后者**」。
+- **实现者三组证伪**：① 把 `fine-grained-parallel` 从「不证明收益」改成「已证明」→ 同一断言红；② 把 `budget` 维度的 carrier token 改名 `LimitsV2` → `the_recorded_key_dimensions_are_the_ones_the_decision_names` 红（「no engine source contains that token」）；③ 往 `crates/jarde-reader/src/lib.rs` 植入 `pub struct CacheEntry` → 源码守卫红。
+- **实现者自查抓到的形状缺陷（如实记录）**：`MeasuredBenefit.deltas` 原为 `Vec`，而 `CANDIDATES` 是 `static`——**「候选带实测收益」这一状态永远构造不出来**，守卫会写在一个它看不见的形状外面；改为 `&'static [(CountedBudgetDimension, i128)]` 后才重跑证伪。
+
+### 守卫的盲区（如实，与 A17 守卫同口径）
+
+只覆盖 `crates/*/src` + `src/`，抓 `cache`/`index`/`facts_cache` **模块名**、**以 `Cache` 开头的类型声明**与**线程派生**；**不抓**局部 memo、以别的名字命名的缓存、依赖内部实现。已写在代码文档里——**是补充而非替代**。
+
+### 未完成（如实）
+
+**2.3（cache 损坏/依赖补齐/profile 变化的失效与直接路径回退）在 2.1/2.2 之后曾标注「无 cache 可做」**；父级据 `facts-cache`（本 change 的 ADDED 能力）与 `design.md` 的「**disabled-by-default 实验开关**」裁决：**disabled 约束的是「启用」而非「存在」**，故 2.3 **实现 in-memory cache 的完整身份/失效/回退语义**（不落盘、不加依赖、保持默认关闭），并由此让 **A15 的缓存半首次可验**、给 3.1 一个真正的第二条路径。**2.2 的「不默认启用」决定不变**，被取代的只是其「连 key 类型都不实现」的推理。
+**属 3.x**：A15 缓存半与 optimized/direct 差分（3.1）；对抗与共享不变量回归（3.2）；发布实测范围与未决门槛（3.3）；fmt/clippy/test/benchmark smoke/strict（3.4）。
