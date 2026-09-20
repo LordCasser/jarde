@@ -1,5 +1,6 @@
-//! P5 tasks 1.2 and 1.3: the repeated direct-path baseline, and the report a second path is judged
-//! by.
+//! P5 tasks 1.2, 1.3, 2.1 and 2.2: the repeated direct-path baseline, the report a second path is
+//! judged by, and the decisions taken from it (nothing is enabled; the key dimensions a cache would
+//! have to bind are recorded and anchored to the code that carries them).
 //!
 //! P5 decides what to optimize from measurements (design decision 1) against a reference path that
 //! stays comparable (decision 3), and a measurement is only a baseline while the bytes it read, the
@@ -16,7 +17,12 @@
 //!   input alone, which is the baseline P5's decision 4 requires a parallel scheduler to preserve;
 //! * it compares two runs field by field (status, fingerprint, published order, coverage,
 //!   diagnostics, resources), which is the report shape a cache, index or parallel path will be
-//!   judged with (task 1.3).
+//!   judged with (task 1.3);
+//! * it records the decisions of tasks 2.1 and 2.2 as data the harness checks, not as prose: no
+//!   candidate is in the default path, a runnable second configuration has to bring a measured
+//!   comparison with it, and the cache key dimensions are anchored to the tokens that carry them
+//!   today. Two of those dimensions have no carrier at all, which is part of why no key type is
+//!   built (see "The decisions tasks 2.1 and 2.2 ask for").
 //!
 //! ```text
 //! verify:  cargo test --test p5_benchmark --locked
@@ -53,9 +59,9 @@
 //! machine is a flake, not a gate; what the always-on tests assert is the semantic half — identical
 //! results, identical order, recorded resources, terminal status.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::slice;
 use std::sync::Arc;
@@ -620,6 +626,14 @@ struct RunRecord {
     published_items: u64,
     /// The committed bodies the premise header read found beside the one this row presents.
     declared_bodies: usize,
+    /// The published items' derivations, counted by their public spelling. A01's contrast is a
+    /// derivation apart (`constant_pool_candidate` against `structural_consumer`), so a path that
+    /// served a pool hit as an answer would publish one and be visible here.
+    derivations: BTreeMap<String, usize>,
+    /// How many published items carry no consumer category. Recorded rather than read as "the
+    /// candidate count": the pool probe is one reason an item has a `None` consumer, and the test
+    /// that reads this says which reading it takes.
+    items_without_a_consumer: usize,
     /// The report as it was serialized, and the normalization of it the fingerprint is taken over.
     published: Value,
     document: Value,
@@ -759,6 +773,12 @@ fn run_full_range(
         order: item_identities(&report.items),
         published_items: report.items.len() as u64,
         declared_bodies: 0,
+        derivations: item_derivations(&report.items),
+        items_without_a_consumer: report
+            .items
+            .iter()
+            .filter(|item| item.consumer.is_none())
+            .count(),
         published: form.raw,
         document: form.normalized,
         fingerprint: form.fingerprint,
@@ -818,6 +838,10 @@ fn run_single_member(
         order: "[]".to_string(),
         published_items: 0,
         declared_bodies: premise.declared_bodies,
+        // The local row publishes the presentation of one run's payload, not a list of XRef items,
+        // so it has no derivations to count. Its `published_items` is zero for the same reason.
+        derivations: BTreeMap::new(),
+        items_without_a_consumer: 0,
         published: form.raw,
         document: form.normalized,
         fingerprint: form.fingerprint,
@@ -834,10 +858,8 @@ fn context_of(corpus: &Corpus, verified: &Verified) -> Context {
         // `direct` is the reference path of `design.md` decision 3: the scan every other path has to
         // agree with. The other two columns of the matrix have no implementation to run.
         path: "direct",
-        cache: "absent: no cache or index exists in this repository (P5 2.2 owns one), so no run \
-                can be labelled cache-on",
-        concurrency: "1: no parallel scheduler exists (P5 2.x owns one), so every row is one \
-                      sequential scan",
+        cache: REFERENCE_CACHE,
+        concurrency: REFERENCE_CONCURRENCY,
         scope: String::new(),
         view: String::new(),
         profile: String::new(),
@@ -867,6 +889,19 @@ fn item_identities(items: &[XrefItem]) -> String {
         })
         .collect();
     serde_json::to_string(&identities).expect("identities render")
+}
+
+/// The published items' derivations, counted by their public spelling.
+fn item_derivations(items: &[XrefItem]) -> BTreeMap<String, usize> {
+    let mut counts = BTreeMap::new();
+    for item in items {
+        let name = serde_json::to_string(&item.derivation)
+            .expect("a derivation serializes")
+            .trim_matches('"')
+            .to_string();
+        *counts.entry(name).or_insert(0) += 1;
+    }
+    counts
 }
 
 // -------------------------------------------------------------------------------------------
@@ -1261,6 +1296,590 @@ fn report_row(row: &Row, distribution: &Distribution) {
             "repeat {index} of {} published its items in a different order",
             row.label
         );
+    }
+}
+
+// -------------------------------------------------------------------------------------------
+// The decisions tasks 2.1 and 2.2 ask for
+// -------------------------------------------------------------------------------------------
+//
+// P5's design decides before it optimizes: "先测量再选择 … 没有收益或回归证据的优化保持 disabled"
+// (decision 1), and design decision 5 refuses to fix a number before real corpus and repeats exist.
+// The prose authority for what was decided is the change document. What this section adds is the
+// half a document cannot hold: the state of each candidate *checked against the matrix this harness
+// can actually run*, and the cache key contract anchored to the tokens that carry it in the code.
+//
+// So enabling a candidate is a change to a run and to this record, in that order, not an edit to a
+// paragraph: `every_benefit_claim_needs_a_second_runnable_path` fails the moment a second
+// configuration appears in the matrix without a measured comparison recorded beside it.
+
+/// One optimization candidate: what it would change, what is measured about it today, and what would
+/// have to exist before it could be enabled.
+struct Candidate {
+    id: &'static str,
+    /// The change the candidate would make to the engine.
+    what: &'static str,
+    /// The slice that owns the decision, and the slice that would enable it.
+    owner: &'static str,
+    /// What the measurements recorded in this file say about it.
+    basis: &'static str,
+    /// The evidence that does not exist.
+    missing: &'static str,
+    /// The observable fact that reopens the decision. Unknown thresholds are named as unknown
+    /// rather than given a number.
+    trigger: &'static str,
+    /// What the engine can do today, so the decision is read against a ceiling and not a hope.
+    ceiling: &'static str,
+    /// The shape the enabled version must take, and the gates it has to clear.
+    upgrade: &'static str,
+    /// Whether a benefit over the reference path has been measured. Today: no candidate has one.
+    benefit: Benefit,
+}
+
+/// Whether a candidate's benefit has been measured across two configurations.
+enum Benefit {
+    /// No comparison exists, and the text says what the reading rests on. A candidate in this state
+    /// stays out of the default path (design decision 1).
+    Unmeasured { why: &'static str },
+    /// A comparison of the reference path against a differently-configured one. This is the only
+    /// variant an enabled candidate may carry, and it cannot be written honestly for a matrix that
+    /// runs one configuration.
+    Measured(MeasuredBenefit),
+}
+
+/// A measured benefit: the two run labels, the configuration the candidate side ran in, the counted
+/// dimensions the harness saw move, and the wall-clock medians of both sides.
+///
+/// Which reductions count as a release-worthy benefit is a later decision (design decision 5). What
+/// is refused here is a benefit claim that names nothing at all.
+struct MeasuredBenefit {
+    reference: &'static str,
+    candidate: &'static str,
+    /// The `(cache, concurrency)` configuration the candidate side ran in. Two runs of the reference
+    /// path are not a benefit, so this may not be the reference configuration.
+    configuration: (&'static str, &'static str),
+    /// `candidate - reference` over every counted dimension, as [`compare`] reports them.
+    ///
+    /// A static slice rather than a `Vec`, because the claim belongs in the record: `CANDIDATES` is
+    /// a `static`, and a `Vec` cannot be built in one, so a `Vec` here would have made the
+    /// "candidate carries a measured benefit" state unconstructible — the guard would have been
+    /// written around a shape it could never see.
+    deltas: &'static [(CountedBudgetDimension, i128)],
+    reference_median_micros: u128,
+    candidate_median_micros: u128,
+}
+
+impl MeasuredBenefit {
+    /// Whether the claim points at something that got smaller.
+    fn points_at_a_reduction(&self) -> bool {
+        self.deltas.iter().any(|(_, delta)| *delta < 0)
+            || self.candidate_median_micros < self.reference_median_micros
+    }
+}
+
+/// The reference configuration of the matrix — `direct`, no cache, one sequential scan — declared
+/// once, so the rows and the decision record cannot describe the harness differently. A benefit
+/// claim's candidate side is refused if it carries these values: that would be the reference path
+/// measured twice.
+const REFERENCE_CACHE: &str = "absent: no cache or index exists in this repository (P5 2.2 owns \
+                               one), so no run can be labelled cache-on";
+const REFERENCE_CONCURRENCY: &str = "1: no parallel scheduler exists (P5 2.x owns one), so every \
+                                      row is one sequential scan";
+
+/// Task 2.1's candidates and task 2.2's, all disabled, each with what would reopen it.
+static CANDIDATES: [Candidate; 3] = [
+    Candidate {
+        id: "merged-queries/single-flight",
+        what: "More than one request over one snapshot shares one scan: identical work runs once, and \
+               each subscriber gets the same published result with its own budget and its own \
+               termination status (design decision 4; the `measured-execution` shared-query \
+               scenario).",
+        owner: "P5 2.1 owns the decision; no slice owns running two overlapping requests, which is \
+                what enabling it would need first.",
+        basis: "Nothing to share: every entry point takes one request at a time, and no row in this \
+                harness runs two requests over one snapshot, so the shared case has no measured cost \
+                and its cancellation rule has no subject. What is measured is the single request — \
+                ~130 µs median over a 659 B archive and a 303 B class (task 1.2), reproducible to \
+                ~10% on this machine, with the first run in a process up to 13× the median.",
+        missing: "A caller that really overlaps two requests over one snapshot, and a repeated \
+                  measurement of that pair. Without a second subscriber there is no denominator for \
+                  'shared' to divide, and no way to exercise 'one subscriber cancels while the other \
+                  keeps waiting'.",
+        trigger: "When an entry point or a benchmark row can run two requests over one snapshot: \
+                  measure the overlapped pair against the same two requests run sequentially, through \
+                  this harness. The trigger is that row existing, not a size of win — which win would \
+                  be worth a default-on change is not fixed (design decision 5).",
+        ceiling: "One request at a time, one configuration in the matrix. `compare` can compare any \
+                  two runs, but there are not yet two runs of the same work to compare.",
+        upgrade: "A shared request may only publish what the sequential pair publishes (`compare`'s \
+                  status, fingerprint, order, coverage and diagnostics, equal), must not reset the \
+                  budget when a subscriber cancels (design decision 3), and must keep the cancelled \
+                  subscriber's termination separate from the other subscriber's (decision 4).",
+        benefit: Benefit::Unmeasured {
+            why: "One path, one configuration: a benefit is a difference between two runs, and the \
+                  harness can produce one run of this request at a time.",
+        },
+    },
+    Candidate {
+        id: "fine-grained-parallel",
+        what: "Splitting one request's scanning work across workers and merging their results in \
+               stable order (design decision 4), leaving coverage and partial semantics as they are.",
+        owner: "P5 2.1 owns the decision; no slice implements a scheduler.",
+        basis: "The reference path's work on this corpus is hundreds of bytes: the local row \
+                materializes exactly one body (303 charged read bytes, 29 analysis steps, 86 IR \
+                items) of the three bodies its class declares, and the two full-range rows charge no \
+                header and no body while materializing 555 and 909 class bytes. A worker's fixed \
+                cost — spawn, hand-off, ordered merge — is measured nowhere in this file, so 'work \
+                saved' has never been put next to 'scheduling paid'.",
+        missing: "A corpus row whose work is large enough for a split to be the dominant term, a \
+                  second path to split it, and the scheduler's own cost measured through the same \
+                  harness rather than assumed. The corpus in this repository cannot decide it: the \
+                  largest subject is 659 bytes.",
+        trigger: "When the harness has a second path and a row whose resource report puts the \
+                  per-unit share of the charge first: the candidate difference then has to clear the \
+                  harness's own repeat spread on the machine measuring it (today ~10% between full \
+                  measurements and up to ~12% between halves of one, so no smaller difference can be \
+                  reported as a gain at all). No threshold for 'worth enabling' is fixed here \
+                  (design decision 5).",
+        ceiling: "Single-threaded: no thread is spawned anywhere in the engine (guarded by \
+                  `the_engine_has_no_cache_index_or_scheduler_to_extend`), so one request is one \
+                  core; and the first run in a process reaches 13× the median, which is larger than \
+                  anything this corpus could show for a scheduling change.",
+        upgrade: "A parallel scan has to publish byte-identical results and keep the origin order \
+                  (`compare` requires order equality, not a stable permutation), and it has to hold \
+                  `Cancellation under pressure` — which needs the pressure corpus of task 3.2: ZIP \
+                  bomb, condy graph, irreducible CFG and missing-dependency rows, none of which are \
+                  measured today.",
+        benefit: Benefit::Unmeasured {
+            why: "Nothing is scheduled to compare against, and the work one request does over this \
+                  corpus is small enough that the harness cannot distinguish a change of the size a \
+                  scheduler could make from its own repeat spread.",
+        },
+    },
+    Candidate {
+        id: "facts-cache/index",
+        what: "Reusing facts between requests — CP/header, X1, resolution, IR/source — under a key \
+               bound to the semantic inputs of the layer that holds them (design decision 2; the \
+               `facts-cache` spec).",
+        owner: "P5 2.2 owns the decision; 2.3 owns invalidation and the direct-path fallback.",
+        basis: "There is no cache and no index to extend (guarded). What a key would have to separate \
+                is visible in the rows already: the same 303 B class is charged 303 read bytes by the \
+                local row and 909 by the full-range row, and the full-range rows materialize 555 and \
+                909 class bytes while charging no header and no body at all — a key that missed the \
+                scope or the layer would hand one row the other's answer.",
+        missing: "A second path, and with it the per-layer dependency sets of `facts-cache`: which \
+                  inputs a layer's answer really depends on is settled by comparing a cached run \
+                  against a direct one (A15's cache half), and two dimensions of the key record below \
+                  have no identity in the code at all.",
+        trigger: "When repeated requests over one snapshot are a real caller's dominant cost — \
+                  observable as rows in this harness whose charged dimensions repeat and whose wall \
+                  clock is the largest term — and every dimension of the key record below has a \
+                  carrier: build it behind a disabled-by-default switch and measure it row by row \
+                  against the direct path.",
+        ceiling: "Every request re-reads and re-materializes what it needs, and nothing survives a \
+                  request. The key contract is recorded but no key exists, so the dimensions without \
+                  a version identity (IR, recovery) cannot even be expressed yet.",
+        upgrade: "An entry has to bind its layer's semantic inputs, keep physical origins separate, \
+                  never let an incomplete entry stand in for a complete one, and fall back to the \
+                  direct path inside the remaining budget (`facts-cache`; design decision 3). `Cold \
+                  and warm results` (A15) and `Optimized versus direct path` are the gates, and \
+                  `Index candidate requires verification` is where A01 returns: a hit is a candidate, \
+                  and a consumer or a definition still has to verify it.",
+        benefit: Benefit::Unmeasured {
+            why: "No cache exists, so there is no cached run to compare against a direct one; and two \
+                  of the key's dimensions have no identity to bind, so the entry cannot state what it \
+                  depends on (see `KEY_DIMENSIONS`).",
+        },
+    },
+];
+
+/// The semantic inputs a facts cache key has to cover, and where each one lives today.
+///
+/// `design.md` decision 2 names the dimensions (snapshot, view, platform, registry, query, IR,
+/// recovery, pass, budget) and `specs/facts-cache` says which layer has to bind what. Task 2.2's
+/// shape question — key type or record — is answered **recorded, not built**, for three reasons that
+/// are facts about this repository rather than preferences:
+///
+/// * a key type has no caller: nothing reads a key, so its shape would be settled by guesswork and
+///   the first real cache would rewrite it;
+/// * two dimensions have no identity in the code at all (the IR and recovery versions), so building
+///   the key would first mean inventing the versions it is supposed to hash — which is what P5's
+///   Non-Goals refuse to preset;
+/// * a key can only be *verified* by comparing a cached run against a direct one (A15's cache half):
+///   a test that pinned today's guesses would pin a guess as truth.
+///
+/// The record is still anchored to code rather than to prose: every `Present` carrier names a token
+/// that has to appear in the engine sources, so renaming or deleting the thing a dimension depends
+/// on fails `the_recorded_key_dimensions_are_the_ones_the_decision_names`.
+struct KeyDimension {
+    /// The name `design.md` decision 2 gives this input.
+    name: &'static str,
+    /// The cache layers whose entries have to include it, from `facts-cache`: `cp-header`, `x1`,
+    /// `resolution`, `ir-source`, joined by `+`.
+    layers: &'static str,
+    /// The requirement this dimension is read from, since `facts-cache` names one input that
+    /// decision 2's list has no dimension for.
+    source: &'static str,
+    /// Where the input is today.
+    carrier: Carrier,
+}
+
+/// Where a key dimension's input is today.
+enum Carrier {
+    /// The input exists in the engine, under this token.
+    Present {
+        what: &'static str,
+        token: &'static str,
+    },
+    /// The dimension is required and has no carrier: a key over it means adding the identity first.
+    Absent {
+        why: &'static str,
+        closed_by: &'static str,
+    },
+}
+
+static KEY_DIMENSIONS: [KeyDimension; 10] = [
+    KeyDimension {
+        name: "snapshot",
+        layers: "cp-header+x1+resolution+ir-source",
+        source: "design decision 2",
+        carrier: Carrier::Present {
+            what: "The identity of the opened artifact, which the query layer already binds into its \
+                   cursor and refuses to mix across snapshots (P1: `a18_open_snapshot_stays_stable_\
+                   and_a_reopened_one_rejects_old_cursors`, `cursor_mismatches_bind_snapshot_view_\
+                   relation_and_schema`).",
+            token: "ArtifactSnapshot",
+        },
+    },
+    KeyDimension {
+        name: "view",
+        layers: "resolution+ir-source",
+        source: "design decision 2",
+        carrier: Carrier::Present {
+            what: "The physical view a request names, which selects which entries of a \
+                   multi-release artifact answer (P1 A06; P4's runtime matrix).",
+            token: "PhysicalView",
+        },
+    },
+    KeyDimension {
+        name: "platform",
+        layers: "resolution+ir-source",
+        source: "design decision 2",
+        carrier: Carrier::Present {
+            what: "The runtime profile a request resolves under: the same bytes answer differently \
+                   under another profile, and the profile is what selects the entry.",
+            token: "RuntimeProfile",
+        },
+    },
+    KeyDimension {
+        name: "registry",
+        layers: "cp-header+x1+resolution",
+        source: "design decision 2, and `facts-cache`'s `parser/registry 版本和 parse policy`",
+        carrier: Carrier::Present {
+            what: "The release/modern registry a dialect is read under, together with the policy \
+                   tables that decide what a scan reports and what the recovery layer claims \
+                   (the reader's patterns, the query layer's plugins).",
+            token: "HIGHEST_REGISTERED_MAJOR",
+        },
+    },
+    KeyDimension {
+        name: "query",
+        layers: "x1+resolution",
+        source: "design decision 2",
+        carrier: Carrier::Present {
+            what: "The request itself — the cursor's binding digest hashes it — and the schema tag \
+                   the report carries, so a relation or a consumer category cannot read another's \
+                   entry.",
+            token: "QUERY_ENGINE_SCHEMA",
+        },
+    },
+    KeyDimension {
+        name: "dependency-snapshot",
+        layers: "resolution",
+        source: "`facts-cache`'s resolution layer (`symbol/source context`, \
+                 `view/domain/platform/dependency snapshot`); decision 2's list has no dimension of \
+                 its own for it",
+        carrier: Carrier::Present {
+            what: "The header providers a request resolves against. A missing dependency is a stated \
+                   negative rather than a failure (A11), and the same query answers differently once \
+                   a provider is added — `facts-cache`'s `Dependency becomes available`.",
+            token: "providers",
+        },
+    },
+    KeyDimension {
+        name: "IR",
+        layers: "ir-source",
+        source: "design decision 2",
+        carrier: Carrier::Absent {
+            why: "The IR is a type, not a version: nothing in the analysis layer states which IR \
+                  revision a derived fact came from, and an entry that cannot name its revision \
+                  cannot be invalidated when one changes (design decision 2's risk: 变更版本时强制 \
+                  失效).",
+            closed_by: "The slice that builds an IR/source-layer cache and therefore has to \
+                        invalidate it.",
+        },
+    },
+    KeyDimension {
+        name: "recovery",
+        layers: "ir-source",
+        source: "design decision 2",
+        carrier: Carrier::Absent {
+            why: "No recovery version identity exists either. The nearest thing is the pass set \
+                  below, which is narrower than what the recovery layer's answers depend on (the \
+                  naming configuration and the output level are inputs to it as well).",
+            closed_by: "The same slice: the recovery identity is added by whoever has to invalidate \
+                        recovered facts.",
+        },
+    },
+    KeyDimension {
+        name: "pass",
+        layers: "ir-source",
+        source: "design decision 2",
+        carrier: Carrier::Present {
+            what: "The named recovery passes a run applies, which decide whether a pattern is \
+                   claimed or refused.",
+            token: "PASSES",
+        },
+    },
+    KeyDimension {
+        name: "budget",
+        layers: "cp-header+x1+resolution+ir-source",
+        source: "design decision 2",
+        carrier: Carrier::Present {
+            what: "The limits a fact was produced under. A truncated scan is a partial answer, and \
+                   `facts-cache` refuses to let an incomplete entry stand in for a complete one \
+                   (design decision 3: no budget is reset by re-running).",
+            token: "Limits",
+        },
+    },
+];
+
+/// The `(cache, concurrency)` configurations the matrix can be run in, read from the rows this
+/// harness produces rather than declared beside them.
+///
+/// This is what keeps the decisions above tied to runs: if a slice wires a second path into the
+/// matrix, this set grows, and the decision record has to grow with it.
+fn runnable_configurations(corpus: &Corpus) -> BTreeSet<(String, String)> {
+    published_rows(corpus)
+        .into_iter()
+        .map(|row| {
+            (
+                row.context.cache.to_string(),
+                row.context.concurrency.to_string(),
+            )
+        })
+        .collect()
+}
+
+/// One engine source file, read by the guards below.
+struct EngineSource {
+    path: String,
+    text: String,
+}
+
+/// Every `.rs` file of the engine crates and the facade, in a deterministic order.
+///
+/// The guards below check *absences* — no cache, no index, no scheduler — and no run can show that
+/// something does not exist, so they read the source. The scope is the engine the decisions are
+/// about: `crates/*/src` and the facade's `src/`. Test code, fixtures, fuzz targets and anything
+/// reached through a dependency are outside it; so is a cache hidden in a local variable.
+fn engine_sources() -> Vec<EngineSource> {
+    let root = repository_root();
+    let crates = root.join("crates");
+    let mut directories = vec![root.join("src")];
+    let mut crate_directories: Vec<PathBuf> = fs::read_dir(&crates)
+        .unwrap_or_else(|error| panic!("read {}: {error}", crates.display()))
+        .map(|entry| entry.expect("a directory entry reads").path())
+        .collect();
+    crate_directories.sort();
+    for crate_directory in crate_directories {
+        directories.push(crate_directory.join("src"));
+    }
+    let mut sources = Vec::new();
+    for directory in directories {
+        collect_sources(&directory, &mut sources);
+    }
+    sources.sort_by(|left, right| left.path.cmp(&right.path));
+    sources
+}
+
+fn collect_sources(directory: &Path, into: &mut Vec<EngineSource>) {
+    // A directory that is not there is not an engine source tree: the guard is about the trees that
+    // exist rather than about a list of crate names that would go stale.
+    let Ok(entries) = fs::read_dir(directory) else {
+        return;
+    };
+    let mut paths: Vec<PathBuf> = entries
+        .map(|entry| entry.expect("a directory entry reads").path())
+        .collect();
+    paths.sort();
+    for path in paths {
+        if path.is_dir() {
+            collect_sources(&path, into);
+        } else if path.extension().is_some_and(|extension| extension == "rs") {
+            let text = fs::read_to_string(&path)
+                .unwrap_or_else(|error| panic!("read {}: {error}", path.display()));
+            let relative = path
+                .strip_prefix(repository_root())
+                .unwrap_or(&path)
+                .to_string_lossy()
+                .to_string();
+            into.push(EngineSource {
+                path: relative,
+                text,
+            });
+        }
+    }
+}
+
+/// The needles that would mean a candidate has been wired into the engine: a cache or index module,
+/// a type declared as a cache, or a thread spawned to scan alongside the caller.
+///
+/// What they catch and what they miss is stated rather than discovered later. They catch a
+/// `cache`/`index`/`facts_cache` module, a type whose declaration begins with `Cache`, and the ways
+/// a Rust program spawns work. They do not catch a cache under another name (`Memo`, `IndexTable`),
+/// a memo table kept in a local variable or a field, anything reached through a dependency, or any
+/// file outside `crates/*/src` and `src/`. `Index…` is deliberately not a name prefix: this
+/// repository already declares `pub struct IndexCall` in the recovery layer — a dispatch-table read,
+/// not an index — and a rule that refused that line would be a rule about spelling rather than about
+/// machinery.
+const MACHINERY: [&str; 11] = [
+    "mod cache",
+    "mod index",
+    "mod facts_cache",
+    "struct Cache",
+    "enum Cache",
+    "struct FactsCache",
+    "enum FactsCache",
+    "thread::spawn",
+    "thread::scope",
+    "rayon",
+    "spawn_blocking",
+];
+
+/// The lines of `text` that name machinery, as `line: needle`.
+fn machinery_hits(text: &str) -> Vec<String> {
+    let mut hits = Vec::new();
+    for (number, line) in text.lines().enumerate() {
+        for needle in MACHINERY {
+            if line.contains(needle) {
+                hits.push(format!("{}: {needle}", number + 1));
+            }
+        }
+    }
+    hits
+}
+
+/// The rule a candidate's claim has to satisfy, as a function of the configurations the matrix can
+/// run: `Ok(())` when the claim is one this harness could repeat, `Err(reason)` when it is not.
+///
+/// It is a function rather than a block inside the test so the rule itself is testable: the record as
+/// it stands has to pass it, and the claims someone would write while turning a candidate on — a
+/// benefit measured in the reference configuration, one measured in a configuration that does not
+/// run, one that points at nothing smaller — have to be refused
+/// (`the_benefit_rule_refuses_a_claim_the_matrix_cannot_back`).
+fn check_candidate(
+    candidate: &Candidate,
+    configurations: &BTreeSet<(String, String)>,
+) -> std::result::Result<(), String> {
+    for (field, text) in [
+        ("what", candidate.what),
+        ("owner", candidate.owner),
+        ("basis", candidate.basis),
+        ("missing", candidate.missing),
+        ("trigger", candidate.trigger),
+        ("ceiling", candidate.ceiling),
+        ("upgrade", candidate.upgrade),
+    ] {
+        if text.trim().is_empty() {
+            return Err(format!(
+                "{}: `{field}` is empty. A candidate kept out of the default path has to say what it \
+                 would change, what is measured about it, what is missing, what would reopen it, \
+                 what the engine can do today and what shape enabling it must take: design \
+                 decision 1 keeps it disabled, not undocumented.",
+                candidate.id
+            ));
+        }
+    }
+    let reference = configurations
+        .iter()
+        .next()
+        .ok_or_else(|| {
+            "the matrix produced no row, so nothing can be measured against it".to_string()
+        })?
+        .clone();
+    match &candidate.benefit {
+        Benefit::Unmeasured { why } => {
+            if why.trim().is_empty() {
+                return Err(format!(
+                    "{} is unmeasured and does not say what the reading rests on",
+                    candidate.id
+                ));
+            }
+            Ok(())
+        }
+        Benefit::Measured(measured) => {
+            if measured.reference == measured.candidate {
+                return Err(format!(
+                    "{}: a benefit measured over one run is a measurement of the reference path, not \
+                     of the candidate",
+                    candidate.id
+                ));
+            }
+            let configuration = (
+                measured.configuration.0.to_string(),
+                measured.configuration.1.to_string(),
+            );
+            if !configurations.contains(&configuration) {
+                return Err(format!(
+                    "{} records a benefit measured as cache `{}` with concurrency `{}`, and the \
+                     matrix cannot be run that way. A benefit measured in a configuration this \
+                     harness cannot reproduce is not a measurement. The reference configuration is \
+                     cache `{}` with concurrency `{}`.",
+                    candidate.id,
+                    measured.configuration.0,
+                    measured.configuration.1,
+                    reference.0,
+                    reference.1
+                ));
+            }
+            if configuration == reference {
+                return Err(format!(
+                    "{} records a benefit measured in the reference configuration (cache `{}`, \
+                     concurrency `{}`): that is the reference path measured twice, which is the \
+                     measurement-shaped claim P5's design (5) and the `performance-gates` spec \
+                     refuse. A benefit needs a second path to run.",
+                    candidate.id, reference.0, reference.1
+                ));
+            }
+            if !measured.points_at_a_reduction() {
+                return Err(format!(
+                    "{} claims a measured benefit and names no counted dimension that got smaller \
+                     and no shorter median: {:?}, candidate {} µs over reference {} µs",
+                    candidate.id,
+                    measured.deltas,
+                    measured.candidate_median_micros,
+                    measured.reference_median_micros
+                ));
+            }
+            Ok(())
+        }
+    }
+}
+
+/// The same candidate with a different benefit: the decision texts stay, the claim changes. Used by
+/// the self-test below, and the shape a real benefit claim takes when one exists.
+fn with_benefit(candidate: &Candidate, benefit: Benefit) -> Candidate {
+    Candidate {
+        id: candidate.id,
+        what: candidate.what,
+        owner: candidate.owner,
+        basis: candidate.basis,
+        missing: candidate.missing,
+        trigger: candidate.trigger,
+        ceiling: candidate.ceiling,
+        upgrade: candidate.upgrade,
+        benefit,
     }
 }
 
@@ -1758,6 +2377,451 @@ fn a_cancelled_direct_run_is_never_published_as_complete() {
         charges_line(&cancelled.usage, &CountedBudgetDimension::ALL)
     );
     println!("cancelled diagnostics {}", cancelled.diagnostics);
+}
+
+/// The premise both decisions rest on, machine-checked: there is no cache, no index and no scheduler
+/// in the engine for a candidate to extend.
+///
+/// The guard is deliberately coarse and its blind spots are stated rather than discovered later: it
+/// finds a cache or index *module or type* and a spawned thread, and it does not find a memo table
+/// kept in a local variable, anything reached through a dependency, or any file outside
+/// `crates/*/src` and `src/`. That is the same kind of boundary P2's A17 guard states for the
+/// modules outside its guarded set: a guard is a supplement, and the sentence it backs says which
+/// half it covers.
+#[test]
+fn the_engine_has_no_cache_index_or_scheduler_to_extend() {
+    let sources = engine_sources();
+    assert!(
+        sources.len() > 10,
+        "the guard read {} engine source file(s), which is too few to be the engine: the walk or \
+         the working directory is wrong, and an empty scan would make the assertions below vacuous",
+        sources.len()
+    );
+    let mut hits = Vec::new();
+    for source in &sources {
+        assert!(
+            !source.text.trim().is_empty(),
+            "{} is empty, so it proves nothing",
+            source.path
+        );
+        for hit in machinery_hits(&source.text) {
+            hits.push(format!("{}:{hit}", source.path));
+        }
+    }
+    assert!(
+        hits.is_empty(),
+        "the engine now declares machinery that P5 tasks 2.1 and 2.2 decided not to build: \
+         {hits:?}\nBoth decisions in this file are recorded against its absence — there is no cache \
+         or index to extend and one request is one sequential scan. If the machinery is real, \
+         measure it through this harness and move the decision with it: a candidate whose second \
+         path runs has to carry a measured comparison before it may stay enabled. If it is not, the \
+         record is out of date."
+    );
+    // The scan is not vacuous: it catches the shapes it looks for, in the spellings a real one would
+    // use, and it leaves alone the line that made the `Index…` prefix rule impossible. That is what
+    // makes the empty result above a statement about the sources rather than about a pattern that
+    // never matches.
+    assert_eq!(machinery_hits("pub mod cache;").len(), 1);
+    assert_eq!(machinery_hits("mod facts_cache;").len(), 1);
+    assert_eq!(
+        machinery_hits("pub struct CacheEntry { table: Vec<u8> }").len(),
+        1
+    );
+    assert_eq!(
+        machinery_hits("let workers = std::thread::scope(|scope| scope);").len(),
+        1
+    );
+    assert_eq!(
+        machinery_hits("pub struct IndexCall { bci: u32 }").len(),
+        0,
+        "the recovery layer's dispatch-table read is not a cache, and the needles may not read it as \
+         one"
+    );
+    println!(
+        "engine sources scanned: {} files under `crates/*/src` and `src/` — no cache or index module \
+         or type, no thread spawn",
+        sources.len()
+    );
+}
+
+/// Tasks 2.1 and 2.2, as a rule rather than a paragraph: everything the matrix can run has to be
+/// measured, and a benefit claim has to be a comparison this harness could repeat.
+///
+/// Today the matrix has one configuration, so every candidate is unmeasured and stays out of the
+/// default path (design decision 1). The rule is what makes that a decision instead of a habit: the
+/// day a slice wires a second path into the matrix, this test fails until the comparison is recorded
+/// beside it, and the day one is recorded without a second path it fails too.
+#[test]
+fn every_benefit_claim_needs_a_second_runnable_path() {
+    let corpus = corpus();
+    let configurations = runnable_configurations(&corpus);
+    println!(
+        "the matrix can be run in {} (cache, concurrency) configuration(s)",
+        configurations.len()
+    );
+    for configuration in &configurations {
+        println!("  cache {}", configuration.0);
+        println!("  concurrency {}", configuration.1);
+    }
+    assert!(
+        !configurations.is_empty(),
+        "the matrix produced no row, so no candidate below could be measured against anything"
+    );
+    let reference = configurations
+        .iter()
+        .next()
+        .expect("the set is not empty")
+        .clone();
+    let second_paths: Vec<&(String, String)> = configurations
+        .iter()
+        .filter(|configuration| **configuration != reference)
+        .collect();
+
+    // (1) Anything the matrix runs as a second configuration has to be measured. A runnable second
+    // path with no comparison beside it is what design decision 1 keeps out of the default path; a
+    // row that is the reference path wearing a second label is what the `performance-gates` spec
+    // refuses as a measurement-shaped claim.
+    for configuration in &second_paths {
+        assert!(
+            CANDIDATES.iter().any(|candidate| matches!(
+                &candidate.benefit,
+                Benefit::Measured(measured)
+                    if measured.configuration.0 == configuration.0
+                        && measured.configuration.1 == configuration.1
+            )),
+            "the matrix can be run as cache `{}` with concurrency `{}`, and no candidate records a \
+             measured comparison taken in that configuration. Either it is a second code path — then \
+             measure it against the direct path and record the comparison in `CANDIDATES` — or it is \
+             the reference path wearing a second label, which P5's design (5) and the \
+             `performance-gates` spec refuse.",
+            configuration.0,
+            configuration.1
+        );
+    }
+
+    // (2) Every candidate is a complete decision, and any measured benefit is a measurement this
+    // harness could repeat: `check_candidate` holds both halves, and the test below holds the rule.
+    for candidate in &CANDIDATES {
+        if let Err(reason) = check_candidate(candidate, &configurations) {
+            panic!("{reason}");
+        }
+    }
+    println!(
+        "  {} candidates, {} of them carrying a measured benefit; the reference configuration is \
+         the only one the matrix can run",
+        CANDIDATES.len(),
+        CANDIDATES
+            .iter()
+            .filter(|candidate| matches!(candidate.benefit, Benefit::Measured(_)))
+            .count()
+    );
+}
+
+/// The rule above is a rule and not a description: a claim the matrix cannot back comes back as a
+/// refusal, and the refusal says which case it is.
+///
+/// Every case here is something someone would write while turning a candidate on. The first is the
+/// one that matters most — a cache-on label over the same code path, with the same numbers, which is
+/// a measurement of the reference path wearing a second name — and it is refused on the
+/// configuration rather than on the intentions of whoever wrote it. The rule's last check — whether
+/// the claim points at anything smaller — is asserted on the predicate itself, because every claim
+/// that reaches it through `check_candidate` has already been refused for the configuration it
+/// names: there is no second configuration to hand it today.
+#[test]
+fn the_benefit_rule_refuses_a_claim_the_matrix_cannot_back() {
+    let corpus = corpus();
+    let configurations = runnable_configurations(&corpus);
+    let candidate = CANDIDATES
+        .iter()
+        .find(|candidate| candidate.id == "fine-grained-parallel")
+        .expect("the candidate is in the record");
+
+    // The record as it stands passes the rule: a refusal below is about the claim, not about a rule
+    // that refuses everything it is shown.
+    assert!(
+        check_candidate(candidate, &configurations).is_ok(),
+        "the candidate as recorded does not satisfy the rule it is recorded under"
+    );
+
+    let claim = |reference_label: &'static str,
+                 candidate_label: &'static str,
+                 configuration: (&'static str, &'static str),
+                 deltas: &'static [(CountedBudgetDimension, i128)],
+                 micros: u128| {
+        Benefit::Measured(MeasuredBenefit {
+            reference: reference_label,
+            candidate: candidate_label,
+            configuration,
+            deltas,
+            reference_median_micros: 130,
+            candidate_median_micros: micros,
+        })
+    };
+
+    /// A claim with a dimension that charges less, and one with a dimension that did not move.
+    const REDUCED: &[(CountedBudgetDimension, i128)] = &[(CountedBudgetDimension::ReadBytes, -627)];
+    const UNCHANGED: &[(CountedBudgetDimension, i128)] = &[(CountedBudgetDimension::ReadBytes, 0)];
+
+    let cases: [(&str, Candidate, &str); 3] = [
+        (
+            "the reference path wearing a second label",
+            with_benefit(
+                candidate,
+                claim(
+                    "full-range-xref/minimal-jar",
+                    "full-range-xref/minimal-jar (cache on)",
+                    (REFERENCE_CACHE, REFERENCE_CONCURRENCY),
+                    REDUCED,
+                    100,
+                ),
+            ),
+            "reference configuration",
+        ),
+        (
+            "a claim in a configuration the matrix cannot run",
+            with_benefit(
+                candidate,
+                claim(
+                    "full-range-xref/minimal-jar",
+                    "full-range-xref/minimal-jar (parallel)",
+                    ("present: a facts cache", "4: four workers"),
+                    REDUCED,
+                    100,
+                ),
+            ),
+            "cannot be run that way",
+        ),
+        (
+            "one run compared with itself",
+            with_benefit(
+                candidate,
+                claim(
+                    "full-range-xref/minimal-jar",
+                    "full-range-xref/minimal-jar",
+                    ("present: a facts cache", "4: four workers"),
+                    REDUCED,
+                    100,
+                ),
+            ),
+            "measured over one run",
+        ),
+    ];
+    for (name, claimed, expected) in cases {
+        let refusal = match check_candidate(&claimed, &configurations) {
+            Err(refusal) => refusal,
+            Ok(()) => panic!("the rule accepted {name}, which the matrix cannot back"),
+        };
+        assert!(
+            refusal.contains(expected),
+            "the refusal of {name} does not say which case it is (expected `{expected}` in it): \
+             {refusal}"
+        );
+        println!("  refused {name}: {refusal}");
+    }
+
+    // The last check inside the rule — does the claim point at anything smaller — is asserted on the
+    // predicate, because every claim that reaches it through `check_candidate` has already been
+    // refused for the configuration it names: there is no second configuration to hand it today.
+    let unchanged = MeasuredBenefit {
+        reference: "full-range-xref/minimal-jar",
+        candidate: "full-range-xref/minimal-jar (cache on)",
+        configuration: ("present: a facts cache", "1: sequential"),
+        deltas: UNCHANGED,
+        reference_median_micros: 130,
+        candidate_median_micros: 130,
+    };
+    assert!(
+        !unchanged.points_at_a_reduction(),
+        "a claim whose counted dimensions all charge the same and whose median did not move is not a \
+         benefit"
+    );
+    let smaller = MeasuredBenefit {
+        candidate_median_micros: 129,
+        ..unchanged
+    };
+    assert!(
+        smaller.points_at_a_reduction(),
+        "a median that moved by a microsecond is the smallest thing this rule can see; asserting \
+         only the refusal above would leave the check unable to say yes to anything"
+    );
+}
+
+/// The key dimensions of task 2.2: the ones `design.md` decision 2 names, once each, each bound to
+/// the layers that have to include it and to the token that carries it in the code.
+///
+/// The shape chosen — recorded, not built — is explained on `KEY_DIMENSIONS`. What this test holds
+/// is the half a sentence cannot: the dimension list is complete against the decision, every layer
+/// name is one of the four `facts-cache` binds keys by, and every `Present` carrier really exists in
+/// the engine sources, so the record cannot rot into prose that agrees with itself.
+#[test]
+fn the_recorded_key_dimensions_are_the_ones_the_decision_names() {
+    const LAYERS: [&str; 4] = ["cp-header", "x1", "resolution", "ir-source"];
+    const NAMED_BY_THE_DECISION: [&str; 9] = [
+        "snapshot", "view", "platform", "registry", "query", "IR", "recovery", "pass", "budget",
+    ];
+    for name in NAMED_BY_THE_DECISION {
+        let recorded = KEY_DIMENSIONS
+            .iter()
+            .filter(|dimension| dimension.name == name)
+            .count();
+        assert_eq!(
+            recorded,
+            1,
+            "`{name}` is one of the dimensions design decision 2 names, and this record has \
+             {recorded} entries for it. A dimension missing from the record is a key that can miss, \
+             and a cache that can answer with another configuration's result; a dimension recorded \
+             twice is two keys for one input. Recorded: {:?}",
+            KEY_DIMENSIONS
+                .iter()
+                .map(|dimension| dimension.name)
+                .collect::<Vec<_>>()
+        );
+    }
+    let sources = engine_sources();
+    for dimension in &KEY_DIMENSIONS {
+        assert!(
+            !dimension.source.trim().is_empty(),
+            "{} does not say which requirement it comes from",
+            dimension.name
+        );
+        for layer in dimension.layers.split('+') {
+            assert!(
+                LAYERS.contains(&layer),
+                "{} is bound to layer `{layer}`, which is not one of the four layers `facts-cache` \
+                 binds keys by ({LAYERS:?})",
+                dimension.name
+            );
+        }
+        match &dimension.carrier {
+            Carrier::Present { what, token } => {
+                assert!(
+                    !what.trim().is_empty(),
+                    "{} has no description of what carries it",
+                    dimension.name
+                );
+                assert!(
+                    sources.iter().any(|source| source.text.contains(token)),
+                    "{} records `{token}` as the token that carries it, and no engine source \
+                     contains that token. This record is anchored to code: a renamed or deleted \
+                     carrier is a failure here, not a sentence that quietly goes stale.",
+                    dimension.name
+                );
+            }
+            Carrier::Absent { why, closed_by } => assert!(
+                !why.trim().is_empty() && !closed_by.trim().is_empty(),
+                "{} is recorded as having no carrier and does not say why, or does not name the \
+                 slice that closes it: an absence is a decision only while it is explained",
+                dimension.name
+            ),
+        }
+    }
+    let absent = KEY_DIMENSIONS
+        .iter()
+        .filter(|dimension| matches!(dimension.carrier, Carrier::Absent { .. }))
+        .count();
+    println!(
+        "{} key dimensions recorded against design decision 2, {absent} of them with no carrier in \
+         the code yet",
+        KEY_DIMENSIONS.len()
+    );
+    for dimension in &KEY_DIMENSIONS {
+        let carrier = match &dimension.carrier {
+            Carrier::Present { token, .. } => format!("present under `{token}`"),
+            Carrier::Absent { .. } => "no carrier yet".to_string(),
+        };
+        println!(
+            "  {:<20} {:<38} {carrier}",
+            dimension.name, dimension.layers
+        );
+    }
+}
+
+/// A14's cancellation half, in the shape this engine can take it today.
+///
+/// The spec's shared-request scenario — one subscriber cancels while another keeps waiting on the
+/// same single-flight request — has no object here: nothing is shared between requests, so there is
+/// no single-flight to subscribe to and no rule to test about the subscriber who keeps waiting.
+/// What can be tested is the property that rule protects, in the only shape the engine has: a
+/// cancelled request must not reach a later request over the same bytes. A scheduler that cancelled
+/// "the work for these bytes" instead of "this subscriber's request" would break exactly here, and
+/// so would a shared entry that remembered a truncated scan.
+#[test]
+fn a_cancelled_request_does_not_reach_a_later_one_over_the_same_bytes() {
+    let corpus = corpus();
+    let jar = verified(&corpus, &SUBJECTS[0]);
+    let baseline = run_full_range(&corpus, &jar, "full-range-xref/minimal-jar", false);
+    let cancelled = run_full_range(&corpus, &jar, "cancelled/full-range-xref/minimal-jar", true);
+    assert_eq!(
+        cancelled.status, "cancelled",
+        "the middle run of this test has to be the cancelled one and reports `{}`",
+        cancelled.status
+    );
+    let after = run_full_range(&corpus, &jar, "full-range-xref/minimal-jar", false);
+    assert_eq!(
+        after.status, "complete",
+        "a request over the same bytes, run after a cancelled one, reports `{}`: cancellation is per \
+         request and nothing may carry it into the next one",
+        after.status
+    );
+    assert_eq!(
+        after.fingerprint,
+        baseline.fingerprint,
+        "the request after the cancelled one published a different result:\n{}",
+        compare(&baseline, &after).lines().join("\n")
+    );
+    assert_eq!(
+        after.order, baseline.order,
+        "the request after the cancelled one published its items in a different order"
+    );
+    println!(
+        "{} reports `{}` and the next request over the same bytes republished the baseline \
+         fingerprint {}",
+        cancelled.label,
+        cancelled.status,
+        short(after.fingerprint.trim_start_matches("blake3:"))
+    );
+}
+
+/// A01 in the shape the measurement side needs: the reference path publishes facts, not candidates.
+///
+/// `p1_xref_code.rs::unused_constant_pool_entries_are_candidates_but_never_calls` is A01's
+/// acceptance — a pool entry nobody consumes produces no call, no BCI and no consumer. The risk a
+/// cache or an index adds is one step over: serving the candidate itself as the answer because the
+/// index said so (`facts-cache`, `Index candidate requires verification`). What `compare` holds a
+/// future path to is the reference path's own shape, so what is pinned here is that shape on the
+/// rows the fingerprint fixes: a `mentions_symbol` scan publishes no `constant_pool_candidate` item
+/// and no item without a consumer category.
+#[test]
+fn the_reference_path_publishes_no_pool_candidate_as_an_item() {
+    let corpus = corpus();
+    let rows = published_rows(&corpus);
+    for row in &rows[..2] {
+        assert!(
+            row.published_items > 0,
+            "{} published nothing, so a claim about what it publishes would be vacuous",
+            row.label
+        );
+        assert_eq!(
+            row.derivations
+                .get("constant_pool_candidate")
+                .copied()
+                .unwrap_or(0),
+            0,
+            "{} published a pool candidate as an item; derivations {:?}",
+            row.label,
+            row.derivations
+        );
+        assert_eq!(
+            row.items_without_a_consumer, 0,
+            "{} published {} item(s) with no consumer category: a pool hit is a candidate, and a \
+             reference exists where a consumer verified it (A01)",
+            row.label, row.items_without_a_consumer
+        );
+        println!("{} derivations {:?}", row.label, row.derivations);
+    }
+    // The local row publishes a payload instead of XRef items, so its empty derivation map is "not
+    // this kind of row" and not "no candidates found".
+    assert!(rows[2].derivations.is_empty() && rows[2].published_items == 0);
 }
 
 /// The repeated measurement itself: the numbers this task exists to produce.
