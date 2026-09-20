@@ -64,12 +64,13 @@ pub const ACC_ABSTRACT: u16 = 0x0400;
 /// Identity: the name and descriptor are evidence the presentation quotes, and the parameter
 /// count is what tells an ordinal name whether it belongs to a parameter or to a local.
 ///
-/// The member's **access flags** are here too, and they are optional because the payload does not
-/// carry them (P3 1.3b publishes the body's own tables, not the member list): a caller that read
-/// the class's declaration states them, and one that did not states nothing. The difference
-/// matters to exactly one rule — a **bridge** is a member the compiler declared as one
-/// ([`ACC_BRIDGE`]), so a run that states no flags has no bridge to present and says so by having
-/// no verdict to record, rather than by guessing from the body's shape.
+/// The member's **access flags** are here too, and they stay optional because a caller may be the
+/// one that read the declaration: the entry point fills them from the payload's own member
+/// declaration (P3 3.1), while a caller that read no header, or a run that published no member
+/// declaration, states nothing. The difference matters to exactly one rule — a **bridge** is a
+/// member the compiler declared as one ([`ACC_BRIDGE`]), so a run that states no flags has no
+/// bridge to present and says so by having no verdict to record, rather than by guessing from the
+/// body's shape.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct MethodFacts {
     name: String,
@@ -97,13 +98,16 @@ impl MethodFacts {
         self
     }
 
-    /// The same facts with the class that declares the member, as the caller read that class's own
-    /// declaration (P3 2.3).
+    /// The same facts with the class that declares the member, as the run's own read of that class
+    /// stated it (P3 2.3; the declaring-class handoff).
     ///
-    /// Like the member's flags this is a **caller-stated declaration fact**: one body's payload
-    /// holds no class-level fact at all (it publishes that body's graph, frames, names and decode),
-    /// so the two rules that read one — `declaration@1` and `init@1` — state it as a declared
-    /// precondition and refuse with the missing fact named when it is absent.
+    /// Like the member's flags this is a **declaration fact** of the class file the body was read
+    /// from, and it stays optional for the same reason: the entry point fills it from the payload's
+    /// own member declaration — the class's raw internal name and its access flags, both taken from
+    /// the one header read that also decoded the body — while a caller that read no header, or a
+    /// run that published no member declaration, states nothing. The rules that read one —
+    /// `declaration@1`, `init@1` and `field@1` — state it as a declared precondition and refuse
+    /// with the missing fact named when it is absent.
     pub fn with_declaring_class(mut self, declaring_class: DeclaringClass) -> Self {
         self.declaring_class = Some(declaring_class);
         self
@@ -571,23 +575,30 @@ pub enum FieldAccess {
     Write,
 }
 
-/// The class that declares the presented member, as the caller read it off that class's header.
+/// The class that declares the presented member: its own name and access flags, as the header read
+/// of that class states them.
 ///
 /// One recovery run presents **one body**, and its payload holds that body's graph, frames, names,
-/// decode and pool — no class-level fact at all: not the class's name, not its access flags, not its
-/// superclass, not its `InnerClasses` attribute (P3 2.3 §3 measured this against `MethodIr`'s own
-/// fields). The caller, however, read the member out of a header, and that header states the class's
-/// own name and flags exactly as it states the member's. This is where the caller hands those two
-/// over: as **declaration** facts, never as a verdict about what the class means.
+/// decode and pool. Of what the class file says about the **class** it carries exactly two facts —
+/// the class's raw internal name (`this_class`) and its access flags — inside the member declaration
+/// of the same header read that decoded the body (the declaring-class handoff). Everything else a
+/// class states about itself is still not in the payload: not its superclass, not its `InnerClasses`
+/// attribute, nor any other class-level attribute. The caller may also be the one that read the
+/// member out of a header and states the two facts itself; the entry point fills them from the run's
+/// own declaration instead. Either way they are handed over as **declaration** facts, never as a
+/// verdict about what the class means.
 ///
-/// What the two rules that read it do with them:
+/// What the rules that read it do with them:
 ///
 /// * `declaration@1` states the member's declaration in the artifact's envelope, and that is where
 ///   "this is a `default` method of an interface" or "this is a static method of an interface" is
 ///   decided — from `ACC_INTERFACE` on the class plus the member's own flags;
 /// * `init@1` compares the class's name with the owner of the constructor call a body makes on its
 ///   own `this`, which is the only thing that tells `super(…)` from `this(…)` (JVMS 4.9.2 allows an
-///   instance initializer to call exactly those two).
+///   instance initializer to call exactly those two);
+/// * `field@1` compares it the same way for a write the body makes on that uninitialized `this`
+///   before the call, which JVMS 4.10.1.9 lets reach only a `Fieldref` that names the class being
+///   constructed.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DeclaringClass {
     name: String,

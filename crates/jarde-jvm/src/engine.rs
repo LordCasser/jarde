@@ -835,7 +835,10 @@ enum DriverRead {
         /// The declaration facts the later passes need beside the body.
         declaration: FrameDeclaration,
         /// What the located member's own declaration says about the member (P3 3.1), from the same
-        /// header read that located it and decoded the body. Boxed for the same reason `facts` is:
+        /// header read that located it and decoded the body — together with what that read states
+        /// about the class declaring it (its `this_class` and its access flags), so a consumer that
+        /// has to know which kind of class the member belongs to reads this run's own evidence.
+        /// Boxed for the same reason `facts` is:
         /// the enum is moved once per request and the common path is the one that does not move a
         /// `MethodDeclaration` by value.
         member: Option<Box<MethodDeclaration>>,
@@ -1041,11 +1044,22 @@ fn read_driver_method(
         // The member's own declaration (P3 3.1), taken from the member this read located rather than
         // from the request: the flags and the descriptor are what the class file states, and the
         // parameter slots those two imply are derived once, here, from that same statement.
+        //
+        // The declaring class's own two facts travel with it (the declaring-class handoff): this
+        // header read is the one that already holds `this_class` and the class's access flags — the
+        // same read whose version, pool and attributes every pass above reads — so the class the
+        // member is declared in, and whether it is an interface, are stated from the bytes this
+        // request really read. Nothing here is derived from the request's owner spelling, the
+        // definition's entry name or the host classpath, and nothing else of the header is copied:
+        // the two fields are all a consumer needs to tell an interface's `default` method from an
+        // ordinary one.
         member: MethodDeclaration::new(
             member.access_flags,
             member.name.raw().clone(),
             member.descriptor.raw().clone(),
             request.method.clone(),
+            read.header.facts.this_class.raw().clone(),
+            read.header.facts.access_flags,
         )
         .map(Box::new),
     })

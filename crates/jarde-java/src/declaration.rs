@@ -4,26 +4,33 @@
 //!
 //! The artifact of this layer is one method **body**: an envelope comment naming the member, then its
 //! statements. The member's own declaration — is it a `default` method of an interface? a static
-//! method of an interface? a constructor? — is therefore written into that envelope, and it cannot
-//! be read from the payload: one run's payload publishes that body's graph, frames, names, decode and
-//! pool, and **no class-level fact at all** (P3 2.3 §3 measured this against `MethodIr`'s own
-//! fields: no `this_class`, no `InnerClasses`). The **class's** flags are therefore still the
-//! caller's to state, and P3 2.2 already let the caller state a member's flags for the bridge rule.
+//! method of an interface? a constructor? — is therefore written into that envelope, and the two
+//! facts it needs arrive here as [`crate::facts::MethodFacts`], which the entry point fills from the
+//! run's **own** read rather than from a second look at the class: the member's own flags since P3
+//! 3.1, and the class that declares it — its `this_class` and its own access flags — since the
+//! declaring-class handoff carried those two into the payload's declaration. This rule is written
+//! against the fact type and not against the payload, because a library caller may still be the one
+//! that read the class header; the facts are optional here, and a caller (or a run) that states
+//! neither refuses rather than guessing. P3 2.2 set the same precedent for a member's flags, which
+//! the bridge rule reads the same way.
 //!
-//! The **member's** own flags have since stopped being one of them: P3 3.1 put the driver method's
-//! declaration — its `access_flags`, descriptor, parameter slots and identity — into the payload,
-//! read in the same header pass that read the body, and the entry point fills
-//! [`crate::facts::MethodFacts`] from there. So the flag on the left below now reaches this rule
-//! from the run rather than from a second reading, and the field stays on the facts type because the
-//! library's callers may still be the ones that read it.
+//! The **member's** own flags were the first of the two to stop being the caller's problem: P3 3.1
+//! put the driver method's declaration — its `access_flags`, descriptor, parameter slots and
+//! identity — into the payload, read in the same header pass that read the body, and the entry point
+//! fills [`crate::facts::MethodFacts`] from there. So the flags this rule reads reach it from the run
+//! rather than from a second reading, and the field stays on the facts type because the library's
+//! callers may still be the ones that read it.
 //!
 //! So this rule reads exactly two declaration facts, both optional:
 //!
 //! * the member's own `access_flags` ([`crate::facts::MethodFacts::access_flags`]) — stated by the
 //!   caller, and by the entry point from the run's own declaration;
 //! * the class that declares it, with that class's own flags ([`crate::facts::DeclaringClass`]) —
-//!   stated by the caller, because the payload carries the declaring class's identity but not its
-//!   flags.
+//!   stated by the caller, and by the entry point from the two facts the declaring-class handoff
+//!   carried: the header read's `this_class` and the class's `access_flags`. It stays optional here
+//!   for the same reason as the flags above — a caller that states no class, or a run that published
+//!   no member declaration and therefore has no class facts to hand over, still gets the refusal
+//!   below instead of a guess.
 //!
 //! # What each combination means, and what a refusal means
 //!

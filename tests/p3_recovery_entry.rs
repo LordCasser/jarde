@@ -213,7 +213,12 @@ fn one_recovery_request_reads_one_body_and_presents_that_member() {
             .iter()
             .map(|rule| rule.citation())
             .collect::<Vec<_>>(),
-        vec!["straight@1".to_string()],
+        // `straight@1` wrote the body, and `declaration@1` wrote the envelope's declaration line: the
+        // class's own name and flags travel with the member's declaration (the declaring-class
+        // handoff), so the rule concludes a form for this member instead of refusing the fact as
+        // missing. The body's own quality is untouched by it — `Structured` above is the same verdict
+        // the body had before the class facts arrived.
+        vec!["straight@1".to_string(), "declaration@1".to_string()],
         "the report says which rule produced the text"
     );
     assert!(matches!(report.outcome, RecoveryOutcome::Produced));

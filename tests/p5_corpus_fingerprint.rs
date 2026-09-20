@@ -209,6 +209,8 @@ What the oracle *prints* is generated at run time from a JDK the repository does
             file("tests/fixtures/p3-corpus/v8-parameters/Flags.class"),
             file("tests/fixtures/p3-corpus/v8-source-target/Flags.class"),
             file("tests/fixtures/p3-corpus/v8-missing-dep/MissingDependency.class"),
+            file("tests/fixtures/p3-declaration/v8/Shape.class"),
+            file("tests/fixtures/p3-declaration/v8/Holder.class"),
             file("tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"),
             file("fuzz/corpus/method_analysis/jsr-ret.class"),
             file("fuzz/corpus/method_analysis/legacy-clone.class"),
@@ -219,8 +221,9 @@ What the oracle *prints* is generated at run time from a JDK the repository does
         note: "The recovery dimension is the most byte-dependent one: a slot reuse, a debug \
 attribute or an entry count changes which local a value lands in, so every sample P3's \
 compile-and-execute comparison reads is checked in, including the flag matrix (which exists to \
-show `-g:none` and `-g:lines,source` do not read the same) and the sample whose dependency is \
-deliberately absent.",
+show `-g:none` and `-g:lines,source` do not read the same), the sample whose dependency is \
+deliberately absent, and the declaration sample, whose two classes are what tell an interface's \
+`default`/`static` member from a class's ordinary one.",
     },
     Dimension {
         key: "degradation",

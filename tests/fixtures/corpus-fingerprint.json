@@ -718,6 +718,14 @@
         },
         {
           "kind": "file",
+          "path": "tests/fixtures/p3-declaration/v8/Shape.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-declaration/v8/Holder.class"
+        },
+        {
+          "kind": "file",
           "path": "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"
         },
         {
@@ -742,7 +750,7 @@
         }
       ],
       "label": "恢复",
-      "note": "The recovery dimension is the most byte-dependent one: a slot reuse, a debug attribute or an entry count changes which local a value lands in, so every sample P3's compile-and-execute comparison reads is checked in, including the flag matrix (which exists to show `-g:none` and `-g:lines,source` do not read the same) and the sample whose dependency is deliberately absent.",
+      "note": "The recovery dimension is the most byte-dependent one: a slot reuse, a debug attribute or an entry count changes which local a value lands in, so every sample P3's compile-and-execute comparison reads is checked in, including the flag matrix (which exists to show `-g:none` and `-g:lines,source` do not read the same), the sample whose dependency is deliberately absent, and the declaration sample, whose two classes are what tell an interface's `default`/`static` member from a class's ordinary one.",
       "state": "pinned"
     },
     "versions": {
@@ -1086,6 +1094,26 @@
       "blake3": "c9017d6d1dc46db4e8d39fd85108f53419141219b28f2b61a1da34d5dfc75289",
       "bytes": 325,
       "path": "tests/fixtures/p3-corpus/v8-source-target/Flags.class"
+    },
+    {
+      "blake3": "11e172a6eeb54cacc4462dd12ce28adbe179b12fb394fdcec0703f817167b8d8",
+      "bytes": 1512,
+      "path": "tests/fixtures/p3-declaration/Holder.java"
+    },
+    {
+      "blake3": "b6584db140fb4ed5949e390ca9c12fa3b21d6779cb50895e15fada54406443c2",
+      "bytes": 1295,
+      "path": "tests/fixtures/p3-declaration/Shape.java"
+    },
+    {
+      "blake3": "a2e7af190439b1cb63bb759c7229d544edb00fbe9b19c0fc63790bb36eeab699",
+      "bytes": 359,
+      "path": "tests/fixtures/p3-declaration/v8/Holder.class"
+    },
+    {
+      "blake3": "31487d3ff6e5a4a98894fda5bc583df9c1e34668a49e83926f8d9c2cdce4b816",
+      "bytes": 191,
+      "path": "tests/fixtures/p3-declaration/v8/Shape.class"
     },
     {
       "blake3": "b226962ee3597e612ed88c8ebb7f526e8616e567fc8b7f9d118b3227a62918ff",

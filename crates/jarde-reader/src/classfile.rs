@@ -9818,7 +9818,7 @@ mod tests {
     /// rules must not reject real code, and real historical subroutines must go through
     /// the same target checks.
     ///
-    /// The counts are the measured population — 41 classes, 153 bodies, 44 exception table
+    /// The counts are the measured population — 43 classes, 159 bodies, 44 exception table
     /// records, 86 branch/switch targets, 8 `jsr`/`jsr_w` instructions (the ECJ 4.6.1 45–48
     /// `finally` codegen; neither the P3 samples nor the P4 modern samples contain a
     /// subroutine) — so a fixture that silently stops being visited, or a body that stops
@@ -9832,6 +9832,13 @@ mod tests {
     /// not move is the last: `p3-local-rewrite`, `p3-scope`, `p3-handlers` and `p3-corpus` are
     /// javac 23.0.1 output, which has no subroutines at all, so every `jsr` in the sweep is the ECJ
     /// corpus's.
+    ///
+    /// The `p3-declaration` sample raises the first two by its own two classes and six bodies and
+    /// leaves the last three exactly where they were: `Shape` declares an `abstract` member with no
+    /// `Code` at all (which is a declaration, not a body), a `default` method and a `static` one, and
+    /// `Holder` a constructor, an instance method, a static method and a `<clinit>` — bodies javac
+    /// 23.0.1 compiles straight-line, with no exception table, no branch and, like every other P3
+    /// sample, no subroutine.
     #[test]
     fn repository_class_fixtures_validate_without_false_target_rejections() {
         let fixtures = class_fixture_paths();
@@ -9892,7 +9899,7 @@ mod tests {
                 branch_targets,
                 subroutines
             ),
-            (41, 153, 44, 86, 8),
+            (43, 159, 44, 86, 8),
             "fixture population changed: re-measure these counts"
         );
     }

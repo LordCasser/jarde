@@ -37,8 +37,8 @@ use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
 use jarde_reader::budget::{Budget, Limits};
 use jarde_reader::classfile::{class_facts, method_code_facts};
 use jarde_reader::model::{
-    ClassBytesId, Digest, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
-    PhysicalVariant,
+    ClassBytesId, Digest, ExecutionReport, JvmBytes, PhysicalClassLocation, PhysicalDefinitionId,
+    PhysicalMethodId, PhysicalVariant,
 };
 use jarde_reader::view::LoaderId;
 use jarde_reader::view::{
@@ -1958,14 +1958,37 @@ fn a_body_that_builds_a_concatenation_out_of_an_accessor_is_presented_as_both() 
     assert!(rules.contains(&"accessor@1".to_string()), "{rules:?}");
 }
 
+/// The same report with the one observed field a determinism comparison must exclude neutralized.
+///
+/// `recovery-validation`'s `Determinism excludes only observed elapsed time` scenario: a controlled
+/// repeat of the same input, profile and limits compares equal except for the observed
+/// `elapsed_millis`, and a 0/1 ms reading of the clock is not a difference in the presentation.
+/// Nothing else is normalized — every result, origin, diagnostic, rule, order and counted field is
+/// still compared exactly as it stands.
+fn without_observed_elapsed(report: &jarde_java::RecoveryReport) -> jarde_java::RecoveryReport {
+    let mut report = report.clone();
+    // Every variant of the execution plane carries the usage of the request, so this is the field
+    // wherever it appears: a stop's report carries one too.
+    let usage = match &mut report.execution {
+        ExecutionReport::Complete { usage }
+        | ExecutionReport::Partial { usage, .. }
+        | ExecutionReport::Cancelled { usage }
+        | ExecutionReport::Failed { usage, .. } => usage,
+    };
+    usage.elapsed_millis = 0;
+    report
+}
+
 #[test]
 fn a_body_without_debug_metadata_is_still_presented_with_deterministic_names() {
     let class = accessor_class();
     let first = present(&class, b"combined", b"()Ljava/lang/String;", 1, Vec::new());
     let second = present(&class, b"combined", b"()Ljava/lang/String;", 1, Vec::new());
     assert_eq!(
-        first, second,
-        "the presentation is a function of the evidence"
+        without_observed_elapsed(&first),
+        without_observed_elapsed(&second),
+        "the presentation is a function of the evidence, up to the one observed field the \
+         determinism requirement excludes"
     );
     assert!(!first.text.contains("self"), "{}", first.text);
     assert!(
@@ -3495,9 +3518,13 @@ fn the_same_member_in_a_class_is_an_ordinary_method_and_a_static_one_is_stated_a
 
 #[test]
 fn a_run_that_was_not_told_the_declaring_class_states_no_declaration() {
-    // The root entry states no class-level fact (`MethodIr` carries none), so this is the shape a
-    // facade-level run has: the refusal names the fact it was missing, the envelope carries no
-    // declaration line, and the rule is not listed as one that produced this artifact.
+    // The facts this harness states name no declaring class, so this is the shape a caller that
+    // states none has: the refusal names the fact it was missing, the envelope carries no
+    // declaration line, and the rule is not listed as one that produced this artifact. (The root
+    // facade entry is no longer this shape — the declaring-class handoff made `MethodIr` carry the
+    // class's raw name and flags with the member's declaration, and `Engine::recover_method` fills
+    // them from there — which is why this case drives the recovery layer directly, with facts that
+    // state the member but not the class.)
     let class = one_method_class(0x0601, 0x0001);
     let report = present(&class, b"run", b"()V", 1, vec![Some("self".into())]);
     let declaration = report.declaration.as_ref().expect("the record is written");

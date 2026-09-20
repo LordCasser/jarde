@@ -63,6 +63,22 @@
 //! that declares no such attribute hands over an empty table, reads nothing and charges nothing —
 //! this is a fact layer, not a second decoder.
 //!
+//! # The declaring class's two facts travel with the member's declaration
+//!
+//! One more pair of facts of that same header read is not about the member at all: the class's own
+//! internal name (`this_class`) and its own access flags. They are what says **which class** declared
+//! this member and **what kind** of class that is, and the member's own flags cannot answer either
+//! question — a `public` method that is not `abstract` is a `default` method in an interface and an
+//! ordinary method in a class, and only `ACC_INTERFACE` on the declaring class tells the two apart.
+//!
+//! The read that located the member had both facts in hand, so dropping them made a consumer ask its
+//! caller for what this run had already read — or, worse, made it refuse a declaration it could have
+//! read. They are therefore carried by [`MethodDeclaration`] ([`MethodDeclaration::class_name`],
+//! [`MethodDeclaration::class_access_flags`]), in the reader's own byte representation for the name
+//! and as the raw flags, bound to the physical definition [`MethodDeclaration::identity`] names. No
+//! second read, no second decoder and no second name system: the bytes handed over are the bytes that
+//! read parsed.
+//!
 //! # Ownership, lifetime, and why nothing here is shared
 //!
 //! * **Who builds it.** [`crate::engine::analyze_method_ir`] does, at the end of one request: the
@@ -122,7 +138,8 @@ use jarde_reader::model::{JvmBytes, PhysicalMethodId};
 /// The access-flag bit a member sets when it is `static` (JVMS 4.6).
 const ACC_STATIC: u16 = 0x0008;
 
-/// What the class file declares about the member whose body this run read (P3 3.1).
+/// What the class file declares about the member whose body this run read (P3 3.1), and about the
+/// class that declares it (the declaring-class handoff).
 ///
 /// The `raw_facts` pass locates the member by raw name and descriptor in the **one** header read that
 /// also yields the body, and this is what that member's own declaration says — kept in the payload
@@ -137,7 +154,18 @@ const ACC_STATIC: u16 = 0x0008;
 ///   count are the signature's, not the body's: they are named as parameters and they are never
 ///   declared by a body statement;
 /// * the **physical identity** the read was performed under, which is what a presentation of this
-///   payload is a presentation *of* (P3 3.2 binds origins to it).
+///   payload is a presentation *of* (P3 3.2 binds origins to it);
+/// * the **class that declares the member** — its own internal name (`this_class`) and its own
+///   access flags — which is the same read's statement about that definition rather than a second
+///   look at it. A member's own flags cannot say whether it is an interface's `default` method or a
+///   class's ordinary one ([`Self::class_access_flags`] and [`Self::class_name`] are what can), and
+///   those two facts were already in hand when the body was read.
+///
+/// The two class facts are **parse facts of one physical definition**: they are read from the header
+/// of the definition the member was located in, they are bound to [`Self::identity`]'s definition
+/// rather than to a name, and they claim nothing beyond what that class file declares — not dialect
+/// validity, not a successful runtime resolution, not JVM verification, and nothing about the
+/// quality of any body presented from this payload.
 ///
 /// A run that read no member header states no declaration: the payload carries the run's own
 /// evidence, so an absent one is absent rather than filled in from the request.
@@ -148,10 +176,13 @@ pub struct MethodDeclaration {
     descriptor: JvmBytes,
     parameter_slots: u16,
     identity: PhysicalMethodId,
+    class_name: JvmBytes,
+    class_access_flags: u16,
 }
 
 impl MethodDeclaration {
-    /// One member's declaration, as the header read that located it states it.
+    /// One member's declaration, as the header read that located it states it, together with what
+    /// that same header states about the class that declares it.
     ///
     /// `None` when the descriptor is not one this layer can walk: the count of parameter slots is
     /// derived from the descriptor, so a descriptor the format does not allow states no declaration
@@ -162,6 +193,8 @@ impl MethodDeclaration {
         name: JvmBytes,
         descriptor: JvmBytes,
         identity: PhysicalMethodId,
+        class_name: JvmBytes,
+        class_access_flags: u16,
     ) -> Option<Self> {
         let parameter_slots = parameter_slots(&descriptor.0, access_flags & ACC_STATIC != 0)?;
         Some(Self {
@@ -170,6 +203,8 @@ impl MethodDeclaration {
             descriptor,
             parameter_slots,
             identity,
+            class_name,
+            class_access_flags,
         })
     }
 
@@ -206,6 +241,29 @@ impl MethodDeclaration {
     /// The physical identity this read was performed under.
     pub fn identity(&self) -> &PhysicalMethodId {
         &self.identity
+    }
+
+    /// The internal name of the class that declares the member (`this_class`), exactly as the bytes
+    /// of that class file spell it.
+    ///
+    /// Kept in the reader's own JVM byte representation rather than as text: the name is part of what
+    /// this declaration is a declaration *of*, and spelling it for a reader is a display decision of
+    /// the consumer. The bytes are the ones the header read that located the member and decoded its
+    /// body held — that read's `this_class`, never the request's owner spelling, an archive entry
+    /// name, a constant-pool reference or anything found through the host classpath.
+    pub fn class_name(&self) -> &JvmBytes {
+        &self.class_name
+    }
+
+    /// The access flags of that class, exactly as the same header states them (JVMS 4.1).
+    ///
+    /// This is the fact a member's own flags cannot stand in for: whether the member is an
+    /// interface's `default` method or an ordinary method of a class is read from `ACC_INTERFACE` on
+    /// the declaring class together with the member's flags. It is a parse fact of one read — not a
+    /// verdict about the dialect, a runtime resolution, JVM verification, or the quality of the body
+    /// presented beside it.
+    pub fn class_access_flags(&self) -> u16 {
+        self.class_access_flags
     }
 }
 
@@ -387,7 +445,8 @@ impl MethodIr {
     /// read that produced [`Self::code`] and [`Self::constant_pool`], so a presentation that needs
     /// the member's flags, its descriptor or how many slots its parameters occupy reads the class
     /// file's own statement instead of a second read of the class (which would be billed again) or an
-    /// assumption about the member.
+    /// assumption about the member. The same statement carries the declaring class's own internal
+    /// name and access flags, which is what tells an interface's member from a class's.
     pub fn declaration(&self) -> Option<&MethodDeclaration> {
         self.declaration.as_deref()
     }

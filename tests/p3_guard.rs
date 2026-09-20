@@ -257,7 +257,10 @@ fn a_single_resource_is_declared_in_the_header_and_closed_by_the_compiler() {
     let report = presented(&engine, &fixture, "one");
     assert_eq!(
         report.text,
-        "// @method one()V\n// recovered from bytecode; presentation is not claimed to compile\n{\n    try (Res local0 = open(\"r\")) {\n        body();\n    }\n    return;\n}\n",
+        // The envelope states what the driver class's own header declares about the member: `Guarded` is
+        // a class and `one()V` is declared `static`, both read from the same header read that decoded
+        // the body (the declaring-class handoff), and neither changes the body below it.
+        "// @method one()V\n// @declaration a static method of `Guarded`, member flags 0x0008\n// recovered from bytecode; presentation is not claimed to compile\n{\n    try (Res local0 = open(\"r\")) {\n        body();\n    }\n    return;\n}\n",
         "{}",
         report.text
     );

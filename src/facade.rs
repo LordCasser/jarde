@@ -469,10 +469,21 @@ impl RecoveredMethod {
 /// member. The flags travel with it, which is what makes a member the class declares a bridge a
 /// bridge here: the `bridge@1` rule reads them and no shape is guessed from the body.
 ///
+/// The class that declares the member travels with the same declaration (the declaring-class
+/// handoff): its internal name and its access flags are the two facts the *same* header read already
+/// held, so the `DeclaringClass` the recovery layer reads is filled from the run's own evidence
+/// instead of being left to the caller — which is what lets `declaration@1` tell an interface's
+/// `default` method from an ordinary one, and `init@1`/`field@1` read a constructor's prologue and
+/// the writes it makes on its own uninitialized `this`. The name is spelled here, at this boundary
+/// only, with the lossy UTF-8 read this layer's other names already use ([`lossy_jvm_name`]);
+/// the payload's own bytes stay the identity, and no second name system is introduced for it.
+///
 /// With no declaration — a run that stopped before `raw_facts`, or a member that declares no body —
 /// the name and descriptor are the request's own bytes and the parameter-slot count is **zero**: no
 /// read stated how many slots the parameters occupy, so every slot is named by its ordinal as a local
-/// (`local0`, `local1`, …), which is A10's deterministic naming and no claim about the signature.
+/// (`local0`, `local1`, …), which is A10's deterministic naming and no claim about the signature. No
+/// class is stated either: a run that published no declaration published no class facts, and the
+/// request's owner spelling is not a substitute for them.
 fn recovery_facts(
     declaration: Option<&jarde_jvm::method_ir::MethodDeclaration>,
     code: Option<&jarde_reader::classfile::MethodCodeFacts>,
@@ -489,9 +500,31 @@ fn recovery_facts(
     let descriptor = String::from_utf8_lossy(&declaration.descriptor().0).into_owned();
     jarde_java::RecoveryFacts::new(
         jarde_java::MethodFacts::new(name, descriptor, declaration.parameter_slots())
-            .with_access_flags(declaration.access_flags()),
+            .with_access_flags(declaration.access_flags())
+            .with_declaring_class(jarde_java::DeclaringClass::new(
+                lossy_jvm_name(declaration.class_name()),
+                declaration.class_access_flags(),
+            )),
     )
     .with_debug_locals(debug)
+}
+
+/// One JVM name of the run's own read, as the text the recovery layer states it with.
+///
+/// This is the display boundary, and the one thing it may not do is change what a name *is*: the
+/// payload keeps the class's raw bytes, and this function only spells them for a `String` field of
+/// the recovery input — the same lossy Modified-UTF-8 read this entry already applies to the member's
+/// name and descriptor above, and the one `jarde-java`'s own decode applies to a pool's names
+/// ([`jarde_java::RecoveryFacts`] compares this spelling with the owner of a constructor call, which
+/// is spelled the same way). A JVM name is not text for every payload: a surrogate pair or a byte
+/// sequence Modified-UTF-8 does not allow becomes the replacement character here, and that is a
+/// display limitation of this boundary rather than a claim that the class's name is legal Java. The
+/// reader's escaped rendering of a `JvmString` is not reachable from here (a `JvmString` can only be
+/// built by a read of its own), and inventing a second spelling here — an ASCII escape, say — would
+/// give this layer two names for one class and could no longer be compared with the names the rules
+/// read out of the pool.
+fn lossy_jvm_name(bytes: &jarde_reader::model::JvmBytes) -> String {
+    String::from_utf8_lossy(&bytes.0).into_owned()
 }
 
 /// The debug records the body's own `Code` attribute states, as the recovery layer's own evidence
