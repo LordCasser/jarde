@@ -1011,8 +1011,8 @@
       "path": "tests/fixtures/p1-golden/metadata.json"
     },
     {
-      "blake3": "b65e4efdf8c523f0dbc216408e3f04d5d04d94d78c8a780d55b23b7a33539500",
-      "bytes": 107486,
+      "blake3": "2b4f7946ef3db27eeee2ded6705da2583c2008ee39eb012635c20180cc188520",
+      "bytes": 108380,
       "path": "tests/fixtures/p1-golden/multi-release.json"
     },
     {
@@ -1021,33 +1021,33 @@
       "path": "tests/fixtures/p1-golden/nested.json"
     },
     {
-      "blake3": "6ff16fe110cd50cc7caf0e919529ac33b86aa847486b7284988ae739e861558c",
-      "bytes": 64925,
+      "blake3": "a6937b7d3cdc958edf6bfb6906a83427f37b879b5e24fb4cc2870a4cbfbd924e",
+      "bytes": 65045,
       "path": "tests/fixtures/p2-golden/exception-overlap.json"
     },
     {
-      "blake3": "9ecdd7c85ce3a3f03eec6a63d39b25fba6b89beaee49cb4912d61ec8bdb70110",
-      "bytes": 100627,
+      "blake3": "75a197729ce5647f67fbf4be59b4948ea2cc569790d6a4b97cd24f8536ae15f7",
+      "bytes": 100819,
       "path": "tests/fixtures/p2-golden/historical.json"
     },
     {
-      "blake3": "75a474fdcd394612567e0a8f4626f4ac1c4091839439860064b6998c147e46d8",
-      "bytes": 37581,
+      "blake3": "a7b9bca333d78ea7bbfa20414dd3f3cb4f4a119662a031ff5a48c49f13d6c95e",
+      "bytes": 37653,
       "path": "tests/fixtures/p2-golden/inputs.json"
     },
     {
-      "blake3": "f0937e4f4bc92eedb8b39fcb7ea9aa1f65db8c2dada5f1e5179d61527d83b5ae",
-      "bytes": 12385,
+      "blake3": "7a7746b4e5b4f7195aea4e7385035bdb7bdb4998a984d3dbad620962ca7f8c6d",
+      "bytes": 12409,
       "path": "tests/fixtures/p2-golden/legacy-clone.json"
     },
     {
-      "blake3": "cb0bb8f1407c494f0c2cb5f153a5970ff12e875c57168ae72a1591c6d496e449",
-      "bytes": 109599,
+      "blake3": "76d6c71ab99fb4f27f96fb811f92165b2573e39a3d93100110be38ff4907ef7f",
+      "bytes": 109815,
       "path": "tests/fixtures/p2-golden/resource-boundary.json"
     },
     {
-      "blake3": "6674244c0b927a10b9e587387a10212670f5cd7f5b1aa35ca8a91243565d774e",
-      "bytes": 12344,
+      "blake3": "902de080ad52a64757e2fc0751b95b6aaeb4cf315becbb90c8506c08bb9f929b",
+      "bytes": 12368,
       "path": "tests/fixtures/p2-golden/wide-switch.json"
     },
     {

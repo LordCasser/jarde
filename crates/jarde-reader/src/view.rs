@@ -1,6 +1,6 @@
 //! Request identities for physical and runtime artifact views.
 
-use crate::model::{ContainerId, ContainerOrigin, SnapshotId};
+use crate::model::{ArchiveNameBytes, ContainerId, ContainerOrigin, SnapshotId};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
@@ -57,12 +57,43 @@ pub enum DelegationPolicy {
     Unknown,
 }
 
+/// One declared load position: the physical content a loader searches and where inside it a
+/// class name is looked up.
+///
+/// The three variants are the three physical shapes a declaration can name, and nothing above
+/// them infers which one a caller meant:
+///
+/// * [`LoadRoot::StandaloneClass`] is one whole CLASS file: the snapshot *is* the definition,
+///   and its own `this_class` is the only name it can provide. It is never inferred from a file
+///   name.
+/// * [`LoadRoot::Container`] is one container of a ZIP snapshot — the snapshot's root container,
+///   or one reached along the origin chain of nested entries — together with the raw byte prefix
+///   a name is looked up under. The prefix is an archive-internal byte prefix, not a host path: it
+///   is empty (the container's own root) or ends with `/`, and a non-empty prefix that does not
+///   end with that boundary is an invalid declaration (the runtime environment validator reports
+///   it as `invalid_root_prefix`). Lookup composes `prefix + internal name + ".class"` byte for
+///   byte — no trimming, no URL decoding, no case folding and no `.`/`..`/backslash folding — and
+///   never requires a directory entry to exist for the prefix, because a ZIP's directory entries
+///   are not what makes an entry reachable.
+/// * [`LoadRoot::External`] names content the entry has not provided: it is a declaration, not a
+///   readable position, and it resolves nothing.
+///
+/// The prefix is part of the runtime environment's identity: two roots that differ only in
+/// prefix are two declarations, and a lookup that changed its environment may not reuse the
+/// verdict of the old one.
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum LoadRoot {
-    Snapshot { snapshot: SnapshotId },
-    ArtifactTree { root: ContainerOrigin },
-    External { id: String },
+    StandaloneClass {
+        snapshot: SnapshotId,
+    },
+    Container {
+        origin: ContainerOrigin,
+        prefix: ArchiveNameBytes,
+    },
+    External {
+        id: String,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]

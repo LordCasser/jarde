@@ -17,17 +17,37 @@
 //! Each assertion below names the contract it enforces.
 
 use jarde::{
-    AnalysisStage, ArtifactInput, ArtifactSnapshot, ArtifactTreeReport, Budget, ClassHeader,
-    ClassSource, ClassTarget, CompileStatus, ConsumerKind, ConsumerSchema, CountedBudgetDimension,
-    CoverageState, DelegationPolicy, Engine, ExecutionReport, InspectionMode, JvmBytes, LayoutMode,
-    Limits, LiteralValue, LoadDomain, LoadRoot, LoaderId, MethodAnalysisReport,
-    MethodAnalysisRequest, MethodBodyState, ModuleMode, MultiReleasePolicy, MultiReleaseViewReport,
-    PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId, PhysicalScope, PhysicalVariant,
-    PhysicalView, Quality, QueryRelation, QueryReport, QueryRequest, QueryResolution, QueryTarget,
-    ReadReason, Representation, ResolutionEnvironment, RuntimeProfile, RuntimeUncertainty,
-    RuntimeView, SemanticValidation, StageState, SymbolRef, SyntaxStatus, TerminationReason,
-    UsageSnapshot, VerificationStatus, physical_variant_for_path,
+    AnalysisStage, ArchiveNameBytes, ArtifactInput, ArtifactKind, ArtifactSnapshot,
+    ArtifactTreeReport, Budget, ClassHeader, ClassSource, ClassTarget, CompileStatus, ConsumerKind,
+    ConsumerSchema, ContainerId, ContainerOrigin, CountedBudgetDimension, CoverageState,
+    DelegationPolicy, Engine, ExecutionReport, InspectionMode, JvmBytes, LayoutMode, Limits,
+    LiteralValue, LoadDomain, LoadRoot, LoaderId, MethodAnalysisReport, MethodAnalysisRequest,
+    MethodBodyState, ModuleMode, MultiReleasePolicy, MultiReleaseViewReport, PhysicalClassLocation,
+    PhysicalDefinitionId, PhysicalMethodId, PhysicalScope, PhysicalVariant, PhysicalView, Quality,
+    QueryRelation, QueryReport, QueryRequest, QueryResolution, QueryTarget, ReadReason,
+    Representation, ResolutionEnvironment, RuntimeProfile, RuntimeUncertainty, RuntimeView,
+    SemanticValidation, StageState, SymbolRef, SyntaxStatus, TerminationReason, UsageSnapshot,
+    VerificationStatus, physical_variant_for_path,
 };
+
+/// The load root one opened fuzz input really is: a standalone CLASS input is one whole
+/// definition, and a ZIP input is searched in its root container with an empty prefix. The
+/// input decides which shape it is; no layout prefix is ever inferred from it.
+pub fn snapshot_root(snapshot: &ArtifactSnapshot) -> LoadRoot {
+    match snapshot.kind() {
+        ArtifactKind::StandaloneClass => LoadRoot::StandaloneClass {
+            snapshot: snapshot.id().clone(),
+        },
+        ArtifactKind::Zip => LoadRoot::Container {
+            origin: ContainerOrigin {
+                snapshot: snapshot.id().clone(),
+                root_container: ContainerId("root".into()),
+                steps: Vec::new(),
+            },
+            prefix: ArchiveNameBytes(Vec::new()),
+        },
+    }
+}
 
 /// The symbol, class and literal the committed seeds really carry.
 ///
@@ -182,9 +202,7 @@ pub fn runtime_view(snapshot: &ArtifactSnapshot) -> RuntimeView {
             loader: LoaderId("fuzz".into()),
             parent_loader: None,
             delegation: DelegationPolicy::ParentFirst,
-            roots: vec![LoadRoot::Snapshot {
-                snapshot: snapshot.id().clone(),
-            }],
+            roots: vec![snapshot_root(snapshot)],
             module_mode: ModuleMode::ClassPath,
             external_override: RuntimeUncertainty::None,
             runtime_transformation: RuntimeUncertainty::None,
@@ -609,9 +627,7 @@ pub fn analysis_environment(snapshot: &ArtifactSnapshot) -> ResolutionEnvironmen
         loader: LoaderId("fuzz".into()),
         parent_loader: None,
         delegation: DelegationPolicy::ParentFirst,
-        roots: vec![LoadRoot::Snapshot {
-            snapshot: snapshot.id().clone(),
-        }],
+        roots: vec![snapshot_root(snapshot)],
         module_mode: ModuleMode::ClassPath,
         external_override: RuntimeUncertainty::None,
         runtime_transformation: RuntimeUncertainty::None,

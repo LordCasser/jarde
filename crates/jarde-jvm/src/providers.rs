@@ -73,7 +73,7 @@ use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{ClassFacts, class_facts};
 use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
-    ClassBytesId, ContainerId, ContainerOrigin, Diagnostic, DiagnosticSeverity, Digest, JvmBytes,
+    ClassBytesId, ContainerOrigin, Diagnostic, DiagnosticSeverity, Digest, JvmBytes,
     PhysicalClassLocation, PhysicalDefinitionId, PhysicalEntryId, PhysicalVariant, SnapshotId,
     physical_variant_for_path,
 };
@@ -89,6 +89,11 @@ pub(crate) const HIERARCHY_CYCLE: &str = "resolution_hierarchy_cycle";
 /// Diagnostic code of a physical definition that the declared loader's own environment does not
 /// bind: the request named a definition this loader would never select for that class name.
 pub(crate) const UNBOUND_DEFINITION: &str = "resolution_definition_unbound";
+
+/// Diagnostic code of a candidate whose own header declares another name than the one it was
+/// found under: the entry path and the class's `this_class` disagree, so the candidate binds no
+/// name at all.
+pub(crate) const DEFINITION_NAME_MISMATCH: &str = "resolution_definition_name_mismatch";
 
 /// One physical position with the definition it selected or read.
 ///
@@ -360,20 +365,12 @@ fn search_class_header(
     };
     let positions = search_positions(&domains);
     let total = u32::try_from(positions.len()).unwrap_or(u32::MAX);
-    let expected = entry_name(internal_name);
 
     let mut reads = Vec::new();
     let mut examined = 0_u32;
     for position in &positions {
-        let decided = match probe_root(
-            content,
-            position,
-            internal_name,
-            &expected,
-            known,
-            budget,
-            &mut reads,
-        ) {
+        let decided = match probe_root(content, position, internal_name, known, budget, &mut reads)
+        {
             Ok(decided) => decided,
             Err(error) => {
                 return HeaderSearch {
@@ -847,10 +844,13 @@ impl<'a> HeaderClosure<'a> {
     ///
     /// The memo may only reuse a binding the request **verified**: the resolution the identity
     /// matches must be the one that selected this definition under the name the definition
-    /// declares for itself (its `this_class`). A resolution that reached the same bytes under
-    /// another name — an entry whose declared name differs from the name it is stored under —
-    /// proves nothing about the binding, so that demand falls back to the fresh check instead: the
-    /// binding one physical definition gets may not depend on which name a request searched first.
+    /// declares for itself (its `this_class`). The candidate election enforces that agreement for
+    /// every `Found` resolution ([`require_candidate_name`]), so the predicate here is the same
+    /// invariant stated where the memo is read — kept as the guard that a later change to the
+    /// election cannot silently turn the memo into a shortcut around it. A resolution that does not
+    /// hold it proves nothing about the binding, and that demand then falls back to the fresh
+    /// check: the binding one physical definition gets may not depend on which name a request
+    /// searched first.
     fn bound_header(&self, claimed: &NodeIdentity) -> Option<ClassHeaderFacts> {
         self.resolutions.iter().find_map(|resolution| {
             let checked_under_its_own_name = resolution
@@ -1564,13 +1564,18 @@ fn search_positions<'a>(domains: &[&'a LoadDomain]) -> Vec<SearchPosition<'a>> {
 /// `Ok(Some(lookup))` when this position decided the lookup, `Err` when the position cannot be
 /// decided at all. Every read the position really performed is appended to `reads`.
 ///
+/// The name a position looks for is composed **inside** the position, because the declared root
+/// carries the prefix: `prefix + internal_name + ".class"`, concatenated byte for byte with a
+/// checked length. A root whose prefix is neither empty nor closed by `/` was refused by the
+/// environment validator and is not searched here; the composition itself may still refuse an
+/// impossible length, and that refusal names the position like every other one.
+///
 /// `known` is the one definition the request already read, when this search verifies a claim:
 /// a position that holds exactly it is decided from those facts and neither read nor charged.
 fn probe_root(
     content: &[ArtifactSnapshot],
     position: &SearchPosition<'_>,
     internal_name: &[u8],
-    entry_name: &[u8],
     known: Option<&ReadDefinition<'_>>,
     budget: &mut Budget,
     reads: &mut Vec<HeaderLocation>,
@@ -1596,62 +1601,80 @@ fn probe_root(
                  not readable and resolves nothing"
             ),
         )),
-        LoadRoot::Snapshot { .. } => match snapshot.kind() {
-            ArtifactKind::Zip => {
-                let candidates = zip_candidates(snapshot, entry_name, &label, budget)?;
-                decide(snapshot, position, candidates, known, budget, reads)
-            }
+        LoadRoot::StandaloneClass { .. } => match snapshot.kind() {
             ArtifactKind::StandaloneClass => {
                 standalone_probe(snapshot, position, internal_name, known, budget, reads)
             }
+            // A standalone CLASS root names exactly the shape a whole CLASS file has; a ZIP
+            // cannot be that root, so the declaration is refused where it is read.
+            ArtifactKind::Zip => Err(at_origin(
+                Error::invalid_input(
+                    "not_standalone_class",
+                    "a standalone CLASS root names a ZIP snapshot; the declaration does not \
+                     describe the provided content",
+                ),
+                &label,
+            )),
         },
-        LoadRoot::ArtifactTree { root } => {
-            let candidates = tree_candidates(snapshot, root, entry_name, &label, budget)?;
-            decide(snapshot, position, candidates, known, budget, reads)
+        LoadRoot::Container { origin, prefix } => {
+            let expected = position_entry_name(&prefix.0, internal_name)
+                .map_err(|error| at_origin(error, &label))?;
+            let candidates = candidates_at(snapshot, origin, &expected, &label, budget)?;
+            decide(
+                snapshot,
+                position,
+                internal_name,
+                candidates,
+                known,
+                budget,
+                reads,
+            )
         }
     }
 }
 
-/// The raw-name candidates of a ZIP snapshot's own container.
+/// The raw entry name one container position looks up: the declared prefix, the requested
+/// internal name and the class suffix, concatenated byte for byte.
 ///
-/// A snapshot is one container — its root — so this is the directed access with the root origin:
-/// the container's central directory is parsed once and the name is looked up in the locator built
-/// from it, exactly as it is for a nested container. A top-level ZIP and a nested JAR differ in
-/// *which* container is addressed, never in how it is read, and neither path enumerates a
-/// container the request did not name.
-fn zip_candidates(
-    snapshot: &ArtifactSnapshot,
-    entry_name: &[u8],
-    label: &str,
-    budget: &mut Budget,
-) -> Result<Vec<PhysicalEntry>> {
-    let origin = ContainerOrigin {
-        snapshot: snapshot.id().clone(),
-        root_container: ContainerId("root".into()),
-        steps: Vec::new(),
-    };
-    candidates_at(snapshot, &origin, entry_name, label, budget)
+/// This is the whole prefix rule. It is deliberately the only place a name is composed, so no
+/// consumer can apply a second normalization: no trimming, no URL decoding, no case folding and
+/// no `.`/`..`/backslash folding happens here or anywhere else on this path — two names that
+/// differ in any byte are two names. The length is checked because a composed name that does not
+/// fit a machine word is not a name this engine can look up, and the refusal says so instead of
+/// wrapping.
+fn position_entry_name(prefix: &[u8], internal_name: &[u8]) -> Result<Vec<u8>> {
+    let length = prefix
+        .len()
+        .checked_add(internal_name.len())
+        .and_then(|length| length.checked_add(CLASS_SUFFIX.len()))
+        .ok_or_else(|| {
+            Error::invalid_input(
+                "class_entry_name_overflow",
+                "the composed entry name does not fit in memory",
+            )
+        })?;
+    let mut expected = Vec::with_capacity(length);
+    expected.extend_from_slice(prefix);
+    expected.extend_from_slice(internal_name);
+    expected.extend_from_slice(CLASS_SUFFIX);
+    Ok(expected)
 }
 
-/// The raw-name candidates of one artifact-tree root container.
+/// The raw-name candidates of one declared container position.
 ///
-/// The position is the declared container itself: entries of nested containers are separate
-/// positions and are searched only when a loader declares them as their own root. Only the
-/// container and the ancestor chain that reaches it are read, so an unrelated sibling — however
-/// many there are, and whatever state it is in — is neither materialized nor reported here. The
-/// explicit whole-tree enumeration keeps reporting every container it finds; the two paths have
-/// deliberately different coverage and a local result never claims whole-tree completeness.
-fn tree_candidates(
-    snapshot: &ArtifactSnapshot,
-    root: &ContainerOrigin,
-    entry_name: &[u8],
-    label: &str,
-    budget: &mut Budget,
-) -> Result<Vec<PhysicalEntry>> {
-    candidates_at(snapshot, root, entry_name, label, budget)
-}
-
-/// One directed container lookup, with the declared position named in any refusal.
+/// The position is the declared container itself — the snapshot's root container, or one reached
+/// along the declared origin chain — and the prefix has already been composed into the name this
+/// looks up, so the same directed access serves a top-level ZIP and a prefixed WAR directory:
+/// they differ in *which* container and *which* name are addressed, never in how the container is
+/// read. Entries of nested containers are separate positions and are searched only when a loader
+/// declares them as their own root. Only the container and the ancestor chain that reaches it are
+/// read, so an unrelated sibling — however many there are, and whatever state it is in — is
+/// neither materialized nor reported here. The explicit whole-tree enumeration keeps reporting
+/// every container it finds; the two paths have deliberately different coverage and a local
+/// result never claims whole-tree completeness.
+///
+/// No directory entry is required to exist for a prefix: the lookup is against the container's
+/// complete central directory, whose records are the entries themselves.
 fn candidates_at(
     snapshot: &ArtifactSnapshot,
     origin: &ContainerOrigin,
@@ -1666,12 +1689,21 @@ fn candidates_at(
 
 /// Decides one position from the candidates it really holds.
 ///
-/// One candidate is the definition the position selects. Several candidates cannot be told
-/// apart, so each one is read for its origin and byte identity and the position is `Ambiguous`:
-/// byte-equal duplicates are not ordered by ordinal either. A candidate that cannot be read is
-/// that position's failure and the search does not continue past it. Every candidate that was
-/// read successfully is appended to `reads`, the ambiguous ones included: those reads happened
-/// and produced identities, they just did not elect a definition.
+/// One candidate is the definition the position selects — but only after its own header agrees
+/// with the name that was demanded: an entry stored as `p/A.class` whose bytes declare another
+/// internal name is **not** the class `p/A`, so the position refuses with
+/// [`DEFINITION_NAME_MISMATCH`] at that candidate's own origin instead of binding it or quietly
+/// searching on. That check is the binding half of the exact byte lookup: the path is how a
+/// class is *found*, the header's `this_class` is what the found bytes *are*.
+///
+/// Several candidates cannot be told apart, so each one is read for its origin and byte identity
+/// and the position is `Ambiguous`: byte-equal duplicates are not ordered by ordinal either. The
+/// name check above belongs to the one candidate a position *elects*; an ambiguous position elects
+/// none, so there is no candidate whose agreement could be asserted — it keeps both origins and
+/// stays `Ambiguous`, which is what this request can honestly say about it. A
+/// candidate that cannot be read is that position's failure and the search does not continue past
+/// it. Every candidate that was read successfully is appended to `reads`, the ambiguous ones
+/// included: those reads happened and produced identities, they just did not elect a definition.
 ///
 /// A single candidate that *is* the definition the request already read (`known`) is elected
 /// from those facts: the position holds exactly that definition, so nothing is read and nothing
@@ -1680,6 +1712,7 @@ fn candidates_at(
 fn decide(
     snapshot: &ArtifactSnapshot,
     position: &SearchPosition<'_>,
+    internal_name: &[u8],
     candidates: Vec<PhysicalEntry>,
     known: Option<&ReadDefinition<'_>>,
     budget: &mut Budget,
@@ -1694,12 +1727,16 @@ fn decide(
                     .map(|location| (location, known.header))
             });
             if let Some((location, header)) = reused {
+                // The request read these bytes itself and the name it searches is the name the
+                // read verified ([`HeaderClosure::read_own_definition`]), so the candidate's own
+                // header is the agreement this check would compare.
                 return Ok(Some(HeaderLookup::found(location, header.clone())));
             }
             let content = read_candidate(snapshot, position, entry, budget)?;
             let facts = class_facts(&content.bytes, budget)
                 .map_err(|error| at_origin(error, &content.origin))?;
             reads.push(content.location.clone());
+            require_candidate_name(&facts.this_class.raw().0, internal_name, &content)?;
             Ok(Some(HeaderLookup::found(
                 content.location,
                 ClassHeaderFacts { facts },
@@ -1714,6 +1751,39 @@ fn decide(
             Ok(Some(HeaderLookup::ambiguous(locations)))
         }
     }
+}
+
+/// The candidate's header has to declare the name the entry path was looked up under.
+///
+/// This is the check the 0.1 identity contract needs and the name lookup alone cannot make: a
+/// physical entry is found by its path, but a class is what its own `this_class` names, and a
+/// file that declares `p/Other` is not the class `p/A` however it is stored. The refusal names
+/// the candidate's own origin — the search position and the entry — so the mismatch is locatable,
+/// and it is a stop rather than a `Missing`: a broken or disagreeing candidate must not be hidden
+/// by searching a later position, and renaming the file in the message (or rewriting the demanded
+/// name to match) would make the mismatch disappear without making the artifact right.
+///
+/// Name agreement proves this binding only. It says nothing about the rest of the class file
+/// being loadable, verifiable or legal, and the caller owns no more than the fact that these bytes
+/// declare this name.
+fn require_candidate_name(
+    declared: &[u8],
+    requested: &[u8],
+    content: &CandidateContent,
+) -> Result<()> {
+    if declared == requested {
+        return Ok(());
+    }
+    Err(Error::invalid_input(
+        DEFINITION_NAME_MISMATCH,
+        format!(
+            "{} holds the class `{}`, but it was selected as the class `{}`; the declaration \
+             does not bind this physical candidate to the requested name",
+            content.origin,
+            escaped(declared),
+            escaped(requested)
+        ),
+    ))
 }
 
 /// One archive candidate's bytes, identity and origin.
@@ -2007,19 +2077,11 @@ fn charge_header_attempt(budget: &mut Budget) -> Result<()> {
     budget.charge(CountedBudgetDimension::ClassHeaders, 1)
 }
 
-/// The raw entry name a ZIP or tree position has to spell for this class.
-fn entry_name(internal_name: &[u8]) -> Vec<u8> {
-    let mut expected = Vec::with_capacity(internal_name.len() + CLASS_SUFFIX.len());
-    expected.extend_from_slice(internal_name);
-    expected.extend_from_slice(CLASS_SUFFIX);
-    expected
-}
-
 /// The snapshot one root names, if the declaration names one at all.
 fn root_snapshot(root: &LoadRoot) -> Option<&SnapshotId> {
     match root {
-        LoadRoot::Snapshot { snapshot } => Some(snapshot),
-        LoadRoot::ArtifactTree { root } => Some(&root.snapshot),
+        LoadRoot::StandaloneClass { snapshot } => Some(snapshot),
+        LoadRoot::Container { origin, .. } => Some(&origin.snapshot),
         LoadRoot::External { .. } => None,
     }
 }
@@ -2074,16 +2136,20 @@ fn position_label(position: &SearchPosition<'_>) -> String {
     let loader = &position.loader.0;
     let index = position.root_index;
     match position.root {
-        LoadRoot::Snapshot { snapshot } => {
-            format!(
-                "root {index} of loader `{loader}` (snapshot `{}`)",
-                snapshot.0
-            )
-        }
-        LoadRoot::ArtifactTree { root } => format!(
-            "root {index} of loader `{loader}` (artifact tree container `{}` of snapshot `{}`)",
-            root.current_container().0,
-            root.snapshot.0
+        LoadRoot::StandaloneClass { snapshot } => format!(
+            "root {index} of loader `{loader}` (standalone CLASS snapshot `{}`)",
+            snapshot.0
+        ),
+        LoadRoot::Container { origin, prefix } if prefix.0.is_empty() => format!(
+            "root {index} of loader `{loader}` (container `{}` of snapshot `{}`)",
+            origin.current_container().0,
+            origin.snapshot.0
+        ),
+        LoadRoot::Container { origin, prefix } => format!(
+            "root {index} of loader `{loader}` (container `{}` prefix \"{}\" of snapshot `{}`)",
+            origin.current_container().0,
+            escaped(&prefix.0),
+            origin.snapshot.0
         ),
         LoadRoot::External { id } => {
             format!("root {index} of loader `{loader}` (external declaration `{id}`)")
@@ -2124,6 +2190,7 @@ mod tests {
     use super::*;
     use jarde_reader::artifact::ArtifactInput;
     use jarde_reader::budget::{BudgetDimension, CancellationToken, Limits};
+    use jarde_reader::model::{ArchiveNameBytes, ContainerId};
     use jarde_reader::view::{
         LayoutMode, ModuleMode, MultiReleasePolicy, PhysicalScope, PhysicalView, RuntimeProfile,
         RuntimeUncertainty, RuntimeView,
@@ -2345,9 +2412,25 @@ mod tests {
         }
     }
 
+    /// The load root one fixture's own content really is.
+    ///
+    /// A standalone CLASS snapshot is one whole definition, and a ZIP snapshot is searched in its
+    /// root container with an empty prefix — the two physical shapes the root model keeps apart.
+    /// The fixture decides which one it is, exactly as a caller has to; a test that declares the
+    /// other shape on purpose builds the root itself instead of calling this.
     fn root_of(snapshot: &ArtifactSnapshot) -> LoadRoot {
-        LoadRoot::Snapshot {
-            snapshot: snapshot.id().clone(),
+        match snapshot.kind() {
+            ArtifactKind::StandaloneClass => LoadRoot::StandaloneClass {
+                snapshot: snapshot.id().clone(),
+            },
+            ArtifactKind::Zip => LoadRoot::Container {
+                origin: ContainerOrigin {
+                    snapshot: snapshot.id().clone(),
+                    root_container: ContainerId("root".into()),
+                    steps: Vec::new(),
+                },
+                prefix: ArchiveNameBytes(Vec::new()),
+            },
         }
     }
 

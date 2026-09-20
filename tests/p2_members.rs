@@ -495,6 +495,35 @@ fn open(bytes: Vec<u8>) -> ArtifactSnapshot {
         .expect("the fixture snapshot opens")
 }
 
+/// The physical definition the engine derives for one stored entry.
+///
+/// Built from the snapshot's own public enumeration and the entry's bytes, so the test does not
+/// restate an identity the engine owns. It is how a test names an entry whose *path* no lookup
+/// resolves — the malformed candidates whose header declares another name.
+fn archive_definition(
+    snapshot: &ArtifactSnapshot,
+    entry_name: &[u8],
+    content: &[u8],
+) -> PhysicalDefinitionId {
+    let mut budget = Budget::new(limits());
+    let report = snapshot.enumerate(&mut budget).expect("the fixture lists");
+    let entry = report
+        .entries
+        .iter()
+        .find(|entry| entry.id.raw_name.0 == entry_name)
+        .expect("the fixture stores the named entry");
+    PhysicalDefinitionId {
+        location: PhysicalClassLocation::ArchiveEntry {
+            entry: entry.id.clone(),
+        },
+        class_bytes: ClassBytesId {
+            digest: Digest(blake3::hash(content).to_hex().to_string()),
+            length: u64::try_from(content.len()).expect("fixture length fits u64"),
+        },
+        variant: PhysicalVariant::Base,
+    }
+}
+
 fn loader(name: &str) -> LoaderId {
     LoaderId(name.to_string())
 }
@@ -511,9 +540,22 @@ fn domain(loader: &LoaderId, parent: Option<LoaderId>, roots: Vec<LoadRoot>) -> 
     }
 }
 
+/// The load root one fixture's own content is: a standalone CLASS snapshot is one whole
+/// definition, and a ZIP snapshot is searched in its root container with an empty prefix. The
+/// fixture says which shape it is; no layout prefix is ever inferred from it.
 fn snapshot_root(snapshot: &ArtifactSnapshot) -> LoadRoot {
-    LoadRoot::Snapshot {
-        snapshot: snapshot.id().clone(),
+    match snapshot.kind() {
+        ArtifactKind::StandaloneClass => LoadRoot::StandaloneClass {
+            snapshot: snapshot.id().clone(),
+        },
+        ArtifactKind::Zip => LoadRoot::Container {
+            origin: ContainerOrigin {
+                snapshot: snapshot.id().clone(),
+                root_container: ContainerId("root".into()),
+                steps: Vec::new(),
+            },
+            prefix: ArchiveNameBytes(Vec::new()),
+        },
     }
 }
 
@@ -3225,33 +3267,32 @@ fn stage(report: &MethodAnalysisReport, stage: AnalysisStage) -> StageState {
         .clone()
 }
 
-/// The malformed artifact the memo shortcut used to accept: an entry that declares another name.
+/// The malformed artifact both paths refuse: an entry that declares another name.
 ///
 /// `p/Fake.class` holds bytes whose `this_class` is `p/Real`, and the same root holds a
-/// **different** `p/Real.class`. A member request for `p/Fake`'s private field selects those
-/// bytes under the name `p/Fake` — a name the definition does not declare — and then reads the
-/// very same physical definition again, by identity, as the class of its use site. The memo holds
-/// that `(loader, definition)` pair as a resolution of `p/Fake`, so answering the identity read
-/// from the memo accepts a binding that was never checked: the definition's own name `p/Real`
-/// resolves to the other definition. The driver path over the same definition reads it fresh and
-/// runs the check, and refuses it. The binding of one physical definition may not depend on the
-/// name a request happened to search first, so both paths refuse, and they refuse identically.
+/// **different** `p/Real.class`. A member request for `p/Fake`'s private field asks for a name no
+/// position can bind: the only candidate stored under `p/Fake.class` declares `p/Real`, so the
+/// candidate is refused where it was read (`resolution_definition_name_mismatch`) instead of being
+/// bound under the requested name — the check F1 found missing from the candidate election. The
+/// driver path over the same physical definition reads it by identity, sees its own name `p/Real`
+/// resolve to the *other* definition, and refuses the claim (`resolution_definition_unbound`).
+/// The two refusals are different facts and both are locatable; what neither path may do is turn
+/// either artifact into a binding, and the memo shortcut F1 closed cannot reappear: a resolution
+/// is no longer `Found` under a name its header does not declare.
 #[test]
-fn a_memoized_definition_is_checked_under_its_own_name_before_it_is_reused() {
+fn an_entry_that_declares_another_name_is_refused_at_its_own_candidate() {
+    let claimed_bytes = Class::new(b"p/Real")
+        .field(b"priv_f", b"I", PRIVATE)
+        .method_with_body(b"bench", b"()V", PUBLIC)
+        .build();
+    let other_bytes = Class::new(b"p/Real").field(b"other", b"I", PUBLIC).build();
     let world = world_of(vec![
-        (
-            entry(b"p/Fake"),
-            Class::new(b"p/Real")
-                .field(b"priv_f", b"I", PRIVATE)
-                .method_with_body(b"bench", b"()V", PUBLIC)
-                .build(),
-        ),
-        (
-            entry(b"p/Real"),
-            Class::new(b"p/Real").field(b"other", b"I", PUBLIC).build(),
-        ),
+        (entry(b"p/Fake"), claimed_bytes.clone()),
+        (entry(b"p/Real"), other_bytes.clone()),
     ]);
-    let claimed = world.definition(b"p/Fake");
+    // The entry whose path disagrees with its header is not a name any lookup resolves any more, so
+    // its physical identity comes from the snapshot's own listing rather than from a search.
+    let claimed = archive_definition(&world.content[0], b"p/Fake.class", &claimed_bytes);
     let other = world.definition(b"p/Real");
     assert_ne!(
         claimed, other,
@@ -3263,29 +3304,29 @@ fn a_memoized_definition_is_checked_under_its_own_name_before_it_is_reused() {
         descriptor: JvmBytes(b"()V".to_vec()),
     };
 
-    // The member path: the request names `p/Fake` as the owner, so the demand for that name
-    // decides a resolution of the claimed definition under a name it does not declare; the
-    // private field makes the access rules read the caller's class, which is those same bytes.
+    // The member path: the request names `p/Fake` as the owner, so the demand for that name reads
+    // the one candidate stored under it and stops at the name its bytes declare.
     let report = world.resolve(
         field(b"p/Fake", b"priv_f", b"I"),
         ReferenceUse::FieldRead,
-        world.caller_in(b"p/Fake", loader("app")),
+        world.caller_in(b"p/Real", loader("app")),
     );
     assert!(
         report.state.is_none() && report.resolved.is_none(),
-        "a definition the loader does not bind is a stop on this path too: {report:?}"
+        "a candidate that declares another name is a stop, not a binding: {report:?}"
     );
     assert_eq!(
         diagnostic_codes(&report),
-        vec!["resolution_definition_unbound"]
+        vec!["resolution_definition_name_mismatch"]
     );
-    let refusal = diagnostic_of(&report, "resolution_definition_unbound");
+    let refusal = diagnostic_of(&report, "resolution_definition_name_mismatch");
     assert_eq!(refusal.severity, DiagnosticSeverity::Error);
     assert!(
-        refusal.message.contains("`app`")
-            && refusal.message.contains("p/Real")
-            && refusal.message.contains("p/Fake.class"),
-        "the refusal names the loader, the name it checked and the definition it claimed: {}",
+        refusal.message.contains("`p/Real`")
+            && refusal.message.contains("`p/Fake`")
+            && refusal.message.contains("\"p/Fake.class\""),
+        "the refusal names the name the candidate declares, the name that was requested and the \
+         physical candidate it read: {}",
         refusal.message
     );
     assert!(matches!(
@@ -3293,20 +3334,21 @@ fn a_memoized_definition_is_checked_under_its_own_name_before_it_is_reused() {
         ExecutionReport::Failed {
             reason: TerminationReason::Error { ref code },
             ..
-        } if code == "resolution_definition_unbound"
+        } if code == "resolution_definition_name_mismatch"
     ));
+    // The read really happened and is recorded: a refused candidate keeps the physical facts it was
+    // built on, and the search does not continue into a later position.
     let claimed_read = report
         .reads
         .iter()
         .find(|read| read.definition == claimed)
-        .unwrap_or_else(|| panic!("the claimed definition was read: {:?}", report.reads));
+        .unwrap_or_else(|| panic!("the candidate was read: {:?}", report.reads));
     assert_eq!(claimed_read.loader, loader("app"));
     assert_eq!(claimed_read.reason, ReadReason::MemberOwner);
     assert_eq!(
         class_headers(&report),
-        3,
-        "the memo holds no checked binding here, so the claim is re-read and checked: the owner, \
-         the claimed definition and the definition its own name selects are three attempts"
+        1,
+        "the first candidate's own header decided the demand: no later position was searched"
     );
     assert_reads_within_attempts(&report);
     assert_no_body_read(&report);
@@ -3326,7 +3368,7 @@ fn a_memoized_definition_is_checked_under_its_own_name_before_it_is_reused() {
         StageState::Failed {
             code: "resolution_definition_unbound".to_string()
         },
-        "the fresh path refuses the same claim"
+        "the fresh path refuses the claim the definition's own name does not select"
     );
     assert_eq!(
         stage(&analyzed, AnalysisStage::RawCfg),
@@ -3334,12 +3376,15 @@ fn a_memoized_definition_is_checked_under_its_own_name_before_it_is_reused() {
     );
     assert_eq!(analyzed.body, MethodBodyState::NotInspected);
 
-    // The agreement asserted on the whole refusal, not on one state: the same code with the same
-    // message, which is the one `unbound_definition` builds from the claim and the decision.
-    assert_eq!(
-        stop_of(&report.diagnostics),
-        stop_of(&analyzed.diagnostics),
-        "both paths refuse the one claim the one way"
+    // The identity read happened and is published: the refused binding keeps the read record of the
+    // definition it claims, and the refusal names both the claim and the definition the search
+    // selected instead.
+    let stop = stop_of(&analyzed.diagnostics);
+    assert!(
+        stop.iter()
+            .any(|(code, message)| code == "resolution_definition_unbound"
+                && message.contains("`p/Real`")),
+        "the driver refusal is locatable: {stop:?}"
     );
 }
 

@@ -116,7 +116,7 @@ fn fixture(content: &[u8]) -> Fixture {
 fn environment(fixture: &Fixture) -> ResolutionEnvironment {
     environment_with(
         fixture,
-        vec![LoadRoot::Snapshot {
+        vec![LoadRoot::StandaloneClass {
             snapshot: fixture.snapshot.id().clone(),
         }],
     )
@@ -865,10 +865,10 @@ fn a_driver_definition_the_declared_loader_does_not_bind_stops_the_body_pass() {
     let environment = environment_with(
         &driver,
         vec![
-            LoadRoot::Snapshot {
+            LoadRoot::StandaloneClass {
                 snapshot: shadow.snapshot.id().clone(),
             },
-            LoadRoot::Snapshot {
+            LoadRoot::StandaloneClass {
                 snapshot: driver.snapshot.id().clone(),
             },
         ],

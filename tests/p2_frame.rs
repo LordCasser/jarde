@@ -121,7 +121,7 @@ fn environment(fixture: &Fixture) -> ResolutionEnvironment {
         loader: LoaderId("app".to_string()),
         parent_loader: None,
         delegation: DelegationPolicy::ParentFirst,
-        roots: vec![LoadRoot::Snapshot {
+        roots: vec![LoadRoot::StandaloneClass {
             snapshot: fixture.snapshot.id().clone(),
         }],
         module_mode: ModuleMode::ClassPath,

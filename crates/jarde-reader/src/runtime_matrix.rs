@@ -1418,10 +1418,16 @@ fn root_attribution(container: &ContainerOrigin, graph: &DomainGraph) -> RootAtt
     }
 }
 
+/// Whether one declared root covers an enumerated container, and where.
+///
+/// A standalone CLASS root names a whole snapshot and no container of its own; a container root
+/// covers the container it addresses and everything derived from it — the prefix decides which
+/// entries of that container are on the class path, never which container it is. The prefix
+/// therefore plays no part here: it is a lookup key inside the container, not a second container.
 fn root_covers(root: &LoadRoot, container: &ContainerOrigin) -> bool {
     match root {
-        LoadRoot::Snapshot { snapshot } => container.snapshot == *snapshot,
-        LoadRoot::ArtifactTree { root } => container_is_under(container, root),
+        LoadRoot::StandaloneClass { snapshot } => container.snapshot == *snapshot,
+        LoadRoot::Container { origin, .. } => container_is_under(container, origin),
         // An external root names bytes this scan never read: it covers no enumerated container.
         LoadRoot::External { .. } => false,
     }

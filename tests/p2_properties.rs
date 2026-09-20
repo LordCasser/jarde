@@ -277,7 +277,7 @@ fn fixture(class: &[u8], descriptor: &[u8]) -> Fixture {
         loader: LoaderId("app".to_string()),
         parent_loader: None,
         delegation: DelegationPolicy::ParentFirst,
-        roots: vec![LoadRoot::Snapshot {
+        roots: vec![LoadRoot::StandaloneClass {
             snapshot: snapshot.id().clone(),
         }],
         module_mode: ModuleMode::ClassPath,

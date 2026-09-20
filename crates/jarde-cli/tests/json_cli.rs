@@ -1,12 +1,13 @@
 use jarde::{
-    AnalysisStage, ArtifactInput, ArtifactSnapshot, Budget, BudgetDimension, ClassTarget,
-    CompileStatus, DelegationPolicy, Engine, EngineBytecodeReport, EngineHeaderReport,
-    EnumerationReport, ExecutionReport, InspectionMode, JvmBytes, LayoutMode, Limits, LoadDomain,
-    LoadRoot, LoaderId, MethodAnalysisReport, MethodAnalysisRequest, MethodBodyState,
-    MethodSelector, ModuleMode, MultiReleasePolicy, PhysicalClassLocation, PhysicalDefinitionId,
-    PhysicalMethodId, PhysicalScope, PhysicalVariant, PhysicalView, Quality, Representation,
-    ResolutionEnvironment, RuntimeProfile, RuntimeUncertainty, RuntimeView, SemanticValidation,
-    StageState, SyntaxStatus, TerminationReason, UsageSnapshot, VerificationStatus,
+    AnalysisStage, ArchiveNameBytes, ArtifactInput, ArtifactKind, ArtifactSnapshot, Budget,
+    BudgetDimension, ClassTarget, CompileStatus, ContainerId, ContainerOrigin, DelegationPolicy,
+    Engine, EngineBytecodeReport, EngineHeaderReport, EnumerationReport, ExecutionReport,
+    InspectionMode, JvmBytes, LayoutMode, Limits, LoadDomain, LoadRoot, LoaderId,
+    MethodAnalysisReport, MethodAnalysisRequest, MethodBodyState, MethodSelector, ModuleMode,
+    MultiReleasePolicy, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
+    PhysicalScope, PhysicalVariant, PhysicalView, Quality, Representation, ResolutionEnvironment,
+    RuntimeProfile, RuntimeUncertainty, RuntimeView, SemanticValidation, StageState, SyntaxStatus,
+    TerminationReason, UsageSnapshot, VerificationStatus,
 };
 use serde_json::{Value, json};
 use std::fs;
@@ -284,6 +285,25 @@ fn analysis_limits() -> Limits {
     }
 }
 
+/// The load root one fixture's own content is: a standalone CLASS snapshot is one whole
+/// definition, and a ZIP snapshot is searched in its root container with an empty prefix. The
+/// fixture the request names decides which shape it is.
+fn snapshot_root(snapshot: &ArtifactSnapshot) -> LoadRoot {
+    match snapshot.kind() {
+        ArtifactKind::StandaloneClass => LoadRoot::StandaloneClass {
+            snapshot: snapshot.id().clone(),
+        },
+        ArtifactKind::Zip => LoadRoot::Container {
+            origin: ContainerOrigin {
+                snapshot: snapshot.id().clone(),
+                root_container: ContainerId("root".into()),
+                steps: Vec::new(),
+            },
+            prefix: ArchiveNameBytes(Vec::new()),
+        },
+    }
+}
+
 /// One caller domain rooted at the fixture's own snapshot, and nothing else: the simplest
 /// environment the library's validator accepts without a problem.
 fn environment(snapshot: &ArtifactSnapshot) -> ResolutionEnvironment {
@@ -291,9 +311,7 @@ fn environment(snapshot: &ArtifactSnapshot) -> ResolutionEnvironment {
         loader: LoaderId("app".to_string()),
         parent_loader: None,
         delegation: DelegationPolicy::ParentFirst,
-        roots: vec![LoadRoot::Snapshot {
-            snapshot: snapshot.id().clone(),
-        }],
+        roots: vec![snapshot_root(snapshot)],
         module_mode: ModuleMode::ClassPath,
         external_override: RuntimeUncertainty::None,
         runtime_transformation: RuntimeUncertainty::None,

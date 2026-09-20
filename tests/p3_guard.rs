@@ -60,7 +60,7 @@ fn environment(snapshot: &ArtifactSnapshot, release: u16) -> ResolutionEnvironme
         loader: LoaderId("app".to_string()),
         parent_loader: None,
         delegation: DelegationPolicy::ParentFirst,
-        roots: vec![LoadRoot::Snapshot {
+        roots: vec![LoadRoot::StandaloneClass {
             snapshot: snapshot.id().clone(),
         }],
         module_mode: ModuleMode::ClassPath,

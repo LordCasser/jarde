@@ -973,8 +973,13 @@
             "parent_loader": null,
             "roots": [
               {
-                "kind": "snapshot",
-                "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+                "kind": "container",
+                "origin": {
+                  "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                  "root_container": "root",
+                  "steps": []
+                },
+                "prefix": []
               }
             ],
             "runtime_transformation": "none"
@@ -1009,8 +1014,13 @@
           "parent_loader": null,
           "roots": [
             {
-              "kind": "snapshot",
-              "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+              "kind": "container",
+              "origin": {
+                "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                "root_container": "root",
+                "steps": []
+              },
+              "prefix": []
             }
           ],
           "runtime_transformation": "none"
@@ -2064,8 +2074,13 @@
             "parent_loader": null,
             "roots": [
               {
-                "kind": "snapshot",
-                "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+                "kind": "container",
+                "origin": {
+                  "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                  "root_container": "root",
+                  "steps": []
+                },
+                "prefix": []
               }
             ],
             "runtime_transformation": "none"
@@ -2100,8 +2115,13 @@
           "parent_loader": null,
           "roots": [
             {
-              "kind": "snapshot",
-              "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+              "kind": "container",
+              "origin": {
+                "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                "root_container": "root",
+                "steps": []
+              },
+              "prefix": []
             }
           ],
           "runtime_transformation": "none"
@@ -3199,8 +3219,13 @@
             "parent_loader": null,
             "roots": [
               {
-                "kind": "snapshot",
-                "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+                "kind": "container",
+                "origin": {
+                  "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                  "root_container": "root",
+                  "steps": []
+                },
+                "prefix": []
               }
             ],
             "runtime_transformation": "none"
@@ -3235,8 +3260,13 @@
           "parent_loader": null,
           "roots": [
             {
-              "kind": "snapshot",
-              "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b"
+              "kind": "container",
+              "origin": {
+                "snapshot": "413d7b4b6c9f9f0d13246ac4616a7a5231b3b961047730a70d65f1c25434251b",
+                "root_container": "root",
+                "steps": []
+              },
+              "prefix": []
             }
           ],
           "runtime_transformation": "none"

@@ -136,6 +136,28 @@ JSON
 
 响应 `status: "ok"`，`report.items` 含一条 `consumer: "invocation"`、`operation: "invoke_special"`、CP index 8、BCI 1、opcode 183 的 item，`execution.status` 为 `complete`，`coverage.dimensions.artifact_structural.state` 为 `complete_within_schema`。`max_items` 只限制每页条目、不改变查询含义；`page.cursor` 是为同一查询身份签发的续页 token（`QUERY_ENGINE_SCHEMA = 2`，绑定 snapshot、view、relation、完整 target 与 consumer schema），跨目标或跨快照重放会被拒为 `query_cursor_mismatch`。请求未实现类别（`verification`/`debug`）时不会返回 `complete_within_schema`；`references_definition`/`may_dispatch_to` 返回 `analysis: unsupported_analysis` 并保留原始常量池候选。预算、取消或损坏输入只会产生 `partial`/`cancelled`/`failed` 与定位诊断，不会伪装成完整无命中。
 
+### 物理树枚举与显式前缀加载位置（`bind-prefixed-load-roots`）
+
+`enumerate_artifact_tree` 是薄的 JSON operation：它打开 `input_path`，把该 snapshot 交给库的既有入口，返回库自己的 report（`containers`/`entries`/`layout_nodes`/`coverage`/`execution`/`diagnostics`），limit 仍逐项必填。它不声明 root、不推导 loader 委派、顺序或 classpath，也不改写 snapshot；普通 `enumerate` 仍只报告顶层容器。
+
+```sh
+CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 cargo run -p jarde-cli -- --request app-tree.json
+# app-tree.json 的 operation 只有一项：
+#   "operation": { "kind": "enumerate_artifact_tree" }
+```
+
+拿到真实的 container origin 与 entry 身份后，**调用方自己声明**加载位置（`LoadRoot`，JSON 拼写即其 `kind`）：
+
+| 形状 | JSON | 含义 |
+| --- | --- | --- |
+| `StandaloneClass { snapshot }` | `{"kind":"standalone_class","snapshot":"…"}` | 整个 CLASS 快照本身就是一个定义，内部名由它自己的 `this_class` 给出 |
+| `Container { origin, prefix }` | `{"kind":"container","origin":{"snapshot":"…","root_container":"root","steps":[]},"prefix":[87,69,66,45,73,78,70,47,99,108,97,115,115,101,115,47]}` | 快照的一个 container（完整 origin 链，可指向 nested container）加**归档内 raw 字节前缀** |
+| `External { id }` | `{"kind":"external","id":"host-jdk"}` | 未提供的声明；不解析，报告 `unreadable_root` |
+
+查名按 `prefix + internal_name + b".class"` 逐字节拼接：不 trim、不 URL 解码、不大小写折叠、不折叠 `.`/`..`/反斜杠，也不要求 ZIP 里存在对应的目录 entry。前缀为空或以 `/` 结尾；非空却不以 `/` 结尾是环境问题 `invalid_root_prefix`（该 root 上的诊断，不补分隔符）。选中候选的 Header 内部名必须与请求名一致，否则返回该候选自身的 `resolution_definition_name_mismatch`，不尝试下一个 root。
+
+这个形状**替换**了旧的 `snapshot`/`artifact_tree` 两种 root（**BREAKING**，无兼容层、无 schema 适配）：旧 JSON 变体不再能反序列化。前缀只影响 container 目录内的查找 key（`ArchiveNameBytes` 参与环境身份，不进入 container facts cache 的 key），跨 root 优先级仍由声明顺序与 loader 委派决定。**支持边界**：前缀是通用机制，等于 Servlet/Boot 专用加载规则**未实现**——不读 `classpath.idx`、不自动排序 `BOOT-INF/lib`、不执行 launcher，`BOOT-INF/classes/` 只是同一种前缀的受控样本。
+
 ## 规格与验证
 
 - [五维支持矩阵](docs/support-matrix.md)

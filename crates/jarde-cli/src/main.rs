@@ -1,11 +1,11 @@
 use clap::Parser;
 use jarde::{
-    AnalysisStage, ArtifactInput, Budget, CalleeReadReport, ClassTarget, ConsumerSchema,
-    CountedBudgetDimension, Engine, EngineBytecodeReport, EngineHeaderReport, EnumerationReport,
-    Error, InspectionMode, JvmBytes, Limits, MethodAnalysisReport, MethodAnalysisRequest,
-    MethodSelector, PhysicalEntry, PhysicalMethodId, PhysicalScope, PhysicalView, QueryCursor,
-    QueryRelation, QueryReport, QueryRequest, QueryTarget, RecoveryReport, ResolutionEnvironment,
-    UsageSnapshot,
+    AnalysisStage, ArtifactInput, ArtifactTreeReport, Budget, CalleeReadReport, ClassTarget,
+    ConsumerSchema, CountedBudgetDimension, Engine, EngineBytecodeReport, EngineHeaderReport,
+    EnumerationReport, Error, InspectionMode, JvmBytes, Limits, MethodAnalysisReport,
+    MethodAnalysisRequest, MethodSelector, PhysicalEntry, PhysicalMethodId, PhysicalScope,
+    PhysicalView, QueryCursor, QueryRelation, QueryReport, QueryRequest, QueryTarget,
+    RecoveryReport, ResolutionEnvironment, UsageSnapshot,
 };
 use serde::{Deserialize, Serialize};
 use std::ffi::OsStr;
@@ -94,6 +94,17 @@ impl From<RequestLimits> for Limits {
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 enum Operation {
     Enumerate,
+    /// One explicit artifact-tree enumeration: every container, entry, layout node, coverage and
+    /// diagnostic the library's own entry reports, under this request's limits.
+    ///
+    /// The adapter adds nothing here — it opens `input_path` and hands *that* snapshot to the
+    /// library's existing `enumerate_artifact_tree` entry, so the answer is the library's own
+    /// report and the snapshot it echoes is the one it really opened. What the operation does
+    /// **not** do is as much of the contract as what it does: it declares no root, invents no
+    /// delegation order and derives no classpath from the layout evidence it publishes. A caller
+    /// uses the identities it returns to declare its own load positions, which is why the
+    /// operation has no request field at all.
+    EnumerateArtifactTree,
     InspectHeader {
         target: Target,
         mode: InspectionMode,
@@ -209,6 +220,10 @@ struct SuccessTransport {
 enum OperationResult {
     Enumeration {
         report: EnumerationReport,
+    },
+    /// The library's own artifact-tree report, unchanged.
+    ArtifactTree {
+        report: ArtifactTreeReport,
     },
     Header {
         report: EngineHeaderReport,
@@ -375,6 +390,9 @@ fn execute(
         Operation::Enumerate => engine
             .enumerate(&snapshot, budget)
             .map(|report| OperationResult::Enumeration { report }),
+        Operation::EnumerateArtifactTree => engine
+            .enumerate_artifact_tree(&snapshot, budget)
+            .map(|report| OperationResult::ArtifactTree { report }),
         Operation::InspectHeader { target, mode } => engine
             .inspect_header(&snapshot, target.as_core(), budget, mode)
             .map(|report| OperationResult::Header { report }),

@@ -353,9 +353,17 @@ fn domain(loader: &LoaderId, parent: Option<LoaderId>, roots: Vec<LoadRoot>) -> 
     }
 }
 
+/// The load root the fixture's own ZIP snapshot is: its root container with an empty prefix —
+/// the fixture holds class entries at the archive root, so no prefix names a byte boundary
+/// inside it.
 fn snapshot_root(snapshot: &ArtifactSnapshot) -> LoadRoot {
-    LoadRoot::Snapshot {
-        snapshot: snapshot.id().clone(),
+    LoadRoot::Container {
+        origin: ContainerOrigin {
+            snapshot: snapshot.id().clone(),
+            root_container: ContainerId("root".into()),
+            steps: Vec::new(),
+        },
+        prefix: ArchiveNameBytes(Vec::new()),
     }
 }
 

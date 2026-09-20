@@ -726,9 +726,21 @@ fn domain_with(
     }
 }
 
+/// The load root one fixture's own content is: a standalone CLASS snapshot is one whole
+/// definition, and a ZIP snapshot is searched in its root container with an empty prefix.
 fn snapshot_root(snapshot: &ArtifactSnapshot) -> LoadRoot {
-    LoadRoot::Snapshot {
-        snapshot: snapshot.id().clone(),
+    match snapshot.kind() {
+        ArtifactKind::StandaloneClass => LoadRoot::StandaloneClass {
+            snapshot: snapshot.id().clone(),
+        },
+        ArtifactKind::Zip => LoadRoot::Container {
+            origin: ContainerOrigin {
+                snapshot: snapshot.id().clone(),
+                root_container: ContainerId("root".into()),
+                steps: Vec::new(),
+            },
+            prefix: ArchiveNameBytes(Vec::new()),
+        },
     }
 }
 

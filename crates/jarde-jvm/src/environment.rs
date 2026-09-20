@@ -78,11 +78,14 @@ pub enum EnvironmentProblemCode {
     UnreadableRoot,
     ContentNotProvided,
     ProviderRootUnbound,
+    /// A container root's prefix is neither empty nor closed by `/`, so the declaration does not
+    /// name a byte boundary inside its container and this engine refuses to guess one.
+    InvalidRootPrefix,
 }
 
 impl EnvironmentProblemCode {
     /// The closed set in declaration order.
-    pub const ALL: [Self; 9] = [
+    pub const ALL: [Self; 10] = [
         Self::DuplicateLoader,
         Self::CallerDomainMismatch,
         Self::CallerLoaderMismatch,
@@ -92,6 +95,7 @@ impl EnvironmentProblemCode {
         Self::UnreadableRoot,
         Self::ContentNotProvided,
         Self::ProviderRootUnbound,
+        Self::InvalidRootPrefix,
     ];
 
     /// Diagnostic code of this problem: the same `snake_case` name serde writes.
@@ -106,6 +110,7 @@ impl EnvironmentProblemCode {
             Self::UnreadableRoot => "unreadable_root",
             Self::ContentNotProvided => "content_not_provided",
             Self::ProviderRootUnbound => "provider_root_unbound",
+            Self::InvalidRootPrefix => "invalid_root_prefix",
         }
     }
 }
@@ -463,8 +468,16 @@ fn validate_domain_parent(
     }
 }
 
-/// Roots are readable only when the entry provided their content; `External` stays an
-/// unreadable declaration.
+/// Roots are readable only when the entry provided their content, and a container root's prefix
+/// has to name a byte boundary; `External` stays an unreadable declaration.
+///
+/// The prefix check is decided from the declaration alone and is the only new refusal this
+/// shape adds: a prefix that is neither empty nor closed by `/` names no boundary inside its
+/// container, and guessing one (adding the separator, trimming, decoding or folding bytes) would
+/// bind a class the caller never declared. Everything else about a container root — that the
+/// origin really derives from its snapshot and that the container's directory is complete — is a
+/// physical fact the search checks when the position is really searched, because it needs the
+/// artifact's bytes and this validator reads none.
 fn validate_domain_roots(
     domain: &LoadDomain,
     content: &[ArtifactSnapshot],
@@ -486,31 +499,48 @@ fn validate_domain_roots(
                     domain.loader.0
                 ),
             )),
-            LoadRoot::Snapshot { snapshot } => {
+            LoadRoot::StandaloneClass { snapshot } => {
                 if !content.iter().any(|candidate| candidate.id() == snapshot) {
                     problems.push(problem(
                         EnvironmentProblemCode::ContentNotProvided,
                         subject,
                         format!(
-                            "root {index} of loader `{}` names snapshot `{}`, which the \
-                             request content does not provide",
+                            "root {index} of loader `{}` names the standalone CLASS snapshot \
+                             `{}`, which the request content does not provide",
                             domain.loader.0, snapshot.0
                         ),
                     ));
                 }
             }
-            LoadRoot::ArtifactTree { root } => {
+            LoadRoot::Container { origin, prefix } => {
+                if !prefix.0.is_empty() && prefix.0.last() != Some(&b'/') {
+                    problems.push(problem(
+                        EnvironmentProblemCode::InvalidRootPrefix,
+                        subject.clone(),
+                        format!(
+                            "root {index} of loader `{}` declares prefix \"{}\" in container \
+                             `{}` of snapshot `{}`; a prefix is empty or ends with `/`, and this \
+                             engine does not guess the missing boundary",
+                            domain.loader.0,
+                            crate::providers::escaped(&prefix.0),
+                            origin.current_container().0,
+                            origin.snapshot.0
+                        ),
+                    ));
+                }
                 if !content
                     .iter()
-                    .any(|candidate| candidate.id() == &root.snapshot)
+                    .any(|candidate| candidate.id() == &origin.snapshot)
                 {
                     problems.push(problem(
                         EnvironmentProblemCode::ContentNotProvided,
                         subject,
                         format!(
-                            "root {index} of loader `{}` names artifact tree `{}` of \
-                             snapshot `{}`, which the request content does not provide",
-                            domain.loader.0, root.root_container.0, root.snapshot.0
+                            "root {index} of loader `{}` names container `{}` of snapshot `{}`, \
+                             which the request content does not provide",
+                            domain.loader.0,
+                            origin.current_container().0,
+                            origin.snapshot.0
                         ),
                     ));
                 }

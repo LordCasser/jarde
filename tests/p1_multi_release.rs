@@ -108,8 +108,13 @@ fn runtime_view(
             loader: LoaderId("test".into()),
             parent_loader: None,
             delegation: DelegationPolicy::ParentFirst,
-            roots: vec![LoadRoot::Snapshot {
-                snapshot: snapshot.id().clone(),
+            roots: vec![LoadRoot::Container {
+                origin: ContainerOrigin {
+                    snapshot: snapshot.id().clone(),
+                    root_container: ContainerId("root".into()),
+                    steps: Vec::new(),
+                },
+                prefix: ArchiveNameBytes(Vec::new()),
             }],
             module_mode: ModuleMode::ClassPath,
             external_override: RuntimeUncertainty::None,

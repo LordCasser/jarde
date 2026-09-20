@@ -186,7 +186,7 @@ fn flat_jar(count: usize) -> Vec<u8> {
             if index % 2 == 0 { STORE } else { DEFLATE },
         ));
     }
-    entries.push(stored(b"p/Top.class", &class));
+    entries.push(stored(b"p/Top.class", &class_bytes(b"p/Top", 52)));
     archive(&entries)
 }
 
@@ -196,7 +196,10 @@ fn flat_jar(count: usize) -> Vec<u8> {
 /// the healthy one. `method` is the compression of the target entry itself (STORED or DEFLATED).
 fn war_with_target(method: u16) -> Vec<u8> {
     let class = class_bytes(b"p/S", 52);
-    let mut entries = vec![stored(b"WEB-INF/classes/App.class", &class)];
+    let mut entries = vec![stored(
+        b"WEB-INF/classes/App.class",
+        &class_bytes(b"App", 52),
+    )];
     for index in 0..SIBLINGS {
         entries.push(library(
             index,
@@ -208,7 +211,7 @@ fn war_with_target(method: u16) -> Vec<u8> {
         b"WEB-INF/lib/Target.jar".to_vec(),
         archive(&[
             stored(b"p/S.class", &class),
-            stored(b"p/Other.class", &class),
+            stored(b"p/Other.class", &class_bytes(b"p/Other", 52)),
         ]),
         method,
     ));
@@ -225,7 +228,7 @@ fn war_with_chain() -> Vec<u8> {
     ]);
     archive(&[
         stored(b"lib/outer.jar", &outer),
-        stored(b"WEB-INF/classes/App.class", &class),
+        stored(b"WEB-INF/classes/App.class", &class_bytes(b"App", 52)),
     ])
 }
 
@@ -283,7 +286,10 @@ fn request_at(root: ContainerOrigin, class_name: &[u8]) -> ResolutionRequest {
         loader: loader("app"),
         parent_loader: None,
         delegation: DelegationPolicy::ParentFirst,
-        roots: vec![LoadRoot::ArtifactTree { root }],
+        roots: vec![LoadRoot::Container {
+            origin: root,
+            prefix: ArchiveNameBytes(Vec::new()),
+        }],
         module_mode: ModuleMode::ClassPath,
         external_override: RuntimeUncertainty::None,
         runtime_transformation: RuntimeUncertainty::None,
@@ -296,7 +302,7 @@ fn request_at(root: ContainerOrigin, class_name: &[u8]) -> ResolutionRequest {
                         .roots
                         .iter()
                         .find_map(|root| match root {
-                            LoadRoot::ArtifactTree { root } => Some(root.snapshot.clone()),
+                            LoadRoot::Container { origin, .. } => Some(origin.snapshot.clone()),
                             _ => None,
                         })
                         .expect("the request names a tree root"),
@@ -496,6 +502,11 @@ fn damage_entry(bytes: Vec<u8>, entry_name: &[u8]) -> (Vec<u8>, u64) {
 
 /// The fixture digests every counter in this file is about, pinned rather than recomputed so a
 /// fixture edit fails here instead of quietly moving a published number.
+///
+/// The pinned bytes moved once, with `bind-prefixed-load-roots`: every class entry of these
+/// fixtures has to declare in its own header the name its path states, because a candidate whose
+/// `this_class` disagrees with the entry it was found under is refused at that candidate. The
+/// shapes and the subjects of the tests below are unchanged.
 #[test]
 fn the_fixture_shapes_are_pinned_by_digest() {
     let flat = flat_jar(4);
@@ -538,18 +549,18 @@ fn the_fixture_shapes_are_pinned_by_digest() {
             digest(&chain),
         ),
         (
-            1_708,
-            "5dc78b3bf337ad08c8925d84be481f224990887608f92a68cd98ae73c0fc13a1".to_string(),
-            36_749,
-            "9a0e4369b87db76c13fe77a4e728ea9a1165bcc4d35706cc1be21aaeaa02308b".to_string(),
+            1_710,
+            "402bb412553fa59cb9da6b19f6c42eb9e88b7e34f3a43aa9da14fcd6502296e2".to_string(),
+            36_751,
+            "45c26bf2052d653ce40e40e59a85b9bd1eb105246b85c6aae5fe21fba0269979".to_string(),
             1_238,
             "8bbc41257b38f1b4a9ef1240d9ea8d270ad31bbfd46aa788d8c0ddbbdc93c5e4".to_string(),
-            9_845,
-            "941cdc2693590bcb5c5474823824808f399cd237585fbd6e9b7cd5de299f8ab7".to_string(),
-            9_643,
-            "a6239dc4bc09fff5ddfa6231103910cd628a43e45ddb495cbfd6bc5bd9231461".to_string(),
+            9_849,
+            "82e1139ff956990bfdde9fa75853ce6cb5563eafdca305ae68b4a08f60907297".to_string(),
+            9_665,
+            "95280d426669488179cdf32d43d37a1a7bc7930cf0b9fd83813ac8709e4a19dd".to_string(),
             782,
-            "c0553357709f7395c369fd8bad38df33c30385df318c48334b4e341030afa7d9".to_string(),
+            "3461b72c47f3845bc314e36d0348adb82a3101fea46601e793e8f745bfb7bceb".to_string(),
         ),
         "a fixture shape moved; the counters and the digests published for it have to move with it"
     );
@@ -673,7 +684,7 @@ fn duplicate_physical_entries_keep_their_ordinals_direct_and_warm() {
     let duplicate = archive(&[stored(b"p/S.class", &source), stored(b"p/S.class", &source)]);
     let outer = archive(&[
         stored(b"WEB-INF/lib/Dup.jar", &duplicate),
-        stored(b"WEB-INF/classes/App.class", &source),
+        stored(b"WEB-INF/classes/App.class", &class_bytes(b"App", 52)),
     ]);
     let snapshot = open(outer);
     let dup = origin_named(&snapshot, b"WEB-INF/lib/Dup.jar");
@@ -1117,7 +1128,7 @@ fn a_changed_content_chain_or_declaration_misses() {
         b"WEB-INF/lib/Target.jar".to_vec(),
         archive(&[
             stored(b"p/S.class", &class),
-            stored(b"p/Other.class", &class),
+            stored(b"p/Other.class", &class_bytes(b"p/Other", 52)),
         ]),
         STORE,
     ));
@@ -1125,7 +1136,10 @@ fn a_changed_content_chain_or_declaration_misses() {
         b"WEB-INF/lib/Extra.jar",
         &archive(&[stored(b"x", b"y")]),
     ));
-    entries.push(stored(b"WEB-INF/classes/App.class", &class));
+    entries.push(stored(
+        b"WEB-INF/classes/App.class",
+        &class_bytes(b"App", 52),
+    ));
     let changed = open(archive(&entries));
     assert_ne!(
         changed.id(),

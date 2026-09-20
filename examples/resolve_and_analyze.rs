@@ -172,7 +172,7 @@ fn run(path: PathBuf) -> jarde::Result<()> {
     let app = LoaderId("app".to_string());
     let platform = LoaderId("platform".to_string());
     let snapshot_id = snapshot.id().clone();
-    let app_roots = vec![LoadRoot::Snapshot {
+    let app_roots = vec![LoadRoot::StandaloneClass {
         snapshot: snapshot_id.clone(),
     }];
     let environment = build_environment(

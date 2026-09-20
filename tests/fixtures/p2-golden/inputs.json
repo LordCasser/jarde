@@ -211,7 +211,7 @@
               "parent_loader": null,
               "roots": [
                 {
-                  "kind": "snapshot",
+                  "kind": "standalone_class",
                   "snapshot": "9b6a99f348ea4cd8181aaf484bbea7e138edb0e942865ec1e3137c1cb7673bd8"
                 }
               ],
@@ -370,7 +370,7 @@
               "parent_loader": null,
               "roots": [
                 {
-                  "kind": "snapshot",
+                  "kind": "standalone_class",
                   "snapshot": "9b6a99f348ea4cd8181aaf484bbea7e138edb0e942865ec1e3137c1cb7673bd8"
                 }
               ],
@@ -391,7 +391,7 @@
               "parent_loader": null,
               "roots": [
                 {
-                  "kind": "snapshot",
+                  "kind": "standalone_class",
                   "snapshot": "9b6a99f348ea4cd8181aaf484bbea7e138edb0e942865ec1e3137c1cb7673bd8"
                 }
               ],
@@ -657,7 +657,7 @@
               "parent_loader": null,
               "roots": [
                 {
-                  "kind": "snapshot",
+                  "kind": "standalone_class",
                   "snapshot": "c1f5616e7ada69dbfd3a82cad257caa9acc7c850dc8b9db22d914aedc58c6d74"
                 }
               ],
@@ -816,7 +816,7 @@
               "parent_loader": null,
               "roots": [
                 {
-                  "kind": "snapshot",
+                  "kind": "standalone_class",
                   "snapshot": "c1f5616e7ada69dbfd3a82cad257caa9acc7c850dc8b9db22d914aedc58c6d74"
                 }
               ],
@@ -837,7 +837,7 @@
               "parent_loader": null,
               "roots": [
                 {
-                  "kind": "snapshot",
+                  "kind": "standalone_class",
                   "snapshot": "c1f5616e7ada69dbfd3a82cad257caa9acc7c850dc8b9db22d914aedc58c6d74"
                 }
               ],
@@ -1113,7 +1113,7 @@
               "parent_loader": null,
               "roots": [
                 {
-                  "kind": "snapshot",
+                  "kind": "standalone_class",
                   "snapshot": "729404043444ea3092461daba540087d966e5f19dc1220d607185391efe3865d"
                 }
               ],
@@ -1277,7 +1277,7 @@
               "parent_loader": null,
               "roots": [
                 {
-                  "kind": "snapshot",
+                  "kind": "standalone_class",
                   "snapshot": "729404043444ea3092461daba540087d966e5f19dc1220d607185391efe3865d"
                 }
               ],
@@ -1298,7 +1298,7 @@
               "parent_loader": null,
               "roots": [
                 {
-                  "kind": "snapshot",
+                  "kind": "standalone_class",
                   "snapshot": "729404043444ea3092461daba540087d966e5f19dc1220d607185391efe3865d"
                 }
               ],

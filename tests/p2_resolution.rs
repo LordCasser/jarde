@@ -224,9 +224,21 @@ fn domain(
     }
 }
 
+/// The load root one fixture's own content is: a standalone CLASS snapshot is one whole
+/// definition, and a ZIP snapshot is searched in its root container with an empty prefix.
 fn snapshot_root(snapshot: &ArtifactSnapshot) -> LoadRoot {
-    LoadRoot::Snapshot {
-        snapshot: snapshot.id().clone(),
+    match snapshot.kind() {
+        ArtifactKind::StandaloneClass => LoadRoot::StandaloneClass {
+            snapshot: snapshot.id().clone(),
+        },
+        ArtifactKind::Zip => LoadRoot::Container {
+            origin: ContainerOrigin {
+                snapshot: snapshot.id().clone(),
+                root_container: ContainerId("root".into()),
+                steps: Vec::new(),
+            },
+            prefix: ArchiveNameBytes(Vec::new()),
+        },
     }
 }
 
@@ -1462,8 +1474,9 @@ fn an_artifact_tree_root_searches_its_own_container_only() {
         &loader("app"),
         None,
         DelegationPolicy::ParentFirst,
-        vec![LoadRoot::ArtifactTree {
-            root: root_container.origin.clone(),
+        vec![LoadRoot::Container {
+            origin: root_container.origin.clone(),
+            prefix: ArchiveNameBytes(Vec::new()),
         }],
     );
     let root_environment = environment(&outer, caller.clone(), vec![caller], Vec::new());
@@ -1481,8 +1494,9 @@ fn an_artifact_tree_root_searches_its_own_container_only() {
         &loader("app"),
         None,
         DelegationPolicy::ParentFirst,
-        vec![LoadRoot::ArtifactTree {
-            root: nested.origin.clone(),
+        vec![LoadRoot::Container {
+            origin: nested.origin.clone(),
+            prefix: ArchiveNameBytes(Vec::new()),
         }],
     );
     let nested_environment = environment(&outer, caller.clone(), vec![caller], Vec::new());

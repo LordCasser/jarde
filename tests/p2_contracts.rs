@@ -217,7 +217,7 @@ fn environment(
 fn healthy_environment(fixture: &Fixture) -> ResolutionEnvironment {
     let app = loader("app");
     let platform = loader("platform");
-    let roots = vec![LoadRoot::Snapshot {
+    let roots = vec![LoadRoot::StandaloneClass {
         snapshot: fixture.snapshot.id().clone(),
     }];
     let provider = HeaderProvider {
@@ -375,6 +375,10 @@ fn problem_code_index(code: EnvironmentProblemCode) -> usize {
         EnvironmentProblemCode::UnreadableRoot => 6,
         EnvironmentProblemCode::ContentNotProvided => 7,
         EnvironmentProblemCode::ProviderRootUnbound => 8,
+        // Appended by `bind-prefixed-load-roots`, after the codes the earlier schema fixed: the
+        // prefix shape is the one declaration-only refusal the container root shape adds, and
+        // positions are the declaration order `ALL` has to mirror.
+        EnvironmentProblemCode::InvalidRootPrefix => 9,
     }
 }
 
@@ -769,7 +773,7 @@ fn missing_parent_domain_is_reported_and_resolves_nothing() {
     let fixture = fixture();
     let app = loader("app");
     let missing = loader("missing-platform");
-    let roots = vec![LoadRoot::Snapshot {
+    let roots = vec![LoadRoot::StandaloneClass {
         snapshot: fixture.snapshot.id().clone(),
     }];
     let environment = environment(
@@ -799,7 +803,7 @@ fn parent_cycle_is_reported_for_every_domain_in_the_cycle() {
     let fixture = fixture();
     let app = loader("app");
     let platform = loader("platform");
-    let roots = vec![LoadRoot::Snapshot {
+    let roots = vec![LoadRoot::StandaloneClass {
         snapshot: fixture.snapshot.id().clone(),
     }];
     let environment = environment(
@@ -839,7 +843,7 @@ fn parent_cycle_is_reported_for_every_domain_in_the_cycle() {
 fn caller_domain_must_be_equal_to_the_domain_declared_under_the_same_loader() {
     let fixture = fixture();
     let app = loader("app");
-    let roots = vec![LoadRoot::Snapshot {
+    let roots = vec![LoadRoot::StandaloneClass {
         snapshot: fixture.snapshot.id().clone(),
     }];
     // The caller declares the fixture root, the domain under the same loader does not.
@@ -970,7 +974,7 @@ fn loader_uniqueness_covers_repeated_and_undeclared_caller_domains() {
     let fixture = fixture();
     let app = loader("app");
     let platform = loader("platform");
-    let roots = vec![LoadRoot::Snapshot {
+    let roots = vec![LoadRoot::StandaloneClass {
         snapshot: fixture.snapshot.id().clone(),
     }];
 
@@ -1018,13 +1022,16 @@ fn roots_without_provided_content_are_reported_by_index() {
         steps: Vec::new(),
     };
     let roots = vec![
-        LoadRoot::Snapshot {
+        LoadRoot::StandaloneClass {
             snapshot: fixture.snapshot.id().clone(),
         },
-        LoadRoot::Snapshot {
+        LoadRoot::StandaloneClass {
             snapshot: absent.clone(),
         },
-        LoadRoot::ArtifactTree { root: tree.clone() },
+        LoadRoot::Container {
+            origin: tree.clone(),
+            prefix: ArchiveNameBytes(Vec::new()),
+        },
     ];
     let environment = environment(
         &fixture,
@@ -1068,7 +1075,7 @@ fn environment_problems_of_different_codes_keep_their_declaration_order() {
     let fixture = fixture();
     let app = loader("app");
     let missing = loader("missing-platform");
-    let provided = LoadRoot::Snapshot {
+    let provided = LoadRoot::StandaloneClass {
         snapshot: fixture.snapshot.id().clone(),
     };
 
@@ -1084,7 +1091,7 @@ fn environment_problems_of_different_codes_keep_their_declaration_order() {
         DelegationPolicy::ParentFirst,
         vec![
             provided.clone(),
-            LoadRoot::Snapshot {
+            LoadRoot::StandaloneClass {
                 snapshot: SnapshotId("never-provided".to_string()),
             },
         ],
@@ -1209,7 +1216,7 @@ fn external_roots_are_unreadable_declarations_not_missing_content() {
 fn provider_roots_must_be_listed_by_a_participating_domain() {
     let fixture = fixture();
     let app = loader("app");
-    let roots = vec![LoadRoot::Snapshot {
+    let roots = vec![LoadRoot::StandaloneClass {
         snapshot: fixture.snapshot.id().clone(),
     }];
     let environment = environment(
@@ -1224,7 +1231,7 @@ fn provider_roots_must_be_listed_by_a_participating_domain() {
             HeaderProvider {
                 id: ProviderId("foreign-headers".to_string()),
                 roots: vec![
-                    LoadRoot::Snapshot {
+                    LoadRoot::StandaloneClass {
                         snapshot: SnapshotId("foreign".to_string()),
                     },
                     LoadRoot::External {
@@ -1265,7 +1272,7 @@ fn provider_roots_must_be_listed_by_a_participating_domain() {
 fn unsupported_module_modes_and_delegations_are_policy_problems() {
     let fixture = fixture();
     let app = loader("app");
-    let roots = vec![LoadRoot::Snapshot {
+    let roots = vec![LoadRoot::StandaloneClass {
         snapshot: fixture.snapshot.id().clone(),
     }];
 
@@ -2271,7 +2278,7 @@ fn all_lists_are_complete_and_align_with_the_serde_names() {
     // `EnvironmentProblemCode::ALL` is the closed set itself: every code appears exactly
     // once, at the index its exhaustive match names, and its `as_str` is the serde name the
     // reports and diagnostics use.
-    assert_eq!(EnvironmentProblemCode::ALL.len(), 9);
+    assert_eq!(EnvironmentProblemCode::ALL.len(), 10);
     let mut indexes = Vec::new();
     for code in EnvironmentProblemCode::ALL {
         let index = problem_code_index(code);

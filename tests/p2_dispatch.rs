@@ -360,9 +360,21 @@ fn domain(loader: &LoaderId, parent: Option<LoaderId>, roots: Vec<LoadRoot>) -> 
     }
 }
 
+/// The load root one fixture's own content is: a standalone CLASS snapshot is one whole
+/// definition, and a ZIP snapshot is searched in its root container with an empty prefix.
 fn snapshot_root(snapshot: &ArtifactSnapshot) -> LoadRoot {
-    LoadRoot::Snapshot {
-        snapshot: snapshot.id().clone(),
+    match snapshot.kind() {
+        ArtifactKind::StandaloneClass => LoadRoot::StandaloneClass {
+            snapshot: snapshot.id().clone(),
+        },
+        ArtifactKind::Zip => LoadRoot::Container {
+            origin: ContainerOrigin {
+                snapshot: snapshot.id().clone(),
+                root_container: ContainerId("root".into()),
+                steps: Vec::new(),
+            },
+            prefix: ArchiveNameBytes(Vec::new()),
+        },
     }
 }
 
@@ -559,8 +571,14 @@ fn tree_range(snapshot: &ArtifactSnapshot) -> (Vec<LoadRoot>, PhysicalScope) {
     };
     (
         vec![
-            LoadRoot::ArtifactTree { root },
-            LoadRoot::ArtifactTree { root: nested },
+            LoadRoot::Container {
+                origin: root,
+                prefix: ArchiveNameBytes(Vec::new()),
+            },
+            LoadRoot::Container {
+                origin: nested,
+                prefix: ArchiveNameBytes(Vec::new()),
+            },
         ],
         scope,
     )
@@ -1751,11 +1769,13 @@ fn an_artifact_tree_range_covers_the_containers_its_positions_reach() {
         &loader("app"),
         None,
         vec![
-            LoadRoot::ArtifactTree {
-                root: root_container.origin.clone(),
+            LoadRoot::Container {
+                origin: root_container.origin.clone(),
+                prefix: ArchiveNameBytes(Vec::new()),
             },
-            LoadRoot::ArtifactTree {
-                root: nested.origin.clone(),
+            LoadRoot::Container {
+                origin: nested.origin.clone(),
+                prefix: ArchiveNameBytes(Vec::new()),
             },
         ],
     );
@@ -1821,7 +1841,7 @@ fn a_standalone_class_root_can_be_the_whole_range() {
         None,
         vec![
             snapshot_root(&world),
-            LoadRoot::Snapshot {
+            LoadRoot::StandaloneClass {
                 snapshot: standalone.id().clone(),
             },
         ],
@@ -1866,7 +1886,7 @@ fn a_tree_range_over_a_class_snapshot_is_a_failed_range_not_an_empty_one() {
         None,
         vec![
             snapshot_root(&world),
-            LoadRoot::Snapshot {
+            LoadRoot::StandaloneClass {
                 snapshot: standalone.id().clone(),
             },
         ],

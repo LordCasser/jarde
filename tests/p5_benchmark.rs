@@ -351,6 +351,25 @@ fn full_range_request(snapshot: &ArtifactSnapshot) -> QueryRequest {
     }
 }
 
+/// The load root one fixture's own content is: a standalone CLASS snapshot is one whole
+/// definition, and a ZIP snapshot is searched in its root container with an empty prefix. The row's
+/// subject decides which shape it is; no layout prefix is inferred from the fixture.
+fn snapshot_root(snapshot: &ArtifactSnapshot) -> LoadRoot {
+    match snapshot.kind() {
+        ArtifactKind::StandaloneClass => LoadRoot::StandaloneClass {
+            snapshot: snapshot.id().clone(),
+        },
+        ArtifactKind::Zip => LoadRoot::Container {
+            origin: ContainerOrigin {
+                snapshot: snapshot.id().clone(),
+                root_container: ContainerId("root".into()),
+                steps: Vec::new(),
+            },
+            prefix: ArchiveNameBytes(Vec::new()),
+        },
+    }
+}
+
 /// The caller domain the single-member row runs under: the subject's own snapshot and nothing else,
 /// which is the simplest environment the validator accepts without a problem.
 fn single_member_environment(snapshot: &ArtifactSnapshot) -> ResolutionEnvironment {
@@ -358,9 +377,7 @@ fn single_member_environment(snapshot: &ArtifactSnapshot) -> ResolutionEnvironme
         loader: LoaderId("app".to_string()),
         parent_loader: None,
         delegation: DelegationPolicy::ParentFirst,
-        roots: vec![LoadRoot::Snapshot {
-            snapshot: snapshot.id().clone(),
-        }],
+        roots: vec![snapshot_root(snapshot)],
         module_mode: ModuleMode::ClassPath,
         external_override: RuntimeUncertainty::None,
         runtime_transformation: RuntimeUncertainty::None,
@@ -4873,12 +4890,8 @@ fn boundary_environment(
     providers: &[ArtifactSnapshot],
     release: u16,
 ) -> ResolutionEnvironment {
-    let mut roots = vec![LoadRoot::Snapshot {
-        snapshot: snapshot.id().clone(),
-    }];
-    roots.extend(providers.iter().map(|provider| LoadRoot::Snapshot {
-        snapshot: provider.id().clone(),
-    }));
+    let mut roots = vec![snapshot_root(snapshot)];
+    roots.extend(providers.iter().map(snapshot_root));
     let domain = LoadDomain {
         loader: LoaderId("app".to_string()),
         parent_loader: None,
@@ -4907,9 +4920,7 @@ fn boundary_environment(
             .enumerate()
             .map(|(index, provider)| HeaderProvider {
                 id: ProviderId(format!("boundary-headers-{index}")),
-                roots: vec![LoadRoot::Snapshot {
-                    snapshot: provider.id().clone(),
-                }],
+                roots: vec![snapshot_root(provider)],
             })
             .collect(),
     }

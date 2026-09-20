@@ -451,14 +451,32 @@ fn archive_classes(snapshot: &ArtifactSnapshot) -> Vec<(Vec<u8>, Vec<u8>)> {
 // The environment a resolution request runs under
 // ---------------------------------------------------------------------------------------------
 
+/// The load root one fixture's own content is: a standalone CLASS snapshot is one whole
+/// definition, and a ZIP snapshot is searched in its root container with an empty prefix. The
+/// fixture decides which shape it is; several rows of this file run over the committed class file
+/// and the rest over archives built in memory.
+fn snapshot_root(snapshot: &ArtifactSnapshot) -> LoadRoot {
+    match snapshot.kind() {
+        ArtifactKind::StandaloneClass => LoadRoot::StandaloneClass {
+            snapshot: snapshot.id().clone(),
+        },
+        ArtifactKind::Zip => LoadRoot::Container {
+            origin: ContainerOrigin {
+                snapshot: snapshot.id().clone(),
+                root_container: ContainerId("root".into()),
+                steps: Vec::new(),
+            },
+            prefix: ArchiveNameBytes(Vec::new()),
+        },
+    }
+}
+
 fn domain(snapshot: &ArtifactSnapshot) -> LoadDomain {
     LoadDomain {
         loader: LoaderId("app".to_string()),
         parent_loader: None,
         delegation: DelegationPolicy::ParentFirst,
-        roots: vec![LoadRoot::Snapshot {
-            snapshot: snapshot.id().clone(),
-        }],
+        roots: vec![snapshot_root(snapshot)],
         module_mode: ModuleMode::ClassPath,
         external_override: RuntimeUncertainty::None,
         runtime_transformation: RuntimeUncertainty::None,
@@ -1637,12 +1655,8 @@ fn a_provider_added_later_is_answered_by_a_fresh_search() {
         dispatch: None,
     };
     let roots = |provider: Option<&ArtifactSnapshot>| {
-        let mut roots = vec![LoadRoot::Snapshot {
-            snapshot: owner_snapshot.id().clone(),
-        }];
-        roots.extend(provider.map(|snapshot| LoadRoot::Snapshot {
-            snapshot: snapshot.id().clone(),
-        }));
+        let mut roots = vec![snapshot_root(&owner_snapshot)];
+        roots.extend(provider.map(snapshot_root));
         roots
     };
     let domain_of = |provider: Option<&ArtifactSnapshot>| LoadDomain {
@@ -1672,9 +1686,7 @@ fn a_provider_added_later_is_answered_by_a_fresh_search() {
             .map(|snapshot| {
                 vec![HeaderProvider {
                     id: ProviderId("app-headers".to_string()),
-                    roots: vec![LoadRoot::Snapshot {
-                        snapshot: snapshot.id().clone(),
-                    }],
+                    roots: vec![snapshot_root(snapshot)],
                 }]
             })
             .unwrap_or_default(),

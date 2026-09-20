@@ -313,8 +313,8 @@ pub(crate) fn declared_evidence(
     for root in roots {
         declared.external_content |= match root {
             LoadRoot::External { .. } => true,
-            LoadRoot::Snapshot { snapshot } => !provides(content, snapshot),
-            LoadRoot::ArtifactTree { root } => !provides(content, &root.snapshot),
+            LoadRoot::StandaloneClass { snapshot } => !provides(content, snapshot),
+            LoadRoot::Container { origin, .. } => !provides(content, &origin.snapshot),
         };
     }
     for domain in &environment.domains {
@@ -792,7 +792,7 @@ mod tests {
                 domain(
                     &app,
                     None,
-                    vec![LoadRoot::Snapshot {
+                    vec![LoadRoot::StandaloneClass {
                         snapshot: SnapshotId("missing".to_string()),
                     }],
                 ),
@@ -802,8 +802,9 @@ mod tests {
                 domain(
                     &app,
                     None,
-                    vec![LoadRoot::ArtifactTree {
-                        root: root_container("missing", "root"),
+                    vec![LoadRoot::Container {
+                        origin: root_container("missing", "root"),
+                        prefix: jarde_reader::model::ArchiveNameBytes(Vec::new()),
                     }],
                 ),
                 true,

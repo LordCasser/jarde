@@ -136,9 +136,15 @@ fn domain(loader: &str, roots: Vec<LoadRoot>, delegation: DelegationPolicy) -> L
     }
 }
 
+/// The load root the fixture's own ZIP snapshot is: its root container with an empty prefix.
 fn snapshot_root(snapshot: &ArtifactSnapshot) -> LoadRoot {
-    LoadRoot::Snapshot {
-        snapshot: snapshot.id().clone(),
+    LoadRoot::Container {
+        origin: ContainerOrigin {
+            snapshot: snapshot.id().clone(),
+            root_container: ContainerId("root".into()),
+            steps: Vec::new(),
+        },
+        prefix: ArchiveNameBytes(Vec::new()),
     }
 }
 
@@ -850,8 +856,9 @@ fn a_name_in_two_war_roots_reports_both_origins_and_the_order_the_declaration_gi
     assert_eq!(single.profiles[0].layout.containers.len(), 2);
 
     // Naming the nested container as a root makes the order explicit, and the order decides.
-    let nested_root = LoadRoot::ArtifactTree {
-        root: nested.clone(),
+    let nested_root = LoadRoot::Container {
+        origin: nested.clone(),
+        prefix: ArchiveNameBytes(Vec::new()),
     };
     let ordered = build(vec![war(
         vec![nested_root.clone(), snapshot_root(&snapshot)],
