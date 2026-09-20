@@ -1,0 +1,1290 @@
+{
+  "acceptance_rows": {
+    "A01": {
+      "corpus": [
+        {
+          "function": "fixture",
+          "kind": "generator",
+          "path": "tests/p1_xref_code.rs"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p1-golden/code.json"
+        }
+      ],
+      "note": "one fixture carries a used and an unused `Methodref`: the constant-pool hit and the X1 consumer's absence are asserted over the same bytes.",
+      "theme": "未使用 Methodref 不是调用"
+    },
+    "A02": {
+      "corpus": [
+        {
+          "kind": "file",
+          "path": "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/JvmBytecodeOracle.java"
+        },
+        {
+          "function": "fixture",
+          "kind": "generator",
+          "path": "tests/p1_xref_code.rs"
+        }
+      ],
+      "note": "the ECJ v52 sample supplies the real invocation, the JDK 25 oracle the independent reading of the same instruction, and the builder the CP index and span coordinates.",
+      "theme": "invokevirtual 位置精确"
+    },
+    "A03": {
+      "corpus": [
+        {
+          "function": "meta_fixture",
+          "kind": "generator",
+          "path": "tests/p1_xref_metadata.rs"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/r2-annotation-positions/v17/RecordOnly.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/r2-annotation-positions/v8/CodeOnly.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/method-signature-grammar/v17/ThrowsMixed.class"
+        }
+      ],
+      "note": "the R2 samples place a type in a nested annotation on a record and in an entry the class comment cannot hold; the signature sample puts a type variable in a `throws` clause; the builder covers the candidate-filter cases a compiler will not emit.",
+      "theme": "annotation/signature/catch 中独有类型"
+    },
+    "A04": {
+      "corpus": [
+        {
+          "kind": "file",
+          "path": "tests/fixtures/b2-bootstrap-descriptor/v8/LambdaSample.class"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p1-golden/bootstrap.json"
+        },
+        {
+          "function": "descriptor_bootstrap_fixture",
+          "kind": "generator",
+          "path": "tests/p1_xref_bootstrap.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p4_modern_facts.rs"
+        }
+      ],
+      "note": "the checked-in lambda sample carries a linkable metafactory call; the builder adds the unused table entries, the condy forms and the illegal shapes javac cannot be asked to emit.",
+      "theme": "LambdaMetafactory 与任意 bootstrap"
+    },
+    "A05": {
+      "corpus": [
+        {
+          "function": "real_lambda_fixture",
+          "kind": "generator",
+          "path": "tests/p1_xref_bootstrap.rs"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p1-golden/bootstrap.json"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p4_modern_facts.rs"
+        }
+      ],
+      "note": "condy chains, a shared subgraph and cycle/visited bookkeeping are hand-built: a container and its nested arguments need exact pool indexes, and javac 23.0.1 emits no `CONSTANT_Dynamic` at all.",
+      "theme": "nested condy 与共享图"
+    },
+    "A06": {
+      "corpus": [
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p1-golden/multi-release.json"
+        },
+        {
+          "function": "a06_fixture",
+          "kind": "generator",
+          "path": "tests/p1_multi_release.rs"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/artifact_tree/multi-release.jar"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p4_runtime_matrix.rs"
+        }
+      ],
+      "note": "the golden holds base/v11/v17 entries of one class and replays the Java 8/11/17 selections beside one physical query; the committed jar is a second, independent MR shape.",
+      "theme": "root/11/17 MR 选择"
+    },
+    "A07": {
+      "corpus": [
+        {
+          "kind": "builder",
+          "path": "tests/p1_artifact_tree.rs"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p1-golden/nested.json"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p4_runtime_matrix.rs"
+        }
+      ],
+      "note": "distinct ordinals, origins and explicit loader/order selections are built in memory; the golden fixes the same bytes at two origins, which is the identity half.",
+      "theme": "WAR 同名类"
+    },
+    "A08": {
+      "corpus": [
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/artifact_tree/nested.jar"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p1-golden/nested.json"
+        },
+        {
+          "function": "zip_with_deflate",
+          "kind": "generator",
+          "path": "tests/p1_xref_code.rs"
+        }
+      ],
+      "note": "one committed nested jar, one golden that stores the same bytes twice — once STORED and once DEFLATED — and a builder that can truncate a candidate beside a readable sibling.",
+      "theme": "DEFLATED nested JAR"
+    },
+    "A09": {
+      "corpus": [
+        {
+          "kind": "file",
+          "path": "tests/fixtures/historical/ecj-4.6.1/v45/HistoricalControlFlow.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p2-golden/historical.json"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/method_analysis/jsr-ret.class"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/method_analysis/legacy-clone.class"
+        }
+      ],
+      "note": "the 45–48 ECJ outputs are where `jsr`/`ret` and the shared subroutine survive; the committed seeds add the clone and the overlapping-handler shapes, and the P2 golden replays the whole historical row.",
+      "theme": "历史 jsr/finally"
+    },
+    "A10": {
+      "corpus": [
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p2-golden/inputs.json"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-scope/v8-debug/Scope.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-corpus/v8-gnone/Flags.class"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p2_frame.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p2_ssa.rs"
+        }
+      ],
+      "note": "the P2 golden's `missing debug` group is the no-attribute case; the P3 flag matrix is the same source compiled with and without `-g`, which is the pair that shows naming must not read the debug attribute.",
+      "theme": "缺失 StackMap/debug"
+    },
+    "A11": {
+      "corpus": [
+        {
+          "kind": "builder",
+          "path": "tests/p2_declaration_refs.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p2_resolution.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p4_runtime_matrix.rs"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-corpus/v8-missing-dep/MissingDependency.class"
+        }
+      ],
+      "note": "the symbolic owner, the widened candidate set and the missing-dependency case are built by the P2 resolution suites; the shipped P3 sample supplies a real reference whose declaration is genuinely absent from the corpus.",
+      "theme": "Base.foo 声明、Sub CP owner"
+    },
+    "A12": {
+      "corpus": [
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-local-rewrite/v8/LocalRewrite.class"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p3_accessor_edges.rs"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p4-modern/v17/ConcatSample.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p4-modern/v8/ConcatJava8.class"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p4_modern_facts.rs"
+        }
+      ],
+      "note": "the P3 samples are the accessor shapes; the P4 pair compiles one concatenation under both releases, which is what the modern facts are read from — the *recovery* increment over that pair has not happened (P4 recorded it, with its trigger).",
+      "theme": "accessor/concat 恢复隐藏调用"
+    },
+    "A13": {
+      "corpus": [
+        {
+          "function": "broken_member_fixture",
+          "kind": "generator",
+          "path": "tests/p1_xref_code.rs"
+        },
+        {
+          "function": "dead_code_fixture",
+          "kind": "generator",
+          "path": "tests/p1_xref_code.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p2_members.rs"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-corpus/v8-missing-dep/MissingDependency.class"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p2-golden/historical.json"
+        }
+      ],
+      "note": "one undecodable member beside readable ones is built by the builder, and the goldens record the per-plane answers (representation, quality, execution, diagnostics) that a failure must not collapse into one.",
+      "theme": "成员级失败"
+    },
+    "A14": {
+      "corpus": [
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p2-golden/resource-boundary.json"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/query/truncated-class"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/artifact_tree/truncated-jar"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p1_query_bounds.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p2_entry_counts.rs"
+        }
+      ],
+      "note": "the committed truncated inputs and the resource-boundary golden are the interruption cases; the bounds suite drives each of the eighteen limits to its edge.",
+      "theme": "全范围中断/缺失依赖"
+    },
+    "A15": {
+      "corpus": [
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p1-golden/code.json"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p2-golden/historical.json"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p1_xref_golden.rs"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/query/minimal-jar"
+        }
+      ],
+      "note": "the corpus half of A15 already exists: a golden replay fixes a snapshot, a query or view and the fully serialized answer, which is the shape a cold/warm comparison compares. No cache exists yet, so no cold/warm measurement has been run against these bytes — that is P5 1.3/2.x/3.1, and task 1.1 only fixes the inputs it will read.",
+      "theme": "冷/热/关缓存完整结果一致"
+    },
+    "A16": {
+      "corpus": [
+        {
+          "kind": "builder",
+          "path": "tests/p3_recovery_entry.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p3_accessor_edges.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p3_isolation.rs"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p2-golden/resource-boundary.json"
+        }
+      ],
+      "note": "what is read is asserted as counts against a fixed fixture (one header, one body, one read, three bodies for the on-demand callees) rather than as bytes, because the boundary is about what was *not* read.",
+      "theme": "单方法按需边界"
+    },
+    "A17": {
+      "corpus": [
+        {
+          "kind": "builder",
+          "path": "tests/p3_isolation.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p2_contracts.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p2_entry_counts.rs"
+        }
+      ],
+      "note": "the construction counts come from the zero-budget/proxy assertions in the entry-count and isolation suites, and the source-level token guard reads the guarded files themselves — the corpus is this repository's own sources, not a fixture.",
+      "theme": "X1 零 CFG/SSA/AST"
+    },
+    "A18": {
+      "corpus": [
+        {
+          "kind": "builder",
+          "path": "tests/p1_query_api.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p1_query_bounds.rs"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/query/corrupt-payload.jar"
+        }
+      ],
+      "note": "the fixed-byte-source and mid-read cancellation cases are built over a literal archive; the committed corrupt payload is the input that must be reported instead of read through. The cache/parallel half of the row is P5's and has not run.",
+      "theme": "分析期间输入变化"
+    }
+  },
+  "dimensions": {
+    "adversarial": {
+      "carriers": [
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/artifact_tree/damaged-entry.jar"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/method_analysis/exception-overlap-mixed.class"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/method_analysis/wide-switch.class"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/method_analysis/wide-switch.jar"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p4-golden/illegal-modern.json"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p2-golden/wide-switch.json"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p1_xref_properties.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p2_properties.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "fuzz/fuzz_targets/method_analysis.rs"
+        }
+      ],
+      "label": "对抗",
+      "note": "The adversarial matrix is unknown constant-pool entries, illegal indexes, over-long attributes, cyclic and over-budget graphs and illegal release shapes: the illegal-modern golden and the committed seeds cover the named shapes, the fuzz targets replay them under a budget, and the two proptest suites cover the generated ones — those cases exist per run only, pinned by CI's fixed `PROPTEST_RNG_SEED` rather than by a digest (see `known_gaps`).",
+      "state": "partial"
+    },
+    "bytecode": {
+      "carriers": [
+        {
+          "kind": "file",
+          "path": "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/b2-bootstrap-descriptor/v8/LambdaSample.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/method-signature-grammar/v17/ThrowsMixed.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/r2-annotation-positions/v8/CodeOnly.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p4-modern/v17/ConcatSample.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/JvmBytecodeOracle.java"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p1-golden/code.json"
+        },
+        {
+          "function": "fixture",
+          "kind": "generator",
+          "path": "tests/p1_xref_code.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p2_frame.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p2_cfg.rs"
+        }
+      ],
+      "label": "字节码",
+      "note": "Instruction-level coordinates (BCI, opcode, constant-pool index, spans) come from the ECJ v52 sample and from the in-memory builder that can pin exact indexes; the historical matrix is cross-checked against a JDK 25 Class-File API oracle whose own source is checked in. What the oracle *prints* is generated at run time from a JDK the repository does not pin — see `known_gaps`.",
+      "state": "pinned"
+    },
+    "compiler": {
+      "carriers": [
+        {
+          "kind": "file",
+          "path": "tests/fixtures/historical/ecj-4.6.1/src/HistoricalControlFlow.java"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-corpus/Flags.java"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p4-modern/src/RecordSample.java"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p4-modern/src/SealedSample.java"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p4-modern/src/ConcatSample.java"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/r2-annotation-positions/RecordOnly.java"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/b2-bootstrap-descriptor/LambdaSample.java"
+        },
+        {
+          "kind": "record",
+          "path": "tests/fixtures/historical/README.md"
+        },
+        {
+          "kind": "record",
+          "path": "tests/fixtures/p3-corpus/README.md"
+        },
+        {
+          "kind": "record",
+          "path": "tests/fixtures/p4-modern/README.md"
+        }
+      ],
+      "label": "编译器",
+      "note": "Two compilers produce the corpus: ECJ 4.6.1 with `-source 1.3` for the 45–52 samples (the `--release 8` story is not a substitute for that codegen) and javac 23.0.1 for P3, P4 and the R2/B2 samples. The compiler is a generation-only input and is not checked in, so what the fingerprint fixes is the *source* it was given — the `.java` files here — plus the recorded command and version in each directory's README.",
+      "state": "pinned"
+    },
+    "degradation": {
+      "carriers": [
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/query/truncated-class"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/query/corrupt-payload.jar"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/query/damaged-candidate.jar"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/artifact_tree/truncated-jar"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/artifact_tree/damaged-entry.jar"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-corpus/v8-missing-dep/MissingDependency.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-corpus/absent-Library-stub/absent/Library.java"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p2-golden/resource-boundary.json"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p1_query_bounds.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p2_entry_counts.rs"
+        }
+      ],
+      "label": "退化",
+      "note": "Degraded inputs are truncated, corrupt and over-budget ones: the committed fuzz seeds carry the first two, `resource-boundary.json` the third, and the missing-dependency sample is the fourth — its stub is checked in *as a source* and deliberately not shipped as a class, because the absent provider is what the fixture is about.",
+      "state": "pinned"
+    },
+    "identity": {
+      "carriers": [
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/artifact_tree/nested.jar"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p1-golden/nested.json"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p1_artifact_tree.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p1_multi_release.rs"
+        }
+      ],
+      "label": "身份",
+      "note": "Identity is a property of a *physical* origin, so it is exercised by the same fixtures that carry duplicates: the golden reuses one jar's bytes at two `WEB-INF/lib` entries (one STORED, one DEFLATED) and asserts distinct origins, and the artifact-tree builder adds the same bytes under several entries and ordinal positions. Only the golden bytes are pinned; the builder's duplicate shapes are not.",
+      "state": "partial"
+    },
+    "packaging": {
+      "carriers": [
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/artifact_tree/minimal-jar"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/artifact_tree/nested.jar"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/artifact_tree/multi-release.jar"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/artifact_tree/damaged-entry.jar"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/artifact_tree/truncated-jar"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/query/minimal-jar"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/query/minimal-class"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p1-golden/nested.json"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p1-golden/multi-release.json"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p1_artifact_tree.rs"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p1_multi_release.rs"
+        }
+      ],
+      "label": "打包",
+      "note": "Checked-in archives fix the ordinary, nested and multi-release shapes as bytes. The WAR, Boot-executable and ZIP64 trees, and the STORED/DEFLATED pair that differs only in compression, are built in memory by `p1_artifact_tree`/`p1_xref_code`: the nested pair's bytes are pinned by `p1-golden/nested.json`, the WAR/Boot/ZIP64 trees are not pinned anywhere (see `known_gaps`).",
+      "state": "partial"
+    },
+    "recovery": {
+      "carriers": [
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-local-rewrite/v8/LocalRewrite.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-scope/v8/Scope.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-scope/v8-debug/Scope.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-handlers/v8/Guarded.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-handlers/v8/Res.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-corpus/v8-gnone/Flags.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-corpus/v8-g/Flags.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-corpus/v8-glines/Flags.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-corpus/v8-parameters/Flags.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-corpus/v8-source-target/Flags.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p3-corpus/v8-missing-dep/MissingDependency.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/method_analysis/jsr-ret.class"
+        },
+        {
+          "kind": "file",
+          "path": "fuzz/corpus/method_analysis/legacy-clone.class"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p2-golden/legacy-clone.json"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p2-golden/historical.json"
+        },
+        {
+          "kind": "builder",
+          "path": "tests/p3_execution_comparison.rs"
+        }
+      ],
+      "label": "恢复",
+      "note": "The recovery dimension is the most byte-dependent one: a slot reuse, a debug attribute or an entry count changes which local a value lands in, so every sample P3's compile-and-execute comparison reads is checked in, including the flag matrix (which exists to show `-g:none` and `-g:lines,source` do not read the same) and the sample whose dependency is deliberately absent.",
+      "state": "pinned"
+    },
+    "versions": {
+      "carriers": [
+        {
+          "kind": "file",
+          "path": "tests/fixtures/historical/ecj-4.6.1/v45/HistoricalControlFlow.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/historical/ecj-4.6.1/v46/HistoricalControlFlow.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/historical/ecj-4.6.1/v47/HistoricalControlFlow.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/historical/ecj-4.6.1/v48/HistoricalControlFlow.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/historical/ecj-4.6.1/v49/HistoricalControlFlow.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/historical/ecj-4.6.1/v50/HistoricalControlFlow.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/historical/ecj-4.6.1/v51/HistoricalControlFlow.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p4-modern/v8/ConcatJava8.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p4-modern/v16/RecordSample.class"
+        },
+        {
+          "kind": "file",
+          "path": "tests/fixtures/p4-modern/v17/SealedSample.class"
+        },
+        {
+          "kind": "golden",
+          "path": "tests/fixtures/p4-golden/version-boundaries.json"
+        },
+        {
+          "function": "with_version",
+          "kind": "generator",
+          "path": "tests/p4_feature_registry.rs"
+        }
+      ],
+      "label": "版本",
+      "note": "45.3–52.0 are eight ECJ outputs of one source, one per historical target; 52/60/61 are javac 23.0.1 outputs. The release registry's 45–71 table is read through `p4_feature_registry`'s `with_version`, which patches the two version fields onto the checked-in v52 sample: those bytes exist only at run time, and `version-boundaries.json` is where their digests are recorded.",
+      "state": "pinned"
+    }
+  },
+  "files": [
+    {
+      "blake3": "ecfe4983ec8d95d3836d2fb9426952f1b3220fc72079a337a8e97e334d6f644a",
+      "bytes": 498,
+      "path": "fuzz/corpus/artifact_tree/damaged-entry.jar"
+    },
+    {
+      "blake3": "e8a36b9bc78e8ae9a96c384197ad078e7b10372c7cb525afbc3cb673eac5a4e7",
+      "bytes": 659,
+      "path": "fuzz/corpus/artifact_tree/minimal-jar"
+    },
+    {
+      "blake3": "272cd8efa03aa1022f798307f4904f34dd3f252d8ddf2f61de6fba9cfddaed88",
+      "bytes": 866,
+      "path": "fuzz/corpus/artifact_tree/multi-release.jar"
+    },
+    {
+      "blake3": "3b3da4a8320750601f282a0b057156163e79911a830ddddc7df9eb7ac57fda96",
+      "bytes": 783,
+      "path": "fuzz/corpus/artifact_tree/nested.jar"
+    },
+    {
+      "blake3": "a783e620d2cd1fd713074f00bf8149f80d665b194422efc6cdd3e4eb9cf06732",
+      "bytes": 80,
+      "path": "fuzz/corpus/artifact_tree/truncated-jar"
+    },
+    {
+      "blake3": "827a10e2dbf9c4da1afbb5be72e0f80c1317b37bfcc270e249f0e19058f6d5f1",
+      "bytes": 189,
+      "path": "fuzz/corpus/method_analysis/exception-overlap-mixed.class"
+    },
+    {
+      "blake3": "9a7bedb2717dbdc0a2e1bd51ec31ba850cd7a902ed5cc204afc35c070b6221e7",
+      "bytes": 214,
+      "path": "fuzz/corpus/method_analysis/exception-overlap.class"
+    },
+    {
+      "blake3": "ec415febcf05e28048c778d7dd4feb697140c9b6ee4248720045513632ef3f2f",
+      "bytes": 258,
+      "path": "fuzz/corpus/method_analysis/jsr-ret.class"
+    },
+    {
+      "blake3": "dad7d14768e62422edbe1e851da1539f90c4cf754ffc9039b03439851b299406",
+      "bytes": 131,
+      "path": "fuzz/corpus/method_analysis/legacy-clone.class"
+    },
+    {
+      "blake3": "28d6bc114bd3f1372d45d490069fd18bde17320d6bc967c616438275c259c0ce",
+      "bytes": 194,
+      "path": "fuzz/corpus/method_analysis/wide-switch.class"
+    },
+    {
+      "blake3": "2eef3f567b805a4d08dd1ab39fb17e773c2f4e488527e6d03f32e912a28c3ce3",
+      "bytes": 334,
+      "path": "fuzz/corpus/method_analysis/wide-switch.jar"
+    },
+    {
+      "blake3": "5ae3037060f9443bc06e7d0e68155bb8cdbe7635a2b6288d7217a804a003fd40",
+      "bytes": 659,
+      "path": "fuzz/corpus/query/corrupt-payload.jar"
+    },
+    {
+      "blake3": "ecfe4983ec8d95d3836d2fb9426952f1b3220fc72079a337a8e97e334d6f644a",
+      "bytes": 498,
+      "path": "fuzz/corpus/query/damaged-candidate.jar"
+    },
+    {
+      "blake3": "b646be45bd13bdb638b9d748be60422d2e2b2eb1a4a70b9f36dc1f006f4aab67",
+      "bytes": 185,
+      "path": "fuzz/corpus/query/minimal-class"
+    },
+    {
+      "blake3": "e8a36b9bc78e8ae9a96c384197ad078e7b10372c7cb525afbc3cb673eac5a4e7",
+      "bytes": 659,
+      "path": "fuzz/corpus/query/minimal-jar"
+    },
+    {
+      "blake3": "a2802aee3832e6919d54ea479a3912ec6bfcb6a72548def45b61cf3001f497b6",
+      "bytes": 20,
+      "path": "fuzz/corpus/query/truncated-class"
+    },
+    {
+      "blake3": "9146cc3a6f96f098696576904dea02366a3906e39f057498ac5ae2d9c9b4ade9",
+      "bytes": 2944,
+      "path": "tests/fixtures/JvmBytecodeOracle.java"
+    },
+    {
+      "blake3": "6c771a42b1cd6800abcf37e14d2d6e5d0d7af222a15d3a85ac648358efb0c59d",
+      "bytes": 108,
+      "path": "tests/fixtures/b2-bootstrap-descriptor/LambdaSample.java"
+    },
+    {
+      "blake3": "92f2b3bcf6c6849dfbc6412bbf4cfecd05cf8204fa7596892ab9306306a94e47",
+      "bytes": 731,
+      "path": "tests/fixtures/b2-bootstrap-descriptor/v8/LambdaSample.class"
+    },
+    {
+      "blake3": "3856f83dd932214e8ebf98abe429ba5b3ab514ba9ea72da259081eaeda4e8527",
+      "bytes": 268,
+      "path": "tests/fixtures/historical/ecj-4.6.1/src/HistoricalControlFlow.java"
+    },
+    {
+      "blake3": "ec415febcf05e28048c778d7dd4feb697140c9b6ee4248720045513632ef3f2f",
+      "bytes": 258,
+      "path": "tests/fixtures/historical/ecj-4.6.1/v45/HistoricalControlFlow.class"
+    },
+    {
+      "blake3": "beb6149ac44581d0a90bf617a845695c67c0ff07f91e27ef50868916d7fed5fe",
+      "bytes": 258,
+      "path": "tests/fixtures/historical/ecj-4.6.1/v46/HistoricalControlFlow.class"
+    },
+    {
+      "blake3": "0caabbb544bf6c73d6e3ea7c5fe337d0439779c2a432a16f8ce7afa6e42f1f87",
+      "bytes": 258,
+      "path": "tests/fixtures/historical/ecj-4.6.1/v47/HistoricalControlFlow.class"
+    },
+    {
+      "blake3": "d6b0442d62bba5790887e3119c14d4a93156af8c01fd1f2e10c48c2ab2619e4e",
+      "bytes": 258,
+      "path": "tests/fixtures/historical/ecj-4.6.1/v48/HistoricalControlFlow.class"
+    },
+    {
+      "blake3": "b960c6fbb987362ff39f4beb48f9202f5f09e3b5316d14495dc4d9daa73c72ac",
+      "bytes": 250,
+      "path": "tests/fixtures/historical/ecj-4.6.1/v49/HistoricalControlFlow.class"
+    },
+    {
+      "blake3": "6ff91eaf8160388f0cc93810abcaf93a3535f2411b1729797bb1378dabdac86c",
+      "bytes": 303,
+      "path": "tests/fixtures/historical/ecj-4.6.1/v50/HistoricalControlFlow.class"
+    },
+    {
+      "blake3": "a3d36fe35a5ec3051cc2662b8a42366c642898559c1a771641631a4c7b864abc",
+      "bytes": 303,
+      "path": "tests/fixtures/historical/ecj-4.6.1/v51/HistoricalControlFlow.class"
+    },
+    {
+      "blake3": "188e1103d1f4eccb0d119d6877a0ca59a9ff74af6f33d6337af81b0ee758fb9b",
+      "bytes": 303,
+      "path": "tests/fixtures/historical/ecj-4.6.1/v52/HistoricalControlFlow.class"
+    },
+    {
+      "blake3": "9102cd0d30c33781f2f1b3dde476d484c63a380601fc4a557c1504c664065e03",
+      "bytes": 91,
+      "path": "tests/fixtures/method-signature-grammar/GenericReturn.java"
+    },
+    {
+      "blake3": "4f6392354b0e4aa853bfeb8bf78abc9edd01848f44bbd6869cfcd2d60f569eec",
+      "bytes": 104,
+      "path": "tests/fixtures/method-signature-grammar/ThrowsMixed.java"
+    },
+    {
+      "blake3": "e0fe9555968baf3abf1f8ba1ca46de0bfb81226d35b373230705a95bee307ecf",
+      "bytes": 87,
+      "path": "tests/fixtures/method-signature-grammar/ThrowsVar.java"
+    },
+    {
+      "blake3": "87bd3684fd8bdf49019df36d9fa59f714dcbc29e97f005284eb52264fd65eb11",
+      "bytes": 88,
+      "path": "tests/fixtures/method-signature-grammar/TypeVarResult.java"
+    },
+    {
+      "blake3": "1b79240a82e7625fc270f0a4299db5025f2a6baa8bb66fdf457f3d30824595d1",
+      "bytes": 242,
+      "path": "tests/fixtures/method-signature-grammar/v17/GenericReturn.class"
+    },
+    {
+      "blake3": "424ef03cacac7df3bd4dcba4be9c7208dd39ff49e580592241fa43daabdd5dda",
+      "bytes": 341,
+      "path": "tests/fixtures/method-signature-grammar/v17/ThrowsMixed.class"
+    },
+    {
+      "blake3": "8eaca015caa9488bd1a52e5095fe00cd5159bedb82d76e8c01a297754525fa23",
+      "bytes": 296,
+      "path": "tests/fixtures/method-signature-grammar/v17/ThrowsVar.class"
+    },
+    {
+      "blake3": "dd63b5763335199ec1661f73a1ed9eb254a30896e3a34432bcb749bae47e3bde",
+      "bytes": 290,
+      "path": "tests/fixtures/method-signature-grammar/v17/TypeVarResult.class"
+    },
+    {
+      "blake3": "5b3ab8fe58d19b7825517efcd00dbd93ae33b1e2f71c0e4a5e364b8817b01dd7",
+      "bytes": 22996,
+      "path": "tests/fixtures/p1-golden/bootstrap.json"
+    },
+    {
+      "blake3": "47973a6e5f49b2aa6532efb1490ca79b0d4a36a10054eec79768b875448b02d8",
+      "bytes": 19500,
+      "path": "tests/fixtures/p1-golden/code.json"
+    },
+    {
+      "blake3": "ac3db8f93e6d423d7cf88363f2b422218ff2c223669067ebece8eae452ff2351",
+      "bytes": 28468,
+      "path": "tests/fixtures/p1-golden/metadata.json"
+    },
+    {
+      "blake3": "b65e4efdf8c523f0dbc216408e3f04d5d04d94d78c8a780d55b23b7a33539500",
+      "bytes": 107486,
+      "path": "tests/fixtures/p1-golden/multi-release.json"
+    },
+    {
+      "blake3": "a52ff64e7adda4849cfda1736b1231332eb4f6f71bdef6b13ea6a9d0d71eb4be",
+      "bytes": 12798,
+      "path": "tests/fixtures/p1-golden/nested.json"
+    },
+    {
+      "blake3": "6ff16fe110cd50cc7caf0e919529ac33b86aa847486b7284988ae739e861558c",
+      "bytes": 64925,
+      "path": "tests/fixtures/p2-golden/exception-overlap.json"
+    },
+    {
+      "blake3": "9ecdd7c85ce3a3f03eec6a63d39b25fba6b89beaee49cb4912d61ec8bdb70110",
+      "bytes": 100627,
+      "path": "tests/fixtures/p2-golden/historical.json"
+    },
+    {
+      "blake3": "75a474fdcd394612567e0a8f4626f4ac1c4091839439860064b6998c147e46d8",
+      "bytes": 37581,
+      "path": "tests/fixtures/p2-golden/inputs.json"
+    },
+    {
+      "blake3": "f0937e4f4bc92eedb8b39fcb7ea9aa1f65db8c2dada5f1e5179d61527d83b5ae",
+      "bytes": 12385,
+      "path": "tests/fixtures/p2-golden/legacy-clone.json"
+    },
+    {
+      "blake3": "cb0bb8f1407c494f0c2cb5f153a5970ff12e875c57168ae72a1591c6d496e449",
+      "bytes": 109599,
+      "path": "tests/fixtures/p2-golden/resource-boundary.json"
+    },
+    {
+      "blake3": "6674244c0b927a10b9e587387a10212670f5cd7f5b1aa35ca8a91243565d774e",
+      "bytes": 12344,
+      "path": "tests/fixtures/p2-golden/wide-switch.json"
+    },
+    {
+      "blake3": "5d86b8fb0e6aeab5b229db3d0416c5738fd10697940b679ec201590bfe42dc93",
+      "bytes": 1754,
+      "path": "tests/fixtures/p3-corpus/Flags.java"
+    },
+    {
+      "blake3": "962ae416ca7dc67cb2981a7d850b7475293022d5e3adf1838e16f0bcdf929efc",
+      "bytes": 1257,
+      "path": "tests/fixtures/p3-corpus/MissingDependency.java"
+    },
+    {
+      "blake3": "16aa510f8bac5e8aea9f6cb1ee0a14a25282f16b02066379aa98ce61e7807b9c",
+      "bytes": 213,
+      "path": "tests/fixtures/p3-corpus/absent-Library-stub/absent/Library.java"
+    },
+    {
+      "blake3": "b5eaefaf761d5d3b6f74cd9b7aa7b7c74c9de97f282e550211f3e712a6b7a872",
+      "bytes": 597,
+      "path": "tests/fixtures/p3-corpus/v8-g/Flags.class"
+    },
+    {
+      "blake3": "a8de25e239041afa354a93e40811b40bdbe479a4437824bad6b133c7d7200088",
+      "bytes": 441,
+      "path": "tests/fixtures/p3-corpus/v8-glines/Flags.class"
+    },
+    {
+      "blake3": "c9017d6d1dc46db4e8d39fd85108f53419141219b28f2b61a1da34d5dfc75289",
+      "bytes": 325,
+      "path": "tests/fixtures/p3-corpus/v8-gnone/Flags.class"
+    },
+    {
+      "blake3": "577522903c6f23d84335dd10e5a5cb0b2f56fc9346227b1bb94bec3fe6c4b5ff",
+      "bytes": 264,
+      "path": "tests/fixtures/p3-corpus/v8-missing-dep/MissingDependency.class"
+    },
+    {
+      "blake3": "91be6d78a909f4ec51354673194ee3bb359a9a42a4c223a828039df21b9c6b1d",
+      "bytes": 395,
+      "path": "tests/fixtures/p3-corpus/v8-parameters/Flags.class"
+    },
+    {
+      "blake3": "c9017d6d1dc46db4e8d39fd85108f53419141219b28f2b61a1da34d5dfc75289",
+      "bytes": 325,
+      "path": "tests/fixtures/p3-corpus/v8-source-target/Flags.class"
+    },
+    {
+      "blake3": "b226962ee3597e612ed88c8ebb7f526e8616e567fc8b7f9d118b3227a62918ff",
+      "bytes": 4098,
+      "path": "tests/fixtures/p3-handlers/Guarded.java"
+    },
+    {
+      "blake3": "0905e1d1c495f458ff98a5968a13831100cc59e0ba571b17b67cc92233cde8a9",
+      "bytes": 897,
+      "path": "tests/fixtures/p3-handlers/Res.java"
+    },
+    {
+      "blake3": "fc4f3cb74079240c4ce81d0439d90a86cc95b1552b91996780b8af6a53009ca1",
+      "bytes": 3814,
+      "path": "tests/fixtures/p3-handlers/v8/Guarded.class"
+    },
+    {
+      "blake3": "a9e6a3bfb34f95c99047efc4a6bae418e014f72781f0ad16d334c6903fcb82b4",
+      "bytes": 733,
+      "path": "tests/fixtures/p3-handlers/v8/Res.class"
+    },
+    {
+      "blake3": "c3575914b083b65295da29bcef50f36ab0207ee70ff32d408b8fd29f0dcf73b3",
+      "bytes": 2368,
+      "path": "tests/fixtures/p3-local-rewrite/LocalRewrite.java"
+    },
+    {
+      "blake3": "7aa56f8589c4c1c32e4ef1c5e4cdc804fb250b79e0b4ae7f0d3cf48dde0eacfe",
+      "bytes": 650,
+      "path": "tests/fixtures/p3-local-rewrite/v8/LocalRewrite.class"
+    },
+    {
+      "blake3": "0a32b2ea235cc96196d96466dfd175576041522e8492f5537a48c58d73f69f3c",
+      "bytes": 3021,
+      "path": "tests/fixtures/p3-scope/Scope.java"
+    },
+    {
+      "blake3": "4a26de558b2538795c97c3f3c9a639fbd44afca27385b5f73c22ee9c044c53fc",
+      "bytes": 1101,
+      "path": "tests/fixtures/p3-scope/v8-debug/Scope.class"
+    },
+    {
+      "blake3": "e00e168ec30b869922fcc2e6ebac602a8055e84a1cee230db14fb0b3a936725b",
+      "bytes": 532,
+      "path": "tests/fixtures/p3-scope/v8/Scope.class"
+    },
+    {
+      "blake3": "d49953d83c70f90419ac9b3ad797ae4a32600069498f68ad716e8fb0513de3c9",
+      "bytes": 16792,
+      "path": "tests/fixtures/p4-golden/illegal-modern.json"
+    },
+    {
+      "blake3": "7b335cabea4b19ff30919494848f8968282ca976be6fdbadab207e0338ae8b35",
+      "bytes": 9046,
+      "path": "tests/fixtures/p4-golden/legal-modern.json"
+    },
+    {
+      "blake3": "c3d306160ea81c5c5b4ad3be0ff0871ef9a57b55660162aab5b55a7758a65a70",
+      "bytes": 5171,
+      "path": "tests/fixtures/p4-golden/version-boundaries.json"
+    },
+    {
+      "blake3": "2c4f4ec4a69e937ddb31735ff47051aea3af3b4987b5ca657ebebedf1e627261",
+      "bytes": 94,
+      "path": "tests/fixtures/p4-modern/src/Alpha.java"
+    },
+    {
+      "blake3": "ab5c2dfcb03b2893c3e1e1ea1a1f7728655a53c0195385af8eca96f791e6e036",
+      "bytes": 99,
+      "path": "tests/fixtures/p4-modern/src/Beta.java"
+    },
+    {
+      "blake3": "54cfc58f2b1a215083441354a756914264853553d29d95eab8c8f6ebd138d74e",
+      "bytes": 328,
+      "path": "tests/fixtures/p4-modern/src/ConcatJava8.java"
+    },
+    {
+      "blake3": "884007b3fa9c797fc456e071a41c3e045846b7eb6f3d3b6452173860e9474f37",
+      "bytes": 321,
+      "path": "tests/fixtures/p4-modern/src/ConcatSample.java"
+    },
+    {
+      "blake3": "9c7802d7c79a89860f453fcad92c143c3436475fd543d213749e313a4bc53788",
+      "bytes": 467,
+      "path": "tests/fixtures/p4-modern/src/Marker.java"
+    },
+    {
+      "blake3": "6c88914d8a9096edc199fa9481ea55835136ecd8da2b64678629159ae35f9f21",
+      "bytes": 258,
+      "path": "tests/fixtures/p4-modern/src/NestSample.java"
+    },
+    {
+      "blake3": "0fa9b2a30d48de9423a4732f673bca2d0407c96dac00f2adbc5c6c7b2f21f054",
+      "bytes": 166,
+      "path": "tests/fixtures/p4-modern/src/RecordSample.java"
+    },
+    {
+      "blake3": "2876e0ab4bae0a9d12063bee8d44d365fd174d2fbfbb02187dc64fe23f0575af",
+      "bytes": 128,
+      "path": "tests/fixtures/p4-modern/src/SealedSample.java"
+    },
+    {
+      "blake3": "fc037ee19a2573a7db2d8ae9125a50eae3b7f47399a41d16ebbeab4d0230c63e",
+      "bytes": 180,
+      "path": "tests/fixtures/p4-modern/src/module-info.java"
+    },
+    {
+      "blake3": "94b27625994e586c86215140e42b39ac22d00b5341ccce0c368796f742e1dcb7",
+      "bytes": 342,
+      "path": "tests/fixtures/p4-modern/src/p4/sample/Provider.java"
+    },
+    {
+      "blake3": "809575fce50ec9017a40d3d86474a46a8d3e6a02596d22723ab40fe1ee9f3db2",
+      "bytes": 340,
+      "path": "tests/fixtures/p4-modern/v16/Marker.class"
+    },
+    {
+      "blake3": "dd78d9d6f5fb570a0a2b9b8828e59f2f420a4da237a725ca16b9d7c0ae2cc816",
+      "bytes": 1245,
+      "path": "tests/fixtures/p4-modern/v16/RecordSample.class"
+    },
+    {
+      "blake3": "d5b8fb45e6c713446e4188a20331f0f0bdf1c2218013e5921e550e2bb6b1c512",
+      "bytes": 140,
+      "path": "tests/fixtures/p4-modern/v17/Alpha.class"
+    },
+    {
+      "blake3": "7e49f49524a08d7a45fb25961b911ace9c93936c5fd056d0be22c49d68fff55e",
+      "bytes": 139,
+      "path": "tests/fixtures/p4-modern/v17/Beta.class"
+    },
+    {
+      "blake3": "ee2498f82333a55ab54b7aac8cc946d691ebb71b93b5757cf7f6cd04ab31fa72",
+      "bytes": 884,
+      "path": "tests/fixtures/p4-modern/v17/ConcatSample.class"
+    },
+    {
+      "blake3": "c12fe70e34110b6341d902c600ebffaf12cf12078d86c52dc782050d623a7aab",
+      "bytes": 370,
+      "path": "tests/fixtures/p4-modern/v17/NestSample$Inner.class"
+    },
+    {
+      "blake3": "df4eefe17cd36de5876252065cf1ebbfe3ea188438141c46604d91d3b0daa445",
+      "bytes": 247,
+      "path": "tests/fixtures/p4-modern/v17/NestSample.class"
+    },
+    {
+      "blake3": "5206007eb997eb688cbefd1c37cd45918c05456813943651de6173654b6a2ea4",
+      "bytes": 119,
+      "path": "tests/fixtures/p4-modern/v17/SealedSample.class"
+    },
+    {
+      "blake3": "f032cf1df991cf2e8a0301aa80c9ca2c0366536f093dc285a865e66f3dd63605",
+      "bytes": 177,
+      "path": "tests/fixtures/p4-modern/v17/module-info.class"
+    },
+    {
+      "blake3": "b679b60ef79d18fd5d2b5fba23bfe4d548022e398f90a12106848370a905745c",
+      "bytes": 335,
+      "path": "tests/fixtures/p4-modern/v17/p4/sample/Provider.class"
+    },
+    {
+      "blake3": "cecc0aa6452dc1c0c8bcf4b9338f5dc4b659c4c0b8d049cecbee154aca27b933",
+      "bytes": 1087,
+      "path": "tests/fixtures/p4-modern/v8/ConcatJava8.class"
+    },
+    {
+      "blake3": "fa7ad1d72c352a790a5807113f03ee0f1c7c2e9e1abf5c95eafd52cff2d39029",
+      "bytes": 194,
+      "path": "tests/fixtures/r2-annotation-positions/CodeOnly.java"
+    },
+    {
+      "blake3": "a48afb0b41b357f68a0b4ffc5e087517267769ada15a0f655ff061c37170b7e1",
+      "bytes": 178,
+      "path": "tests/fixtures/r2-annotation-positions/RecordOnly.java"
+    },
+    {
+      "blake3": "f45c5aa15e925bafee7eb1ddc1b52809cf6eb92ad270185c1c2727b5638afe09",
+      "bytes": 1017,
+      "path": "tests/fixtures/r2-annotation-positions/v17/RecordOnly.class"
+    },
+    {
+      "blake3": "1c401c66ec9220f4b5d9e8b5cc8c64021ec637cbacd104b9b896ac1ef9f3a746",
+      "bytes": 285,
+      "path": "tests/fixtures/r2-annotation-positions/v8/CodeOnly.class"
+    }
+  ],
+  "known_gaps": [
+    "WAR, Boot-executable and ZIP64 trees exist only as bytes a test builds in memory (`tests/p1_artifact_tree.rs`): they are replayed and asserted, but no golden document records their digest, so a change to that builder moves them without moving this fingerprint.",
+    "The STORED/DEFLATED pair and the same-bytes-multiple-origins cases are pinned only where a golden already names them (`p1-golden/nested.json`, `p1-golden/multi-release.json`); the other shapes those builders produce are not pinned.",
+    "The proptest suites (`tests/p1_xref_properties.rs`, `tests/p2_properties.rs`) generate their inputs per case. CI fixes `PROPTEST_RNG_SEED`, which makes a run reproducible, but no digest is recorded here, so a case-level corpus change is invisible to this fingerprint.",
+    "`tests/fixtures/JvmBytecodeOracle.java` is checked in, but the reading it produces comes from whatever JDK runs it; P0 records the oracle as a cross-check rather than a pinned input, and this fingerprint does not pin a JDK.",
+    "`tests/p3_execution_comparison.rs` compiles wrappers generated from the run's own facts with the machine's `javac`: the wrappers are a function of pinned bytes, the compiler is not pinned."
+  ],
+  "purpose": "Fix the bytes every P5 measurement reads. Digests here are a fingerprint of the corpus, not evidence that an acceptance row passes and not a performance claim.",
+  "regenerate": "cargo test --test p5_corpus_fingerprint --locked -- --ignored regenerate_corpus_fingerprint",
+  "schema": "jarde-corpus-fingerprint/1",
+  "scope": {
+    "excluded_directories": [
+      "target",
+      "out",
+      "artifacts",
+      "__pycache__"
+    ],
+    "excluded_extensions": [
+      "md",
+      "py"
+    ],
+    "excluded_file_names": [
+      "corpus-fingerprint.json"
+    ],
+    "note": "Every file below `roots` whose extension is not excluded, minus the excluded directory names, is listed in `files` with its blake3 digest and byte count. The exclusions are records about the corpus, not inputs to it: `README.md` files name the compiler, the command and the expected digests, and the two `.py` files regenerate the fuzz seeds. This is a filesystem walk, not a `git ls-files` listing, so a corpus file that is present but untracked is fingerprinted too and fails the check on a clean checkout.",
+    "roots": [
+      "tests/fixtures",
+      "fuzz/corpus"
+    ]
+  }
+}

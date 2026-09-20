@@ -134,3 +134,36 @@ the version-patched fixtures, whose bytes are `p4-modern/`'s with the two versio
 assembled by the named generators in `tests/p4_golden.rs`, because `javac` cannot be asked to emit
 an illegal release shape.
 
+## Corpus fingerprint (`corpus-fingerprint.json`, P5 1.1)
+
+Every file below `tests/fixtures/` and `fuzz/corpus/` — the checked-in samples and archives, the
+golden documents, and the committed fuzz seeds — is fingerprinted in one document.
+`corpus-fingerprint.json` records a blake3 digest and a byte count for each of the 93 files it
+covered when it was written — the count is data, not a promise — and beside them the index P5's
+measurement baseline reads: the eight corpus dimensions (versions,
+compiler, packaging, identity, bytecode, recovery, degradation, adversarial), the carrier behind
+each, and the acceptance row each input feeds. The document is rendered from the tables in
+`tests/p5_corpus_fingerprint.rs`, which also verifies it, so it cannot drift from either the bytes
+or the classification.
+
+```text
+verify:      cargo test --test p5_corpus_fingerprint --locked
+with output: cargo test --test p5_corpus_fingerprint --locked -- --nocapture
+regenerate:  cargo test --test p5_corpus_fingerprint --locked -- --ignored regenerate_corpus_fingerprint
+```
+
+A changed, missing or unlisted corpus file fails the verify command and names the file with the
+recorded and current digests; the corpus is the thing to fix, and the regenerator is for a change
+that was intended. Two kinds of file sit deliberately outside the walk: a directory's `README.md`
+(provenance prose is a record *about* the corpus, not an input to it — otherwise fixing a typo
+would move the fingerprint) and the two `fuzz/corpus/*.py` seed generators. Neither is pinned;
+neither is read by a test at run time.
+
+The manifest is an index, not a second pin: a generated fixture's digest stays asserted where it
+already was (its golden document), and the manifest only points at it. `builder` and `record`
+carriers are not byte-pinned either. What the fingerprint therefore does *not* fix is listed in
+its own `known_gaps`: the WAR, Boot-executable and ZIP64 trees and most duplicate-origin shapes
+exist only as bytes `tests/p1_artifact_tree.rs` builds, the two proptest suites generate their
+cases per run (CI's fixed `PROPTEST_RNG_SEED` makes that reproducible, not pinned), and the JDK 25
+oracle's reading comes from whatever JDK runs it.
+
