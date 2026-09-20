@@ -143,6 +143,10 @@ struct Member {
 /// One class file of a sample's classpath: the name it is written under, and its bytes.
 type ClasspathFile = (&'static str, &'static [u8]);
 
+/// One member's own calls: the member's name and one argument list per call, each argument written
+/// as Java source text.
+type MemberInputs = (&'static str, &'static [&'static [&'static str]]);
+
 /// The committed driver of one sample: what the **original** class does, run in a controlled way.
 ///
 /// A refusal may rest on an effect the original really performs — a static initializer that runs, the
@@ -182,6 +186,12 @@ struct Sample {
     /// be run as does not perform it — so it is not listed here, and what varies with the refusal is
     /// measured by `baseline` on the original instead.
     measured: &'static [&'static str],
+    /// The calls one member is made with, when the default input set cannot state the finding's own
+    /// inputs: `("a", "bc")` is the pair the receiver-grouping defect was measured on, while a
+    /// `String` parameter's default values are `"r"` and `null` — inputs on which the two texts
+    /// happen to answer the same. Keyed by member name; a member not listed keeps the default set,
+    /// so a sample that states nothing here is called exactly as before.
+    inputs: Option<&'static [MemberInputs]>,
     /// The quoted bytecode each refused member must name, for the samples whose refusals exist to pin
     /// *which* instructions the answer accounts for: `(member, the indexes its quotes state)`. The
     /// set is compared exactly, so a quote that names an instruction it did not read fails here as
@@ -230,6 +240,7 @@ const LOCAL_REWRITE: Sample = Sample {
     // refusals of this sample are counted for the same reason (their control compiles wherever the
     // text still holds the statement the count is about, and the row states where it does not).
     measured: &["post", "saved", "conditional", "cast"],
+    inputs: None,
     // The quotes of this sample are pinned by `tests/p3_local_rewrite.rs`, which needs no JDK.
     quotes: &[],
     baseline: None,
@@ -312,6 +323,7 @@ const SCOPE_NO_DEBUG: Sample = Sample {
     scaffold: &[],
     counter: None,
     measured: &[],
+    inputs: None,
     quotes: &[],
     baseline: None,
     members: SCOPE_MEMBERS,
@@ -328,6 +340,7 @@ const SCOPE_DEBUG: Sample = Sample {
     scaffold: &[],
     counter: None,
     measured: &[],
+    inputs: None,
     quotes: &[],
     baseline: None,
     members: SCOPE_MEMBERS,
@@ -347,6 +360,7 @@ const GUARDED: Sample = Sample {
     scaffold: &[],
     counter: None,
     measured: &[],
+    inputs: None,
     quotes: &[],
     baseline: None,
     members: &[
@@ -459,6 +473,7 @@ const ECJ_V52: Sample = Sample {
     scaffold: &[],
     counter: None,
     measured: &[],
+    inputs: None,
     quotes: &[],
     baseline: None,
     members: &[
@@ -491,6 +506,7 @@ const MISSING_DEPENDENCY: Sample = Sample {
     scaffold: &[],
     counter: None,
     measured: &[],
+    inputs: None,
     quotes: &[],
     baseline: None,
     members: &[
@@ -520,6 +536,7 @@ const fn flags(label: &'static str, bytes: &'static [u8]) -> Sample {
         scaffold: &[],
         counter: Some("Flags.probes"),
         measured: &[],
+        inputs: None,
         quotes: &[],
         baseline: None,
         members: FLAGS_MEMBERS,
@@ -562,6 +579,7 @@ const NESTED_EVAL: Sample = Sample {
     // compare: nothing of the effect is in the text. What the refusal rests on is the original's own
     // answer, and `baseline` is where that is executed.
     measured: &[],
+    inputs: None,
     quotes: &[("nestedLocal", &[8, 0]), ("nestedCall", &[9, 1])],
     baseline: Some(Baseline {
         class: "Baseline",
@@ -613,6 +631,7 @@ const REFUSED_CAST: Sample = Sample {
     // fragments perform none of the reads: their evidence is the committed original, run by
     // `baseline`, and the quotes' own BCIs (the reads at BCI 0/1/3 down to the class initializer).
     measured: &[],
+    inputs: None,
     quotes: &[
         ("fieldCast", &[0, 3, 6]),
         ("instanceCast", &[1, 4, 7]),
@@ -673,6 +692,7 @@ const NESTED_ARITHMETIC: Sample = Sample {
     scaffold: &[],
     counter: None,
     measured: &[],
+    inputs: None,
     quotes: &[],
     // Every member of this sample is written whole, so no refusal rests on the original's own
     // behaviour; the driver is here because the *positive* comparison's inputs are the original's
@@ -734,6 +754,96 @@ const NESTED_ARITHMETIC: Sample = Sample {
             associativity already state (`a + b * c`, `(a + b) + c`) gain no parentheses",
 };
 
+const RECEIVER_GROUPING: Sample = Sample {
+    label: "p3-receiver-grouping/v8 (javac 23.0.1, --release 8 -g:none)",
+    class: "ReceiverGrouping",
+    bytes: include_bytes!("fixtures/p3-receiver-grouping/v8/ReceiverGrouping.class"),
+    classpath: &[],
+    extends: Some("ReceiverGrouping"),
+    scaffold: &[],
+    counter: None,
+    measured: &[],
+    // The default `String` values are `"r"` and `null`, and `call("r", "r")` is exactly the input
+    // where the two texts agree: the finding is `("a", "bc")`, so the calls the members are made
+    // with are stated here, in source text, and both sides are called with the same ones.
+    inputs: Some(&[
+        (
+            "call",
+            &[
+                &["\"a\"", "\"bc\""],
+                &["\"r\"", "\"r\""],
+                &["null", "\"bc\""],
+            ],
+        ),
+        ("length", &[&["\"a\"", "\"bc\""], &["\"\"", "\"xy\""]]),
+        (
+            "nested",
+            &[&["\"a\"", "\"bc\"", "\"def\""], &["\"\"", "\"\"", "\"x\""]],
+        ),
+        ("plain", &[&["\"  a \""], &["\"a\""]]),
+        ("chained", &[&["\"  a \""], &["\"a\""]]),
+        ("same", &[&["\"a\"", "\"b\"", "\"c\""]]),
+        ("argument", &[&["\"a\"", "\"bc\""]]),
+    ]),
+    quotes: &[],
+    baseline: Some(Baseline {
+        class: "Baseline",
+        source: include_str!("fixtures/p3-receiver-grouping/Baseline.java"),
+        lines: &[
+            "call(\"a\", \"bc\")=bc",
+            "call(\"r\", \"r\")=r",
+            "call(null, \"bc\")=ullbc",
+            "length(\"a\", \"bc\")=3",
+            "nested(\"a\", \"bc\", \"def\")=bcdef",
+            "plain(\"  a \")=[a]",
+            "chained(\"  a \")=1",
+            "same(\"a\", \"b\", \"c\")=abc",
+            "argument(\"a\", \"bc\")=abc",
+        ],
+    }),
+    members: &[
+        Member {
+            name: "call",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "length",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "nested",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "plain",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "chained",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "same",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "argument",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "wrap",
+            expect: Expect::Executed,
+        },
+    ],
+    point: "the printer's grouping is a property of the **position**: a call's receiver \
+            (`(a + b).substring(1)`), a receiver built from a three-operand chain \
+            (`(a + b + c).substring(1)`) and a call on a concatenation's length \
+            (`(a + b).length()`) all keep the operand's group, so `call(\"a\", \"bc\")` answers \
+            \"bc\" on both sides where the text that dropped the parentheses answered \"ac\" — while \
+            a name receiver (`arg0.trim()`), a nested call (`arg0.trim().length()`), an argument \
+            (`wrap(a + b)`) and a left-associative chain (`a + b + c`) gain nothing",
+};
+
 const REQUIRED: &[&Sample] = &[
     &LOCAL_REWRITE,
     &SCOPE_NO_DEBUG,
@@ -743,6 +853,7 @@ const REQUIRED: &[&Sample] = &[
     &NESTED_EVAL,
     &REFUSED_CAST,
     &NESTED_ARITHMETIC,
+    &RECEIVER_GROUPING,
 ];
 
 const CORPUS: &[&Sample] = &[
@@ -1046,7 +1157,20 @@ struct Call {
     arguments: String,
 }
 
-fn calls_for(parameters: &[Parameter]) -> Vec<Call> {
+/// One member's calls: the sample's own list when it states one for this member, and the default
+/// input set otherwise.
+fn calls_for(sample: &Sample, member: &str, parameters: &[Parameter]) -> Vec<Call> {
+    if let Some(inputs) = sample.inputs
+        && let Some((_, listed)) = inputs.iter().find(|(name, _)| *name == member)
+    {
+        return listed
+            .iter()
+            .map(|arguments| Call {
+                label: format!("[{}]", arguments.join(", ")),
+                arguments: arguments.join(", "),
+            })
+            .collect();
+    }
     let values: Vec<Vec<String>> = parameters
         .iter()
         .map(|parameter| sample_values(&parameter.spelling))
@@ -1125,7 +1249,7 @@ fn runner_rows(
     target: &str,
 ) -> String {
     let mut rows = String::new();
-    let calls = calls_for(&plan.parameters);
+    let calls = calls_for(sample, &plan.name, &plan.parameters);
     let counter_before = match sample.counter {
         Some(counter) => format!("long before = {counter};\n            "),
         None => String::new(),

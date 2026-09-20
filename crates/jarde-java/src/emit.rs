@@ -233,7 +233,8 @@ impl<'a> Emitter<'a> {
                 value,
             } => {
                 self.put(&pad, at)?;
-                self.expr(receiver)?;
+                // A write's receiver is a receiver position exactly like a read's.
+                self.operand(receiver, PRIMARY)?;
                 self.put(".", at)?;
                 self.put(name, at)?;
                 self.put(" = ", at)?;
@@ -407,7 +408,9 @@ impl<'a> Emitter<'a> {
                 args,
             } => {
                 if let Some(receiver) = receiver {
-                    emitter.expr(receiver)?;
+                    // The receiver position: the `.` that follows binds tighter than every operator
+                    // and than a lambda, so the base keeps its own group or the text regroups it.
+                    emitter.operand(receiver, PRIMARY)?;
                     emitter.put(".", at)?;
                 }
                 emitter.put(name, at)?;
@@ -449,17 +452,22 @@ impl<'a> Emitter<'a> {
                 emitter.expr(body)
             }
             ExprKind::MethodReference { qualifier, name } => {
-                emitter.expr(qualifier)?;
+                // The qualifier position, for the same reason as a call's receiver: `::` is a
+                // suffix over a `Primary`, an `ExpressionName` or a type name.
+                emitter.operand(qualifier, PRIMARY)?;
                 emitter.put("::", at)?;
                 emitter.put(name, at)
             }
             ExprKind::Field { receiver, name } => {
-                emitter.expr(receiver)?;
+                // The field receiver is a receiver position exactly like a call's.
+                emitter.operand(receiver, PRIMARY)?;
                 emitter.put(".", at)?;
                 emitter.put(name, at)
             }
             ExprKind::Index { array, index } => {
-                emitter.expr(array)?;
+                // The indexee position: `[` is a suffix, so the array's own text has to end where
+                // the text does. The **index** is delimited by the brackets and needs nothing.
+                emitter.operand(array, PRIMARY)?;
                 emitter.put("[", at)?;
                 emitter.expr(index)?;
                 emitter.put("]", at)
@@ -470,10 +478,41 @@ impl<'a> Emitter<'a> {
                 emitter.binary_operand(right, *op, Side::Right)
             }
             ExprKind::Not { value } => {
+                // The operand of `!` is at the unary level, so a looser value keeps its own group:
+                // `!a + b` would be `(!a) + b`, another tree than `!(a + b)`.
                 emitter.put("!", at)?;
-                emitter.expr(value)
+                emitter.operand(value, UNARY)
             }
         })
+    }
+
+    /// Appends one operand in a position that accepts only text binding at least as tightly as
+    /// `least`, in the parentheses that keep its own group when it binds looser.
+    ///
+    /// This is the printer's grouping rule stated once, and the position is what states the
+    /// requirement: [`Self::binary_operand`] is the binary-operator position on this same scale,
+    /// while a receiver, a method reference's qualifier and an indexee demand [`PRIMARY`] — the
+    /// level at which a following `.`, `::` or `[` applies to the whole expression — and the
+    /// operand of `!` demands [`UNARY`]. Every other position this printer has needs nothing: a
+    /// call's arguments and an array's index are delimited by `,`/`)` and `[`/`]`, a condition,
+    /// switch selector and `synchronized` lock sit inside their own parentheses, and a return
+    /// value, an initialiser, an assignment's right-hand side and a lambda body each take the whole
+    /// expression to the end of the text around it.
+    ///
+    /// The parentheses are written around the operand's own node, which is where they belong: the
+    /// segment table still records the operand's text against the operand's anchors, exactly as it
+    /// records the operator's own spelling, and no node's anchors move.
+    fn operand(&mut self, operand: &Expr, least: u8) -> Result<(), StopReason> {
+        let at = Some(operand.origin.primary().bci());
+        let grouped = expression_binding(&operand.kind) < least;
+        if grouped {
+            self.put("(", at)?;
+        }
+        self.expr(operand)?;
+        if grouped {
+            self.put(")", at)?;
+        }
+        Ok(())
     }
 
     /// Appends one operand of a binary expression, in the parentheses Java's own precedence and
@@ -489,36 +528,20 @@ impl<'a> Emitter<'a> {
     /// does not, because the text would read it as part of the parent's own group
     /// (`a - (b - c)` is not `(a - b) - c`).
     ///
-    /// The parentheses are written around the operand's own node, which is where they belong: the
-    /// segment table still records the operand's text against the operand's anchors, exactly as it
-    /// records the operator's own spelling, and no node's anchors move.
+    /// This is the binary-operator position of [`Self::operand`]'s scale: the operand on the left
+    /// needs the parent's own level, and the one on the right needs to bind strictly tighter.
     fn binary_operand(
         &mut self,
         operand: &Expr,
         parent: BinaryOp,
         side: Side,
     ) -> Result<(), StopReason> {
-        let at = Some(operand.origin.primary().bci());
-        let grouped = match &operand.kind {
-            ExprKind::Binary { op, .. } => {
-                let operand_binding = binding(*op);
-                let parent_binding = binding(parent);
-                operand_binding < parent_binding
-                    || (matches!(side, Side::Right) && operand_binding == parent_binding)
-            }
-            // Every other expression this subset writes binds tighter than every binary operator
-            // (a call, a field read, an array read, a literal or a negation), so none of them can
-            // be regrouped by the text around it.
-            _ => false,
+        let parent = binary_binding(parent);
+        let least = match side {
+            Side::Left => parent,
+            Side::Right => parent + 1,
         };
-        if grouped {
-            self.put("(", at)?;
-        }
-        self.expr(operand)?;
-        if grouped {
-            self.put(")", at)?;
-        }
-        Ok(())
+        self.operand(operand, least)
     }
 
     /// The only way text enters the buffer.
@@ -596,19 +619,43 @@ enum Side {
     Right,
 }
 
-/// How tightly Java binds one binary operator: a larger value binds tighter.
+/// The level at which a following `.`, `::` or `[` applies to the whole expression: a Primary or an
+/// ExpressionName (JLS 15.8, 6.5.6) is the tightest text this subset writes.
+const PRIMARY: u8 = 6;
+
+/// The level of the unary `!` (JLS 15.15.6): tighter than every binary operator, looser than a
+/// primary — `!b.f()` reads as `!(b.f())`, so a `!` in a primary position keeps its own group.
+const UNARY: u8 = 5;
+
+/// How tightly one whole expression this subset writes binds: a larger value binds tighter, and a
+/// position that accepts only tighter text is written through [`Emitter::operand`].
 ///
-/// Only the order matters — the printer compares two of these — and the four values are Java's own
-/// groups (JLS 15.17 multiplicative, 15.18 additive, 15.20 relational then equality). The
-/// comparison is a total rule rather than a table over operator pairs because every operator this
-/// subset writes is left-associative, and the AST's subset carries no assignment, conditional or
-/// boolean-and/or node whose associativity would need a second rule.
-fn binding(op: BinaryOp) -> u8 {
+/// Only the order of these values matters — the printer compares two of them — and the levels are
+/// Java's own (JLS 15). A lambda is an AssignmentExpression (15.27), looser than every operator and
+/// every suffix; the binary operators are 15.17–15.20; `!` is 15.15.6; everything else is a Primary
+/// or an ExpressionName. The comparison is a total rule rather than a table over pairs because
+/// every binary operator this subset writes is left-associative, and the AST's subset carries no
+/// assignment, conditional or boolean-and/or node whose associativity would need a second rule.
+fn expression_binding(kind: &ExprKind) -> u8 {
+    match kind {
+        ExprKind::Lambda { .. } => 0,
+        ExprKind::Binary { op, .. } => binary_binding(*op),
+        ExprKind::Not { .. } => UNARY,
+        // A call, `new`, a field read, an array read, a literal, a name, a type name: every one of
+        // them is read whole before any suffix or operator applies.
+        _ => PRIMARY,
+    }
+}
+
+/// How tightly Java binds one binary operator, in the units [`expression_binding`] compares: the
+/// four values are Java's own groups (JLS 15.17 multiplicative, 15.18 additive, 15.20 relational
+/// then equality).
+fn binary_binding(op: BinaryOp) -> u8 {
     match op {
-        BinaryOp::Multiply | BinaryOp::Divide | BinaryOp::Remainder => 3,
-        BinaryOp::Add | BinaryOp::Subtract => 2,
-        BinaryOp::Less | BinaryOp::LessOrEqual | BinaryOp::Greater | BinaryOp::GreaterOrEqual => 1,
-        BinaryOp::Equal | BinaryOp::NotEqual => 0,
+        BinaryOp::Multiply | BinaryOp::Divide | BinaryOp::Remainder => 4,
+        BinaryOp::Add | BinaryOp::Subtract => 3,
+        BinaryOp::Less | BinaryOp::LessOrEqual | BinaryOp::Greater | BinaryOp::GreaterOrEqual => 2,
+        BinaryOp::Equal | BinaryOp::NotEqual => 1,
     }
 }
 
@@ -932,6 +979,401 @@ mod tests {
             vec!["arg0 * local1"],
             "the inner product answers for the bytecode that produced it, with no parentheses in \
              its segment"
+        );
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // The positions a subexpression can be written in.
+    //
+    // Grouping is a property of the **position**, not only of a binary parent: `(a + b).substring(1)`
+    // reached the buffer as `a + b.substring(1)` — `a + (b.substring(1))`, another program — because
+    // the call branch printed its receiver and then the `.`. These tests build the shapes directly,
+    // so every position is exercised even where this subset's own rules cannot reach it today (the
+    // `Not` child is always a boolean parameter's load, the indexee is always the enum dispatch
+    // table's field read, and a field's receiver is never a concatenation in javac's output).
+    // ---------------------------------------------------------------------------------------
+
+    fn local_at(name: &str, bci: u32) -> Expr {
+        Expr::direct(ExprKind::Local(name.to_string()), bci)
+    }
+
+    fn integer_at(value: i64, bci: u32) -> Expr {
+        Expr::direct(ExprKind::Integer(value), bci)
+    }
+
+    fn sum_at(left: Expr, right: Expr, bci: u32) -> Expr {
+        Expr::direct(
+            ExprKind::Binary {
+                op: BinaryOp::Add,
+                left: Box::new(left),
+                right: Box::new(right),
+            },
+            bci,
+        )
+    }
+
+    fn call_at(receiver: Option<Expr>, name: &str, args: Vec<Expr>, bci: u32) -> Expr {
+        Expr::direct(
+            ExprKind::Call {
+                receiver: receiver.map(Box::new),
+                name: name.to_string(),
+                args,
+            },
+            bci,
+        )
+    }
+
+    /// One expression as the body's only statement, so a printer shape is asserted without a run.
+    fn emitted_value(value: Expr) -> Emitted {
+        let stmts = vec![Stmt::new(
+            StmtKind::Expr(value),
+            OriginSet::new(Origin::direct(1)),
+        )];
+        let mut budget = budget_with(1 << 20);
+        emit(&stmts, &facts(), None, None, &mut budget).expect("an ample budget writes")
+    }
+
+    /// One statement, with its own anchors, as the body's whole text.
+    fn emitted_stmt(kind: StmtKind, anchors: &[u32]) -> Emitted {
+        let mut origin = OriginSet::new(Origin::direct(anchors[0]));
+        for bci in &anchors[1..] {
+            origin = origin.plus_derived(Origin::derived(*bci));
+        }
+        let stmts = vec![Stmt::new(kind, origin)];
+        let mut budget = budget_with(1 << 20);
+        emit(&stmts, &facts(), None, None, &mut budget).expect("an ample budget writes")
+    }
+
+    /// Every position whose text is followed by something that binds tighter than a binary
+    /// expression — `.`, `::`, `[` — takes the operand's whole text, so a subexpression that binds
+    /// looser than a primary keeps its own group in parentheses.
+    #[test]
+    fn a_suffix_position_keeps_the_group_of_its_operand() {
+        let receiver = sum_at(local_at("arg0", 2), local_at("arg1", 3), 4);
+        let emitted = emitted_value(Expr::new(
+            ExprKind::Call {
+                receiver: Some(Box::new(receiver)),
+                name: "substring".to_string(),
+                args: vec![integer_at(1, 7)],
+            },
+            OriginSet::new(Origin::direct(8)).plus_derived(Origin::derived(4)),
+        ));
+        assert!(
+            emitted.text.contains("(arg0 + arg1).substring(1);"),
+            "the receiver of a call is a receiver position: `arg0 + arg1.substring(1)` is \
+             `arg0 + (arg1.substring(1))`, another program:\n{}",
+            emitted.text
+        );
+        assert_eq!(
+            emitted.source_map.text_of_bci(&emitted.text, 4),
+            vec!["arg0 + arg1", "(arg0 + arg1).substring(1)"],
+            "the receiver's own segment is its own text; the parentheses belong to the call"
+        );
+
+        let field = emitted_value(Expr::new(
+            ExprKind::Field {
+                receiver: Box::new(sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)),
+                name: "f".to_string(),
+            },
+            OriginSet::new(Origin::direct(5)),
+        ));
+        assert!(
+            field.text.contains("(arg0 + arg1).f;"),
+            "a field read's receiver is a receiver position:\n{}",
+            field.text
+        );
+
+        let index = emitted_value(Expr::new(
+            ExprKind::Index {
+                array: Box::new(sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)),
+                index: Box::new(integer_at(0, 7)),
+            },
+            OriginSet::new(Origin::direct(5)),
+        ));
+        assert!(
+            index.text.contains("(arg0 + arg1)[0];"),
+            "the indexee is a suffix position and the index is delimited:\n{}",
+            index.text
+        );
+
+        let reference = emitted_value(Expr::new(
+            ExprKind::MethodReference {
+                qualifier: Box::new(sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)),
+                name: "length".to_string(),
+            },
+            OriginSet::new(Origin::direct(5)),
+        ));
+        assert!(
+            reference.text.contains("(arg0 + arg1)::length;"),
+            "`::` applies to the whole qualifier, so a binary one keeps its group:\n{}",
+            reference.text
+        );
+    }
+
+    /// The operator positions of the same scale: `!` binds tighter than every binary operator, so a
+    /// binary operand keeps its group; and a `!` in a receiver position does too, because `!a.f()`
+    /// reads as `!(a.f())`.
+    #[test]
+    fn a_prefix_position_and_a_not_receiver_keep_their_groups() {
+        let not = emitted_value(Expr::direct(
+            ExprKind::Not {
+                value: Box::new(sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)),
+            },
+            5,
+        ));
+        assert!(
+            not.text.contains("!(arg0 + arg1);"),
+            "`!` is a unary operator and its operand is not:\n{}",
+            not.text
+        );
+
+        let not_receiver = emitted_value(call_at(
+            Some(Expr::direct(
+                ExprKind::Not {
+                    value: Box::new(local_at("arg0", 2)),
+                },
+                3,
+            )),
+            "f",
+            vec![],
+            4,
+        ));
+        assert!(
+            not_receiver.text.contains("(!arg0).f();"),
+            "`!a.f()` is `!(a.f())`, so a negation in a receiver position keeps its own group:\n{}",
+            not_receiver.text
+        );
+    }
+
+    /// A lambda is an AssignmentExpression: nothing in this subset binds looser, so one written
+    /// where a suffix follows keeps its own group. (Its target type is a separate question this
+    /// layer does not answer; the position only owes the tree's grouping.)
+    #[test]
+    fn a_lambda_in_a_receiver_position_keeps_its_own_group() {
+        let lambda = Expr::direct(
+            ExprKind::Lambda {
+                params: vec![crate::ast::LambdaParam {
+                    ty: crate::ast::Type::Reference("java.lang.String".to_string()),
+                    name: "p0".to_string(),
+                }],
+                body: Box::new(call_at(Some(local_at("p0", 3)), "trim", vec![], 3)),
+            },
+            2,
+        );
+        let emitted = emitted_value(call_at(
+            Some(lambda),
+            "applyAsInt",
+            vec![local_at("arg0", 5)],
+            6,
+        ));
+        assert!(
+            emitted
+                .text
+                .contains("((java.lang.String p0) -> p0.trim()).applyAsInt(arg0);"),
+            "the `->` body ends where the lambda ends, so `applyAsInt` may not be written inside \
+             it:\n{}",
+            emitted.text
+        );
+    }
+
+    /// The positions that delimit their operand — a call's argument, an array's index, a condition
+    /// (and a switch selector and lock), a return value, an initialiser and a lambda body — gain no
+    /// parentheses, and neither does a binary operand whose own level already states the tree.
+    #[test]
+    fn a_delimited_or_already_grouped_position_gains_no_parentheses() {
+        let emitted = emitted_value(call_at(
+            None,
+            "f",
+            vec![sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)],
+            5,
+        ));
+        assert!(
+            emitted.text.contains("f(arg0 + arg1);"),
+            "an argument is delimited by `,` and `)`, so it needs nothing:\n{}",
+            emitted.text
+        );
+
+        let index = emitted_value(Expr::new(
+            ExprKind::Index {
+                array: Box::new(local_at("arg0", 2)),
+                index: Box::new(sum_at(local_at("arg1", 3), local_at("arg2", 4), 5)),
+            },
+            OriginSet::new(Origin::direct(6)),
+        ));
+        assert!(
+            index.text.contains("arg0[arg1 + arg2];"),
+            "an index is delimited by `[` and `]`:\n{}",
+            index.text
+        );
+
+        let returned = emitted_stmt(
+            StmtKind::Return {
+                value: Some(sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)),
+            },
+            &[4],
+        );
+        assert!(
+            returned.text.contains("return arg0 + arg1;"),
+            "a return value is the whole expression to the `;`:\n{}",
+            returned.text
+        );
+
+        let declared = emitted_stmt(
+            StmtKind::Declare {
+                ty: crate::ast::Type::Int,
+                name: "local0".to_string(),
+                value: Some(sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)),
+            },
+            &[4],
+        );
+        assert!(
+            declared.text.contains("int local0 = arg0 + arg1;"),
+            "an initialiser is the whole expression to the `;`:\n{}",
+            declared.text
+        );
+
+        let conditional = emitted_stmt(
+            StmtKind::If {
+                cond: sum_at(local_at("arg0", 2), local_at("arg1", 3), 4),
+                then_body: vec![Stmt::new(
+                    StmtKind::Expr(call_at(None, "f", vec![], 6)),
+                    OriginSet::new(Origin::direct(6)),
+                )],
+                else_body: vec![Stmt::new(
+                    StmtKind::Expr(call_at(None, "g", vec![], 7)),
+                    OriginSet::new(Origin::direct(7)),
+                )],
+            },
+            &[4],
+        );
+        assert!(
+            conditional.text.contains("if (arg0 + arg1) {"),
+            "a condition is written inside its own parentheses:\n{}",
+            conditional.text
+        );
+
+        let switch = emitted_stmt(
+            StmtKind::Switch {
+                value: sum_at(local_at("arg0", 2), local_at("arg1", 3), 4),
+                arms: vec![crate::ast::SwitchArm {
+                    keys: vec![0],
+                    default: false,
+                    body: vec![Stmt::new(
+                        StmtKind::Expr(call_at(None, "f", vec![], 6)),
+                        OriginSet::new(Origin::direct(6)),
+                    )],
+                }],
+            },
+            &[4],
+        );
+        assert!(
+            switch.text.contains("switch (arg0 + arg1) {"),
+            "a switch selector is written inside its own parentheses:\n{}",
+            switch.text
+        );
+
+        let lock = emitted_stmt(
+            StmtKind::Synchronized {
+                lock: sum_at(local_at("arg0", 2), local_at("arg1", 3), 4),
+                body: vec![Stmt::new(
+                    StmtKind::Expr(call_at(None, "f", vec![], 6)),
+                    OriginSet::new(Origin::direct(6)),
+                )],
+            },
+            &[4],
+        );
+        assert!(
+            lock.text.contains("synchronized (arg0 + arg1) {"),
+            "a lock is written inside its own parentheses:\n{}",
+            lock.text
+        );
+
+        let lambda_body = emitted_value(Expr::direct(
+            ExprKind::Lambda {
+                params: vec![],
+                body: Box::new(sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)),
+            },
+            5,
+        ));
+        assert!(
+            lambda_body.text.contains("() -> arg0 + arg1;"),
+            "a lambda body is the whole expression after `->`:\n{}",
+            lambda_body.text
+        );
+    }
+
+    /// The controls that must stay byte-for-byte what they were: a primary receiver and a nested
+    /// call gain nothing, an operand that binds tighter than its parent gains nothing, an
+    /// equal-precedence operand on the left gains nothing, and a binary whose operand is `!` gains
+    /// nothing (`!a == b` is `(!a) == b`).
+    #[test]
+    fn a_primary_operand_and_an_already_stated_group_gain_nothing() {
+        let plain = emitted_value(call_at(Some(local_at("arg0", 2)), "foo", vec![], 3));
+        assert!(
+            plain.text.contains("arg0.foo();"),
+            "a name receiver is a primary:\n{}",
+            plain.text
+        );
+
+        let chained = emitted_value(call_at(
+            Some(call_at(Some(local_at("arg0", 2)), "trim", vec![], 3)),
+            "length",
+            vec![],
+            4,
+        ));
+        assert!(
+            chained.text.contains("arg0.trim().length();"),
+            "a call is a primary, so it needs no parentheses:\n{}",
+            chained.text
+        );
+
+        let tighter = emitted_value(sum_at(
+            local_at("arg0", 2),
+            Expr::direct(
+                ExprKind::Binary {
+                    op: BinaryOp::Multiply,
+                    left: Box::new(local_at("arg1", 3)),
+                    right: Box::new(local_at("arg2", 4)),
+                },
+                5,
+            ),
+            6,
+        ));
+        assert!(
+            tighter.text.contains("arg0 + arg1 * arg2;"),
+            "a tighter operand already keeps its own group:\n{}",
+            tighter.text
+        );
+
+        let left = emitted_value(sum_at(
+            sum_at(local_at("arg0", 2), local_at("arg1", 3), 4),
+            local_at("arg2", 5),
+            6,
+        ));
+        assert!(
+            left.text.contains("arg0 + arg1 + arg2;"),
+            "an equal-precedence operand on the left is already where left associativity puts \
+             it:\n{}",
+            left.text
+        );
+
+        let not_operand = emitted_value(Expr::direct(
+            ExprKind::Binary {
+                op: BinaryOp::Equal,
+                left: Box::new(Expr::direct(
+                    ExprKind::Not {
+                        value: Box::new(local_at("arg0", 2)),
+                    },
+                    3,
+                )),
+                right: Box::new(local_at("arg1", 4)),
+            },
+            5,
+        ));
+        assert!(
+            not_operand.text.contains("!arg0 == arg1;"),
+            "`!` binds tighter than `==`, so the text already reads as the tree:\n{}",
+            not_operand.text
         );
     }
 }

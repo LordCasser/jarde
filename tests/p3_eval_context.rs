@@ -40,6 +40,19 @@
 //!   quotient of a product, a difference of a scaled sum) and the two controls whose tree Java's
 //!   defaults already state are asserted below by **exact text**, with the executed comparison in
 //!   `tests/p3_execution_comparison.rs` as the value evidence.
+//! * **The position, not only the parent operator.** The same sample's texts are one evidence
+//!   that grouping was decided per **parent node**: a binary operand of the *same* tree shape is
+//!   grouped, and a subexpression in any other position is not. `ReceiverGrouping.call` is
+//!   `(a + b).substring(1)` — `aload_0; aload_1; append; append; toString; iconst_1; substring` —
+//!   whose receiver is the concatenation `a + b`; printed by concatenating the receiver and then
+//!   the `.`, the text was `return arg0 + arg1.substring(1);`, which Java reads as
+//!   `arg0 + (arg1.substring(1))`. With `("a", "bc")` the class answers `"bc"` and that text
+//!   answers `"ac"`, while the run still reported `Java`/`Structured`/`contains_statements` with
+//!   no diagnostic. `ReceiverGrouping.length` is the review's second shape (`(a + b).length()`,
+//!   whose ungrouped text does not even compile under its `int` return) and `nested` is a
+//!   three-operand chain in receiver position; the sample's `plain`, `chained`, `same` and
+//!   `argument` members are the controls that must gain nothing (a name receiver, a nested call, a
+//!   left-associative chain of the same precedence and a call argument).
 //!
 //! The controls are what keep the fix from being "refuse every nested expression", "quote every
 //! field read" and "parenthesise everything":
@@ -69,6 +82,10 @@ const REFUSED: &[u8] = include_bytes!("fixtures/p3-refused-cast/v8/RefusedCast.c
 /// The committed sample of the nested-arithmetic grouping defect, compiled the same way (see the
 /// fixture's README).
 const NESTED_ARITHMETIC: &[u8] = include_bytes!("fixtures/p3-nested-arithmetic/v8/ModLike.class");
+/// The committed sample of the receiver-position grouping defect, compiled the same way (see the
+/// fixture's README).
+const RECEIVER_GROUPING: &[u8] =
+    include_bytes!("fixtures/p3-receiver-grouping/v8/ReceiverGrouping.class");
 
 fn limits() -> Limits {
     Limits {
@@ -865,6 +882,136 @@ fn the_printed_text_keeps_the_arithmetic_tree() {
         problems.is_empty(),
         "an arithmetic operand retains its own value only if the printed text parses back into the \
          tree it was printed from:\n{}",
+        problems.join("\n")
+    );
+}
+
+// ---------------------------------------------------------------------------------------------
+// `group-call-receivers`: the grouping is a property of the **position**, not only of a binary
+// parent — the fixture is `tests/fixtures/p3-receiver-grouping/`, whose README records the
+// compiler, the command, the digests and the bytecode of every member.
+// ---------------------------------------------------------------------------------------------
+
+/// One member of the receiver-grouping sample: its name, its descriptor, the statement its text
+/// must hold, and the statement the same tree was printed as before the receiver position was
+/// grouped (empty for the controls that must not move).
+type ReceiverShape = (&'static [u8], &'static [u8], &'static str, &'static str);
+
+/// Every shape of the defect and every control, asserted by **exact text**: the text is what a
+/// caller receives and recompiles, and the structural planes (`representation`, `quality`,
+/// `content`) are stated after it as facts about the run, not as evidence that the text is the
+/// program its bytecode is. The executed values are compared in
+/// `tests/p3_execution_comparison.rs`.
+#[test]
+fn the_printed_text_keeps_the_grouping_of_every_position() {
+    let engine = Engine::new();
+    let sample = fixture(&engine, RECEIVER_GROUPING);
+    let shapes: &[ReceiverShape] = &[
+        // The reported shape: the receiver of `substring` is the concatenation `a + b`. The
+        // ungrouped text `arg0 + arg1.substring(1)` is `arg0 + (arg1.substring(1))`, and with
+        // `("a", "bc")` the class answers "bc" while that text answers "ac".
+        (
+            b"call",
+            b"(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+            "return (arg0 + arg1).substring(1);",
+            "return arg0 + arg1.substring(1);",
+        ),
+        // The review's second shape: `(a + b).length()`. Its ungrouped text is not even a program
+        // under the member's `int` return (`String` cannot convert to `int`).
+        (
+            b"length",
+            b"(Ljava/lang/String;Ljava/lang/String;)I",
+            "return (arg0 + arg1).length();",
+            "return arg0 + arg1.length();",
+        ),
+        // A three-operand chain in receiver position: the tree is `(a + b) + c`, so the group
+        // holds the whole chain, not just its first pair.
+        (
+            b"nested",
+            b"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+            "return (arg0 + arg1 + arg2).substring(1);",
+            "return arg0 + arg1 + arg2.substring(1);",
+        ),
+        // The controls: a name receiver, a nested call, a left-associative chain of the same
+        // precedence and a call argument all already state their trees, so they gain no
+        // parentheses — the fix is grouping, not decoration.
+        (
+            b"plain",
+            b"(Ljava/lang/String;)Ljava/lang/String;",
+            "return arg0.trim();",
+            "",
+        ),
+        (
+            b"chained",
+            b"(Ljava/lang/String;)I",
+            "return arg0.trim().length();",
+            "",
+        ),
+        (
+            b"same",
+            b"(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+            "return arg0 + arg1 + arg2;",
+            "",
+        ),
+        (
+            b"argument",
+            b"(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+            "wrap(arg0 + arg1);",
+            "",
+        ),
+        (
+            b"wrap",
+            b"(Ljava/lang/String;)Ljava/lang/String;",
+            "return arg0;",
+            "",
+        ),
+    ];
+
+    let mut problems = Vec::new();
+    for (member, descriptor, statement, ungrouped) in shapes {
+        let name = String::from_utf8_lossy(member);
+        let report = recover(&engine, &sample, member, descriptor);
+        let text = &report.text;
+        if !text.contains(statement) {
+            problems.push(format!(
+                "{name}: the text must state `{statement}`:\n{text}"
+            ));
+        }
+        if !ungrouped.is_empty() && text.contains(ungrouped) {
+            problems.push(format!(
+                "{name}: the text still holds `{ungrouped}`, which parses back into a different \
+                 tree:\n{text}"
+            ));
+        }
+        let quoted = quoted_bcis(text);
+        if !quoted.is_empty() {
+            problems.push(format!(
+                "{name}: this shape is provable, so the body may not be quoted: {quoted:?}\n{text}"
+            ));
+        }
+        if report.representation != Representation::Java {
+            problems.push(format!(
+                "{name}: the body must stay written whole, and the run states {:?}",
+                report.representation
+            ));
+        }
+        if report.quality != Quality::Structured {
+            problems.push(format!(
+                "{name}: the body must stay structured, and the run states {:?}",
+                report.quality
+            ));
+        }
+        if report.content != RecoveryContent::ContainsStatements {
+            problems.push(format!(
+                "{name}: the artifact states statements, and the run states {:?}",
+                report.content
+            ));
+        }
+    }
+    assert!(
+        problems.is_empty(),
+        "a subexpression keeps its value only if the printed text parses back into the tree it was \
+         printed from, and that is a property of the position it is written in:\n{}",
         problems.join("\n")
     );
 }

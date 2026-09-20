@@ -86,6 +86,7 @@ compression are the production paths, not a test double.
 | `p3-refused-cast/` | javac 23.0.1; `javac --release 8 -g:none -d v8 RefusedCast.java` | `v8/RefusedCast.class` (52.0, 666 bytes, SHA-256 `d7d2ecf5…3ac588`), `v8/External.class` (52.0, 427 bytes, SHA-256 `dbccbc01…0f0c3c84`), `v8/Holder.class` (52.0, 158 bytes, SHA-256 `7f0dc855…f6bc66d5`), with the bytecode of every member in that directory's `README.md` | `tests/p3_eval_context.rs` (P3-R9: a quote keeps the observable producers its refused expression depended on); `tests/p3_execution_comparison.rs` (the refused reads and the composed controls) |
 | `p3-declaration/` | javac 23.0.1; `javac --release 8 -g:none -d v8 Shape.java Holder.java` | `v8/Shape.class` (52.0, 191 bytes, SHA-256 `91f9a3a0…f32e`) and `v8/Holder.class` (52.0, 359 bytes, SHA-256 `11cbb8c0…b5ea`), with the bytecode and flags of every member in that directory's `README.md` | `tests/p3_declaration_handoff.rs` (the member forms a class file's own flags decide, through `Engine::recover_method`) |
 | `p3-nested-arithmetic/` | javac 23.0.1; `javac --release 8 -g:none -d v8 ModLike.java` | `v8/ModLike.class` (52.0, 568 bytes, SHA-256 `a5827ef4…d2891158`), with the bytecode of every member in that directory's `README.md` | `tests/p3_eval_context.rs` (the printer's grouping: a nested arithmetic's text parses back into the tree it was printed from, and the two shapes the defaults already state gain no parentheses); `tests/p3_execution_comparison.rs` (all eight members executed against the original, `inverse32(-1)` included) |
+| `p3-receiver-grouping/` | javac 23.0.1; `javac --release 8 -g:none -d v8 ReceiverGrouping.java` | `v8/ReceiverGrouping.class` (52.0, 1038 bytes, SHA-256 `8e030b53…30cc8c00`), with the bytecode of every member in that directory's `README.md` | `tests/p3_eval_context.rs` (the printer's grouping as a property of the **position**: a call's receiver, a three-operand chain in receiver position, and the controls that gain nothing); `tests/p3_execution_comparison.rs` (all eight members executed against the original, `call("a", "bc")` included) |
 
 ### The replayable compile-and-execute comparison (P3 3.3)
 
@@ -143,7 +144,7 @@ an illegal release shape.
 
 Every file below `tests/fixtures/` and `fuzz/corpus/` — the checked-in samples and archives, the
 golden documents, and the committed fuzz seeds — is fingerprinted in one document.
-`corpus-fingerprint.json` records a blake3 digest and a byte count for each of the 108 files it
+`corpus-fingerprint.json` records a blake3 digest and a byte count for each of the 111 files it
 covered when it was written — the count is data, not a promise — and beside them the index P5's
 measurement baseline reads: the eight corpus dimensions (versions,
 compiler, packaging, identity, bytecode, recovery, degradation, adversarial), the carrier behind

@@ -1176,6 +1176,21 @@
       "path": "tests/fixtures/p3-nested-eval/v8/NestedEval.class"
     },
     {
+      "blake3": "106f605183cf2d2a10d6d53d65f6d4473825c583db63707b95aea21563df5c63",
+      "bytes": 1658,
+      "path": "tests/fixtures/p3-receiver-grouping/Baseline.java"
+    },
+    {
+      "blake3": "9b0c7af3f7440d8e5ee8dede953b51cd8f6faf0f725343a9292f4812c45b4422",
+      "bytes": 790,
+      "path": "tests/fixtures/p3-receiver-grouping/ReceiverGrouping.java"
+    },
+    {
+      "blake3": "5e16d691d1ef6700ba20c66879d42ce401558efba3cf69c64bbcbdabc8e1c071",
+      "bytes": 1038,
+      "path": "tests/fixtures/p3-receiver-grouping/v8/ReceiverGrouping.class"
+    },
+    {
       "blake3": "3aa46c10f360abf4fe543011fa76487dd6ce626aa577e38b2c92ef12a519e9fb",
       "bytes": 1498,
       "path": "tests/fixtures/p3-refused-cast/Baseline.java"

@@ -20,7 +20,7 @@
 //!   (`if (arg0) { } else { … }`, whose condition is still evaluated). The in-memory generator is
 //!   the repository's own second fixture kind (`tests/fixtures/README.md`): a compiled sample cannot
 //!   be added here without moving the reader's pinned fixture population
-//!   (`crates/jarde-reader/src/classfile.rs`, `(44, 168, 44, 86, 8)`), and this class's bytes are
+//!   (`crates/jarde-reader/src/classfile.rs`, `(45, 177, 44, 86, 8)`), and this class's bytes are
 //!   written by the test itself, so nothing about them needs a compiler at run time. The two string
 //!   literals it loads are `a//b` and `a/*b*/`: a classifier that stripped comments and counted
 //!   tokens would see two different artifacts where the structure is one `return <literal>;`;
