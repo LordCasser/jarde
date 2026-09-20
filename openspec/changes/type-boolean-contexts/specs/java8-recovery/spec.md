@@ -1,0 +1,25 @@
+## ADDED Requirements
+
+### Requirement: Boolean contexts are presented as booleans
+
+值出现在 boolean 上下文时，呈现 MUST 按该上下文的类型定型，而不是按值在帧里的 int 形状拼写：返回类型为 `Z` 的方法的 `return` MUST 以 boolean 呈现（`return true;`/`return false;`，MUST NOT 为 `return 1;`/`return 0;`）；条件的分支测试在其操作数被证明为 boolean（返回 descriptor 为 `Z` 的调用结果，或既有 P3-R5 证据所证明的 boolean 参数、由它声明的局部、字面量与否定）时 MUST 写成真值测试（`if (flag())`、`if (arg0)`），MUST NOT 写成与 `0` 的整数比较（`if (flag() != 0)`）。层不能证明上下文所要求的值是 boolean 时 MUST 拒绝该区域并保留 bytecode 与 origin，MUST NOT 发布另一个编译器拒绝的文本；上下文没有 boolean 要求的位置（真正 `int` 返回、两个 int 值的比较）MUST 保持原有整数形态。本要求只使用返回 descriptor、参数槽类型与既有 callee descriptor 证据，MUST NOT 由它引入通用类型系统或推断。
+
+#### Scenario: A boolean return presents true or false
+
+- **WHEN** 方法 descriptor 的返回类型是 `Z`，正文是 `if (x == 0) { return true; } return false;`（`iconst_1`/`iconst_0; ireturn`）
+- **THEN** 呈现 MUST 为 `return true;`/`return false;`，MUST NOT 为 `return 1;`/`return 0;`；把正文放进方法自己的签名后 javac MUST 接受，`int cannot be converted to boolean` 不得出现
+
+#### Scenario: A boolean call result as a condition
+
+- **WHEN** 分支测试的操作数是返回 descriptor 为 `Z` 的调用结果（源码形状 `if (flag()) { return 1; } return 0;`）
+- **THEN** 呈现 MUST 是真值测试 `if (flag())`，MUST NOT 是 `if (flag() != 0)`；javac MUST 接受该正文，`incomparable types: boolean and int` 不得出现，且执行结果与原 class 相同
+
+#### Scenario: An unproven boolean context is refused
+
+- **WHEN** 上下文要求 boolean，而该值的 boolean 类型没有证据（不是返回 `Z` 的调用结果、不是 descriptor 声明为 `Z` 的参数或由其声明的局部、也不是 boolean 字面量/否定）
+- **THEN** 该区域 MUST 拒绝并保留 bytecode 与 origin（representation=Mixed、quality=Fallback、拒绝诊断点名相关 BCI 与物理方法），MUST NOT 以 `1`/`0` 或与 `0` 比较的形式发布；拒绝产物按既有 refusal 契约可定位
+
+#### Scenario: An int context keeps its int shape
+
+- **WHEN** 方法真正返回 `int`（descriptor 返回 `I`），或分支测试比较两个 int 值（`if (x != 0) { return 1; } return 0;`）
+- **THEN** 呈现 MUST 保持 `return 1;`/`return 0;` 与 `if (arg0 != 0)` 的整数形态，MUST NOT 改成 `true`/`false` 或真值测试；本要求 MUST NOT 用普遍改写成 boolean 换取反例通过

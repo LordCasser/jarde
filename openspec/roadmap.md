@@ -4,7 +4,9 @@ P0–P5 与分层已按各阶段范围归档：P2 29/29、分层 7/7、P3 12/12�
 
 相关入口：[OpenSpec 规划入口](README.md)、[技术栈与依赖选型](dependencies.md)、[架构验收与阶段映射](acceptance.md)。
 
-**最新完成判定（`8586356`）：本轮任务链的停止语义已关闭。** 独立 review 复现的 R1/P1（名称选择丢失搜索停止）与 R2/P2（类视图顶层漏汇总 body 停止）已由 [preserve-task-operation-stops](changes/archive/2026-09-20-preserve-task-operation-stops/tasks.md)（5/5）修正：未完成搜索返回 `Incomplete` 而不执行也不报缺失，类视图顶层在库内汇总 body 停止。反例、正向对照与变异证据见该 change 的归档验证记录。历史归档保留；benchmark 候选随之冻结为 `8586356`（`85828c4` 仅作历史比较臂）。
+**最新完成判定（代码构建基线 `a4dcd96`，文档 `b5557f6`）：benchmark 缺陷尚未全部关闭。** [本次复测](completion-review.md) 确认指定崩溃方法已返回停止报告、`Mod.inverse32` 已保留算术分组；boolean 返回/比较与数组类型仍失败，另有调用 receiver 分组导致可编译但算错的反例。Produced/content 契约已交付；`ArrayUtils.removeElement` 的具体 receiver 指控经字节码核对为本类静态调用，不能据此认定引擎丢 receiver。性能专项仍 0/22。
+
+历史 R1/P1（名称选择丢失搜索停止）与 R2/P2（类视图顶层漏汇总 body 停止）已由 [preserve-task-operation-stops](changes/archive/2026-09-20-preserve-task-operation-stops/tasks.md)（5/5，`8586356`）关闭。`8586356` 保留为当时冻结的性能比较臂，不代表后续恢复修正已被包含；新的正式候选须在声明缺口和范围后重新冻结。
 
 ## 阶段依赖
 
@@ -14,7 +16,7 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
                                   └────────────────┴─────────────────┴────────────────────┴──→ P5 p5-measured-optimization
 ```
 
-`layer-jarde-crates` 与 P2 已全部归档，原 4.2b/4.3b 及 P2 出口不再是待办。六包 workspace 与 P3 只读 IR 交接、恢复门面/CLI 均已存在，声明、按需成员与物理方法映射也已交付；旧恢复缺口 R8/R9 已关闭，当前阻塞是新任务操作的选择/停止传播。
+`layer-jarde-crates` 与 P2 已全部归档，原 4.2b/4.3b 及 P2 出口不再是待办。六包 workspace 与 P3 只读 IR 交接、恢复门面/CLI 均已存在，声明、按需成员与物理方法映射也已交付；旧恢复缺口 R8/R9 和任务选择/停止传播均已关闭，当前缺口见下表。
 
 `p1-query-xref` 还直接消费 P0 的 snapshot/classfile/contract；`p4-modern-semantics` 需要 P1 的 views/query、P2 的 resolver/IR 和 P3 的 recovery。P5 选择一个或多个已有稳定结果契约作为优化目标，在被选阶段的真实基线稳定后即可进入，不要求先完成 P4；若优化跨阶段，再纳入所有受影响阶段的回归。
 
@@ -41,9 +43,13 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 
 | 顺序 | 范围 | 完成条件 |
 | --- | --- | --- |
-| 1 | `preserve-task-operation-stops`，0/5 | 不完整名称搜索不执行/不报缺失；类视图库内汇总停止；库/CLI 反例与正向对照在固定提交通过 |
-| 2 | 重新冻结 benchmark 候选 | 已冻结为 `8586356`（修正后行为提交）；`85828c4` 仅保留为历史比较臂，样本、构建、环境和原始数据完整记录 |
-| 3 | `optimize-demand-workloads`，0/22 | 先 G0/W1–W5 与 O1 已交付证据复核，再 O2–O8 调查/准入；每项有真实处置，已准入实现无隐藏待办 |
+| 已关闭 | 停止传播、指定递归 abort、`inverse32` 二元分组、Produced/content 读法 | 分别由 `8586356`、`4f62e26`、`445a277` 及契约归档交付；不推广为任意输入安全或完整源码恢复 |
+| 1 | [group-call-receivers](changes/group-call-receivers/proposal.md)，实施中 | `(a + b).substring(1)` 输入 `("a", "bc")` 的恢复值须为 `"bc"`，不能为 `"ac"`；补齐实际可达上下文及编译/行为对照，保留 origin 与求值次数 |
+| 2 | [type-boolean-contexts](changes/type-boolean-contexts/proposal.md)，已规划 | 以 descriptor 和本次值证据定型；`isSCSV` 不返回 int，boolean 调用结果不与 0 比较；无足够证据时可靠拒绝，不一揽子改写类型系统 |
+| 3 | [spell-array-types](changes/spell-array-types/proposal.md)，已规划 | `[B`、引用数组与多维数组在类型位置写合法 Java 或明确拒绝；固定 `hash2FieldElement` 及受控声明样例，不把 descriptor 直接输出 |
+| 核实 | 历史 clone/toString 报错 | 逐条保存 opcode、owner、descriptor 和包装器上下文；`ArrayUtils.removeElement` 是静态 helper 正向对照，不作为丢 receiver 反例 |
+| 4 | 重新冻结 benchmark 候选 | 保留 `85828c4`、`8586356` 的历史身份；新候选记录修正范围、未闭合反例、构建与输入摘要，不把不同版本结果相互替代 |
+| 5 | `optimize-demand-workloads`，0/22 | 调查可继续；正式对照先 G0/W1–W5 与 O1 已交付证据复核，再 O2–O8 调查/准入；不混入上述正确性实现 |
 
 ## 已关闭的恢复正确性收尾
 
@@ -78,7 +84,7 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 | 2 | [add-task-oriented-operations](changes/archive/2026-09-20-add-task-oriented-operations/proposal.md) | 已归档（11/11，`2428752`）：库内目标选择/阶段调度/有界预算/三种环境策略、类视图与引用组织、恢复呈现顺序 |
 | 3 | [add-task-oriented-cli](changes/archive/2026-09-20-add-task-oriented-cli/proposal.md) | 已归档（9/9，`85828c4`）：五个薄子命令、text/JSON 同源、诊断分离、四态退出状态 |
 
-三者依赖顺序固定，现已按当时验证范围归档；R1/R2 由新的独立修正 change 跟踪，不回写历史归档为失败。显式 artifact-tree 发现和 prefix root 已交付，仍未实施的是自动 WAR/Boot layout policy，不应将两者合并成“树发现未实现”。
+三者依赖顺序固定，现已按当时验证范围归档；R1/R2 的独立修正也已关闭，不回写历史归档为失败。显式 artifact-tree 发现和 prefix root 已交付，仍未实施的是自动 WAR/Boot layout policy，不应将两者合并成“树发现未实现”。
 
 ## 分开处理的后续范围
 
