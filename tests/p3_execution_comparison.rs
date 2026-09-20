@@ -844,6 +844,153 @@ const RECEIVER_GROUPING: Sample = Sample {
             (`wrap(a + b)`) and a left-associative chain (`a + b + c`) gain nothing",
 };
 
+const BOOLEAN_CONTEXTS: Sample = Sample {
+    label: "p3-boolean-contexts/v8 (javac 23.0.1, --release 8 -g:none)",
+    class: "BooleanContexts",
+    bytes: include_bytes!("fixtures/p3-boolean-contexts/v8/BooleanContexts.class"),
+    classpath: &[],
+    // `parity` and `callFlag` call the sample's own `flag`, so the scratch class extends the sample
+    // (the class is not `final`) and those names resolve to the committed class's members.
+    extends: Some("BooleanContexts"),
+    scaffold: &[],
+    counter: None,
+    measured: &[],
+    // The default `int` input set is 7, 0, -1 and the review's own inputs are `isZero(0)` and
+    // `isZero(1)`: `1` is the one the default set does not carry, so the members the finding was
+    // measured on state their calls here and both sides are called with the same ones. `pick` and
+    // `intLocal` state theirs so that each arm of the branch is executed explicitly rather than left
+    // to the default list's rotation.
+    inputs: Some(&[
+        ("isZero", &[&["0"], &["1"], &["7"], &["-1"]]),
+        ("parity", &[&["0"], &["1"]]),
+        ("pick", &[&["7", "true", "true"], &["0", "false", "false"]]),
+        ("intLocal", &[&["7"], &["0"]]),
+    ]),
+    quotes: &[],
+    // The positive comparison's inputs are the original's own values too, and the driver prints every
+    // member's own answers for them: the two members a `boolean` parameter and a `boolean` field are
+    // read from, and the members whose local's own declaration types its later uses.
+    baseline: Some(Baseline {
+        class: "Baseline",
+        source: include_str!("fixtures/p3-boolean-contexts/Baseline.java"),
+        lines: &[
+            "isZero(0)=true",
+            "isZero(1)=false",
+            "isZero(7)=false",
+            "isZero(-1)=false",
+            "flag()=true",
+            "parity(0)=1",
+            "parity(1)=1",
+            "passed(true)=true",
+            "passed(false)=false",
+            "callFlag()=true",
+            "fieldFlag()=true",
+            "localFromCall()=true",
+            "pick(7, true, true)=true",
+            "pick(0, false, false)=false",
+            "fromLocal(true)=true",
+            "fromLocal(false)=false",
+            "assignFromCall(true)=true",
+            "assignFromCall(false)=true",
+            "throughLocal(true)=true",
+            "throughLocal(false)=false",
+            "staticFlagCount()=1",
+            "intLocal(7)=1",
+            "intLocal(0)=0",
+            "count(true)=1",
+            "count(false)=0",
+            "nonzero(0)=0",
+            "nonzero(1)=1",
+            "answer()=1",
+        ],
+    }),
+    members: &[
+        Member {
+            name: "isZero",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "flag",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "parity",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "passed",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "callFlag",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "fieldFlag",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "localFromCall",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "pick",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "fromLocal",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "assignFromCall",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "throughLocal",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "staticFlagCount",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "intLocal",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "count",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "nonzero",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "answer",
+            expect: Expect::Executed,
+        },
+        // The one refusal of this sample: `negated`'s value is a stack merge out of two constant
+        // pushes that no name denotes, and neither the boolean items nor a local's declaration
+        // speaks for it.
+        Member {
+            name: "negated",
+            expect: Expect::Quoted(None),
+        },
+    ],
+    point: "the descriptor types a boolean context, and a local's own declaration states it too: a \
+            `Z` method's `return` is written `true`/`false` (`isZero`, `flag`), a condition whose \
+            operand is a proven boolean is written as a truth test (`parity`'s `if (flag())`, \
+            `staticFlagCount`'s `if (staticFlag)`), and a local filled from a proven boolean value is \
+            declared `boolean` with its later uses printing as that boolean (`throughLocal`, \
+            `localFromCall`, `pick`, `fromLocal`, `assignFromCall`) — so every one of these bodies \
+            compiles under a declaration derived from the run's own facts and answers what the \
+            original answers, where the pre-fix text was `return 1;`/`return 0;`, \
+            `if (flag() != 0)` and `int local1 = arg0; return local1;`, which javac refuses (`int \
+            cannot be converted to boolean`, `incomparable types: boolean and int`, `boolean cannot \
+            be converted to int`) — while the int-shaped controls (`nonzero`, `answer`, `count`, \
+            `intLocal`, whose `0`/`1` stores stay `int`) keep the text they had",
+};
+
 const REQUIRED: &[&Sample] = &[
     &LOCAL_REWRITE,
     &SCOPE_NO_DEBUG,
@@ -854,6 +1001,7 @@ const REQUIRED: &[&Sample] = &[
     &REFUSED_CAST,
     &NESTED_ARITHMETIC,
     &RECEIVER_GROUPING,
+    &BOOLEAN_CONTEXTS,
 ];
 
 const CORPUS: &[&Sample] = &[

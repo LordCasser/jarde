@@ -111,6 +111,12 @@ pub(crate) struct Inputs<'a> {
     /// The type each parameter slot holds, as the member's own descriptor states it (P3-R5): a
     /// `boolean` parameter and an `int` one share a slot shape, and only this fact tells them apart.
     pub(crate) parameter_types: &'a BTreeMap<u16, Type>,
+    /// Whether the member's own descriptor returns `Z` (`(I)Z`, `()Z`, …), as the same reading of
+    /// the same descriptor states it. The frames state one slot shape for the four int-sized
+    /// primitives, so this signature fact is what says whether a `return` in this body presents a
+    /// boolean; the caller derives it where it derives [`Self::parameter_types`], so that a builder
+    /// handed this run's facts never reads a second opinion out of a descriptor itself.
+    pub(crate) returns_boolean: bool,
     /// The names the presentation decided, in slot order.
     pub(crate) names: &'a NameTable,
     /// The variables each local slot holds (P3 3.4): one per slot unless the debug records name the
@@ -193,6 +199,7 @@ struct HoistedDeclaration {
 }
 
 /// Plans where each local variable's declaration is written.
+#[allow(clippy::too_many_arguments)]
 fn declarations(
     regions: &[Region],
     ssa: &SsaTable,
@@ -201,6 +208,7 @@ fn declarations(
     reuse: &reuse::Plan,
     parameters: u16,
     parameter_types: &BTreeMap<u16, Type>,
+    fields: &field::Plan,
 ) -> Declarations {
     let paths = region_paths(regions);
     let mut uses: BTreeMap<LocalVariable, Vec<SlotUse>> = BTreeMap::new();
@@ -215,6 +223,7 @@ fn declarations(
                         path: path.cloned(),
                         bci: instruction.bci(),
                         written: None,
+                        stored: None,
                     });
                 }
             }
@@ -226,6 +235,7 @@ fn declarations(
                         path: path.cloned(),
                         bci: instruction.bci(),
                         written: Some(*value),
+                        stored: store_operand(operations, instruction),
                     });
                 }
             }
@@ -264,10 +274,12 @@ fn declarations(
             continue;
         }
         let Some(value) = first.written else { continue };
-        // The same evidence the in-place declaration reads: the member's descriptor where the value
-        // is a `boolean` parameter's (P3-R5), and the type the frame states otherwise. A variable
-        // neither fact types keeps the write's own fallback.
-        let Some(ty) = parameter_boolean(ssa, operations, parameter_types, value)
+        // The same evidence the in-place declaration reads ([`boolean_proof`]): the class's own
+        // descriptors where the value being stored is a `boolean` parameter's, a `Z`-returning
+        // call's or a `Z` field's, and the type the frame states otherwise. A variable neither fact
+        // types keeps the write's own fallback.
+        let evidence = first.stored.unwrap_or(value);
+        let Some(ty) = boolean_proof(ssa, operations, parameter_types, fields, evidence)
             .then_some(Type::Boolean)
             .or_else(|| value_type(ssa.value(value).ty()))
         else {
@@ -331,6 +343,12 @@ struct SlotUse {
     bci: u32,
     /// The value a write stores; absent for a read.
     written: Option<ValueId>,
+    /// The value a write **reads** as the one it stores, when the two are different values: a
+    /// `…; istore` writes the slot and reads the stack, and only the second is the value whose own
+    /// evidence says what type the slot holds. Absent where the write reads no stack value (an
+    /// `iinc`) and where the instruction produces the value it writes (an invocation the SSA
+    /// already places in the slot).
+    stored: Option<ValueId>,
 }
 
 /// The path of the innermost region every use of one slot sits in.
@@ -486,7 +504,18 @@ pub(crate) fn build(
         inputs.reuse,
         inputs.parameters,
         inputs.parameter_types,
+        inputs.fields,
     );
+    // The variables the plan typed `boolean` before a statement was written: a hoisted declaration
+    // states its type above the region whose writes fill it, so reads of it are proven from the
+    // first statement the build writes rather than from the declaration it will reach later.
+    let boolean_locals: BTreeSet<LocalVariable> = declarations
+        .at_region
+        .values()
+        .flatten()
+        .filter(|declaration| declaration.ty == Type::Boolean)
+        .map(|declaration| declaration.variable)
+        .collect();
     let mut builder = Builder {
         canonical,
         ssa,
@@ -496,6 +525,7 @@ pub(crate) fn build(
         profile: inputs.profile,
         parameters: inputs.parameters,
         parameter_types: inputs.parameter_types,
+        returns_boolean: inputs.returns_boolean,
         names: inputs.names,
         reuse: inputs.reuse,
         chains: inputs.chains,
@@ -509,6 +539,7 @@ pub(crate) fn build(
         block_of,
         budget,
         declared: BTreeSet::new(),
+        boolean_locals,
         stmts: Vec::new(),
         statements: 0,
         ragged: false,
@@ -550,6 +581,9 @@ struct Builder<'a> {
     parameters: u16,
     /// The type each parameter slot holds, as the member's own descriptor states it (P3-R5).
     parameter_types: &'a BTreeMap<u16, Type>,
+    /// Whether the member's own descriptor returns `Z`: the fact that decides whether a `return` of
+    /// this body presents a boolean (P3-R5's reading, in the return position).
+    returns_boolean: bool,
     names: &'a NameTable,
     /// The variables each local slot holds (P3 3.4): which of a slot's two variables a use point
     /// belongs to, and therefore which name that use is written with.
@@ -576,6 +610,11 @@ struct Builder<'a> {
     /// The variables declared so far: a write of a variable whose declaration is already written
     /// becomes an assignment, and every variable's declaration is written once.
     declared: BTreeSet<LocalVariable>,
+    /// The variables this build knows hold a **boolean**: the ones whose declaration it wrote
+    /// `boolean` (planned hoisted declarations and in-place ones alike). A read of one of them is
+    /// proven boolean, which is the item the body itself states — the class's own descriptor of the
+    /// value that filled the variable, recorded where the declaration was written.
+    boolean_locals: BTreeSet<LocalVariable>,
     stmts: Vec<Stmt>,
     statements: usize,
     ragged: bool,
@@ -1091,37 +1130,21 @@ impl Builder<'_> {
                         return self.fallback(vec![at], &reason, at);
                     }
                 };
-                let Some((_, value)) = stack_operands(instruction).last().copied() else {
+                let Some((_, stored)) = stack_operands(instruction).last().copied() else {
                     return self.fallback(
                         vec![at],
                         &format!("the store at BCI {at} reads no value to store"),
                         at,
                     );
                 };
-                let value = match self.render_value(value, at, 0) {
+                let value = match self.render_value(stored, at, 0) {
                     Ok(value) => value,
                     Err(reason) => {
                         let bcis = self.quoted_bcis(at);
                         return self.fallback(bcis, &reason, at);
                     }
                 };
-                match self.declare(variable, written, at)? {
-                    Some(ty) => self.push(Stmt::new(
-                        StmtKind::Declare {
-                            ty,
-                            name: target,
-                            value: Some(value),
-                        },
-                        OriginSet::new(Origin::direct(at)),
-                    )),
-                    None => self.push(Stmt::new(
-                        StmtKind::Assign {
-                            name: target,
-                            value,
-                        },
-                        OriginSet::new(Origin::direct(at)),
-                    )),
-                }
+                self.write_statement(variable, target, written, stored, value, at)
             }
             Some(Operation::Invoke(target)) => {
                 // The call an instance initializer makes on its own uninitialized `this` is the
@@ -1221,27 +1244,13 @@ impl Builder<'_> {
                         return self.fallback(vec![at], &reason, at);
                     }
                 };
-                match self.declare(variable, written, at)? {
-                    Some(ty) => self.push(Stmt::new(
-                        StmtKind::Declare {
-                            ty,
-                            name: target_name,
-                            value: Some(call),
-                        },
-                        OriginSet::new(Origin::direct(at)),
-                    )),
-                    None => self.push(Stmt::new(
-                        StmtKind::Assign {
-                            name: target_name,
-                            value: call,
-                        },
-                        OriginSet::new(Origin::direct(at)),
-                    )),
-                }
+                // The invocation produces the value its own slot takes, so the value written and the
+                // value whose evidence types it are one and the same.
+                self.write_statement(variable, target_name, written, written, call, at)
             }
             Some(Operation::Return) => {
                 let value = match stack_operands(instruction).last().copied() {
-                    Some((_, value)) => match self.render_value(value, at, 0) {
+                    Some((_, value)) => match self.return_expr(value, at) {
                         Ok(value) => Some(value),
                         Err(reason) => {
                             let bcis = self.quoted_bcis(at);
@@ -1397,19 +1406,186 @@ impl Builder<'_> {
         }
     }
 
-    /// Whether one value is read from a parameter slot the member's descriptor declares `boolean`.
+    /// The expression one `return` writes, typed by the member's own return descriptor.
     ///
-    /// The value has to be the result of a single `load` of that slot: a value a branch or a phi
-    /// merged is not what the descriptor states, and this layer does not carry the parameter's type
-    /// through one.
-    fn boolean_parameter(&self, value: ValueId) -> bool {
+    /// A method whose descriptor returns `Z` returns a **boolean** (P3-R5's reading, in the return
+    /// position): the frames state one `int` shape for the four int-sized primitives, so only the
+    /// signature says whether the `ireturn` of this body presents a boolean. A value with boolean
+    /// evidence ([`Self::boolean_value`]) is written as one — the literal `0`/`1` becomes
+    /// `false`/`true`, and every other proven value already prints what it is — while a value
+    /// without it is refused: the `int` spelling this layer would otherwise write (`return 1;` in a
+    /// `boolean` method) is text the member's own signature rejects, and a body that publishes it
+    /// claims a Java method that does not compile. A member that returns anything else keeps the
+    /// value exactly as it was rendered.
+    fn return_expr(&mut self, value: ValueId, at: u32) -> Result<Expr, String> {
+        if !self.returns_boolean {
+            return self.render_value(value, at, 0);
+        }
+        if self.boolean_value(value, at) {
+            return self.render_value(value, at, 0).map(boolean_spelling);
+        }
+        // A value this layer cannot present at all keeps its own, more specific refusal: the
+        // boolean context is the *second* reason such a value is not written, and the first one is
+        // the evidence the value's own rendering is missing.
+        match self.render_value(value, at, 0) {
+            Err(reason) => Err(reason),
+            Ok(_) => Err(format!(
+                "the value at BCI {at} is returned from a method whose own descriptor returns `Z`, and this layer has no evidence that the value is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the member's own signature rejects"
+            )),
+        }
+    }
+
+    /// Whether one value is **proven** boolean in a position that requires a boolean: a `Z` return,
+    /// a branch test, or a store into a variable the run already knows holds a `boolean`.
+    ///
+    /// Three kinds of fact make up the proof, and each is a statement of the class file or of this
+    /// body rather than a guess from the value's shape:
+    ///
+    /// * [`Self::boolean_evidence`] — the class's own descriptors: a `boolean` parameter's load, a
+    ///   call whose callee descriptor returns `Z`, a claimed field read whose pool descriptor is `Z`;
+    /// * [`Self::boolean_literal`] — the `0`/`1` literal, which is how a `boolean` is pushed, and
+    ///   which only a context that *already* requires a boolean can read as one (`int x = 1;` and
+    ///   `boolean c = true;` are the same bytes, and a fresh local states no type);
+    /// * [`Self::boolean_local`] — a read of a local variable a write of this body declared
+    ///   `boolean`, which is the item the plan calls "a local the body has proven boolean".
+    ///
+    /// Every other value — an arithmetic result, a comparison, a value a branch or a phi merged out
+    /// of unproven parts, a `load` of a slot no write proved boolean — is *not* proven boolean, and
+    /// a boolean context refuses it rather than guessing. This is not a type system: it reads the
+    /// same descriptors ([`typed_arguments`] does) plus the declarations this very build wrote.
+    fn boolean_value(&self, value: ValueId, at: u32) -> bool {
+        self.boolean_evidence(value) || self.boolean_literal(value) || self.boolean_local(value, at)
+    }
+
+    /// Whether the class's own descriptors state that one value is a boolean, with no context and no
+    /// local consulted: a `load` of a parameter slot whose descriptor is `Z` (P3-R5), the result of
+    /// a call whose **callee's** descriptor returns `Z` ([`CallTarget`]'s own descriptor, the fact
+    /// [`typed_arguments`] reads), or a field access a `field@1` verdict claimed whose pool
+    /// descriptor is `Z` — the same kind of fact as the callee descriptor, read from the evidence
+    /// the artifact spells the member with.
+    ///
+    /// Nothing is followed: a value a store wrote, a value merged out of two pushes, and a value
+    /// whose descriptor sits one definition away all state nothing here.
+    fn boolean_evidence(&self, value: ValueId) -> bool {
+        boolean_proof(
+            self.ssa,
+            self.operations,
+            self.parameter_types,
+            self.fields,
+            value,
+        )
+    }
+
+    /// Whether one value is a `0`/`1` literal: the constant a `boolean` is pushed as, in the
+    /// positions that already require a boolean.
+    fn boolean_literal(&self, value: ValueId) -> bool {
         let Definition::Instruction { bci, .. } = self.ssa.value(value).def() else {
             return false;
         };
-        let Some(Operation::Load { slot }) = self.operations.get(*bci) else {
-            return false;
+        matches!(
+            self.operations.get(*bci),
+            Some(Operation::Push(ConstantValue::Int(0 | 1)))
+        )
+    }
+
+    /// Whether one value reads a local variable this build proved boolean: a `load` of that
+    /// variable, or the entry/phi its own slot holds at `at`.
+    ///
+    /// The proof is the variable's own declaration — the write whose stored value a descriptor
+    /// typed — and it is recorded where that declaration was written. Following the value further
+    /// (through the write that filled the variable, or through a phi's operands) is exactly what
+    /// this does **not** do: an unproven variable is not a boolean local, however boolean the shape
+    /// of its flow looks.
+    fn boolean_local(&self, value: ValueId, at: u32) -> bool {
+        let (slot, read_at) = match self.ssa.value(value).def() {
+            Definition::Instruction { bci, .. } => match self.operations.get(*bci) {
+                Some(Operation::Load { slot }) => (*slot, *bci),
+                _ => return false,
+            },
+            Definition::Entry { slot, .. } | Definition::Phi { slot, .. } => match slot {
+                Slot::Local(slot) => (*slot, at),
+                Slot::Stack(_) => return false,
+            },
+            Definition::Caught { .. } => return false,
         };
-        matches!(self.parameter_types.get(slot), Some(Type::Boolean))
+        self.reuse
+            .variable_at(slot, read_at)
+            .is_some_and(|variable| self.boolean_locals.contains(&variable))
+    }
+
+    /// Whether one variable is known to hold a boolean: a parameter slot the member's descriptor
+    /// declares `Z`, or a local a write of this body declared `boolean`.
+    fn boolean_variable(&self, variable: LocalVariable) -> bool {
+        if variable.slot() < self.parameters {
+            return matches!(
+                self.parameter_types.get(&variable.slot()),
+                Some(Type::Boolean)
+            );
+        }
+        self.boolean_locals.contains(&variable)
+    }
+
+    /// The statement one write of a value into a variable becomes.
+    ///
+    /// Three outcomes, and the last two are one rule read in both directions:
+    ///
+    /// * this write **states** the variable's type: a declaration, whose type is the stored value's
+    ///   own evidence and whose boolean value is spelled `true`/`false`;
+    /// * an earlier write stated it: an assignment, whose value is what the variable's type requires.
+    ///   A value this run cannot prove boolean, stored into a variable it knows holds a `boolean`, is
+    ///   refused — `local1 = 2;` beside `boolean local1 = …;` is text the variable's own type
+    ///   rejects, exactly like the `int` spelling of a boolean return;
+    /// * neither: an assignment whose value keeps the type it had.
+    ///
+    /// `written` is the value the slot takes (the frame's own record of the write) and `stored` is
+    /// the value the writing instruction reads — see [`Self::declare`].
+    #[allow(clippy::too_many_arguments)]
+    fn write_statement(
+        &mut self,
+        variable: LocalVariable,
+        name: String,
+        written: ValueId,
+        stored: ValueId,
+        value: Expr,
+        at: u32,
+    ) -> Result<(), StopReason> {
+        match self.declare(variable, written, stored, at)? {
+            Some(ty) => {
+                let value = if ty == Type::Boolean {
+                    boolean_spelling(value)
+                } else {
+                    value
+                };
+                self.push(Stmt::new(
+                    StmtKind::Declare {
+                        ty,
+                        name,
+                        value: Some(value),
+                    },
+                    OriginSet::new(Origin::direct(at)),
+                ))
+            }
+            None if self.boolean_variable(variable) => {
+                if !self.boolean_value(stored, at) {
+                    return self.fallback(
+                        vec![at],
+                        &format!(
+                            "the value at BCI {at} is stored into `{name}`, which this run already stated holds a `boolean`, and this layer has no evidence that the value is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the variable's own type rejects"
+                        ),
+                        at,
+                    );
+                }
+                let value = boolean_spelling(value);
+                self.push(Stmt::new(
+                    StmtKind::Assign { name, value },
+                    OriginSet::new(Origin::direct(at)),
+                ))
+            }
+            None => self.push(Stmt::new(
+                StmtKind::Assign { name, value },
+                OriginSet::new(Origin::direct(at)),
+            )),
+        }
     }
 
     /// Whether a local variable has to be declared at this write, and with which type.
@@ -1419,12 +1595,18 @@ impl Builder<'_> {
     /// written it yet — so the frame cannot state a type here, while the value that is about to fill
     /// the slot can, and is the same evidence the source's declaration was read from.
     ///
+    /// `written` is the value the slot takes and `stored` is the value the writing instruction
+    /// reads: a store writes the slot and reads the stack, and the **stored** value is the one whose
+    /// evidence states what the slot holds (a call that writes its slot directly produces the value
+    /// it writes, so both are the same value there).
+    ///
     /// `Ok(None)` means "no declaration is due": the variable is a parameter's (its declaration is the
     /// method's signature) or it was declared at an earlier write in this run.
     fn declare(
         &mut self,
         variable: LocalVariable,
         written: ValueId,
+        stored: ValueId,
         at: u32,
     ) -> Result<Option<Type>, StopReason> {
         if self.declared.contains(&variable) || variable.slot() < self.parameters {
@@ -1435,11 +1617,20 @@ impl Builder<'_> {
             // reported as a fallback of its own.
             return Ok(None);
         }
-        // A local filled from a `boolean` parameter is declared `boolean`: the frames state one
-        // `int` shape for the four int-sized primitives, and the member's own descriptor is the fact
-        // that says which of them the value really is (P3-R5). Everything else keeps the frame's
-        // evidence.
-        let boolean = self.boolean_parameter(written);
+        // A local whose **stored** value this run proved boolean is declared `boolean`: the frames
+        // state one `int` shape for the four int-sized primitives, so the fact that says which of
+        // them the value is comes from the value's own evidence — a descriptor, or a local an
+        // earlier declaration proved boolean (P3-R5's reading, one site further along).
+        //
+        // The `0`/`1` literal is deliberately not evidence here, and this is the one place the
+        // predicate is narrower than the positions that require a boolean: a fresh local states no
+        // type at all, so `int y = 0;` and `boolean c = true;` are the same bytes and reading the
+        // literal would declare every `int` local filled with `0`/`1` a boolean. That was measured,
+        // not assumed: with the literal added to this decision, `p3-scope`'s `scope(Z)I` recovers
+        // `boolean local1; if (arg0) { local1 = true; } else { …refused… }` and the execution
+        // comparison stops on `scope(Z)I is a body the run writes whole, and this run states Mixed`.
+        // Everything else keeps the frame's evidence.
+        let boolean = self.boolean_evidence(stored) || self.boolean_local(stored, at);
         let Some(ty) = boolean
             .then_some(Type::Boolean)
             .or_else(|| value_type(self.ssa.value(written).ty()))
@@ -1455,6 +1646,9 @@ impl Builder<'_> {
             return Ok(None);
         };
         self.declared.insert(variable);
+        if boolean {
+            self.boolean_locals.insert(variable);
+        }
         Ok(Some(ty))
     }
 
@@ -2833,6 +3027,66 @@ fn parameter_descriptors(descriptor: &str) -> Option<Vec<&str>> {
     Some(types)
 }
 
+/// Whether the class's own descriptors state that one value is a boolean.
+///
+/// The free-function form of [`Builder::boolean_evidence`], for the step that decides a **hoisted**
+/// variable's type before a single statement is written: that declaration states its type from the
+/// first write's stored value, and the two readings have to be one reading.
+///
+/// What it deliberately does not carry is the `0`/`1` literal (a fresh local has no boolean context,
+/// so `int y = 0;` and `boolean c = true;` are the same bytes — see [`Builder::declare`]) and a local
+/// this body declared boolean (that declaration is a statement, and this runs before there are any).
+fn boolean_proof(
+    ssa: &SsaTable,
+    operations: &Operations,
+    parameter_types: &BTreeMap<u16, Type>,
+    fields: &field::Plan,
+    value: ValueId,
+) -> bool {
+    if parameter_boolean(ssa, operations, parameter_types, value) {
+        return true;
+    }
+    let Definition::Instruction { bci, .. } = ssa.value(value).def() else {
+        return false;
+    };
+    match operations.get(*bci) {
+        Some(Operation::Invoke(target)) => returns_boolean(target.descriptor()),
+        Some(Operation::Field { .. }) => fields
+            .claim(*bci)
+            .is_some_and(|(evidence, _)| evidence.descriptor == "Z"),
+        _ => false,
+    }
+}
+
+/// The value one writing instruction **reads** as the value it stores, when the two are different.
+///
+/// A `…; istore` writes the slot and reads the stack: the slot takes a value of the store's own, and
+/// the value whose evidence states what the slot now holds is the one on the stack. An instruction
+/// that writes a slot directly — an invocation whose result the SSA already places in the slot —
+/// produces the value it writes, so it stores nothing it read, and `None` says so rather than naming
+/// an argument of the call.
+fn store_operand(operations: &Operations, instruction: &SsaInstruction) -> Option<ValueId> {
+    match operations.get(instruction.bci()) {
+        Some(Operation::Store { .. }) => {
+            stack_operands(instruction).last().map(|(_, value)| *value)
+        }
+        _ => None,
+    }
+}
+
+/// Whether one method descriptor's **return type** is `Z` (`(I)Z`, `()Z`, …).
+///
+/// The return side of the same reading [`MethodFacts::parameter_types`] makes for the parameters:
+/// the frames state one `int` shape for the four int-sized primitives, so only a descriptor says
+/// whether the position it types holds a `boolean`. A descriptor this reading cannot parse states no
+/// return type at all, and a body presented under it keeps every value as it was rendered.
+pub(crate) fn returns_boolean(descriptor: &str) -> bool {
+    descriptor
+        .strip_prefix('(')
+        .and_then(|rest| rest.split_once(')'))
+        .is_some_and(|(_, returns)| returns == "Z")
+}
+
 /// The value one instruction reads out of one local slot, when it reads that slot at all.
 ///
 /// A load of a slot *produces* a value rather than consuming one, so this is deliberately not
@@ -2882,6 +3136,28 @@ fn literal(constant: &ConstantValue) -> ExprKind {
     }
 }
 
+/// One expression whose value a boolean context has proven boolean, spelled as that boolean.
+///
+/// The only value whose *text* changes is the literal: the frames state `0`/`1` for a boolean
+/// literal exactly as they do for an `int` one, and the boolean context is the fact that says which
+/// of the two the bytecode pushed — the same reading [`typed_arguments`] makes for a `Z` argument.
+/// Every other proven value (a `boolean` parameter's load, a call whose callee descriptor returns
+/// `Z`, a claimed field read of descriptor `Z`, a read of a local this body declared `boolean`)
+/// already prints what it is, and an expression of any other type is left untouched: the caller is
+/// the only place that knows its context, and this helper never invents one.
+fn boolean_spelling(expr: Expr) -> Expr {
+    let Expr { kind, origin } = expr;
+    let spelled = match kind {
+        ExprKind::Integer(0) => false,
+        ExprKind::Integer(1) => true,
+        _ => return Expr { kind, origin },
+    };
+    Expr {
+        kind: ExprKind::Boolean(spelled),
+        origin,
+    }
+}
+
 /// The operator an arithmetic operation becomes.
 fn arithmetic_op(op: ArithmeticOp) -> BinaryOp {
     match op {
@@ -2920,7 +3196,20 @@ fn condition(
             operands.len()
         ));
     }
+    // A zero test whose operand is **proven boolean** is not a comparison (P3-R5). The frames state
+    // one slot shape for the four int-sized primitives, so the fact that decides the text here is a
+    // descriptor: `ifeq` on a `boolean` parameter is `!b`, `ifne` is `b`, and any other zero test on
+    // it (`iflt`, `ifgt`, …) has no Java spelling at all — the signature would refuse it — so the
+    // region is refused rather than written as an int comparison. An operand the layer cannot prove
+    // boolean keeps the integer comparison it has always had: that is not a defect, and refusing it
+    // would trade the two shapes this rule is about for a layer that refuses every `int` branch.
+    let boolean = builder.boolean_value(operands[0].1, branch_bci);
     let left = builder.render_value(operands[0].1, branch_bci, 0)?;
+    let left = if boolean {
+        boolean_spelling(left)
+    } else {
+        left
+    };
     let anchor = left.origin.primary().bci();
     // The operator the *sense* states, and the operator its negation states.
     let (positive, negative) = match op {
@@ -2964,13 +3253,8 @@ fn condition(
         ),
     };
     let test = if taken { positive } else { negative };
-    // P3-R5: a zero test on a parameter whose **descriptor** says `boolean` is not a comparison.
-    // The frames state one slot shape for the four int-shaped primitives, so the fact that decides
-    // the text here is the member's own signature: `ifeq` on a `boolean` parameter is `!b`, `ifne`
-    // is `b`, and any other zero test on it (`iflt`, `ifgt`, …) has no Java spelling at all — the
-    // signature would refuse it — so the region is refused rather than written as an int comparison.
     if let Test::Zero(op) = test
-        && builder.boolean_parameter(operands[0].1)
+        && boolean
     {
         return match op {
             BinaryOp::NotEqual => Ok(left),
@@ -2981,7 +3265,7 @@ fn condition(
                 OriginSet::new(crate::source_map::Origin::direct(anchor)),
             )),
             other => Err(format!(
-                "the branch at BCI {branch_bci} tests a `boolean` parameter with `{}`, which no Java source spells",
+                "the branch at BCI {branch_bci} tests a value proven boolean with `{}`, which no Java source spells",
                 other.spell()
             )),
         };

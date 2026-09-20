@@ -1051,6 +1051,21 @@
       "path": "tests/fixtures/p2-golden/wide-switch.json"
     },
     {
+      "blake3": "b6d4c2c17514025a3826305fc306048531a32b14c3a27b54235fcf908b707d18",
+      "bytes": 2695,
+      "path": "tests/fixtures/p3-boolean-contexts/Baseline.java"
+    },
+    {
+      "blake3": "37928642f60d619f46a2288e981ccb2fab2d436bda4b58781ca465f0a0696f69",
+      "bytes": 2290,
+      "path": "tests/fixtures/p3-boolean-contexts/BooleanContexts.java"
+    },
+    {
+      "blake3": "1d884b34a2b8637234d441dc1a66fb62163d3d51a8c2682419c033ca09664cb2",
+      "bytes": 1114,
+      "path": "tests/fixtures/p3-boolean-contexts/v8/BooleanContexts.class"
+    },
+    {
       "blake3": "5d86b8fb0e6aeab5b229db3d0416c5738fd10697940b679ec201590bfe42dc93",
       "bytes": 1754,
       "path": "tests/fixtures/p3-corpus/Flags.java"

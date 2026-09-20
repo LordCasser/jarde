@@ -33,10 +33,12 @@ use crate::source_map::OriginSet;
 pub enum Type {
     /// `boolean`, `byte`, `char` and `short`: a **descriptor** states which of the int-shaped
     /// primitives a position has (a `MethodType` bootstrap argument says `Z` outright), while the
-    /// *frames* cannot — a `boolean` and an `int` share one slot and one value shape — so
-    /// [`crate::build`]'s frame reading never produces these four and only the descriptor reader of
-    /// a lambda's SAM ([`crate::lambda`]) does. That is the difference between a fact a descriptor
-    /// states and a guess this layer would be making.
+    /// *frames* cannot — a `boolean` and an `int` share one slot and one value shape — so the frame
+    /// reading never produces these four on its own: [`crate::build`] produces [`Self::Boolean`]
+    /// from a descriptor (a `Z` return, a `Z` parameter or callee, a claimed field, a lambda's SAM)
+    /// and, transitively, from a local this body already declared `boolean`, and [`crate::lambda`]
+    /// spells a SAM parameter from the same kind of fact. That is the difference between a fact a
+    /// descriptor states and a guess this layer would be making.
     Boolean,
     Byte,
     Char,

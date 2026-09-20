@@ -87,6 +87,7 @@ compression are the production paths, not a test double.
 | `p3-declaration/` | javac 23.0.1; `javac --release 8 -g:none -d v8 Shape.java Holder.java` | `v8/Shape.class` (52.0, 191 bytes, SHA-256 `91f9a3a0…f32e`) and `v8/Holder.class` (52.0, 359 bytes, SHA-256 `11cbb8c0…b5ea`), with the bytecode and flags of every member in that directory's `README.md` | `tests/p3_declaration_handoff.rs` (the member forms a class file's own flags decide, through `Engine::recover_method`) |
 | `p3-nested-arithmetic/` | javac 23.0.1; `javac --release 8 -g:none -d v8 ModLike.java` | `v8/ModLike.class` (52.0, 568 bytes, SHA-256 `a5827ef4…d2891158`), with the bytecode of every member in that directory's `README.md` | `tests/p3_eval_context.rs` (the printer's grouping: a nested arithmetic's text parses back into the tree it was printed from, and the two shapes the defaults already state gain no parentheses); `tests/p3_execution_comparison.rs` (all eight members executed against the original, `inverse32(-1)` included) |
 | `p3-receiver-grouping/` | javac 23.0.1; `javac --release 8 -g:none -d v8 ReceiverGrouping.java` | `v8/ReceiverGrouping.class` (52.0, 1038 bytes, SHA-256 `8e030b53…30cc8c00`), with the bytecode of every member in that directory's `README.md` | `tests/p3_eval_context.rs` (the printer's grouping as a property of the **position**: a call's receiver, a three-operand chain in receiver position, and the controls that gain nothing); `tests/p3_execution_comparison.rs` (all eight members executed against the original, `call("a", "bc")` included) |
+| `p3-boolean-contexts/` | javac 23.0.1; `javac --release 8 -g:none -d v8 BooleanContexts.java` | `v8/BooleanContexts.class` (52.0, 1114 bytes, SHA-256 `e6a85f9a…6bfb2bf0d`), with the bytecode of every member and the pre-fix `javac` refusals in that directory's `README.md` | `tests/p3_boolean_contexts.rs` (a boolean context is typed by its descriptor: a `Z` method's `return` is `true`/`false`, a proven-boolean condition is a truth test, a local a write proved boolean is declared `boolean` with its later uses printing as that boolean, the `int` controls keep their shape, and an unprovable value is refused at each of the three sites); `tests/p3_execution_comparison.rs` (sixteen members compiled under a declaration derived from the run's own facts and executed against the original, the one remaining refusal recorded as a boundary) |
 
 ### The replayable compile-and-execute comparison (P3 3.3)
 
@@ -144,7 +145,7 @@ an illegal release shape.
 
 Every file below `tests/fixtures/` and `fuzz/corpus/` — the checked-in samples and archives, the
 golden documents, and the committed fuzz seeds — is fingerprinted in one document.
-`corpus-fingerprint.json` records a blake3 digest and a byte count for each of the 111 files it
+`corpus-fingerprint.json` records a blake3 digest and a byte count for each of the 114 files it
 covered when it was written — the count is data, not a promise — and beside them the index P5's
 measurement baseline reads: the eight corpus dimensions (versions,
 compiler, packaging, identity, bytecode, recovery, degradation, adversarial), the carrier behind
