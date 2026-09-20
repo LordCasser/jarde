@@ -50,6 +50,7 @@ outcome: performed | presentation execution status: complete | text length: 248
 | `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` | 通过 |
 | `cargo test --test p3_execution_comparison --locked -- --ignored` | 2 passed / 0 failed（17.6 s） |
 | `openspec validate --all --strict --no-interactive` | 20 passed / 0 failed（归档前） |
+| 实现提交的 CI（`85828c4`） | [run 35502305001](https://github.com/LordCasser/jarde/actions/runs/35502305001) **四 job success**：stable（fmt、clippy `-D warnings`、两轮固定 seed 全量测试、JDK 25 oracle、P3 编译执行对照、依赖边界、OpenSpec strict、`git diff --exit-code`）、MSRV 1.88.0、supply chain、fuzz smoke |
 
 未新增 fixture 文件：`task_cli.rs` 全部内存构造（STORED-only ZIP writer + class-file writer），真实样本复用已提交的 ECJ v52，已在 `tests/fixtures/README.md` 索引，corpus fingerprint 未变。
 
