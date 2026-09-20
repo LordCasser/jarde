@@ -53,6 +53,7 @@
 | `cargo test --test p3_execution_comparison --locked -- --ignored` | 2 passed / 0 failed（20.4 s） |
 | `cargo test -p jarde-cli --test json_cli --locked` | 16 passed / 0 failed |
 | `openspec validate --all --strict --no-interactive` | 22 passed / 0 failed（归档前，含本 change） |
+| 该提交的 CI（`7d095ce`） | [run 35494183220](https://github.com/LordCasser/jarde/actions/runs/35494183220) **四 job success**：stable（fmt、clippy `-D warnings`、两轮固定 seed 全量测试、JDK 25 oracle、P3 编译执行对照、依赖边界、OpenSpec strict、`git diff --exit-code`）、MSRV 1.88.0、supply chain、fuzz smoke |
 
 ## 边界
 
