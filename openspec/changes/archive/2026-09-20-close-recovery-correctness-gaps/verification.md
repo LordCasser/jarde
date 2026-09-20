@@ -36,7 +36,7 @@
 
 CI 只作为该固定提交的门禁证据；`cd6f2f0` 的 run 35484396101 四 job success 不构成本次验收。
 
-**归档后校验**（`openspec/changes/archive/2026-09-20-close-recovery-correctness-gaps/`）：`openspec validate --archived --strict --no-interactive` = **9 passed / 0 failed**；`openspec validate --all --strict --no-interactive` = **18 passed / 4 failed**，其中 18 份主规格——含并入本次两份 delta 的 `java8-recovery` 与 `recovery-validation`——全部通过，4 项失败属于同一工作区里其他 session 新增的 4 份 proposal-only change，与本 change 无关。归档把两份 delta 各 `~ 1 modified` 合入主规格，原有 scenario 一条不少、各新增两条（见上文场景对照）。
+**归档后校验**（`openspec/changes/archive/2026-09-20-close-recovery-correctness-gaps/`）：`openspec validate --archived --strict --no-interactive` = **9 passed / 0 failed**；`openspec validate --all --strict --no-interactive` = **18 passed / 4 failed**，其中 18 份主规格——含并入本次两份 delta 的 `java8-recovery` 与 `recovery-validation`——全部通过，4 项失败属于工作区里新出现的 4 份 proposal-only change（本次收尾之外、当时未提交，也不在本 change 范围内）。归档把两份 delta 各 `~ 1 modified` 合入主规格，原有 scenario 一条不少、各新增两条（见上文场景对照）。
 
 ### 本次留下的边界与记录
 
