@@ -18,6 +18,8 @@ jarde 是纯 Rust、library-first 的 JVM artifact 分析引擎。P0/P1 已完�
 
 恢复产物目前是**方法体**，包含 `text`、source map、rules/profile、诊断和独立结果平面。报告还带闭合的 `content`（`not_produced`/`explanation_only`/`contains_statements`），从最终提交的结构判断产物是否含实际发射的 Java 语句；`Produced` 仅表示产物已交付，`content` 不证明完整恢复，也不证明可编译或语义等价。完整结构可标记 Java/Structured，有低级引用时为 Mixed/Fallback；生产请求保持 `compile_status=NotAttempted`、`semantic_validation=Unproven`、`verification=NotPerformed`。门面已提供参数/receiver/debug 与按需成员证据（P3 3.1/3.2），accessor 的字段访问可从公开入口直接呈现；`carry-declaring-class-evidence` 又补上 driver Header **同一次**读取里的**声明类自身**两项（`this_class` 与 class `access_flags`，只读、不新增扫描），门面级 `declaration@1` 因此能判定普通实例/static、interface `default`/`static`、构造器与 `<clinit>`，同一事实也让构造器的 `super()`/`this()` 与对未初始化 `this` 的字段写入可达；这些 class flags 是 **parse 事实**，不是 dialect 合法性、runtime 解析成功、JVM verification 或质量结论，方法体自身的 quality/compile/verification 不因此升级。**嵌套**（`InnerClasses`/`NestMembers`）、`MethodParameters` 与其它类级 metadata 仍不在载荷，故不声称嵌套。当前支持范围见 [支持矩阵](docs/support-matrix.md)。
 
+**平面与 `content` 的读法（契约原文，`recovery-validation`／`java8-recovery` 规格）**：每个平面 SHALL 只被读作它自己的结构性问题：representation 说明表示形态，quality 说明区域结构的强度，syntax/compile/semantic/verification 各自说明对应证据是否存在，coverage 与 execution 说明工作范围与完成度，content 说明交付物是否含发射语句。任意组合——包括 quality=Structured、content=contains_statements、execution=complete、coverage=CompleteWithinSchema 且无诊断同时成立——MUST NOT 构成语义等价或值正确的声明；已知反例中存在这样同时成立、却计算了与字节码不同值的产物。需要语义证据的调用方 MUST 执行受控编译/执行对照，或把产物当作假设并保留其未证明状态；MUST NOT 用任一平面组合代替该动作。`Produced` 与 `content` MUST 分开统计与表述：同一轮 sweep 的 182,883 个请求中有 30,452 个是 Produced 而产物不含语句；报告、README、支持矩阵与 benchmark 协议 MUST NOT 把这类计数表述为语句恢复率或语义恢复率，MUST 分别命名「引擎 content 分类」与旧 token/启发式口径。content 与其余平面一样是结构性的，MUST NOT 被读作值等价或语义正确的证据。
+
 `Strict` 的 45.x–51.x 与 52.0 支持只表示结构读取和 version-only gate，不能解释为完整 dialect validation 或 JVM verifier。现代版本、preview、future 与缺失输入分别报告能力限制。实际边界以 [五维支持矩阵](docs/support-matrix.md) 为准。
 
 ## 支持范围
@@ -245,6 +247,8 @@ cargo run -q -p jarde-cli -- references --input $J --class-name p/Base --member 
 cargo run -q -p jarde-cli -- recover --input $J --method @method.json --policy plain-jar \
   --format text --output Base.java
 ```
+
+**`recover` 的 JSON/text 报告（上面的恢复示例）适用同一读法契约（契约原文，`recovery-validation`／`java8-recovery` 规格）**：每个平面 SHALL 只被读作它自己的结构性问题：representation 说明表示形态，quality 说明区域结构的强度，syntax/compile/semantic/verification 各自说明对应证据是否存在，coverage 与 execution 说明工作范围与完成度，content 说明交付物是否含发射语句。任意组合——包括 quality=Structured、content=contains_statements、execution=complete、coverage=CompleteWithinSchema 且无诊断同时成立——MUST NOT 构成语义等价或值正确的声明；已知反例中存在这样同时成立、却计算了与字节码不同值的产物。需要语义证据的调用方 MUST 执行受控编译/执行对照，或把产物当作假设并保留其未证明状态；MUST NOT 用任一平面组合代替该动作。`Produced` 与 `content` MUST 分开统计与表述：同一轮 sweep 的 182,883 个请求中有 30,452 个是 Produced 而产物不含语句；报告、README、支持矩阵与 benchmark 协议 MUST NOT 把这类计数表述为语句恢复率或语义恢复率，MUST 分别命名「引擎 content 分类」与旧 token/启发式口径。content 与其余平面一样是结构性的，MUST NOT 被读作值等价或语义正确的证据。
 
 `class-view` 是另一条“打开代码”的路径：`--body 'foo()V'` 只为被请求的那个方法计一次 `method_bodies`，同一个类的其他方法不会被读取（`native`/`abstract` 这类无 Body 的成员不计尝试，返回 `not_declared`）；`--body-method` 接受方法身份。
 
