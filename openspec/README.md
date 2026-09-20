@@ -20,8 +20,8 @@ P0–P5 与分层已按各阶段范围归档：P2 29/29、分层 7/7、P3 12/12�
 | Benchmark 批次 1/4 | [expose-recovery-content](changes/archive/2026-09-20-expose-recovery-content/proposal.md) | 4/4，`7d095ce` 归档；`RecoveryReport.content` 三值闭合 |
 | Benchmark 批次 2/4 | [carry-declaring-class-evidence](changes/archive/2026-09-20-carry-declaring-class-evidence/proposal.md) | 4/4，`618de49` 归档；driver class name/flags 同源交接 |
 | Benchmark 批次 3/4 | [bound-container-lookup](changes/archive/2026-09-20-bound-container-lookup/proposal.md) | 8/8，`b22ea04` 归档；定向 container 访问与有界复用 |
-| Benchmark 批次 4/4 | [bind-prefixed-load-roots](changes/bind-prefixed-load-roots/proposal.md) | 待实施；container+prefix root 与 CLI 树枚举 |
-| 性能专项 | [optimize-demand-workloads](changes/optimize-demand-workloads/proposal.md) | 22 项规划；以 `bound-container-lookup` 为首项实施 change，其余按实验准入 |
+| Benchmark 批次 4/4 | [bind-prefixed-load-roots](changes/archive/2026-09-20-bind-prefixed-load-roots/proposal.md) | 6/6，`fbcf06b` 归档；container+prefix root 与 CLI 树枚举 |
+| 性能专项 | [optimize-demand-workloads](changes/optimize-demand-workloads/proposal.md) | 22 项规划；以已归档的 `bound-container-lookup` 为首项实施 change，其余按实验准入 |
 | 易用性 1/3 | [add-artifact-navigation](changes/add-artifact-navigation/proposal.md) | 8 项规划；列类/列方法/歧义，身份可直接用于恢复 |
 | 易用性 2/3 | [add-task-oriented-operations](changes/add-task-oriented-operations/proposal.md) | 11 项规划；库内目标选择、阶段调度、预算与环境策略 |
 | 易用性 3/3 | [add-task-oriented-cli](changes/add-task-oriented-cli/proposal.md) | 9 项规划；薄命令、text/JSON、显式退出状态 |

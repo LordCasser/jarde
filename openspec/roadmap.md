@@ -56,7 +56,7 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 | 1 | [expose-recovery-content](changes/archive/2026-09-20-expose-recovery-content/proposal.md) | 已归档（4/4，`7d095ce`）：产物内容三值分类，评测分母可对账 |
 | 2 | [carry-declaring-class-evidence](changes/archive/2026-09-20-carry-declaring-class-evidence/proposal.md) | 已归档（4/4，`618de49`）：同源 driver class name/flags 交接，声明 form 由本次读取决定 |
 | 3 | [bound-container-lookup](changes/archive/2026-09-20-bound-container-lookup/proposal.md) | 已归档（8/8，`b22ea04`）：定向 container 访问、raw-name 定位表、有界 backing 复用 |
-| 4 | [bind-prefixed-load-roots](changes/bind-prefixed-load-roots/proposal.md) | 待实施：container+raw prefix 的 root 与 CLI 树枚举 |
+| 4 | [bind-prefixed-load-roots](changes/archive/2026-09-20-bind-prefixed-load-roots/proposal.md) | 已归档（6/6，`fbcf06b`）：container+raw prefix 的加载位置模型、候选 `this_class` 绑定、CLI 树枚举闭环 |
 
 它们与已归档的正确性收尾相互独立：R8/R9 不因这些 change 重开，这些 change 也不把基准分布当作修复后的实测。
 
