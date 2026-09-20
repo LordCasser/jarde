@@ -44,7 +44,7 @@ STORED nested container 可引用已验证 backing 的区间，DEFLATED nested c
 
 ### 5. 容器子项的分阶段证据
 
-本 change 是 [性能专项](../optimize-demand-workloads/proposal.md) 的 O1。工作负载口径、阿姆达尔判断、仪表校准、统计方法、完整/语义 fingerprint 与停止投资原则以总专项为准；本项只实施容器访问与复用，不承担其它方案的调查或实现。
+本 change 是 [性能专项](../../optimize-demand-workloads/proposal.md) 的 O1。工作负载口径、阿姆达尔判断、仪表校准、统计方法、完整/语义 fingerprint 与停止投资原则以总专项为准；本项只实施容器访问与复用，不承担其它方案的调查或实现。
 
 扩展现有 P5 harness，比较 B（固定原始路径）→ D（定向直接路径及操作内复用，跨请求保留关闭）→ C/W（同一 D 上的空/热 store）→ F（容量不足）。B/D 使用记录精确 revision 的基线/候选产物，固定语义与构建条件；C/W/F 使用同一候选。容器实验保持 CP/Header 产品策略一致，无法隔离时只报告组合收益，不把它全部归给 container。
 

@@ -127,6 +127,8 @@
 
 声明、赋值、调用、return 和控制流语句均可构成 contains_statements；该分类不改变 representation、quality、syntax、coverage、execution 或验证状态。分类 MUST 不依赖注释剥离、token 相似度或调用方二次解析文本。库与 CLI SHALL 返回同一分类。
 
+`Produced` 与 `content` MUST 分开统计与表述：同一轮 sweep 的 182,883 个请求中有 30,452 个是 Produced 而产物不含语句；报告、README、支持矩阵与 benchmark 协议 MUST NOT 把这类计数表述为语句恢复率或语义恢复率，MUST 分别命名「引擎 content 分类」与旧 token/启发式口径。content 与其余平面一样是结构性的，MUST NOT 被读作值等价或语义正确的证据。
+
 #### Scenario: Explanation-only produced artifact
 
 - **WHEN** 方法产物只有 BCI 引用、降级理由和成员包装说明
@@ -146,6 +148,16 @@
 
 - **WHEN** 同一结构改变注释措辞、空白，或字符串字面量包含注释分隔符
 - **THEN** 内容分类不因这些文本变化而改变；公开库和 JSON CLI 对同一请求报告相同分类
+
+#### Scenario: A produced count is not a statement count
+
+- **WHEN** 报告或文档给出某组请求的 Produced 数量或比例
+- **THEN** MUST 同时给出 content 分类（或明确声明该数不含内容分类），MUST NOT 把它标注为语句恢复率、语义正确率或行为等价率；两个口径分别命名，不合并成一个数字
+
+#### Scenario: Produced without a statement stays visible as such
+
+- **WHEN** 一组请求的产物只有包装、理由与 BCI 引用
+- **THEN** 它们计入 Produced 且 content 为 explanation_only；报告与文档 MUST 能同时读出这两个数，不得因「有产物」就把它们计成含语句
 
 ### Requirement: Driver class declarations use the already-read physical evidence
 

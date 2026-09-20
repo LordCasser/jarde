@@ -1,6 +1,6 @@
 ## Context
 
-动机与两条可复现反例见 [proposal](proposal.md) 和 [完成复核](../../completion-review.md)。`search_named_classes` 已能返回搜索 coverage、execution 和诊断，但 `bind_method` 只检查候选数量；`bind_class` 的零候选分支也直接报未找到，单候选分支仍可在搜索未完整时执行。成员表局部停止还需在共享搜索处传播。
+动机与两条可复现反例见 [proposal](proposal.md) 和 [完成复核](../../../completion-review.md)。`search_named_classes` 已能返回搜索 coverage、execution 和诊断，但 `bind_method` 只检查候选数量；`bind_class` 的零候选分支也直接报未找到，单候选分支仍可在搜索未完整时执行。成员表局部停止还需在共享搜索处传播。
 
 `class_view` 保留 `ClassViewBody` 的独立执行平面，却没有把成功返回的 body 值内部的停止合并到顶层；CLI 用 `class_view_plane` 再次遍历 body 弥补这一差异。修正必须落在库边界，不能要求每个宿主复制此逻辑。
 

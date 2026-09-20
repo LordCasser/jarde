@@ -2,7 +2,7 @@
 
 同一轮 benchmark 暴露了四处契约缺口，都是「读法」问题而不是行为问题；不写进文档，下一位消费者会按错误读法使用报告：
 
-1. `quality=Structured` + `content=ContainsStatements` 很容易被读成「这份产物是对的」。它是活的：同一轮 campaign 里有 `Structured` 产物计算出与字节码不同的值（见 [fix-nested-arithmetic-value](../fix-nested-arithmetic-value/proposal.md)）。载荷里每个平面都是结构性的，没有任何一个是语义等价声明；文档必须明说，并给出调用方该做什么。
+1. `quality=Structured` + `content=ContainsStatements` 很容易被读成「这份产物是对的」。它是活的：同一轮 campaign 里有 `Structured` 产物计算出与字节码不同的值（见 [fix-nested-arithmetic-value](../2026-09-20-fix-nested-arithmetic-value/proposal.md)）。载荷里每个平面都是结构性的，没有任何一个是语义等价声明；文档必须明说，并给出调用方该做什么。
 2. `produced` 与 `content` 容易混为一谈：一次 sweep 的 **182,883** 个请求里有 **30,452** 个是 Produced 但产物不含语句。
 3. 声明诊断词汇的含义随版本变化：`jre_declaration_class_not_in_run` 从单个 artifact 上的 **10,720** 次降到语料全局 **0** 次，而 `jre_declaration` 出现在**每个** artifact 上——跨版本对 code 计数不能读成改善信号。
 4. `archive_entries` 在不同请求形状下不可比：两个 flat jar 是 **28** 与 **29**，一个大 flat jar 约 **6,009**，一个 WAR **500–1,296**，另一个 **3,702**（container tree root 会走子容器）。比较行之前必须先说明这个计数在各 scope 下的含义。
@@ -36,6 +36,6 @@
 
 文档落点：`README.md`、`docs/support-matrix.md`、`openspec/benchmark-protocol.md`，以及上述四个 capability 的 delta。不修改主 specs、不改 Rust、不改报告 schema、不新增测试（机械锚点复用既有测试，见 design）。
 
-依赖：本 change 的第 1 条引用 [fix-nested-arithmetic-value](../fix-nested-arithmetic-value/proposal.md) 的**措辞与反例结论**，不依赖它的代码落地；因此在 fix change 的反例事实确定后即可实施，两者不需要串行代码路径（本 change 不触碰 `crates/`）。与 [bound-recovery-recursion](../bound-recovery-recursion/proposal.md) 无依赖。
+依赖：本 change 的第 1 条引用 [fix-nested-arithmetic-value](../2026-09-20-fix-nested-arithmetic-value/proposal.md) 的**措辞与反例结论**，不依赖它的代码落地；因此在 fix change 的反例事实确定后即可实施，两者不需要串行代码路径（本 change 不触碰 `crates/`）。与 [bound-recovery-recursion](../2026-09-20-bound-recovery-recursion/proposal.md) 无依赖。
 
 非目标：不新增 crate、依赖或依赖升级；不引入 verifier；不声称一般语义等价；不重开 R8/R9 或已归档的停止传播修正；不做性能工作（`optimize-demand-workloads` 保持 0/22）；不修 body 解码重新解析类的债务；不改动任何既有报告的取值或分类逻辑。

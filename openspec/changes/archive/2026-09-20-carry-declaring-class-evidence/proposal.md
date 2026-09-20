@@ -23,4 +23,4 @@ benchmark 的高频 `jre_declaration_class_not_in_run` 不能直接解释成依�
 
 前提为 P2 MethodIr/MethodDeclaration 与 P3 声明规则已交付。范围为 `jarde-jvm` 的 raw_facts/MethodDeclaration、根 facade 适配、`jarde-java` 现有事实及对应测试；不新增 crate、provider、全局符号表或第三方库。
 
-不扩展跨类 Body、enum switch 表、InnerClasses、MethodParameters、handler 根策略或完整类源码。清除该诊断只证明交接补齐，不承诺语句率或 Structured 比例提高。关联分析见 [benchmark review](../../benchmark-review.md)。
+不扩展跨类 Body、enum switch 表、InnerClasses、MethodParameters、handler 根策略或完整类源码。清除该诊断只证明交接补齐，不承诺语句率或 Structured 比例提高。关联分析见 [benchmark review](../../../benchmark-review.md)。

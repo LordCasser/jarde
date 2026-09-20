@@ -84,7 +84,7 @@ fixture MUST 由测试内的具名生成器构造（不提交第三方字节、�
 
 回退按本 change 的独立提交进行；回退后必须恢复「该输入使进程 abort、停止语义未覆盖」的公开事实，不能保留完成声明。
 
-与 [`fix-nested-arithmetic-value`](../fix-nested-arithmetic-value/proposal.md) 都改 `crates/jarde-java/src/build.rs`：两者串行实施，先后顺序不改变任一方的验收，但不允许在同一个工作树里并行改动同一文件。
+与 [`fix-nested-arithmetic-value`](../2026-09-20-fix-nested-arithmetic-value/proposal.md) 都改 `crates/jarde-java/src/build.rs`：两者串行实施，先后顺序不改变任一方的验收，但不允许在同一个工作树里并行改动同一文件。
 
 ## Open Questions
 

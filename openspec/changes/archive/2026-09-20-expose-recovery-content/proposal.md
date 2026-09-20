@@ -24,4 +24,4 @@ benchmark 对 25,853 次请求的 token 启发式分类估计约 16.0% 只有理
 
 前提为现有 AST/emitter、RecoveryReport 和公开 recover_method。影响 `jarde-java` 的报告/提交路径、CLI 序列化及恢复测试；不引入文本 parser 或依赖，不为兼容保留第二套质量体系。
 
-不改变恢复算法、BCI coverage、fallback effect 保留或 source-map 契约，不把 corpus 百分比设为 CI 硬阈值，不新增通用评测平台。正确性修复与本 change 分别验收。关联分析见 [benchmark review](../../benchmark-review.md)。
+不改变恢复算法、BCI coverage、fallback effect 保留或 source-map 契约，不把 corpus 百分比设为 CI 硬阈值，不新增通用评测平台。正确性修复与本 change 分别验收。关联分析见 [benchmark review](../../../benchmark-review.md)。

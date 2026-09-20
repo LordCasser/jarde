@@ -30,6 +30,6 @@ jarde-cli recover --input javassist/bytecode/CodeAnalyzer.class --policy single-
 
 ## Impact
 
-影响恢复层可达的递归入口与其停止路径；具体文件由定位证据决定，当前候选包括 `crates/jarde-java/src/build.rs`、`crates/jarde-java/src/region.rs`、`crates/jarde-java/src/emit.rs` 与 `crates/jarde-java/src/stop.rs`；若 native 栈证明溢出发生在 `jarde-jvm` 或 `jarde-reader`，界加在该处并在验证中如实记录。与 [fix-nested-arithmetic-value](../fix-nested-arithmetic-value/proposal.md) 都涉及 `crates/jarde-java/src/build.rs`，两者必须**串行**实施，不能并行。
+影响恢复层可达的递归入口与其停止路径；具体文件由定位证据决定，当前候选包括 `crates/jarde-java/src/build.rs`、`crates/jarde-java/src/region.rs`、`crates/jarde-java/src/emit.rs` 与 `crates/jarde-java/src/stop.rs`；若 native 栈证明溢出发生在 `jarde-jvm` 或 `jarde-reader`，界加在该处并在验证中如实记录。与 [fix-nested-arithmetic-value](../2026-09-20-fix-nested-arithmetic-value/proposal.md) 都涉及 `crates/jarde-java/src/build.rs`，两者必须**串行**实施，不能并行。
 
 非目标：不新增 crate 或依赖（含 `stacker` 一类增长栈的库）、不升级依赖、不引入 verifier、不声称一般语义等价；不把 region/SSA/AST 通用改写成迭代实现；不重开 R8/R9 或已归档的停止传播修正；不做性能工作（`optimize-demand-workloads` 保持 0/22）；不修 body 解码重新解析类的债务；不改变既有停止、取消与预算语义，不新增 `StopReason` 变体或预算维度。历史归档与既有验证记录保持原状。当前仅完成修正规划，实施任务全部待办。

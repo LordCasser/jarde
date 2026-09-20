@@ -35,6 +35,6 @@ int inverse32(int d) {                 // ModLike.inverse32(I)I
 
 ## Impact
 
-实现落在恢复层表达式构建路径（`crates/jarde-java/src/build.rs` 的 `render_value` 族与既有私有 AST）；根因由实施者对照 SSA 值与实际求值点诊断并记录证据，本 change 不预设根因。与 [bound-recovery-recursion](../bound-recovery-recursion/proposal.md) 都涉及 `crates/jarde-java/src/build.rs`，两者必须**串行**实施，不能并行。
+实现落在恢复层表达式构建路径（`crates/jarde-java/src/build.rs` 的 `render_value` 族与既有私有 AST）；根因由实施者对照 SSA 值与实际求值点诊断并记录证据，本 change 不预设根因。与 [bound-recovery-recursion](../2026-09-20-bound-recovery-recursion/proposal.md) 都涉及 `crates/jarde-java/src/build.rs`，两者必须**串行**实施，不能并行。
 
 交付包含受控 fixture（源码、class 字节、来源 README 记录命令/编译器版本/摘要/逐成员字节码、fingerprint 再生成、reader fixture census 更新）、执行对照与变异。非目标：不新增 crate、依赖或依赖升级；不重做 SSA；不引入通用值物化框架或超出既有私有 AST 的新临时量；不新增公共类型、报告平面或停止分支；不重开 R8/R9 或已归档的停止传播修正；不声称一般语义等价；不做性能工作（`optimize-demand-workloads` 保持 0/22）；不修 body 解码重新解析类的债务。历史归档与既有验证记录保持原状。

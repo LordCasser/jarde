@@ -1,6 +1,6 @@
 # 实现完成复核（2026-09-20）
 
-**结论：本次 review 与规划修订完成，任务链实现暂不能确认收尾完成。** 历史阶段和七项后续交付的归档保留；当前行为仍有 R1/P1 与 R2/P2 两条停止语义缺口，由 [preserve-task-operation-stops](changes/preserve-task-operation-stops/proposal.md) 单独修正。`optimize-demand-workloads` 仍是 0/22 的调查专项，O1 子交付已完成不等于专项已完成。
+**结论：本次 review 与规划修订完成，任务链实现暂不能确认收尾完成。** 历史阶段和七项后续交付的归档保留；当前行为仍有 R1/P1 与 R2/P2 两条停止语义缺口，由 [preserve-task-operation-stops](changes/archive/2026-09-20-preserve-task-operation-stops/proposal.md) 单独修正。`optimize-demand-workloads` 仍是 0/22 的调查专项，O1 子交付已完成不等于专项已完成。
 
 ## 范围与证据基线
 

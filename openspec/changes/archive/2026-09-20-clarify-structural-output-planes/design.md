@@ -2,7 +2,7 @@
 
 四条缺口与证据见 [proposal](proposal.md)。它们的共同点：报告本身没有错，错的是**读法**。载荷里的 planes（representation/quality/syntax/compile/semantic/verification/coverage/execution）以及恢复侧的 content 各自只回答自己的结构性问题；Produced 只说明产物已交付；诊断码是「该版本在哪次运行里记录了哪个事实」的身份；计数字段是「本次请求在其声明范围内实际做了多少」的代理。四处证据都来自同一轮 benchmark 并已由本人复现，本 change 只把这些读法写入拥有它们的文档与 spec。
 
-依赖关系：第 1 条使用 [fix-nested-arithmetic-value](../fix-nested-arithmetic-value/proposal.md) 的反例结论（`Structured` 产物可以算错值）。本 change **不依赖它的代码**，也不改 `crates/`；只有在 fix change 的根因结论已确定（或至少反例事实已固定）时才写入对应的措辞，避免把未定的根因写进契约。
+依赖关系：第 1 条使用 [fix-nested-arithmetic-value](../2026-09-20-fix-nested-arithmetic-value/proposal.md) 的反例结论（`Structured` 产物可以算错值）。本 change **不依赖它的代码**，也不改 `crates/`；只有在 fix change 的根因结论已确定（或至少反例事实已固定）时才写入对应的措辞，避免把未定的根因写进契约。
 
 ## Goals / Non-Goals
 

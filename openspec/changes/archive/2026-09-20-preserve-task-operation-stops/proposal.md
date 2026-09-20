@@ -21,6 +21,6 @@
 
 ## Impact
 
-前提是已归档的 `add-artifact-navigation`、`add-task-oriented-operations` 和 `add-task-oriented-cli`。影响根库 `src/facade.rs` 的选择/组合报告、CLI 适配及对应回归；证据见 [独立完成复核](../../completion-review.md)。不新增 crate、第三方依赖、持久状态或兼容层。
+前提是已归档的 `add-artifact-navigation`、`add-task-oriented-operations` 和 `add-task-oriented-cli`。影响根库 `src/facade.rs` 的选择/组合报告、CLI 适配及对应回归；证据见 [独立完成复核](../../../completion-review.md)。不新增 crate、第三方依赖、持久状态或兼容层。
 
 非目标：恢复算法、container cache、分页或性能优化；不重开 R8/R9，不重构整个 facade，不修复 body 解码重新解析类等独立架构债务。当前仅完成修正规划，实施任务全部待办；历史归档保持原状。

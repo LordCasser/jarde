@@ -31,7 +31,7 @@
 
 ### 2. 结构性平面不是值证据
 
-`quality=Structured` 只说明区域结构成立，`content=contains_statements` 只说明产物含发射语句，`execution=complete` 只说明本次工作跑完；三者都不构成「产物与字节码同值」的声明。本 change 的任何验收 MUST NOT 用这些平面代替执行对照或操作数证明；这一边界同时由 [`clarify-structural-output-planes`](../clarify-structural-output-planes/proposal.md) 写进文档契约。
+`quality=Structured` 只说明区域结构成立，`content=contains_statements` 只说明产物含发射语句，`execution=complete` 只说明本次工作跑完；三者都不构成「产物与字节码同值」的声明。本 change 的任何验收 MUST NOT 用这些平面代替执行对照或操作数证明；这一边界同时由 [`clarify-structural-output-planes`](../2026-09-20-clarify-structural-output-planes/proposal.md) 写进文档契约。
 
 ### 3. fixture 提交真实字节，对照执行原 class
 
@@ -67,7 +67,7 @@
 3. 提交 fixture 与来源 README，执行 fingerprint 再生成与 census 更新，加入执行对照、拒绝路径验收与变异。
 4. 跑固定提交门禁并写 verification；同步 delta 与状态引用后归档。
 
-与 [`bound-recovery-recursion`](../bound-recovery-recursion/proposal.md) 串行实施（同一文件 `crates/jarde-java/src/build.rs`）。回退按本 change 的独立提交进行；回退后必须恢复「该产物算错值」的公开事实，不能保留完成声明。
+与 [`bound-recovery-recursion`](../2026-09-20-bound-recovery-recursion/proposal.md) 串行实施（同一文件 `crates/jarde-java/src/build.rs`）。回退按本 change 的独立提交进行；回退后必须恢复「该产物算错值」的公开事实，不能保留完成声明。
 
 ## Open Questions
 

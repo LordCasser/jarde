@@ -1,6 +1,6 @@
 ## Why
 
-本 change 是 [性能优化专项](../optimize-demand-workloads/proposal.md) 的 O1 实施子项，负责消除单 container 访问中的越界工作和重复工作。基线中 S2-001 一次方法请求计费 5,900 entries / 7.0 MB，而一次树枚举为 2,799 entries / 3.67 MB；这证明了重复枚举/展开，但尚无阶段耗时占比，不能据此承诺整体倍数或亚毫秒延迟。
+本 change 是 [性能优化专项](../../optimize-demand-workloads/proposal.md) 的 O1 实施子项，负责消除单 container 访问中的越界工作和重复工作。基线中 S2-001 一次方法请求计费 5,900 entries / 7.0 MB，而一次树枚举为 2,799 entries / 3.67 MB；这证明了重复枚举/展开，但尚无阶段耗时占比，不能据此承诺整体倍数或亚毫秒延迟。
 
 ## What Changes
 
@@ -28,4 +28,4 @@
 
 前提为 P1 物理身份/nested replay、P2 显式 roots、P5 测量及 cache 边界已交付。影响 reader 的 artifact/cache/budget、jvm providers 和性能测试；不新增 crate，不升级依赖。现有恢复正确性修复的回归必须在候选提交继续通过，历史 `cd6f2f0` benchmark 不能作为新提交的质量基线。
 
-不包含 prefix root、默认打开任何 cache、查询 class 共享实现、方法定位表、批量 API、分页重设计、CP/Header ownership 重构、resolution/IR/source cache、预加载/预取、并行、持久索引、single-flight、mmap、JSON 微优化或新的 session 框架。这些方向只能在本主线完成并重测后另行决策；性能专项不承担其它正确性 change。关联分析见 [benchmark review](../../benchmark-review.md)。
+不包含 prefix root、默认打开任何 cache、查询 class 共享实现、方法定位表、批量 API、分页重设计、CP/Header ownership 重构、resolution/IR/source cache、预加载/预取、并行、持久索引、single-flight、mmap、JSON 微优化或新的 session 框架。这些方向只能在本主线完成并重测后另行决策；性能专项不承担其它正确性 change。关联分析见 [benchmark review](../../../benchmark-review.md)。

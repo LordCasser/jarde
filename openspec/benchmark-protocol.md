@@ -6,6 +6,7 @@
 
 - **`85828c4` 改记为历史比较臂**：它是本次 review 的行为基线，仍存在 [R1/R2 停止语义缺口](completion-review.md)，不能称为“最终已验收引擎”。修正后的当前候选 SHA 为 **`8586356`**（`preserve-task-operation-stops` 的固定提交：名称选择的停止传播与类视图顶层汇总），其本机门禁与反例对照见该 change 的归档验证记录。
 - 正式测量在每个声明 SHA 的独立 worktree 构建，给它独立的 `CARGO_TARGET_DIR`，记录构建参数与二进制摘要。历史臂可用 `git worktree add /tmp/jarde-bench-base 85828c4`；当前候选必须使用实际验收 SHA。两侧行为差异单列，不能归因成性能收益。
+- **每份记录同时登记该引擎版本的诊断 code 词汇**：诊断码 SHALL 标识「该引擎版本在本次运行中记录了哪个事实」，MUST NOT 被读作跨版本可比的量。同一个码在不同版本的含义变化（例如声明事实交接前 `jre_declaration_class_not_in_run` 在单个 artifact 上出现 10,720 次、交接后语料全局 0 次，而 `jre_declaration` 出现在每个 artifact 上）MUST 被登记为词汇/事实来源的变化；消费方、比较报告与文档 MUST NOT 把某个码的出现次数下降直接读作质量或覆盖改善，比较 MUST 同时声明两个引擎版本与各自的 code 词汇。
 - 每个 change 的实现提交与其 CI 结果：
 
 | 批次 | Change | 实现提交 | CI |
@@ -77,6 +78,8 @@
 - 旧的 token/调用序列/字符串相似度比率**保留**供与旧数字对照，但必须标注「分类列口径已变：旧数字来自去注释 token 启发式，新数字来自引擎的结构分类」，不得把两者当同一口径。
 
 **结果平面**：representation / quality / syntax / compile / semantic / verification / coverage / execution 各自独立记录；拒绝原因按码计数、按 artifact 分列。
+
+**计数与比较行的声明**：每个计数字段 SHALL 被读作「本次请求在其声明范围与请求形状下实际做了多少工作」的代理，MUST NOT 被当作跨请求形状可比的单位。比较行 MUST 声明请求形状、声明的 roots/profile（含 multi-release/layout 策略）与引擎版本，并明确该 scope 下这个数「数的是什么」；MUST NOT 跨形状直接比较计数，也 MUST NOT 用未声明形状的数字得出收益或回归结论。
 
 ## 重复与负载
 

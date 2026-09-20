@@ -1,6 +1,6 @@
 # 验证记录
 
-实现提交见仓库历史（紧邻本文件归档提交之前）。反例来自独立复核 [completion-review](../../completion-review.md)；本文件记录修正后的库/CLI 证据。CI 结果随后回填。
+实现提交见仓库历史（紧邻本文件归档提交之前）。反例来自独立复核 [completion-review](../../../completion-review.md)；本文件记录修正后的库/CLI 证据。CI 结果随后回填。
 
 ## 两条反例的关闭
 

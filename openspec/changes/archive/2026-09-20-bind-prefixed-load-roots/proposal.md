@@ -24,4 +24,4 @@ benchmark 中 158 次 `resolution_definition_unbound` 集中在 `WEB-INF/classes
 
 前提为 reader 物理布局、origin replay、环境校验和 root 顺序已交付。影响 `LoadRoot`、environment/providers、相关 view identity/序列化、CLI 和集成测试；使用现有 raw bytes/serde，不新增依赖。可在独立提交实现，建议在 `bound-container-lookup` 定向容器入口稳定后集成以减少重叠。
 
-不实现 Servlet/Boot 自动加载规则、classpath.idx、MR overlay 与 resolver 的整合、module path、外部依赖下载或全 artifact 入口。前缀支持不等于完整 Boot 支持。关联分析见 [benchmark review](../../benchmark-review.md)。
+不实现 Servlet/Boot 自动加载规则、classpath.idx、MR overlay 与 resolver 的整合、module path、外部依赖下载或全 artifact 入口。前缀支持不等于完整 Boot 支持。关联分析见 [benchmark review](../../../benchmark-review.md)。
