@@ -37,6 +37,26 @@ CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 \
 
 示例使用 `Engine`、`ArtifactInput::Path`、`ClassTarget::Root`、`InspectionMode::Strict` 和有限 `Limits`，并打印版本、类名、成员数量、verification 与最终 usage。ZIP/JAR/WAR 需要先枚举并把**完整枚举所得的 `PhysicalEntry`**传给 `ClassTarget::Entry`；不能只用 ordinal 或 path 重新定位。
 
+### 列出类与成员，并交回物理身份
+
+[`examples/navigate_artifact.rs`](examples/navigate_artifact.rs) 是可编译检查的导航示例，接受 standalone CLASS 或 ZIP/JAR/WAR：
+
+```sh
+CARGO_BUILD_JOBS=1 CARGO_INCREMENTAL=0 \
+  cargo run --example navigate_artifact -- fuzz/corpus/query/minimal-jar
+```
+
+它走完整条链，且**不需要调用方拼装任何身份**：
+
+1. `Engine::list_class_candidates(snapshot, scope, budget)` —— 只按 raw name 划分 scope，**零 Header 读取**；每个 entry 恰好出现一次（类候选或普通 resource），报告里的 `class_headers` 为 0。
+2. `Engine::list_class_declarations(snapshot, scope, budget)` —— 真实读取每个候选，交回 `ClassDeclarationItem`：`definition`（location + class bytes digest/length + variant）、`this_class`、class access flags、super/interfaces、raw path 与声明名的一致性，以及成员表停止位置；未确认的候选列在 `unconfirmed` 里。
+3. `Engine::list_members(snapshot, &definition, budget)` —— 用上一步交回的身份读取同一份物理定义，一次有界读取给出类声明、字段与方法；方法项带 raw name、descriptor、access flags 和**可直接用于方法请求**的 `PhysicalMethodId`。
+4. `Engine::find_targets(snapshot, scope, &query, budget)` —— 点分隔名（`com.demo.A`）与内部名（`com/demo/A`）指向同一物理身份；同名多定义与同名多 descriptor 返回**全部**候选而不静默取第一个；无匹配返回空候选与已扫描范围。
+
+同名不同 origin（上层目录 entry 与显式展开的嵌套库、重复 ordinal、相同字节）**全部**返回：不合并、不 first-wins，选择依据是每条候选自带的物理身份而不是遍历顺序。把返回的身份回传给 `list_members` 或方法请求，读到的就是那份物理定义。
+
+**列举只读 Header**：它不解析声明、不加载、不构建 CFG/SSA/Region/Java AST，不推断 WAR/Boot 布局或 classpath 前缀，不给 MR 选择结论，也不证明类可加载、可链接或已验证。要版本与 dialect 平面用 `Engine::inspect_header`；要方法体用方法请求或 `Engine::recover_method`。摘要见 [五维支持矩阵](docs/support-matrix.md#导航列举与身份交接add-artifact-navigation2026-09-20)。
+
 ## JSON CLI quickstart
 
 CLI 从 stdin（或 `--request FILE`）读取一个不超过 1 MiB 的 JSON 请求。下面检查已提交的 ECJ 4.6.1 / classfile 52.0 fixture 中 `finallyPath(I)I`；方法名和 descriptor 按 JVM 原始字节数组传递：

@@ -51,7 +51,23 @@ X1 列的 `Supported` 一律限定在**请求声明的 consumer schema 与物理
 
 P3 当前边界分别验收：方法声明事实（access_flags/descriptor/receiver 与参数槽/debug 范围/物理身份）已由同一次 Header 读取进入 `MethodIr`，门面不再固定 `parameters=0`，参数按描述符定型（`boolean` 参数写 `if (b)`）；source-map anchor 已带**物理方法身份**（caller/callee 同 BCI 可区分，复用 reader 的 `OriginMember`）；accessor 的 callee 证据由 `jarde-jvm` 按**被调用点点名的候选**读取，有预算、有 reason、绑定同一物理定义与 CP，且**不预装全类 Body**。类级事实本轮只补上**声明类自身**的两项：driver Header 同一次读取的 `this_class` 与 class `access_flags` 随 `MethodDeclaration` 只读交接，门面把它们填入既有 `DeclaringClass`，于是门面级 `declaration@1` 能判定普通实例/static、interface `default`/`static`、构造器与 `<clinit>`，且同一次读取不新增 Header/Body 扫描；**嵌套**（`InnerClasses`/`NestMembers`）与其它类级 metadata 仍不在载荷，故仍不声称嵌套（`new@1` 只呈现实例化），低层恢复入口对本来缺失的事实保持既有拒绝。
 
-### 现代（53–71）能力与 P4 新增入口（2026-09-20）
+### 导航列举与身份交接（`add-artifact-navigation`，2026-09-20）
+
+`Engine` 新增四个任务级入口，把「artifact 里有什么、它的物理身份是什么」收回库内；它们只读 Header，不进入 resolver/IR/恢复，也不推断任何布局或 root。
+
+| 入口 | 证据等级 | 读什么 | 发布什么 |
+| --- | --- | --- | --- |
+| `Engine::list_class_candidates(snapshot, scope, budget)` | entry 候选（**零** Header 读取） | 只枚举物理范围（`SnapshotAll` 或显式 `ArtifactTree`），`class_headers`/`class_bytes` 均为 0 | 该范围的完整划分：每个 entry 恰好一次，`.class` raw name 规则命中者为 `ClassCandidate`，其余为 `Resource`（资源/目录/嵌套库/Manifest；只是物理分类，不解析也不解释内容） |
+| `Engine::list_class_declarations(snapshot, scope, budget)` | header 确认 | 每个候选的真实读取（每次尝试先计一次 `class_headers`，字节按 `read_bytes`/`entry_bytes`/`class_bytes`/`attribute_bytes` 计） | `ClassDeclarationItem`：`definition`（location + class bytes digest/length + variant）、`this_class`、class access flags、super/interfaces、`binding`（raw path 与声明名是否一致）、`member_table`（成员表停止位置）；`unconfirmed` 列出未确认的候选；读取失败即停并给可靠前缀、带物理 origin 的诊断与非 Complete execution |
+| `Engine::list_members(snapshot, definition, budget)` | 确认读取之上的一次有界读取 | 只读该 `PhysicalDefinitionId` 指向的字节（location/坐标/variant/digest 全部先验证），一次 `class_headers` | `ClassContentItem::{ClassDeclaration, Field, Method}`：方法项带 raw name、descriptor、access flags 与**可直接用于方法请求的** `PhysicalMethodId`；`Code` 只是 shell（`CodeAttribute { content_span }`，内容未读），`abstract`/`native` 为 `NoCodeAttribute`，不伪造 Body；成员记录损坏时给可靠前缀与逐成员诊断 |
+| `Engine::find_targets(snapshot, scope, query, budget)` | header 确认 + 友好名称 | 只读路径在 `/` 边界上**声明**了请求内部名的候选 | 全部候选（同名多定义、同名多 descriptor 都返回），每条带自己的物理身份与 `descriptor`；无匹配返回空候选、已扫描范围与 `Complete`；路径与 `this_class` 不一致给 `navigation_path_name_mismatch` 而不绑定 |
+
+- **身份即选择依据**：结果是 `PhysicalDefinitionId`/`PhysicalMethodId`/`PhysicalMemberId`，不是显示名。把返回的身份回传给 `Engine::list_members` 或方法请求，读到的就是那份物理定义；同一 artifact 里的同名定义**全部**返回，不合并、不 first-wins，遍历顺序或路径顺序不影响身份。
+- **友好输入、物理结果**：`ClassNameQuery::dotted("com.demo.A")` 与 `internal("com/demo/A")` 指向同一内部名，命中唯一时绑定同一物理身份；拼写只出现在请求回显里，绝不进入身份。
+- **不做的事（明文边界）**：列举不解析声明、不加载、不构建 CFG/SSA/Region/Java IR，不推断 WAR/Boot 布局或任何 classpath 前缀，不给 MR 选择结论，不证明类可加载/可链接/已验证；`VerificationStatus::NotPerformed` 之类平面不因列举改变。版本/dialect 平面仍只由 `Engine::inspect_header` 给出（列举不做 version gate）。
+- **计费**：每次读取尝试前计一次 `class_headers`；列举自身发布的每条 item/诊断计一次 `ResultItems`（枚举已按其自身口径计过它读到的 entry 记录）；`method_bodies`/`code_bytes` 与 IR 构造维度恒为 0。停止（预算、取消、损坏）保留可靠前缀、显式标出未扫描范围并报非 Complete execution。
+- **证据**：`tests/navigation.rs`（19 项：候选/确认两级、同名同字节两 origin、路径名不一致、损坏候选、预算/取消停止、成员前缀、身份回传、两写法对照、重载、空匹配、顺序稳定性、scope 形状），reader 侧 `class_member_facts` 与整结构读取在 43 个已提交 class fixture 上逐项一致（`classfile::tests::repository_class_fixtures_validate_without_false_target_rejections`）。公共示例：`cargo run --example navigate_artifact [path]`。
+
 
 P4 已交付并归档（**10/10**，归档提交 `88416ab`）；命令、数字与证伪见 [P4 验证记录](../openspec/changes/archive/2026-09-20-p4-modern-semantics/verification.md)。下表按本页既有的五个平面分开记录；没有列出的能力就是没有，不是待兑现的承诺。
 

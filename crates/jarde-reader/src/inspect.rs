@@ -15,7 +15,8 @@ use crate::classfile::{BytecodeInspection, HeaderInspection, InspectionMode, Met
 use crate::error::{Error, Result};
 use crate::model::{
     ClassBytesId, Coverage, CoverageDimension, CoverageRange, CoverageState, Digest,
-    ExecutionReport, PhysicalClassLocation,
+    ExecutionReport, PhysicalClassLocation, PhysicalDefinitionId, SnapshotId,
+    physical_variant_for_path,
 };
 use serde::{Deserialize, Serialize};
 
@@ -155,6 +156,143 @@ fn materialize(
             Ok((materialized.bytes, source))
         }
     }
+}
+
+/// Reads the bytes of the standalone class a `CLASS` snapshot **is**, and states the source they are.
+///
+/// The read a listing performs for a standalone candidate, and the one read an identity-addressed
+/// request performs for a standalone definition: the snapshot is the class, so there is no entry to
+/// locate and no chain to verify — the bytes and the identity derived from them are the whole answer.
+/// The bytes are charged as the caller's own output, exactly as [`inspect_header`]'s root read charges
+/// them.
+///
+/// What it does not do: it does not parse the bytes, and it claims nothing about them beyond their
+/// position and length. `Err` is reserved for a snapshot that is not a standalone `CLASS` and for a
+/// refused charge; bytes that are not a class file are returned as they are.
+pub fn materialize_root(
+    snapshot: &ArtifactSnapshot,
+    budget: &mut Budget,
+) -> Result<(Vec<u8>, ClassSource)> {
+    if snapshot.kind() != ArtifactKind::StandaloneClass {
+        return Err(Error::invalid_input(
+            "class_target_root_on_zip",
+            "root class target requires a standalone CLASS snapshot",
+        ));
+    }
+    let bytes = snapshot.root_bytes(budget)?;
+    let class_bytes = ClassBytesId {
+        digest: Digest(blake3::hash(&bytes).to_hex().to_string()),
+        length: u64::try_from(bytes.len()).map_err(|_| class_size_overflow())?,
+    };
+    Ok((
+        bytes,
+        ClassSource {
+            location: PhysicalClassLocation::StandaloneRoot {
+                snapshot: snapshot.id().clone(),
+            },
+            class_bytes,
+        },
+    ))
+}
+
+/// Reads the class one physical definition names, and states the source those bytes came from.
+///
+/// This is the read an **identity-addressed** request performs: the caller already holds a
+/// [`PhysicalDefinitionId`] — a location, the class bytes' digest and the syntactic variant — and
+/// asks for exactly that class. The location decides which bounded read is used (the standalone
+/// root's own bytes, or the entry the location names, located through the snapshot's directed
+/// container access) and the result is verified against the definition **before** it is returned:
+///
+/// * the location's snapshot is this snapshot, and its shape matches the snapshot's kind;
+/// * an entry location names an entry this snapshot really holds at those coordinates;
+/// * the entry's raw name derives exactly the variant the definition names;
+/// * the bytes' own digest and length are the ones the definition names.
+///
+/// Any disagreement is a structured `Error` and never a read of "something near" the identity: an
+/// identity that could quietly denote other bytes would not be an identity, and a caller that
+/// checks its result against the definition afterwards would be doing this read's job.
+///
+/// The bytes of a container entry are charged as an intermediate read, because they are consumed
+/// inside the request that asked for them rather than returned as the request's own answer.
+///
+/// What it does **not** do: it does not parse the bytes, does not verify the entry is a class file
+/// at all, and does not resolve, load or analyse anything. The digest is a check that the bytes are
+/// the ones the *identity* was derived from, never a claim that those bytes are legal.
+pub fn materialize_definition(
+    snapshot: &ArtifactSnapshot,
+    definition: &PhysicalDefinitionId,
+    budget: &mut Budget,
+) -> Result<(Vec<u8>, ClassSource)> {
+    match &definition.location {
+        PhysicalClassLocation::StandaloneRoot { snapshot: named } => {
+            require_snapshot(snapshot, named)?;
+            let (bytes, source) = materialize_root(snapshot, budget)?;
+            require_class_bytes(definition, &source.class_bytes)?;
+            Ok((bytes, source))
+        }
+        PhysicalClassLocation::ArchiveEntry { entry } => {
+            require_snapshot(snapshot, entry.snapshot())?;
+            if snapshot.kind() != ArtifactKind::Zip {
+                return Err(definition_location_mismatch(
+                    "an archive-entry definition requires a ZIP snapshot",
+                ));
+            }
+            let record = snapshot.container_record(entry, budget)?.ok_or_else(|| {
+                Error::invalid_input(
+                    "definition_entry_not_found",
+                    "the definition names an entry this snapshot does not hold at those coordinates",
+                )
+            })?;
+            if physical_variant_for_path(&record.id.raw_name.0) != definition.variant {
+                return Err(Error::invalid_input(
+                    "definition_variant_mismatch",
+                    "the definition's physical variant is not the one its entry's raw name derives",
+                ));
+            }
+            let materialized = snapshot.read_entry_for_analysis(&record, budget)?;
+            let class_bytes = ClassBytesId {
+                digest: materialized.content_digest,
+                length: u64::try_from(materialized.bytes.len())
+                    .map_err(|_| class_size_overflow())?,
+            };
+            require_class_bytes(definition, &class_bytes)?;
+            Ok((
+                materialized.bytes,
+                ClassSource {
+                    location: definition.location.clone(),
+                    class_bytes,
+                },
+            ))
+        }
+    }
+}
+
+fn require_snapshot(snapshot: &ArtifactSnapshot, named: &SnapshotId) -> Result<()> {
+    if named != snapshot.id() {
+        return Err(Error::invalid_input(
+            "definition_snapshot_mismatch",
+            "the definition belongs to another snapshot",
+        ));
+    }
+    Ok(())
+}
+
+fn require_class_bytes(definition: &PhysicalDefinitionId, read: &ClassBytesId) -> Result<()> {
+    if &definition.class_bytes != read {
+        return Err(Error::invalid_input(
+            "definition_class_bytes_mismatch",
+            "the bytes at the definition's location are not the class bytes the definition names",
+        ));
+    }
+    Ok(())
+}
+
+fn definition_location_mismatch(message: &str) -> Error {
+    Error::invalid_input("definition_location_mismatch", message)
+}
+
+fn class_size_overflow() -> Error {
+    Error::invalid_input("class_size_overflow", "class length does not fit u64")
 }
 
 fn header_coverage(class_length: u64) -> Coverage {

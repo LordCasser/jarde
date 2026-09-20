@@ -106,13 +106,13 @@ pub use jarde_reader::classfile::{
     DialectValidationScope, EnclosingMethodFacts, EntryDescriptor, ExceptionHandlerFact,
     HeaderInspection, HeaderStructuralRead, ImmediateValue, InnerClassFacts, InspectionMode,
     InstructionFact, InstructionOperands, Java8RuntimeCompatibility, LocalOperand, MemberHeader,
-    MethodCodeFacts, MethodSelector, ModernFeature, ModernOrigin, ModuleFacts, NestedAttributeFact,
-    OutputLevel, OutputLevelConflict, OutputLevelStatus, PreviewMarker, ProvidesFacts,
-    SwitchOperands, VerificationStatus, VersionCapability, VersionDialectSupport,
-    VersionRuleStatus, attribute_content, attribute_facts, attribute_slice, bootstrap_methods,
-    class_facts, code_nested_attributes, cp_class_name, cp_entry, cp_utf8, descriptor_types,
-    entry_descriptor, inspect_header, inspect_method_bytecode, method_code_coverage,
-    method_code_facts, push_unique,
+    MemberTablePhase, MemberTableStop, MethodCodeFacts, MethodSelector, ModernFeature,
+    ModernOrigin, ModuleFacts, NestedAttributeFact, OutputLevel, OutputLevelConflict,
+    OutputLevelStatus, PreviewMarker, ProvidesFacts, SwitchOperands, VerificationStatus,
+    VersionCapability, VersionDialectSupport, VersionRuleStatus, attribute_content,
+    attribute_facts, attribute_slice, bootstrap_methods, class_facts, code_nested_attributes,
+    cp_class_name, cp_entry, cp_utf8, descriptor_types, entry_descriptor, inspect_header,
+    inspect_method_bytecode, method_code_coverage, method_code_facts, push_unique,
 };
 // The modern structural facts (P4 1.2) cross the same way `classfile`'s names do: the fact types and
 // the one entry point that reads them, never the module path. What a caller gets is record

@@ -521,6 +521,382 @@ fn read_header_inspection(
     })
 }
 
+/// Which member table a stopped read stopped in.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MemberTablePhase {
+    Fields,
+    Methods,
+}
+
+/// Where a member-table read stopped, and what stopped it.
+///
+/// The record is a *fact about the read*, not a verdict on the class: `index` is the position of
+/// the first record the read could not finish, counted from 0 inside its own table, and it is
+/// exactly the point from which nothing after it is stated. `class_offset` is the class-file
+/// position the failing read was attempted at, so the stop is locatable in the bytes; `code` is
+/// the reader's own failure code for it and `message` its message.
+///
+/// A stop does not say the member is illegal, that the class is unusable or that the rest of the
+/// table is damaged: it says this read ended here, and the prefix before it is what the read did
+/// establish.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct MemberTableStop {
+    pub phase: MemberTablePhase,
+    pub index: u64,
+    pub class_offset: u64,
+    pub code: String,
+    pub message: String,
+}
+
+/// One class's own declaration and the member tables read under it, as far as they could be read.
+///
+/// The read covers the class's fixed structure up to the end of the method table: its
+/// `this_class`, access flags, superclass and interfaces, then every field and method record before
+/// the stop, each with the attribute **shells** its declaration carries. It deliberately does not
+/// read the class attribute table that follows the member tables, decode any attribute content
+/// (a `Code` attribute is a shell here, never a body), run the version gate or build any analysis
+/// fact — [`class_facts`] and [`inspect_header`] are the whole-structure reads, and this one says
+/// only what its own doc states.
+///
+/// This is the one read that survives a damaged member table: noak's decoder establishes the whole
+/// class structure at `Class::new`, so a single undecodable member record currently fails every
+/// header read of that class; this walk reads the declaration and the records one by one, publishes
+/// the prefix before the first record it cannot finish and records that stop in
+/// [`ClassMemberFacts::stopped_at`]. Damage outside the member tables — a structure that does not
+/// begin with the class-file magic, a constant pool that cannot be measured, a truncated fixed
+/// part — is still an `Err`, exactly as in the whole-structure reads, because a class whose own
+/// declaration cannot be established has no prefix to publish.
+///
+/// What it does **not** prove: that the class is legal, loadable, linkable or verified; that its
+/// version is one this build validates; that the member records after a stop are readable; or that
+/// a `Code` shell's content decodes. A refusal of the request itself — an exceeded budget, a
+/// cancellation — is an `Err` and never a stop, because that is the request ending rather than the
+/// class ending.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ClassMemberFacts {
+    pub access_flags: u16,
+    pub this_class: JvmString,
+    pub super_class: Option<JvmString>,
+    pub interfaces: Vec<JvmString>,
+    /// How many field records the class file's own `fields_count` declares.
+    ///
+    /// It is the table's declared length, not the number of records [`ClassMemberFacts::fields`]
+    /// holds: when the read stopped, the two differ by exactly the records it never reached.
+    pub field_count: u64,
+    pub fields: Vec<MemberHeader>,
+    /// How many method records the class file's own `methods_count` declares; see
+    /// [`ClassMemberFacts::field_count`].
+    pub method_count: u64,
+    pub methods: Vec<MemberHeader>,
+    /// `None` exactly when both member tables were read to their declared end.
+    pub stopped_at: Option<MemberTableStop>,
+}
+
+/// The class-file magic every class structure begins with.
+const CLASS_FILE_MAGIC: [u8; 4] = 0xcafebabe_u32.to_be_bytes();
+
+/// Reads one class's declaration and member tables, stopping where a member record stops.
+///
+/// See [`ClassMemberFacts`] for what the read establishes, what it deliberately leaves out and what
+/// a stop means. The member listing is the consumer: it needs one bounded read that yields a class
+/// declaration and its members without reading a body and without failing the whole class when one
+/// member record does not decode.
+pub fn class_member_facts(bytes: &[u8], budget: &mut Budget) -> Result<ClassMemberFacts> {
+    budget.poll()?;
+    budget.charge(CountedBudgetDimension::ClassBytes, to_u64(bytes.len())?)?;
+    validate_constant_pool_slots(bytes, budget)?;
+    if bytes.len() < 10 || !bytes.starts_with(&CLASS_FILE_MAGIC) {
+        return Err(Error::invalid_input(
+            "classfile_decode",
+            "class structure does not begin with the class-file magic, so no declaration or member table can be read",
+        ));
+    }
+    let layout = measure_constant_pool(bytes, budget)?;
+    if layout.is_empty() {
+        return Err(Error::invalid_input(
+            "classfile_decode",
+            "class structure declares no constant-pool slot, so no declaration or member table can be read",
+        ));
+    }
+    let mut offset = usize::try_from(span_end(&layout[layout.len() - 1].span)?)
+        .map_err(|_| class_member_structure_overflow())?;
+
+    let access_flags = read_u16(bytes, offset).map_err(class_member_structure_error)?;
+    offset = offset_plus(offset, 2)?;
+    let this_class_index = read_u16(bytes, offset).map_err(class_member_structure_error)?;
+    offset = offset_plus(offset, 2)?;
+    let this_class = jvm_string_from_raw(&class_name(bytes, &layout, this_class_index)?.0)?;
+    let super_class_index = read_u16(bytes, offset).map_err(class_member_structure_error)?;
+    offset = offset_plus(offset, 2)?;
+    let super_class = if super_class_index == 0 {
+        None
+    } else {
+        Some(jvm_string_from_raw(
+            &class_name(bytes, &layout, super_class_index)?.0,
+        )?)
+    };
+
+    let interface_count = read_u16(bytes, offset).map_err(class_member_structure_error)?;
+    offset = offset_plus(offset, 2)?;
+    let mut interfaces = Vec::new();
+    for _ in 0..interface_count {
+        budget.poll()?;
+        let index = read_u16(bytes, offset).map_err(class_member_structure_error)?;
+        offset = offset_plus(offset, 2)?;
+        let name = class_name(bytes, &layout, index)?;
+        charge_item(budget)?;
+        interfaces.push(jvm_string_from_raw(&name.0)?);
+    }
+
+    let field_count = read_u16(bytes, offset).map_err(class_member_structure_error)?;
+    offset = offset_plus(offset, 2)?;
+    let mut fields = Vec::new();
+    let fields_stop = read_member_records(
+        bytes,
+        &layout,
+        field_count,
+        MemberTablePhase::Fields,
+        budget,
+        &mut offset,
+        &mut fields,
+    )?;
+    let method_count = if fields_stop.is_some() {
+        // The walk stopped before the method table's own count: the count is unread, so the table
+        // declares nothing this read can state and nothing is skipped on its behalf.
+        0
+    } else {
+        let declared = read_u16(bytes, offset).map_err(class_member_structure_error)?;
+        offset = offset_plus(offset, 2)?;
+        declared
+    };
+    let mut methods = Vec::new();
+    let stopped_at = match fields_stop {
+        Some(stop) => Some(stop),
+        None => read_member_records(
+            bytes,
+            &layout,
+            method_count,
+            MemberTablePhase::Methods,
+            budget,
+            &mut offset,
+            &mut methods,
+        )?,
+    };
+
+    Ok(ClassMemberFacts {
+        access_flags,
+        this_class,
+        super_class,
+        interfaces,
+        field_count: u64::from(field_count),
+        fields,
+        method_count: u64::from(method_count),
+        methods,
+        stopped_at,
+    })
+}
+
+/// Reads one member table record by record, stopping at the first record that does not read.
+///
+/// `Ok(None)` is a table read to its declared end; `Ok(Some(stop))` names the record that ended the
+/// read, with the records before it left in `out`. A refusal of the request itself — an exceeded
+/// budget, a cancellation — is an `Err`: it is the request ending, not damage in the class file,
+/// and the caller's own stop handling owns it.
+fn read_member_records(
+    bytes: &[u8],
+    layout: &[CpSlotLayout],
+    count: u16,
+    phase: MemberTablePhase,
+    budget: &mut Budget,
+    offset: &mut usize,
+    out: &mut Vec<MemberHeader>,
+) -> Result<Option<MemberTableStop>> {
+    for index in 0..u64::from(count) {
+        budget.poll()?;
+        // The position this record's read starts at: a failure inside it is located here, which is
+        // the last position this walk can prove.
+        let start = to_u64(*offset)?;
+        match read_member_record(bytes, layout, budget, offset) {
+            Ok(header) => {
+                charge_item(budget)?;
+                out.push(header);
+            }
+            Err(error) if is_class_structure_damage(&error) => {
+                return Ok(Some(MemberTableStop {
+                    phase,
+                    index,
+                    class_offset: start,
+                    code: error_code(&error),
+                    message: error.to_string(),
+                }));
+            }
+            Err(error) => return Err(error),
+        }
+    }
+    Ok(None)
+}
+
+/// Reads one member record: its flags, its raw name and descriptor, and the shells of its attributes.
+///
+/// The attribute shells are what [`inspect_header_structure`] publishes for a member — name, shell
+/// span and content span, charged as `AttributeBytes` and one result item each — and no attribute
+/// content is decoded, so a `Code` attribute costs its declaration and never its body.
+fn read_member_record(
+    bytes: &[u8],
+    layout: &[CpSlotLayout],
+    budget: &mut Budget,
+    offset: &mut usize,
+) -> Result<MemberHeader> {
+    let access_flags = read_u16(bytes, *offset)?;
+    *offset = offset_plus(*offset, 2)?;
+    let name_index = read_u16(bytes, *offset)?;
+    *offset = offset_plus(*offset, 2)?;
+    let descriptor_index = read_u16(bytes, *offset)?;
+    *offset = offset_plus(*offset, 2)?;
+    let attribute_count = read_u16(bytes, *offset)?;
+    *offset = offset_plus(*offset, 2)?;
+    let name = jvm_string_from_raw(&utf8_index(bytes, layout, name_index)?.0)?;
+    let descriptor = jvm_string_from_raw(&utf8_index(bytes, layout, descriptor_index)?.0)?;
+
+    let mut attributes = Vec::with_capacity(usize::from(attribute_count));
+    for _ in 0..attribute_count {
+        budget.poll()?;
+        let attribute_name_index = read_u16(bytes, *offset)?;
+        let length = read_u32(bytes, offset_plus(*offset, 2)?)?;
+        let shell_start = *offset;
+        let content_start = offset_plus(*offset, ATTRIBUTE_HEADER_LENGTH)?;
+        let content_length =
+            usize::try_from(length).map_err(|_| class_member_structure_overflow())?;
+        let content_span = checked_span(bytes, to_u64(content_start)?, to_u64(content_length)?)?;
+        let span_length = u64::from(ATTRIBUTE_HEADER_LENGTH as u16)
+            .checked_add(content_span.length)
+            .ok_or_else(|| span_overflow("class-member attribute shell"))?;
+        let span = checked_span(bytes, to_u64(shell_start)?, span_length)?;
+        *offset = offset_plus(content_start, content_length)?;
+        budget.charge(CountedBudgetDimension::AttributeBytes, span_length)?;
+        charge_item(budget)?;
+        attributes.push(AttributeShell {
+            name: jvm_string_from_raw(&utf8_index(bytes, layout, attribute_name_index)?.0)?,
+            span,
+            content_span,
+        });
+    }
+
+    Ok(MemberHeader {
+        name,
+        descriptor,
+        access_flags,
+        attributes,
+    })
+}
+
+/// Whether one failure is damage in the class structure rather than the request ending.
+///
+/// A damaged record is what a member-table read publishes as a prefix plus a stop; an exceeded
+/// budget, a cancellation and an I/O failure are the request ending and travel on as errors.
+fn is_class_structure_damage(error: &Error) -> bool {
+    match error {
+        Error::InvalidInput { .. } | Error::Unsupported { .. } => true,
+        Error::BudgetExceeded { .. } | Error::Cancelled { .. } | Error::Io { .. } => false,
+    }
+}
+
+/// The stable code of one failure, using the code the error already carries.
+///
+/// The same mapping the artifact tree, the query scan and the resolver use, so one failure has one
+/// code wherever this engine reports it. Only the two damaged-structure arms are reachable from a
+/// member-table stop — a refused charge, a cancellation and an I/O failure travel on as errors — but
+/// the mapping is the engine's whole one so a stop added later cannot pick a different code.
+fn error_code(error: &Error) -> String {
+    match error {
+        Error::InvalidInput { code, .. } | Error::Unsupported { code, .. } => code.clone(),
+        Error::BudgetExceeded { dimension, .. } => {
+            format!(
+                "budget_exceeded_{}",
+                crate::artifact::budget_dimension_code(*dimension)
+            )
+        }
+        Error::Cancelled { .. } => "cancelled".to_owned(),
+        Error::Io { operation, .. } => operation.clone(),
+    }
+}
+
+/// One Modified-UTF-8 payload as this layer spells JVM strings, without a validated wrapper.
+///
+/// The walk is byte-for-byte the one [`jvm_string_mstr`] performs on noak's own validated value:
+/// every sequence takes the width its first byte states, each sequence becomes one UTF-16 code
+/// unit in order, and a surrogate pair therefore arrives as the two units it was written as. The
+/// difference is only that these bytes come from the raw member walk rather than from a decoder
+/// that already checked them, so a sequence that leaves the payload is a structured error instead
+/// of a panic. The value is a **spelling** of the bytes, not a claim that they are legal
+/// Modified UTF-8; the raw bytes stay the identity.
+fn jvm_string_from_raw(raw: &[u8]) -> Result<JvmString> {
+    let mut utf16 = Vec::new();
+    let mut offset = 0usize;
+    while offset < raw.len() {
+        let first = raw[offset];
+        let width = if first < 0x80 {
+            1usize
+        } else if first & 0xe0 == 0xc0 {
+            2usize
+        } else {
+            3usize
+        };
+        let unit = match width {
+            1 => u16::from(first),
+            2 => {
+                let second = *raw
+                    .get(offset + 1)
+                    .ok_or_else(class_member_utf8_truncated)?;
+                (u16::from(first & 0x1f) << 6) | u16::from(second & 0x3f)
+            }
+            _ => {
+                let second = *raw
+                    .get(offset + 1)
+                    .ok_or_else(class_member_utf8_truncated)?;
+                let third = *raw
+                    .get(offset + 2)
+                    .ok_or_else(class_member_utf8_truncated)?;
+                (u16::from(first & 0x0f) << 12)
+                    | (u16::from(second & 0x3f) << 6)
+                    | u16::from(third & 0x3f)
+            }
+        };
+        utf16.push(unit);
+        offset = offset
+            .checked_add(width)
+            .ok_or_else(class_member_utf8_truncated)?;
+    }
+    Ok(JvmString::from_parts(raw.to_vec(), utf16))
+}
+
+fn class_member_utf8_truncated() -> Error {
+    Error::invalid_input(
+        "classfile_modified_utf8_truncated",
+        "a Modified UTF-8 sequence ends after the payload that holds it",
+    )
+}
+
+fn class_member_structure_error(error: Error) -> Error {
+    match error {
+        Error::InvalidInput { code, message } => Error::invalid_input(
+            code,
+            format!("class-member walk stopped while reading the class structure: {message}"),
+        ),
+        other => other,
+    }
+}
+
+fn class_member_structure_overflow() -> Error {
+    Error::invalid_input(
+        "classfile_span_overflow",
+        "class-member walk position or attribute length exceeds this address space",
+    )
+}
+
 /// Inspects one exact method body using noak's Java 8 instruction cursor.
 pub fn inspect_method_bytecode(
     bytes: &[u8],
@@ -9851,6 +10227,25 @@ mod tests {
             let mut budget = Budget::new(limits(u64::MAX));
             let header = class_facts(&bytes, &mut budget)
                 .unwrap_or_else(|error| panic!("{}: {error:?}", path.display()));
+            // The member walk (the member listing's own read) states the same declaration, the same
+            // fields and the same methods as the whole-structure read on every committed class, and
+            // finds nothing to stop for. A repository fixture is a *readable* class, so the two
+            // reads agreeing here is what makes the tolerant walk's prefix trustworthy on the
+            // damaged inputs the listing tests build by hand.
+            let walked = class_member_facts(&bytes, &mut budget)
+                .unwrap_or_else(|error| panic!("{}: {error:?}", path.display()));
+            assert_eq!(walked.stopped_at, None, "{}", path.display());
+            assert_eq!(
+                walked.access_flags,
+                header.access_flags,
+                "{}",
+                path.display()
+            );
+            assert_eq!(walked.this_class, header.this_class, "{}", path.display());
+            assert_eq!(walked.super_class, header.super_class, "{}", path.display());
+            assert_eq!(walked.interfaces, header.interfaces, "{}", path.display());
+            assert_eq!(walked.fields, header.fields, "{}", path.display());
+            assert_eq!(walked.methods, header.methods, "{}", path.display());
             for method in &header.methods {
                 let facts = match method_code_facts(&bytes, method, &mut budget) {
                     Ok(facts) => facts,
@@ -9927,5 +10322,150 @@ mod tests {
         let mut found = Vec::new();
         walk(&root, &mut found);
         found
+    }
+
+    /// One class with two methods, whose second method carries one attribute of the named length.
+    ///
+    /// The pool is `#1` the class name, `#2` its `Class`, `#3`/`#4` `java/lang/Object`, `#5`/`#6`
+    /// the first method's text, `#7`/`#8` the second's and `#9` the attribute's name. The first
+    /// method has no attribute at all, so the walk's own position arithmetic is what the tests
+    /// below exercise: one shell-less record, then one record whose attribute is the damage.
+    fn two_method_fixture(second_attribute_length: u32) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(&0xcafebabe_u32.to_be_bytes());
+        u16_be(&mut bytes, 0);
+        u16_be(&mut bytes, 52);
+        u16_be(&mut bytes, 10);
+        utf8(&mut bytes, b"p/Two"); // 1
+        class_entry(&mut bytes, 1); // 2
+        utf8(&mut bytes, b"java/lang/Object"); // 3
+        class_entry(&mut bytes, 3); // 4
+        utf8(&mut bytes, b"first"); // 5
+        utf8(&mut bytes, b"()V"); // 6
+        utf8(&mut bytes, b"second"); // 7
+        utf8(&mut bytes, b"()I"); // 8
+        utf8(&mut bytes, b"Code"); // 9
+        u16_be(&mut bytes, 0x0021);
+        u16_be(&mut bytes, 2);
+        u16_be(&mut bytes, 4);
+        u16_be(&mut bytes, 0);
+        u16_be(&mut bytes, 0);
+        u16_be(&mut bytes, 2);
+        for (name, descriptor, attributes) in [(5_u16, 6_u16, 0_u16), (7, 8, 1)] {
+            u16_be(&mut bytes, 0x0001);
+            u16_be(&mut bytes, name);
+            u16_be(&mut bytes, descriptor);
+            u16_be(&mut bytes, attributes);
+            if attributes == 1 {
+                u16_be(&mut bytes, 9);
+                u32_be(&mut bytes, second_attribute_length);
+                bytes.push(0xb1);
+            }
+        }
+        bytes
+    }
+
+    /// The member walk establishes exactly what the header read does when nothing is damaged.
+    #[test]
+    fn member_walk_agrees_with_the_whole_structure_read() {
+        let bytes = fixture().bytes;
+        let mut walk_budget = Budget::new(limits(1 << 20));
+        let walked = class_member_facts(&bytes, &mut walk_budget).unwrap();
+        let mut header_budget = Budget::new(limits(1 << 20));
+        let header = inspect_header_structure(&bytes, &mut header_budget).unwrap();
+
+        assert_eq!(walked.access_flags, header.access_flags);
+        assert_eq!(walked.this_class, header.this_class);
+        assert_eq!(walked.super_class, header.super_class);
+        assert_eq!(walked.interfaces, header.interfaces);
+        assert_eq!(walked.fields, header.fields);
+        assert_eq!(walked.methods, header.methods);
+        assert_eq!(walked.stopped_at, None);
+        // The walk stops at the method table, so the class attribute table is the one thing the
+        // whole-structure read holds and this read does not claim.
+        assert!(!header.attributes.is_empty());
+        assert!(
+            walked.methods[0]
+                .attributes
+                .iter()
+                .any(|shell| shell.name.raw().0 == b"Code"),
+            "the `Code` attribute is a shell in the member list, not a decoded body"
+        );
+        assert_eq!(
+            walk_budget.usage().code_bytes,
+            0,
+            "no member read charges an instruction byte: the body is never decoded"
+        );
+    }
+
+    /// A record that does not decode keeps the prefix read before it and names the stop.
+    #[test]
+    fn a_damaged_member_record_keeps_the_prefix_and_names_the_stop() {
+        // The second method declares one attribute of length 4 while one content byte follows it,
+        // so the attribute's content leaves the class bytes: the record is the damage.
+        let bytes = two_method_fixture(4);
+        let mut budget = Budget::new(limits(1 << 20));
+        let walked = class_member_facts(&bytes, &mut budget).unwrap();
+        assert_eq!(walked.this_class.raw().0, b"p/Two");
+        assert!(walked.fields.is_empty());
+        assert_eq!(walked.methods.len(), 1, "{:?}", walked.methods);
+        assert_eq!(walked.methods[0].name.raw().0, b"first");
+        let stop = walked
+            .stopped_at
+            .expect("the second method's attribute leaves the class bytes");
+        assert_eq!(stop.phase, MemberTablePhase::Methods);
+        assert_eq!(stop.index, 1);
+        assert_eq!(stop.code, "classfile_invalid_attribute_span");
+        assert!(
+            stop.class_offset > 0 && stop.class_offset < bytes.len() as u64,
+            "the stop is located inside the class bytes: {stop:?}"
+        );
+
+        // The same bytes fail the whole-structure reads, which is what makes the prefix above
+        // something only this walk can establish.
+        let mut header_budget = Budget::new(limits(1 << 20));
+        assert!(inspect_header_structure(&bytes, &mut header_budget).is_err());
+        let mut facts_budget = Budget::new(limits(1 << 20));
+        assert!(class_facts(&bytes, &mut facts_budget).is_err());
+    }
+
+    /// Both tables read to their declared end leave no stop behind.
+    #[test]
+    fn a_complete_member_table_leaves_no_stop() {
+        let bytes = two_method_fixture(1);
+        let mut budget = Budget::new(limits(1 << 20));
+        let walked = class_member_facts(&bytes, &mut budget).unwrap();
+        assert_eq!(walked.stopped_at, None);
+        assert_eq!(walked.methods.len(), 2);
+        assert_eq!(walked.methods[1].name.raw().0, b"second");
+        let shell = &walked.methods[1].attributes[0];
+        assert_eq!(shell.name.raw().0, b"Code");
+        assert_eq!(shell.content_span.length, 1);
+        assert_eq!(budget.usage().code_bytes, 0);
+    }
+
+    /// A refusal of the request is an error, never a prefix with a stop.
+    #[test]
+    fn a_refused_member_read_is_an_error_not_a_stop() {
+        let bytes = two_method_fixture(1);
+        let mut budget = Budget::new(Limits {
+            class_bytes: 1,
+            ..limits(1 << 20)
+        });
+        assert!(matches!(
+            class_member_facts(&bytes, &mut budget),
+            Err(Error::BudgetExceeded {
+                dimension: BudgetDimension::ClassBytes,
+                ..
+            })
+        ));
+
+        let cancellation = CancellationToken::new();
+        cancellation.cancel();
+        let mut budget = Budget::with_cancellation_token(limits(1 << 20), cancellation);
+        assert!(matches!(
+            class_member_facts(&bytes, &mut budget),
+            Err(Error::Cancelled { .. })
+        ));
     }
 }

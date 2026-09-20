@@ -70,6 +70,7 @@ them, and a missing or changed file is a test failure.
 | `p1_multi_release.rs::a06_fixture`, `class_with` | base/v11/v17 MR-JAR and single-class variants | A06, compliance and budget cases |
 | `p1_artifact_tree.rs::zip` | Boot/WAR/ordinary nested trees with duplicate and malformed children | A08, A07 origin identity |
 | `p1_xref_properties.rs::build_class(shape, extras)` | structured class: member counts, constant-pool entries, instruction sequence; `extras` appended unused entries | the four proptest properties |
+| `tests/navigation.rs::class_file`, `zip_of`, `two_origin_war` | hand-built classes (fields, `Code`, `abstract`/`native`, one deliberately damaged member record) inside WARs whose upper directory entry and explicitly expanded nested library hold the same class name — the same bytes in one case, different bytes in others | `add-artifact-navigation`: candidate/confirmed listings, duplicate origins, path-vs-declaration mismatch, damaged candidate and damaged member stops, identity handoff |
 | `p1_xref_golden.rs::code_fixture`, `metadata_fixture`, `mr_fixture`, `nested_fixture` | the five golden inputs above, each with an asserted blake3 digest | golden replays |
 
 The real `zip()`/`rawzip` writer produces all archives, so enumeration, CRC and
