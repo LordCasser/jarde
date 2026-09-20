@@ -2,7 +2,7 @@
 
 jarde 是纯 Rust、library-first 的 JVM artifact 分析引擎。P0/P1 已完成并归档：有界不可变快照、CLASS/JAR/WAR 读取、嵌套物理视图、MR 选择、Header/bytecode inspection 和 X0/X1 查询已交付。
 
-**当前完成判断（2026-09-20，`bafdcec` / 行为 `85828c4`）**：常规门禁通过，但独立 review 复现了名称选择丢失搜索停止、类视图顶层忽略 body 停止两项问题，暂不能确认任务链收尾完成。反例、验证结果与独立修正计划见 [完成复核](openspec/completion-review.md)；性能专项仍为 0/22。
+**当前完成判断（2026-09-20，`8586356`）**：P0–P5、分层、benchmark 四项后续交付与易用性三阶段均已归档；独立复核发现的两项停止语义问题（名称选择丢失搜索停止、类视图顶层忽略 body 停止）已在 `8586356` 关闭并归档验证——未完成的名称搜索返回 `Incomplete` 选择而非执行或报缺失，类视图顶层由库汇总 body 停止。1254 passed / 0 failed / 6 ignored、clippy `-D warnings`、两条 P3 编译执行对照与 OpenSpec strict 通过。性能专项 `optimize-demand-workloads` 仍为 0/22。
 
 **已关闭的恢复问题（`fd0aae8`）**：P0–P5 与分层均已按各阶段范围归档，`cd6f2f0` 复核出的两条 P1 已由本轮关闭（`close-recovery-correctness-gaps`，4/4）：`(x + 1) + ++x` 不再输出对输入 7 返回 17 的 Java，改为保留被拒读取的可靠降级；被拒 cast 前的字段读取重新出现在产物与 source map 中，含字段链。两条反例、正向对照与执行基线已进入永久语料（`tests/fixtures/p3-nested-eval/`、`tests/fixtures/p3-refused-cast/`）与库/CLI 验收。实施、变异与门禁证据见 [收尾验证](openspec/changes/archive/2026-09-20-close-recovery-correctness-gaps/verification.md)。
 

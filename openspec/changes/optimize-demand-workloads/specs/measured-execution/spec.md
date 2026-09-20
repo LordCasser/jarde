@@ -160,3 +160,13 @@
 
 - **WHEN** 一个子项完成后原热点占比下降
 - **THEN** 重新排列剩余调查优先级，必要时停止后续策略，不继续沿用原热点的占比和收益预估
+
+#### Scenario: A delivered child change does not finish the investigation program
+
+- **WHEN** 某独立子 change 已归档并通过其正确性和工作计数门禁，但专项工作负载、原始样本、归因或其余调查处置尚未完成
+- **THEN** 记录该子项已交付与专项仍未完成，不重复实施子项，也不把归档、格式验证或工作计数下降当成整个专项完成
+
+#### Scenario: A frozen candidate has an independently reproduced correctness gap
+
+- **WHEN** 已冻结候选被反例证明会丢失搜索停止证据或误报完整结果
+- **THEN** 保留该提交作为注明缺口的历史比较臂，由独立正确性 change 修复并验收后重新冻结当前候选；性能专项不得降低行为契约或删除失败样本以通过准入

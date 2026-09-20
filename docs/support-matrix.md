@@ -1,6 +1,6 @@
 # 当前五维支持矩阵
 
-当前复核边界（2026-09-20，`bafdcec` / 行为 `85828c4`）：P0–P5、分层、四项 benchmark 后续交付和易用性三阶段均已按当时范围归档。**当前任务链尚不能确认收尾完成**：独立复核发现 R1/P1 名称选择丢失搜索停止、R2/P2 类视图顶层漏汇总 body 停止，见 [完成复核](../openspec/completion-review.md) 和 [修正计划](../openspec/changes/preserve-task-operation-stops/proposal.md)。本轮两固定 seed 全量各 1249/0/6、fmt/clippy、两条 P3 编译/执行对照及小型 benchmark smoke 通过，仍不能替代新增反例的验收。
+当前复核边界（2026-09-20，`8586356`）：P0–P5、分层、四项 benchmark 后续交付、易用性三阶段与停止传播修正均已按当时范围归档。独立复核发现的 R1/P1（名称选择丢失搜索停止）与 R2/P2（类视图顶层漏汇总 body 停止）已在 `8586356` 关闭：未完成的名称搜索返回独立的 `Incomplete` 选择（保留候选/coverage/诊断/用量，不执行分析，CLI exit 4），类视图的顶层 execution 在库内汇总所请求方法体的停止。反例、正向对照与变异证据见 [修正验证](../openspec/changes/archive/2026-09-20-preserve-task-operation-stops/verification.md) 与 [完成复核](../openspec/completion-review.md)。
 
 已交付的定向 container 访问、显式 prefix root、driver 声明类事实交接和内容分类保持有效；生产 verifier、自动编译和普遍语义等价证明仍未实现。
 
@@ -201,7 +201,7 @@ P5 归档的“部分通过”保留为历史判断；本轮按主规格的条�
 | 维度 | 环境/入口 | 状态 | 边界 |
 | --- | --- | --- | --- |
 | 平台 | Linux x86_64 | Validated（历史 CI） | 历史 `cd6f2f0` 的 [CI 35484396101](https://github.com/LordCasser/jarde/actions/runs/35484396101) stable/MSRV/supply-chain/fuzz-smoke 均通过，含 JDK25 oracle。 |
-| 平台 | macOS arm64 | Validated（本轮限定回归） | `bafdcec` 的代码（行为 `85828c4`）：两固定 seed 各 1249 passed / 0 failed / 6 ignored；JDK 23 下两条显式编译执行对照、小型 benchmark smoke、fmt 与 clippy `-D warnings` 通过。R1/R2 仍开放；本轮未重跑 MSRV/supply-chain/JDK25 oracle/fuzz CI，见完成复核。 |
+| 平台 | macOS arm64 | Validated（本轮限定回归） | `8586356`：两轮全量各 1254 passed / 0 failed / 6 ignored；JDK 23 下两条显式编译执行对照、fmt 与 clippy `-D warnings` 通过；复核的 R1/R2 反例改为永久回归并通过。本轮未重跑 MSRV/supply-chain/JDK25 oracle/fuzz CI。 |
 | 平台 | Linux aarch64 | Supported（当前实际本地证据） | Fedora-like，kernel `7.1.0-rc3-gaokun3+`；证据版本见 verification。 |
 | 平台 | 32-bit | NotValidated / Unsupported | noak `lookupswitch` 巨大 `npairs` 等 `usize` 风险未建立支持；P0 限 64-bit。 |
 | Library adapter | `Engine` + `Budget` | Supported；任务操作停止传播待修 | 同步 API；含普通枚举、显式 `enumerate_artifact_tree`、标准 MR 选择与 P1 `query`（`PhysicalScope::SnapshotAll`/`ArtifactTree`），以及显式运行环境下的 `resolve_symbol`/`declaration_references` 与方法分析/恢复的 `analyze_method`/`recover_method`；任务导向层增加 `class_view`/`analyze_target`/`recover_target`（目标选择 + 有界默认预算 + 显式环境策略 + stage 发布，见上一节）；`CancellationToken` 可由调用方注入，取消为协作式。 |

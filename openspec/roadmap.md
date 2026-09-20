@@ -4,6 +4,8 @@ P0–P5 与分层已按各阶段范围归档：P2 29/29、分层 7/7、P3 12/12�
 
 相关入口：[OpenSpec 规划入口](README.md)、[技术栈与依赖选型](dependencies.md)、[架构验收与阶段映射](acceptance.md)。
 
+**最新完成判定（`8586356`）：本轮任务链的停止语义已关闭。** 独立 review 复现的 R1/P1（名称选择丢失搜索停止）与 R2/P2（类视图顶层漏汇总 body 停止）已由 [preserve-task-operation-stops](changes/archive/2026-09-20-preserve-task-operation-stops/tasks.md)（5/5）修正：未完成搜索返回 `Incomplete` 而不执行也不报缺失，类视图顶层在库内汇总 body 停止。反例、正向对照与变异证据见该 change 的归档验证记录。历史归档保留；benchmark 候选随之冻结为 `8586356`（`85828c4` 仅作历史比较臂）。
+
 ## 阶段依赖
 
 ```text
@@ -12,7 +14,7 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
                                   └────────────────┴─────────────────┴────────────────────┴──→ P5 p5-measured-optimization
 ```
 
-`layer-jarde-crates` 与 P2 已全部归档，原 4.2b/4.3b 及 P2 出口不再是待办。六包 workspace 与 P3 只读 IR 交接、恢复门面/CLI 均已存在，声明、按需成员与物理方法映射也已交付；当前仅收尾新发现的恢复正确性缺口。
+`layer-jarde-crates` 与 P2 已全部归档，原 4.2b/4.3b 及 P2 出口不再是待办。六包 workspace 与 P3 只读 IR 交接、恢复门面/CLI 均已存在，声明、按需成员与物理方法映射也已交付；旧恢复缺口 R8/R9 已关闭，当前阻塞是新任务操作的选择/停止传播。
 
 `p1-query-xref` 还直接消费 P0 的 snapshot/classfile/contract；`p4-modern-semantics` 需要 P1 的 views/query、P2 的 resolver/IR 和 P3 的 recovery。P5 选择一个或多个已有稳定结果契约作为优化目标，在被选阶段的真实基线稳定后即可进入，不要求先完成 P4；若优化跨阶段，再纳入所有受影响阶段的回归。
 
@@ -35,7 +37,15 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 - 每个 change 的实施阶段归档前先执行对应 strict validation，再按架构验收 IDs 和真实语料验证；有行为 delta 时 archive 默认同步主 specs，不使用 `--skip-specs`。
 - 优先复用 P0 已评估的 noak、rawzip、flate2 rust_backend、blake3、serde、thiserror、clap；后续库、持久 index 或并发方案先依 [选型准入](dependencies.md) 评估。JVM/JADX 不进入生产核心运行依赖，只可作为受控测试 oracle。
 
-## 当前执行顺序（2026-09-20 收尾完成）
+## 当前执行顺序（2026-09-20 独立复核后）
+
+| 顺序 | 范围 | 完成条件 |
+| --- | --- | --- |
+| 1 | `preserve-task-operation-stops`，0/5 | 不完整名称搜索不执行/不报缺失；类视图库内汇总停止；库/CLI 反例与正向对照在固定提交通过 |
+| 2 | 重新冻结 benchmark 候选 | 已冻结为 `8586356`（修正后行为提交）；`85828c4` 仅保留为历史比较臂，样本、构建、环境和原始数据完整记录 |
+| 3 | `optimize-demand-workloads`，0/22 | 先 G0/W1–W5 与 O1 已交付证据复核，再 O2–O8 调查/准入；每项有真实处置，已准入实现无隐藏待办 |
+
+## 已关闭的恢复正确性收尾
 
 | 顺序 | 范围 | 结果 |
 | --- | --- | --- |
@@ -68,15 +78,16 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 | 2 | [add-task-oriented-operations](changes/archive/2026-09-20-add-task-oriented-operations/proposal.md) | 已归档（11/11，`2428752`）：库内目标选择/阶段调度/有界预算/三种环境策略、类视图与引用组织、恢复呈现顺序 |
 | 3 | [add-task-oriented-cli](changes/archive/2026-09-20-add-task-oriented-cli/proposal.md) | 已归档（9/9，`85828c4`）：五个薄子命令、text/JSON 同源、诊断分离、四态退出状态 |
 
-三者依赖顺序固定，现已全部归档；WAR 布局策略与更广的树发现边界重叠部分以已归档的 `bind-prefixed-load-roots` 为前提，仍未实施。
+三者依赖顺序固定，现已按当时验证范围归档；R1/R2 由新的独立修正 change 跟踪，不回写历史归档为失败。显式 artifact-tree 发现和 prefix root 已交付，仍未实施的是自动 WAR/Boot layout policy，不应将两者合并成“树发现未实现”。
 
 ## 分开处理的后续范围
 
 | 范围 | 当前边界 | 何时继续 |
 | --- | --- | --- |
-| 声明与源码覆盖 | MethodParameters、类级 InnerClasses/ACC_INTERFACE 尚未进入恢复载荷；仍是方法体产物 | 宣称对应命名/类级源码覆盖前，单独交付事实与语料；不混入 R8/R9 |
+| 声明与源码覆盖 | driver 类名/access flags（含 ACC_INTERFACE）已同源交接；MethodParameters、InnerClasses 的完整恢复消费及完整类级源码仍未交付 | 宣称对应命名/类级源码覆盖前单独验收；不重复实施已归档的声明交接 |
 | 异常图策略 | handler 入口作为根的语义取舍仍待裁决，当前可靠 fallback 保留 | 改 canonical 策略前单独验收 Frame/SSA/异常次序，不能靠恢复层隐藏 |
 | 现代输出与适配 | P4 是结构/推断能力，恢复 OutputLevel 仍 Java8；新增 P4 入口没有 CLI/JSON 面 | 需要相应产品能力时单独设计与验收，不把结构支持当源码恢复 |
-| 优化与资源 | CP/Header cache 默认 off；容量按 entry 数；更高层 key、index/parallel/merged 未实现，规模语料/阈值未定 | 有代表性成本证据和明确资源权重/收益时再评估；未实现路径不构成 A15/A18 当前阻塞 |
+| 优化与资源 | CP/Header + container facts cache 默认 off；entries/retained_bytes 双限、满则拒绝；更高层 key、index/parallel/merged 未实现，规模语料/阈值未定 | 由性能专项复核实际工作负载、归因和资源代价；未实现可选路径不构成 A15/A18 当前阻塞 |
+| 局部解析与隔离 | class_view 已共享字节/成员列举，body 解码仍重建类 reader；成员表损坏可能连带拒绝前面的方法体 | 单独评估结构/locator 复用与损坏隔离，不混入当前停止传播修正 |
 
 这些边界限制可声明的产品覆盖；它们不能被总括成“完整 JVM/Java 恢复已实现”，也不能无差别塞进一个正确性修复。A15/A18 按已实现路径通过，usage 节省允许但资源/取消仍逐项对照；不存在的路径为不适用。归档阶段、当前正确性与后续覆盖分别记录。

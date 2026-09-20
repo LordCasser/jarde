@@ -2,14 +2,14 @@
 
 动机及总范围见 [proposal](proposal.md)。本专项管理多方案的调查、实施准入与验收；每个影响产品契约的方案仍由独立 change 实施，避免一个性能 PR 同时改动读取、解析、分页和调度。
 
-历史 benchmark 固定在 `cd6f2f0`；后续代码调查见 `9c274d1` 附近的实现，工作树还有其它正确性修复。这些证据只能支持调查入口，不能代替实施时的固定基线，也没有给出各阶段的墙钟占比。
+历史 benchmark 固定在 `cd6f2f0`；原始外部报告/脚本未完整留存，不作为可重跑基线。2026-09-20 复核 HEAD 为 `bafdcec`，行为基线为 `85828c4`，定向访问、前缀 root、声明交接与任务链已落地。该基线仍有 [停止语义缺口](../../completion-review.md)，由独立 change 关闭后再冻结正式候选。以下区分已交付事实与未测成本，均没有给出当前各阶段的墙钟占比。
 
 | 已定位的工作形态 | 源码入口 | 尚未证明的内容 |
 | --- | --- | --- |
-| 指定 container 查名仍枚举整树，nested 读取重放祖先链 | `providers.rs::tree_candidates/listed_entry`、`artifact.rs::read_nested_entry_with_accounting` | 各阶段实际时间占比及优化倍数 |
+| O1 已交付：指定 container 定向查名、raw-name 多值表与有界 backing 复用；显式树枚举仍保留 | `providers.rs::tree_candidates`、`artifact.rs::container_candidates/container_record` | W1–W5 的阶段时间、容量退化与端到端收益；不重做旧整树修正 |
 | 多 consumer 分别 materialize/parse 同一个 class，code/bootstrap 分别解码方法 | `xref/mod.rs::ScanContext::read_unit`、`xref/{code,metadata,bootstrap}.rs` | W4 中重复工作占比及共享后的内存代价 |
-| 每次方法解码重新创建 reader 并遍历方法表；callee 再读声明类 | `classfile.rs::method_code_facts`、`callee.rs::read_callees` | 容器成本移除后的剩余瓶颈 |
-| cache 读取/保存构造摘要，命中深复制 payload，容量只有 entry 数 | `facts_cache.rs::FactsKey/take/keep` | hash/clone 是否值得改 ownership，真实复用率 |
+| class_view 已共享同次 class 字节与成员列举；body 解码仍重建 reader，恢复路径仍有 callee 读取 | `facade.rs::class_view/body_result`、`classfile.rs::method_code_facts`、`callee.rs::read_callees` | 容器成本移除后的 parse/定位占比；区分 bytes 共享与结构共享 |
+| cache 构造摘要、CP/Header payload 命中复制；容量已为 entries + retained_bytes，满则拒绝 | `facts_cache.rs::FactsKey/take/keep/FactsCapacity` | hash/clone 是否值得改 ownership，真实复用率及驻留代价 |
 | provider 全量收集；当前 unit 全部产出后分页，续页重扫 boundary unit | `xref/mod.rs::ProviderScan::collect/scan_units` | 首屏和续页的收益、coverage 变化范围 |
 | open 完整读入后 hash，entry/root 有拥有所有权的字节复制；JSON 长度固定点反复遍历 | `artifact.rs::open/root_bytes/read_verified`、`jarde-cli::write_success` | 对不同工作负载端到端成本的贡献 |
 
@@ -67,7 +67,7 @@ W1–W5 使用可再生成 fixture 和已有 API；W6 先确认目标宿主和�
 ### 4. O1：容器定向访问与已验证 backing 复用
 
 - **必要性/证据：** 一个指定 container 的查询不需要展开未搜索 sibling；重复请求不应在事实仍被保留时重建目录。历史条目/展开计数已支持此入口。
-- **方案：** 按 origin chain 定向访问；完整目录的 raw-name 多值表与 locator；单次操作贯通查名/绑定/读取；跨请求有界保留完整目录与验证 backing。实现和行为规格由 [bound-container-lookup](../bound-container-lookup/proposal.md) 唯一负责。
+- **方案/现状：** 按 origin chain 定向访问、完整目录 raw-name 多值表、locator 和跨请求有界 backing 已交付。实现和行为规格由已归档的 [bound-container-lookup](../archive/2026-09-20-bound-container-lookup/proposal.md) 唯一负责（8/8，`b22ea04`）；本专项复用其验证，不重新实现。
 - **调查/实验：** B 原始路径、D 定向直接路径、C/W 空/热 store、F 容量不足；隔离 CP/Header 命中；W1/W2/W5 增加无关 sibling、目标目录规模和深度。
 - **约束/验收：** 未搜索 sibling 展开为零；保留期间目录和父 backing 不重建；重复 raw name 不合并；cold 完整目录和 CRC 检查保留；计数变化不冒充 wall-clock 改善。
 - **回退：** D 经验收后成为新的直接路径基线；运行期只对可选 cache/backing 保留失败降级，关闭跨请求保留仍走 D，构造失败不发布完整 facts。D 本身的缺陷用提交回退处理，不在生产长期保留旧整树路径作为“加速失败 fallback”。
@@ -75,7 +75,7 @@ W1–W5 使用可再生成 fixture 和已有 API；W6 先确认目标宿主和�
 ### 5. O2：操作内 class 读取、结构与方法定位复用
 
 - **必要性/证据：** consumer、driver/callee 对同一可信 class 重复读/parse；单方法解码重复扫描方法表，全类调用存在 `K × M` 的定位检查。
-- **方案：** 在当前操作栈范围保留验证字节、内容身份、结构和方法 locator；consumer 共享只读事实；callee 消费同次已验证类；方法 key 用 raw name/descriptor 并保留重复声明歧义。先用局部借用/共享对象，不把整个 MethodIr 改成长期全局缓存。
+- **方案：** 以 class_view 已共享的验证字节/成员列举为基线，调查尚未共享的结构和方法 locator、consumer 只读事实与 callee 同次类读取；方法 key 用 raw name/descriptor 并保留重复声明歧义。driver 类名/flags 已由 `carry-declaring-class-evidence` 交接，不重复立项。先用局部借用/共享对象，不把整个 MethodIr 改成长期全局缓存。
 - **调查/实验：** W3/W4 分别启用 bytes 共享、结构共享、locator，记录 inflate/hash/parse/表项检查次数和峰值数据；覆盖多 consumer、accessor、多方法类及稀疏单方法。
 - **约束/验收：** 相同 backing 的仍持有事实不重构；不同 snapshot/物理来源不混淆；Strict/Forensic 及原始结构的解析策略不互相代答。共享 code/bootstrap 解码时只保留必要 use-site 摘要，避免为省扫描而驻留全部方法 IR；保持 consumer 输出顺序与预算/诊断语义。
 - **回退：** 单个局部复用步骤可撤销，回到直接解析；容量不足优先完成当前事实消费再释放，不能在取消/耗尽后重跑。共享事实的所有权和 class digest 只能来自已验证读取，禁止相信外部伪造摘要。
@@ -166,6 +166,6 @@ O1 先行；O2 可以先调查但独立提交。O3/O4 的实验建立在稳定�
 
 ## Migration Plan
 
-先建立 G0 harness 与八项调查登记，核对已被其它 change 消除的问题；执行 O1 的独立 change 并收集第一轮结果。按 G1/G2 选择后续项，单独定义产品 delta、实施、验证和演练回退，每完成一项都重测并更新排名。启用策略仅依据已声明工作负载，不扩大成全局默认。
+先由 `preserve-task-operation-stops` 关闭任务链停止缺口并冻结新基线；建立 G0 harness 与八项调查登记，复用已归档 O1 的实现/计数证据，补齐本专项归因与原始样本。按 G1/G2 选择后续项，单独定义产品 delta、实施、验证和演练回退，每完成一项都重测并更新排名。启用策略仅依据已声明工作负载，不扩大成全局默认。
 
 本专项最终交付：可复现测量入口、每项调查决定与证据、所有已准入子项的实施/回退记录，以及剩余候选的明确处置。未准入方案无需实现，但必须有调查结果或明确的缺失工作负载/证据及重新进入条件；未完成的已准入项不能因任务多或预算不足被标为完成。当前只生成规划，执行这些步骤需后续 apply。

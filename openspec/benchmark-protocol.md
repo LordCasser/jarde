@@ -1,12 +1,11 @@
-# 重新 benchmark 协议（2026-09-20 冻结）
+# 重新 benchmark 协议（2026-09-20 复核后）
 
-本文件固定**下一次** jadx-vs-jarde 测量的口径。上一次测量（`cd6f2f0`，报告见 `/tmp/jarde-bench/jadx-vs-jarde-benchmark.md`，其原始数据已丢失）的脚本未能逐字复原，因此这里固定的是**参数与判据**——那才是可复现的资产；harness 由本文件重新生成即可。
+本文件登记下一次 jadx-vs-jarde 测量的参数与判据，**测量尚未完成**。上一次测量（`cd6f2f0`，历史报告路径 `/tmp/jarde-bench/jadx-vs-jarde-benchmark.md`，原始数据已丢失）的脚本未完整保留；本文件也尚未固定方法抽样清单、全部运行命令与 harness，因此不能单凭协议声称可复现或 G0 已完成。正式运行前须保存这些资产及摘要，不依赖 `/tmp` 历史文件。
 
 ## 冻结基线
 
-- **引擎冻结于 `85828c4`**（最后一个改变行为的提交：任务链 CLI 与其一并修复的 elapsed 假红）。此后只有文档提交，不改变行为。
-- 测量必须在一个**该 SHA 的独立 worktree** 中构建运行，避免工作树里后续文档改动或未提交内容混入：
-  `git worktree add /tmp/jarde-bench-base 85828c4`，并给它独立的 `CARGO_TARGET_DIR`。
+- **`85828c4` 改记为历史比较臂**：它是本次 review 的行为基线，仍存在 [R1/R2 停止语义缺口](completion-review.md)，不能称为“最终已验收引擎”。修正后的当前候选 SHA 为 **`8586356`**（`preserve-task-operation-stops` 的固定提交：名称选择的停止传播与类视图顶层汇总），其本机门禁与反例对照见该 change 的归档验证记录。
+- 正式测量在每个声明 SHA 的独立 worktree 构建，给它独立的 `CARGO_TARGET_DIR`，记录构建参数与二进制摘要。历史臂可用 `git worktree add /tmp/jarde-bench-base 85828c4`；当前候选必须使用实际验收 SHA。两侧行为差异单列，不能归因成性能收益。
 - 每个 change 的实现提交与其 CI 结果：
 
 | 批次 | Change | 实现提交 | CI |
@@ -18,7 +17,8 @@
 | benchmark 4 | bind-prefixed-load-roots | `fbcf06b` | 35497694448 success |
 | 易用性 1 | add-artifact-navigation | `e0c83b6` | 35499237358 success |
 | 易用性 2 | add-task-oriented-operations | `2428752` | 35501294803 success |
-| 易用性 3 | add-task-oriented-cli | `85828c4` | 35502305001 |
+| 易用性 3 | add-task-oriented-cli | `85828c4` | 35502305001 success（归档验证记录，本轮未重查远端） |
+| 停止传播修正 | preserve-task-operation-stops | `8586356` | 见该 change 的归档验证记录 |
 
 ## 语料与每次计时前的门禁
 
@@ -39,9 +39,11 @@
 | struts2/s2-013/S2-013.war | war | 3383341 | `c8f5c7e5c4140392` |
 | struts2/s2-015/S2-015.war | war | 3510089 | `23274e700381f13f` |
 
-旧运行的 sha256 只保留前 16 位；重新计算并比较前 16 位即可确认字节未变，也用于把完整摘要补回记录。
+旧运行的 sha256 只保留前 16 位，只能核对历史摘要前缀一致，不能恢复旧完整摘要。新 campaign 必须计算并保存完整 SHA-256、精确 artifact/方法清单、抽样与排除规则；前缀相同不能代替新样本的完整身份记录。
 
 ## 工具
+
+以下是旧运行的工具/启动行为记录；新运行须实际记录路径、版本、JVM 与线程配置，不假定当前环境相同。
 
 - jadx **1.5.6**（`/opt/homebrew/bin/jadx`），JVM OpenJDK 23.0.1。
   - **计时臂**：默认（6 线程）与 `-j 1`。
@@ -51,7 +53,7 @@
 
 ## jarde 测量形状（三档）
 
-1. **按需单请求**（与 `jadx --single-class` 同口径，进程级）：`jarde-cli` 的一个子命令对单个方法/单个 entry，记录进程 wall time。
+1. **按需单请求**（进程级）：记录 `jarde-cli` 对单方法/entry 的 wall time，以及 jadx `--single-class` 的类级 wall time。两者交付单位不同，必须分列，不直接宣称同口径加速；要作同口径对照，须另行固定相同类/方法集合与输出工作。
 2. **逐 artifact sweep**（主表）：**每个 artifact 一个 snapshot**，**每个请求一个新 `Budget`**；容器声明见下。
 3. **可选全量**：只在 directed access 使 WAR 全量变得可行时做，作为**同一次 campaign 内的第二个覆盖臂**（旧抽样规则作可比锚点 + 全量作新信息），不做两次独立运行。
 
@@ -78,8 +80,8 @@
 
 ## 重复与负载
 
-- jadx：每配置 **≥3 次**；`--version` 启动参照 **5 次**；进程内重复 **6 次**；负载**每分钟采样**，与数字同时发布。
-- **非空载时只认 >2× 的差异**；发布中位数与区间，不发布单点数字，也不发布任何加速倍数或阈值承诺。
+- 正式 G0/G1 对照：每工具/配置至少 **10 个独立重复**，交错执行并重建声明初态，保存全部有效原始样本和负载；进程内重复 **6 次**仅作 warm 观察，不能充当独立样本。`--version` 启动参照 **5 次**单列。尾延迟结论另定足额样本。
+- 实验前登记主指标、退化/内存界限与统计方法，发布中位数及区间，不事后挑样本/改阈值。旧记录的“非空载只认 >2×”只是粗略观察规则，不构成显著性或性能验收标准；无法区分噪声时如实标记未证实。
 - `archive_entries`/`read_bytes` 是实际工作的计费代理；retained weight 是驻留代理，**不是** RSS（RSS 要单独测量，不与计费混谈）。
 
 ## join 与对账
