@@ -525,3 +525,18 @@ test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; fini
 **样本与口径**：每格 **≥10 次独立交错样本**（两臂交替执行，非先跑完一臂再跑另一臂）；报告**中位数与极值**，不报平均；不使用事后挑选（不删样本、不做"代表性"筛选）。机器负载、OS page cache 初态（是否先温一次）与并发（是否有其它构建）**必须随样本记录**。
 
 **结论分级**（与 7.4 相同口径）：①契约通过（计数与语义）②工作量下降（构造数/返回字节）③时间收益（仅在 10 次交错且无负载干扰时声明）。三者在页面上分开写；时间收益若落在样本噪声内（极值跨越中位数差值）一律记为未证实。
+
+## 收尾（7.3/7.5）
+
+| 门禁 | 结果 |
+| --- | --- |
+| `cargo fmt --all -- --check` | 干净 |
+| `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` | 零告警 |
+| `cargo test --workspace --all-targets --all-features --locked` | **1578 passed / 0 failed / 17 ignored** |
+| `cargo test --test p3_execution_comparison --locked -- --ignored` | 3 passed |
+| 受影响门禁单列 | `p1_xref_golden` 5、`p1_query_api`、`p1_query_bounds`、`p1_query_demand` 6、`p1_query_positions` 5、`p1_query_planes` 5、`p5_corpus_fingerprint` 5、`p5_shared_payload` 6 全绿 |
+| `openspec validate --all --strict --no-interactive` | 24 / 24 |
+
+测量与原始样本见 `evidence/measurement-7-3.md` 与 `evidence/raw-7-3-*.jsonl`；能力清单更新见 `docs/support-matrix.md`（证据选择、产物绑定与追问、增量分页三行）。
+
+**完整变更的已知边界（不随完成而消失）**：CLI 未加 `expected_artifact` 旗标；`read_details` 本层不物化（选择它被显式拒绝）；局部证据的范围过滤是"记录/segment 与范围相交"，跨记录 origin 闭包的完整验证只在 region 记录上给出投影比较；查询的目录验证仍是容器粒度、`SnapshotAll` 不下降入 nested；`EntryCursor` 未在门面再导出；`export_cli` 的 `a_counted_dimension_override` 偶发红（既有 flake，单跑与复跑均绿）。
