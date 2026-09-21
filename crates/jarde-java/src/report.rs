@@ -51,6 +51,7 @@ use jarde_reader::model::{Diagnostic, DiagnosticSeverity, ExecutionReport, Termi
 use serde::Serialize;
 
 use crate::accessor::AccessorRecord;
+use crate::artifact::{ArtifactBinding, ArtifactSubject, RecoveryArtifact};
 use crate::bridge::{self, BridgeRecord};
 use crate::build;
 use crate::concat::{self, ConcatRecord};
@@ -105,6 +106,15 @@ pub struct RecoveryRequest<'a> {
     /// necessary results: the artifact, the planes, the core gaps and the stops. The selection never
     /// decides whether a rule runs, whether a value is proven or whether a region is refused.
     pub evidence: RecoveryEvidenceRequest,
+    /// What the artifact this run commits is **of**, as the entry that performed the trusted read
+    /// states it (change `add-demand-driven-core-results`, D3'): the physical method identity, the
+    /// member record that read established and the environment the run is presented under.
+    ///
+    /// `None` is a run whose caller stated no subject — the direct entry over a payload it built
+    /// itself — and such a run publishes **no** artifact binding
+    /// ([`RecoveryReport::artifact`]): identity a caller did not state is never invented from the
+    /// request's own spelling.
+    pub subject: Option<ArtifactSubject>,
 }
 
 impl<'a> RecoveryRequest<'a> {
@@ -120,6 +130,7 @@ impl<'a> RecoveryRequest<'a> {
             profile,
             members: None,
             evidence: RecoveryEvidenceRequest::essential(),
+            subject: None,
         }
     }
 
@@ -137,6 +148,18 @@ impl<'a> RecoveryRequest<'a> {
     /// a different *decision*.
     pub fn with_evidence(mut self, evidence: RecoveryEvidenceRequest) -> Self {
         self.evidence = evidence;
+        self
+    }
+
+    /// The same request, stating what the artifact it presents is **of** (D3').
+    ///
+    /// The entry that performed the trusted read is the one that can state this: it holds the
+    /// physical identity the run is bound to, the member record the read established and the
+    /// environment it was validated under. A run presented with a subject publishes the binding of
+    /// the artifact it commits ([`RecoveryReport::artifact`]), which is what makes a later request's
+    /// `expected_artifact` checkable at all.
+    pub fn with_subject(mut self, subject: ArtifactSubject) -> Self {
+        self.subject = Some(subject);
         self
     }
 }
@@ -298,6 +321,17 @@ pub struct RecoveryReport {
     /// the answer to "was this asked for, and did it arrive", which no empty `Vec` and no `None` can
     /// give on its own. It is checked against this report's own payload before the run returns.
     pub evidence: RecoveryEvidence,
+    /// What this run states about the artifact it committed, and about the artifact its request
+    /// named as `expected_artifact` (change `add-demand-driven-core-results`, D3').
+    ///
+    /// The two halves are [`RecoveryArtifact::binding`] — the contract facts of this run's own
+    /// artifact, which a caller keeps to explain this very text later — and
+    /// [`RecoveryArtifact::agreement`] — what the run decided about the text the request named: no
+    /// expectation (`NotStated`), this artifact (`Agreed`, the only verdict that attaches the
+    /// selected evidence), a different one (`Mismatched`, stated dimension by dimension) or nothing
+    /// to compare (`Unverifiable`). A mismatch never re-points the evidence at the caller's text and
+    /// never deletes this run's own artifact.
+    pub artifact: RecoveryArtifact,
     /// The names the presentation decided, when the run reached the naming step.
     pub aliased_names: Vec<String>,
     /// What the run states about itself, in the fact layer's diagnostic vocabulary.
@@ -825,6 +859,36 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         ));
     }
     // ---------------------------------------------------------------------------------------
+    // The artifact binding and the judgement about the artifact the request named (D3', tasks
+    // 5.1/5.2). It is taken here — the artifact is committed and every diagnostic of this run is
+    // stated, and no evidence record has been materialized yet — because the phase below is exactly
+    // what the judgement gates. The caller's `expected_artifact` is a **candidate for verification**:
+    // the value it is compared against is this run's own binding, and only an agreement lets this
+    // run's evidence describe the text the caller holds. A mismatch refuses the *materialization* and
+    // nothing else — the text committed above stays, its planes and its gaps stay, and the categories
+    // the request selected stay `NotPerformed`, the state for a selection that was refused.
+    //
+    // A run whose entry stated no subject publishes no binding at all: identity this layer was not
+    // given is never invented from the request's spelling, and a request that names an artifact for
+    // such a run is answered `Unverifiable` rather than with a comparison nobody performed.
+    // ---------------------------------------------------------------------------------------
+    let artifact = match &request.subject {
+        Some(subject) => RecoveryArtifact::of(
+            ArtifactBinding::of(subject, &request.profile, &emitted.text),
+            selection.expected_artifact(),
+        ),
+        None => RecoveryArtifact::unbound(selection.expected_artifact()),
+    };
+    if let (Some(refusal), Some(code)) =
+        (artifact.agreement().refusal(), artifact.agreement().code())
+    {
+        // The verdict is a gap of this run, stated in the vocabulary every other gap uses. It is a
+        // warning and not a stop: the artifact was committed and is delivered, and what the verdict
+        // refuses is the attachment of this run's evidence to another artifact.
+        diagnostics.push(diagnostic(code, DiagnosticSeverity::Warning, refusal));
+    }
+    let attaches = artifact.attaches();
+    // ---------------------------------------------------------------------------------------
     // The evidence phase: the artifact is committed and every diagnostic of this run is stated, and
     // what the request selected is materialized now — one owning record at a time, within the same
     // budget, in the fixed order this layer states its categories in.
@@ -845,7 +909,8 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     // one by one, each after the charge that pays for it — only for the regions the selected driver
     // range intersects. A region is kept or dropped as a unit, with the origins it states for
     // itself.
-    let (regions, reached) = if selection.requests(RecoveryEvidenceKind::RegionDetails) {
+    let (regions, reached) = if attaches && selection.requests(RecoveryEvidenceKind::RegionDetails)
+    {
         phase.materialize(
             budget,
             recovered
@@ -871,7 +936,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     let mut enum_switches: Vec<EnumSwitchRecord> = Vec::new();
     let mut init: Option<InitRecord> = None;
     let mut declaration_record: Option<DeclarationRecord> = None;
-    if selection.requests(RecoveryEvidenceKind::RuleDetails) {
+    if attaches && selection.requests(RecoveryEvidenceKind::RuleDetails) {
         let mut delivery = Delivery::new(&phase);
         lambdas = delivery.take(program.materialize_lambdas(publication, &mut phase, budget));
         concats = delivery.take(chains.materialize(publication, &mut phase, budget));
@@ -898,22 +963,23 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     // The names the presentation had to replace: per local slot rather than per bytecode index, so a
     // driver range neither selects nor drops one of them — a request that selects this category over
     // a range gets it whole.
-    let (aliased_names, reached) = if selection.requests(RecoveryEvidenceKind::NameDetails) {
-        phase.materialize(
-            budget,
-            names.names().filter(|name| name.aliased().is_some()),
-            aliased_name,
-        )
-    } else {
-        (Vec::new(), Materialized::None)
-    };
+    let (aliased_names, reached) =
+        if attaches && selection.requests(RecoveryEvidenceKind::NameDetails) {
+            phase.materialize(
+                budget,
+                names.names().filter(|name| name.aliased().is_some()),
+                aliased_name,
+            )
+        } else {
+            (Vec::new(), Materialized::None)
+        };
     evidence.materialized(RecoveryEvidenceKind::NameDetails, reached);
 
     // The source map: the last category, because it is the only one that replays the whole decided
     // AST. The committing pass wrote the text and owns no table; this pass writes no text and
     // verifies every byte it re-writes against the artifact the committing pass produced.
     let mut gate_stop: Option<StopReason> = None;
-    let (source_map, reached) = if selection.requests(RecoveryEvidenceKind::SourceMap) {
+    let (source_map, reached) = if attaches && selection.requests(RecoveryEvidenceKind::SourceMap) {
         match emit_source_map(
             &program.stmts,
             request.facts,
@@ -991,6 +1057,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         method,
         rules,
         evidence,
+        artifact,
     };
     debug_assert!(
         report.evidence.agrees_with(&report),
@@ -1176,6 +1243,9 @@ fn stopped(
         // Nothing of a selected category was materialized, and the status list says exactly that
         // rather than leaving an empty `Vec` to be read as "this body has no such evidence".
         evidence: RecoveryEvidence::pending(selection),
+        // No artifact was committed, so this run publishes no binding and compares nothing: the
+        // verdict states that the artifact the request named could not be checked against one.
+        artifact: RecoveryArtifact::not_produced(selection.expected_artifact()),
         aliased_names: Vec::new(),
         diagnostics: vec![stop_diagnostic(&reason)],
     }
@@ -1227,6 +1297,9 @@ fn refused(
         declaration: None,
         fallbacks: Vec::new(),
         evidence: RecoveryEvidence::pending(selection),
+        // No artifact was committed — the selection itself was refused before one — so this run
+        // publishes no binding and compares nothing.
+        artifact: RecoveryArtifact::not_produced(selection.expected_artifact()),
         aliased_names: Vec::new(),
         diagnostics: vec![stop_diagnostic(&reason)],
     }

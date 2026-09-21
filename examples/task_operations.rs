@@ -18,7 +18,9 @@
 //! 5. **An explicit environment policy**: `EnvironmentPolicy::SingleClass` builds the declaration
 //!    a caller would write by hand, the engine's own validator accepts it, and
 //!    `Engine::recover_target` runs the P2 pipeline under the operation's own stage table and
-//!    presents the same run's artifact content-first (`RecoveryPresentation::parts`).
+//!    presents the same run's artifact content-first (`RecoveryPresentation::parts`). The artifact
+//!    it publishes carries a **binding** — the contract facts of that exact text — and the same
+//!    example hands the binding back to a second request as the artifact its evidence explains.
 //! 6. **References organised by owning method**: `ReferenceGrouping::from_query` keeps the scan's
 //!    own planes and moves only its items, grouping body hits under their method while class-level
 //!    and resource positions keep their own places and derivation classes.
@@ -229,6 +231,56 @@ fn run(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
         if recovery.presentation.content == RecoveryContent::NotProduced {
             println!(
                 "  the run stopped before delivering an artifact; its text and source map are empty"
+            );
+        }
+
+        // The artifact binding this run published, and the evidence a **later** request may attach
+        // to the very text it names. The caller keeps the value — it is contract facts, not a
+        // payload — and hands it back as the artifact a second request's evidence explains. The run
+        // never trusts it: it binds the artifact it commits itself and compares the two, so a
+        // changed text, rule set or origin is a stated mismatch (`evidence_artifact_mismatch`)
+        // rather than the evidence of a text the caller does not hold.
+        if let Some(binding) = recovery.recovered.recovery().artifact.binding() {
+            println!(
+                "  artifact binding: schema={} engine={} registry={} member={} text={} byte(s) digested `{}`",
+                binding.schema(),
+                binding.engine(),
+                binding.registry(),
+                binding
+                    .member_ordinal()
+                    .map_or("no record".to_string(), |ordinal| format!(
+                        "record #{}",
+                        ordinal.0
+                    )),
+                binding.text_bytes(),
+                binding.text_digest(),
+            );
+            let mut explained_budget = task_budget(&overrides)?;
+            let explained = match engine.recover_target_with_evidence(
+                slice::from_ref(&snapshot),
+                &MethodOperationRequest {
+                    method: MethodRef::Method {
+                        method: method.clone(),
+                    },
+                    environment: environment.clone(),
+                },
+                &RecoveryEvidenceRequest::all().with_expected_artifact(binding.clone()),
+                &mut explained_budget,
+            )? {
+                OperationOutcome::Performed(report) => report,
+                OperationOutcome::Ambiguous(_) | OperationOutcome::Incomplete(_) => {
+                    unreachable!(
+                        "an identity is not searched: nothing can be ambiguous or unfinished"
+                    )
+                }
+            };
+            let explained_report = explained.recovered.recovery();
+            println!(
+                "  evidence expansion of that artifact: agreement={:?} records={} bytes={} text_unchanged={}",
+                explained_report.artifact.agreement(),
+                explained_report.regions.len() + explained_report.source_map.len(),
+                explained_report.text.len(),
+                explained_report.text == recovery.recovered.recovery().text,
             );
         }
     }

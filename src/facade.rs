@@ -20,6 +20,18 @@ use crate::resolver::{
 use jarde_java::{
     RecoveryContent, RecoveryEvidenceKind, RecoveryEvidenceRequest, RecoveryReport, StopReason,
 };
+// The artifact binding (change `add-demand-driven-core-results`, D3') crosses the facade here, the
+// way the recovery layer's other product names do: a caller reads it off the report it already
+// holds — `RecoveredMethod::recovery().artifact()` — and hands the same value back as the
+// `expected_artifact` of a later request, so the names have to be nameable without naming
+// `jarde-java`'s modules.
+pub use jarde_java::{
+    ARTIFACT_MISMATCH_CODE, ARTIFACT_SCHEMA, ARTIFACT_UNVERIFIABLE_CODE, ArtifactAgreement,
+    ArtifactBinding, ArtifactDimension, ArtifactMismatch, ArtifactSubject, RecoveryArtifact,
+    TEXT_DIGEST,
+};
+// The one reader identity that vocabulary names: a binding states the member **record** the read
+// established, and a caller reading it back has to be able to hold that value.
 use jarde_query::query::{
     ConsumerKind, ConsumerSchema, QueryAnalysis, QueryCoverage, QueryPage, QueryRelation,
     QueryReport, QueryRequest, XrefDerivation, XrefItem,
@@ -48,6 +60,7 @@ use jarde_reader::model::{
     PhysicalMethodId, PhysicalVariant, Provenance, SnapshotId, TerminationReason,
     physical_variant_for_path,
 };
+pub use jarde_reader::prepared::MethodOrdinal;
 use jarde_reader::view::{
     DelegationPolicy, LayoutMode, LoadDomain, LoadRoot, LoaderId, ModuleMode, PhysicalScope,
     PhysicalView, RuntimeProfile, RuntimeUncertainty, RuntimeView,
@@ -3243,6 +3256,23 @@ enum CalleeClass<'a> {
     None,
 }
 
+/// The member record one prepared class located for a member, as the ordinal the reader states.
+///
+/// The locator is multi-valued on purpose (`PreparedClass::locate_method` returns *every* ordinal
+/// declaring a name and descriptor): a class that declares one name and descriptor twice has two
+/// records, and neither is *the* record. So exactly one ordinal is an answer and anything else —
+/// none, or several — is `None`: a position this read did not establish must not be invented, and a
+/// duplicate declaration has no artifact to bind in the first place (the body read refuses it).
+fn member_ordinal(
+    prepared: &jarde_reader::prepared::PreparedClass<'_>,
+    method: &PhysicalMethodId,
+) -> Option<jarde_reader::prepared::MethodOrdinal> {
+    match prepared.locate_method(&method.name.0, &method.descriptor.0) {
+        [ordinal] => Some(*ordinal),
+        _ => None,
+    }
+}
+
 /// One run presented, with the class a same-class callee read may come from.
 fn recovery_from(
     content: &[ArtifactSnapshot],
@@ -3264,6 +3294,16 @@ fn recovery_from(
     // budget — and it is the only read this entry performs beyond the one run: a recovery request
     // whose body names no such call site reads no member at all, and (D2 3.3) no preparation either.
     let candidates = named_callee_candidates(analyzed.ir());
+    // The member record this presentation's own selection established (change
+    // `add-demand-driven-core-results`, D3'). The ordered member table of a prepared class is the
+    // one thing that says *which* of two records declaring one name and descriptor an artifact was
+    // written for, so it is read from the preparation this entry already holds — the class task's
+    // own, or the one the callee read below makes — and from nothing else. An entry that holds no
+    // preparation walks no member table: it states `None` rather than a position it never located.
+    let mut ordinal = match &callee_class {
+        CalleeClass::Prepared(prepared) => member_ordinal(prepared, &request.method),
+        _ => None,
+    };
     let callees = match (&callee_class, &candidates) {
         (_, None) => None,
         (CalleeClass::Prepared(prepared), Some(candidates)) => Some(read_prepared_named_callees(
@@ -3275,6 +3315,7 @@ fn recovery_from(
             // callee read, and a body that named no such member never gets here.
             crate::d0_counts::class_prepared();
             let prepared = jarde_reader::prepared::PreparedClass::prepare(read, budget)?;
+            ordinal = member_ordinal(&prepared, &request.method);
             Some(read_prepared_named_callees(
                 content, request, candidates, &prepared, budget,
             )?)
@@ -3284,8 +3325,19 @@ fn recovery_from(
         }
     };
     let members = callees.as_ref().map(member_table);
+    // What the artifact this run is about to commit is *of*, as this entry's own trusted read states
+    // it (D3'): the physical identity the run was bound to, the member record the selection above
+    // established and the environment the run was validated under. This is the entry's statement and
+    // never the caller's: a caller's `expected_artifact` is only ever a candidate for verification.
+    let analysis = analyzed.report();
+    let subject = jarde_java::ArtifactSubject::new(
+        analysis.method.clone(),
+        ordinal,
+        analysis.environment_identity.clone(),
+    );
     let request = jarde_java::RecoveryRequest::new(analyzed.ir(), &facts, profile)
-        .with_evidence(evidence.clone());
+        .with_evidence(evidence.clone())
+        .with_subject(subject);
     let mut recovery = jarde_java::recover(
         &match &members {
             Some(members) => request.with_members(members),
@@ -3300,8 +3352,15 @@ fn recovery_from(
     // presentation really produced an artifact. Every other case publishes the binding results alone:
     // which member each candidate resolved to, which candidates this class does not answer, and what
     // the read charged. Nothing is read a second time on either branch.
-    let publish_read_details =
-        evidence.requests(RecoveryEvidenceKind::ReadDetails) && recovery.produced();
+    //
+    // The run's own verdict about the artifact the request named gates this too (D3', tasks 5.2/5.3):
+    // this is the one category the entry materializes, and a mismatch attaches *no* evidence —
+    // including this one — to a text the run did not write. The binding results beside it are not
+    // evidence: they are the answer the read already had to give the accessor rule, and they are
+    // carried as they always were.
+    let publish_read_details = evidence.requests(RecoveryEvidenceKind::ReadDetails)
+        && recovery.produced()
+        && recovery.artifact.attaches();
     let callees = match callees {
         None => None,
         Some(read) if publish_read_details => {
