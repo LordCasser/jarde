@@ -477,3 +477,16 @@ test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; fini
 | `cargo test --test d1_evidence_selection --all-features --locked` | 8 passed |
 
 接缝：`src/facade.rs` 的 `publish_read_details`（选中且产出才发布读取明细）、`crates/jarde-java/src/emit.rs:393`（仅选中 `SourceMap` 时记录 span）、`src/bulk.rs::result_weight`（按选择核算拥有字节，未选不计）。未做：agent 侧的两条变异反例没有留下原始输出，本记录不把它们写成已验证；D3 的"局部=完整投影"由 `the_driver_range_selects_the_records_it_intersects` 在 region 记录上给出。
+
+## D3'（任务 5.1–5.3）验证记录
+
+| 命令 | 结果 |
+| --- | --- |
+| `cargo test --workspace --all-targets --all-features --locked` | **1552 passed / 0 failed / 11 ignored**（103 targets） |
+| `cargo test --test p3_execution_comparison --locked -- --ignored` | 3 passed |
+| `cargo test --test d3_artifact_binding --all-features --locked` | 13 passed |
+| `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` | 干净（合并时修掉 3 处 `useless_format`、1 处 `too_many_arguments`（按 reader crate 既有惯例显式 allow）、1 处 `large_enum_variant`（CLI 的 `Operation` 改为 Box 该字段）） |
+
+**集成期修正（由主 Agent 记录）**：`tests/bulk_recovery_retention.rs` 原断言"无 store 的运行会解析更多目录"在 D2 之后不再恒真（成员绑定改由 prepared 类定位，无主的目录查询只剩少数且依赖取类顺序）；改为断言契约本身——**保留绝不会比不保留解析更多**（`zero ≥ roomy`）且 records 逐项相同，并注明该计数与顺序有关。反例（取消准备交接）仍由 `d2_prepared_handoff` 与 `bulk_recovery_serial` 承担。
+
+**未覆盖**：CLI 未加 `expected_artifact` 旗标（报告字段随 schema 传播）；绑定上无可数 `Arc`，释放见证以结构性事实（无法持 IR/AST 编译通过）与逐请求重建计数替代；一次全量运行中 `export_cli` 偶发红，单跑与复跑均绿，按既有 flake 记录。
