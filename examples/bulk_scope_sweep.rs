@@ -208,6 +208,13 @@ fn main() -> Result<()> {
         ..Counting::default()
     };
     let request = BulkRecoveryRequest::for_scope(environment, workers, task_limits(&[])?);
+    // The observation port is attached only in a build that has it (`--features test-support`): it
+    // adds one JSON line stating what coordinating this run cost, and leaves the two lines above it
+    // byte for byte what every earlier measurement read.
+    #[cfg(feature = "test-support")]
+    let probe = std::sync::Arc::new(jarde::BulkProbe::new());
+    #[cfg(feature = "test-support")]
+    let request = request.with_probe(probe.clone());
     let report = recovery(&engine, &snapshot, &request, &mut budget, &mut sink)?;
 
     println!(
@@ -227,6 +234,11 @@ fn main() -> Result<()> {
         report.usage.ir_items,
         report.usage.analysis_steps,
         report.usage.elapsed_millis,
+    );
+    #[cfg(feature = "test-support")]
+    println!(
+        "probe={}",
+        serde_json::to_string(&probe.reading()).expect("a probe reading serializes")
     );
     Ok(())
 }

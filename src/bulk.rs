@@ -96,6 +96,11 @@ use std::collections::VecDeque;
 use std::sync::{Condvar, Mutex, MutexGuard};
 use std::time::Duration;
 
+mod observation;
+#[cfg(feature = "test-support")]
+pub use observation::{BulkProbe, BulkProbeReading, LedgerSiteReading, WindowSiteReading};
+use observation::{Observation, WindowSite};
+
 /// The default per-class preparation ceiling of a bulk request, in bytes.
 ///
 /// A class whose own bytes are larger than this is a **refused** class: its method count stays
@@ -154,6 +159,10 @@ pub struct BulkRecoveryRequest {
     #[cfg(feature = "test-support")]
     #[serde(skip)]
     pub faults: BulkFaults,
+    /// Test-only observation of how this operation was coordinated, when a caller attaches one.
+    #[cfg(feature = "test-support")]
+    #[serde(skip)]
+    pub probe: Option<std::sync::Arc<BulkProbe>>,
 }
 
 impl BulkRecoveryRequest {
@@ -178,7 +187,20 @@ impl BulkRecoveryRequest {
             max_buffered_result_weight: DEFAULT_MAX_BUFFERED_RESULT_WEIGHT,
             #[cfg(feature = "test-support")]
             faults: BulkFaults::default(),
+            #[cfg(feature = "test-support")]
+            probe: None,
         }
+    }
+
+    /// The same request, observed by `probe`.
+    ///
+    /// The probe is not part of what a request *means* — no field of a report, a stream record or a
+    /// stop states an observation — so it is attached here rather than declared in the request's own
+    /// constructor. See [`BulkProbe`] for what it counts and what it costs.
+    #[cfg(feature = "test-support")]
+    pub fn with_probe(mut self, probe: std::sync::Arc<BulkProbe>) -> Self {
+        self.probe = Some(probe);
+        self
     }
 
     /// The same request with the three capacities stated explicitly.
@@ -1113,13 +1135,16 @@ struct OperationState {
 struct Registry {
     state: Mutex<OperationState>,
     changed: Condvar,
+    /// The operation's observation port: where a window wait is stated, when one is attached.
+    observation: Observation,
 }
 
 impl Registry {
-    fn new() -> Self {
+    fn new(observation: Observation) -> Self {
         Self {
             state: Mutex::new(OperationState::default()),
             changed: Condvar::new(),
+            observation,
         }
     }
 
@@ -1127,6 +1152,26 @@ impl Registry {
         self.state
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner())
+    }
+
+    /// Waits on the window's own signal, stating the wait to the operation's observation port.
+    ///
+    /// One place, so "how long did a waiter sit on this window" is answered at the wait itself
+    /// rather than by timing the call that contains it: a call that found its record waiting for it
+    /// waited for nothing.
+    fn wait_signal<'a>(
+        &self,
+        state: MutexGuard<'a, OperationState>,
+        site: WindowSite,
+        timeout: Duration,
+    ) -> MutexGuard<'a, OperationState> {
+        let started = self.observation.wait_started();
+        let (guard, _) = self
+            .changed
+            .wait_timeout(state, timeout)
+            .unwrap_or_else(|poisoned| poisoned.into_inner());
+        self.observation.waited(site, started);
+        guard
     }
 
     /// Closes the operation, keeping the first reason. Every waiter is woken.
@@ -1164,6 +1209,7 @@ impl Registry {
         let mut state = self.lock();
         state.counts.classes_prepared = state.counts.classes_prepared.saturating_add(1);
         state.counts.methods_declared = state.counts.methods_declared.saturating_add(declared);
+        self.observation.class_declared(declared);
     }
 
     /// Records one class that was not prepared: its method count stays unknown.
@@ -1256,6 +1302,7 @@ impl Registry {
     /// dispatched task already taken. Anything else waits — bounded, and observing the close signal —
     /// for the coordinator to dispatch more.
     fn take_task(&self) -> Option<(u64, ScopeClass)> {
+        self.observation.window_call(WindowSite::TakeTask);
         let mut state = self.lock();
         loop {
             if state.ending.is_some() {
@@ -1271,11 +1318,7 @@ impl Registry {
             if state.traversal_done {
                 return None;
             }
-            let (guard, _) = self
-                .changed
-                .wait_timeout(state, WAIT_SLICE)
-                .unwrap_or_else(|poisoned| poisoned.into_inner());
-            state = guard;
+            state = self.wait_signal(state, WindowSite::TakeTask, WAIT_SLICE);
         }
     }
 
@@ -1289,6 +1332,7 @@ impl Registry {
         index: u64,
         event: ClassPreparedEvent,
     ) -> std::result::Result<bool, Closing> {
+        self.observation.window_call(WindowSite::PlaceControl);
         let mut state = self.lock();
         loop {
             let Some(position) = position_of(&state, index) else {
@@ -1305,11 +1349,7 @@ impl Registry {
                 self.changed.notify_all();
                 return Ok(true);
             }
-            let (guard, _) = self
-                .changed
-                .wait_timeout(state, WAIT_SLICE)
-                .unwrap_or_else(|poisoned| poisoned.into_inner());
-            state = guard;
+            state = self.wait_signal(state, WindowSite::PlaceControl, WAIT_SLICE);
         }
     }
 
@@ -1321,6 +1361,7 @@ impl Registry {
         index: u64,
         event: MethodResultEvent,
     ) -> std::result::Result<bool, Closing> {
+        self.observation.window_call(WindowSite::PlaceMethod);
         let mut state = self.lock();
         loop {
             let Some(position) = position_of(&state, index) else {
@@ -1342,11 +1383,7 @@ impl Registry {
                 self.changed.notify_all();
                 return Ok(true);
             }
-            let (guard, _) = self
-                .changed
-                .wait_timeout(state, WAIT_SLICE)
-                .unwrap_or_else(|poisoned| poisoned.into_inner());
-            state = guard;
+            state = self.wait_signal(state, WindowSite::PlaceMethod, WAIT_SLICE);
         }
     }
 
@@ -1429,6 +1466,8 @@ struct Operation<'a> {
     /// bound it before this operation existed: one class read and one preparation are discovery
     /// work, and the operation's own total bounds them again beside this.
     discovery_limits: Limits,
+    /// The operation's observation port, empty unless its caller attached a probe.
+    observation: Observation,
     /// Test-only fault injection.
     faults: Faults,
 }
@@ -2131,6 +2170,8 @@ struct Delivery<'a> {
     /// The consumer refused (`Stop`) or failed: nothing further may be handed to it, including the
     /// records that would have stated why. What it confirmed stands.
     closed: bool,
+    /// The operation's observation port, empty unless its caller attached a probe.
+    observation: Observation,
 }
 
 impl Delivery<'_> {
@@ -2143,10 +2184,12 @@ impl Delivery<'_> {
     /// The sink's callback is called with the operation's output account, and the call happens
     /// without the ledger's lock: taking a permit is the sink's own decision inside the callback.
     fn deliver(&mut self, record: Record<'_>) -> std::result::Result<SinkControl, Closing> {
+        let started = self.observation.delivery_started();
         self.budget.set_owner(UsageOwner::Delivery);
         self.budget
             .charge(CountedBudgetDimension::ResultItems, 1)
             .map_err(Closing::Stopped)?;
+        let in_sink = started.map(|_| std::time::Instant::now());
         let control = match record {
             Record::Header(event) => {
                 let account = self.account.clone();
@@ -2159,6 +2202,7 @@ impl Delivery<'_> {
             Record::Final(event) => self.sink.final_event(event),
         }
         .map_err(Closing::Consumer)?;
+        self.observation.delivered(started, in_sink);
         if control == SinkControl::Stop {
             self.closed = true;
         }
@@ -2299,6 +2343,7 @@ struct Stream {
 /// this function reads directly, and the ledger records the stop at the next checkpoint that takes
 /// its lock.
 fn take_front(registry: &Registry, budget: &Budget) -> Front {
+    registry.observation.window_call(WindowSite::TakeFront);
     let mut state = registry.lock();
     loop {
         if state.ending.is_some() {
@@ -2351,11 +2396,7 @@ fn take_front(registry: &Registry, budget: &Budget) -> Front {
         if state.traversal_done && state.slots.is_empty() {
             return Front::Empty;
         }
-        let (guard, _) = registry
-            .changed
-            .wait_timeout(state, WAIT_SLICE)
-            .unwrap_or_else(|poisoned| poisoned.into_inner());
-        state = guard;
+        state = registry.wait_signal(state, WindowSite::TakeFront, WAIT_SLICE);
     }
 }
 
@@ -2545,8 +2586,10 @@ fn coordinate(
                     operation,
                     delivery,
                 };
+                let started = operation.observation.class_task_started();
                 let ending =
                     run_class_task(operation, &class, ordinal, &mut discovery, &mut consumer);
+                operation.observation.class_task_ended(started);
                 if !publish_class_end(operation, delivery, ordinal, &class, ending) {
                     break;
                 }
@@ -2671,11 +2714,11 @@ fn drain_ended_classes(operation: &Operation<'_>, delivery: &mut Delivery<'_>) -
             let Some(remaining) = deadline.checked_duration_since(std::time::Instant::now()) else {
                 break None;
             };
-            let (guard, _) = operation
-                .registry
-                .changed
-                .wait_timeout(state, remaining.min(WAIT_SLICE))
-                .unwrap_or_else(|poisoned| poisoned.into_inner());
+            let guard = operation.registry.wait_signal(
+                state,
+                WindowSite::TakeFront,
+                remaining.min(WAIT_SLICE),
+            );
             drop(guard);
         };
         let Some((ordinal, class, ending)) = taken else {
@@ -2797,10 +2840,9 @@ fn merge_class_execution(class_execution: &mut Option<ExecutionReport>, event: &
 /// class taken, which is what makes the coordinator's join prompt.
 fn worker_loop(operation: &Operation<'_>) {
     let _alive = operation.faults.register_worker();
-    loop {
-        let Some((index, class)) = operation.registry.take_task() else {
-            return;
-        };
+    let lived = operation.observation.worker_started();
+    let mut busy = Duration::ZERO;
+    while let Some((index, class)) = operation.registry.take_task() {
         let guard = TaskGuard { operation, index };
         let mut budget =
             operation.budget_for(operation.discovery_limits.clone(), UsageOwner::Discovery);
@@ -2808,10 +2850,16 @@ fn worker_loop(operation: &Operation<'_>) {
             registry: operation.registry,
             index,
         };
+        let started = operation.observation.class_task_started();
         let ending = run_class_task(operation, &class, index, &mut budget, &mut consumer);
+        operation.observation.class_task_ended(started);
+        if let Some(started) = started {
+            busy = busy.saturating_add(started.elapsed());
+        }
         drop(guard);
         operation.registry.finish_task(index, ending);
     }
+    operation.observation.worker_ended(lived, busy);
 }
 
 /// A class task's presence in the window while it runs, as the panic path needs it.
@@ -3152,8 +3200,19 @@ pub fn recover_all(
     }
     let mut cursor = snapshot.scope_cursor(&request.scope)?;
     let ledger = OperationLedger::new(budget);
+    #[cfg(feature = "test-support")]
+    let ledger = match request.probe.as_ref() {
+        // The probe sees the operation's own total as a caller's observer: nothing else in the run
+        // reads it, and a request without one leaves the total unobserved.
+        Some(probe) => ledger.with_observer(probe.clone()),
+        None => ledger,
+    };
     budget.with_ledger(ledger.clone(), UsageOwner::Discovery);
-    let registry = Registry::new();
+    #[cfg(feature = "test-support")]
+    let observation = Observation::of(request.probe.clone());
+    #[cfg(not(feature = "test-support"))]
+    let observation = Observation::of();
+    let registry = Registry::new(observation.clone());
     let operation = Operation {
         content,
         snapshot,
@@ -3164,6 +3223,7 @@ pub fn recover_all(
         registry: &registry,
         store,
         discovery_limits: budget.limits().clone(),
+        observation: observation.clone(),
         faults: Faults::from_request(request),
     };
     let account = DeliveryAccount::of(&ledger, budget.limits());
@@ -3172,6 +3232,7 @@ pub fn recover_all(
         budget,
         account,
         closed: false,
+        observation: observation.clone(),
     };
     let header = BulkHeaderEvent {
         view: PhysicalView {
@@ -3283,6 +3344,9 @@ pub fn recover_all(
         });
     }
     let usage = operation.ledger.usage();
+    // Every thread that entered the operation's accounting has returned by now, so the coordinator's
+    // own tallies are added here: a caller that reads the probe after this call reads the whole run.
+    observation.flush();
     Ok(BulkRecoveryReport {
         summary: BulkSummary {
             execution: jarde_reader::accounting::with_usage(execution, usage.clone()),
