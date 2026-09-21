@@ -528,8 +528,8 @@ impl Budget {
     ///    budget's;
     /// 2. this budget's own limit and checked addition, so a local limit stops the local work before
     ///    the operation is asked for anything;
-    /// 3. the operation's total, taken atomically beside this budget's owner share
-    ///    ([`OperationLedger::charge`]);
+    /// 3. the operation's total, taken atomically on that dimension's own counter, and the owner's
+    ///    share of it booked immediately afterwards ([`OperationLedger::charge`]);
     /// 4. this budget's own usage.
     ///
     /// Work whose permit was refused started nothing and is billed nowhere. A cancellation that

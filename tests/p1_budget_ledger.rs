@@ -23,8 +23,12 @@ use jarde::{
     Budget, BudgetDimension, CountedBudgetDimension, Error, Limits, TerminationReason,
     UsageSnapshot,
 };
-use jarde_reader::ledger::{BulkStop, BulkStopKind, OperationLedger, UsageOwner};
-use std::sync::Barrier;
+use jarde_reader::ledger::{
+    BulkStop, BulkStopKind, LEDGER_OBSERVATION_STRIDE, LedgerEntryTiming, LedgerObserver,
+    LedgerSite, OperationLedger, UsageOwner,
+};
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{Arc, Barrier, Mutex};
 use std::time::Duration;
 
 /// Headroom for one budget: every dimension the tests use, with the clock open.
@@ -651,4 +655,323 @@ fn a_budget_without_a_ledger_keeps_the_direct_path() {
     budget.set_owner(UsageOwner::Delivery);
     budget.charge(CountedBudgetDimension::CodeBytes, 0).unwrap();
     assert_eq!(budget.usage().code_bytes, 3);
+}
+
+/// One observer a test can hold: every entry and every refusal the total reported, in order.
+///
+/// This is what a caller of an operation can write against the seam, and it is how this file states
+/// that the port sees what really happened rather than what a run happens to make convenient.
+#[derive(Debug, Default)]
+struct Census {
+    entries: Mutex<Vec<(LedgerSite, bool)>>,
+    refusals: Mutex<Vec<(LedgerSite, Option<BudgetDimension>)>>,
+}
+
+impl Census {
+    fn entries(&self) -> Vec<(LedgerSite, bool)> {
+        self.entries
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clone()
+    }
+
+    fn refusals(&self) -> Vec<(LedgerSite, Option<BudgetDimension>)> {
+        self.refusals
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .clone()
+    }
+
+    fn sampled(&self) -> usize {
+        self.entries()
+            .into_iter()
+            .filter(|(_, sampled)| *sampled)
+            .count()
+    }
+}
+
+impl LedgerObserver for Census {
+    fn entry(&self, site: LedgerSite, timing: Option<LedgerEntryTiming>) {
+        self.entries
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .push((site, timing.is_some()));
+    }
+
+    fn refusal(&self, site: LedgerSite, dimension: Option<BudgetDimension>) {
+        self.refusals
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
+            .push((site, dimension));
+    }
+}
+
+/// The operation's total reports **every** entry into it, exactly once and in order, and an entry
+/// carries a timing once in [`LEDGER_OBSERVATION_STRIDE`].
+///
+/// The counts are the exact ones a reader multiplies the sampled durations by, so a port that lost
+/// its call sites — a `charge` that stopped reporting, a checkpoint that never reached the observer —
+/// fails here rather than quietly publishing a smaller figure.
+#[test]
+fn the_total_reports_every_entry_and_the_observation_moves_no_number() {
+    let mut headroom = limits(8);
+    headroom.analysis_steps = 4_096;
+    let entry = Budget::new(headroom);
+
+    // The same work, once observed and once not: the observation is not part of any total.
+    let unobserved = OperationLedger::new(&entry);
+    for _ in 0..3 {
+        unobserved
+            .charge(
+                UsageOwner::Methods,
+                CountedBudgetDimension::AnalysisSteps,
+                2,
+            )
+            .unwrap();
+        unobserved.poll().unwrap();
+    }
+    unobserved
+        .check_nested_depth(UsageOwner::Discovery, 2)
+        .unwrap();
+
+    let census = Arc::new(Census::default());
+    let ledger = OperationLedger::new(&entry).with_observer(census.clone());
+    for _ in 0..3 {
+        ledger
+            .charge(
+                UsageOwner::Methods,
+                CountedBudgetDimension::AnalysisSteps,
+                2,
+            )
+            .unwrap();
+        ledger.poll().unwrap();
+    }
+    ledger.check_nested_depth(UsageOwner::Discovery, 2).unwrap();
+    assert_eq!(
+        ledger.usage(),
+        unobserved.usage(),
+        "an observed total is the same total"
+    );
+    assert_eq!(
+        ledger.cumulative(UsageOwner::Methods),
+        unobserved.cumulative(UsageOwner::Methods)
+    );
+
+    let observed = census.entries();
+    assert_eq!(
+        observed.len(),
+        7,
+        "three charges, three checkpoints and one depth observation: {observed:?}"
+    );
+    assert_eq!(
+        observed,
+        vec![
+            (LedgerSite::Charge(UsageOwner::Methods), false),
+            (LedgerSite::Checkpoint, false),
+            (LedgerSite::Charge(UsageOwner::Methods), false),
+            (LedgerSite::Checkpoint, false),
+            (LedgerSite::Charge(UsageOwner::Methods), false),
+            (LedgerSite::Checkpoint, false),
+            (LedgerSite::Depth(UsageOwner::Discovery), false),
+        ],
+        "every entry is reported once, in the order it happened, with its own site"
+    );
+    assert!(census.refusals().is_empty());
+
+    // The stride is a stride: seven entries are not yet a sample, and the sixty-fourth is.
+    let sampling_start = observed.len() as u64;
+    for _ in sampling_start..LEDGER_OBSERVATION_STRIDE {
+        ledger
+            .charge(
+                UsageOwner::Methods,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+            )
+            .unwrap();
+    }
+    assert_eq!(
+        census.sampled(),
+        1,
+        "entry {} carries the first timing",
+        LEDGER_OBSERVATION_STRIDE
+    );
+    for _ in LEDGER_OBSERVATION_STRIDE..LEDGER_OBSERVATION_STRIDE * 2 {
+        ledger
+            .charge(
+                UsageOwner::Methods,
+                CountedBudgetDimension::AnalysisSteps,
+                1,
+            )
+            .unwrap();
+    }
+    assert_eq!(
+        census.sampled(),
+        2,
+        "one timing per stride, not one per entry and not one per run"
+    );
+    assert_eq!(
+        census.entries().len() as u64,
+        LEDGER_OBSERVATION_STRIDE * 2,
+        "the counts stay exact however few entries are timed"
+    );
+}
+
+/// An entry budget's own depth high-water mark is part of the operation's total, exactly as its
+/// counted dimensions are.
+///
+/// The refusals a per-dimension counter does not need are the two high-water marks: they are moved by
+/// a maximum rather than by an addition, so an operation whose starting point already reached a depth
+/// is the deepest of the entry and its own work — a fold that a total built from zero counters would
+/// silently drop.
+#[test]
+fn the_entry_depths_are_part_of_the_operation_and_its_own_work_can_exceed_them() {
+    let mut headroom = limits(8);
+    headroom.nested_depth = 4;
+    headroom.dependency_depth = 6;
+    let mut entry = Budget::new(headroom);
+    entry.check_nested_depth(4).unwrap();
+    entry.observe_dependency_depth(6).unwrap();
+    assert_eq!(entry.usage().nested_depth, 4);
+    assert_eq!(entry.usage().dependency_depth, 6);
+
+    let ledger = OperationLedger::new(&entry);
+    assert_eq!(
+        ledger.usage().nested_depth,
+        4,
+        "the operation starts from the depth the entry already reached"
+    );
+    assert_eq!(ledger.usage().dependency_depth, 6);
+    assert_eq!(ledger.entry_usage().nested_depth, 4);
+
+    // Its own work can reach deeper, and a shallower observation never lowers the mark.
+    ledger.check_nested_depth(UsageOwner::Methods, 4).unwrap();
+    ledger.check_nested_depth(UsageOwner::Discovery, 3).unwrap();
+    assert_eq!(ledger.usage().nested_depth, 4);
+    assert_eq!(
+        ledger.cumulative(UsageOwner::Methods).nested_depth,
+        4,
+        "the owner's own mark is the deepest *it* accepted"
+    );
+    assert_eq!(ledger.cumulative(UsageOwner::Discovery).nested_depth, 3);
+    // The two high-water dimensions are independent: neither observation touches the other.
+    assert_eq!(ledger.usage().dependency_depth, 6);
+}
+
+/// A total's admission is atomic: eight workers hammer one exhausted dimension and exactly the
+/// limit's worth of units is admitted, never one more.
+///
+/// The lock this total used to hold made that true by construction; a per-dimension counter has to
+/// make it true by exchanging, and "two workers race for the last unit" is too narrow a window to
+/// catch a lost exchange (`optimize-demand-workloads` 4.2 measured 10/10 passes against a
+/// read-then-write admission). This test is written so that a lost exchange is very likely rather
+/// than merely possible: eight threads each ask for one unit a thousand times against a limit of a
+/// thousand, so every oversell the total allows is one the total states.
+#[test]
+fn a_hammered_dimension_admits_exactly_its_limit_and_never_one_more() {
+    const WORKERS: usize = 8;
+    const EACH: u64 = 1_000;
+    const LIMIT: u64 = 1_000;
+    let mut operation = limits(1 << 20);
+    operation.analysis_steps = LIMIT;
+    let entry = Budget::new(operation);
+    let ledger = OperationLedger::new(&entry);
+
+    let admitted = AtomicU64::new(0);
+    let barrier = Barrier::new(WORKERS);
+    std::thread::scope(|scope| {
+        for _ in 0..WORKERS {
+            let ledger = ledger.clone();
+            let admitted = &admitted;
+            let barrier = &barrier;
+            scope.spawn(move || {
+                let mut worker = Budget::new(limits(1 << 20));
+                worker.with_ledger(ledger, UsageOwner::Methods);
+                barrier.wait();
+                for _ in 0..EACH {
+                    if worker
+                        .charge(CountedBudgetDimension::AnalysisSteps, 1)
+                        .is_ok()
+                    {
+                        admitted.fetch_add(1, Ordering::Relaxed);
+                    }
+                }
+            });
+        }
+    });
+
+    assert_eq!(
+        admitted.load(Ordering::Relaxed),
+        LIMIT,
+        "a total admits exactly its limit of a dimension, whatever its workers do"
+    );
+    assert_eq!(
+        ledger.usage().analysis_steps,
+        LIMIT,
+        "and states exactly that: {WORKERS} workers asked {EACH} times each for one unit of a \
+         {LIMIT}-unit quota"
+    );
+    assert_eq!(
+        ledger.cumulative(UsageOwner::Methods).analysis_steps,
+        LIMIT,
+        "every admitted unit belongs to the work that took it"
+    );
+}
+
+/// An entry that could not take its permit is reported as the refusal it was, with the quota it
+/// needed — and the entry that recorded the operation's stop is the first one that did.
+#[test]
+fn a_refused_entry_is_reported_with_the_quota_it_needed() {
+    let mut operation = limits(64);
+    operation.analysis_steps = 1;
+    operation.result_items = 0;
+    let entry = Budget::new(operation);
+    let census = Arc::new(Census::default());
+    let ledger = OperationLedger::new(&entry).with_observer(census.clone());
+
+    ledger
+        .charge(
+            UsageOwner::Methods,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+        )
+        .unwrap();
+    assert!(
+        census.refusals().is_empty(),
+        "an admitted entry is no refusal"
+    );
+    let refused = ledger
+        .charge(
+            UsageOwner::Methods,
+            CountedBudgetDimension::AnalysisSteps,
+            1,
+        )
+        .unwrap_err();
+    assert!(matches!(
+        refused,
+        Error::BudgetExceeded {
+            dimension: BudgetDimension::AnalysisSteps,
+            ..
+        }
+    ));
+    assert_eq!(
+        census.refusals(),
+        vec![(
+            LedgerSite::Charge(UsageOwner::Methods),
+            Some(BudgetDimension::AnalysisSteps)
+        )]
+    );
+    assert_eq!(
+        ledger.stop_reason().map(|stop| stop.kind),
+        Some(BulkStopKind::Budget),
+        "the refusal that was reported is the one that stopped the operation"
+    );
+
+    // The operation is stopped: the entries after it observe the stop the first refusal recorded,
+    // and the report still names that first one.
+    let _ = ledger.charge(UsageOwner::Delivery, CountedBudgetDimension::ResultItems, 1);
+    assert_eq!(
+        ledger.stop_reason().and_then(|stop| stop.owner),
+        Some(UsageOwner::Methods),
+        "a later observation does not replace the stop the first refusal recorded"
+    );
 }

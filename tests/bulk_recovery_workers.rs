@@ -376,3 +376,112 @@ fn the_operations_total_and_a_methods_local_limit_are_two_declarations() {
     );
     assert_eq!(report.summary.classes_refused, 0, "{:?}", report.summary);
 }
+
+/// The operation's own observation port sees what the workers configuration really did.
+///
+/// The figures are load-bearing in the one way a diagnostic can be: they are stated as *relations*
+/// the run has to satisfy — one window call per produced record, one delivery per record the sink was
+/// handed, no worker busier than its own lifetime — so a port whose call sites were removed, or an
+/// operation that stopped coordinating the way it says it does, fails here instead of publishing a
+/// smaller number. `optimize-demand-workloads` 4.1 is where these relations come from, and the
+/// numbers the port reports are what the performance work reads.
+#[test]
+fn the_observation_port_sees_the_coordination_that_really_happened() {
+    let probe = Arc::new(BulkProbe::new());
+    let case = run_with(4, {
+        let probe = probe.clone();
+        move |request| request.with_probe(probe)
+    });
+    let report = &case.report;
+    let reading = probe.reading();
+    let row = |where_: &str, site: &str| -> u64 {
+        match where_ {
+            "ledger" => {
+                reading
+                    .ledger
+                    .iter()
+                    .find(|row| row.site == site)
+                    .unwrap_or_else(|| panic!("{site} is a ledger site"))
+                    .calls
+            }
+            _ => {
+                reading
+                    .window
+                    .iter()
+                    .find(|row| row.site == site)
+                    .unwrap_or_else(|| panic!("{site} is a window site"))
+                    .calls
+            }
+        }
+    };
+
+    assert_eq!(report.summary.status(), "complete", "{:?}", report.summary);
+    assert_eq!(
+        reading.records_delivered,
+        case.sink.events.len() as u64,
+        "every record the operation handed over is one delivery, and the sink saw exactly those"
+    );
+    assert_eq!(
+        row("window", "place_control"),
+        report.summary.classes_prepared,
+        "one control record is handed to a slot per prepared class"
+    );
+    assert_eq!(
+        row("window", "place_method"),
+        report.summary.methods_executed,
+        "one method record is handed to a slot per executed method"
+    );
+    assert!(
+        row("window", "take_front") >= report.summary.methods_delivered,
+        "the coordinator took the front of the window at least once per delivered method record"
+    );
+    assert_eq!(
+        reading.class_tasks, report.summary.classes_seen,
+        "one class task per class candidate the traversal yielded"
+    );
+    assert_eq!(
+        reading.worker_threads, report.summary.limits.workers_effective as u64,
+        "the workers the operation really created are the workers it published"
+    );
+
+    let charges: u64 = reading.ledger[..3].iter().map(|site| site.calls).sum();
+    assert!(
+        charges > 0,
+        "the operation charged its total: {:?}",
+        reading.ledger
+    );
+    assert!(
+        row("ledger", "checkpoint") >= charges,
+        "a charge on a budget that bills to an operation is preceded by that operation's checkpoint \
+         ({} checkpoints for {charges} charges)",
+        row("ledger", "checkpoint")
+    );
+    assert_eq!(
+        reading.ledger.iter().map(|site| site.refusals).sum::<u64>(),
+        0,
+        "a complete run refuses nothing: {:?}",
+        reading.ledger
+    );
+
+    assert!(reading.worker_thread_nanos > 0 && reading.worker_busy_nanos > 0);
+    assert!(
+        reading.worker_busy_nanos <= reading.worker_thread_nanos,
+        "a worker cannot be busier than the life it lived: {reading:?}"
+    );
+    assert!(
+        reading.class_task_max_nanos <= reading.class_task_nanos,
+        "the longest class task is one of them: {reading:?}"
+    );
+    assert!(
+        reading.declared_methods_max > 0,
+        "the fixture's classes declare methods: {reading:?}"
+    );
+    assert!(reading.sink_nanos > 0, "the sink was called: {reading:?}");
+
+    // The port is not an answer: nothing the operation publishes carries a figure from it.
+    let published = serde_json::to_value(&report.summary).expect("a summary serializes");
+    assert!(
+        published.get("probe").is_none() && published.get("observation").is_none(),
+        "an observation is not part of what the operation states: {published}"
+    );
+}
