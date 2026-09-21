@@ -2039,6 +2039,10 @@ struct Planned {
     quality: Quality,
     /// What the delivered artifact holds, as the report's own content plane states it.
     content: RecoveryContent,
+    /// The artifact's own text, as the run delivered it: the value this file wraps, compiles and
+    /// compares, kept so that two entries' answers to the same member can be compared to each other
+    /// and not only to the original class.
+    text: String,
     /// Whether the run delivered an artifact at all: a stopped request holds no content, and the
     /// two values are compared rather than assumed to agree.
     produced: bool,
@@ -2095,10 +2099,248 @@ struct SampleOutcome {
 }
 
 // -------------------------------------------------------------------------------------------
+// The two entries the bodies are read through: the single method, and the bulk operation.
+//
+// Everything below this point is the same for both — the wrapper, the compilation, the execution and
+// the comparison — so what a sample proves about one entry is proved about the other by running the
+// same sample table through both.
+// -------------------------------------------------------------------------------------------
+
+/// Which entry a run reads its bodies through.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum Entry {
+    /// [`Engine::recover_method`]: one request per member, the entry every earlier reading of this
+    /// file was written from.
+    SingleMethod,
+    /// [`Engine::recover_all`]: one operation over the sample's own physical scope, whose stream
+    /// hands the answer of every member over as one record. This is the entry `jarde-cli export`
+    /// drives, and the text of a record is what that command writes.
+    Bulk,
+}
+
+impl Entry {
+    fn name(self) -> &'static str {
+        match self {
+            Self::SingleMethod => "recover_method",
+            Self::Bulk => "recover_all",
+        }
+    }
+}
+
+/// The sink one sample's bulk operation is read through: it keeps the operation's own records, so
+/// the comparison reads each member's answer from the record about that member.
+#[derive(Default)]
+struct Collected {
+    header: Option<BulkHeaderEvent>,
+    /// Every method record the operation delivered, in delivery order.
+    records: Vec<MethodResultEvent>,
+    /// Every class's own end record.
+    ended: Vec<ClassEndEvent>,
+    /// The operation's last event, when it reached one.
+    final_event: Option<BulkFinalEvent>,
+}
+
+impl RecoverySink for Collected {
+    fn header(&mut self, event: &BulkHeaderEvent) -> jarde::Result<SinkControl> {
+        self.header = Some(event.clone());
+        Ok(SinkControl::Continue)
+    }
+
+    fn class_prepared(&mut self, _event: &ClassPreparedEvent) -> jarde::Result<SinkControl> {
+        Ok(SinkControl::Continue)
+    }
+
+    fn method(&mut self, event: &MethodResultEvent) -> jarde::Result<SinkControl> {
+        self.records.push(event.clone());
+        Ok(SinkControl::Continue)
+    }
+
+    fn class_end(&mut self, event: &ClassEndEvent) -> jarde::Result<SinkControl> {
+        self.ended.push(event.clone());
+        Ok(SinkControl::Continue)
+    }
+
+    fn diagnostic(&mut self, _event: &BulkDiagnosticEvent) -> jarde::Result<SinkControl> {
+        Ok(SinkControl::Continue)
+    }
+
+    fn final_event(&mut self, event: &BulkFinalEvent) -> jarde::Result<SinkControl> {
+        self.final_event = Some(event.clone());
+        Ok(SinkControl::Continue)
+    }
+}
+
+/// One sample's bulk operation, as the comparison reads it: the method records it delivered.
+struct BulkRead {
+    records: Vec<MethodResultEvent>,
+}
+
+impl BulkRead {
+    /// The presented run of one member: the operation's own record about that member.
+    ///
+    /// A record the operation did not present — a declaration with no body, a request refused before
+    /// any analysis ran, a result the window could not hold — is not an answer this comparison can
+    /// wrap, so it is a failure of the run and not a silent skip: the sample table says what each
+    /// member's answer is, and only a presented run can be the one the table states.
+    fn recovered(&self, label: &str, name: &str, descriptor: &str) -> &RecoveredMethod {
+        let mut matching = self.records.iter().filter(|event| {
+            event.method.name.0 == name.as_bytes()
+                && event.method.descriptor.0 == descriptor.as_bytes()
+        });
+        let event = matching.next().unwrap_or_else(|| {
+            panic!(
+                "{label}: the bulk operation delivered no record for `{name}{descriptor}`; it \
+                 delivered {:?}",
+                self.records
+                    .iter()
+                    .map(|event| (
+                        String::from_utf8_lossy(&event.method.name.0).into_owned(),
+                        event.outcome(),
+                    ))
+                    .collect::<Vec<_>>()
+            )
+        });
+        assert!(
+            matching.next().is_none(),
+            "{label}: the bulk operation delivered more than one record for `{name}{descriptor}`"
+        );
+        match &event.delivery {
+            MethodDelivery::Recovered(recovered) => recovered,
+            delivery => panic!(
+                "{label}: the bulk operation's record for `{name}{descriptor}` is {:?} rather than \
+                 a presented run, so the member has no text this comparison could wrap",
+                delivery.outcome()
+            ),
+        }
+    }
+}
+
+/// Runs one sample's own physical scope through [`Engine::recover_all`], once, and answers with what
+/// it delivered.
+///
+/// The request is the shape `jarde-cli export` builds for a standalone class: the sample's own
+/// snapshot, the policy one class file is read under, Java 8, the same per-method limits the
+/// single-method requests use. Two workers are stated so that the class task runs on a worker of the
+/// operation rather than on this test's thread.
+fn bulk_read(engine: &Engine, sample: &Sample, snapshot: &ArtifactSnapshot) -> BulkRead {
+    let request = BulkRecoveryRequest::for_scope(
+        EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::SnapshotAll,
+            policy: EnvironmentPolicy::SingleClass,
+            profile: RuntimeProfile {
+                java_release: 8,
+                multi_release: MultiReleasePolicy::Disabled,
+                layout: LayoutMode::Generic,
+            },
+            loader: LoaderId("app".to_owned()),
+        },
+        2,
+        limits(),
+    );
+    let content = [snapshot.clone()];
+    let mut budget = Budget::new(limits());
+    let mut sink = Collected::default();
+    let report = engine
+        .recover_all(&content, &request, &mut budget, &mut sink)
+        .expect("the sample's own scope is recoverable");
+    assert!(
+        sink.final_event.is_some() && report.final_delivered,
+        "{}: the operation confirmed its `Final` record: {:?}",
+        sample.label,
+        report.summary
+    );
+    assert_eq!(
+        report.summary.limits.workers_effective, 2,
+        "{}: the sample's class task runs on a worker of the operation",
+        sample.label
+    );
+    assert!(
+        report.summary.traversal_complete,
+        "{}: one standalone class is a scope the traversal reaches the end of: {:?}",
+        sample.label, report.summary
+    );
+    assert_eq!(
+        report.summary.methods_delivered, report.summary.methods_executed,
+        "{}: every method the operation ran was delivered: {:?}",
+        sample.label, report.summary
+    );
+    assert!(
+        report.stop.is_none(),
+        "{}: the operation observed no stop: {:?}",
+        sample.label,
+        report.stop
+    );
+    // The operation's own account, read back against the records this sink kept: the stream the
+    // comparison is about to read is the operation's whole stream and not a prefix of it, and its
+    // disposition buckets are the methods it really ran. Both readings are the report's and the
+    // sink's, so this is an agreement between two accounts rather than arithmetic on one number.
+    assert_eq!(
+        report.summary.methods_delivered,
+        u64::try_from(sink.records.len()).expect("the record count fits u64"),
+        "{}: every record the operation delivered is one this comparison read: {:?}",
+        sample.label,
+        report.summary
+    );
+    assert_eq!(
+        report.summary.outcomes.total(),
+        report.summary.methods_executed,
+        "{}: the disposition buckets are the methods the operation ran: {:?}",
+        sample.label,
+        report.summary
+    );
+    // The shape of the read the text came from, in the operation's own account: preparing the class
+    // once is one parse, and a class that declares N members is not N parses. The single-method entry
+    // the other tests of this file read charges its own read per request; a bulk path that went back
+    // to one of those per member would hand over the same text and fail here, which is why this
+    // comparison states the shape beside the text it compiled.
+    assert_eq!(
+        report.discovery_usage.class_bytes,
+        u64::try_from(sample.bytes.len()).expect("the class length fits u64"),
+        "{}: the sample's class file is parsed once for the whole operation: {:?}",
+        sample.label,
+        report.discovery_usage
+    );
+    assert_eq!(
+        report.discovery_usage.class_headers, 0,
+        "{}: preparation charges the one read, so the binding search charges no header: {:?}",
+        sample.label, report.discovery_usage
+    );
+    // The stream and the report are two accounts of one operation, and the comparison reads both:
+    // what the header published is the configuration the summary states, and the class the method
+    // records belong to ended by publishing every one of them — so the records this comparison wraps
+    // are the whole of a completed class, not the visible prefix of a stopped one.
+    assert_eq!(
+        sink.header.as_ref().map(|header| &header.limits),
+        Some(&report.summary.limits),
+        "{}: the header publishes the operation's own configuration",
+        sample.label
+    );
+    assert_eq!(
+        sink.ended.len(),
+        1,
+        "{}: one sample declares one class, so the stream states one class end: {:?}",
+        sample.label,
+        sink.ended
+    );
+    assert_eq!(
+        sink.ended[0].completion,
+        ClassCompletion::Completed {
+            methods: u64::try_from(sink.records.len()).expect("the record count fits u64"),
+        },
+        "{}: the class ended having published every method record this comparison read",
+        sample.label
+    );
+    BulkRead {
+        records: sink.records,
+    }
+}
+
+// -------------------------------------------------------------------------------------------
 // The run itself: one sample, every member, compiled and executed.
 // -------------------------------------------------------------------------------------------
 
-fn run_sample(sample: &Sample) -> SampleOutcome {
+fn run_sample(sample: &Sample, entry: Entry) -> SampleOutcome {
     let dir = TempDir::new(&sanitize(sample.class));
     dir.write(&format!("{}.class", sample.class), sample.bytes);
     for (name, bytes) in sample.classpath {
@@ -2153,6 +2395,14 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
     let mut executed = Vec::new();
     let mut counted = Vec::new();
 
+    // The bulk entry's own read of the whole sample, made once before any member is planned: it is
+    // one operation, and asking it again per member would be a second operation rather than the
+    // entry's shape.
+    let bulk = match entry {
+        Entry::SingleMethod => None,
+        Entry::Bulk => Some(bulk_read(&engine, sample, &snapshot)),
+    };
+
     for (name, descriptor, has_code) in &declared {
         if !has_code {
             // A member with no `Code` attribute (abstract, native) is not a member a run can be
@@ -2200,10 +2450,21 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
             },
             stages: AnalysisStage::ALL.to_vec(),
         };
-        let mut budget = Budget::new(limits());
-        let recovered = engine
-            .recover_method(slice::from_ref(&snapshot), &request, &mut budget)
-            .expect("a legal request is answered, not raised");
+        // The answer of this member, from the entry this run reads through. The single-method entry
+        // asks for this member alone and owns the answer it gets; the bulk entry already read the
+        // whole sample in one operation, so the comparison reads the record the operation delivered
+        // about this member — the same run, from a class prepared once.
+        let asked;
+        let recovered: &RecoveredMethod = match &bulk {
+            None => {
+                let mut budget = Budget::new(limits());
+                asked = engine
+                    .recover_method(slice::from_ref(&snapshot), &request, &mut budget)
+                    .expect("a legal request is answered, not raised");
+                &asked
+            }
+            Some(bulk) => bulk.recovered(sample.label, name, descriptor),
+        };
         let report = recovered.recovery();
 
         // The facts of **this** run: the declaration the presentation read (P3 3.1) and the
@@ -2343,6 +2604,7 @@ fn run_sample(sample: &Sample) -> SampleOutcome {
             represent: report.representation,
             quality: report.quality,
             content: report.content.clone(),
+            text: report.text.clone(),
             produced: report.produced(),
             scratch: scratch.clone(),
             codes,
@@ -2700,7 +2962,10 @@ fn quoted_bcis(text: &str) -> Vec<u32> {
             runs them. `cargo test` therefore stays green without a compiler; CI's JDK job runs it \
             with `-- --ignored` (see tests/fixtures/p3-corpus/README.md)"]
 fn the_p3_findings_are_replayed_by_compiling_and_executing_the_bodies() {
-    let outcomes: Vec<SampleOutcome> = REQUIRED.iter().map(|sample| run_sample(sample)).collect();
+    let outcomes: Vec<SampleOutcome> = REQUIRED
+        .iter()
+        .map(|sample| run_sample(sample, Entry::SingleMethod))
+        .collect();
     print_outcomes(&outcomes);
 }
 
@@ -2716,8 +2981,236 @@ fn the_corpus_is_read_the_same_way_by_every_legal_flag_set() {
         "`--release 8` and `-source 8 -target 8` produce the same bytes for Flags.java, which is \
          why the `v8-source-target` build has no rows of its own"
     );
-    let outcomes: Vec<SampleOutcome> = CORPUS.iter().map(|sample| run_sample(sample)).collect();
+    let outcomes: Vec<SampleOutcome> = CORPUS
+        .iter()
+        .map(|sample| run_sample(sample, Entry::SingleMethod))
+        .collect();
     print_outcomes(&outcomes);
+}
+
+// -------------------------------------------------------------------------------------------
+// The same comparison through the bulk entry: the text `jarde-cli export` writes.
+// -------------------------------------------------------------------------------------------
+
+/// A class whose one instance member **reads its receiver**, and whose one static member constructs
+/// the class.
+///
+/// This sample is the receiver-read shape, and it is in the bulk list as a **boundary the run
+/// states**: the presentation spells an instance method's receiver as the slot ordinal
+/// (`arg0.value`), which the wrapper declares nothing for — the wrapper of an instance member is an
+/// instance method, so its receiver is `this` and `arg0` names no local, field or parameter. `Holder`
+/// is also `final`, so no wrapper may extend it and inherit the field the body reads. The row below
+/// records that as the expected result rather than as a failure of the comparison, and the open change
+/// `spell-the-instance-receiver-as-this` owns the spelling it pins.
+///
+/// The static member is the same class's other half: it is executed, so the sample states both what
+/// the bulk entry does with a receiver read and what it does with an ordinary member of the same
+/// class.
+const HOLDER_RECEIVER: Sample = Sample {
+    label: "p3-declaration/v8 (javac 23.0.1, --release 8 -g:none)",
+    class: "Holder",
+    bytes: include_bytes!("fixtures/p3-declaration/v8/Holder.class"),
+    classpath: &[],
+    // `Holder` is `final`: nothing may extend it, and the field `value()` reads is private to it.
+    extends: None,
+    scaffold: &[],
+    counter: None,
+    measured: &[],
+    inputs: None,
+    quotes: &[],
+    baseline: None,
+    members: &[
+        Member {
+            name: "value",
+            expect: Expect::NotACompilationUnit(
+                "an instance method's receiver is spelled as the slot ordinal (`arg0.value`), which \
+                 the wrapper declares nothing for; `spell-the-instance-receiver-as-this` owns that \
+                 spelling",
+            ),
+        },
+        Member {
+            name: "of",
+            expect: Expect::Executed,
+        },
+    ],
+    point: "the receiver-read shape, stated as the boundary it is today: a body that reads `this` \
+            is written with the slot ordinal as the receiver and is not a compilation unit, while the \
+            same class's static member is written whole and behaves as the original does",
+};
+
+/// The samples the bulk comparison runs, and what each one is in the list for.
+///
+/// The list is short on purpose: every sample is run through **both** entries, and each run compiles
+/// and executes one wrapper per member. What it has to cover is the coverage the change's task 6.4
+/// names — an instance method that reads its receiver, a body with control flow, and bodies the run
+/// does not write as compilable Java — and the five samples below cover all of it between them:
+///
+/// * `SCOPE_NO_DEBUG` — control flow (`scope`, `armOnly`, `reuse`, whose locals are written across
+///   arms and read after a join) and the instance shape whose receiver sits below a category-2
+///   parameter (`receiver(long)`, wrapped as an instance method);
+/// * `HOLDER_RECEIVER` — a body that really **reads** its receiver (`value()I` reads the instance
+///   field) and the same class's static member, which is executed;
+/// * `LOCAL_REWRITE` — the refusals whose text quotes the bytecode it could not write (`post`,
+///   `saved`, `conditional`, `cast`), with the count control that measures what the quoted text still
+///   performs;
+/// * `GUARDED` — the guarded shapes (try-with-resources, handler bodies, synchronized bodies), several
+///   of which are refused with a stated diagnostic code;
+/// * `MISSING_DEPENDENCY` — a body the run writes whole that is **not** a compilation unit, because
+///   the type it names is not shipped with the fixture: the boundary is the expected result there, not
+///   a failure of the comparison.
+const BULK_COMPARISON: &[&Sample] = &[
+    &SCOPE_NO_DEBUG,
+    &HOLDER_RECEIVER,
+    &LOCAL_REWRITE,
+    &GUARDED,
+    &MISSING_DEPENDENCY,
+];
+
+/// The same wrappers, the same `javac --release 8`, the same `java`, the same traces — with every
+/// body read from [`Engine::recover_all`] instead of [`Engine::recover_method`].
+///
+/// What this case adds to the two above is the entry, not the comparison: the bulk operation is the
+/// one `jarde-cli export` drives, it prepares each class once and hands one record per member over,
+/// and until this case no gate fed its text to a compiler and a JVM. The two entries are also compared
+/// to each other: the same member's text byte for byte, the same content, the same representation and
+/// the same set of executed members, so "the bulk entry is the same pipeline" is checked where the
+/// text differs from the original's behaviour (the refusals) rather than only where it does not.
+#[test]
+#[ignore = "needs a JDK on PATH: it compiles the wrappers it generates with `javac --release 8` and \
+            runs them (see tests/fixtures/p3-corpus/README.md)"]
+fn the_bulk_entrys_bodies_are_the_same_text_and_the_same_behaviour() {
+    let mut members = 0usize;
+    let mut boundaries = 0usize;
+    let mut instance = Vec::new();
+    for sample in BULK_COMPARISON {
+        let single = run_sample(sample, Entry::SingleMethod);
+        let bulk = run_sample(sample, Entry::Bulk);
+
+        // Each entry's own trace was compared with the committed original's inside `run_sample`, so
+        // the two cannot answer differently for a member they both executed. The rest of this block
+        // is about the artifact itself: the text of the member, which no execution covers when the
+        // run refused to write it.
+        assert_eq!(
+            bulk.executed, single.executed,
+            "{}: the two entries execute the same members",
+            sample.label
+        );
+        assert_eq!(
+            bulk.trace_lines, single.trace_lines,
+            "{}: both entries' traces carry the same number of compared lines",
+            sample.label
+        );
+        assert_eq!(
+            bulk.rows.len(),
+            single.rows.len(),
+            "{}: both entries are asked about the same members",
+            sample.label
+        );
+
+        let mut sample_boundaries = 0usize;
+        for (single_row, bulk_row) in single.rows.iter().zip(bulk.rows.iter()) {
+            assert_eq!(bulk_row.name, single_row.name, "{}", sample.label);
+            assert_eq!(
+                bulk_row.descriptor, single_row.descriptor,
+                "{}",
+                sample.label
+            );
+            assert_eq!(
+                bulk_row.text, single_row.text,
+                "{}: `{}{}` - the two entries deliver the same text, byte for byte",
+                sample.label, bulk_row.name, bulk_row.descriptor
+            );
+            assert_eq!(bulk_row.content, single_row.content, "{}", sample.label);
+            assert_eq!(bulk_row.represent, single_row.represent, "{}", sample.label);
+            assert_eq!(
+                bulk_row.executed(),
+                single_row.executed(),
+                "{}: `{}{}` - both entries reach the same verdict about the wrapper",
+                sample.label,
+                bulk_row.name,
+                bulk_row.descriptor
+            );
+            // A member this comparison did **not** execute is a boundary the run itself states: the
+            // text quotes bytecode the run refused to write as Java, or javac refused the wrapper the
+            // text was placed in. An unexecuted row that states neither is a row this file silently
+            // dropped, which is the one thing this comparison may not do — so the boundary is not
+            // only tolerated here, it is required to have a reason.
+            if !bulk_row.executed() {
+                assert!(
+                    matches!(bulk_row.represent, Representation::Mixed)
+                        || bulk_row.refusal.is_some(),
+                    "{}: `{}{}` is not executed and states no reason: representation {:?}, quotes \
+                     {:?}",
+                    sample.label,
+                    bulk_row.name,
+                    bulk_row.descriptor,
+                    bulk_row.represent,
+                    bulk_row.quotes
+                );
+                sample_boundaries += 1;
+            }
+            if !bulk_row
+                .declaration
+                .split_whitespace()
+                .any(|word| word == "static")
+            {
+                instance.push(format!("{}{}", bulk_row.name, bulk_row.descriptor));
+            }
+            members += 1;
+        }
+        boundaries += sample_boundaries;
+        // The receiver-read shape this list has to carry, asserted the way `run_sample` asserts the
+        // count control: `Holder.value()I` is the body that reads its own instance field through the
+        // receiver, its text is **not** a compilation unit under this entry's wrapper either (the
+        // receiver is spelled as the slot ordinal), and the same class's static member is executed
+        // beside it. Stating it here means the list cannot lose that shape — or start executing it,
+        // which would mean the receiver is spelled some other way — without this case saying so.
+        if sample.class == "Holder" {
+            let value = bulk
+                .rows
+                .iter()
+                .find(|row| row.name == "value")
+                .expect("the receiver-read member is planned");
+            assert!(
+                !value.executed() && value.text.contains("arg0."),
+                "{}: `value()I` reads its receiver, the presentation spells that receiver as the \
+                 slot ordinal, and the wrapper therefore declares nothing for it: {:?}\n{}",
+                sample.label,
+                value.refusal,
+                value.text
+            );
+            assert!(
+                bulk.executed.iter().any(|name| name == "of"),
+                "{}: the same class's static member is the executed half of this sample: {:?}",
+                sample.label,
+                bulk.executed
+            );
+        }
+        println!(
+            "\n## {} through {} — {} member(s), {} executed, {} boundary/boundaries, {} trace line(s) \
+             identical to the original",
+            sample.label,
+            Entry::Bulk.name(),
+            bulk.rows.len(),
+            bulk.executed.len(),
+            sample_boundaries,
+            bulk.trace_lines
+        );
+    }
+
+    assert!(
+        instance
+            .iter()
+            .any(|member| member.starts_with("receiver(")),
+        "the list covers the instance-member shape (`receiver(long)` reads `this` at slot 0 below a \
+         category-2 parameter); the members with a receiver were {instance:?}"
+    );
+    assert!(
+        boundaries > 0,
+        "the list covers the refusal side of the comparison: a run whose every row executed could not \
+         tell \"the bulk entry refuses the same bodies\" from \"this list has no refusals\" ({members} \
+         member(s) compared)"
+    );
 }
 
 fn print_outcomes(outcomes: &[SampleOutcome]) {

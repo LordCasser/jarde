@@ -2916,6 +2916,11 @@ fn a_deep_concatenation_chain_answers_in_a_subprocess() {
 #[test]
 #[ignore = "explicit gate: build the optimized CLI with `cargo build --release -p jarde-cli --locked`"]
 fn the_deep_chain_answers_in_the_optimized_build() {
+    the_deep_chain_answers(&optimized_cli());
+}
+
+/// The optimized CLI the two explicit release gates run: the same binary, resolved the same way.
+fn optimized_cli() -> std::path::PathBuf {
     let mut binary = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     binary.pop();
     binary.pop();
@@ -2928,5 +2933,168 @@ fn the_deep_chain_answers_in_the_optimized_build() {
          (expected {})",
         binary.display()
     );
-    the_deep_chain_answers(&binary);
+    binary
+}
+
+// ---------------------------------------------------------------------------------------------
+// The same input through the bulk entry: one operation, two workers, the ordinary worker stack
+// ---------------------------------------------------------------------------------------------
+
+/// The one `export` invocation the bulk deep-chain cases make, against a named binary.
+///
+/// `--jobs 2` is what this gate is about. The bulk operation runs a class task on the **calling**
+/// thread only when its effective worker count is one, so the same input under `--jobs 1` would be
+/// presented on the process's own (larger) stack and would say nothing about the workers this change
+/// added. Two workers put this class's task on a worker thread the library created with
+/// `std::thread::Builder::new()` and no `stack_size`, and the stream's own `header` record is
+/// asserted below to have really run with two.
+///
+/// No case sets `RUST_MIN_STACK` — the variable `Builder::new()` reads for that default — so what the
+/// chain has to fit in is the ordinary stack of an ordinary worker, not one a case enlarged.
+fn export_deep_chain(binary: &Path, class: &Path, output: &Path) -> Output {
+    Command::new(binary)
+        .args([
+            "export",
+            "--input",
+            path_of(class),
+            "--policy",
+            "single-class",
+            "--jobs",
+            "2",
+            "--output",
+            path_of(output),
+            "--format",
+            "jsonl",
+        ])
+        .env_remove("RUST_MIN_STACK")
+        .output()
+        .unwrap_or_else(|error| panic!("run {}: {error}", binary.display()))
+}
+
+/// Every record of one `export` stream, in file order.
+///
+/// The framing is checked before the lines are: a stream that does not end at a record boundary is
+/// not read as a list of records that happen to be followed by a fragment.
+fn jsonl_records(path: &Path) -> Vec<Value> {
+    let bytes = fs::read(path).expect("the stream file is readable");
+    assert!(
+        bytes.ends_with(b"\n"),
+        "the stream does not end at a record boundary: {} byte(s) ending {:?}",
+        bytes.len(),
+        &bytes[bytes.len().saturating_sub(16)..]
+    );
+    bytes
+        .split(|byte| *byte == b'\n')
+        .filter(|line| !line.is_empty())
+        .map(|line| {
+            serde_json::from_slice(line).unwrap_or_else(|error| {
+                panic!(
+                    "a stream line is not one JSON document ({error}): {}",
+                    String::from_utf8_lossy(line)
+                )
+            })
+        })
+        .collect()
+}
+
+/// The bulk entry presents the deep chain too: one `export` process, two workers, one whole method
+/// record carrying the chain the single-method entry presents.
+///
+/// The assertion this case exists for is that the run **ends**: the chain is presented on a worker
+/// stack and the process answers with a status and a stream instead of aborting. The stream is then
+/// read for the same text the `recover` gate reads, so "the bulk entry's chain" is the chain and not
+/// a shorter one that happens to fit.
+fn the_deep_chain_reaches_a_bulk_worker(binary: &Path) {
+    let temp = TempDir::new();
+    let class = temp.write("DeepConcat.class", &deep_concat_fixture(DEEP_APPENDS));
+    let stream = temp.join("deep.jsonl");
+    let ran = export_deep_chain(binary, &class, &stream);
+    assert_eq!(
+        status(&ran),
+        EXIT_COMPLETE,
+        "{}: a deep chain has to be presented and delivered, not aborted: {}",
+        binary.display(),
+        stderr_text(&ran)
+    );
+
+    let records = jsonl_records(&stream);
+    let header = records.first().expect("the stream has a header");
+    assert_eq!(header["kind"], json!("header"), "{header}");
+    assert_eq!(header["limits"]["workers_requested"], json!(2), "{header}");
+    assert_eq!(
+        header["limits"]["workers_effective"],
+        json!(2),
+        "the class task ran on a worker thread of the operation rather than on this process's own \
+         stack, which is the stack this gate is about: {header}"
+    );
+
+    let last = records.last().expect("the stream has a final record");
+    assert_eq!(last["kind"], json!("final"), "{last}");
+    let summary = &last["summary"];
+    assert_eq!(
+        summary["execution"]["status"],
+        json!("complete"),
+        "{summary}"
+    );
+    assert_eq!(summary["traversal_complete"], json!(true), "{summary}");
+    assert_eq!(summary["classes_prepared"], json!(1), "{summary}");
+    assert_eq!(summary["methods_declared"], json!(1), "{summary}");
+    assert_eq!(summary["methods_delivered"], json!(1), "{summary}");
+
+    let method = records
+        .iter()
+        .find(|record| record["kind"] == json!("method"))
+        .unwrap_or_else(|| panic!("the stream states the class's one method: {records:?}"));
+    assert_eq!(method["delivery"]["state"], json!("recovered"), "{method}");
+    let name: Vec<u8> = serde_json::from_value(method["method"]["name"].clone())
+        .expect("the record's raw name is a byte array");
+    let descriptor: Vec<u8> = serde_json::from_value(method["method"]["descriptor"].clone())
+        .expect("the record's raw descriptor is a byte array");
+    assert_eq!(name, b"method".as_slice(), "{method}");
+    assert_eq!(
+        descriptor,
+        b"(Ljava/lang/String;)Ljava/lang/String;".as_slice(),
+        "{method}"
+    );
+    let recovery = &method["delivery"]["recovery"];
+    assert_eq!(
+        recovery["content"],
+        json!("contains_statements"),
+        "{method}"
+    );
+    let text = recovery["text"]
+        .as_str()
+        .unwrap_or_else(|| panic!("a presented chain is text: {method}"));
+    assert_eq!(
+        text.matches(" + ").count(),
+        DEEP_APPENDS - 1,
+        "one part per `append`, joined by the `+`s the chain performs"
+    );
+    assert_eq!(
+        text.matches("arg0").count(),
+        DEEP_APPENDS,
+        "each part is the value its own `append` read"
+    );
+}
+
+/// The debug entry of the bulk command — the default gate — on the input the pre-fix printer aborted
+/// on.
+#[test]
+fn a_deep_concatenation_chain_is_presented_by_a_bulk_worker() {
+    the_deep_chain_reaches_a_bulk_worker(Path::new(BIN));
+}
+
+/// The optimized entry of the same case: the second explicit release gate, run by hand.
+///
+/// ```text
+/// cargo build --release -p jarde-cli --locked
+/// cargo test -p jarde-cli --test task_cli --locked -- --ignored the_deep_chain_reaches_a_bulk_worker_in_the_optimized_build
+/// ```
+///
+/// The two builds are two boundaries of the same code — the review measured *different* answers from
+/// them for this input on the main thread — so the worker stack is stated in both.
+#[test]
+#[ignore = "explicit gate: build the optimized CLI with `cargo build --release -p jarde-cli --locked`"]
+fn the_deep_chain_reaches_a_bulk_worker_in_the_optimized_build() {
+    the_deep_chain_reaches_a_bulk_worker(&optimized_cli());
 }

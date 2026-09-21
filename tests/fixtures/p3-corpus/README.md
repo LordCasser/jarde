@@ -81,7 +81,7 @@ cargo test --test p3_execution_comparison --locked -- --ignored --nocapture
 ```
 
 `cargo test` (without `--ignored`) never runs it, so a machine with no JDK stays green: the fixtures
-are bytes and no other test invokes a compiler. The two ignored tests are also run by CI's `stable`
+are bytes and no other test invokes a compiler. The three ignored tests are also run by CI's `stable`
 job, which already installs a JDK and already runs the ignored
 `jdk25_instruction_boundaries_match_public_bytecode_inspection` oracle. **No fixture is recompiled at
 test time** — `javac` is only ever asked to compile the wrappers *this comparison generates*, so the
@@ -150,6 +150,36 @@ two findings are marked **closed** below; every other row is the earlier run's o
 | `p3-corpus/v8-parameters` | the same three | Java/Structured | compiles with ordinal names | executed: traces identical |
 | `p3-corpus/v8-missing-dep` | `viaAbsentLibrary(I)I` | Java/Structured | **javac refuses**: cannot find symbol (`absent` is not shipped) | boundary |
 | | `plain(I)I` | Java/Structured | compiles | executed: traces identical |
+
+### The same bodies through the bulk entry (`add-parallel-bulk-recovery`, task 6.4)
+
+The third ignored test — `the_bulk_entrys_bodies_are_the_same_text_and_the_same_behaviour` — runs the
+same wrappers, the same `javac --release 8` and the same `java` over bodies read from
+**`Engine::recover_all`**, the bulk entry `jarde-cli export` drives, instead of `Engine::recover_method`.
+It wraps five samples (each one through *both* entries), and it is what states that the bulk entry's
+text is not only the same text but the same behaviour:
+
+| sample through `recover_all` | members | executed | boundaries | traces |
+| --- | --- | --- | --- | --- |
+| `p3-scope/v8` (control flow: `scope`, `armOnly`, `reuse`; instance `receiver(J)J`) | 7 | 7 | 0 | identical (18 lines) |
+| `p3-declaration/v8` (`Holder.value()I` reads its receiver; `Holder.of(I)LHolder;`) | 2 | 1 | 1 | identical (3 lines) |
+| `p3-local-rewrite/v8` (`post`, `saved`, `conditional`, `cast` refused) | 8 | 4 | 4 | identical (17 lines) |
+| `p3-handlers/v8` (guarded shapes, several refused with a code) | 22 | 12 | 10 | identical (78 lines) |
+| `p3-corpus/v8-missing-dep` (`viaAbsentLibrary` is not a compilation unit) | 2 | 1 | 1 | identical (3 lines) |
+
+The receiver-read row is the shape with an open owner: `Holder.value()I`'s body reads the instance
+field through the receiver, the presentation spells that receiver as the slot ordinal (`arg0.value`),
+and no wrapper declares `arg0` — so the text is not a compilation unit, and the test asserts that
+boundary (and the spelling it rests on) rather than treating it as a failure.
+`spell-the-instance-receiver-as-this` owns the spelling; when it lands, this row's expectation is what
+changes.
+
+Beside the traces, the test holds the two entries against each other: the same member's text byte for
+byte, the same content and representation, the same executed set. It also asserts that every
+**unexecuted** row states its own reason (quoted bytecode, or javac's refusal of that text), so a
+member this comparison did not run can never be one it silently dropped, and it pins the read shape
+the text came from — for each sample the operation's own account charges exactly one parse of the class
+file for all its members, which a per-member read would not.
 
 ## The content classification of this sample (recorded run of 2026-09-20, `25ed621` + this change)
 
