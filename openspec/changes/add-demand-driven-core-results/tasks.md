@@ -31,9 +31,9 @@
 
 ## 5. D3 产物绑定与证据重建
 
-- [ ] 5.1 构造版本化产物绑定值，覆盖完整物理方法/必要 ordinal、环境、规则/schema、输出配置和正文摘要；验证同名异内容、同字节不同 origin、重复 entry/成员、格式及规则变化不碰撞代答，显示标签不替代身份，外部值仅作待验证输入（D07/D10）。
-- [ ] 5.2 在同一恢复管线支持 expected_artifact 的证据展开；先验证重建产物，再关联证据，测试全部临时状态释放后的成功重建、不同文本明确 mismatch、紧预算真实停止及新请求费用独立（D07）。
-- [ ] 5.3 测试 Essential → 局部证据 → All → 换方法 → 放弃序列，确保已知正文/事实不被不同证据选择改变，产物绑定不持有隐藏 IR/AST，store 容量保持有界（D03/D07/D11）。
+- [x] 5.1 构造版本化产物绑定值，覆盖完整物理方法/必要 ordinal、环境、规则/schema、输出配置和正文摘要；验证同名异内容、同字节不同 origin、重复 entry/成员、格式及规则变化不碰撞代答，显示标签不替代身份，外部值仅作待验证输入（D07/D10）。 证据：`crates/jarde-java/src/artifact.rs` 的 `ArtifactBinding`（6 维 + `ARTIFACT_SCHEMA`/`TEXT_DIGEST`）与 `ArtifactDimension::ALL`；碰撞矩阵 13 项（同名异内容、同字节两 origin、重复 entry、重复成员、换 profile、schema+1、文本变化、期望无类别）各自给出 `Mismatched{维度}`/拒绝，显示标签不参与判定。
+- [x] 5.2 在同一恢复管线支持 expected_artifact 的证据展开；先验证重建产物，再关联证据，测试全部临时状态释放后的成功重建、不同文本明确 mismatch、紧预算真实停止及新请求费用独立（D07）。 证据：`expected_artifact` + `ArtifactAgreement{NotStated,Agreed,Mismatched,Unverifiable}`，判定点在正文提交后、证据物化前（mismatch 只拒证据）；重建在释放首个结果与预算后由新预算完成，计数口显示第二次请求自己读类/解 body/跑恢复（计费独立）；紧预算 `Partial{BudgetExceeded(IrItems)}` 且 artifact 保留；`Unverifiable` 与 mismatch/无证据三态可分。
+- [x] 5.3 测试 Essential → 局部证据 → All → 换方法 → 放弃序列，确保已知正文/事实不被不同证据选择改变，产物绑定不持有隐藏 IR/AST，store 容量保持有界（D03/D07/D11）。 证据：序列用例（正文/决策/绑定不被选择改变；换方法 → `Mismatched{Method}` 且零附着；放弃时 `body_decodes=0`/`recovery_runs=0`；store 驻留 3 entries/1 MiB 内有界）；绑定结构上无法持 IR/AST（尝试持 `Arc<MethodIr>` 无法编译），故释放见证=derive + `size_of` 上界 + 逐请求重建计数。
 
 ## 6. D4 增量结构查询与续扫
 
