@@ -4874,7 +4874,13 @@ fn scans_are_deterministic_and_paginate_without_gaps() {
         }
         assert!(pages < 32, "continuation must terminate");
     }
-    assert_eq!(pages, full.items.len());
+    // One page per item, plus the conservative page that reports the end of the range:
+    // the page that filled exactly at the last step's last item stopped before the next
+    // step, so it keeps a continuation instead of claiming the scope was covered.
+    assert_eq!(
+        pages,
+        u32::try_from(full.items.len()).expect("item count fits u32") + 1
+    );
     assert_eq!(collected, full.items);
 }
 

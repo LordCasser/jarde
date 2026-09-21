@@ -91,8 +91,8 @@
 
 use super::{ScanContext, ScanUnit, UnitContent, class_content, to_u64};
 use crate::query::{
-    ConsumerKind, LiteralValue, QueryRelation, QueryResolution, QueryTarget, XrefCertainty,
-    XrefDerivation, XrefEvidence, XrefItem, XrefOperation, XrefTarget,
+    ConsumerKind, LiteralValue, QueryPosition, QueryRelation, QueryResolution, QueryTarget,
+    XrefCertainty, XrefDerivation, XrefEvidence, XrefItem, XrefOperation, XrefTarget,
 };
 use jarde_reader::budget::CountedBudgetDimension;
 use jarde_reader::classfile::{
@@ -119,28 +119,189 @@ const CODE_CATEGORIES: [ConsumerKind; 5] = [
     ConsumerKind::Exception,
 ];
 
-pub(super) fn scan(
+/// The code producer's work on one unit, kept across the steps a page may stop between.
+///
+/// The producer has one state for the whole unit, so the work a page boundary must not
+/// repeat is done once: the unit's bytes are read and its class file decoded when the
+/// producer opens, and every step after that shares that one decode. The steps themselves
+/// are the stops a page limit can cut at — one method body per step — so the members behind
+/// the page's stop are never decoded, never billed and never materialized.
+///
+/// The deferred member-level failure follows the same rule: the step that decoded the
+/// failing member publishes its diagnostic and remembers the error, and the *unit* ends with
+/// it once its method stream is over. A page that stopped inside a later member resumes
+/// there, so it neither re-decodes the failing member nor re-reports the failure: the page
+/// that met the damage is the page that carries its diagnostic, which is what a caller
+/// stitching the pages together needs. The unpaged scan, and every scan whose page reaches
+/// the end of the unit's method stream, reports the failure as one terminal error exactly as
+/// before.
+pub(super) struct CodeWalk {
+    state: State,
+    /// A member whose body could not be decoded: reported once the method stream ends, so
+    /// the readable members keep their facts and the unit still ends with the error.
+    pending: Option<Error>,
+}
+
+/// How far the code producer got with one unit.
+enum State {
+    /// The producer has not looked at the unit yet.
+    Unopened,
+    /// The producer answers nothing for this unit: the entry is not a class candidate, or
+    /// the request names no consumer category this producer answers.
+    Absent,
+    /// The unit's class file is decoded and the walk stands inside it. Boxed because the
+    /// decoded facts are much larger than the two states the producer is between.
+    Open(Box<Open>),
+}
+
+/// One open code producer: the unit's class file and where in it the walk stands.
+struct Open {
+    content: UnitContent,
+    facts: ClassFacts,
+    definition: PhysicalDefinitionId,
+    /// The next member this walk decodes, in the class file's own method list.
+    at: usize,
+}
+
+/// What one step of the code producer did.
+pub(super) enum CodeOutcome {
+    /// The step is over, and the producer stands at this position.
+    Stepped(QueryPosition),
+    /// The producer has no step left for this unit.
+    Finished,
+}
+
+impl CodeWalk {
+    /// A producer that has not read anything yet.
+    pub(super) fn unopened() -> Self {
+        Self {
+            state: State::Unopened,
+            pending: None,
+        }
+    }
+
+    /// Runs the next step of the code producer for one unit.
+    ///
+    /// `position` is the position a continuation resumed at; it decides the member the walk
+    /// starts from and is verified against the class file before any of that member's items
+    /// are produced. Once the walk is open, its own cursor decides the member, so the
+    /// position of an already-open walk is not consulted again.
+    pub(super) fn step(
+        &mut self,
+        ctx: &mut ScanContext<'_>,
+        unit: &ScanUnit,
+        position: QueryPosition,
+        out: &mut Vec<XrefItem>,
+    ) -> Result<CodeOutcome> {
+        let relation = ctx.request().relation;
+        // The raw pool probe answers about pool entries, not about consumers, so it is
+        // category-independent: `super` already refused a request that names no category at
+        // all, and a probe must not silently become "no scan" because the caller named a
+        // category the pool does not use.
+        let pool_probe = relation == QueryRelation::ConstantPoolContains;
+        let consumer_scan = matches!(
+            relation,
+            QueryRelation::MentionsSymbol | QueryRelation::LiteralValue
+        ) && CODE_CATEGORIES.iter().any(|kind| ctx.wants(*kind));
+        if !pool_probe && !consumer_scan {
+            self.state = State::Absent;
+            return Ok(CodeOutcome::Finished);
+        }
+        if matches!(self.state, State::Unopened) {
+            self.state = match open(ctx, unit, &position)? {
+                Some(open) => State::Open(Box::new(open)),
+                None => State::Absent,
+            };
+        }
+        let State::Open(open) = &mut self.state else {
+            return Ok(CodeOutcome::Finished);
+        };
+        if pool_probe {
+            for entry in &open.facts.constant_pool {
+                emit_pool_candidate(ctx, &open.definition, entry, out);
+            }
+            // The probe is one step: it answers every pool candidate and is over.
+            return Ok(CodeOutcome::Finished);
+        }
+        let mut deferred: Option<Error> = None;
+        let mut next = None;
+        while open.at < open.facts.methods.len() {
+            let index = open.at;
+            open.at += 1;
+            // An abstract or native member declares no body. That absence is normal, so
+            // it is skipped rather than reported as a member that failed to decode.
+            if !has_code(&open.facts.methods[index]) {
+                continue;
+            }
+            let method = &open.facts.methods[index];
+            let code = {
+                let budget = ctx.budget();
+                method_code_facts(&open.content.bytes, method, budget)?
+            };
+            let method_id = PhysicalMethodId {
+                owner: open.definition.clone(),
+                name: method.name.raw().clone(),
+                descriptor: method.descriptor.raw().clone(),
+            };
+            emit_instructions(ctx, &open.facts.constant_pool, &method_id, &code, out)?;
+            emit_handlers(
+                ctx,
+                index,
+                &open.definition,
+                &open.facts.constant_pool,
+                &code,
+                out,
+            )?;
+            match code_stop(ctx, &code) {
+                Some(CodeStop::Budget(error)) => return Err(error),
+                Some(CodeStop::Decode(error)) => {
+                    ctx.push_diagnostic(stop_diagnostic(
+                        index,
+                        &open.definition,
+                        &method_id,
+                        &code,
+                    )?);
+                    deferred = Some(error);
+                }
+                None => {}
+            }
+            next = Some(next_position(&open.facts, index)?);
+            break;
+        }
+        if let Some(error) = deferred
+            && self.pending.is_none()
+        {
+            self.pending = Some(error);
+        }
+        match next {
+            Some(position) => Ok(CodeOutcome::Stepped(position)),
+            // The method stream is over: a member-level failure the walk met on the way
+            // ends the unit here, after every readable member kept its facts.
+            None => match self.pending.take() {
+                Some(error) => Err(error),
+                None => Ok(CodeOutcome::Finished),
+            },
+        }
+    }
+}
+
+/// Opens the code producer for one unit, or reports that it answers nothing.
+///
+/// The gates above said the producer answers, so its bytes are read here and its class file
+/// decoded — once, for every step that follows. A resumed position names a member of this
+/// class file, and that is checked before the walk moves: the member at that index must
+/// exist, must declare a body and must carry exactly the raw name and descriptor the
+/// position was issued for. A position that does not is a cursor that does not describe this
+/// unit, never a member to skip over.
+fn open(
     ctx: &mut ScanContext<'_>,
     unit: &ScanUnit,
-    out: &mut Vec<XrefItem>,
-) -> Result<()> {
-    let relation = ctx.request().relation;
-    // The raw pool probe answers about pool entries, not about consumers, so it is
-    // category-independent: `super` already refused a request that names no category at
-    // all, and a probe must not silently become "no scan" because the caller named a
-    // category the pool does not use.
-    let pool_probe = relation == QueryRelation::ConstantPoolContains;
-    let consumer_scan = matches!(
-        relation,
-        QueryRelation::MentionsSymbol | QueryRelation::LiteralValue
-    ) && CODE_CATEGORIES.iter().any(|kind| ctx.wants(*kind));
-    if !pool_probe && !consumer_scan {
-        return Ok(());
-    }
+    position: &QueryPosition,
+) -> Result<Option<Open>> {
     // The shared rule, the read and the damaged-candidate failure are `super`'s: this
     // stream only appears here once it really needs class bytes.
     let Some(content) = class_content(ctx, unit)? else {
-        return Ok(());
+        return Ok(None);
     };
     let facts = {
         let budget = ctx.budget();
@@ -150,13 +311,65 @@ pub(super) fn scan(
         digest: content.digest.clone(),
         length: to_u64(content.bytes.len())?,
     });
-    if pool_probe {
-        for entry in &facts.constant_pool {
-            emit_pool_candidate(ctx, &definition, entry, out);
+    let at = match position {
+        QueryPosition::Method {
+            index,
+            name,
+            descriptor,
+        } => {
+            let index = usize::try_from(*index).map_err(|_| cursor_position_mismatch())?;
+            let method = facts
+                .methods
+                .get(index)
+                .ok_or_else(cursor_position_mismatch)?;
+            if !has_code(method)
+                || method.name.raw().0 != name.0
+                || method.descriptor.raw().0 != descriptor.0
+            {
+                return Err(cursor_position_mismatch());
+            }
+            index
         }
-        return Ok(());
+        _ => 0,
+    };
+    Ok(Some(Open {
+        content,
+        facts,
+        definition,
+        at,
+    }))
+}
+
+/// The position the next step of an open producer stands at.
+///
+/// Once the producer is open its member table is in hand, so the next member that declares a
+/// body is named by its own index, raw name and descriptor — the anchor a continuation
+/// verifies before it resumes in that member.
+fn next_position(facts: &ClassFacts, after: usize) -> Result<QueryPosition> {
+    for index in after + 1..facts.methods.len() {
+        let method = &facts.methods[index];
+        if has_code(method) {
+            return Ok(QueryPosition::Method {
+                index: u32::try_from(index).map_err(|_| {
+                    Error::invalid_input(
+                        "query_size_overflow",
+                        "member index does not fit the cursor position",
+                    )
+                })?,
+                name: method.name.raw().clone(),
+                descriptor: method.descriptor.raw().clone(),
+            });
+        }
     }
-    scan_methods(ctx, &content, &facts, &definition, out)
+    Ok(QueryPosition::Metadata)
+}
+
+/// The error a continuation carries when its position does not describe the unit it names.
+fn cursor_position_mismatch() -> Error {
+    Error::invalid_input(
+        "query_cursor_mismatch",
+        "cursor position does not name a member of the unit the boundary names",
+    )
 }
 
 /// Emits one raw constant-pool candidate per entry that carries the requested target.
@@ -291,55 +504,6 @@ fn literal_matches(target: &LiteralValue, entry: &CpEntryFacts) -> bool {
         LiteralValue::Double { value } => {
             matches!(&entry.kind, CpEntryKind::Double { bits } if bits == value)
         }
-    }
-}
-
-/// Scans every method of one class file for consumed references.
-///
-/// A member whose code cannot be decoded completely is reported as a member-level
-/// diagnostic and does not hide the remaining members: their references are still facts,
-/// and the scan ends the unit with the terminal error so the report stays `Partial`
-/// instead of claiming a complete scan it did not perform. A budget or cancellation stop
-/// returns immediately, because no further read in this request can succeed.
-fn scan_methods(
-    ctx: &mut ScanContext<'_>,
-    content: &UnitContent,
-    facts: &ClassFacts,
-    definition: &PhysicalDefinitionId,
-    out: &mut Vec<XrefItem>,
-) -> Result<()> {
-    let mut pending: Option<Error> = None;
-    for (index, method) in facts.methods.iter().enumerate() {
-        // An abstract or native member declares no body. That absence is normal, so it is
-        // skipped rather than reported as a member that failed to decode.
-        if !has_code(method) {
-            continue;
-        }
-        let code = {
-            let budget = ctx.budget();
-            method_code_facts(&content.bytes, method, budget)?
-        };
-        let method_id = PhysicalMethodId {
-            owner: definition.clone(),
-            name: method.name.raw().clone(),
-            descriptor: method.descriptor.raw().clone(),
-        };
-        emit_instructions(ctx, &facts.constant_pool, &method_id, &code, out)?;
-        emit_handlers(ctx, index, definition, &facts.constant_pool, &code, out)?;
-        match code_stop(ctx, &code) {
-            Some(CodeStop::Budget(error)) => return Err(error),
-            Some(CodeStop::Decode(error)) => {
-                ctx.push_diagnostic(stop_diagnostic(index, definition, &method_id, &code)?);
-                if pending.is_none() {
-                    pending = Some(error);
-                }
-            }
-            None => {}
-        }
-    }
-    match pending {
-        Some(error) => Err(error),
-        None => Ok(()),
     }
 }
 

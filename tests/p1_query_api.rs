@@ -669,7 +669,7 @@ fn a18_open_snapshot_stays_stable_and_a_reopened_one_rejects_old_cursors() {
     // 3.1 onward: the cursor is public structured state, bound to the full query identity
     // (target included) under the current engine schema.
     assert_eq!(cursor.engine_schema, QUERY_ENGINE_SCHEMA);
-    assert_eq!(QUERY_ENGINE_SCHEMA, 2, "the target-bound cursor generation");
+    assert_eq!(QUERY_ENGINE_SCHEMA, 3, "the step-bound cursor generation");
     assert_eq!(cursor.target, request.target);
     assert!(
         serde_json::to_value(&cursor)
@@ -1617,18 +1617,21 @@ fn pagination_continuation_reproduces_one_full_scan() {
     assert_eq!(
         xref_ranges(&pages[1].coverage.dimensions.artifact_structural.scanned),
         vec![(0, 1)],
-        "a continuation replays the boundary unit and skips its published prefix"
+        "a continuation re-runs the boundary step and skips the items an earlier page \
+         published from it, so the unit it resumes in stays examined"
     );
 
-    // The final page starts at the second container entry: the first entry is
-    // reported as not examined by this invocation, and `scanned_items` counts the
-    // replayed prefix once more (read again, neither re-published nor re-billed).
+    // The final page resumes after the boundary step: every step before it already
+    // published its items, so nothing is replayed and `scanned_items` counts no
+    // re-read prefix at all. The entries this invocation really looked at are the ones
+    // it examined, and the entry the earlier pages covered stays declared as skipped
+    // for *this* invocation instead of being read again.
     // `has_more` is conservative, so the page after the last result is empty.
     let last = pages.last().unwrap();
     assert_eq!(last.page.returned_items, 0);
     assert!(!last.page.has_more);
     assert!(last.items.is_empty());
-    assert_eq!(last.coverage.scanned_items, 2);
+    assert_eq!(last.coverage.scanned_items, 0);
     assert_eq!(
         xref_ranges(&last.coverage.dimensions.artifact_structural.scanned),
         vec![(1, 4)]
@@ -2427,50 +2430,33 @@ fn unsupported_relation_candidates_page_without_repeats_or_gaps() {
         }
         assert!(pages.len() < 8, "pagination must terminate");
     }
-    assert_eq!(pages.len(), 3);
+    assert_eq!(pages.len(), 4);
     assert_eq!(
         collected, full.items,
         "pages must not repeat or skip candidates"
     );
-    for page in &pages[..2] {
+    for page in &pages[..3] {
         assert!(page.page.has_more);
     }
-    assert!(!pages[2].page.has_more);
-    assert_eq!(
-        pages[0]
-            .page
-            .cursor
-            .as_ref()
-            .expect("truncated page")
-            .boundary
-            .ordinal,
-        0
-    );
-    assert_eq!(
-        pages[0]
-            .page
-            .cursor
-            .as_ref()
-            .expect("truncated page")
-            .boundary
-            .item_index,
-        1
-    );
-    assert_eq!(
-        pages[1]
-            .page
-            .cursor
-            .as_ref()
-            .expect("truncated page")
-            .boundary
-            .ordinal,
-        1
-    );
-    // A continuation replays the resumed entry: its already published candidate is read
-    // again but neither re-published nor billed again, so the page reports one replay and
-    // one new candidate as scanned.
-    assert_eq!(pages[1].coverage.scanned_items, 2);
-    assert_eq!(pages[2].coverage.scanned_items, 2);
+    assert!(!pages[3].page.has_more);
+    // The page that filled exactly at the last candidate of an entry stopped *after*
+    // that entry's step: the position names the step that follows it, so the
+    // continuation neither re-runs the entry nor replays the candidate it published.
+    for (page, ordinal) in pages[..3].iter().zip([0_u64, 1, 2]) {
+        let boundary = &page.page.cursor.as_ref().expect("truncated page").boundary;
+        assert_eq!(boundary.ordinal, ordinal);
+        assert_eq!(boundary.position, QueryPosition::Metadata);
+        assert_eq!(
+            boundary.item_index, 0,
+            "the step that finished published its items in the earlier page"
+        );
+    }
+    // Nothing is replayed: every page reports exactly the one candidate it published,
+    // and the last page (which found every entry's steps already done) reports none.
+    assert_eq!(pages[0].coverage.scanned_items, 1);
+    assert_eq!(pages[1].coverage.scanned_items, 1);
+    assert_eq!(pages[2].coverage.scanned_items, 1);
+    assert_eq!(pages[3].coverage.scanned_items, 0);
 
     // The cursor binds the caller's relation, not the substituted probe: a cursor from
     // `references_definition` cannot be replayed for `may_dispatch_to`.

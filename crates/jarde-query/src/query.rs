@@ -69,7 +69,13 @@ impl ConsumerSchema {
 /// not carry a target, and a continuation that changed the target used to be replayed
 /// with the old page's published prefix, so the engine rejects this generation
 /// explicitly instead of keeping a compatibility path it cannot verify.
-pub const QUERY_ENGINE_SCHEMA: u16 = 2;
+///
+/// Schema 3 adds [`QueryBoundary::position`]: a page that stops inside a unit now names
+/// the step it stopped in, so a continuation resumes at that step instead of replaying
+/// the unit. A schema 2 boundary counts items per unit and cannot be interpreted as a
+/// step position, so this generation is rejected as a whole rather than replayed at a
+/// boundary it was not issued for.
+pub const QUERY_ENGINE_SCHEMA: u16 = 3;
 
 /// Consumer schema version this engine executes.
 const CONSUMER_SCHEMA_VERSION: u16 = 1;
@@ -177,17 +183,69 @@ pub struct QueryCursor {
 
 /// Position immediately after the last published item.
 ///
-/// `item_index` counts the items already published for `(container, ordinal)` by this
-/// request's target: the target is part of the cursor identity, and the count is the
-/// number of items that target answered in that unit, not a byte offset. A continuation
-/// replays that unit deterministically and skips exactly this many items, so consecutive
-/// pages of one query neither repeat nor skip published entries.
+/// The position is a pair: [`QueryBoundary::position`] names the step of one unit's scan
+/// the page stopped in — the step the next item would come from — and
+/// [`QueryBoundary::item_index`] counts the items that step already published for this
+/// request's target. The target is part of the cursor identity, and the count is the
+/// number of items that target answered in that step, not a byte offset.
+///
+/// A continuation re-derives the unit's scan program from the bound request and the
+/// unit's own class file, verifies that `position` names a step of that program (the
+/// [`QueryPosition::Method`] anchor against the class file's own member, and the item
+/// count against the items that step answers), and then re-runs that one step, skipping
+/// exactly `item_index` of its items. Every earlier step of the unit, every earlier unit
+/// and every earlier container is therefore neither re-read nor re-billed, and
+/// consecutive pages of one query neither repeat nor skip published items.
 #[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct QueryBoundary {
     pub container: ContainerOrigin,
     pub ordinal: u64,
+    /// The step of this unit's scan the next published item comes from.
+    pub position: QueryPosition,
+    /// Items already published from [`QueryBoundary::position`]'s step.
     pub item_index: u64,
+}
+
+/// Where the scan stands inside one unit: the step the next published item comes from.
+///
+/// One unit's scan is a program of steps, all of them derived from the bound request and,
+/// for a class candidate, from the class file's own member table: the resource consumer,
+/// then the code producer — the raw constant-pool probe, or the instruction stream of one
+/// method after another — then the metadata consumer, then the bootstrap consumer. The
+/// scan stops between steps, and inside the items of one step, as soon as the page is full
+/// or a stop is observed; the position it publishes says where it stopped.
+///
+/// This is a *verifiable* position, not merely a count: a continuation re-derives the same
+/// program and refuses a position that does not name a step of it — [`QueryPosition::Method`]
+/// is checked against the class file member it names, and `item_index` against the items the
+/// step answers — with `query_cursor_mismatch` instead of skipping items on a guess.
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub enum QueryPosition {
+    /// The resource consumer's step of this unit.
+    Resource,
+    /// The code producer's opening step of this unit: the raw constant-pool probe, or the
+    /// instruction stream's first member. Which one it is depends on the bound relation and
+    /// on the class file, so the position cannot name that member before the producer read
+    /// the unit; the continuation opens the producer at the same point and verifies the
+    /// stream it derives.
+    Code,
+    /// The instruction stream of one member of this unit's class file.
+    Method {
+        /// Position of the member in the class file's own method list.
+        index: u32,
+        /// Raw name of the member, as the class file spells it.
+        name: JvmBytes,
+        /// Raw descriptor of the member, as the class file spells it.
+        descriptor: JvmBytes,
+    },
+    /// The metadata consumer's step of this unit.
+    Metadata,
+    /// The bootstrap consumer's step of this unit.
+    Bootstrap,
+    /// Every step of this unit ran: the next item comes from the unit after it.
+    UnitComplete,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -535,7 +593,7 @@ fn cursor_mismatch(bound: &str) -> Error {
 }
 
 /// Canonical cursor binding digest: blake3 over `engine_schema`, `snapshot`, `physical`,
-/// `relation`, `target`, `consumers` and `boundary`.
+/// `relation`, `target`, `consumers` and `boundary` (the boundary's step position included).
 ///
 /// The encoding is length-prefixed and written by hand: the crate has no JSON
 /// dependency outside its tests, and the digest must not depend on a serializer
@@ -588,8 +646,35 @@ pub(crate) fn cursor_digest(
         hash_field(&mut hasher, step.child_container.0.as_bytes());
     }
     hasher.update(&boundary.ordinal.to_be_bytes());
+    hash_position(&mut hasher, &boundary.position);
     hasher.update(&boundary.item_index.to_be_bytes());
     Ok(Digest(hasher.finalize().to_hex().to_string()))
+}
+
+/// Encodes the step a page stopped in into the cursor digest.
+///
+/// Every variant is tagged, so a position can never be read as another: a method step is
+/// not its own index repeated as a pool step, and the member's raw name and descriptor take
+/// part with the index, so a cursor issued for one member cannot be replayed against a
+/// class file whose member list moved under the same number.
+fn hash_position(hasher: &mut blake3::Hasher, position: &QueryPosition) {
+    match position {
+        QueryPosition::Resource => hash_field(hasher, b"position_resource"),
+        QueryPosition::Code => hash_field(hasher, b"position_code"),
+        QueryPosition::Method {
+            index,
+            name,
+            descriptor,
+        } => {
+            hash_field(hasher, b"position_method");
+            hasher.update(&index.to_be_bytes());
+            hash_field(hasher, &name.0);
+            hash_field(hasher, &descriptor.0);
+        }
+        QueryPosition::Metadata => hash_field(hasher, b"position_metadata"),
+        QueryPosition::Bootstrap => hash_field(hasher, b"position_bootstrap"),
+        QueryPosition::UnitComplete => hash_field(hasher, b"position_unit_complete"),
+    }
 }
 
 /// Encodes one query target into the cursor digest.
@@ -742,6 +827,7 @@ mod tests {
                 steps: Vec::new(),
             },
             ordinal,
+            position: QueryPosition::Resource,
             item_index,
         }
     }
@@ -935,6 +1021,80 @@ mod tests {
                 &target,
                 &consumers,
                 &boundary(3, 3)
+            )
+        );
+        // The step position is part of the boundary binding: the same unit and the same
+        // published count under another step is another continuation.
+        let mut elsewhere = boundary(3, 2);
+        elsewhere.position = QueryPosition::Metadata;
+        assert_ne!(
+            base,
+            digest(
+                QUERY_ENGINE_SCHEMA,
+                "snap-1",
+                &physical,
+                QueryRelation::MentionsSymbol,
+                &target,
+                &consumers,
+                &elsewhere
+            )
+        );
+        let mut other_member = boundary(3, 2);
+        other_member.position = QueryPosition::Method {
+            index: 0,
+            name: JvmBytes(b"run".to_vec()),
+            descriptor: JvmBytes(b"()V".to_vec()),
+        };
+        let mut same_index_other_name = other_member.clone();
+        same_index_other_name.position = QueryPosition::Method {
+            index: 0,
+            name: JvmBytes(b"walk".to_vec()),
+            descriptor: JvmBytes(b"()V".to_vec()),
+        };
+        let mut same_name_other_descriptor = other_member.clone();
+        same_name_other_descriptor.position = QueryPosition::Method {
+            index: 0,
+            name: JvmBytes(b"run".to_vec()),
+            descriptor: JvmBytes(b"(I)V".to_vec()),
+        };
+        assert_ne!(
+            digest(
+                QUERY_ENGINE_SCHEMA,
+                "snap-1",
+                &physical,
+                QueryRelation::MentionsSymbol,
+                &target,
+                &consumers,
+                &other_member
+            ),
+            digest(
+                QUERY_ENGINE_SCHEMA,
+                "snap-1",
+                &physical,
+                QueryRelation::MentionsSymbol,
+                &target,
+                &consumers,
+                &same_index_other_name
+            )
+        );
+        assert_ne!(
+            digest(
+                QUERY_ENGINE_SCHEMA,
+                "snap-1",
+                &physical,
+                QueryRelation::MentionsSymbol,
+                &target,
+                &consumers,
+                &other_member
+            ),
+            digest(
+                QUERY_ENGINE_SCHEMA,
+                "snap-1",
+                &physical,
+                QueryRelation::MentionsSymbol,
+                &target,
+                &consumers,
+                &same_name_other_descriptor
             )
         );
         // Absent and empty consumer sets are distinct bindings.
