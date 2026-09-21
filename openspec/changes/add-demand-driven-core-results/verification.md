@@ -503,3 +503,25 @@ test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; fini
 **既有断言变化：零**（`tests/p1_query_demand.rs` 只新增）。两处有意改变已文档化并新增用例固定：① 根目录整体不可解析时 query 拒绝整棵范围（Failed + 声明范围 skipped），不再发布半解析前缀；② `Resource`+`ArtifactTree` 的 coverage 改按"到达的容器"陈述（每容器 `central_directory_entries` + xref 前缀），旧的 `nested_archive_candidates` 区间不再出现。
 
 **新入口的已知边界（如实）**：目录验证仍是**容器粒度**（rawzip 公共迭代器无法跨 pull 持有，不引第二解析器），故小页省的是其后容器、条目内容与解压，不省首容器已拉记录的验证费用；`SnapshotAll` 不下降入 nested（与既有枚举一致，nested 内 resource 需 `ArtifactTree`）；目录整体损坏的 nested 子树不发布子前缀（tree 枚举会发布）；standalone CLASS 无 entry cursor；`EntryCursor` 未在门面再导出（其验收为 in-crate 测试）。
+
+## 7.3 事先声明的测量协议（在跑数之前固定，防止事后挑选）
+
+**工作负载**（全部用仓库内 fixture 与提交的真实语料，路径与 roots 文档随样本一起留档）：
+
+| 序列 | 内容 | 首个结果的定义 |
+| --- | --- | --- |
+| `nav-class` | 打开快照 → 列出成员（不取 body） | 成员清单返回 |
+| `nav-decl` | 同上 + 单个成员声明 | 声明返回 |
+| `recover-one` | 单方法恢复（Essential） | 正文返回 |
+| `recover-sweep` | 整包导出（`export --jobs auto`） | 第一条 `method` 记录 |
+| `evidence-then-expand` | 单方法恢复 → 对同一产物带 `expected_artifact` 追问 RegionDetails+SourceMap | 追问证据返回 |
+| `page-small` | 结构调整查询，页大小 4，连续 4 页 | 第 1 页返回 |
+| `page-then-abandon` | 同上前两页后丢弃 cursor 与预算 | 第 2 页返回 |
+
+**两臂**：`arm=essential`（默认选择）与 `arm=all`（显式全量）。两臂的**正文与恢复决定必须逐字相同**；差异只允许出现在可选明细的存在与计费上。任何正文差异使该次测量作废，转为缺陷。
+
+**度量**：每次运行记录 ①首个结果的耗时与 CPU（`user+sys`）；②整序列墙钟与 CPU；③构造计数（D0/D1 的计数口：类物化、准备、body 解码、可选记录构造）；④返回字节；⑤峰值 RSS（`/usr/bin/time -l` 的 `maximum resident set size`）；⑥窗口保留权重高水位（bulk 臂）。
+
+**样本与口径**：每格 **≥10 次独立交错样本**（两臂交替执行，非先跑完一臂再跑另一臂）；报告**中位数与极值**，不报平均；不使用事后挑选（不删样本、不做"代表性"筛选）。机器负载、OS page cache 初态（是否先温一次）与并发（是否有其它构建）**必须随样本记录**。
+
+**结论分级**（与 7.4 相同口径）：①契约通过（计数与语义）②工作量下降（构造数/返回字节）③时间收益（仅在 10 次交错且无负载干扰时声明）。三者在页面上分开写；时间收益若落在样本噪声内（极值跨越中位数差值）一律记为未证实。
