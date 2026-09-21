@@ -1,0 +1,54 @@
+**3/32**（D0 的三项已实现并按 [verification](verification.md) 记录验证；D1–D5 的 29 项未开始）。实施顺序与所有权见 [design §13](design.md#13-可独立提交的实施边界)，D01–D12 为该文档的验收编号。不因文档或 strict 通过勾选实现；不修改其它 change 的完成状态。
+
+## 1. D0 基线、字段角色与反例
+
+- [x] 1.1 冻结实施 revision/dirty patch、现有完整证据与 query 顺序基线，在 verification 中记录源码入口和开放缺口；复跑数组槽宽与 T5 反例并登记独立修复所有权，不将修复混入本 change（D03/D12）。→ verification §1–§5：`809ca81`、dirty 全为文档、反例真实复跑（`javac` 拒绝 `return arg1;`；`65!`→`A!`/`x65`→`xA`），两项修复所有权仍独立。
+- [x] 1.2 对 RecoveryReport、规则计划、emitter、analysis/callee 报告逐字段标注算法输入、内部计划、必要结果或可选明细，记录拥有者/生命周期/计费站点；审查确认内部 CFG/SSA 本已与报告分离，不重建第二套模型（D01/D04/D11）。→ verification §6（297 字段清点：算法输入 30 / 内部计划 116 / 必要结果 51 / 可选明细 100）与 design §16。
+- [x] 1.3 增加有界 test-support 或 harness 计数，分别见证 class 物化/准备、body 解码、consumer work、可选拥有型记录和释放；用一次人为重复构造/先全量后过滤的变异验证计数会变红，仪表不进入领域 fingerprint（D01/D02/D04/D08）。→ `src/d0_counts.rs` + `tests/d0_demand_counts.rs`（5 passed），变异 M1/M2 各变红后还原，见 verification §7。
+
+## 2. D1 需求与结果契约
+
+- [ ] 2.1 为现有恢复请求加入类型化 evidence kinds、driver BCI 范围与生效选择；验证 Essential/All、合法空范围、反向/越界/非指令边界、无 Code 和不支持类别，无静默忽略或自动扩大（D03/D04/D05）。
+- [ ] 2.2 增加证据选择/状态清单与可选 payload 的一致性约束；验证 NotRequested、Complete 空结果、Partial、NotPerformed 可区分，既有 limits/usage 与独立语义平面仍可读取（D03/D05/D06）。
+- [ ] 2.3 在原拒绝站点形成核心可定位缺口，复用既有原因与物理位置；验证关闭规则明细仍能取得语句级拒绝、ExplanationOnly、无 Body、未知分母与真实停止，不从生成注释反解析事实（D05）。
+- [ ] 2.4 在 facade、class-source、bulk、CLI/示例和测试调用点显式传播选择，完整审计调用显式 All，普通恢复默认 Essential；验证库/适配器相同选择同结果，不增加协议实现或另一路恢复（D01/D03）。
+
+## 3. D2 普通操作内的可信准备交接
+
+- [ ] 3.1 将目标绑定所取得的可信 read/facts 交给同次 preparation/声明消费者；验证明确身份与名字选择的所选定义各自不重读，候选搜索费用独立，缺失/歧义/未完成行为保持（D02/D10）。
+- [ ] 3.2 将 class_view 的选定 body 定位和 class_source 的声明/正文接到同一 prepared 生命周期；以多方法 fixture 验证一次所选类物化、一次准备、按需 body 数量，替换把 class_headers=2 视为目标的旧断言（D01/D02）。
+- [ ] 3.3 将直接 recover_method/recover_target 的 driver 与必要同类 callee 接到同一 preparation；验证有/无 accessor、重复成员、缺依赖和 profile/loader 不匹配，不跳过原绑定检查（D02/D10）。
+- [ ] 3.4 验证 none/zero/容量不足/足容量四种 store 的普通操作与连续请求；活动事实只共享，未保留的下一请求可重建，取消与最后消费者释放后计数归零（D02/D11）。
+
+## 4. D3 可选证据的实际构造
+
+- [ ] 4.1 将语义规则计划与公开 RuleDetails 拥有型记录分离；保持所有前提/拒绝决定执行，关闭明细时不复制完整记录，逐规则接受与拒绝对照 All 基线（D03/D04/D05）。
+- [ ] 4.2 将 RegionDetails、NameDetails 与可选读取明细按选择物化，保留必须的 HeaderRead 摘要和核心缺口；验证关闭类别构造计数为零且取消无隐藏构造（D04/D05/D11）。
+- [ ] 4.3 让默认 emitter 不构造完整 Segment 表；详细模式复用同一 formatter 与 AST 的映射/计数 sink，验证正文逐字一致、偏移有效、不复制第二份正文且没有第二次 IR/恢复（D03/D04）。
+- [ ] 4.4 实现 driver BCI 局部证据选择及必要 origin 闭包；测试跨方法相同 BCI、复合表达式、生成节点与范围外依赖，局部结果等于完整证据的规定投影（D04/D10）。
+- [ ] 4.5 实现“可信正文提交 → 所选证据物化”的停止边界，并将新增工作接到同一预算；在前提规划、正文提交前、各证据类别中途和发布处受控停止，验证没有预算重置、没有假 Complete、已提交正文不丢失（D06）。
+- [ ] 4.6 更新 bulk 对可选 payload 的拥有容量核算及完整证据接线；验证新结果权重不少于实际持有下界、零选明细无虚构费用，不修改 worker/ledger/窗口算法（D11）。
+
+## 5. D3 产物绑定与证据重建
+
+- [ ] 5.1 构造版本化产物绑定值，覆盖完整物理方法/必要 ordinal、环境、规则/schema、输出配置和正文摘要；验证同名异内容、同字节不同 origin、重复 entry/成员、格式及规则变化不碰撞代答，显示标签不替代身份，外部值仅作待验证输入（D07/D10）。
+- [ ] 5.2 在同一恢复管线支持 expected_artifact 的证据展开；先验证重建产物，再关联证据，测试全部临时状态释放后的成功重建、不同文本明确 mismatch、紧预算真实停止及新请求费用独立（D07）。
+- [ ] 5.3 测试 Essential → 局部证据 → All → 换方法 → 放弃序列，确保已知正文/事实不被不同证据选择改变，产物绑定不持有隐藏 IR/AST，store 容量保持有界（D03/D07/D11）。
+
+## 6. D4 增量结构查询与续扫
+
+- [ ] 6.1 在现有物理遍历底座提供 query 可用的 entry 事件，覆盖 class 与 resource，复用 bulk 的 class 过滤而不并入其 scheduler；以多 nested、损坏子树和逐 entry 取消验证物理顺序与未知范围（D08/D11）。
+- [ ] 6.2 替换 query 的全范围 ProviderScan 收集，以需求拉取推进；密集首 entry 命中小页时不展开后续 nested，必要目录验证/解压/CRC 仍计费，完整遍历清单相等（D01/D08）。
+- [ ] 6.3 将 code consumer 改为可停止的逐项产出并接共用边界解码；复用当前 unit CP/member facts，测试一方法多命中、后续方法与损坏 Code 后缀，页满不构造 unit 的全部匹配（D01/D04/D08）。
+- [ ] 6.4 将 metadata/bootstrap/resource 消费者接入同一停止反馈与当前位置表示；覆盖单个位置产生多条结果、混合 consumer、资源无 CP 线索及未实现类别，不改变 derivation 或产生过滤假阴性（D08/D09）。
+- [ ] 6.5 版本化细粒度 cursor，绑定查询身份、遍历/consumer 内位置与必要祖先状态；验证旧 schema、篡改 target/scope/relation/位置均被拒，合法页大小/预算变化允许继续，验证与重放有界（D09）。
+- [ ] 6.6 去除按已发布匹配序号重造整单元结果的续页路径，保留必要底座验证的真实费用；连续多页与完整查询逐项相等，无重复/遗漏，稀疏命中及最终空页合法（D08/D09）。
+- [ ] 6.7 核对每页 coverage/execution/diagnostics；坏后缀只在访问时报告，页满与取消/预算不同，未扫描范围和未知分母可见，伪造 cursor 不能把前缀计成已扫描（D05/D08/D09）。
+
+## 7. D5 独立验收、测量与文档
+
+- [ ] 7.1 跑完整配置确定性与 Essential/All/局部证据足额语义对照，包含既有算术/receiver/boolean/concat/effect/origin/拒绝 fixture；受控 JDK 编译执行中不得以新增拒绝删掉原正确样本，已知失败独立修复后重冻候选（D03/D04/D10）。
+- [ ] 7.2 执行 debug/release 子进程、深表达式正常结束与各阶段停止释放、cache clear/容量拒绝、慢消费者及放弃序列门禁；证明无 abort、无遗留工作、真实费用和有界所有权（D06/D11）。
+- [ ] 7.3 按父性能协议冻结导航/恢复/证据追问/分页与放弃工作负载，保留相同完整产出和不同证据选择两组对照；记录首次结果、全序列 CPU/墙钟、构造数、返回字节、RSS 与保留权重，时间主张至少十次独立交错样本且无事后挑选（D12）。
+- [ ] 7.4 对每项 D01–D12 保存正例、反例/变异、命令与原始证据，区分“契约通过”“工作量下降”“时间收益未证实”；以关闭明细却仍构造全表、旧匹配序号重扫等变异证明门禁有效（D01–D12）。
+- [ ] 7.5 运行 fmt/clippy/workspace 及受影响 source-map/query/fingerprint 门禁，更新公共示例、能力清单、verification 与架构状态；执行 OpenSpec strict、本地链接与 MODIFIED 场景保留检查，真实实现完成后再同步归档主 specs（D01–D12）。
