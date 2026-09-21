@@ -10651,6 +10651,13 @@ mod tests {
     /// explicit constructor) and moves neither of the last three: every body is one local load
     /// (or, for the constructor, one field write) and its return, so no body declares an exception
     /// table, branches, or a subroutine.
+    ///
+    /// The `p3-required-conversions` sample adds its own class and thirteen bodies (twelve `static`
+    /// methods and the default constructor) and moves neither of the last three: every member is one
+    /// `StringBuilder` chain, one load-and-return, or one store, so no body declares an exception
+    /// table, branches, or — like every other P3 sample — a subroutine. The increment is the whole
+    /// of this sample's contribution: it is a class javac 23.0.1 compiled for Java 8 like the rest,
+    /// read by the same structural path.
     #[test]
     fn repository_class_fixtures_validate_without_false_target_rejections() {
         let fixtures = class_fixture_paths();
@@ -10730,7 +10737,7 @@ mod tests {
                 branch_targets,
                 subroutines
             ),
-            (51, 246, 44, 125, 8),
+            (52, 259, 44, 125, 8),
             "fixture population changed: re-measure these counts"
         );
     }

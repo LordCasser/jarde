@@ -1301,6 +1301,16 @@
       "path": "tests/fixtures/p3-refused-cast/v8/RefusedCast.class"
     },
     {
+      "blake3": "e9602186e21bd8e16c37f98eab088aaf4531f08bddfed620594c17f6679dd486",
+      "bytes": 4851,
+      "path": "tests/fixtures/p3-required-conversions/RequiredConversions.java"
+    },
+    {
+      "blake3": "96ed4aee49026f64179075ee3843709aa7e7a5cd02ed2d05f7a11e1b9c385d3d",
+      "bytes": 1031,
+      "path": "tests/fixtures/p3-required-conversions/v8/RequiredConversions.class"
+    },
+    {
       "blake3": "0a32b2ea235cc96196d96466dfd175576041522e8492f5537a48c58d73f69f3c",
       "bytes": 3021,
       "path": "tests/fixtures/p3-scope/Scope.java"

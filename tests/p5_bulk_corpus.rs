@@ -635,7 +635,12 @@ impl Billing {
         ir_items: 16940,
         analysis_steps: 7055,
         result_items: 122,
-        output_bytes: 25710,
+        // 25716 and not 25710: this case is the one that holds `Guarded` and `BooleanContexts`, and
+        // the two `Z` field writes of their static initializers (`Guarded.FLAG`,
+        // `BooleanContexts.staticFlag`) are spelled `true` where they were the `int` `1` — three
+        // bytes longer each, and `= 1;` is text `javac` refuses (`int cannot be converted to
+        // boolean`). No member's classification moved; only those two spellings did.
+        output_bytes: 25716,
     };
     /// `damaged-tail`: the readable classes only; the damaged entries cost their own attempts.
     const DAMAGED_TAIL: Self = Self {
@@ -674,7 +679,7 @@ impl Billing {
         ir_items: 27544,
         analysis_steps: 11235,
         result_items: 1378,
-        output_bytes: 43945,
+        output_bytes: 43951,
     };
 
     /// Arm B — the same requests, each carrying the one store that started empty. Pinned for the same
@@ -689,7 +694,7 @@ impl Billing {
         ir_items: 27544,
         analysis_steps: 11235,
         result_items: 26,
-        output_bytes: 43945,
+        output_bytes: 43951,
     };
 }
 // ---------------------------------------------------------------------------------------------
