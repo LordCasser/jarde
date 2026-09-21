@@ -300,6 +300,115 @@ pub enum Behaviour {
 /// sleeping over a record, cancelling the operation — without a second thread of its own.
 pub type SinkHook = Box<dyn FnMut(&Recorded)>;
 
+/// The bytes one delivered result **owns**, as this module's own reading of the same public surface the
+/// library reads them from: the text's own buffer, the source map's segment table, and the tables the two
+/// reports hold — each by its **capacity** where the surface hands over a table this process owns, and by
+/// its length where it hands over a slice.
+///
+/// It is deliberately a *subset* of the library's own weight model (no struct frames, no member
+/// identities, no declaration facts, no strings inside the record types the facade does not expose), so a
+/// case can state "the weight covers what a result owns" without restating the library's formula.
+pub fn owned_bytes(recovered: &RecoveredMethod) -> u64 {
+    fn buffer<T>(values: &Vec<T>) -> u64 {
+        u64::try_from(values.capacity())
+            .unwrap_or(u64::MAX)
+            .saturating_mul(u64::try_from(std::mem::size_of::<T>()).unwrap_or(u64::MAX))
+    }
+    fn slice<T>(values: &[T]) -> u64 {
+        u64::try_from(values.len())
+            .unwrap_or(u64::MAX)
+            .saturating_mul(u64::try_from(std::mem::size_of::<T>()).unwrap_or(u64::MAX))
+    }
+    fn strings(values: &Vec<String>) -> u64 {
+        let mut bytes = buffer(values);
+        for value in values {
+            bytes = bytes.saturating_add(u64::try_from(value.capacity()).unwrap_or(u64::MAX));
+        }
+        bytes
+    }
+    fn diagnostics(values: &Vec<Diagnostic>) -> u64 {
+        let mut bytes = buffer(values);
+        for value in values {
+            bytes = bytes
+                .saturating_add(u64::try_from(value.code.capacity()).unwrap_or(u64::MAX))
+                .saturating_add(u64::try_from(value.message.capacity()).unwrap_or(u64::MAX));
+        }
+        bytes
+    }
+
+    let recovery = recovered.recovery();
+    let analysis = recovered.analysis();
+    let mut bytes = u64::try_from(recovery.text.capacity()).unwrap_or(u64::MAX);
+    bytes = bytes
+        .saturating_add(slice(recovery.source_map.segments()))
+        .saturating_add(u64::try_from(recovery.method.capacity()).unwrap_or(u64::MAX))
+        .saturating_add(strings(&recovery.aliased_names))
+        .saturating_add(diagnostics(&recovery.diagnostics))
+        .saturating_add(buffer(&recovery.rules))
+        .saturating_add(buffer(&recovery.regions))
+        .saturating_add(buffer(&recovery.lambdas))
+        .saturating_add(buffer(&recovery.concats))
+        .saturating_add(buffer(&recovery.accessors))
+        .saturating_add(buffer(&recovery.bridges))
+        .saturating_add(buffer(&recovery.news))
+        .saturating_add(buffer(&recovery.fields))
+        .saturating_add(buffer(&recovery.enum_switches))
+        .saturating_add(buffer(&recovery.fallbacks))
+        .saturating_add(buffer(&analysis.requested_stages))
+        .saturating_add(buffer(&analysis.stages))
+        .saturating_add(buffer(&analysis.reads))
+        .saturating_add(buffer(&analysis.environment_problems))
+        .saturating_add(diagnostics(&analysis.diagnostics));
+    for lambda in &recovery.lambdas {
+        for owned in [
+            lambda.bootstrap.as_ref(),
+            lambda.sam_method_type.as_ref(),
+            lambda.instantiated_method_type.as_ref(),
+            lambda.implementation.as_ref(),
+        ]
+        .into_iter()
+        .flatten()
+        {
+            bytes = bytes.saturating_add(u64::try_from(owned.capacity()).unwrap_or(u64::MAX));
+        }
+        bytes = bytes
+            .saturating_add(u64::try_from(lambda.sam_name.capacity()).unwrap_or(u64::MAX))
+            .saturating_add(u64::try_from(lambda.sam_descriptor.capacity()).unwrap_or(u64::MAX))
+            .saturating_add(buffer(&lambda.captures));
+    }
+    bytes
+}
+
+/// The figure the older weight model charged for one result: the text's **length** plus a fixed cost per
+/// retained record.
+///
+/// It is kept beside [`owned_bytes`] as the *proxy* a case compares against: a result owns far more than
+/// this, which is exactly what a model that charged the proxy would miss.
+pub fn proxy_bytes(recovered: &RecoveredMethod) -> u64 {
+    const RECORD_WEIGHT: u64 = 64;
+    let recovery = recovered.recovery();
+    let analysis = recovered.analysis();
+    let records = recovery.regions.len()
+        + recovery.lambdas.len()
+        + recovery.concats.len()
+        + recovery.accessors.len()
+        + recovery.bridges.len()
+        + recovery.news.len()
+        + recovery.fields.len()
+        + recovery.enum_switches.len()
+        + recovery.fallbacks.len()
+        + recovery.aliased_names.len()
+        + recovery.rules.len()
+        + recovery.diagnostics.len()
+        + recovery.source_map.len()
+        + analysis.diagnostics.len()
+        + analysis.stages.len()
+        + recovered.callees().map_or(0, |read| read.members().len());
+    u64::try_from(recovery.text.len())
+        .unwrap_or(u64::MAX)
+        .saturating_add(RECORD_WEIGHT.saturating_mul(u64::try_from(records).unwrap_or(u64::MAX)))
+}
+
 /// One method record, as the sink received it and as the targets compare it.
 ///
 /// The library's own [`MethodResultEvent`] holds the whole delivery; this is the projection the
@@ -325,8 +434,15 @@ pub struct MethodRecord {
     /// For a result the fixed per-result ceiling refused: the weight it was accounted at and the
     /// ceiling it exceeded.
     pub oversized: Option<(u64, u64)>,
+    /// Why the run's own presentation stopped, when it did: a method's local allowance, a shape the
+    /// recovery refuses, an incomplete table — the reason the artifact is not there.
+    pub stop_reason: Option<StopReason>,
     /// The run's own diagnostic codes, without their messages.
     pub diagnostic_codes: Vec<String>,
+    /// What this result owns, as this module reads it from the public surface: see [`owned_bytes`].
+    pub owned_bytes: u64,
+    /// The proxy the older weight model charged for the same result: see [`proxy_bytes`].
+    pub proxy_bytes: u64,
     /// The semantic fingerprint of this record: its identity, content and disposition, with every
     /// resource reading left out.
     pub fingerprint: Fingerprint,
@@ -352,6 +468,12 @@ impl MethodRecord {
             MethodDelivery::Oversized { weight, limit, .. } => Some((*weight, *limit)),
             _ => None,
         };
+        // The run's own stop, when it states one: the reason a method has no artifact is part of what
+        // the stream says about it, so it is compared with the rest of the record.
+        let stop_reason = match &event.delivery {
+            MethodDelivery::Recovered(recovered) => recovered.recovery().outcome.stop().cloned(),
+            _ => None,
+        };
         let diagnostic_codes = match &event.delivery {
             MethodDelivery::Refused { diagnostics, .. } => {
                 diagnostics.iter().map(|item| item.code.clone()).collect()
@@ -372,6 +494,9 @@ impl MethodRecord {
             fields.number(weight);
             fields.number(limit);
         }
+        if let Some(reason) = &stop_reason {
+            fields.structured(reason);
+        }
         for code in &diagnostic_codes {
             fields.text(code);
         }
@@ -379,7 +504,15 @@ impl MethodRecord {
             fields.termination(plane);
         }
         let fingerprint = fields.done();
+        let (owned_bytes, proxy_bytes) = match &event.delivery {
+            MethodDelivery::Recovered(recovered) => {
+                (owned_bytes(recovered), proxy_bytes(recovered))
+            }
+            _ => (0, 0),
+        };
         Self {
+            owned_bytes,
+            proxy_bytes,
             class_ordinal: event.class_ordinal,
             member_ordinal: event.member_ordinal,
             method: event.method.clone(),
@@ -387,6 +520,7 @@ impl MethodRecord {
             text,
             weight: event.weight,
             oversized,
+            stop_reason,
             diagnostic_codes,
             fingerprint,
         }
@@ -438,6 +572,8 @@ pub struct Recorder {
     pub delay: Duration,
     /// What this consumer does after it has confirmed its method records.
     pub method_behaviour: Behaviour,
+    /// The operation's output account, as the header handed it over.
+    pub delivery: Option<DeliveryAccount>,
     /// How many method records this sink has been handed.
     methods_seen: u64,
 }
@@ -456,6 +592,7 @@ impl Recorder {
             hook: None,
             delay: Duration::ZERO,
             method_behaviour: Behaviour::Continue,
+            delivery: None,
             methods_seen: 0,
         }
     }
@@ -567,7 +704,14 @@ impl Recorder {
 }
 
 impl RecoverySink for Recorder {
-    fn header(&mut self, event: &BulkHeaderEvent) -> Result<SinkControl> {
+    fn header(
+        &mut self,
+        event: &BulkHeaderEvent,
+        delivery: DeliveryAccount,
+    ) -> Result<SinkControl> {
+        // The account travels with the header; a recording sink keeps it so a test can state what the
+        // operation still allowed at the moment a record was handed over.
+        self.delivery = Some(delivery);
         self.take(Recorded::Header(event.clone()))
     }
 

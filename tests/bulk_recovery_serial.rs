@@ -48,6 +48,26 @@ fn cursor_order(snapshot: &ArtifactSnapshot) -> Vec<Vec<u8>> {
     order
 }
 
+/// One run of the flat fixture under one worker count and one whole-operation wall clock.
+///
+/// The deadline is the **operation's** (`limits.elapsed_millis`, which the ledger takes from the entry
+/// budget), not a method's: it is the clock a wait inside the coordinator is bounded by.
+fn run_fixture(workers: usize, elapsed_millis: u64) -> (BulkRecoveryReport, Recorder) {
+    let mut limits = bulk_support::limits();
+    limits.elapsed_millis = elapsed_millis;
+    let (snapshot, _opened) = open(flat_fixture());
+    let content = vec![snapshot.clone()];
+    let mut budget = Budget::new(limits);
+    let roots = container_roots(&snapshot, &mut budget, &FLAT_PREFIXES);
+    let environment = environment(&snapshot, tree_scope(), roots);
+    let request = request(environment, workers);
+    let mut sink = Recorder::new();
+    let report = Engine::new()
+        .recover_all(&content, &request, &mut budget, &mut sink)
+        .expect("the fixture's scope is recoverable");
+    (report, sink)
+}
+
 #[test]
 fn the_whole_scope_is_recovered_class_by_class_in_physical_order() {
     let (snapshot, _opened) = open(nested_fixture());
@@ -382,12 +402,21 @@ fn a_class_that_cannot_be_prepared_is_refused_and_its_method_count_stays_unknown
 }
 
 #[test]
-fn a_class_over_the_preparation_ceiling_is_refused_with_its_own_code() {
+fn a_class_over_the_preparation_ceiling_is_refused_before_it_is_read_into_memory() {
     // A preparation ceiling below every class of the fixture, and the traversal still walks the whole
     // scope: each class is refused, none is truncated, and the run states the ceiling it refused at.
+    //
+    // The ceiling is a ceiling on **materialization**, not only on preparation, and the account says
+    // so: a class the container's own directory record already states is over the ceiling never has
+    // its bytes read, so the entry bytes the operation charges stay at zero. A ceiling checked after
+    // the read would still refuse every class — and would show the fixture's 1,813 bytes of class
+    // bodies charged, which is the reading this case is about.
+    let mut limits = bulk_support::limits();
+    limits.entry_bytes = 1 << 20;
+    limits.class_bytes = 1 << 20;
     let (snapshot, _opened) = open(flat_fixture());
     let content = vec![snapshot.clone()];
-    let mut budget = Budget::new(bulk_support::limits());
+    let mut budget = Budget::new(limits.clone());
     let roots = container_roots(&snapshot, &mut budget, &FLAT_PREFIXES);
     let environment = environment(&snapshot, tree_scope(), roots);
     let request = request(environment, 1).with_capacities(
@@ -422,6 +451,93 @@ fn a_class_over_the_preparation_ceiling_is_refused_with_its_own_code() {
         sink.diagnostics()
     );
     assert_eq!(report.summary.status(), "partial", "{:?}", report.summary);
+    assert_eq!(
+        report
+            .usage
+            .counted_usage(CountedBudgetDimension::EntryBytes),
+        0,
+        "no class body was read: the ceiling refused each one at the length its own container \
+         record states, before any of its bytes were materialized"
+    );
+    assert_eq!(
+        report
+            .usage
+            .counted_usage(CountedBudgetDimension::ReadBytes),
+        0,
+        "and no compressed byte of one was read either"
+    );
+    assert!(
+        report
+            .usage
+            .counted_usage(CountedBudgetDimension::ArchiveEntries)
+            > 0,
+        "the walk itself still parsed the directory it read the lengths from: {:?}",
+        report.usage
+    );
+}
+
+#[test]
+fn the_serial_configuration_finishes_inside_a_deadline_and_holds_no_window_slot() {
+    // The serial configuration runs each class task on the calling thread, so it opens no window slot
+    // at all — and a deadline a little above the work it really does is what makes that observable. A
+    // slot left behind per class would be an end nobody ever publishes, the final drain would wait for
+    // it, and the wait would cross the deadline before the `final` record could be delivered: the
+    // scope would be fully recovered and delivered, and the run would still end partial without a
+    // `final`. The same scope under two workers is the control: there the window holds slots, at most
+    // one per worker, and the same deadline is met.
+    let measured = run_fixture(1, u64::MAX).0;
+    let work = measured
+        .usage
+        .elapsed_millis
+        .max(1)
+        .saturating_add(200)
+        .max(250);
+    assert!(
+        work < 500,
+        "the deadline below has to fit between the fixture's own work and the drain the defect pays: \
+         {work} ms"
+    );
+
+    for (workers, slots) in [(1_usize, 0_u64), (2, 2)] {
+        let (report, sink) = run_fixture(workers, work);
+        assert_eq!(
+            report.summary.status(),
+            "complete",
+            "{workers} worker(s) inside {work} ms: {:?}",
+            report.summary
+        );
+        assert!(
+            report.final_delivered,
+            "the run published the `final` record its consumer needs ({workers} worker(s))"
+        );
+        assert_eq!(report.summary.methods_declared, 18);
+        assert_eq!(report.summary.methods_delivered, 18);
+        assert_eq!(
+            sink.methods().len(),
+            18,
+            "every method record reached the sink before the deadline ({workers} worker(s))"
+        );
+        assert!(
+            report.usage.elapsed_millis < work,
+            "the scope really finished inside its own deadline ({workers} worker(s)): {:?}",
+            report.usage
+        );
+        if slots == 0 {
+            assert_eq!(
+                report.window.window_slots_high_water, slots,
+                "the serial configuration opens no window slot, whatever the class count is: {:?}",
+                report.window
+            );
+        } else {
+            assert!(
+                report.window.window_slots_high_water >= 1
+                    && report.window.window_slots_high_water <= slots,
+                "a worker configuration holds one slot per class task in flight, never one per \
+                 class of the scope: {:?}",
+                report.window
+            );
+        }
+    }
 }
 
 #[test]

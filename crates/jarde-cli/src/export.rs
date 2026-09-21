@@ -16,10 +16,13 @@
 //! * **the stream is the library's order.** The sink writes each record inside the callback that
 //!   delivered it, so the frames of the file are the frames of the operation — header, class prepared,
 //!   that class's methods, its class end, and the final summary last.
-//! * **encoding is bounded by the request's own allowance.** A record is encoded into one reused
-//!   buffer that never holds more than the stream's remaining `output_bytes` reading, and it is
-//!   debited *before* it is written; a record that does not fit stops the run without being written at
-//!   all, and the encoder states that record's real size by counting the bytes it cannot hold.
+//! * **encoding is bounded by the operation's own account.** A record is encoded into one reused
+//!   buffer that never holds more than the `output_bytes` the operation could still charge, and its
+//!   bytes are charged **before** any of it is written: a record the one account refuses stops the run
+//!   without a byte of it being written, and the encoder states that record's real size by counting
+//!   the bytes it cannot hold. There is no second allowance: the recovered text the library emits and
+//!   the JSONL bytes this stream writes are admitted against the same declared `output_bytes` total,
+//!   which is what makes their *sum* stay inside one number.
 //! * **a record is delivered when the whole line is on the file.** Each line is handed over in one
 //!   `write_all`, framing included, and only then is its length added to the delivered prefix. A write
 //!   that fails part way leaves a partial line, which is not a record: the file is truncated back to
@@ -52,8 +55,8 @@ use jarde::artifact::budget_dimension_code;
 use jarde::{
     BudgetDimension, BulkDiagnosticEvent, BulkFinalEvent, BulkHeaderEvent, BulkRecoveryReport,
     BulkRecoveryRequest, BulkStop, ClassEndEvent, ClassPreparedEvent, CountedBudgetDimension,
-    Error, ExecutionReport, FactsCache, FactsCapacity, MethodResultEvent, RecoverySink,
-    SinkControl,
+    DeliveryAccount, Error, ExecutionReport, FactsCache, FactsCapacity, Limits, MethodResultEvent,
+    RecoverySink, SinkControl, task_budget,
 };
 use serde::Serialize;
 use std::fs::{File, OpenOptions};
@@ -83,9 +86,14 @@ pub(crate) struct Export {
     /// so `ir_items=…` is the way to state a tighter or a wider one. The effective configuration is
     /// published in the stream's `header`.
     ///
+    /// These are the **operation's** totals. The local limits one method runs under are the command's
+    /// single-request defaults (the same numbers one `recover` request runs under), published beside
+    /// them as `limits.method`: a whole-package ceiling is not a per-method allowance.
+    ///
     /// `output_bytes` is also this stream's own allowance: the JSONL bytes this command writes are
-    /// debited from the same reading the request declares, and a record that does not fit ends the run
-    /// rather than being written anyway.
+    /// charged to the same reading the request declares — the account the operation hands the stream
+    /// in its `header` — so a record that does not fit ends the run rather than being written anyway,
+    /// and the recovered text the library emits competes for the very same number.
     #[arg(long = "budget", value_name = "DIMENSION=LIMIT", action = ArgAction::Append)]
     budget: Vec<String>,
     /// The file the JSONL stream is written to.
@@ -275,9 +283,9 @@ pub(crate) fn run(args: Export) -> Result<ExitCode, Failure> {
     let request = BulkRecoveryRequest::for_scope(
         declaration.bind(&opened.snapshot, &opened.scope),
         workers,
-        opened.budget.limits().clone(),
+        method_limits()?,
     );
-    let mut stream = Stream::new(file, output, framing, stream_allowance(&opened.budget));
+    let mut stream = Stream::new(file, output, framing);
     // One process, one library operation: the stream is this call's sink, and there is no second run
     // behind it — not a serial retry, not a per-method process.
     let outcome = opened.engine.recover_all(
@@ -311,6 +319,24 @@ pub(crate) fn run(args: Export) -> Result<ExitCode, Failure> {
     })
 }
 
+/// The local limits **one method** of this export runs under.
+///
+/// They are the command's single-request defaults — the limits one `recover` request runs under,
+/// bounded in every dimension — and deliberately **not** the whole-package ceiling the operation is
+/// opened with. A total that funds a whole package (about a trillion units, and a two-hour wall
+/// clock) is a bound on the *operation*; letting every method inherit it would state that one method
+/// may spend a whole package's allowance. A method's own limits stop that method and leave the rest
+/// of the scope alone, which is only true when they are their own numbers — and the operation's
+/// totals bound every method beside them either way.
+///
+/// Both are published in the stream's `header`: `limits.method` is this document, and the caller's
+/// `--budget` declarations are the operation's totals. A caller that wants a different per-method
+/// allowance states it in a library request; this command's own vocabulary for a whole-package bound
+/// stays `--budget`.
+fn method_limits() -> Result<Limits, Error> {
+    Ok(task_budget(&[])?.limits().clone())
+}
+
 /// The worker count `--jobs` asks for.
 ///
 /// `auto` is this machine's own count — `std::thread::available_parallelism`, and 1 when that reading
@@ -336,22 +362,6 @@ fn jobs_requested(value: &str) -> Result<usize, Error> {
             ),
         )),
     }
-}
-
-/// The byte allowance this stream's own encoding runs under.
-///
-/// It is the request's remaining `output_bytes` reading, taken once before the operation starts: the
-/// adapter may hold and write no more than what the request declared for output. The reading is a
-/// *reading* and not a charge because the operation holds the caller's one budget mutably for the whole
-/// call — a sink callback borrows only itself — so the adapter carries the number it is bounded by
-/// instead of taking a permit the operation would have to release. The two accounts stay separate and
-/// are both readable: the request's totals are the report's `usage`, and the stream's own bytes are
-/// what the output file holds.
-fn stream_allowance(budget: &jarde::Budget) -> u64 {
-    budget
-        .limits()
-        .output_bytes
-        .saturating_sub(budget.usage().output_bytes)
 }
 
 /// Creates the destination exclusively.
@@ -483,8 +493,10 @@ enum Encoded {
 
 /// Why the adapter ended the stream itself, when it did.
 enum Stopped {
-    /// A record did not fit the stream's remaining allowance. Nothing was written for it, the prefix
-    /// before it stands, and the run is incomplete rather than failed.
+    /// The operation's one account refused a record's bytes: nothing was written for that record, the
+    /// prefix before it stands, and the run is incomplete rather than failed. The error is the
+    /// account's own refusal — the dimension it needed, the total it ran under and what the record
+    /// required.
     Allowance(Error),
     /// The output failed: a record could not be written, or the file could not be flushed, closed and
     /// read back. The confirmed prefix stands — the file holds whole lines up to the last boundary — and
@@ -501,8 +513,8 @@ impl Stopped {
     }
 }
 
-/// The one destination of an `export` stream: the file, the bounded encoder and the stream's own
-/// remaining allowance.
+/// The one destination of an `export` stream: the file, the bounded encoder and the operation's own
+/// output account.
 struct Stream {
     /// The destination, created exclusively before the operation started. It is taken when the stream
     /// is closed, so "one closing per stream" is a property of the type.
@@ -510,12 +522,14 @@ struct Stream {
     /// The destination's path, for the messages of a failure.
     path: PathBuf,
     /// The encoding of one record, reused from record to record: the only buffer this adapter owns, and
-    /// it never holds more than the stream's remaining allowance.
+    /// it never holds more than the operation's account still allows.
     buffer: Vec<u8>,
     /// The byte that ends one record, as the command's `--format` states it.
     framing: u8,
-    /// The request's remaining `output_bytes` reading, taken before the operation started.
-    allowance: u64,
+    /// The operation's own output account, handed over with the header. Every record's bytes are
+    /// charged here before they are written, and the stream holds no allowance of its own beside it:
+    /// "can this be written" is the same declaration the operation's own text was admitted against.
+    account: Option<DeliveryAccount>,
     /// How many bytes of confirmed records the file holds: delivery is the prefix up to this offset.
     confirmed: u64,
     /// Why the adapter stopped the stream, if it did.
@@ -523,21 +537,33 @@ struct Stream {
 }
 
 impl Stream {
-    fn new(file: File, path: PathBuf, framing: u8, allowance: u64) -> Self {
+    fn new(file: File, path: PathBuf, framing: u8) -> Self {
         Self {
             file: Some(file),
             path,
             buffer: Vec::new(),
             framing,
-            allowance,
+            account: None,
             confirmed: 0,
             stopped: None,
         }
     }
 
-    /// How much of the allowance is left after the records already confirmed.
-    fn remaining(&self) -> u64 {
-        self.allowance.saturating_sub(self.confirmed)
+    /// The operation's output account, or the failure that says the stream was never handed one.
+    ///
+    /// A stream's records follow its header, and the header is where the account arrives, so this can
+    /// only fail for a consumer that was asked to write a record it was never given the means to pay
+    /// for. It is answered rather than panicked on, and it ends the run as the output failure it is.
+    fn account(&mut self) -> jarde::Result<DeliveryAccount> {
+        match self.account.clone() {
+            Some(account) => Ok(account),
+            None => Err(self.output_failure(
+                "cli_delivery_account",
+                "the operation handed no output account with its header, so a record's bytes could \
+                 not be charged to it"
+                    .to_owned(),
+            )),
+        }
     }
 
     /// Records why the adapter stopped, keeping the observation that states the run's class.
@@ -555,9 +581,12 @@ impl Stream {
         }
     }
 
-    /// Encodes one record into the buffer, framing included, or answers that it does not fit.
-    fn encode(&mut self, record: &Record<'_>) -> Result<Encoded, Error> {
-        let remaining = self.remaining();
+    /// Encodes one record into the buffer, framing included, inside what the account still allows.
+    ///
+    /// The bound is the operation's own reading of its remaining `output_bytes`, so this buffer never
+    /// holds more than the operation could still charge — and the record's bytes are charged to that
+    /// same account by [`Stream::deliver`] before any of them is written.
+    fn encode(&mut self, record: &Record<'_>, remaining: u64) -> Result<Encoded, Error> {
         self.buffer.clear();
         let mut encoder = Bounded::new(&mut self.buffer, remaining);
         let outcome = serde_json::to_writer(&mut encoder, record);
@@ -578,25 +607,44 @@ impl Stream {
         Ok(Encoded::Line(self.buffer.len()))
     }
 
-    /// Encodes, debits and writes one record, and answers whether the stream goes on.
+    /// Encodes one record, takes its permit from the operation's account, and writes it.
+    ///
+    /// The order is the contract: the permit is asked for **before** the first byte is written, and a
+    /// refused permit is a refusal — nothing of that record reaches the file, and the account's error
+    /// (the dimension, the total and what the record needed) is what the run states. A permitted write
+    /// stays charged whatever happens to it afterwards.
     fn deliver(&mut self, record: Record<'_>) -> jarde::Result<SinkControl> {
-        let line = match self.encode(&record)? {
-            Encoded::Line(line) => line,
-            Encoded::TooLarge { needed } => {
-                // The record is not written — not even partially — so the prefix is exactly what was
-                // confirmed before it, and the stop states the numbers: the allowance this stream ran
-                // under, what it delivered, and what the record would have needed.
-                self.note(Stopped::Allowance(Error::BudgetExceeded {
-                    dimension: BudgetDimension::OutputBytes,
-                    limit: self.allowance,
-                    consumed: self.confirmed,
-                    requested: needed,
-                }));
-                return Ok(SinkControl::Stop);
-            }
+        let account = self.account()?;
+        let encoded = self.encode(&record, account.remaining_output_bytes())?;
+        let bytes = match &encoded {
+            Encoded::Line(line) => u64::try_from(*line).unwrap_or(u64::MAX),
+            // The record is not in the buffer: it needed more than the operation still allowed. Its
+            // real size is what the permit is asked for, which is how the account's refusal states the
+            // numbers instead of a lower bound.
+            Encoded::TooLarge { needed } => *needed,
         };
-        self.write(line)?;
-        Ok(SinkControl::Continue)
+        match (account.charge_output_bytes(bytes), encoded) {
+            (Ok(()), Encoded::Line(line)) => {
+                self.write(line)?;
+                Ok(SinkControl::Continue)
+            }
+            (Err(error), _) => {
+                // The one account refused these bytes: the record is not written — not even partially
+                // — so the prefix is exactly what was confirmed before it. The ledger holds the stop
+                // this refusal recorded (dimension and delivery owner), and the error states the
+                // numbers for the failure document.
+                self.note(Stopped::Allowance(error));
+                Ok(SinkControl::Stop)
+            }
+            (Ok(()), Encoded::TooLarge { needed }) => Err(self.output_failure(
+                "cli_export_encoder",
+                format!(
+                    "the operation admitted a record of {needed} byte(s) after the encoder refused to \
+                     hold it, so the record cannot be written from this buffer even though it was \
+                     paid for"
+                ),
+            )),
+        }
     }
 
     /// Writes one encoded line and confirms it.
@@ -717,7 +765,14 @@ fn flush_and_close(mut file: File) -> io::Result<()> {
 }
 
 impl RecoverySink for Stream {
-    fn header(&mut self, event: &BulkHeaderEvent) -> jarde::Result<SinkControl> {
+    fn header(
+        &mut self,
+        event: &BulkHeaderEvent,
+        delivery: DeliveryAccount,
+    ) -> jarde::Result<SinkControl> {
+        // The header is where the operation hands over its own output account, and this stream keeps
+        // it for the rest of the stream: every following record is charged to that one total.
+        self.account = Some(delivery);
         self.deliver(Record::Header { event })
     }
 

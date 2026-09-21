@@ -54,6 +54,12 @@
 //! total closes dispatch, wakes every waiter and joins every worker; work that already took its
 //! permit stays billed even when it was never delivered.
 //!
+//! The consumer's own bytes are part of that same total rather than a second allowance kept beside
+//! it: the header hands the sink a [`DeliveryAccount`], and a record's bytes are charged to the
+//! operation's `delivery` share **before** any of them is written. "Can this record be written" is
+//! therefore answered by the declaration the operation's own work is answered by, and the two cannot
+//! each stay inside one number while their sum exceeds it.
+//!
 //! # Cancellation
 //!
 //! Every wait is bounded and observes both the caller's cancellation token (which the ledger took
@@ -74,8 +80,8 @@
 use crate::environment::ResolutionEnvironment;
 use crate::ir::{AnalysisStage, MethodAnalysisReport, MethodAnalysisRequest, MethodBodyState};
 use crate::{
-    ClassBytesId, ContainerId, Coverage, CoverageDimension, CoverageRange, CoverageState,
-    Diagnostic, DiagnosticSeverity, Error, ExecutionReport, FactsCapacity, Limits,
+    BudgetDimension, ClassBytesId, ContainerId, Coverage, CoverageDimension, CoverageRange,
+    CoverageState, Diagnostic, DiagnosticSeverity, Error, ExecutionReport, FactsCapacity, Limits,
     PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId, PhysicalView, Provenance,
     RecoveredMethod, Result, SnapshotId, TerminationReason, UsageSnapshot,
 };
@@ -204,6 +210,12 @@ impl BulkRecoveryRequest {
 /// `facts_capacity` is the retention capacity of the store the entry budget carries, or
 /// [`FactsCapacity::none`] when the caller attached none: a zero capacity closes cross-consumption
 /// retention and changes nothing about the facts the operation is holding right now.
+///
+/// `total` is the operation's own ceiling — the entry budget's limits, which every part of the
+/// operation is admitted against — and `method` is the local limit of **one** method. The two are
+/// published separately because they are separate declarations: a caller may open a whole package
+/// under a ceiling that funds it and still hold each method to its own single-request allowance, and a
+/// consumer that reads only this record has to be able to tell which number bounds which work.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct BulkLimits {
@@ -212,7 +224,11 @@ pub struct BulkLimits {
     /// The worker count this operation uses: `min(requested, window / per-result ceiling)`, at
     /// least one.
     pub workers_effective: usize,
-    /// The local limits one method runs under, as the request declared them.
+    /// The operation's own total limits: the entry budget's, shared by discovery, every method and
+    /// delivery. Never reset and never multiplied by the worker count.
+    pub total: Limits,
+    /// The local limits one method runs under, as the request declared them. They bound that method
+    /// alone: a method that runs out of them stops without touching the operation's other classes.
     pub method: Limits,
     /// The per-class preparation ceiling, as the request declared it.
     pub max_class_bytes: u64,
@@ -235,6 +251,7 @@ impl BulkLimits {
     /// valid request may get, and it is published rather than hidden.
     pub fn effective_from(
         request: &BulkRecoveryRequest,
+        total: &Limits,
         facts_capacity: FactsCapacity,
     ) -> Result<Self> {
         if request.workers == 0 {
@@ -277,6 +294,7 @@ impl BulkLimits {
         Ok(Self {
             workers_requested: request.workers,
             workers_effective: effective,
+            total: total.clone(),
             method: request.method_limits.clone(),
             max_class_bytes: request.max_class_bytes,
             max_result_weight: request.max_result_weight,
@@ -301,6 +319,87 @@ pub enum SinkControl {
     Stop,
 }
 
+/// The operation's own output account, handed to the sink with the stream's `Header`.
+///
+/// A consumer's records are bytes, and those bytes are charged to **the operation's** one total
+/// (design decision 4: encoding for delivery is the `delivery` part of the ledger every read and
+/// every method bills to) instead of to a second allowance an adapter keeps beside it. That is the
+/// whole point of the handle: "may this record be written" is answered by the same declaration the
+/// operation's own work is answered by, so the two cannot each stay inside a number and still exceed
+/// their sum.
+///
+/// # What a consumer does with it
+///
+/// * ask [`DeliveryAccount::remaining_output_bytes`] for what the operation could still charge, and
+///   hold no more than that while encoding;
+/// * ask [`DeliveryAccount::charge_output_bytes`] for the permit of a record **before** writing any
+///   byte of it. A refused permit is a refusal: not one byte of that record is written, the prefix
+///   the consumer already confirmed stands, and the stop the ledger records names the dimension it
+///   needed and the delivery owner that needed it;
+/// * keep the handle for the rest of the stream, and for as long as the consumer's own bookkeeping
+///   needs it. It is a handle on one total rather than a reading taken at the header, so what it
+///   reports moves while the operation's other parts work.
+///
+/// # What it is not
+///
+/// The record weight itself is not the consumer's charge: the library bills one `ResultItems` per
+/// record it hands over, before the callback. This handle is for the bytes the *consumer* owns.
+///
+/// A charge that took its permit stays charged. A cancellation that arrives after the permit does
+/// not refund it, and a permitted record that then fails to be written is still billed: the permit
+/// is for the work, not for its success. The handle locks the operation's total only for its own
+/// charge — the library never holds that lock while it calls the sink, and a consumer needs no lock
+/// of its own for its own bookkeeping.
+#[derive(Clone, Debug)]
+pub struct DeliveryAccount {
+    /// The operation's total, shared with every part of the operation.
+    ledger: OperationLedger,
+    /// The `output_bytes` ceiling the operation was opened with: the entry budget's own total limit,
+    /// which is the one any charge of this dimension is admitted against. It is read here once so a
+    /// consumer never has to re-declare a number the operation already holds.
+    output_bytes_limit: u64,
+}
+
+impl DeliveryAccount {
+    /// The account of one operation: the ledger every part of it bills to, and the entry budget's
+    /// own `output_bytes` ceiling.
+    fn of(ledger: &OperationLedger, limits: &Limits) -> Self {
+        Self {
+            ledger: ledger.clone(),
+            output_bytes_limit: limits.output_bytes,
+        }
+    }
+
+    /// How many output bytes the operation could still charge, as its total stands right now.
+    ///
+    /// This is the reading of one total — `limit - usage` — and nothing else: it takes no permit and
+    /// records no stop. A consumer that sizes its buffer by it can still be refused by
+    /// [`DeliveryAccount::charge_output_bytes`] afterwards, because the operation's other parts
+    /// charge the same dimension while the consumer encodes, and only the charge is a decision.
+    pub fn remaining_output_bytes(&self) -> u64 {
+        self.output_bytes_limit.saturating_sub(
+            self.ledger
+                .usage()
+                .counted_usage(CountedBudgetDimension::OutputBytes),
+        )
+    }
+
+    /// Takes the permit for `bytes` bytes of the consumer's own output, as the operation's
+    /// **delivery** work.
+    ///
+    /// The charge is the operation's own: it is admitted against the total the caller declared and
+    /// billed to [`UsageOwner::Delivery`], and a refusal is the operation's first stop — the
+    /// dimension it needed and the owner that needed it travel with that record. `Err` means the
+    /// bytes were **not** admitted: no byte of a record refused here may be written.
+    pub fn charge_output_bytes(&self, bytes: u64) -> Result<()> {
+        self.ledger.charge(
+            UsageOwner::Delivery,
+            CountedBudgetDimension::OutputBytes,
+            bytes,
+        )
+    }
+}
+
 /// The typed consumer of one bulk operation's stream.
 ///
 /// The callbacks run on the **coordinator thread only** — the calling thread of
@@ -313,9 +412,16 @@ pub enum SinkControl {
 /// A record is **delivered** exactly when its callback returned `Ok`; the delivery counts a caller
 /// reads are the confirmations, and an event whose callback was refused is not one of them.
 pub trait RecoverySink {
-    /// The view this operation covers and its effective configuration. It is the first event of
-    /// every stream, published before anything is discovered.
-    fn header(&mut self, event: &BulkHeaderEvent) -> Result<SinkControl>;
+    /// The view this operation covers, its effective configuration, and the operation's own output
+    /// account. It is the first event of every stream, published before anything is discovered.
+    ///
+    /// The account travels with the header because the header is the one event a stream starts with:
+    /// a consumer that charges its own bytes stores the handle here and keeps it for the rest of the
+    /// stream ([`DeliveryAccount`]). A stream that published no header publishes nothing else either
+    /// — an operation stopped before its first record delivers no record at all — so no consumer is
+    /// ever asked to write a record without having been handed the account it may write it under.
+    fn header(&mut self, event: &BulkHeaderEvent, delivery: DeliveryAccount)
+    -> Result<SinkControl>;
 
     /// One class prepared: its identity, the shared read evidence of its one read and how many
     /// method records it declares. It carries no constant pool and no member table.
@@ -659,6 +765,11 @@ pub struct BulkWindow {
     pub active_classes: u64,
     /// The most class tasks that were executing at the same time.
     pub concurrent_classes_high_water: u64,
+    /// The most window slots the operation held at once: one per class task dispatched and not yet
+    /// ended. The serial configuration opens none — the coordinator *is* the class task there — so
+    /// this is zero for it however many classes the scope holds, while a worker configuration holds
+    /// at most [`BulkWindow::active_classes`] of them.
+    pub window_slots_high_water: u64,
     /// The largest retained weight of pending method results this run reached.
     pub buffered_weight_high_water: u64,
     /// The largest weight one method result was accounted at.
@@ -983,6 +1094,9 @@ struct OperationState {
     /// Class tasks executing right now, and the most that ever were.
     executing: u64,
     executing_high_water: u64,
+    /// The most window slots this operation ever held at once: one per dispatched class the
+    /// coordinator had not yet delivered the end of.
+    slot_count_high_water: u64,
     /// The retained weight of the pending method records, and the most it ever was.
     retained_weight: u64,
     retained_weight_high_water: u64,
@@ -1104,6 +1218,35 @@ impl Registry {
         state.executing = state.executing.saturating_add(1);
         state.executing_high_water = state.executing_high_water.max(state.executing);
         Entered { registry: self }
+    }
+
+    /// Dispatches one class task into the window and answers the ordinal it delivers under.
+    fn dispatch_class(&self, class: ScopeClass) -> u64 {
+        let mut state = self.lock();
+        let ordinal = state.dispatched;
+        state.slots.push_back(Slot::new(class));
+        state.dispatched = state.dispatched.saturating_add(1);
+        state.slot_count_high_water = state
+            .slot_count_high_water
+            .max(u64::try_from(state.slots.len()).unwrap_or(u64::MAX));
+        self.changed.notify_all();
+        ordinal
+    }
+
+    /// Takes the next delivery ordinal for a class the coordinator runs **itself**, without opening a
+    /// window slot for it.
+    ///
+    /// The serial configuration needs the ordinal of each class and nothing else: the coordinator *is*
+    /// the class task, so every record goes straight to the sink where it is produced and the class's
+    /// end is published at the same place. A slot opened for such a class would never be taken —
+    /// nothing drains a window in that configuration — so it would stay in the window for the rest of
+    /// the operation, grow with the class count, and leave the final drain waiting for an end that
+    /// nobody owes it (a wait that costs the operation its deadline, and with it the `Final` record).
+    fn next_ordinal(&self) -> u64 {
+        let mut state = self.lock();
+        let ordinal = state.dispatched;
+        state.dispatched = state.dispatched.saturating_add(1);
+        ordinal
     }
 
     /// Takes the next class task a worker may run, or `None` when this operation has no more work
@@ -1444,18 +1587,6 @@ fn run_class_task(
         Ok(read) => read,
         Err(error) => return class_failure(operation, error, budget, methods, class_execution),
     };
-    if read.class_bytes.length > operation.limits.max_class_bytes {
-        let error = Error::invalid_input(
-            "bulk_class_too_large",
-            format!(
-                "the class entry is {} bytes and this operation prepares at most {}: the class is \
-                 refused, and the methods it declares stay unknown rather than being counted or \
-                 silently truncated",
-                read.class_bytes.length, operation.limits.max_class_bytes
-            ),
-        );
-        return class_failure(operation, error, budget, methods, class_execution);
-    }
     let prepared = match PreparedClass::prepare(&read, budget) {
         Ok(prepared) => prepared,
         Err(error) => return class_failure(operation, error, budget, methods, class_execution),
@@ -1550,15 +1681,65 @@ fn class_failure(
 
 /// The one trusted read of one class candidate: the entry's verified bytes, or the snapshot's own
 /// root when the candidate is a standalone CLASS.
+///
+/// # The preparation ceiling is enforced *while* the bytes are read
+///
+/// The read runs under a budget of its own whose `entry_bytes` and `class_bytes` limits are this
+/// operation's [`BulkRecoveryRequest::max_class_bytes`] (when that is the tighter of the two), and it
+/// bills to the same ledger as every other read of the operation. That is what makes the ceiling a
+/// ceiling on **materialization** rather than on preparation alone: the entry's own trusted length —
+/// the uncompressed size of the container's directory record, verified against the entry's local
+/// header — is checked before the bytes are copied out, and a deflated entry is charged chunk by chunk
+/// as it inflates. A class over the ceiling is therefore refused **before** it is read into memory,
+/// and an entry that inflates past the length its record states cannot grow past the ceiling either.
+///
+/// The refusal is a *class-level* one: it is answered as [`BulkRecoveryRequest::max_class_bytes`]'
+/// own refusal, the operation continues with the classes beside it, and the ceiling's dimension
+/// (`entry_bytes`/`class_bytes`) is the one the caller declared in the entry budget.
 fn read_class(
     operation: &Operation<'_>,
     class: &ScopeClass,
     budget: &mut Budget,
 ) -> Result<PreparedClassRead> {
     budget.set_owner(UsageOwner::Discovery);
-    match &class.entry {
-        Some(entry) => operation.snapshot.prepared_class(entry, budget),
-        None => operation.snapshot.prepared_root_class(budget),
+    let mut limits = budget.limits().clone();
+    limits.entry_bytes = limits.entry_bytes.min(operation.limits.max_class_bytes);
+    limits.class_bytes = limits.class_bytes.min(operation.limits.max_class_bytes);
+    let mut read = operation.budget_for(limits, UsageOwner::Discovery);
+    let read = match &class.entry {
+        Some(entry) => operation.snapshot.prepared_class(entry, &mut read),
+        None => operation.snapshot.prepared_root_class(&mut read),
+    };
+    match read {
+        Ok(read) => Ok(read),
+        Err(error) => Err(ceiling_refusal(operation, &error).unwrap_or(error)),
+    }
+}
+
+/// The operation's own preparation-ceiling refusal, when a read failed because of it.
+///
+/// A read that needs more than the ceiling is answered with
+/// [`BulkRecoveryRequest::max_class_bytes`]' own error rather than the budget error of the local
+/// limit that carried it: the caller declared a ceiling on one class, and "this class is larger than
+/// the ceiling" is the fact a consumer of that record can act on. `None` leaves the read's own error
+/// as it is — a damaged entry, a missing directory and an exhausted *quota* all keep their own codes.
+fn ceiling_refusal(operation: &Operation<'_>, error: &Error) -> Option<Error> {
+    let ceiling = operation.limits.max_class_bytes;
+    match error {
+        Error::BudgetExceeded {
+            dimension: BudgetDimension::EntryBytes | BudgetDimension::ClassBytes,
+            limit,
+            requested,
+            ..
+        } if *limit == ceiling && *requested > ceiling => Some(Error::invalid_input(
+            "bulk_class_too_large",
+            format!(
+                "the class entry needs {requested} byte(s) and this operation prepares at most \
+                 {ceiling}: the class is refused before it is read into memory, and the methods it \
+                 declares stay unknown rather than being counted or silently truncated"
+            ),
+        )),
+        _ => None,
     }
 }
 
@@ -1719,40 +1900,207 @@ fn local_or_closing(
     })
 }
 
-/// The retained weight of one method result, in bytes.
+/// The retained weight of one method result, in bytes: what the result **owns**.
 ///
-/// The figure is a **retention proxy**, and it says so: the artifact's own text plus one fixed cost
-/// per record the result keeps — the planes the presentation published, the source map's segments
-/// and the analysis' diagnostics and stages. It measures what this operation retains while it waits,
-/// which is the question the result window asks. It is not an allocator's view of the same result,
-/// no RSS figure is read from it, and the per-method `method_limits` are what bound the work before a
-/// result ever reaches this weight.
+/// # The model (design decision 5)
+///
+/// ```text
+/// weight(result) =
+///     size_of::<RecoveredMethod>()                             the held value's own frame
+///   + text.capacity()                                          the artifact's text buffer
+///   + source_map.segments().len() * size_of::<Segment>()        the segment table
+///   + the recovery report:
+///       method.capacity() + Σ aliased_names[i].capacity()       the strings it owns
+///     + Σ diagnostics[i].{code,message}.capacity()              the diagnostics it owns
+///     + capacities of rules/regions/lambdas/concats/accessors/bridges/news/fields/enum_switches/
+///       fallbacks, each * size_of::<Element>()                  one allocation per table
+///     + the strings of every LambdaRecord (and of its captures)
+///   + the analysis report: the same two rules over
+///       environment_problems (with their messages), requested_stages, stages, reads, diagnostics,
+///       the member identity (its owner digest, its raw name and descriptor) and its origin set
+///   + the callee read: its class name, its members' identities and its refusal table
+///   + the facts: the declaration's own name and descriptor (by length: the surface hands them over
+///       as `&str`), and the debug-local table's own buffer
+/// ```
+///
+/// Every owned buffer is counted by its **capacity**, not by the length it currently uses: a `Vec` or
+/// `String` this operation holds owns its whole allocation, and an allocator that grew it to twice
+/// the length it needed is holding twice the memory the length suggests. Tables the surface hands over
+/// as **slices** (`SourceMap::segments`, the callee read's members and refusals, the facts' debug
+/// locals) are counted by length, because a slice carries no capacity — the number is then a lower
+/// bound of that table's own allocation, and the tables this module owns itself are the ones counted
+/// exactly.
+///
+/// # What this model is not
+///
+/// * **It is not RSS and not an allocator's view.** It counts the bytes this operation's own
+///   structures own, with no allocator header, no fragmentation, no rounding and no copy an upper
+///   layer made of a fact it read here. A process's real footprint is a different measurement.
+/// * **No backing is shared inside a result.** Nothing a result holds is an `Arc`: the values above
+///   are plain owned data, so there is no backing to deduplicate *within* one result's weight. What
+///   *is* shared across the operation — the class's bytes and the container facts — belongs to the
+///   preparation that read it and is charged there; counting it again per result would be exactly the
+///   duplication the design's deduplication rule forbids.
+/// * **Record elements are walked for the types this facade exposes** (`LambdaRecord` with its
+///   captures, both reports' `Diagnostic`s, the analysis report's `EnvironmentProblem`s, the member
+///   identities) and **not beyond that**: the strings *inside* a `RegionRecord`, a `ConcatRecord`, an
+///   `AccessorRecord`, a `BridgeRecord`, a `NewRecord`, a `FieldRecord`, an `EnumSwitchRecord`, an
+///   `InitRecord` or a `DeclarationRecord` are outside this model, because those element types are not
+///   part of this facade's surface (only their tables' own allocations are counted). The same holds
+///   for the facts' `DebugLocal` fields and for anything an `EnvironmentIdentity` or an `OriginSet`
+///   holds beyond the parts listed above. A caller that needs a hard bound must therefore read this
+///   figure as "at least what is counted here", which is why the per-item ceiling that refuses a
+///   result is stated separately as [`BulkRecoveryRequest::max_result_weight`].
 fn result_weight(recovered: &RecoveredMethod) -> u64 {
-    /// The fixed cost of one retained record of any plane.
-    const RECORD_WEIGHT: u64 = 64;
     let recovery = recovered.recovery();
     let analysis = recovered.analysis();
-    let records = recovery
-        .regions
-        .len()
-        .saturating_add(recovery.lambdas.len())
-        .saturating_add(recovery.concats.len())
-        .saturating_add(recovery.accessors.len())
-        .saturating_add(recovery.bridges.len())
-        .saturating_add(recovery.news.len())
-        .saturating_add(recovery.fields.len())
-        .saturating_add(recovery.enum_switches.len())
-        .saturating_add(recovery.fallbacks.len())
-        .saturating_add(recovery.aliased_names.len())
-        .saturating_add(recovery.rules.len())
-        .saturating_add(recovery.diagnostics.len())
-        .saturating_add(recovery.source_map.len())
-        .saturating_add(analysis.diagnostics.len())
-        .saturating_add(analysis.stages.len())
-        .saturating_add(recovered.callees().map_or(0, |read| read.members().len()));
-    let text = u64::try_from(recovery.text.len()).unwrap_or(u64::MAX);
-    let records = u64::try_from(records).unwrap_or(u64::MAX);
-    text.saturating_add(RECORD_WEIGHT.saturating_mul(records))
+    let facts = recovered.facts();
+    let mut weight = Weight::default();
+
+    // The value itself, and the artifact it carries.
+    weight.frame::<RecoveredMethod>();
+    weight.text(&recovery.text);
+    weight.slice(recovery.source_map.segments());
+
+    // The recovery report's own strings and tables.
+    weight.text(&recovery.method);
+    weight.strings(&recovery.aliased_names);
+    weight.diagnostics(&recovery.diagnostics);
+    weight.buffer(&recovery.rules);
+    weight.buffer(&recovery.regions);
+    weight.buffer(&recovery.lambdas);
+    weight.buffer(&recovery.concats);
+    weight.buffer(&recovery.accessors);
+    weight.buffer(&recovery.bridges);
+    weight.buffer(&recovery.news);
+    weight.buffer(&recovery.fields);
+    weight.buffer(&recovery.enum_switches);
+    weight.buffer(&recovery.fallbacks);
+    for lambda in &recovery.lambdas {
+        weight.optional_text(lambda.bootstrap.as_ref());
+        weight.text(&lambda.sam_name);
+        weight.text(&lambda.sam_descriptor);
+        weight.optional_text(lambda.sam_method_type.as_ref());
+        weight.optional_text(lambda.instantiated_method_type.as_ref());
+        weight.optional_text(lambda.implementation.as_ref());
+        weight.buffer(&lambda.captures);
+    }
+
+    // The analysis report: its own tables, the member it is about, and the origins it names.
+    weight.identity(&analysis.method);
+    weight.origin_set(&analysis.origin);
+    weight.buffer(&analysis.environment_problems);
+    for problem in &analysis.environment_problems {
+        weight.text(&problem.message);
+    }
+    weight.buffer(&analysis.requested_stages);
+    weight.buffer(&analysis.stages);
+    weight.buffer(&analysis.reads);
+    weight.diagnostics(&analysis.diagnostics);
+
+    // The callee read, when this request made one.
+    if let Some(read) = recovered.callees() {
+        weight.borrowed(read.class());
+        weight.slice(read.members());
+        weight.slice(read.refusals());
+        for member in read.members() {
+            weight.identity(member.identity());
+        }
+    }
+
+    // The facts the run was presented from: the declaration's own strings, and its debug-local table.
+    weight.borrowed(facts.method().name());
+    weight.borrowed(facts.method().descriptor());
+    weight.slice(facts.debug_locals());
+
+    weight.0
+}
+
+/// The accumulator one result's retained weight is summed in.
+///
+/// Every term is a **capacity** wherever the surface hands over a buffer this operation owns, and a
+/// length wherever it hands over a slice (which owns nothing). All arithmetic saturates: a weight is a
+/// bound used to refuse work, so it must never wrap into a small number and admit a result that does
+/// not fit.
+#[derive(Clone, Copy, Default)]
+struct Weight(u64);
+
+impl Weight {
+    /// One value's own frame, without whatever it owns behind a pointer.
+    fn frame<T>(&mut self) {
+        self.value(u64::try_from(std::mem::size_of::<T>()).unwrap_or(u64::MAX));
+    }
+
+    /// One owned table's own allocation: `capacity` elements of `T`.
+    fn buffer<T>(&mut self, values: &Vec<T>) {
+        let elements = u64::try_from(values.capacity()).unwrap_or(u64::MAX);
+        let each = u64::try_from(std::mem::size_of::<T>()).unwrap_or(u64::MAX);
+        self.value(elements.saturating_mul(each));
+    }
+
+    /// One table the surface hands over as a slice: it owns nothing itself, so its length is the
+    /// closest reading of the allocation behind it.
+    fn slice<T>(&mut self, values: &[T]) {
+        let elements = u64::try_from(values.len()).unwrap_or(u64::MAX);
+        let each = u64::try_from(std::mem::size_of::<T>()).unwrap_or(u64::MAX);
+        self.value(elements.saturating_mul(each));
+    }
+
+    /// One owned string's own allocation.
+    fn text(&mut self, value: &String) {
+        self.value(u64::try_from(value.capacity()).unwrap_or(u64::MAX));
+    }
+
+    /// One owned string that is not held, when it is held at all.
+    fn optional_text(&mut self, value: Option<&String>) {
+        if let Some(value) = value {
+            self.text(value);
+        }
+    }
+
+    /// One string the surface hands over as a borrowed `str`: a `&str` carries no capacity, so its
+    /// length is all it states.
+    fn borrowed(&mut self, value: &str) {
+        self.value(u64::try_from(value.len()).unwrap_or(u64::MAX));
+    }
+
+    /// One owned list of strings: its own allocation, and the allocation of every string in it.
+    fn strings(&mut self, values: &Vec<String>) {
+        self.buffer(values);
+        for value in values {
+            self.text(value);
+        }
+    }
+
+    /// One owned list of diagnostics: its own allocation, and the two strings each one owns.
+    fn diagnostics(&mut self, values: &Vec<Diagnostic>) {
+        self.buffer(values);
+        for diagnostic in values {
+            self.text(&diagnostic.code);
+            self.text(&diagnostic.message);
+        }
+    }
+
+    /// One member identity: the strings its definition carries and the raw name and descriptor bytes.
+    fn identity(&mut self, identity: &PhysicalMethodId) {
+        self.text(&identity.owner.class_bytes.digest.0);
+        if let Some(entry) = identity.owner.location.entry() {
+            self.buffer(&entry.raw_name.0);
+        }
+        self.buffer(&identity.name.0);
+        self.buffer(&identity.descriptor.0);
+    }
+
+    /// One origin set: its own frame and the members it holds.
+    fn origin_set(&mut self, origins: &jarde_reader::model::OriginSet) {
+        self.frame::<jarde_reader::model::OriginSet>();
+        self.buffer(&origins.members);
+    }
+
+    /// Adds one already counted number of bytes.
+    fn value(&mut self, bytes: u64) {
+        self.0 = self.0.saturating_add(bytes);
+    }
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -1777,6 +2125,9 @@ enum Record<'a> {
 struct Delivery<'a> {
     sink: &'a mut dyn RecoverySink,
     budget: &'a mut Budget,
+    /// The operation's one output account, handed to the sink with the header: the consumer's own
+    /// bytes are charged to the same total every read and every method bills to.
+    account: DeliveryAccount,
     /// The consumer refused (`Stop`) or failed: nothing further may be handed to it, including the
     /// records that would have stated why. What it confirmed stands.
     closed: bool,
@@ -1788,13 +2139,19 @@ impl Delivery<'_> {
     /// The charge comes first and it is the operation's own: a record the total cannot pay for is
     /// not published, and the `Final` event is no exception — a stream is not completed by a record
     /// the quota refused, and a charge refusal is a stop like any other.
+    ///
+    /// The sink's callback is called with the operation's output account, and the call happens
+    /// without the ledger's lock: taking a permit is the sink's own decision inside the callback.
     fn deliver(&mut self, record: Record<'_>) -> std::result::Result<SinkControl, Closing> {
         self.budget.set_owner(UsageOwner::Delivery);
         self.budget
             .charge(CountedBudgetDimension::ResultItems, 1)
             .map_err(Closing::Stopped)?;
         let control = match record {
-            Record::Header(event) => self.sink.header(event),
+            Record::Header(event) => {
+                let account = self.account.clone();
+                self.sink.header(event, account)
+            }
             Record::Prepared(event) => self.sink.class_prepared(event),
             Record::Method(event) => self.sink.method(event),
             Record::ClassEnd(event) => self.sink.class_end(event),
@@ -2183,7 +2540,7 @@ fn coordinate(
                     }
                     Next::Stopped => break,
                 };
-                let ordinal = dispatch_class(operation, class.clone());
+                let ordinal = operation.registry.next_ordinal();
                 let mut consumer = DirectConsumer {
                     operation,
                     delivery,
@@ -2214,7 +2571,7 @@ fn coordinate(
                         &mut diagnostics_published,
                     ) {
                         Next::Class(class) => {
-                            dispatch_class(operation, *class);
+                            operation.registry.dispatch_class(*class);
                         }
                         Next::Done => {
                             traversal_done = true;
@@ -2353,16 +2710,6 @@ fn stop_ending(operation: &Operation<'_>, delivery: &Delivery<'_>) -> Option<End
         return Some(Ending::Stopped);
     }
     None
-}
-
-/// Dispatches one class task into the window and answers the ordinal it delivers under.
-fn dispatch_class(operation: &Operation<'_>, class: ScopeClass) -> u64 {
-    let mut state = operation.registry.lock();
-    let ordinal = state.dispatched;
-    state.slots.push_back(Slot::new(class));
-    state.dispatched = state.dispatched.saturating_add(1);
-    operation.registry.changed.notify_all();
-    ordinal
 }
 
 /// What one step of the traversal yielded.
@@ -2726,6 +3073,7 @@ fn window_of(state: &OperationState, limits: &BulkLimits) -> BulkWindow {
     BulkWindow {
         active_classes: limits.workers_effective as u64,
         concurrent_classes_high_water: state.executing_high_water,
+        window_slots_high_water: state.slot_count_high_water,
         buffered_weight_high_water: state.retained_weight_high_water,
         largest_result_weight: state.largest_result_weight,
         result_weight_limit: limits.max_result_weight,
@@ -2767,7 +3115,8 @@ pub fn recover_all(
     sink: &mut dyn RecoverySink,
 ) -> Result<BulkRecoveryReport> {
     let store = crate::OperationStore::of(budget);
-    let limits = BulkLimits::effective_from(request, store.capacity())?;
+    let total = budget.limits().clone();
+    let limits = BulkLimits::effective_from(request, &total, store.capacity())?;
     if request.environment.snapshot != request.snapshot
         || request.environment.scope != request.scope
     {
@@ -2817,9 +3166,11 @@ pub fn recover_all(
         discovery_limits: budget.limits().clone(),
         faults: Faults::from_request(request),
     };
+    let account = DeliveryAccount::of(&ledger, budget.limits());
     let mut delivery = Delivery {
         sink,
         budget,
+        account,
         closed: false,
     };
     let header = BulkHeaderEvent {

@@ -33,9 +33,10 @@
 
 use jarde::{
     ArchiveNameBytes, ArtifactInput, BulkDiagnosticEvent, BulkFinalEvent, BulkHeaderEvent,
-    BulkRecoveryRequest, ClassEndEvent, ClassPreparedEvent, Engine, EnvironmentPolicy,
-    EnvironmentRequest, LayoutMode, Limits, LoadRoot, LoaderId, MethodDelivery, MethodResultEvent,
-    MultiReleasePolicy, PhysicalScope, RecoverySink, RuntimeProfile, SinkControl, task_budget,
+    BulkRecoveryRequest, ClassEndEvent, ClassPreparedEvent, DeliveryAccount, Engine,
+    EnvironmentPolicy, EnvironmentRequest, LayoutMode, Limits, LoadRoot, LoaderId, MethodDelivery,
+    MethodResultEvent, MultiReleasePolicy, PhysicalScope, RecoverySink, RuntimeProfile,
+    SinkControl, task_budget,
 };
 use serde_json::{Value, json};
 use std::fs;
@@ -334,19 +335,76 @@ fn first_of_kind<'a>(records: &'a [Value], kind: &str) -> &'a Value {
         .unwrap_or_else(|| panic!("the stream has no `{kind}` record: {:?}", kinds(records)))
 }
 
-/// The document without the one field two runs of the same request may differ in.
-fn strip_elapsed(value: &Value) -> Value {
+/// One record without the readings two runs of one request may differ in.
+///
+/// Two runs of the same request compute the same records, and they cannot publish the same
+/// *readings*: the wall clock is a property of the run (`elapsed_millis`), and the operation's byte
+/// account is a function of the records' own digits — the delivered bytes are charged to that account,
+/// so a run whose elapsed reading happens to be one digit longer charges a couple of bytes more and
+/// reports exactly that in its `usage.output_bytes`. Those two are therefore dropped here, and nothing
+/// else is: the declared configuration (`limits.…`) is what the caller stated rather than what the run
+/// measured, so it stays in the comparison.
+fn strip_run_readings(value: &Value) -> Value {
+    strip_readings(value, false)
+}
+
+/// The recursive half of [`strip_run_readings`]: `in_usage` says whether this object is a usage
+/// snapshot, which is where the byte account lives.
+fn strip_readings(value: &Value, in_usage: bool) -> Value {
     match value {
         Value::Object(fields) => Value::Object(
             fields
                 .iter()
                 .filter(|(key, _)| key.as_str() != "elapsed_millis")
-                .map(|(key, child)| (key.clone(), strip_elapsed(child)))
+                .filter(|(key, _)| !(in_usage && key.as_str() == "output_bytes"))
+                .map(|(key, child)| (key.clone(), strip_readings(child, key.as_str() == "usage")))
                 .collect(),
         ),
-        Value::Array(items) => Value::Array(items.iter().map(strip_elapsed).collect()),
+        Value::Array(items) => Value::Array(
+            items
+                .iter()
+                .map(|item| strip_readings(item, false))
+                .collect(),
+        ),
         leaf => leaf.clone(),
     }
+}
+
+/// States that a failure document names the dimension the operation's account refused.
+///
+/// A run that stopped on its allowance is reported in one of two spellings, and both are the library's
+/// own vocabulary: the adapter's refusal is the account's `budget_exceeded` error — the dimension, the
+/// total the run ran under and the numbers of the record that did not fit — while a stop the
+/// **operation** itself recorded is quoted in the unfinished run's message, owner included
+/// (`{"owner":"…","kind":"budget","dimension":"output_bytes"}`). What both state is the dimension, and
+/// that is what this checks.
+fn assert_stop_names_output_bytes(document: &Value) {
+    let error = &document["error"];
+    let names_it = error["dimension"] == json!("output_bytes")
+        || error["message"]
+            .as_str()
+            .is_some_and(|message| message.contains("\"dimension\":\"output_bytes\""));
+    assert!(
+        names_it,
+        "the failure document does not name `output_bytes` as the dimension the run stopped on, \
+         neither by the account's own refusal nor by the stop the operation recorded: {document}"
+    );
+}
+
+/// The records of one stream as the sequence the operation published them in: every record's kind
+/// beside the class and member ordinals a record of that kind carries. Two runs of one scope publish
+/// the same sequence, so a stopped run's records can be checked to be its prefix.
+fn sequence(records: &[Value]) -> Vec<(String, Option<u64>, Option<u64>)> {
+    records
+        .iter()
+        .map(|record| {
+            (
+                record["kind"].as_str().unwrap_or_default().to_owned(),
+                record["class_ordinal"].as_u64(),
+                record["member_ordinal"].as_u64(),
+            )
+        })
+        .collect()
 }
 
 /// Whether one record's own frame order is the operation's: every class's records sit between its
@@ -749,19 +807,24 @@ fn a_small_allowance_keeps_a_readable_prefix_and_never_confirms_completeness() {
         "the stream never exceeds its allowance"
     );
 
-    // (3) An allowance that funds every record but the last: the `final` record is the one the run
-    //     cannot afford, and completion is not a reason to spend past the allowance — the file keeps
-    //     *all* the other records and states no `final` at all. The allowance is the prefix's own
-    //     length plus one byte, so it is the last record that cannot fit whatever the allowance's own
-    //     digits do to the earlier records' lengths.
-    let last = u64::try_from(lines[lines.len() - 1].len()).expect("the final line fits u64");
-    let prefix = fs::metadata(&whole)
-        .expect("the stream is readable")
-        .len()
-        .checked_sub(last)
-        .expect("the fixture's stream holds its last record")
-        .checked_add(1)
-        .expect("the prefix length fits u64");
+    // (3) One byte short of what the whole run charged: the account funds every record it can and the
+    //     last byte is not funded, so no `final` is written — completion is not a reason to spend past
+    //     the declaration — and the records the run did confirm are a whole-line prefix of the complete
+    //     run's own records. The complete run publishes the total it charged in its own summary
+    //     (`summary.execution.usage.output_bytes`: the recovered text the library emitted **and** the
+    //     JSONL bytes this stream wrote, in one number), which is exactly the account the budget below
+    //     is one byte short of.
+    let complete_records = stream(&whole);
+    let complete_kinds = kinds(&complete_records);
+    let charged =
+        first_of_kind(&complete_records, "final")["summary"]["execution"]["usage"]["output_bytes"]
+            .as_u64()
+            .expect("the complete run states the total it charged");
+    assert!(
+        charged > 0,
+        "the complete run really charged its own account: {charged}"
+    );
+    let one_short = charged - 1;
     let without_final = temp.join("without-final.jsonl");
     let stopped = run(&[
         "export",
@@ -772,7 +835,7 @@ fn a_small_allowance_keeps_a_readable_prefix_and_never_confirms_completeness() {
         "--jobs",
         "1",
         "--budget",
-        &format!("output_bytes={prefix}"),
+        &format!("output_bytes={one_short}"),
         "--output",
         path_of(&without_final),
     ]);
@@ -783,26 +846,163 @@ fn a_small_allowance_keeps_a_readable_prefix_and_never_confirms_completeness() {
         stderr_text(&stopped)
     );
     let records = stream(&without_final);
-    let mut expected = kinds(&stream(&whole));
-    expected.pop();
+    assert!(
+        records
+            .iter()
+            .all(|record| record["kind"] != json!("final")),
+        "a run one byte short of its own total cannot afford a `final` record: {:?}",
+        kinds(&records)
+    );
+    let written = fs::metadata(&without_final)
+        .expect("the stream is readable")
+        .len();
+    assert!(
+        written <= one_short,
+        "the bytes this stream wrote are inside the one declaration it wrote them under: {written} \
+         of {one_short}"
+    );
+    // The delivered records are the complete run's own prefix: whole lines, in the operation's own
+    // order, with no record the complete run did not publish in that position.
+    assert!(
+        !records.is_empty(),
+        "the funded prefix is a real prefix: {:?}",
+        kinds(&records)
+    );
     assert_eq!(
         kinds(&records),
-        expected,
-        "the run delivered every record it could afford — and no `final` it could not"
+        complete_kinds[..records.len()].to_vec(),
+        "the stopped run delivered the operation's own records in order, and stopped at one of them"
     );
     let document = error_document(&stopped);
-    assert_eq!(document["error"]["kind"], json!("budget_exceeded"));
-    assert_eq!(document["error"]["limit"], json!(prefix));
     assert!(
-        document["error"]["consumed"]
+        document["usage"]["output_bytes"]
             .as_u64()
-            .expect("the refusal states what the stream delivered")
-            + document["error"]["requested"]
-                .as_u64()
-                .expect("the refusal states what the record needed")
-            > prefix,
-        "the record the run stopped on really did not fit: {document}"
+            .expect("the failure document states the account the run spent")
+            <= one_short,
+        "the run's whole account stays inside the number it ran under: {document}"
     );
+    assert_stop_names_output_bytes(&document);
+}
+
+// ---------------------------------------------------------------------------------------------
+// One account: the library's own output and this stream's bytes are the same declaration
+// ---------------------------------------------------------------------------------------------
+
+#[test]
+fn one_account_bounds_the_library_and_the_stream_at_every_job_setting() {
+    let temp = TempDir::new();
+    let input = temp.write("app.jar", &three_class_archive());
+    let whole = temp.join("whole.jsonl");
+    let complete = run(&[
+        "export",
+        "--input",
+        path_of(&input),
+        "--policy",
+        "plain-jar",
+        "--jobs",
+        "1",
+        "--output",
+        path_of(&whole),
+    ]);
+    assert_eq!(
+        status(&complete),
+        EXIT_COMPLETE,
+        "{}",
+        stderr_text(&complete)
+    );
+    // The complete run's own account: what it charged to `output_bytes`. Its summary publishes the
+    // operation's total, which is the recovered text the library emitted plus the JSONL bytes this
+    // stream wrote — one number, and the number the runs below spend half of.
+    let complete_records = stream(&whole);
+    let complete_sequence = sequence(&complete_records);
+    let charged =
+        first_of_kind(&complete_records, "final")["summary"]["execution"]["usage"]["output_bytes"]
+            .as_u64()
+            .expect("the complete run states the total it charged");
+    let written_whole = fs::metadata(&whole).expect("the stream is readable").len();
+    assert!(
+        charged > written_whole,
+        "the account holds more than this stream's own bytes: the recovered text the library emitted \
+         is charged to the same declaration ({charged} charged, {written_whole} written)"
+    );
+    let budget = charged / 2;
+    let header_line = u64::try_from(raw_lines(&whole)[0].len()).expect("the header line fits u64");
+    assert!(
+        budget > header_line * 4,
+        "the budget below funds a real prefix rather than only the header: {budget} of {charged}, \
+         the header being {header_line} byte(s)"
+    );
+
+    for (label, jobs) in [("one", "1"), ("auto", "auto")] {
+        let output = temp.join(&format!("tight-{label}.jsonl"));
+        let stopped = run(&[
+            "export",
+            "--input",
+            path_of(&input),
+            "--policy",
+            "plain-jar",
+            "--jobs",
+            jobs,
+            "--budget",
+            &format!("output_bytes={budget}"),
+            "--output",
+            path_of(&output),
+        ]);
+        assert_eq!(
+            status(&stopped),
+            EXIT_INCOMPLETE,
+            "`--jobs {label}` with half the account: {}",
+            stderr_text(&stopped)
+        );
+        // Every line the stream wrote is a whole record, and no `final` claims a completeness the
+        // account could not fund — whatever the worker count is.
+        let records = stream(&output);
+        assert!(
+            records
+                .iter()
+                .all(|record| record["kind"] != json!("final")),
+            "`--jobs {label}`: a run that spent its account writes no `final`: {:?}",
+            kinds(&records)
+        );
+        assert!(
+            records.len() > 2
+                && records
+                    .iter()
+                    .any(|record| record["kind"] == json!("method")),
+            "`--jobs {label}`: the funded prefix holds real records: {:?}",
+            kinds(&records)
+        );
+        // The delivered records are the complete run's own sequence, up to where this run stopped:
+        // the account decides how many records a run gets, never which ones or in what order.
+        assert_eq!(
+            sequence(&records),
+            complete_sequence[..records.len()].to_vec(),
+            "`--jobs {label}`: the stopped stream is a prefix of the scope's own record sequence"
+        );
+
+        // The bytes this stream wrote are inside the declaration, and so is the operation's whole
+        // account — the library's emission and this stream's records added up, which is the claim a
+        // second allowance beside this one could not make.
+        let written = fs::metadata(&output).expect("the stream is readable").len();
+        let document = error_document(&stopped);
+        let spent = document["usage"]["output_bytes"]
+            .as_u64()
+            .expect("the failure document states the account the run spent");
+        assert!(
+            written <= budget,
+            "`--jobs {label}`: the written bytes stay inside the declaration: {written} of {budget}"
+        );
+        assert!(
+            spent <= budget,
+            "`--jobs {label}`: the whole account stays inside it too: {spent} of {budget}"
+        );
+        assert!(
+            spent > written,
+            "`--jobs {label}`: the account the run spent holds this stream's bytes *and* the text the \
+             library emitted ({spent} spent, {written} written)"
+        );
+        assert_stop_names_output_bytes(&document);
+    }
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -912,7 +1112,11 @@ impl Recorder {
 }
 
 impl RecoverySink for Recorder {
-    fn header(&mut self, event: &BulkHeaderEvent) -> Result<SinkControl, jarde::Error> {
+    fn header(
+        &mut self,
+        event: &BulkHeaderEvent,
+        _delivery: DeliveryAccount,
+    ) -> Result<SinkControl, jarde::Error> {
         self.keep(event);
         Ok(SinkControl::Continue)
     }
@@ -970,17 +1174,19 @@ fn every_record_of_the_stream_is_the_library_value_of_the_same_run() {
     let records = stream(&output);
 
     // The same request through the library's own entry, in this process: one operation, one sink,
-    // under the very limits the run published in its header.
-    // The same request through the library's own entry, in this process: one operation, one sink,
-    // under the very limits the run published in its header — including the store the header
-    // published, so both documents are produced by one configuration rather than two.
-    let mut budget = task_budget(&[]).expect("the task defaults are a bounded budget");
-    let published = published_limits(&records);
+    // under the very configuration the run published in its header — the operation's own totals as the
+    // entry budget it is opened with, the per-method limits it hands the request, and the store the
+    // header published — so both documents are produced by one configuration rather than two.
+    let publication = &first_of_kind(&records, "header")["limits"];
+    let totals: Limits = serde_json::from_value(publication["total"].clone())
+        .expect("the header publishes the operation's own `Limits` document");
     let capacity: jarde::FactsCapacity = serde_json::from_value(
         first_of_kind(&records, "header")["limits"]["facts_capacity"].clone(),
     )
     .expect("the header publishes the reader's own capacity document");
-    budget = budget.with_facts_cache(jarde::FactsCache::current(capacity));
+    let published = published_limits(&records);
+    let mut budget =
+        jarde::Budget::new(totals).with_facts_cache(jarde::FactsCache::current(capacity));
     let engine = Engine::new();
     let snapshot = engine
         .open(ArtifactInput::Path(path.clone()), &mut budget)
@@ -1020,8 +1226,8 @@ fn every_record_of_the_stream_is_the_library_value_of_the_same_run() {
             "record {index} carries a stable kind"
         );
         assert_eq!(
-            strip_elapsed(&record),
-            strip_elapsed(event),
+            strip_run_readings(&record),
+            strip_run_readings(event),
             "record {index} ({kind}) is not the library's own value for the same run"
         );
     }
@@ -1184,8 +1390,8 @@ fn a_roots_document_declares_the_same_roots_as_repeated_root_arguments() {
     for (index, (repeated, declared)) in repeated_records.iter().zip(&declared_records).enumerate()
     {
         assert_eq!(
-            strip_elapsed(repeated),
-            strip_elapsed(declared),
+            strip_run_readings(repeated),
+            strip_run_readings(declared),
             "record {index} differs between the two spellings of one declaration"
         );
     }
@@ -1581,10 +1787,14 @@ fn a_whole_package_reaches_its_final_under_the_commands_own_defaults() {
         "{summary}"
     );
 
-    // The header publishes the configuration the run really used: this command's own finite ceiling
-    // for every counted dimension, its own wall clock, and the task defaults for the two depths no
-    // budget raises.
-    let limits = &first_of_kind(&records, "header")["limits"]["method"];
+    // The header publishes **two** configurations, because the run really has two: the operation's
+    // own total — this command's finite ceiling for every counted dimension and its whole-package wall
+    // clock — and the local limits one method runs under, which are the command's single-request
+    // defaults. A whole-package ceiling that leaked into the per-method limits would say that one
+    // method may spend a whole package's allowance, and the two documents a consumer reads would not
+    // tell it which number bounds which work.
+    let publication = &first_of_kind(&records, "header")["limits"];
+    let totals = &publication["total"];
     for dimension in [
         "input_bytes",
         "archive_entries",
@@ -1603,20 +1813,54 @@ fn a_whole_package_reaches_its_final_under_the_commands_own_defaults() {
         "normalization_clones",
     ] {
         assert_eq!(
-            limits[dimension],
+            totals[dimension],
             json!(1_u64 << 40),
-            "the header states the command's own ceiling for {dimension}: {limits}"
+            "the header states the command's own total for {dimension}: {totals}"
         );
     }
     // The wall clock is the command's own too, bounded and stated rather than unbounded: a whole
     // package takes hours in the worst case this command is sized for, and never `u64::MAX`.
     assert_eq!(
-        limits["elapsed_millis"],
+        totals["elapsed_millis"],
         json!(2 * 60 * 60 * 1000),
-        "{limits}"
+        "{totals}"
     );
-    assert_eq!(limits["nested_depth"], json!(4), "{limits}");
-    assert_eq!(limits["dependency_depth"], json!(8), "{limits}");
+    assert_eq!(totals["nested_depth"], json!(4), "{totals}");
+    assert_eq!(totals["dependency_depth"], json!(8), "{totals}");
+
+    // The per-method limits are the single-request defaults, dimension for dimension, and every one
+    // of them is bounded: none of the operation's ceilings is among them.
+    let methods = &publication["method"];
+    let single = task_budget(&[])
+        .expect("the task defaults are a bounded budget")
+        .limits()
+        .clone();
+    let published: Limits = serde_json::from_value(methods.clone())
+        .expect("the header publishes the library's own `Limits` document");
+    assert_eq!(
+        published, single,
+        "one method of a bulk export runs under the limits one single request runs under: {methods}"
+    );
+    assert!(
+        published.elapsed_millis
+            < totals["elapsed_millis"]
+                .as_u64()
+                .expect("the total states its clock"),
+        "the whole-package wall clock is not a per-method one: {methods} against {totals}"
+    );
+    for (dimension, ceiling) in [
+        ("ir_items", 1_u64 << 40),
+        ("analysis_steps", 1_u64 << 40),
+        ("output_bytes", 1_u64 << 40),
+    ] {
+        assert!(
+            methods[dimension]
+                .as_u64()
+                .expect("a counted limit is a number")
+                < ceiling,
+            "the operation's {dimension} ceiling is not the method's own limit: {methods}"
+        );
+    }
 
     // The members of the package were really decoded and delivered: not one class or member was
     // refused, none was stopped or oversized, and the only member without a body is the nested

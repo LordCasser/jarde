@@ -237,3 +237,76 @@ fn one_result_larger_than_the_ceiling_stops_that_method_only() {
         );
     }
 }
+
+#[test]
+fn a_result_weighs_what_it_owns_and_not_the_length_it_writes() {
+    // The window's ceiling is only as honest as the weight each result is accounted at. This case reads
+    // the same public surface the library's model reads, and states three things about one run of the
+    // nested fixture:
+    //
+    // * every delivered result's weight **covers** what that result owns — its text's own buffer, its
+    //   source map's segment table and the tables of both reports, each by capacity where the surface
+    //   hands over a buffer this process owns;
+    // * the result that owns most weighs most (and the one that owns least weighs least): the weight
+    //   follows what a result holds rather than a constant;
+    // * what the *older* model charged — the text's length plus a fixed cost per retained record — is
+    //   below what a result really owns, so a model that charged that proxy cannot cover it.
+    let (report, sink) = run_slow(1, std::time::Duration::ZERO, None);
+    assert_eq!(report.summary.status(), "complete", "{:?}", report.summary);
+    let methods = sink.methods();
+    assert_eq!(methods.len(), 18, "the whole scope was delivered");
+
+    for method in &methods {
+        assert!(
+            method.weight >= method.owned_bytes,
+            "a result's weight covers what it owns: {} byte(s) of weight for {} byte(s) of owned \
+             capacity, for {}#{}",
+            method.weight,
+            method.owned_bytes,
+            method.class_ordinal,
+            method.member_ordinal
+        );
+    }
+    let largest = methods
+        .iter()
+        .max_by_key(|method| method.owned_bytes)
+        .expect("the scope delivered method records");
+    let smallest = methods
+        .iter()
+        .min_by_key(|method| method.owned_bytes)
+        .expect("the scope delivered method records");
+    assert!(
+        largest.owned_bytes > smallest.owned_bytes,
+        "the fixture's results really differ in what they own: {} against {}",
+        largest.owned_bytes,
+        smallest.owned_bytes
+    );
+    assert!(
+        largest.weight > smallest.weight,
+        "and the weight follows what they own: {} against {}",
+        largest.weight,
+        smallest.weight
+    );
+    assert!(
+        largest.owned_bytes > largest.proxy_bytes,
+        "the length-plus-constant proxy is below what the largest result owns: {} against {}",
+        largest.owned_bytes,
+        largest.proxy_bytes
+    );
+    let weights: Vec<u64> = methods.iter().map(|method| method.weight).collect();
+    assert!(
+        weights.iter().max() != weights.iter().min(),
+        "the weight is a reading of each result, not one constant: {weights:?}"
+    );
+    assert_eq!(
+        report.window.largest_result_weight,
+        *weights.iter().max().expect("the scope delivered methods"),
+        "the window's own reading is the largest weight it retained: {:?}",
+        report.window
+    );
+    assert!(
+        report.window.buffered_weight_high_water <= report.window.buffered_weight_limit,
+        "and the high-water mark stays inside the window's ceiling: {:?}",
+        report.window
+    );
+}

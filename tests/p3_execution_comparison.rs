@@ -2141,7 +2141,11 @@ struct Collected {
 }
 
 impl RecoverySink for Collected {
-    fn header(&mut self, event: &BulkHeaderEvent) -> jarde::Result<SinkControl> {
+    fn header(
+        &mut self,
+        event: &BulkHeaderEvent,
+        _delivery: jarde::DeliveryAccount,
+    ) -> jarde::Result<SinkControl> {
         self.header = Some(event.clone());
         Ok(SinkControl::Continue)
     }
