@@ -1,7 +1,9 @@
 # 纯 Rust JVM 静态分析与按需反编译引擎：最终架构
 
-> 版本：1.0 · 架构基线  
-> 整理与规范核对日期：2026-09-16  
+> 版本：1.1 · 架构基线与渐进式核心结果设计
+>
+> 架构基线日期：2026-09-16；核心需求与结果边界更新：2026-09-21
+>
 > 交付定位：可用于实现拆分、接口设计和评审的技术设计；本文不是已实现能力或实测性能报告。  
 > 核心目标：独立、纯 Rust、library-first，原生处理 `.class`、`.jar`、`.war`；无需 JVM/JADX 运行依赖，支持直接查询 artifact、精确结构引用和按需 Java 反编译。
 
@@ -94,7 +96,7 @@
 
 ```mermaid
 flowchart TD
-    API["Rust API / CLI / Agent Adapter"] --> SESSION["Analysis Session · Snapshot · Budget"]
+    API["Rust API / CLI / Agent Adapter"] --> SESSION["Engine · Snapshot · Request Budget"]
     SESSION --> ART["Artifact Store · Layout · Runtime View"]
     ART --> CF["Classfile Reader · CP · Instruction Decoder"]
     ART --> Q
@@ -123,7 +125,7 @@ flowchart TD
 | `ir` | 原始方法、规范化 CFG、Frame/SSA、Types、Effects、Regions | 源码文本管理 |
 | `decompile` | Phase/Pass、恢复、最小闭包、降级协调 | ZIP 格式实现 |
 | `java` | Java AST、命名、表达式优先级、格式化、源码映射 | 覆盖 artifact 事实 |
-| `engine` | Session、公共 API、预算、缓存与任务执行 | 框架私有规则 |
+| `engine` | 无状态门面、公共 API、请求预算、显式事实复用与任务组合 | 框架私有规则 |
 | `adapters` | CLI、JSON、MCP/服务等薄封装 | 另一套分析语义 |
 
 共用一套 instruction boundary decoder，避免 Query 和 Decompiler 对 `wide`、switch 等指令长度产生分歧。Query 使用无对象或轻量 cursor；Decompiler 选择将相同解码事件物化为 IR。
@@ -147,7 +149,7 @@ reader/query/jvm 与根门面的分层已按 7/7 归档；`jarde-java` 已随 P3
 | `jarde-cli` | 参数与 JSON 适配 | jarde |
 | `jarde-java`（已创建） | Region、recovery AST、命名、source map 与输出 | jvm、reader；复用 petgraph；由 jarde 聚合 |
 
-轻量调用方直接依赖 reader/query；query 的生产依赖闭包不得出现 resolver/IR/Java 恢复。`jarde-jvm → jarde-query` 不授权单方法分析隐式全局扫描。中端内部模块保持私有，向恢复层提供所需的只读 facts；不能因拆包把全部内部结构改成 public。共用同一身份和预算，不新增 speculative core/common 包或跨项目通用 IR。P2/分层已完成归档；P3–P5 也已按各自范围归档；当前只修嵌套求值与 fallback 生产者保留，不重复拆包、作用域或跨方法接线。
+轻量调用方直接依赖 reader/query；query 的生产依赖闭包不得出现 resolver/IR/Java 恢复。`jarde-jvm → jarde-query` 不授权单方法分析隐式全局扫描。中端内部模块保持私有，向恢复层提供所需的只读 facts；不能因拆包把全部内部结构改成 public。共用同一身份和预算，不新增 speculative core/common 包或跨项目通用 IR。P2/分层已完成归档；P3–P5 也已按各自范围归档；上述原反例已独立闭环；当前新增的渐进式结果设计见 §13.4、§15.1 与其实施 change，不重复拆包或重做已共享的 CP/Header。
 
 <a id="s04"></a>
 ## 4. 版本体系与 Java 8 兼容基线
@@ -335,6 +337,8 @@ Header 包含原始名称、成员 descriptor、flags、继承信息、泛型/an
 方法和字段以完整 descriptor 标识；方法 descriptor 包含返回值，不能只按源码式参数列表去重。Array/primitive types 具有独立类型节点，不强行映射为 `.class` entry。
 
 字节完全相同的类可共用解析缓存，但位于不同包、容器位置、加载器或应用视图的 origin 不能被合并。显示名称、恢复名称、去混淆别名都不是稳定身份。
+
+`com/example/Foo@a91f` 可以作为当前结果中的显示标签；后缀来自完整物理身份，不能仅取 class 内容摘要。短后缀遇到冲突必须扩长，调用与证据绑定仍传完整身份，不解析标签来选第一个候选。同名符号数量、物理定义数量和特定运行视图选中数量是三个口径；物理盈余保留，不为匹配其它工具的类数而去重。具体例子与成本约束见本轮 [设计 §3.1](openspec/changes/add-demand-driven-core-results/design.md#31-同名类物理身份与显示标签)。
 
 ### 8.2 UseSite 的正交字段
 
@@ -717,17 +721,29 @@ Readability 模式可使用稳定别名并提供映射；严格重编译模式�
 
 ### 13.3 Source Map
 
-输出 token/range → DefinitionId/UseSite/OriginSet，支持一对多、多对一，以及 `GeneratedWithoutOriginalSpan`。
+恢复内部始终保留声明、表达式、语句与 fallback 的 origin。公开映射表按显式选择物化，支持一对多、多对一及 `GeneratedWithoutOriginalSpan`；未请求映射、检查后为空和映射构造中止必须区分。关闭详细映射不关闭类型/effect/恢复前提验证，也不能丢失必要拒绝位置。
 
-保留四类位置：artifact/container offset、class 内 offset、原始方法 BCI、生成文本位置。LineNumberTable 只是可选原源码行提示，缺失不影响 bytecode 定位。
+保留四类位置的区别：artifact/container offset、class 内 offset、原始方法 BCI、生成文本位置。BCI 必须绑定物理方法，LineNumberTable 只是可选原源码行提示。callee 与 caller 的相同 BCI 不代表同一位置。
 
-源码中展示一个 lambda 时，其 span 可以关联 invokedynamic 点和 implementation body；合并不是删除 provenance。Source map key 包含输出配置及恢复版本，不能跨输出版本复用字符偏移。
+局部映射按当前方法 BCI 范围选择，补足相关记录的必要来源。任何附着到已有文本的映射均绑定输入、运行环境、恢复规则、输出配置和确切文本摘要；不能跨格式/规则版本复用字符偏移。释放临时 IR 后允许在新预算内重建并核对，产物身份不强制引擎永久持有 AST。
 
-### 13.4 Agent 使用契约
+### 13.4 渐进式核心结果契约（目标设计，待实现）
 
-适配器优先返回短的类型化结果、稳定 ID、coverage 和 diagnostics，再允许按 ID 拉取更大 body/source/evidence。大结果使用分页/流式事件和输出预算，避免默认把整个 WAR 反编译文本塞入上下文。
+每个核心请求回答明确的问题：定位目标、读取结构、取得引用、恢复方法或核验证据。目标范围、事实类别、分析强度与证据深度分别选择；已有 query consumers、analysis stages 和 class_view bodies 继续承载选择，恢复入口补齐证据选择，不新增公共 Session 或通用查询语言。
 
-目标字符串、注释和资源都是不可信分析数据，不是对 Agent 的指令。上层应以结构化字段传递并保留来源，禁止目标内容改变工具权限或执行策略。
+| 信息 | 普通请求的交付原则 |
+| --- | --- |
+| 目标、原始 descriptor、物理来源、请求范围 | 保留足以确定身份与含义的事实，不能按同名合并来源 |
+| 实际答案、content/quality/validation、coverage/execution | 保留，不能用单一 success 或 produced 替代 |
+| 歧义、未知分母、局部拒绝、缺失条件、停止 | 始终可定位；不能因省略明细被隐藏 |
+| 完整源码映射、区域/规则/命名/读取明细 | 按类别与必要范围展开，显式完整选择保留原审计契约 |
+| 重复正文、重复完整上下文、未请求范围的明细 | 不重复构造或交付；依赖仍须说明读取理由 |
+
+计算所必需的 CFG/Frame/SSA、origin 与规则计划继续执行；没有选择公开明细时不构造对应拥有型报告表。正文先形成可信产物，可选证据随后停止时保留正文，整体 execution 如实反映未完成请求。默认结果仍受预算约束，不保证任意大小的必要结果都能交付。
+
+增量查询必须同时约束 provider、consumer 与结果收集；页满后停止后续工作，未知后缀不提前诊断，完整续页无重复无遗漏。压缩读取、目录验证、成员布局定位等不可省略工作仍如实计费。
+
+完整设计、接口轮廓、生命周期、反例和实施分工以 [add-demand-driven-core-results/design.md](openspec/changes/add-demand-driven-core-results/design.md) 为本轮唯一详细架构；[规格](openspec/changes/add-demand-driven-core-results/specs/demand-driven-results/spec.md) 定义可观察契约，[任务](openspec/changes/add-demand-driven-core-results/tasks.md) 定义实施与验收。本节表示目标能力，不能据此更新已交付支持矩阵。
 
 <a id="s14"></a>
 ## 14. Phase、Pass 与扩展机制
@@ -775,47 +791,22 @@ JADX、其他反编译器和 JDK 工具可作为算法参考及测试 oracle；�
 
 以下为**目标 API 草案**，用于定义交互语义；不是可直接运行的已发布 crate 示例。最终名称可调整，结果契约应保留。
 
-### 15.1 Session 与请求
+### 15.1 Engine、不可变输入与需求选择
 
-```rust
-let engine = Engine::builder()
-    .limits(Limits::default())
-    .cache(CachePolicy::MemoryBounded)
-    .build()?;
+沿用当前 `Engine + ArtifactSnapshot + request + Budget` 边界，调用方显式提供运行环境与可选有界 facts store。核心入口不要求全局 Session、常驻 IR 或预先索引；公共 API 保持同步、可取消，不强制 async runtime。
 
-let snapshot = engine.open(ArtifactInput::Path("app.war".into()))?;
+| 核心入口/选择 | 语义与计算边界 |
+| --- | --- |
+| `list_members` / `class_view` 空 bodies | 读取声明与成员，零 body 解码、零 IR/恢复 |
+| `class_view` 显式 BodyRef | 同一可信类准备，仅读所选 body |
+| `query` 的 relation + consumers | 对所选关系取得结构事实，不隐式恢复源码或解析其它关系 |
+| `analyze_method` 的 stages | 固定依赖表补齐必要阶段，report 与 MethodIr payload 保持分离 |
+| `recover_method` / 任务恢复入口 | 运行所需恢复依赖；目标默认必要结果，明细显式选择 |
+| `class_source` / `recover_all` | 调用方明确要求整类/全量才启动对应范围与有界调度 |
 
-let session = engine.session(snapshot)
-    .runtime(RuntimeProfile::java8())
-    .platform(platform_headers)
-    .loader_model(loader_model)
-    .finish()?;
+同次目标绑定已取得的可信 read 交给下一消费者，避免把 identity 作为重读理由。跨独立请求是否保留由显式容量策略决定，未保留时允许在新预算内重建。
 
-let report = session.query(QueryRequest {
-    target: QueryTarget::MethodSymbol {
-        owner: "java/lang/Runtime".into(),
-        name: "exec".into(),
-        descriptor: DescriptorMatch::Any,
-    },
-    relation: QueryRelation::MentionsSymbol,
-    view: View::PhysicalAll,
-    consumers: ConsumerSet::Semantic,
-    analysis: XrefLevel::Structural,
-    scope: Scope::ArtifactTree,
-    budget: request_budget,
-    ..QueryRequest::defaults()
-})?;
-
-let output = session.decompile(DecompileRequest {
-    target: DecompileTarget::Method(method_id),
-    closure: ClosurePolicy::MinimalRequired,
-    java_level: JavaOutputLevel::Java8,
-    fallback: FallbackPolicy::PreserveBytecode,
-    budget: decompile_budget,
-})?;
-```
-
-公共库默认提供同步、可取消的计算 API，不强制引入某个 async runtime。异步服务可在有界 worker pool 中调用；避免库自己创建不可控线程池。
+待实现的恢复选择包含证据类别集合、当前方法 BCI 范围，以及展开已有产物时的预期产物绑定值。默认 Essential 与显式 All 的完整结果必须具有相同正文和核心语义，差异仅来自所选证据及实际费用；紧预算的不同完成程度如实报告。具体类型轮廓和迁移规则见上述 change，本文不提供另一套可能分叉的草案 API。
 
 ### 15.2 QueryReport 结果形状
 
@@ -888,18 +879,18 @@ Cursor 绑定 snapshot、query、view、排序/扫描边界和引擎 schema 版�
 
 ### 16.2 快照一致性
 
-默认分析不可变 session snapshot。针对可变路径，选择复制/固定 backing store，或检测读前读后 identity 变化并中止/重试；不能让同一结果混用旧目录与新 class bytes。
+分析使用不可变 ArtifactSnapshot。当前 open 固定输入字节并建立身份，后续不能混用路径变化后的新字节；源路径不等于已打开的 snapshot。
 
-path/mtime/ZIP CRC 只能作为快速线索，不作为不可信环境中的强内容身份。首次打开不要求为了哈希读完整 WAR；可先使用 session-scoped snapshot identity，按实际读取对象计算内容摘要。跨会话缓存只有身份足够强且已验证时才能复用。
+path/mtime/ZIP CRC 不能代替已验证的内容身份。渐进式保证约束 class/body/IR/证据的按需构造，不承诺 open 只读局部字节；现有 open 的读取和摘要成本计入冷端到端。mmap 或延迟摘要另行准入，不能降低不可变性与校验。
 
 ### 16.3 并发与循环依赖
 
 - 按字节/预计内存权重限制并发，不只按任务数量。
-- 相同能力请求使用 single-flight 复用，但消费者取消不应无条件取消其他订阅者。
+- 跨独立请求的 single-flight 属后续候选，先有工作负载与收益证据；若实现，消费者取消不能无条件取消其他订阅者。
 - 不持有全局锁执行 I/O、解压、Pass 或回调。
 - Header/解析依赖可能成环；使用 request graph、in-progress handle 和有界 fixpoint/SCC 处理，避免互等 future 死锁。
 - 不发布半初始化可变 ClassNode；只发布有效 Header snapshot 或显式 incomplete 状态。
-- 物化、CP、IR、结果缓冲共用 session 总预算，避免各层独立“合规”但累计 OOM。
+- 物化、CP、IR、结果缓冲共用操作总预算，避免各层独立“合规”但累计 OOM。
 
 可并行扫描不同 entry，但有序输出需缓冲和背压。默认确定性排序为 physical origin、member、location；极速 unordered stream 可以单独提供。预算中断下已完成子集可以受调度影响，必须承认 Partial，不宣称相同部分结果。
 
@@ -924,7 +915,7 @@ path/mtime/ZIP CRC 只能作为快速线索，不作为不可信环境中的强�
 
 所有预算都输出消耗维度和终止原因。达到上限时尽可能返回已验证的部分事实；不会把未扫描区域标为无命中。
 
-默认不把归档 entry 解包到用户路径；必须物化时写引擎管理的 backing file。禁止 Zip Slip、符号链接逃逸和重名覆盖；临时文件生命周期由 session 管理。
+默认不把归档 entry 解包到用户路径；必须物化时写引擎管理的 backing file。禁止 Zip Slip、符号链接逃逸和重名覆盖；临时文件生命周期由持有其 backing 的操作与消费者管理。
 
 不执行目标代码、不调用其 bootstrap、不加载 JNI、不运行 JAR launcher，不自动解析远程 URL。扩展插件的信任边界另行管理。
 
