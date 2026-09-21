@@ -178,23 +178,32 @@ fn zero_and_tiny_retention_publish_the_same_scope_as_retention_with_room() {
     // (4) Retention is what decides the fate of a container **no consumer is holding**, and nothing
     //     else changes. A container a class task is reading is never read twice in either run: the
     //     walk hands its own active handle to the task that reads the class (task 3.4, whose own
-    //     target states that count on a scope of nested containers), so what is left for the store to
-    //     answer is the lookups that have to consult a container nothing holds — a member's binding
-    //     search that reaches a container no class task is reading any more. The run with room
-    //     answers those from what it kept; the run without it pays for the directory again. The
-    //     conclusion above is identical in both runs, which is the claim: not retaining re-reads, it
-    //     does not re-decide.
+    //     target states that count on a scope of nested containers). The lookups that used to be left
+    //     for the store — a member's binding search that reached a container no class task was
+    //     reading any more — no longer exist as directory reads: a prepared class locates its own
+    //     members from the facts it was prepared with (task 3.1/3.2), so both runs parse each
+    //     container exactly once and the store answers what it kept rather than rescuing a re-read.
+    //     What the case still states is the conclusion: the same records from both runs, and no run
+    //     parsing more than the scope's containers.
     let roomy_facts = roomy_store.report();
     assert!(
         roomy_facts.container_hits > 0 && roomy_facts.container_stored > 0,
         "the run with room really kept and answered container facts: {roomy_facts:?}"
     );
+    // Where a lookup consults a container nothing holds any more, the store decides whether that
+    // costs a directory read — and *how many* such lookups a run makes depends on the order classes
+    // are taken, so the count is stated as the inequality that is the contract: keeping facts never
+    // makes a run parse more than the run that keeps nothing.
     assert!(
-        zero_store.report().directory_parses > roomy_facts.directory_parses,
-        "a store that keeps nothing re-parses what it could not hold ({} parses) where retention \
-         answers it ({}): {:?}",
+        zero_store.report().directory_parses >= roomy_facts.directory_parses,
+        "retention never parses more than the run without it: {} against {} {:?}",
         zero_store.report().directory_parses,
         roomy_facts.directory_parses,
+        roomy_facts
+    );
+    assert!(
+        roomy_facts.directory_parses <= 2,
+        "the run with room parses each container once and no more: {:?}",
         roomy_facts
     );
 }

@@ -71,6 +71,8 @@ use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::MethodCodeFacts;
 use serde::{Deserialize, Serialize};
 
+use crate::artifact::{ArtifactBinding, EXPECTATION_SHAPE_CODE};
+
 /// The code of a refusal of a category this entry does not materialize.
 pub const UNSUPPORTED_KIND_CODE: &str = "jre_evidence_kind_unsupported";
 
@@ -216,6 +218,15 @@ pub struct RecoveryEvidenceRequest {
     /// one. `None` is the whole method.
     #[serde(default)]
     driver_bci_range: Option<BytecodeRange>,
+    /// The artifact this request wants its evidence attached to, when it explains a text it already
+    /// holds (change `add-demand-driven-core-results`, D3').
+    ///
+    /// The value is a **candidate for verification, never a trusted statement**: the run computes the
+    /// binding of the artifact it commits itself ([`ArtifactBinding`]) and compares the two, and only
+    /// an agreement attaches evidence. A request that names no artifact is the ordinary first
+    /// recovery, and [`crate::RecoveryReport::artifact`] is the run's own answer to either case.
+    #[serde(default)]
+    expected_artifact: Option<ArtifactBinding>,
 }
 
 impl RecoveryEvidenceRequest {
@@ -232,6 +243,7 @@ impl RecoveryEvidenceRequest {
         Self {
             kinds: RecoveryEvidenceKind::SUPPORTED.into_iter().collect(),
             driver_bci_range: None,
+            expected_artifact: None,
         }
     }
 
@@ -253,6 +265,23 @@ impl RecoveryEvidenceRequest {
         self
     }
 
+    /// The same request, explaining one artifact the caller already holds: the evidence it selects is
+    /// attached only if the run commits that very artifact (D3').
+    ///
+    /// The binding is the one a previous recovery published
+    /// ([`crate::RecoveryReport::artifact`]); the run never trusts it, it recomputes its own and
+    /// compares. A request that names an artifact while selecting no category is refused
+    /// ([`EXPECTATION_SHAPE_CODE`]) — the same shape rule the driver range already has.
+    pub fn with_expected_artifact(mut self, expected: ArtifactBinding) -> Self {
+        self.expected_artifact = Some(expected);
+        self
+    }
+
+    /// The artifact this request wants its evidence attached to, when it names one.
+    pub fn expected_artifact(&self) -> Option<&ArtifactBinding> {
+        self.expected_artifact.as_ref()
+    }
+
     /// The categories this request selects.
     pub fn kinds(&self) -> impl Iterator<Item = RecoveryEvidenceKind> + '_ {
         self.kinds.iter().copied()
@@ -265,7 +294,7 @@ impl RecoveryEvidenceRequest {
 
     /// Whether this request selects nothing optional — the ordinary recovery.
     pub fn is_essential(&self) -> bool {
-        self.kinds.is_empty() && self.driver_bci_range.is_none()
+        self.kinds.is_empty() && self.driver_bci_range.is_none() && self.expected_artifact.is_none()
     }
 
     /// The driver range this request restricts its positional evidence to, when it states one.
@@ -300,6 +329,19 @@ impl RecoveryEvidenceRequest {
                      does not hold",
                     kind.spell()
                 ),
+            });
+        }
+        // A request that names an artifact explains it with the categories it selects: with none
+        // selected the expectation would be checked against nothing a caller could read, which is
+        // the same shape problem the range above states.
+        if self.kinds.is_empty() && self.expected_artifact.is_some() {
+            return Err(EvidenceRefusal {
+                code: EXPECTATION_SHAPE_CODE,
+                at: None,
+                message:
+                    "the request names the artifact it wants its evidence attached to without \
+                          selecting any evidence category, so the expectation would explain nothing"
+                        .to_owned(),
             });
         }
         let Some(range) = self.driver_bci_range else {
@@ -833,6 +875,119 @@ mod tests {
                 .with_evidence(selection),
             &mut budget,
         )
+    }
+
+    /// The subject the entry that performed the read states for this run (D3'): the physical
+    /// identity the analysis was bound to, the member record a preparation would have established
+    /// (none here — the unit fixtures walk no member table) and the environment it was validated
+    /// under.
+    fn subject_of(analysis: &jarde_jvm::method_ir::MethodIrAnalysis) -> crate::ArtifactSubject {
+        crate::ArtifactSubject::new(
+            analysis.report().method.clone(),
+            None,
+            analysis.report().environment_identity.clone(),
+        )
+    }
+
+    /// One run presented with a subject, a selection and the debug names its facts state.
+    fn report_of_subject(
+        analysis: &jarde_jvm::method_ir::MethodIrAnalysis,
+        subject: &crate::ArtifactSubject,
+        selection: RecoveryEvidenceRequest,
+        debug: Vec<crate::DebugLocal>,
+    ) -> RecoveryReport {
+        let facts =
+            RecoveryFacts::new(MethodFacts::new("method", "()V", 0)).with_debug_locals(debug);
+        let mut budget = jarde_reader::budget::Budget::new(limits());
+        recover(
+            &RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
+                .with_evidence(selection)
+                .with_subject(subject.clone()),
+            &mut budget,
+        )
+    }
+
+    /// A text that is not this run's artifact is a mismatch, and no selected evidence is attached to
+    /// it: the same payload, the same subject and the same configuration, one other debug table.
+    ///
+    /// The two texts are the same **length** on purpose: what tells two artifacts of one slot shape
+    /// apart is the digest of the exact bytes, and a judgement made from a length, a member spelling
+    /// or a bytecode index would answer this request with evidence of a text the caller does not hold.
+    #[test]
+    fn the_evidence_of_one_text_is_never_attached_to_another() {
+        // `iconst_0; istore_1; iload_1; ireturn`: one local slot, named by the debug table.
+        const BODY: &[u8] = &[0x03, 0x3c, 0x1b, 0xac];
+        let analysis = analyze(BODY, 2);
+        let subject = subject_of(&analysis);
+        let first = report_of_subject(
+            &analysis,
+            &subject,
+            RecoveryEvidenceRequest::essential(),
+            vec![crate::DebugLocal::named(1, "aa")],
+        );
+        assert!(first.produced(), "{:?}", first.outcome);
+        assert!(first.text.contains("aa"), "{}", first.text);
+        let binding = first
+            .artifact
+            .binding()
+            .expect("a run presented with a subject publishes its binding")
+            .clone();
+        assert_eq!(
+            first.artifact.agreement(),
+            &crate::ArtifactAgreement::NotStated,
+            "the ordinary recovery states no expectation"
+        );
+
+        let second = report_of_subject(
+            &analysis,
+            &subject,
+            RecoveryEvidenceRequest::all().with_expected_artifact(binding),
+            vec![crate::DebugLocal::named(1, "bb")],
+        );
+        assert!(second.produced(), "the run's own artifact stands");
+        assert!(second.text.contains("bb"), "{}", second.text);
+        assert_eq!(
+            second.text.len(),
+            first.text.len(),
+            "the two texts are one length, so only their bytes tell them apart"
+        );
+        let crate::ArtifactAgreement::Mismatched { mismatch } = second.artifact.agreement() else {
+            panic!(
+                "the verdict is a mismatch: {:?}",
+                second.artifact.agreement()
+            );
+        };
+        assert_eq!(
+            mismatch.dimensions(),
+            [crate::ArtifactDimension::Text],
+            "the text is the dimension that changed: {}",
+            mismatch.message()
+        );
+        assert!(
+            second
+                .diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == crate::ARTIFACT_MISMATCH_CODE),
+            "the verdict is stated as a gap: {:?}",
+            second.diagnostics
+        );
+        for kind in RecoveryEvidenceKind::SUPPORTED {
+            assert_eq!(
+                second.evidence.state(kind),
+                EvidenceState::NotPerformed,
+                "nothing of the selection was attached to the caller's text: {kind:?}"
+            );
+        }
+        assert!(
+            second.regions.is_empty()
+                && second.source_map.is_empty()
+                && second.aliased_names.is_empty()
+                && second.lambdas.is_empty()
+        );
+        assert!(
+            second.evidence.agrees_with(&second),
+            "and the status list says what the report holds"
+        );
     }
 
     /// The three decisions a selection may not change: what the artifact is, what it holds, and

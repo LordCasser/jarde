@@ -144,6 +144,12 @@ pub(crate) fn emit(
 /// to cover exactly the artifact's own length. A disagreement is stated as a stop — never as a map
 /// of offsets into text that other writes produced — so a map that cannot be attached to the
 /// artifact is not handed out.
+// The eight parameters are the eight distinct inputs of one seam — what is being replayed, the
+// facts and declaration it is replayed under, the member it belongs to, what kind of publication
+// this replay is, the artifact it must agree with, the phase that charges the work and the budget
+// that funds it — and bundling any of them into a struct would only move the same values one level
+// down for a caller that holds them all anyway.
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn emit_source_map(
     stmts: &[Stmt],
     facts: &RecoveryFacts,

@@ -610,10 +610,19 @@ fn derived_facts(analysis: &MethodIrAnalysis, method: &PhysicalMethodId) -> Reco
     .with_debug_locals(debug)
 }
 
-/// One presentation report with the usage of its own run taken out.
+/// One presentation report with the usage of its own run taken out, and the **artifact statement**
+/// beside it.
+///
+/// The direct route below goes through the facade, which states what the artifact it committed is
+/// *of* (change `add-demand-driven-core-results`, D3'), while this file builds the prepared request
+/// itself and states no subject: the two halves of [`RecoveryReport::artifact`] are the *entry's*
+/// statement about the artifact, and every other field is what the presentation of the same run
+/// produced. The identity half is asserted where it belongs — the case below checks that the direct
+/// entry really publishes one — so this helper keeps the comparison this file is about exact.
 fn recovery_without_usage(report: &RecoveryReport) -> RecoveryReport {
     let mut report = report.clone();
     report.execution = execution_without_usage(&report.execution);
+    report.artifact = RecoveryArtifact::default();
     report
 }
 
@@ -711,6 +720,10 @@ fn the_prepared_payload_prints_the_text_the_direct_run_prints() {
             recovery_without_usage(&prepared_report),
             recovery_without_usage(direct.recovery()),
             "{label}: the prepared payload prints the direct report"
+        );
+        assert!(
+            direct.recovery().artifact.binding().is_some(),
+            "{label}: the facade's own entry states the artifact it was bound to"
         );
         assert_eq!(
             prepared_report.text,

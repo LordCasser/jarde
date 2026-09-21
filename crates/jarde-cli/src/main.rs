@@ -180,8 +180,12 @@ enum Operation {
         /// `Engine::recover_method` answers too. The selection is propagated verbatim — this
         /// adapter chooses no default of its own — and the library refuses a category it does not
         /// materialize rather than answering with nothing.
+        ///
+        /// Boxed for the reason `environment` above is: one request is held at a time, and the
+        /// selection is the second-largest field any operation carries, so keeping it inline would
+        /// size every variant of this enum by it.
         #[serde(default)]
-        evidence: RecoveryEvidenceRequest,
+        evidence: Box<RecoveryEvidenceRequest>,
     },
 }
 

@@ -55,6 +55,7 @@
 //! reuses it for the raw CFG.
 
 pub mod accessor;
+pub mod artifact;
 pub mod ast;
 pub mod bridge;
 pub mod concat;
@@ -85,6 +86,11 @@ pub(crate) mod reuse;
 
 pub use accessor::{
     AccessorCandidate, AccessorField, AccessorRecord, AccessorRefusal, AccessorShape,
+};
+pub use artifact::{
+    ARTIFACT_MISMATCH_CODE, ARTIFACT_SCHEMA, ARTIFACT_UNVERIFIABLE_CODE, ArtifactAgreement,
+    ArtifactBinding, ArtifactDimension, ArtifactMismatch, ArtifactSubject, EXPECTATION_SHAPE_CODE,
+    RecoveryArtifact, TEXT_DIGEST,
 };
 pub use bridge::{BridgeRecord, BridgeRefusal};
 pub use concat::{ConcatAppend, ConcatRecord, ConcatRefusal};
