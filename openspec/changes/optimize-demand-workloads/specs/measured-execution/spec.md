@@ -180,3 +180,23 @@
 
 - **WHEN** 已冻结候选在声明的目标工作负载中被反例证明会丢失搜索停止证据、误报完整结果，或输出类型非法/行为不等价的代码
 - **THEN** 保留该提交作为注明缺口的历史比较臂，由独立正确性 change 修复并验收后重新冻结当前候选；性能专项不得降低行为契约或删除失败样本以通过准入
+
+
+### Requirement: Agent workloads remain demand scoped across preparation and delivery
+
+性能专项 SHALL 将核心库的导航、选定方法、查询首屏/续页及证据追问作为独立于全量导出的工作负载。核心 crate SHALL 维持按请求范围读取/计算的边界，不得通过全量恢复再过滤来实现普通单点请求。候选设计 SHALL 区分必要分析、证据构造、序列化投影与跨请求保留，复用已验证事实不能依赖可选 cache 恰好准入。默认策略的决策 MUST 同时验证继续与放弃、首条结果、实际工作、资源和真实停止。
+
+#### Scenario: An agent requests members and then one method body
+
+- **WHEN** 同一 snapshot 上先列举成员，再请求一个确定物理方法的正文
+- **THEN** 成员步骤不恢复 Body；后续只执行所选方法及既有恢复规则实际要求的依赖，能够复用的 prepared 实现不分叉，未选择的其它方法不因性能策略被全部恢复
+
+#### Scenario: Compact delivery and full evidence have different cost
+
+- **WHEN** 相同请求提供必要结果及显式完整证据视图
+- **THEN** 两者分别记录实际序列化与必要分析成本，最小结果保留身份、四平面和真实停止；较少输出字节不得被宣传为同产出恢复算法加速
+
+#### Scenario: Product implementation has one owner
+
+- **WHEN** 普通 prepared 交接、增量查询或可选证据产品进入实现
+- **THEN** 由 add-demand-driven-core-results 的产品契约与任务验收，本专项记录归因和处置；bulk 的 worker/总账/窗口仍由原 change 负责，不重复实施或重复计完成

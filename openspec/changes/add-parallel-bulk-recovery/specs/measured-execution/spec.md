@@ -57,3 +57,9 @@
 
 - **WHEN** 候选总时间下降但有更多失败、提前停止、遗漏或 explanation_only
 - **THEN** 正确性/覆盖门禁拒绝将其认定为性能收益，独立登记能力变化；性能测量不修改正文来补齐质量（B10）
+
+
+#### Scenario: The same class name has several physical definitions
+
+- **WHEN** 全物理 scope 中多个 origin 声明同一类名，而对照工具只发布其中一份或没有发布来源
+- **THEN** 完整物理清单保留每个定义及其成员 multiplicity；对账使用完整来源和原始声明，不按 basename 或内容相同合并身份；另一版本独有签名、重复物理记录和对照来源未决分别统计，来源不足不能标为物理一一覆盖；同工作集耗时只能来自预先固定该工作集的运行（B01/B07/B10）

@@ -46,23 +46,32 @@ P0 establish-p0-foundation → P1 p1-query-xref → P2 p2-jvm-ir → P3 p3-java8
 | 已关闭 | 停止传播、指定递归 abort、`inverse32` 二元分组、Produced/content 读法 | 分别由 `8586356`、`4f62e26`、`445a277` 及契约归档交付；不推广为任意输入安全或完整源码恢复 |
 | 原反例已关闭 | 调用 receiver 分组（`fa6dc6e`） | `(a + b).substring(1)` 保持分组，输入 `("a","bc")` 得 `bc`；不重开该反例 |
 | 原反例已关闭 | boolean 返回/调用条件、就地局部声明（`5a8c36a`） | 原样例通过；后续 T2/T3 由以下独立归档关闭，字面量臂等类型忠实度仍有限 |
-| 原反例已关闭 | 数组类型拼写（`66bd2d0`） | `byte[]`、引用数组及多维数组原样例通过；既有记录边界保留，本轮未确认新的正常数组声明回归 |
+| 原反例已关闭 | 数组类型拼写（`66bd2d0`） | `byte[]`、引用数组及多维数组原样例通过；既有拼写反例保持关闭；class-source 的数组参数槽宽另有新反例，见下方独立债务 |
 | 已关闭 | 深拼接（`5c35cbf` 实现，见其归档验证） | 当前 debug 的 2048 次 append 必须返回产物或明确停止报告，不得 SIGABRT；同时验证构建、发射和释放，不用增大线程栈替代界限。debug/release 分别记录 |
 | 已关闭 | 整数二元比较回归（`f4d1044` 实现，见其归档验证） | `1 == n`、`0 < n`、`1 < n` 保持整数文本，覆盖常量左右位置与比较方向；boolean 原反例仍通过 |
 | 已关闭 | 局部类型一次性决定（`2895bc4` 实现，见其归档验证） | 已声明 boolean 局部跨分支复制后仍按一致证据定型，或可靠拒绝；不得生成 `int local3` 再赋入 boolean 的矛盾文本 |
 | 已关闭 / T4 | concat 数值前缀与列明转换形状（`5c35cbf`，见归档验证） | `(1,2)` 得 `"12!"`，单段加法仍得 `"3!"`；boolean/null/Object、求值与异常顺序对照通过，不代表所有参数转换已完整 |
 | 1 / T5 | `append(int)` 消费 char 的转换，独立后续 | `value(char c)` 的 `append((int)c)` 输入 `'A'` 必须得 `"65!"`，首段/后段都覆盖；当前是 `"A!"` / `"xA"`。保留 Concat 片段表示，在片段内落实目标转换，证据不足拒绝，不混入 bulk |
+| 独立债务 / 数组槽宽 | `class_source` 的 `[J/[D/[[J` 参数被算为两槽 | `f(long[] xs,int n){return n;}` 当前签名 arg2、正文 arg1，javac 拒绝；数组应占一槽。独立修复并覆盖实例/静态、无调试信息及标量 long/double 对照，不混入证据产品改动 |
 | 独立债务 | CLI 停止报告的文档预算 | 请求停止与最终报告共用 output_bytes，部分发射中止只能 exit 2/stderr；库清理和可交付 CLI 停止已通过，文档交付能力未闭环 |
 | 核实 | 历史 clone/toString 报错 | 逐条保存 opcode、owner、descriptor 和包装器上下文；`ArrayUtils.removeElement` 是静态 helper 正向对照，不作为丢 receiver 反例 |
 | 5 | 重新冻结 benchmark 候选 | 保留历史版本身份；新候选登记 T1–T4 关闭、T5 与其它已知边界、构建与输入摘要，不把不同版本/构建配置结果相互替代 |
 | 6 | `optimize-demand-workloads`，0/22 | 调查继续；正式对照先 G0 与 O1 证据复核；已确认的 W6a 全量并行交给下述子 change，其余候选独立处置 |
-| 6a | [add-parallel-bulk-recovery](changes/add-parallel-bulk-recovery/tasks.md)，0/22 | 类准备复用 → 串行流式 bulk → 共享总账和类间并行 → CLI → 真实 1/2/4/6 worker 全量门禁；发布前验证普通 worker 栈和同一正确性基线 |
+| 6a | [add-parallel-bulk-recovery](changes/add-parallel-bulk-recovery/tasks.md)，主体已实现，验收以任务表为准 | 类准备复用 → 串行流式 bulk → 共享总账和类间并行 → CLI → 真实 1/2/4/6 worker 全量门禁；发布前验证普通 worker 栈和同一正确性基线 |
 
-## 全量导出架构（2026-09-21，规划完成、实现未开始）
+## 全量导出架构（2026-09-21，主体已实现，验收继续）
 
 多线程已是明确需求，不再以“尚无并发宿主”为理由暂缓本场景。[设计](changes/add-parallel-bulk-recovery/design.md) 与 [bulk 契约](changes/add-parallel-bulk-recovery/specs/bulk-recovery/spec.md) 定义：一次打开输入、按类共享准备、类间有界 worker、按方法有序交付，共用总预算与有界保留。CLI 目标默认 `--jobs auto`，单线程是同一操作的 `--jobs 1` 配置；数值容量和启用依据仍需实施门禁确认。
 
-子 change 唯一拥有 O2 恢复路径、O4 bulk、O7 类间并行和必需的 O5/O8，父专项继续测量归因；查询分页、预热、跨请求 single-flight 和完整类源码各自独立。首版导出方法 JSONL，不能宣称等于 jadx 的完整 Java 工程。性能判据是包含准备、编码及输出关闭的实测总时间，不能用 warm p50 推导整包追平。主 specs 在真实实现验收归档前不提升为已交付能力。
+bulk 子 change 唯一拥有 O2 批量准备、O4 bulk/class-source、O7 类间并行及活动容器交接，父专项继续测量归因；普通 prepared 交接、增量分页和可选证据归下述新 change，预热与跨请求 single-flight 仍独立。首版导出方法 JSONL，不能宣称等于 jadx 的完整 Java 工程。性能判据是包含准备、编码及输出关闭的实测总时间，不能用 warm p50 推导整包追平。主 specs 在真实实现验收归档前不提升为已交付能力。
+
+## 渐进式核心结果（2026-09-21，规划就绪、实现未开始）
+
+[add-demand-driven-core-results](changes/add-demand-driven-core-results/proposal.md) 将本轮讨论落为可执行计划：[架构设计](changes/add-demand-driven-core-results/design.md)、[行为规格](changes/add-demand-driven-core-results/specs/demand-driven-results/spec.md)、[0/32 实施任务](changes/add-demand-driven-core-results/tasks.md)。默认必要结果、显式详细证据、可信类事实交接与真正增量查询各自有 D01–D12 外部判据；不增加公共 Session、协议层、持久 IR 或全程序索引。
+
+按 D0 基线 → D1 结果/选择 → D2 普通 prepared 交接 → D3 可选证据/产物绑定 → D4 增量 query → D5 独立验收推进；D2 与 D4 可按共享 reader 边界协调实施。新默认和 query cursor 为显式 breaking 变更，完整审计调用者明确选择 All。正文提交后详细证据停止不丢正文，但请求整体停止仍可见。
+
+数组槽宽与 T5 转换问题独立修复；它们的失败不能通过默认精简、删除样本或更宽拒绝被隐藏。父性能专项负责归因，不重复拥有新 change 的实现；主 specs 在真实代码验收后同步，不由本次规划提前宣称完成。
 
 ## 已关闭的恢复正确性收尾
 
