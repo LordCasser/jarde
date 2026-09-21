@@ -1181,6 +1181,97 @@ impl ArtifactSnapshot {
         ))
     }
 
+    /// One class read a caller **already performed**, in the shape a class task consumes.
+    ///
+    /// [`Self::prepared_class`] and [`Self::prepared_root_class`] are the reads a class task
+    /// performs; this is the same value for a read that has already happened elsewhere. A caller
+    /// that binds a target (a class view's identity, a search's elected candidate, a method
+    /// request's own definition) holds the bytes a read of this snapshot verified, the digest and
+    /// length that read established, and the location they came from; handing them over here lets
+    /// the class be **prepared** from that read instead of being read a second time
+    /// (`add-demand-driven-core-results` task 3.1: one operation, one materialization of the class
+    /// it selected).
+    ///
+    /// Nothing is read, hashed, verified or charged here: the bytes are the caller's own evidence,
+    /// already accounted as the read that produced them, and `class_bytes` is that read's identity —
+    /// the same two values [`Self::prepared_class`] states for the same entry. What this adds is the
+    /// one thing a preparation cannot build for itself: the container the class was read out of, as
+    /// the active handle [`PreparedClassRead::container_facts`] hands out. `container` says whether
+    /// that handle is wanted at all — see [`ContainerHandover`] — because reaching a container
+    /// charges its directory, and a consumer that only decodes bodies out of the read asks the
+    /// container nothing.
+    ///
+    /// A `location` that is not an address of this snapshot is an input error, exactly as it is for
+    /// the read that would have produced the bytes.
+    pub fn prepared_read_of(
+        &self,
+        location: PhysicalClassLocation,
+        class_bytes: ClassBytesId,
+        bytes: Vec<u8>,
+        container: crate::prepared::ContainerHandover,
+        budget: &mut Budget,
+    ) -> Result<crate::prepared::PreparedClassRead> {
+        budget.poll()?;
+        let (container_id, depth, container_facts) = match &location {
+            PhysicalClassLocation::ArchiveEntry { entry } => {
+                if entry.snapshot() != &self.id {
+                    return Err(Error::invalid_input(
+                        "definition_snapshot_mismatch",
+                        "the class read belongs to another snapshot",
+                    ));
+                }
+                let origin = &entry.origin;
+                let depth = u64::try_from(origin.steps.len()).map_err(|_| {
+                    Error::invalid_input("nested_depth_overflow", "nested origin is too deep")
+                })?;
+                let facts = match container {
+                    crate::prepared::ContainerHandover::Keep => {
+                        let facts = self.container_facts(origin, budget)?;
+                        // A hold is this read's own statement that it is what keeps the product
+                        // alive, and it is recorded only when that is true: with a store attached
+                        // the store is the one keeping it, and recording a hold here would answer a
+                        // *later* request — one whose budget carries no store at all — from a
+                        // product that outlives this read for the store's reason. That is exactly
+                        // what [`HeldContainerFacts`]'s own note about a store's retention rules
+                        // out. A request with no store reaches the product by its own read, so the
+                        // hold is the read's and dies with it.
+                        if budget.facts_cache().is_none() {
+                            self.hold_container_facts(&facts);
+                        }
+                        Some(ContainerFactsHandle { facts })
+                    }
+                    crate::prepared::ContainerHandover::NotNeeded => None,
+                };
+                (origin.current_container().clone(), depth, facts)
+            }
+            PhysicalClassLocation::StandaloneRoot { snapshot } => {
+                if snapshot != &self.id {
+                    return Err(Error::invalid_input(
+                        "definition_snapshot_mismatch",
+                        "the class read belongs to another snapshot",
+                    ));
+                }
+                (root_origin(&self.id).root_container, 0, None)
+            }
+        };
+        let length = u64::try_from(bytes.len()).map_err(|_| {
+            Error::invalid_input("class_size_overflow", "class length does not fit u64")
+        })?;
+        // The class bytes are this read's whole backing, so the backing's trusted identity is the
+        // class bytes' own identity: the digest the read that produced them established.
+        let backing_digest = class_bytes.digest.clone();
+        Ok(crate::prepared::PreparedClassRead::new(
+            location,
+            class_bytes,
+            container_id,
+            depth,
+            Arc::from(bytes),
+            ByteSpan::new(0, length),
+            backing_digest,
+            container_facts,
+        ))
+    }
+
     /// The verified facts of one container, from the facts some live handle already holds, from
     /// retention when a store answers, and from this request's own read otherwise.
     ///

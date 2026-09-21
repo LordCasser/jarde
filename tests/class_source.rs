@@ -674,10 +674,12 @@ fn one_real_class_is_presented_with_its_declaration_and_its_bodies() {
     assert!(indentation_is_four_spaces(&report.text), "{}", report.text);
     assert!(report.text.ends_with("}\n"));
 
-    // Two class headers — the binding read and the one preparation — and one body attempt per
-    // member: the member runs decode against the preparation and charge no class read of their own
-    // (see `one_preparation_serves_every_member_body`).
-    assert_eq!(report.usage.class_headers, 2, "{:?}", report.usage);
+    // One class header — the binding read, which is also the read the one preparation is built
+    // over (D2 3.2: the selected definition is materialized once, never re-read for the
+    // preparation) — and one body attempt per member: the member runs decode against that
+    // preparation and charge no class read of their own (see
+    // `one_preparation_serves_every_member_body`).
+    assert_eq!(report.usage.class_headers, 1, "{:?}", report.usage);
     assert_eq!(report.usage.method_bodies, 3, "{:?}", report.usage);
     assert_eq!(
         report.execution,
@@ -791,10 +793,10 @@ fn a_member_without_a_body_is_a_declaration_and_never_an_empty_body() {
     assert!(contradictory.contains("// jarde:"), "not silently dropped");
 
     // The three members with no body charge nothing: the three bodies are the whole of this
-    // request's body work, and the two class reads — the binding and the one preparation — are
-    // beside them whatever the member count.
+    // request's body work, and the one class read — the binding, over which the one preparation is
+    // built — is beside them whatever the member count.
     assert_eq!(report.usage.method_bodies, 3, "{:?}", report.usage);
-    assert_eq!(report.usage.class_headers, 2, "{:?}", report.usage);
+    assert_eq!(report.usage.class_headers, 1, "{:?}", report.usage);
     let no_body = report
         .methods
         .iter()
@@ -959,7 +961,7 @@ fn a_method_table_that_stops_keeps_its_prefix_and_claims_no_more() {
     );
     // No body was decoded from a table that did not read to its end, and the request is not complete.
     assert_eq!(report.usage.method_bodies, 0, "{:?}", report.usage);
-    assert_eq!(report.usage.class_headers, 2, "{:?}", report.usage);
+    assert_eq!(report.usage.class_headers, 1, "{:?}", report.usage);
     assert!(!matches!(
         report.execution,
         ExecutionReport::Complete { .. }
@@ -1488,8 +1490,10 @@ fn a_class_in_a_container_is_prepared_from_the_entry_it_lives_in() {
             .0,
         b"WEB-INF/classes/p/Container.class"
     );
+    // One class read for the whole request (D2 3.2): the search read the definition it elected,
+    // and the one preparation is built over *that* read instead of reading the same entry again.
     assert_eq!(
-        class_layer.usage.class_headers, 2,
+        class_layer.usage.class_headers, 1,
         "{:?}",
         class_layer.usage
     );
@@ -1547,7 +1551,7 @@ fn a_class_in_a_container_is_prepared_from_the_entry_it_lives_in() {
         "the search walked the tree scope: {:?}",
         nested.coverage
     );
-    assert_eq!(nested.usage.class_headers, 2, "{:?}", nested.usage);
+    assert_eq!(nested.usage.class_headers, 1, "{:?}", nested.usage);
     assert_eq!(nested.usage.method_bodies, 2, "{:?}", nested.usage);
     assert_eq!(
         nested.usage.class_bytes,
@@ -1616,9 +1620,11 @@ fn a_class_that_cannot_be_prepared_keeps_its_presentation() {
             method.markers
         );
     }
-    // No body was attempted, and the failure is the request's own plane rather than a success.
+    // No body was attempted, and the failure is the request's own plane rather than a success. The
+    // class itself was read once — the binding read, over which the preparation that refused these
+    // members was attempted (D2 3.2) — and not once per member that states the refusal.
     assert_eq!(report.usage.method_bodies, 0, "{:?}", report.usage);
-    assert_eq!(report.usage.class_headers, 2, "{:?}", report.usage);
+    assert_eq!(report.usage.class_headers, 1, "{:?}", report.usage);
     assert!(!matches!(
         report.execution,
         ExecutionReport::Complete { .. }
@@ -1633,14 +1639,15 @@ fn a_class_that_cannot_be_prepared_keeps_its_presentation() {
 // The read shape: one preparation, one decode per body
 // ---------------------------------------------------------------------------------------------
 
-/// The read shape of one presentation of one class: two class reads whatever the member count, and
-/// one decode per member that declares a body.
+/// The read shape of one presentation of one class: **one** class read whatever the member count —
+/// the binding read, which is also the read the one preparation is built over (D2 3.2) — and one
+/// decode per member that declares a body.
 ///
 /// This is the assertion task 7.3 asks for, and it is deliberately a *shape* assertion rather than a
 /// count of one fixture: two classes whose member counts differ (6 and 9, each with one member that
 /// declares no body) are presented under the whole task budget, and the class reads must be the same
-/// two while the body attempts follow the bodies. A return to a per-member run reads the class once
-/// per member and fails here: `class_headers` would be 2 + 5 and 2 + 8, and `class_bytes` would grow
+/// one while the body attempts follow the bodies. A return to a per-member run reads the class once
+/// per member and fails here: `class_headers` would be 1 + 5 and 1 + 8, and `class_bytes` would grow
 /// by a class per member.
 #[test]
 fn one_preparation_serves_every_member_body() {
@@ -1656,15 +1663,17 @@ fn one_preparation_serves_every_member_body() {
     );
 
     for (report, bodies) in [(&six, 5_u64), (&nine, 8_u64)] {
-        // One class read for the binding, one for the preparation: `class_headers` is the same two
-        // for both classes, and the class bytes are read exactly twice — the class's own length
-        // counted twice, never once per member.
-        assert_eq!(report.usage.class_headers, 2, "{:?}", report.usage);
+        // One class read for the binding, which the one preparation is built over (D2 3.2):
+        // `class_headers` is the same one for both classes, and the class bytes are parsed exactly
+        // twice — the binding's own member walk and the preparation, each counted once for the
+        // class's own length, never once per member.
+        assert_eq!(report.usage.class_headers, 1, "{:?}", report.usage);
         assert_eq!(report.usage.method_bodies, bodies, "{:?}", report.usage);
         assert_eq!(
             report.usage.class_bytes,
             2 * report.class.class_bytes.length,
-            "the class bytes are read by the binding and the preparation: {:?}",
+            "the class bytes are parsed by the binding's member walk and by the one preparation \
+             built over that same read — two parses of one read, not two reads: {:?}",
             report.usage
         );
         // Every member that declares a body really ran, and the member that declares none is the

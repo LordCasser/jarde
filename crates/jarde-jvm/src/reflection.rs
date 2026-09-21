@@ -1252,19 +1252,19 @@ impl Scan<'_> {
         // `ConstantValue` attribute, and that layer reads the attribute content out of the bytes
         // of this very read: the header facts were already paid for by the demand above, so this
         // charges the class bytes and their attributes and nothing else.
-        let bytes = match self.closure.read_own_definition(
+        let read = match self.closure.read_own_definition(
             &location.loader,
             &location.definition,
             HeaderDemand::PatternScan,
             self.budget,
         ) {
-            Ok(read) => read.bytes,
+            Ok(read) => read,
             Err(error) => {
                 self.stop_now(&error);
                 return;
             }
         };
-        let constants = match own_string_constants(&facts, &bytes, self.budget) {
+        let constants = match own_string_constants(&facts, read.read.bytes(), self.budget) {
             Ok(constants) => constants,
             Err(error) => {
                 self.stop_now(&error);

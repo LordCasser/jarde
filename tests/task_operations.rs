@@ -1744,10 +1744,11 @@ fn the_class_view_reads_one_header_one_listing_and_only_the_requested_bodies() {
     assert!(report.usage.code_bytes > 0);
     assert_no_ir("the class view", &budget.usage());
 
-    // The same view without the body: the only counters a body adds are the body's own. Every
-    // class read — the header attempt, the materialized bytes and the member walk — is the same
-    // read, so a view that re-read the header or re-listed the members per method would move one
-    // of these numbers where it must not.
+    // The same view without the body. What a body adds is its own counters *and* the one
+    // preparation of the class it is decoded against (D2 3.2): the view's class read is the same
+    // read whatever it asks for — the header attempt, the materialized bytes and the member walk do
+    // not move — and `class_bytes` grows by exactly one parse of that same read, the preparation
+    // that serves every requested body instead of a per-body `Class::new`.
     let mut without_budget = task_budget(&[]).expect("the task defaults are bounded");
     let without = performed(
         engine
@@ -1765,7 +1766,14 @@ fn the_class_view_reads_one_header_one_listing_and_only_the_requested_bodies() {
             .expect("the same class view without bodies runs"),
     );
     assert_eq!(report.usage.class_headers, without.usage.class_headers);
-    assert_eq!(report.usage.class_bytes, without.usage.class_bytes);
+    assert_eq!(
+        report.usage.class_bytes,
+        without.usage.class_bytes + report.class.class_bytes.length,
+        "the body the view decoded was located and decoded through one preparation of the class it \
+         read (D2 3.2), so exactly one parse of that class is added: {:?} vs {:?}",
+        report.usage,
+        without.usage
+    );
     assert_eq!(report.usage.read_bytes, without.usage.read_bytes);
     assert!(
         report.usage.result_items > without.usage.result_items,

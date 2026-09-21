@@ -31,7 +31,7 @@ use jarde_reader::budget::{Budget, CountedBudgetDimension, Limits, UsageSnapshot
 use jarde_reader::classfile::{
     AttributeShell, BytecodeStop, BytecodeStopPhase, ClassMemberFacts, ExceptionHandlerFact,
     InspectionMode, InstructionFact, MemberHeader, MemberTablePhase, MemberTableStop,
-    MethodSelector, class_member_facts, method_code_coverage, method_code_facts,
+    MethodSelector, class_member_facts, method_code_coverage,
 };
 use jarde_reader::error::{Error, Result};
 use jarde_reader::inspect::{
@@ -310,19 +310,105 @@ impl Engine {
     /// A body with no debug metadata is presented with deterministic ordinal names (A10) rather than
     /// refused: nothing is invented for it, and the ordinals it gets are the ones the declaration's
     /// parameter slots and the body's own slots state.
+    ///
+    /// **One class, one read, one preparation** (D2 3.1/3.3). The definition this request names is
+    /// read once — by [`jarde_jvm::read_method_class`], which performs exactly the read
+    /// [`jarde_jvm::analyze_method_ir`] performs before it runs, or adopts the read a caller's own
+    /// binding already performed — and prepared once, and that one preparation is what the run
+    /// ([`jarde_jvm::analyze_prepared_method_ir`]) and the presentation's callee read consume. A
+    /// body whose call sites name members of the same class therefore costs no second class read,
+    /// and the loader's binding check is *not* skipped: the prepared run performs it over the
+    /// declared order, from the facts the read established.
     pub fn recover_method(
         &self,
         content: &[ArtifactSnapshot],
         request: &crate::ir::MethodAnalysisRequest,
         budget: &mut Budget,
     ) -> Result<RecoveredMethod> {
-        let analyzed = jarde_jvm::analyze_method_ir(content, request, budget)?;
+        self.recover_bound_method(content, request, None, budget)
+    }
+
+    /// One recovery request whose target binding already read the class it selected (D2 3.1/3.3).
+    ///
+    /// `binding` is the trusted read the caller's own binding performed for this request's own
+    /// definition, when it performed one: a name search reads the definitions it examines, so the
+    /// definition it elects has already been read, and this is that read. The operation prepares the
+    /// class **once** over it and runs over that preparation, which the same-class callee read then
+    /// consumes too — so the selected definition is materialized once, prepared once, and read by no
+    /// consumer of this request again.
+    ///
+    /// A caller with no binding read (the identity path, which binds from the caller's own identity)
+    /// lets the run perform the request's own read
+    /// ([`jarde_jvm::analyze_method_ir_owning_the_read`]) and hands *that* read to the callee
+    /// consumer, which prepares it exactly when the presented body really names members of the same
+    /// class. The loader binding check, the profile decision and every stop stay exactly where they
+    /// were: they are the run's own, decided over the declared order from the facts the read
+    /// established, and no path skips them.
+    fn recover_bound_method(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &crate::ir::MethodAnalysisRequest,
+        binding: Option<&ConfirmedRead>,
+        budget: &mut Budget,
+    ) -> Result<RecoveredMethod> {
+        // The binding's own read, stated once more in the shape a class task consumes: adopting it
+        // is what keeps this operation from reading the definition its binding selected again.
+        let bound_read = match binding {
+            Some(bound) => match definition_snapshot(content, &request.method.owner) {
+                Some(snapshot) => Some(bound.prepared_read(
+                    snapshot,
+                    jarde_reader::prepared::ContainerHandover::Keep,
+                    budget,
+                )?),
+                // The content the binding read from is not provided to this request: the run states
+                // that, in the vocabulary its own read uses for it.
+                None => return self.recover_own_read(content, request, budget),
+            },
+            None => None,
+        };
+        let Some(read) = bound_read else {
+            return self.recover_own_read(content, request, budget);
+        };
+        // One prepared class over one materialization (`crate::d0_counts`): the run and the callee
+        // read below consume this one, and the definition the binding selected is read by neither.
+        crate::d0_counts::class_prepared();
+        let prepared = jarde_reader::prepared::PreparedClass::prepare(&read, budget)?;
+        let analyzed = jarde_jvm::analyze_prepared_method_ir(content, &prepared, request, budget)?;
         if analyzed.ir().code().is_some() {
             // A decode was published, so this demand path really decoded one body
             // (`crate::d0_counts`): counted after the run, so a stop before `raw_facts` counts none.
             crate::d0_counts::body_decoded();
         }
-        recovery_presented(content, request, analyzed, None, budget)
+        recovery_presented(content, request, analyzed, Some(&prepared), budget)
+    }
+
+    /// One recovery request whose class the run reads itself, with that read handed to the
+    /// presentation (D2 3.1/3.3).
+    ///
+    /// [`jarde_jvm::analyze_method_ir_owning_the_read`] is [`Engine::recover_method`]'s own run —
+    /// the same validation, the same environment check, the same passes, the same report and the
+    /// same charges as [`jarde_jvm::analyze_method_ir`] — returning the trusted read the run's
+    /// driver class was read as. The presentation's same-class callee read prepares *that* read when
+    /// the presented body names members of the same class, so the class is read once for the whole
+    /// request and a body that names no such member prepares nothing at all.
+    fn recover_own_read(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &crate::ir::MethodAnalysisRequest,
+        budget: &mut Budget,
+    ) -> Result<RecoveredMethod> {
+        let run = jarde_jvm::analyze_method_ir_owning_the_read(content, request, budget)?;
+        let (analyzed, read) = run.into_parts();
+        if analyzed.ir().code().is_some() {
+            crate::d0_counts::body_decoded();
+        }
+        if read.is_some() {
+            // One class materialization for this operation's own selected definition
+            // (`crate::d0_counts`): the run above performed it, and the presentation below consumes
+            // it rather than reading the definition again.
+            crate::d0_counts::class_materialized();
+        }
+        recovery_read(content, request, analyzed, read, budget)
     }
 
     /// One whole physical scope recovered in one operation: every class it holds prepared once,
@@ -669,20 +755,7 @@ impl Engine {
         query: &NavigationQuery,
         budget: &mut Budget,
     ) -> Result<NavigationReport> {
-        let search = search_named_classes(
-            snapshot,
-            scope,
-            &query.class,
-            match &query.member {
-                None => SearchSubject::Declaration,
-                Some(_) => SearchSubject::Member,
-            },
-            |read| match &query.member {
-                None => Ok(vec![read.class.clone()]),
-                Some(filter) => member_candidates(read, filter),
-            },
-            budget,
-        )?;
+        let search = search_targets(snapshot, scope, query, budget)?;
         Ok(NavigationReport {
             view: PhysicalView {
                 snapshot: snapshot.id().clone(),
@@ -819,8 +892,8 @@ impl Engine {
             let mut resolutions = Vec::new();
             for body in &request.bodies {
                 match resolve_body_ref(&read, body)? {
-                    BodyResolution::Method(method, member) => {
-                        resolutions.push(BodyResolution::Method(method, member));
+                    BodyResolution::Method(method, ordinal, member) => {
+                        resolutions.push(BodyResolution::Method(method, ordinal, member));
                     }
                     BodyResolution::NotReached(stop) => {
                         resolutions.push(BodyResolution::NotReached(stop));
@@ -841,18 +914,71 @@ impl Engine {
                     }
                 }
             }
+            // The one preparation every requested body is decoded against (D2 3.2): the class's
+            // declaration, constant pool, member table and locator are read **once** — out of the
+            // very bytes the binding read (task 3.1), never by reading the definition again — and
+            // every body the request asked for is located and decoded against them, so a body does
+            // not parse the class a second time.
+            //
+            // It is made exactly when this view really decodes a body: a body the class declares
+            // without a `Code` entry, a reference the member table never reached and a body that
+            // stopped are not decodes of this class, and preparing it for them would charge a read
+            // nothing consumes. A preparation that fails — the reader's strict structure read
+            // refusing bytes the tolerant class read accepted — does not erase the class either:
+            // the declaration, the fields and every member stay published, and each body that would
+            // have been decoded states that failure as its own refusal.
+            let requested_bodies = resolutions.iter().any(|resolution| match resolution {
+                BodyResolution::Method(_, _, member) => code_shell(member).is_some(),
+                BodyResolution::NotReached(_) | BodyResolution::Ambiguous { .. } => false,
+            });
+            let mut prepared_read = None;
+            let mut preparation_failure = None;
+            if requested_bodies {
+                match read.prepared_read(
+                    snapshot,
+                    jarde_reader::prepared::ContainerHandover::NotNeeded,
+                    budget,
+                ) {
+                    Ok(value) => prepared_read = Some(value),
+                    Err(error) => preparation_failure = Some(error),
+                }
+            }
+            let prepared = match &prepared_read {
+                Some(value) => {
+                    // One prepared class over one materialization (`crate::d0_counts`): a view that
+                    // prepared the class per body would prepare N.
+                    crate::d0_counts::class_prepared();
+                    match jarde_reader::prepared::PreparedClass::prepare(value, budget) {
+                        Ok(class) => Some(class),
+                        Err(error) => {
+                            preparation_failure = Some(error);
+                            None
+                        }
+                    }
+                }
+                None => None,
+            };
+            let bodies_state = match (&prepared, preparation_failure) {
+                (Some(prepared), _) => ViewBodies::Prepared(prepared),
+                (None, Some(error)) => ViewBodies::Refused(error),
+                // Unreachable by construction: `requested_bodies` is the one predicate that decides
+                // whether this view prepares anything and the one that sends a member here, so a
+                // member with a `Code` entry in this loop belongs to a class it prepared.
+                (None, None) => ViewBodies::NotNeeded,
+            };
             for (position, resolution) in resolutions.into_iter().enumerate() {
                 let reference = request
                     .bodies
                     .get(position)
                     .expect("one resolution per requested body");
                 let body = match resolution {
-                    BodyResolution::Method(method, member) => {
+                    BodyResolution::Method(method, ordinal, member) => {
                         match body_result(
                             &definition,
-                            &read.bytes,
-                            &method,
+                            &bodies_state,
+                            ordinal,
                             &member,
+                            &method,
                             reference,
                             budget,
                         ) {
@@ -950,9 +1076,12 @@ impl Engine {
                 return Ok(OperationOutcome::Incomplete(candidates));
             }
         };
+        // The analysis-only operation has no consumer beside its run, so the read the search
+        // performed is the search's own and the run reads the class as every analysis request does.
         let BoundMethod {
             method,
             environment,
+            read: _,
         } = *bound;
         let stages = operation.stages().to_vec();
         let analysis = jarde_jvm::analyze_method(
@@ -1001,15 +1130,17 @@ impl Engine {
         let BoundMethod {
             method,
             environment,
+            read,
         } = *bound;
         let stages = operation.stages().to_vec();
-        let recovered = self.recover_method(
+        let recovered = self.recover_bound_method(
             content,
             &crate::ir::MethodAnalysisRequest {
                 environment,
                 method: method.clone(),
                 stages: stages.clone(),
             },
+            read.as_ref(),
             budget,
         )?;
         let presentation = RecoveryPresentation::of(recovered.recovery());
@@ -1042,9 +1173,9 @@ impl Engine {
     /// results into one class text ([`crate::class_source`]) and the report that publishes the facts
     /// beside the spelling.
     ///
-    /// **One preparation, however many members the class has** (task 7.3). The class is prepared
-    /// once — [`jarde_reader::prepared::PreparedClass::prepare`], the reader's own once-read class
-    /// task, over the very definition the binding bound — and every member body is decoded against
+    /// **One preparation, however many members the class has** (task 7.3, D2 3.2). The class is
+    /// prepared once — [`jarde_reader::prepared::PreparedClass::prepare`], the reader's own once-read
+    /// class task — over the read the binding performed, and every member body is decoded against
     /// that one preparation, through [`jarde_jvm::analyze_prepared_method_ir`] and
     /// [`jarde_jvm::callee::read_prepared_callees`], which is the prepared half of exactly the run
     /// [`Engine::recover_method`] performs. A member's run therefore charges no class header and no
@@ -1052,12 +1183,13 @@ impl Engine {
     /// the callee evidence its call sites justify comes from the same prepared class.
     ///
     /// **What one request costs.** One class header and one member walk for the class-binding read,
-    /// one class header and one verified class read for the preparation — made exactly when the class
-    /// declares at least one member this presentation would run a body for — and then one body attempt
-    /// per member that declares one. Neither `class_headers` nor class bytes grow with the number of
-    /// members: a class with `N` bodies costs one preparation and `N` decodes. A member that declares
-    /// no body charges nothing, a member this presentation cannot spell is never run, and no class is
-    /// read for a member that is not presented.
+    /// one preparation *over that same read* — made exactly when the class declares at least one
+    /// member this presentation would run a body for, and never a second read of the definition
+    /// (D2 task 3.2) — and then one body attempt per member that declares one. Neither
+    /// `class_headers` nor the class's bytes are read twice: a class with `N` bodies costs one
+    /// materialization, one preparation and `N` decodes. A member that declares no body charges
+    /// nothing, a member this presentation cannot spell is never run, and no class is read for a
+    /// member that is not presented.
     ///
     /// A preparation that fails — the reader's own strict structure read refusing bytes the tolerant
     /// class read accepted — does not erase the class: the declaration, the fields and every member
@@ -1189,11 +1321,13 @@ impl Engine {
                 .filter(|member| class_source_runs_body(member))
                 .count(),
         )?;
-        // The one preparation every member body is decoded against (task 7.3): the class's
+        // The one preparation every member body is decoded against (task 7.3, D2 3.2): the class's
         // declaration, constant pool, member table and locator read once, by the reader's own
-        // prepared-class lifecycle, over the definition the binding bound. It is charged as the one
-        // class-header read attempt it is, and it is made exactly when this presentation would run
-        // some member's body — a class whose members all declare no body is presented without one.
+        // prepared-class lifecycle, over the very bytes the class binding read — the read this
+        // request already performed, handed over as the read a class task consumes (task 3.1), so
+        // the selected definition is materialized once and not once per consumer. It is made
+        // exactly when this presentation would run some member's body — a class whose members all
+        // declare no body is presented without one.
         //
         // A preparation that could not be made is not the request ending: the failure is kept and
         // becomes the refusal of every member that declares a body, so the class, its fields and its
@@ -1201,7 +1335,13 @@ impl Engine {
         // could be decoded.
         let mut preparation: Option<Error> = None;
         let prepared_read = if declared_bodies > 0 {
-            match read_prepared_definition(snapshot, &definition, budget) {
+            // The container is kept: every member's own run reads it again for the loader's binding
+            // query, and this read is what keeps that directory from being parsed per member.
+            match read.prepared_read(
+                snapshot,
+                jarde_reader::prepared::ContainerHandover::Keep,
+                budget,
+            ) {
                 Ok(read) => Some(read),
                 Err(error) => {
                     preparation = Some(error);
@@ -1424,31 +1564,6 @@ struct ClassBodyRefusal {
     /// Whether the failure ends the request: a cancellation or an exhausted shared dimension does,
     /// and a class the reader's strict structure read refuses does not.
     ends: bool,
-}
-
-/// The one trusted read of the class this presentation presents (task 7.3).
-///
-/// The definition is the one the binding bound, so its location, digest and length are the bytes this
-/// request already read; this asks the snapshot for the same class in the shape a class task
-/// consumes — one verified read whose bytes every member body is decoded against — and charges the
-/// one class-header read attempt it is, exactly as the single-method entry charges the driver read it
-/// performs itself. Which definition the read really is stays checked where it belongs: the analysis
-/// of each member refuses a prepared class that is not the definition its request names
-/// (`class_definition_mismatch`), so a read of some other class cannot be decoded as this one.
-fn read_prepared_definition(
-    snapshot: &ArtifactSnapshot,
-    definition: &PhysicalDefinitionId,
-    budget: &mut Budget,
-) -> Result<jarde_reader::prepared::PreparedClassRead> {
-    // One class materialization for a preparation (`crate::d0_counts`): the D0 1.3 gate counts it
-    // here, at the one site that performs it, so a path that materializes the same class twice says
-    // so instead of hiding behind one charge.
-    crate::d0_counts::class_materialized();
-    budget.charge(CountedBudgetDimension::ClassHeaders, 1)?;
-    match definition.location.entry() {
-        Some(entry) => snapshot.prepared_class(entry, budget),
-        None => snapshot.prepared_root_class(budget),
-    }
 }
 
 /// One member body recovered from the class this request prepared (task 7.3).
@@ -1988,12 +2103,39 @@ struct ClassCandidate<'a> {
 /// The facts travel with the item because a caller that asks for members derives them from *this*
 /// read — one read of the class per request, never a second opinion about the same bytes. The bytes
 /// travel with both because a class view decodes the bodies it was asked for out of them instead of
-/// reading the same class a second time.
+/// reading the same class a second time, and the source travels with them because they are what a
+/// preparation is built from (`add-demand-driven-core-results` task 3.1): the consumer that needs a
+/// prepared class hands *this* read over instead of reading the same definition again.
 struct ConfirmedRead {
     class: ClassContentItem,
     facts: ClassMemberFacts,
     diagnostics: Vec<Diagnostic>,
     bytes: Vec<u8>,
+    source: ClassSource,
+}
+
+impl ConfirmedRead {
+    /// This read in the shape a class task consumes: the very bytes this binding read, stated once
+    /// more as the read a preparation is built from.
+    ///
+    /// Nothing is read or charged here — the materialization already happened, and this is the
+    /// handover that keeps it from happening twice (task 3.1). `container` says whether the
+    /// preparation's consumers will read the class's container again (a method analysis's loader
+    /// binding query) or only decode bodies out of it (a class view).
+    fn prepared_read(
+        &self,
+        snapshot: &ArtifactSnapshot,
+        container: jarde_reader::prepared::ContainerHandover,
+        budget: &mut Budget,
+    ) -> Result<jarde_reader::prepared::PreparedClassRead> {
+        snapshot.prepared_read_of(
+            self.source.location.clone(),
+            self.source.class_bytes.clone(),
+            self.bytes.clone(),
+            container,
+            budget,
+        )
+    }
 }
 
 /// Enumerates the entries one declared scope holds, under the reader's own accounting.
@@ -2242,6 +2384,7 @@ fn read_class_declaration(
         facts,
         diagnostics,
         bytes,
+        source,
     })
 }
 
@@ -2817,47 +2960,48 @@ fn named_callee_candidates(
 /// The class's own members the presented body's call sites named, read on demand (P3 3.2).
 ///
 /// This is the read for a caller that holds **no** prepared class: one header read by identity, then
-/// one `MethodBodies` attempt per distinct named member. A bulk worker, which holds the class its
-/// method belongs to, calls [`read_prepared_named_callees`] instead and pays no class read at all.
+/// one `MethodBodies` attempt per distinct named member. A caller that holds one — a bulk worker's
+/// class task, or this operation's own read of the same definition (D2 3.3) — calls
+/// [`read_prepared_named_callees`] instead and pays no class read at all.
 fn read_named_callees(
     content: &[ArtifactSnapshot],
     request: &crate::ir::MethodAnalysisRequest,
-    ir: &jarde_jvm::method_ir::MethodIr,
+    candidates: &(
+        PhysicalDefinitionId,
+        Vec<jarde_jvm::callee::CalleeCandidate>,
+    ),
     budget: &mut Budget,
-) -> Result<Option<jarde_jvm::callee::CalleeReadReport>> {
-    let Some((definition, candidates)) = named_callee_candidates(ir) else {
-        return Ok(None);
-    };
-    let read = jarde_jvm::callee::read_callees(
+) -> Result<jarde_jvm::callee::CalleeReadReport> {
+    let (definition, candidates) = candidates;
+    jarde_jvm::callee::read_callees(
         content,
-        &jarde_jvm::callee::CalleeReadRequest::new(&request.environment, &definition, &candidates),
+        &jarde_jvm::callee::CalleeReadRequest::new(&request.environment, definition, candidates),
         budget,
-    )?;
-    Ok(Some(read))
+    )
 }
 
-/// The same read, from the class a bulk worker already prepared (bulk tasks 2.3 and 3.2).
+/// The same read, from a class the caller already prepared (bulk tasks 2.3 and 3.2, D2 3.3).
 ///
 /// The candidates, their order and the read's refusals are [`named_callee_candidates`]'s, exactly as
 /// the direct read's are; what changes is where the member records and the bodies come from — the
-/// caller's prepared class, which charged one class read for all of its methods.
+/// caller's prepared class, which charged one class read for everything that consumes it.
 fn read_prepared_named_callees(
     content: &[ArtifactSnapshot],
     request: &crate::ir::MethodAnalysisRequest,
-    ir: &jarde_jvm::method_ir::MethodIr,
+    candidates: &(
+        PhysicalDefinitionId,
+        Vec<jarde_jvm::callee::CalleeCandidate>,
+    ),
     prepared: &jarde_reader::prepared::PreparedClass<'_>,
     budget: &mut Budget,
-) -> Result<Option<jarde_jvm::callee::CalleeReadReport>> {
-    let Some((definition, candidates)) = named_callee_candidates(ir) else {
-        return Ok(None);
-    };
-    let read = jarde_jvm::callee::read_prepared_callees(
+) -> Result<jarde_jvm::callee::CalleeReadReport> {
+    let (definition, candidates) = candidates;
+    jarde_jvm::callee::read_prepared_callees(
         content,
         prepared,
-        &jarde_jvm::callee::CalleeReadRequest::new(&request.environment, &definition, &candidates),
+        &jarde_jvm::callee::CalleeReadRequest::new(&request.environment, definition, candidates),
         budget,
-    )?;
-    Ok(Some(read))
+    )
 }
 
 /// One callee read as the member table the accessor rule reads (P3 3.2).
@@ -2957,19 +3101,13 @@ impl RecoveredMethod {
 
 /// One analysis run presented, from whichever read produced it (bulk task 3.2).
 ///
-/// This is the whole of [`Engine::recover_method`]'s presentation: the facts the recovery layer
-/// needs, the on-demand callee read of the presented body's own call sites, and one
-/// [`jarde_java::recover`] call over the run's payload. It exists as one function because the bulk
-/// operation presents **the same run** for every method of a prepared class
-/// ([`jarde_jvm::analyze_prepared_method_ir`]) and a second presentation path would be a second
-/// spelling of the same contract — the two entries differ in one thing only:
-///
-/// * `prepared` is `None` for the single-method entry, whose [`jarde_jvm::analyze_method_ir`] read
-///   the class itself, and the callee evidence then comes from
-///   [`jarde_jvm::callee::read_callees`], which reads the class again for the members the call
-///   sites named;
-/// * `prepared` is the class a bulk worker holds for a whole class task, and the callee evidence
-///   then comes from [`jarde_jvm::callee::read_prepared_callees`], which reads no class at all.
+/// This is the whole of `Engine`'s recovery presentation: the facts the recovery layer needs, the
+/// on-demand callee read of the presented body's own call sites, and one [`jarde_java::recover`]
+/// call over the run's payload. It exists as one function because the bulk operation presents **the
+/// same run** for every method of a prepared class ([`jarde_jvm::analyze_prepared_method_ir`]) and a
+/// second presentation path would be a second spelling of the same contract — the callers differ in
+/// one thing only: which read of the presented body's own class a same-class callee read consumes
+/// ([`CalleeClass`]).
 ///
 /// Everything else — which candidates are read, in which order, with which refusals, and how the
 /// payload is presented — is this function's, so a method presented through the bulk path and the
@@ -2979,6 +3117,59 @@ pub(crate) fn recovery_presented(
     request: &crate::ir::MethodAnalysisRequest,
     analyzed: jarde_jvm::method_ir::MethodIrAnalysis,
     prepared: Option<&jarde_reader::prepared::PreparedClass<'_>>,
+    budget: &mut Budget,
+) -> Result<RecoveredMethod> {
+    let callee_class = match prepared {
+        Some(prepared) => CalleeClass::Prepared(prepared),
+        None => CalleeClass::None,
+    };
+    recovery_from(content, request, analyzed, callee_class, budget)
+}
+
+/// The same presentation for a caller that holds the read the run performed, not a preparation
+/// (D2 3.1/3.3).
+///
+/// `read` is [`jarde_jvm::AnalyzedMethod::read`]: the class the run itself read, when it read one.
+/// The same-class callee read consumes a preparation of *that* read — made here, exactly when the
+/// presented body really names members of the same class — so the class is read once for the whole
+/// request, and a body that names no such member prepares nothing at all.
+fn recovery_read(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    analyzed: jarde_jvm::method_ir::MethodIrAnalysis,
+    read: Option<jarde_reader::prepared::PreparedClassRead>,
+    budget: &mut Budget,
+) -> Result<RecoveredMethod> {
+    let callee_class = match &read {
+        Some(read) => CalleeClass::Read(read),
+        None => CalleeClass::None,
+    };
+    recovery_from(content, request, analyzed, callee_class, budget)
+}
+
+/// The class one recovery presentation reads its same-class callee evidence from.
+///
+/// The three cases are the three callers of the presentation, and the difference between them is
+/// exactly "who already read the presented body's class":
+enum CalleeClass<'a> {
+    /// A class the caller already prepared — a bulk worker's class task, or this operation's own
+    /// preparation of a read its binding performed. Every callee read is answered from it, and no
+    /// class is read for one.
+    Prepared(&'a jarde_reader::prepared::PreparedClass<'a>),
+    /// The read the run performed itself: prepared once, and only when the presented body's call
+    /// sites name members of the same class — the read a callee read would otherwise have to
+    /// perform again is this one.
+    Read(&'a jarde_reader::prepared::PreparedClassRead),
+    /// No class: the presentation reads the class the call sites named, as it always did.
+    None,
+}
+
+/// One run presented, with the class a same-class callee read may come from.
+fn recovery_from(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    analyzed: jarde_jvm::method_ir::MethodIrAnalysis,
+    callee_class: CalleeClass<'_>,
     budget: &mut Budget,
 ) -> Result<RecoveredMethod> {
     let facts = crate::facade::recovery_facts(
@@ -2991,12 +3182,26 @@ pub(crate) fn recovery_presented(
     // definition the run read the presented body from (P3 3.2). It happens **between** the run and
     // the presentation — not inside the recovery layer, which holds no artifact, no loader and no
     // budget — and it is the only read this entry performs beyond the one run: a recovery request
-    // whose body names no such call site reads no member at all.
-    let callees = match prepared {
-        Some(prepared) => {
-            read_prepared_named_callees(content, request, analyzed.ir(), prepared, budget)?
+    // whose body names no such call site reads no member at all, and (D2 3.3) no preparation either.
+    let candidates = named_callee_candidates(analyzed.ir());
+    let callees = match (&callee_class, &candidates) {
+        (_, None) => None,
+        (CalleeClass::Prepared(prepared), Some(candidates)) => Some(read_prepared_named_callees(
+            content, request, candidates, prepared, budget,
+        )?),
+        (CalleeClass::Read(read), Some(candidates)) => {
+            // One prepared class over one materialization (`crate::d0_counts`), made exactly when a
+            // same-class callee read consumes it: the class read once serves the run above and this
+            // callee read, and a body that named no such member never gets here.
+            crate::d0_counts::class_prepared();
+            let prepared = jarde_reader::prepared::PreparedClass::prepare(read, budget)?;
+            Some(read_prepared_named_callees(
+                content, request, candidates, &prepared, budget,
+            )?)
         }
-        None => read_named_callees(content, request, analyzed.ir(), budget)?,
+        (CalleeClass::None, Some(candidates)) => {
+            Some(read_named_callees(content, request, candidates, budget)?)
+        }
     };
     let members = callees.as_ref().map(member_table);
     let request = jarde_java::RecoveryRequest::new(analyzed.ir(), &facts, profile);
@@ -4343,6 +4548,34 @@ enum SearchSubject {
     Member,
 }
 
+/// The one search behind the navigation entry and the method binding.
+///
+/// "Which definitions of this name exist, which of them are confirmed and what does each declare"
+/// is answered once, here, so [`Engine::find_targets`] and [`bind_method`] cannot drift in what
+/// they examine, in the items they select or in the stop they publish: the report entry publishes
+/// this search's own planes, and the method binding elects the read this search confirmed.
+fn search_targets(
+    snapshot: &ArtifactSnapshot,
+    scope: &PhysicalScope,
+    query: &NavigationQuery,
+    budget: &mut Budget,
+) -> Result<NamedClassSearch> {
+    search_named_classes(
+        snapshot,
+        scope,
+        &query.class,
+        match &query.member {
+            None => SearchSubject::Declaration,
+            Some(_) => SearchSubject::Member,
+        },
+        |read| match &query.member {
+            None => Ok(vec![read.class.clone()]),
+            Some(filter) => member_candidates(read, filter),
+        },
+        budget,
+    )
+}
+
 fn search_named_classes<F>(
     snapshot: &ArtifactSnapshot,
     scope: &PhysicalScope,
@@ -4483,10 +4716,18 @@ struct BoundClass {
     class_item: Option<ClassContentItem>,
 }
 
-/// One bound method: the identity the operation runs over and the environment it runs in.
+/// One bound method: the identity the operation runs over, the environment it runs in, and the
+/// trusted read the binding itself performed, when it performed one.
 struct BoundMethod {
     method: PhysicalMethodId,
     environment: ResolutionEnvironment,
+    /// The read of the definition this binding elected, when a name search confirmed it (task 3.1).
+    ///
+    /// A search reads the definitions it examines, so the definition it elects has already been
+    /// read: this is that read, handed to the operation so the selected definition is never read a
+    /// second time. The identity path binds from the caller's own identity and reads nothing, so it
+    /// has none.
+    read: Option<ConfirmedRead>,
 }
 
 /// What one method-level selection bound, or the candidates that refuse to be one.
@@ -4516,13 +4757,13 @@ fn bind_class(
     match class {
         ClassRef::Definition { definition } => {
             require_definition_snapshot(snapshot, definition)?;
-            // One class materialization for this operation's own selected definition
-            // (`crate::d0_counts`): the D0 1.3 gate reads it beside the preparation read below, so a
-            // presentation that reads the same definition twice says so. A name-based request's
-            // *search* reads are the search's own cost and are not counted here.
-            crate::d0_counts::class_materialized();
             budget.charge(CountedBudgetDimension::ClassHeaders, 1)?;
             let read = read_definition(snapshot, definition, budget)?;
+            // One class materialization for this operation's own selected definition
+            // (`crate::d0_counts`), counted at the read that really happened: a request whose
+            // charge, cancellation or read was refused above materialized nothing, and a name-based
+            // request's *search* reads are the search's own cost and are not counted here.
+            crate::d0_counts::class_materialized();
             let provenance = Some(definition_provenance(definition));
             let class_item = match charge_item(budget) {
                 Ok(()) => {
@@ -4659,6 +4900,10 @@ fn bind_method(
             Ok(MethodBinding::Bound(Box::new(BoundMethod {
                 method: method.clone(),
                 environment,
+                // The identity path binds from the caller's own identity: it read no class, so
+                // there is no read to hand over — the request's own read is the one
+                // `read_method_class` performs for it.
+                read: None,
             })))
         }
         MethodRef::Name {
@@ -4677,7 +4922,7 @@ fn bind_method(
                     kind: MemberQueryKind::Methods,
                 }),
             };
-            let report = self_find_targets(
+            let search = search_targets(
                 snapshot,
                 &environment.runtime.physical.scope,
                 &query,
@@ -4686,17 +4931,17 @@ fn bind_method(
             // The search's own completeness is read before its candidate count: a confirmed prefix
             // — one candidate, or none — is neither a unique binding nor a missing method while the
             // search has not finished.
-            if !matches!(report.execution, ExecutionReport::Complete { .. }) {
+            if !matches!(search.execution, ExecutionReport::Complete { .. }) {
                 return Ok(MethodBinding::Incomplete(Box::new(TargetCandidates {
                     query,
-                    candidates: report.candidates,
+                    candidates: search.items,
                     limits: budget.limits().clone(),
-                    coverage: report.coverage,
-                    execution: report.execution,
-                    diagnostics: report.diagnostics,
+                    coverage: search.coverage,
+                    execution: search.execution,
+                    diagnostics: search.diagnostics,
                 })));
             }
-            match report.candidates.len() {
+            match search.items.len() {
                 0 => Err(Error::invalid_input(
                     "operation_target_not_found",
                     format!(
@@ -4707,34 +4952,44 @@ fn bind_method(
                         class.spelling()
                     ),
                 )),
-                1 => Ok(MethodBinding::Bound(Box::new(BoundMethod {
-                    method: method_identity_of(&report.candidates[0]),
-                    environment,
-                }))),
+                1 => {
+                    // The elected read travels with the binding (task 3.1): the operation this
+                    // binding is for consumes *this* read — the one the search performed to
+                    // confirm the definition — instead of reading the same definition again, and
+                    // the search's own candidate reads stay the search's own cost.
+                    let read = search.matches.into_iter().next();
+                    Ok(MethodBinding::Bound(Box::new(BoundMethod {
+                        method: method_identity_of(&search.items[0]),
+                        environment,
+                        read,
+                    })))
+                }
                 _ => Ok(MethodBinding::Ambiguous(Box::new(TargetCandidates {
                     query,
-                    candidates: report.candidates,
+                    candidates: search.items,
                     limits: budget.limits().clone(),
-                    coverage: report.coverage,
-                    execution: report.execution,
-                    diagnostics: report.diagnostics,
+                    coverage: search.coverage,
+                    execution: search.execution,
+                    diagnostics: search.diagnostics,
                 }))),
             }
         }
     }
 }
 
-/// The navigation entry as the method binding calls it.
+/// The provided snapshot one physical definition lives in, when the request provides it.
 ///
-/// A free function rather than a method call keeps this helper usable outside the `Engine` impl
-/// block while still going through the very same public entry the caller would.
-fn self_find_targets(
-    snapshot: &ArtifactSnapshot,
-    scope: &PhysicalScope,
-    query: &NavigationQuery,
-    budget: &mut Budget,
-) -> Result<NavigationReport> {
-    Engine::new().find_targets(snapshot, scope, query, budget)
+/// The definition carries its own snapshot, so this is the one lookup every entry that has to reach
+/// the definition's bytes performs: the read entries state their own refusal when it is absent
+/// (`content_not_provided`), and this answers `None` so a caller that only *adopts* a read can let
+/// them.
+fn definition_snapshot<'a>(
+    content: &'a [ArtifactSnapshot],
+    definition: &PhysicalDefinitionId,
+) -> Option<&'a ArtifactSnapshot> {
+    content
+        .iter()
+        .find(|candidate| candidate.id() == definition.snapshot())
 }
 
 pub(crate) fn snapshot_not_provided(snapshot: &SnapshotId) -> Error {
@@ -4815,6 +5070,7 @@ fn read_definition(
         facts,
         diagnostics,
         bytes,
+        source,
     })
 }
 
@@ -4829,8 +5085,9 @@ fn read_definition(
               only move the header a read is about to borrow behind a pointer"
 )]
 enum BodyResolution {
-    /// Exactly one declared method matched, with its own member header for the read.
-    Method(PhysicalMethodId, MemberHeader),
+    /// Exactly one declared method matched: its identity, its own ordinal in the class's member
+    /// table (the coordinate the prepared class decodes it by) and its member header for the read.
+    Method(PhysicalMethodId, usize, MemberHeader),
     /// The member table stopped before the reference could be decided: the member may or may not be
     /// declared beyond the stop, and nothing is claimed about it (A13).
     NotReached(MemberTableStop),
@@ -4860,7 +5117,11 @@ fn resolve_body_ref(read: &ConfirmedRead, body: &BodyRef) -> Result<BodyResoluti
                 ));
             }
             match declared_method(read, &method.name, &method.descriptor) {
-                Some(member) => Ok(BodyResolution::Method(method.clone(), member.clone())),
+                Some((ordinal, member)) => Ok(BodyResolution::Method(
+                    method.clone(),
+                    ordinal,
+                    member.clone(),
+                )),
                 None => not_reached_or_missing(
                     read,
                     &format!(
@@ -4899,8 +5160,9 @@ fn resolve_body_ref(read: &ConfirmedRead, body: &BodyRef) -> Result<BodyResoluti
                         ),
                     },
                 ),
-                [(_, member)] => Ok(BodyResolution::Method(
+                [(index, member)] => Ok(BodyResolution::Method(
                     member_identity(definition, member),
+                    *index,
                     (*member).clone(),
                 )),
                 many => {
@@ -4943,15 +5205,16 @@ fn not_reached_or_missing(read: &ConfirmedRead, requested: &str) -> Result<BodyR
     }
 }
 
+/// The one member record declaring this raw name and descriptor, with the ordinal the class's own
+/// member table states it at — the coordinate the prepared class decodes a body by.
 fn declared_method<'a>(
     read: &'a ConfirmedRead,
     name: &JvmBytes,
     descriptor: &JvmBytes,
-) -> Option<&'a MemberHeader> {
-    read.facts
-        .methods
-        .iter()
-        .find(|member| member.name.raw().0 == name.0 && member.descriptor.raw().0 == descriptor.0)
+) -> Option<(usize, &'a MemberHeader)> {
+    read.facts.methods.iter().enumerate().find(|(_, member)| {
+        member.name.raw().0 == name.0 && member.descriptor.raw().0 == descriptor.0
+    })
 }
 
 fn member_identity(definition: &PhysicalDefinitionId, member: &MemberHeader) -> PhysicalMethodId {
@@ -4970,17 +5233,41 @@ fn code_shell(member: &MemberHeader) -> Option<&AttributeShell> {
         .find(|shell| shell.name.raw().0 == b"Code")
 }
 
-/// Reads one member's body out of the class bytes the view already holds.
+/// How one class view produces the bodies the request asked for (D2 3.2).
+///
+/// Exactly one of these is decided per request, before the body loop: the class is prepared once
+/// over the read the binding performed and every requested body is decoded against that
+/// preparation, or the one attempt to obtain that preparation failed and each body that would have
+/// been decoded states that failure, or the request asks for no body this view decodes at all (a
+/// member that declares no `Code`, a reference the member table never reached) and nothing was
+/// prepared.
+enum ViewBodies<'a> {
+    /// The class was prepared: every body that declares a `Code` entry is decoded by it.
+    Prepared(&'a jarde_reader::prepared::PreparedClass<'a>),
+    /// The class could not be prepared, and this is why: the reader's own failure, which becomes
+    /// the refusal of every body that would have been decoded, while the class, its members and the
+    /// declarations stay published (A13).
+    Refused(Error),
+    /// No requested body reaches a decode, so nothing was prepared.
+    NotNeeded,
+}
+
+/// Reads one member's body out of the class this view prepared.
 ///
 /// One `method_bodies` attempt is charged before a body that is there; a member that declares no
-/// `Code` is answered as such and charges none. A decode that fails is answered with the member's
-/// own refusal value rather than ending the view: the class, the members and the other bodies stay
-/// published (A13).
+/// `Code` is answered as such and charges none. The decode is
+/// [`jarde_reader::prepared::PreparedClass::method_code`] — the one implementation
+/// [`jarde_reader::classfile::method_code_facts`] delegates to, so a body decoded here and the same
+/// body decoded by the single-method entry cannot drift in facts, in stop position or in what they
+/// charge — which is what keeps a view from parsing the class once per requested body. A decode that
+/// fails, and a preparation that failed before it, are answered with the member's own refusal value
+/// rather than ending the view: the class, the members and the other bodies stay published (A13).
 fn body_result(
     definition: &PhysicalDefinitionId,
-    bytes: &[u8],
-    method: &PhysicalMethodId,
+    bodies: &ViewBodies<'_>,
+    ordinal: usize,
     member: &MemberHeader,
+    method: &PhysicalMethodId,
     reference: &BodyRef,
     budget: &mut Budget,
 ) -> Result<ClassViewBody> {
@@ -4991,7 +5278,25 @@ fn body_result(
         });
     }
     budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
-    match method_code_facts(bytes, member, budget) {
+    let decoded = match bodies {
+        ViewBodies::Prepared(prepared) => match u32::try_from(ordinal) {
+            Ok(ordinal) => {
+                prepared.method_code(jarde_reader::prepared::MethodOrdinal(ordinal), budget)
+            }
+            Err(_) => Err(Error::invalid_input(
+                "classfile_result_overflow",
+                "method ordinal exceeds u32",
+            )),
+        },
+        ViewBodies::Refused(error) => Err(error.clone()),
+        // Unreachable by construction: the request's own members are the ones that decided the
+        // preparation above, so a member with a `Code` entry here belongs to a class this view
+        // prepared or states why it could not.
+        ViewBodies::NotNeeded => {
+            unreachable!("a member that declares a body belongs to a class the view prepared")
+        }
+    };
+    match decoded {
         Ok(facts) => {
             // One demand-path decode (`crate::d0_counts`), counted at the decode that really
             // happened — a member that declares no `Code` returned above and counts nothing.

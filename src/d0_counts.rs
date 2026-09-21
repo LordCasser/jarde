@@ -24,11 +24,17 @@
 //!
 //! | counter | one increment is | hooked at |
 //! | --- | --- | --- |
-//! | `class_materializations` | one class's bytes materialized as a trusted read for a preparation | `crate::facade`'s `read_prepared_definition` |
-//! | `class_preparations` | one `PreparedClass::prepare` built over such a read | `crate::facade`'s `class_source` |
-//! | `body_decodes` | one method body decoded on a demand path | `crate::facade`'s `body_result`, `recover_method`, `recover_prepared_member` |
+//! | `class_materializations` | one class's bytes materialized as a trusted read of the definition an operation **selected** | `crate::facade`'s `bind_class` (the identity path's read) and `recover_own_read` (the read a recovery run performed itself) |
+//! | `class_preparations` | one `PreparedClass::prepare` built over such a read | `crate::facade`'s `class_source`, `class_view` and `recovery_from` |
+//! | `body_decodes` | one method body decoded on a demand path | `crate::facade`'s `body_result`, `recover_bound_method`, `recover_own_read` and `recover_prepared_member` |
 //! | `recovery_runs` | one Java recovery presentation over one run's payload | `crate::facade`'s `recovery_presented` |
 //! | `owned_records` | one owning result record this layer's own publication built | `crate::facade`'s `body_result` and `recovery_presented` |
+//!
+//! D2 (tasks 3.1–3.3) moved two of those sites without changing what they mean: a preparation is
+//! now built over the read the binding performed — `read_prepared_definition`, which materialized
+//! the definition a second time, is gone — and a class view and a direct recovery run prepare the
+//! class they decode bodies from, so `class_preparations` is the figure that says "one preparation
+//! served every body this operation decoded".
 //!
 //! # What is *not* hooked here, and why
 //!

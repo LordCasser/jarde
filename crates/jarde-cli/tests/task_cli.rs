@@ -2869,31 +2869,45 @@ fn the_deep_chain_answers(binary: &Path) {
     assert_eq!(text.matches("arg0").count(), DEEP_APPENDS);
 
     // A `--budget` stop: the existing stop shape, the report on standard output and no artifact.
+    // A `--budget` stop: the run never reports success and never hands out an artifact it did not
+    // produce. The *kind* of stop a bound this tight lands on is deliberately not pinned here any
+    // more: the redundant class read this arm was calibrated against is gone (the read path now
+    // materializes a class once), and with it the bound that used to stop inside the recovery of
+    // this body — a sweep of 2,000–60,000 bytes lands on either an unfinished search or a run the
+    // document cannot fit, both of which exit non-zero. The precise shape of a short-bound stop is
+    // asserted where it is still reachable: `tests/p3_concat_conversion.rs`'s
+    // `a_deep_chain_under_a_short_output_bound_stops_without_an_artifact`.
     let output = recover_deep_chain(binary, &class, &["--budget", "output_bytes=17000"]);
-    assert_eq!(
+    assert_ne!(
         status(&output),
-        EXIT_INCOMPLETE,
-        "a stopped run is never success: {}",
+        EXIT_COMPLETE,
+        "a run under a bound it cannot afford is never success: {}",
         stderr_text(&output)
     );
-    let document = stdout_json(&output);
-    let recovery = &document["recovered"]["recovery"];
-    assert_eq!(recovery["content"], json!("not_produced"));
-    assert_eq!(recovery["text"], json!(""), "a stop hands out no artifact");
-    assert_eq!(
-        recovery["source_map"]["segments"].as_array().map(Vec::len),
-        Some(0),
-        "and no segment table"
-    );
-    assert_eq!(
-        recovery["execution"]["status"],
-        json!("partial"),
-        "a stop is a non-Complete execution plane: {document}"
-    );
-    assert!(
-        recovery["outcome"]["stopped"].is_object(),
-        "the report states a stop rather than a produced artifact: {document}"
-    );
+    if let Ok(document) = serde_json::from_slice::<serde_json::Value>(&output.stdout) {
+        let recovery = &document["recovered"]["recovery"];
+        assert_ne!(
+            recovery["content"],
+            json!("contains_statements"),
+            "and it never states recovered statements it could not write: {document}"
+        );
+        assert_eq!(
+            recovery["text"],
+            json!(""),
+            "a stop hands out no artifact: {document}"
+        );
+        assert!(
+            recovery["execution"]["status"] != json!("complete"),
+            "a stopped run is a non-Complete execution plane: {document}"
+        );
+    } else {
+        assert_eq!(
+            status(&output),
+            EXIT_USAGE,
+            "a refusal that writes no document is a usage failure: {}",
+            stderr_text(&output)
+        );
+    }
 }
 
 /// The debug entry — the default gate — on the input the pre-fix printer aborted on.
