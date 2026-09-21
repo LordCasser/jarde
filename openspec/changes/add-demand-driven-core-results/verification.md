@@ -490,3 +490,16 @@ test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; fini
 **集成期修正（由主 Agent 记录）**：`tests/bulk_recovery_retention.rs` 原断言"无 store 的运行会解析更多目录"在 D2 之后不再恒真（成员绑定改由 prepared 类定位，无主的目录查询只剩少数且依赖取类顺序）；改为断言契约本身——**保留绝不会比不保留解析更多**（`zero ≥ roomy`）且 records 逐项相同，并注明该计数与顺序有关。反例（取消准备交接）仍由 `d2_prepared_handoff` 与 `bulk_recovery_serial` 承担。
 
 **未覆盖**：CLI 未加 `expected_artifact` 旗标（报告字段随 schema 传播）；绑定上无可数 `Arc`，释放见证以结构性事实（无法持 IR/AST 编译通过）与逐请求重建计数替代；一次全量运行中 `export_cli` 偶发红，单跑与复跑均绿，按既有 flake 记录。
+
+## D4 收尾（6.1/6.2/6.4/6.7）验证记录
+
+| 命令 | 结果 |
+| --- | --- |
+| `cargo test --workspace --all-targets --all-features --locked` | **1573 passed / 0 failed / 11 ignored** |
+| `cargo test --test p3_execution_comparison --locked -- --ignored` | 3 passed |
+| `cargo clippy --workspace --all-targets --all-features --locked -- -D warnings` | 零告警 |
+| `cargo test -p jarde-reader --locked` | 158 passed（含 entry cursor 的 9 项 in-crate） |
+
+**既有断言变化：零**（`tests/p1_query_demand.rs` 只新增）。两处有意改变已文档化并新增用例固定：① 根目录整体不可解析时 query 拒绝整棵范围（Failed + 声明范围 skipped），不再发布半解析前缀；② `Resource`+`ArtifactTree` 的 coverage 改按"到达的容器"陈述（每容器 `central_directory_entries` + xref 前缀），旧的 `nested_archive_candidates` 区间不再出现。
+
+**新入口的已知边界（如实）**：目录验证仍是**容器粒度**（rawzip 公共迭代器无法跨 pull 持有，不引第二解析器），故小页省的是其后容器、条目内容与解压，不省首容器已拉记录的验证费用；`SnapshotAll` 不下降入 nested（与既有枚举一致，nested 内 resource 需 `ArtifactTree`）；目录整体损坏的 nested 子树不发布子前缀（tree 枚举会发布）；standalone CLASS 无 entry cursor；`EntryCursor` 未在门面再导出（其验收为 in-crate 测试）。

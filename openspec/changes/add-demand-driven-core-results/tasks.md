@@ -39,13 +39,13 @@
 
 **进度（2026-09-21）**：6.3/6.5/6.6 已由查询分页实现交付并登记证据；6.1/6.2/6.4/6.7 仍开放，已知边界是 `Resource` consumer 与 `SnapshotAll` scope 仍走枚举路径（`META-INF/services` 一类名字无法定向查出，分母必须是全部条目），单容器内非 class 条目暂无公开的增量枚举入口（`ScopeCursor` 只产出 class 候选），因此"同容器内资源条目的账单"仍是打开目录时一次付清；这些要在推进 6.1/6.4 时一并解决，不靠缩小验收回避。
 
-- [ ] 6.1 在现有物理遍历底座提供 query 可用的 entry 事件，覆盖 class 与 resource，复用 bulk 的 class 过滤而不并入其 scheduler；以多 nested、损坏子树和逐 entry 取消验证物理顺序与未知范围（D08/D11）。
-- [ ] 6.2 替换 query 的全范围 ProviderScan 收集，以需求拉取推进；密集首 entry 命中小页时不展开后续 nested，必要目录验证/解压/CRC 仍计费，完整遍历清单相等（D01/D08）。
+- [x] 6.1 在现有物理遍历底座提供 query 可用的 entry 事件，覆盖 class 与 resource，复用 bulk 的 class 过滤而不并入其 scheduler；以多 nested、损坏子树和逐 entry 取消验证物理顺序与未知范围（D08/D11）。 证据：`crates/jarde-reader/src/entry_cursor.rs`（`ArtifactSnapshot::entry_cursor`、`EntryCursor::next_entry`、`ScopeEntry{entry,depth,kind}`，`kind` 区分 class/nested/other）；容器 depth-first、容器内按 ordinal；class 规则与 bulk 走查共用同一函数（`scope_cursor::is_class_candidate_name`），不并入其 scheduler；完整遍历与 `enumerate_artifact_tree`/`enumerate` 逐项（顺序/深度/分类）相等；损坏子树、逐 entry 取消/预算停止各有用例。
+- [x] 6.2 替换 query 的全范围 ProviderScan 收集，以需求拉取推进；密集首 entry 命中小页时不展开后续 nested，必要目录验证/解压/CRC 仍计费，完整遍历清单相等（D01/D08）。 证据：`UnitStream` 只剩 `Standalone/Entries/Walked`（`Enumerated`/`ProviderContainer`/`covered_end` 删除）；计数：小页 5 archive_entries / 433 B / 0 code / 0 nested vs 完整 67 / 3748 / 30 / 8；必要目录验证/CRC/解压照旧计费；反例 M1（resource 路径回退整树枚举）两用例变红。
 - [x] 6.3 将 code consumer 改为可停止的逐项产出并接共用边界解码；复用当前 unit CP/member facts，测试一方法多命中、后续方法与损坏 Code 后缀，页满不构造 unit 的全部匹配（D01/D04/D08）。 证据：`crates/jarde-query/src/xref/code.rs` 的 `CodeWalk`（单元字节与 class facts 只解码一次、跨方法保活），页满即停：小页 `code_bytes` 5 vs 整单元 72（D0 计数口实测）；一方法多命中、后续方法与损坏 Code 后缀由 `p1_query_demand`/`p1_xref_code` 覆盖。
-- [ ] 6.4 将 metadata/bootstrap/resource 消费者接入同一停止反馈与当前位置表示；覆盖单个位置产生多条结果、混合 consumer、资源无 CP 线索及未实现类别，不改变 derivation 或产生过滤假阴性（D08/D09）。
+- [x] 6.4 将 metadata/bootstrap/resource 消费者接入同一停止反馈与当前位置表示；覆盖单个位置产生多条结果、混合 consumer、资源无 CP 线索及未实现类别，不改变 derivation 或产生过滤假阴性（D08/D09）。 证据：`tests/p1_query_positions.rs` 5 项（步内切断 `item_index>0`、资源事实无 CP 线索 `constant_pool_index=None`、混合 consumer 跨容器续页、未实现类别）；derivation 与产物字段未改。
 - [x] 6.5 版本化细粒度 cursor，绑定查询身份、遍历/consumer 内位置与必要祖先状态；验证旧 schema、篡改 target/scope/relation/位置均被拒，合法页大小/预算变化允许继续，验证与重放有界（D09）。 证据：`QueryBoundary{container,ordinal,position,item_index}` + `QueryPosition`，`QUERY_ENGINE_SCHEMA` 2→3，`cursor_digest` 绑定 position，续扫时按类成员表逐字节校验（伪造位置 → `query_cursor_mismatch`）；旧 schema 被显式拒绝。
 - [x] 6.6 去除按已发布匹配序号重造整单元结果的续页路径，保留必要底座验证的真实费用；连续多页与完整查询逐项相等，无重复/遗漏，稀疏命中及最终空页合法（D08/D09）。 证据：步骤机把位置前移到下一步（`UnitComplete` 时连字节都不再读）；`p1_query_api` 的续页断言更新（边界单元不再重放、`scanned_items` 2→1/0），连续多页与完整查询逐项相等由 `p1_query_demand` 的拼接用例承担。
-- [ ] 6.7 核对每页 coverage/execution/diagnostics；坏后缀只在访问时报告，页满与取消/预算不同，未扫描范围和未知分母可见，伪造 cursor 不能把前缀计成已扫描（D05/D08/D09）。
+- [x] 6.7 核对每页 coverage/execution/diagnostics；坏后缀只在访问时报告，页满与取消/预算不同，未扫描范围和未知分母可见，伪造 cursor 不能把前缀计成已扫描（D05/D08/D09）。 证据：`tests/p1_query_planes.rs` 5 项——页满 `Complete`、取消 `Cancelled`+诊断、预算 `Partial{BudgetExceeded{dimension}}` 三态可分；坏后缀只在读到时报；未到达容器记为 skipped 且未知分母不冒充空；伪造 cursor（改 ordinal/position）→ `query_cursor_mismatch`。
 
 ## 7. D5 独立验收、测量与文档
 
