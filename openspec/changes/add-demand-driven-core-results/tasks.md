@@ -15,10 +15,10 @@
 
 ## 3. D2 普通操作内的可信准备交接
 
-- [ ] 3.1 将目标绑定所取得的可信 read/facts 交给同次 preparation/声明消费者；验证明确身份与名字选择的所选定义各自不重读，候选搜索费用独立，缺失/歧义/未完成行为保持（D02/D10）。
-- [ ] 3.2 将 class_view 的选定 body 定位和 class_source 的声明/正文接到同一 prepared 生命周期；以多方法 fixture 验证一次所选类物化、一次准备、按需 body 数量，替换把 class_headers=2 视为目标的旧断言（D01/D02）。
-- [ ] 3.3 将直接 recover_method/recover_target 的 driver 与必要同类 callee 接到同一 preparation；验证有/无 accessor、重复成员、缺依赖和 profile/loader 不匹配，不跳过原绑定检查（D02/D10）。
-- [ ] 3.4 验证 none/zero/容量不足/足容量四种 store 的普通操作与连续请求；活动事实只共享，未保留的下一请求可重建，取消与最后消费者释放后计数归零（D02/D11）。
+- [x] 3.1 将目标绑定所取得的可信 read/facts 交给同次 preparation/声明消费者；验证明确身份与名字选择的所选定义各自不重读，候选搜索费用独立，缺失/歧义/未完成行为保持（D02/D10）。 证据：`ConfirmedRead.source` 与 `prepared_read()`；名字路径交 `search_targets` 选中的那次读，身份路径由运行自己读；计数：class_source 2→1 次物化、歧义/环境被拒时准备与解码均为 0；反例 M3。
+- [x] 3.2 将 class_view 的选定 body 定位和 class_source 的声明/正文接到同一 prepared 生命周期；以多方法 fixture 验证一次所选类物化、一次准备、按需 body 数量，替换把 class_headers=2 视为目标的旧断言（D01/D02）。 证据：`class_view` 新增 `ViewBodies`（有 Code 才准备一次，0 body 时 0 次），每个 body 走 `prepared.method_code`；`class_source` 删除第二次物化，`class_headers` 2→1；反例 M4（每 body 各准备一次 → 3≠1）；旧断言 `class_headers == 2` 被替换为 1（有意改变，7 处 + CLI 1 处）。
+- [x] 3.3 将直接 recover_method/recover_target 的 driver 与必要同类 callee 接到同一 preparation；验证有/无 accessor、重复成员、缺依赖和 profile/loader 不匹配，不跳过原绑定检查（D02/D10）。 证据：`analyze_method_ir_owning_the_read` 交出自己那份 read；同类 callee 走 `read_prepared_callees`，`class_headers` 2→1 且 `method_bodies` 不变（2）；有/无 accessor、重复成员、缺依赖与 profile/loader 不匹配用例全绿；反例 M5。
+- [x] 3.4 验证 none/zero/容量不足/足容量四种 store 的普通操作与连续请求；活动事实只共享，未保留的下一请求可重建，取消与最后消费者释放后计数归零（D02/D11）。 证据：四种 store 状态下同一操作计数 1/1/8、`class_headers` 1、文本一致；连续两次请求与 `clear()` 后计数相同（无免费复用）；反例 M6（把 store 代答的容器登记为 held → 下一次无 store 请求的 `archive_entries` 1≠5）已修并还原验证。
 
 ## 4. D3 可选证据的实际构造
 
