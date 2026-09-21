@@ -247,7 +247,7 @@ review 的 R1–R8 全部有落点，逐条给出**修复位置与验证**；未
 
 ## 11. 固定候选与基线（任务 1.1）
 
-**候选提交**：`CANDIDATE_SHA`（本轮全部实现提交的 HEAD；工作树态一律不当作候选）。
+**候选提交**：以本轮最后一个实现提交为准（本文件随该提交一起提交，SHA 见提交记录；工作树态一律不当作候选）。**构建**：`cargo build --release -p jarde-cli --locked`；**验证**：`cargo test --workspace --all-targets --all-features --locked`（当前 1516 passed / 0 failed）+ 显式 `#[ignore]` 门禁（JDK 对照 3 passed、两条 release 深链门禁 2 passed）。
 
 **构建与工具**：rustc/cargo 1.98.1（Homebrew）· macOS 26.6.2 arm64 · 12 核 / 24 GiB · release 构建用于本页性能读数 · OpenJDK 23.0.1（受控编译执行对照）· jadx 1.5.6（跨工具对照）。
 
@@ -287,3 +287,9 @@ review 的 R1–R8 全部有落点，逐条给出**修复位置与验证**；未
 **未裁定（需要架构决策，不在本轮）**：窗口的有序交付是当前第一瓶颈（`take_front` 等待≈墙钟 94%，采样 condvar 70–75%，jobs=8 比 4 慢 5–7%）。要动它需要换窗口设计（例如按类分批发布或允许更深的批次窗口），属结构性决策，不以"再调参数"收尾。此处如实记录为未完成，不勾选 6.3。
 
 **本轮新增的相关证据**：活动容器随任务交接后，同一 3 容器/8 条目/4 类 fixture 在每个 worker 数与三种 store 配置下 `archive_entries` 恒为 8（此前按类数增长到 50）；查询分页的"页满即停"与 descriptor 统一（数组一槽）不改变导出路径的计费口径，但会改变同语料的方法文本（接收者与数组参数拼写），因此任何跨版本耗时对照必须固定候选。
+
+**T5 与其它独立边界的登记**：append 参数转换（T5）已独立立项并完成（`make-required-conversions-explicit`，其 verification 记录执行对照）；数组槽宽归 `fix-descriptor-slot-facts`；接收者拼写归 `spell-the-instance-receiver-as-this`。本 change 不把它们的修复算作自己的成果，只在其影响本 change 读数时记录（例如同语料文本变化导致跨版本耗时对照必须固定候选）。
+
+**CLI 文档预算边界**：`export` 的流额度与库总账已在 D2/4.6 后统一（同一本账、终态记录自身计入）；`recover`/`class-source` 等文档命令仍按既有 `output_bytes` 语义拒绝超限文档。CLI 深链门的"紧输出上限"不再 pin 具体停止种类（旧标定所依赖的冗余读已被 D2 移除），精确形状由库层 `p3_concat_conversion` 承担——这是登记在案的口径变化，不是放宽验收。
+
+**深链进程门禁（普通 worker 栈）复跑**：debug `a_deep_concatenation_chain_is_presented_by_a_bulk_worker`（随 workspace 跑）与 release `the_deep_chain_reaches_a_bulk_worker_in_the_optimized_build`（`--jobs 2` 把类任务放到库自建、未设 `stack_size` 的线程上）在本轮最终候选上通过；128 KiB 栈探针会以 `jarde-bulk-0` 溢出 abort，证明该门禁针对 worker 栈。
