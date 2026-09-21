@@ -212,4 +212,4 @@ CLI 使用 `create_new` 创建目标，拒绝覆盖；编码经有界 writer/缓
 3. **按原权重契约完成窗口验证。** 当前 `result_weight` 的固定 64 字节/记录代理未计拥有的可变容量和未序列化 facts；它可作代理指标，不能作为原设计所要求的容量实现。保持归属去重和固定单项 ceiling，不把代理高水位或 RSS 当另一项已经通过。
 4. **最后重建性能候选。** 修复后的 1/N 完整语义、JDK 执行对照、实际 worker 深链与资源门禁通过后再冻结。先把同一核心结果的丢弃 sink、JSON 编码到计数 sink、编码加写文件三臂分开；并行同时记录 CPU、锁/等待、第一条结果与类分布。三臂差值只是受控对照，流水线有重叠时不能直接当可相加阶段耗时。历史 3 次/2 artifact 表不能确定串行输出是唯一瓶颈。
 
-bulk 是宿主显式要求全量时的一种调度，MCP 的普通导航继续由声明/成员/指定方法入口服务。把 prepared 复用扩到单点和选定方法集合、输出按需投影、查询续扫等安排在父专项，不混入本次缺陷修复；见 [MCP 优先级](../optimize-demand-workloads/design.md#15-mcp-宿主的按需边界与下一轮顺序)。
+bulk 是调用方显式要求全量时的一种调度，普通导航继续由声明/成员/指定方法入口服务。普通 prepared 交接、可选证据产品和增量查询由 [add-demand-driven-core-results](../add-demand-driven-core-results/design.md) 唯一负责，不混入本 change 的 worker、总账与活动容器任务交接；父专项继续[测量归因与排序](../optimize-demand-workloads/design.md#15-核心库的按需边界与下一轮顺序)。

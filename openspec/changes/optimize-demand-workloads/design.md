@@ -8,8 +8,8 @@
 | --- | --- | --- |
 | O1 已交付：指定 container 定向查名、raw-name 多值表与有界 backing 复用；显式树枚举仍保留 | `providers.rs::tree_candidates`、`artifact.rs::container_candidates/container_record` | W1–W5 的阶段时间、容量退化与端到端收益；不重做旧整树修正 |
 | 多 consumer 分别 materialize/parse 同一个 class，code/bootstrap 分别解码方法 | `xref/mod.rs::ScanContext::read_unit`、`xref/{code,metadata,bootstrap}.rs` | W4 中重复工作占比及共享后的内存代价 |
-| class_view 已共享同次 class 字节与成员列举；body 解码仍重建 reader，恢复路径仍有 callee 读取 | `facade.rs::class_view/body_result`、`classfile.rs::method_code_facts`、`callee.rs::read_callees` | 容器成本移除后的 parse/定位占比；区分 bytes 共享与结构共享 |
-| cache 构造摘要、CP/Header payload 命中复制；容量已为 entries + retained_bytes，满则拒绝 | `facts_cache.rs::FactsKey/take/keep/FactsCapacity` | hash/clone 是否值得改 ownership，真实复用率及驻留代价 |
+| class_view 已共享同次 class 字节与成员列举；bulk/class_source 已消费 prepared，单方法恢复仍有 driver/callee 重读 | `facade.rs::class_view/body_result`、`classfile.rs::method_code_facts`、`callee.rs::read_callees` | 容器成本移除后的 parse/定位占比；区分 bytes 共享与结构共享 |
+| prepared 路径已交付可信 digest 与 CP/Header Arc（642e49f）；其余 cache 路径仍需逐项复核；容量已为 entries + retained_bytes，满则拒绝 | `facts_cache.rs::FactsKey/take/keep/FactsCapacity` | hash/clone 是否值得改 ownership，真实复用率及驻留代价 |
 | provider 全量收集；当前 unit 全部产出后分页，续页重扫 boundary unit | `xref/mod.rs::ProviderScan::collect/scan_units` | 首屏和续页的收益、coverage 变化范围 |
 | open 完整读入后 hash，entry/root 有拥有所有权的字节复制；JSON 长度固定点反复遍历 | `artifact.rs::open/root_bytes/read_verified`、`jarde-cli::write_success` | 对不同工作负载端到端成本的贡献 |
 
@@ -75,7 +75,7 @@ W1–W5 使用可再生成 fixture 和已有 API。W6a 已由调用方明确，�
 
 ### 5. O2：操作内 class 读取、结构与方法定位复用
 
-恢复路径由 `add-parallel-bulk-recovery` 实现可信 prepared class、driver/同类 callee 复用；查询多 consumer 的 O2 仍在本专项独立调查，不随恢复路径批量上线。
+可信 prepared class 及其 bulk/class-source 消费由 `add-parallel-bulk-recovery` 已实现；普通入口的选择/driver/callee 交接与查询消费者的按需复用由 `add-demand-driven-core-results` 负责，父专项测量实际剩余重复与资源代价。
 
 - **必要性/证据：** consumer、driver/callee 对同一可信 class 重复读/parse；单方法解码重复扫描方法表，全类调用存在 `K × M` 的定位检查。
 - **方案：** 以 class_view 已共享的验证字节/成员列举为基线，调查尚未共享的结构和方法 locator、consumer 只读事实与 callee 同次类读取；方法 key 用 raw name/descriptor 并保留重复声明歧义。driver 类名/flags 已由 `carry-declaring-class-evidence` 交接，不重复立项。先用局部借用/共享对象，不把整个 MethodIr 改成长期全局缓存。
@@ -137,7 +137,7 @@ W1–W5 使用可再生成 fixture 和已有 API。W6a 已由调用方明确，�
 
 ### 12. 组合、依赖和实现所有权
 
-O1 已交付。当前实施主线是 `add-parallel-bulk-recovery`：O2 恢复路径 prepared class → O4 串行流式 bulk → O7 类间有界并行 → CLI/实测；必需的 O5 共享 payload、O8 可信摘要/编码归同一子项。其它 O2 查询消费者、O3 查询分页、O5 更高层缓存、O6 预热、O7 single-flight、O8 mmap 仍单独准入，不作为本主线前置，也不混入实现。预期收益重叠必须消融，不能由多个 change 重复认领。
+O1 已交付。`add-parallel-bulk-recovery` 继续拥有 O2 批量类准备、O4 bulk、O7 worker/总账/窗口，以及任务活动容器交接；`add-demand-driven-core-results` 拥有 O2 普通操作的可信事实交接、O3 增量结构查询与 O8 可选证据产品。下一轮顺序见 §15。O5 更高层缓存、O6 预热、O7 single-flight 和 O8 mmap 仍独立准入，不是这两项的前置，也不因已有规划默认上线。父专项不重复认领实现，重叠收益用消融区分。
 
 实施项准入时登记具体 change、受影响 specs 和责任范围；已有 `bound-container-lookup` 唯一拥有 O1。子 change 需要新增产品行为时按正常 proposal/spec/design/tasks 定义，不能把总专项的候选描述当已批准的协议细节。多个方案的预期收益重叠时先做单因素实验，再做所选组合消融。
 
@@ -156,9 +156,31 @@ O1 已交付。当前实施主线是 `add-parallel-bulk-recovery`：O2 恢复路
 
 策略关闭是回退机制，不要求长期保留全部旧实现；阶段实验可保存旧可执行产物与 fixtures。cache clear 只释放 store 持有引用，不能销毁活动请求借用的 backing。部分结果已发布后的重试必须由明确的 continuation 契约驱动，不用回退隐藏重复输出。
 
+不同证据选择的正文与核心语义一致性按 demand-driven 子 spec 独立验收；同一选择下的完整确定性门禁不放宽，完整证据仍比较全部 source map/规则明细。
+
 ### 14. 库复用与依赖选择
 
 沿用已准入 rawzip/flate2/noak、现有 Arc/集合和 P5 harness；依赖的许可、维护与已知缺口以 `openspec/dependencies.md` 和各子项固定版本证据核对。优先利用已有 parser 的切片/locator/事件能力，避免另写 ZIP、CLASS 或 JSON parser。确需 cache、线程池、持久层或 mmap 库时，G2 比较现有依赖能力与新增库的维护、许可、平台、取消和边界测试成本；未通过不得加入依赖。没有具体缺口时不预选新库。
+
+### 15. 核心库的按需边界与下一轮顺序
+
+核心 crate 的普通调用以明确的问题决定范围、事实类别、必要分析和证据深度。`Engine + ArtifactSnapshot + request + Budget` 保持现有边界；不增加公共 Session、全局后台索引或第二套恢复管线。跨请求保留继续显式有界，当前消费者已经持有的可信事实必须直接交接。
+
+[add-demand-driven-core-results](../add-demand-driven-core-results/design.md) 是该产品契约的唯一详细设计，包含必要结果、类型化证据选择、正文提交/证据停止、产物绑定、局部证据和细粒度 query cursor。其任务保持待实现，父专项不通过新增字段列表提前宣称交付。
+
+| 工作负载 | 应测的核心边界 | 本轮实现归属 |
+| --- | --- | --- |
+| W1/W3 选定方法 | bind/prepare/driver/callee 对同一选中定义只准备一次；不解码未选 body | demand-driven D2 |
+| W2 连续导航/放弃 | 显式保留命中、未保留重建、最后消费者释放、无无关预取 | demand-driven D2/D5；保留策略另行准入 |
+| W4 小页/续页 | provider 与 consumer 停止、位置重放成本、未知后缀、完整结果拼接 | demand-driven D4 |
+| 方法源码/证据追问 | 必要计算、可选明细构造、局部/完整映射、产物核验、输出字节 | demand-driven D1/D3/D5 |
+| W6a 全量导出 | 活动容器交接、共享总账、1/N worker、有序背压与清理 | bulk 原 change |
+
+当前代码已经共享 prepared CP/Header（642e49f），不再以旧深拷贝为待实施项。剩余普通单方法条件性 callee 重读、class_source 的 bind + prepare 双读取和 query 整单元收集需要分别见证。活动容器任务交接不能靠 CLI 的保留配置代替；新任务状态以各子 change 的实时清单为准。
+
+决策顺序：独立关闭已复现的数组槽宽与 T5 转换错误；推进 ordinary prepared 交接和必要结果/证据产品；增量 query 独立验收；bulk 同时关闭其生命周期与真实全量门禁。算法正确性修正不混入证据或调度改动。
+
+并行性能重新基于锁等待、worker 计算与内部有序等待归因。discard 样本仅排除编码/文件写出作为唯一原因，不能排除内部背压；总账锁是待测候选。改变证据选择的输出收益和同产出算法收益分开报告。Rust/Java 不是速度证据，完整导出、单方法及追问序列的工作单位不可互换。
 
 ## Risks / Trade-offs
 
