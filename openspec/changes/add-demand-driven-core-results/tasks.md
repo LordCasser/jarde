@@ -8,10 +8,10 @@
 
 ## 2. D1 需求与结果契约
 
-- [ ] 2.1 为现有恢复请求加入类型化 evidence kinds、driver BCI 范围与生效选择；验证 Essential/All、合法空范围、反向/越界/非指令边界、无 Code 和不支持类别，无静默忽略或自动扩大（D03/D04/D05）。
-- [ ] 2.2 增加证据选择/状态清单与可选 payload 的一致性约束；验证 NotRequested、Complete 空结果、Partial、NotPerformed 可区分，既有 limits/usage 与独立语义平面仍可读取（D03/D05/D06）。
-- [ ] 2.3 在原拒绝站点形成核心可定位缺口，复用既有原因与物理位置；验证关闭规则明细仍能取得语句级拒绝、ExplanationOnly、无 Body、未知分母与真实停止，不从生成注释反解析事实（D05）。
-- [ ] 2.4 在 facade、class-source、bulk、CLI/示例和测试调用点显式传播选择，完整审计调用显式 All，普通恢复默认 Essential；验证库/适配器相同选择同结果，不增加协议实现或另一路恢复（D01/D03）。
+- [x] 2.1 为现有恢复请求加入类型化 evidence kinds、driver BCI 范围与生效选择；验证 Essential/All、合法空范围、反向/越界/非指令边界、无 Code 和不支持类别，无静默忽略或自动扩大（D03/D04/D05）。 证据：`crates/jarde-java/src/evidence.rs`（`RecoveryEvidenceKind`/`RecoveryEvidenceRequest`/`BytecodeRange`）；边界表：空范围=合法空结果、反向/仅范围/越界/指令内部/无 Code/不支持类别各自拒绝或沿用既有停止，未知拼写是适配器 usage 错误（无静默扩大）。
+- [x] 2.2 增加证据选择/状态清单与可选 payload 的一致性约束；验证 NotRequested、Complete 空结果、Partial、NotPerformed 可区分，既有 limits/usage 与独立语义平面仍可读取（D03/D05/D06）。 证据：`RecoveryEvidence`（固定 5 项）+ `RecoveryReport.evidence`；`NotRequested`/`Complete`（含合法空）/`Partial{delivered}`/`NotPerformed` 四态各有用例；清单与 payload 由库内 `debug_assert` 与测试内独立重述的映射双向检查；limits/usage 与独立语义平面未变。
+- [x] 2.3 在原拒绝站点形成核心可定位缺口，复用既有原因与物理位置；验证关闭规则明细仍能取得语句级拒绝、ExplanationOnly、无 Body、未知分母与真实停止，不从生成注释反解析事实（D05）。 证据：`StopReason::EvidenceRefused{code,at,message}`；关闭规则明细后诊断仍逐字相同（从计划的 gap/counter 生成，不从记录读）；`ExplanationOnly`/无 Body/未知分母/真实停止的既有断言全绿。
+- [x] 2.4 在 facade、class-source、bulk、CLI/示例和测试调用点显式传播选择，完整审计调用显式 All，普通恢复默认 Essential；验证库/适配器相同选择同结果，不增加协议实现或另一路恢复（D01/D03）。 证据：`*_with_evidence` 系列入口 + 原 3 参入口显式 `essential()`；`BulkRecoveryRequest.evidence`（`for_scope`=all、`with_evidence` 可收窄、serde 缺省=全量）；CLI `--evidence KIND`/`--evidence-bci`；示例显式传选择；全量审计调用点改 `all()`（既有测试的 20+ 处迁移逐条声明）。
 
 ## 3. D2 普通操作内的可信准备交接
 
