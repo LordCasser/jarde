@@ -110,9 +110,9 @@ pub use inspect::{ClassSource, ClassTarget, EngineBytecodeReport, EngineHeaderRe
 pub use ir::*;
 pub use jarde_query::query::{
     BootstrapVia, ConsumerKind, ConsumerSchema, LiteralValue, QUERY_ENGINE_SCHEMA, QueryAnalysis,
-    QueryBoundary, QueryCoverage, QueryCursor, QueryPage, QueryRelation, QueryReport, QueryRequest,
-    QueryResolution, QueryTarget, XrefCertainty, XrefDerivation, XrefEvidence, XrefItem,
-    XrefOperation, XrefTarget,
+    QueryBoundary, QueryCoverage, QueryCursor, QueryPage, QueryPosition, QueryRelation,
+    QueryReport, QueryRequest, QueryResolution, QueryTarget, XrefCertainty, XrefDerivation,
+    XrefEvidence, XrefItem, XrefOperation, XrefTarget,
 };
 pub use jarde_reader::facts_cache::{
     CONTAINER_FACTS_SCHEMA, FACTS_FORMAT, FactsCache, FactsCapacity, FactsIdentity, FactsReport,

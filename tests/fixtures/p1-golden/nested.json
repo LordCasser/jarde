@@ -31,42 +31,17 @@
               "scanned": [
                 {
                   "end": 1,
-                  "label": "container:root:nested_archive_candidates",
-                  "start": 0
-                },
-                {
-                  "end": 2,
-                  "label": "container:root:nested_archive_candidates",
-                  "start": 1
-                },
-                {
-                  "end": 2,
-                  "label": "container:root:central_directory_entries",
-                  "start": 0
-                },
-                {
-                  "end": 1,
-                  "label": "container:8a6c805ce6a23bbf80235094ed628362dc6404b853c51eeedc3bfb3d34fa0ee8:central_directory_entries",
-                  "start": 0
-                },
-                {
-                  "end": 1,
-                  "label": "container:797a99959ea9b6b17d25f8d4c695d6f32a64417cb8b122f1c4d04f86502479ba:central_directory_entries",
-                  "start": 0
-                },
-                {
-                  "end": 2,
-                  "label": "container:root:xref_scan_entries",
-                  "start": 0
-                },
-                {
-                  "end": 1,
                   "label": "container:8a6c805ce6a23bbf80235094ed628362dc6404b853c51eeedc3bfb3d34fa0ee8:xref_scan_entries",
                   "start": 0
                 },
                 {
                   "end": 1,
                   "label": "container:797a99959ea9b6b17d25f8d4c695d6f32a64417cb8b122f1c4d04f86502479ba:xref_scan_entries",
+                  "start": 0
+                },
+                {
+                  "end": 2,
+                  "label": "container:root:xref_scan_entries",
                   "start": 0
                 }
               ],
@@ -96,7 +71,7 @@
           "status": "complete",
           "usage": {
             "analysis_steps": 0,
-            "archive_entries": 17,
+            "archive_entries": 14,
             "attribute_bytes": 88,
             "class_bytes": 274,
             "class_headers": 0,
@@ -111,7 +86,7 @@
             "normalization_clones": 0,
             "output_bytes": 0,
             "read_bytes": 1204,
-            "result_items": 11
+            "result_items": 6
           }
         },
         "items": [

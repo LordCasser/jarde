@@ -494,8 +494,11 @@ fn a_page_limited_query_publishes_one_item_and_decodes_the_whole_first_unit() {
     );
     assert!(page_usage.read_bytes < full_usage.read_bytes);
 
-    // (b) The invocation consumer: the unit-level view. A unit's whole body set is decoded before
-    // its items are known, so a page of one item still pays for every body of the unit it stops in.
+    // (b) The invocation consumer: the unit-level view, and the boundary the query change moved. A
+    // unit's body set used to be decoded before its items were known, so a page of one item paid for
+    // every body of the unit it stopped in. The consumer now walks the unit method by method and
+    // stops once the page is full, so the page pays only for the bodies up to the one that filled it
+    // — and the continuation still covers the rest without repeating what was published.
     let invocations =
         |snapshot: &ArtifactSnapshot, scope: &PhysicalScope, max_items| QueryRequest {
             relation: QueryRelation::MentionsSymbol,
@@ -544,22 +547,45 @@ fn a_page_limited_query_publishes_one_item_and_decodes_the_whole_first_unit() {
         unit_page.page.has_more,
     );
     assert_eq!(unit_full.items.len(), 1, "the unit holds one matching call");
-    assert!(!unit_full.page.has_more);
-    assert_eq!(
-        unit_page_usage.code_bytes, unit_full_usage.code_bytes,
-        "a page of one item decodes every body of the unit it stops in"
+    assert!(
+        unit_page_usage.code_bytes < unit_full_usage.code_bytes,
+        "a page of one item stops once that item is published instead of decoding every body of the \
+         unit it stops in: {} byte(s) against the unit's {}",
+        unit_page_usage.code_bytes,
+        unit_full_usage.code_bytes
     );
     assert_eq!(
         unit_page.items.len(),
         unit_full.items.len(),
         "the page holds every match of the unit it stopped in"
     );
-    // `has_more` is conservative but never invented: the one-unit scope really reached the end of
-    // its range with that one item, so it states none; the two-unit page stopped on the page limit
-    // before the next unit, so it states one and its continuation may legally be empty.
+    // `has_more` is conservative and never invented: a page that stopped inside the unit states that
+    // there may be more, because the suffix it did not walk is unknown rather than empty — the
+    // continuation is what settles it, and for this one-unit scope it comes back with no items.
     assert!(
-        !unit_page.page.has_more,
-        "the one-unit scope reached the end of its range"
+        unit_page.page.has_more,
+        "a page that stopped inside its unit leaves the suffix unknown"
+    );
+    let continuation_cursor = unit_page
+        .page
+        .cursor
+        .clone()
+        .expect("a page that stopped inside its unit carries a cursor");
+    let mut continuation_budget = fresh_budget();
+    let continuation = engine
+        .query(
+            &unit,
+            &QueryRequest {
+                cursor: Some(continuation_cursor),
+                ..invocations(&unit, &PhysicalScope::SnapshotAll, 1)
+            },
+            &mut continuation_budget,
+        )
+        .expect("the continuation of the one-unit page is answered");
+    assert!(
+        continuation.items.is_empty(),
+        "the unit had one match and the page published it: {:?}",
+        continuation.items
     );
 
     // The same page over both units stops before the second one: it reads no byte of it, and its
@@ -580,9 +606,11 @@ fn a_page_limited_query_publishes_one_item_and_decodes_the_whole_first_unit() {
     );
     assert_eq!(page.items.len(), 1);
     assert_eq!(page.coverage.scanned_items, 1);
-    assert_eq!(
-        page_usage.code_bytes, unit_full_usage.code_bytes,
-        "the page pays for the whole first unit and no more"
+    assert!(
+        page_usage.code_bytes <= unit_full_usage.code_bytes,
+        "the page never pays for more bodies than the unit it stopped in holds: {} against {}",
+        page_usage.code_bytes,
+        unit_full_usage.code_bytes
     );
     assert!(
         page_usage.read_bytes < full_usage.read_bytes,

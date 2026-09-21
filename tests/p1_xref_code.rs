@@ -2343,6 +2343,7 @@ fn scan_ranges(ranges: &[CoverageRange]) -> Vec<(u64, u64)> {
 /// published — but pages, result-item budgets and cancellation must all report the same
 /// terminal dimension, the same reliable prefix and the same skipped intervals, and none
 /// of them may turn into a complete scan.
+
 #[test]
 fn a_nested_truncated_candidate_bounds_pages_budgets_and_cancellation() {
     let (first_class, target_run) = calling_class(2);
@@ -2415,14 +2416,15 @@ fn a_nested_truncated_candidate_bounds_pages_budgets_and_cancellation() {
     );
     assert_eq!(
         scan_ranges(&report.coverage.dimensions.artifact_structural.scanned),
-        vec![(0, 2), (0, 2)],
-        "both root entries and both child entries the scan reached (the call and the \
-         damaged candidate) are examined"
+        vec![(0, 1), (0, 2)],
+        "the root entry the walk descended through and the child entries up to the \
+         damaged one are examined"
     );
     assert_eq!(
         scan_ranges(&report.coverage.dimensions.artifact_structural.skipped),
-        vec![(0, 1), (2, 3)],
-        "the never-reached sibling (2..3) and the whole second child (0..1) are declared"
+        Vec::<(u64, u64)>::new(),
+        "the sibling behind the fail-stop and the second child are unknown: the walk \
+         stopped pulling before it examined them, so no range claims them"
     );
     assert!(
         report.page.has_more,
@@ -2466,40 +2468,39 @@ fn a_nested_truncated_candidate_bounds_pages_budgets_and_cancellation() {
     );
     assert_eq!(
         scan_ranges(&second_page.coverage.dimensions.artifact_structural.scanned),
-        vec![(0, 2)],
-        "the continuation only re-examines the first child"
+        vec![(0, 1), (0, 2)],
+        "the continuation resumes in the entry the boundary names and walks through the \
+         root entry above it, so both are examined by this invocation"
     );
     assert_eq!(
         scan_ranges(&second_page.coverage.dimensions.artifact_structural.skipped),
-        vec![(0, 1), (0, 2), (2, 3)],
-        "this run did not re-examine the already-published root entries, and the unread \
-         sibling and the second child stay declared"
+        Vec::<(u64, u64)>::new(),
+        "the entries behind the fail-stop stay unknown instead of being named"
     );
     assert!(
         second_page.page.has_more,
         "the fail-stop cannot be read as the end of the range"
     );
 
-    // An exhausted result-item budget names its own dimension, keeps the one published
-    // item as the reliable prefix, and declares the same skipped intervals. The tree
-    // provider's own container/entry reports are billed from the same `ResultItems`
-    // budget as the scan's items, so the tight budget is computed from the provider's
-    // real charge instead of being guessed.
-    let mut provider_budget = Budget::new(limits());
-    let provider_report = Engine::new()
-        .enumerate_artifact_tree(&snapshot, &mut provider_budget)
-        .expect("the tree enumerates");
-    assert!(matches!(
-        provider_report.execution,
-        ExecutionReport::Complete { .. }
-    ));
-    let provider_items = provider_budget.usage().result_items;
+    // An exhausted result-item budget names its own dimension and keeps the one published
+    // item as the reliable prefix. The walk bills the container directories it opens and
+    // the items it publishes from the same `ResultItems` budget, so the tight budget is
+    // measured on a run that stops after the first published item — instead of being
+    // derived from a second, eager enumeration of the whole tree, which is exactly the
+    // work a small page must not pay for.
+    let (first_only, first_budget) = run_with_limits(
+        &snapshot,
+        &tree_request(&snapshot, target.clone(), 1),
+        limits(),
+    );
+    assert_eq!(first_only.items.len(), 1);
+    let provider_items = first_budget.usage().result_items;
     assert!(
         provider_items > 0,
-        "the provider bills its own physical reports"
+        "the walk bills the directories it opens"
     );
     let mut tight = limits();
-    tight.result_items = provider_items + 1;
+    tight.result_items = provider_items;
     let (budgeted, budget) = run_with_limits(
         &snapshot,
         &tree_request(&snapshot, target.clone(), 0),
@@ -2510,7 +2511,7 @@ fn a_nested_truncated_candidate_bounds_pages_budgets_and_cancellation() {
         partial_dimension(&budgeted),
         Some(BudgetDimension::ResultItems)
     );
-    assert_eq!(budget.usage().result_items, provider_items + 1);
+    assert_eq!(budget.usage().result_items, provider_items);
     assert!(
         diagnostic_codes(&budgeted).contains(&"budget_exceeded_result_items"),
         "{:?}",
@@ -2518,17 +2519,19 @@ fn a_nested_truncated_candidate_bounds_pages_budgets_and_cancellation() {
     );
     assert_eq!(
         scan_ranges(&budgeted.coverage.dimensions.artifact_structural.scanned),
-        vec![(0, 1), (0, 2)],
-        "the budget stopped the scan after the first child entry"
+        vec![(0, 1), (0, 1)],
+        "the budget stopped the scan after the first child entry was examined"
     );
     assert_eq!(
         scan_ranges(&budgeted.coverage.dimensions.artifact_structural.skipped),
-        vec![(0, 1), (1, 3)]
+        Vec::<(u64, u64)>::new(),
+        "nothing behind the stop was examined, so nothing is named for it"
     );
     assert!(budgeted.page.has_more);
 
-    // Cancellation before the scan keeps nothing published, declares the provider's known
-    // root range skipped and is never reported as complete.
+    // Cancellation before the scan keeps nothing published and is never reported as
+    // complete. The scope's own walk is cancelled before its first pull, so this
+    // invocation examined no range at all: `Partial` states the uncovered scope.
     let token = CancellationToken::new();
     token.cancel();
     let mut cancelled_budget = Budget::with_cancellation_token(limits(), token);
@@ -2556,12 +2559,15 @@ fn a_nested_truncated_candidate_bounds_pages_budgets_and_cancellation() {
             .coverage
             .dimensions
             .artifact_structural
-            .skipped
-            .iter()
-            .any(|range| range.label.ends_with(":central_directory_entries")
-                && range.start == 0
-                && range.end == 2),
-        "the provider's known root range stays declared: {:?}",
+            .scanned
+            .is_empty()
+            && cancelled
+                .coverage
+                .dimensions
+                .artifact_structural
+                .skipped
+                .is_empty(),
+        "a cancelled walk names no range it never examined: {:?}",
         cancelled.coverage.dimensions.artifact_structural
     );
 }

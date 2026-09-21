@@ -1,15 +1,29 @@
-//! XRef scan orchestration: unit iteration, result billing, page and coverage.
+//! XRef scan orchestration: the physical walk, the units it yields, result billing,
+//! page and coverage.
 //!
-//! This module owns the deterministic order of the P1 scan:
+//! The scan is a *pull*, not a collection. Two walks run together, and neither of them
+//! builds the range it has not reached:
 //!
-//! 1. containers in provider order, then entry ordinal ascending,
-//! 2. inside one entry, the consumer sub-scan order declared by [`scan_unit`]
-//!    (`resource`, `code`, `metadata`, `bootstrap`) and each sub-scan's own
-//!    position order.
+//! 1. [`UnitStream`] yields one unit at a time — the standalone CLASS root, the entries a
+//!    request's schema needs in the scope's own physical order. Which stream a request gets
+//!    is the request's own decision: `resource` is the only consumer that reads an entry
+//!    that is not a class, so a request that names it enumerates every entry of every
+//!    container through the provider's report, and every other schema walks the scope's
+//!    class candidates through the reader's incremental scope cursor, descending into a
+//!    nested container only when the scan reaches the entry that holds it.
+//! 2. [`UnitScan`] runs one unit as a program of steps — `resource`, then the code producer
+//!    (the raw pool probe, or the instruction stream of one method after another), then
+//!    `metadata`, then `bootstrap` — and stops *between* steps and *between* the items of
+//!    one step. Decoding that has not started is neither billed nor materialized, and the
+//!    items a step produced after the page filled are dropped, not published.
 //!
-//! That order is the base of the cursor semantics: a continuation replays one
-//! unit and skips the items an earlier page already published, so consecutive
-//! pages neither repeat nor skip results.
+//! The stop is recorded as a [`QueryBoundary`]: the unit and the step the next item would
+//! come from, plus the number of that step's items already published. A continuation
+//! re-derives the same program, verifies the position against the unit's own class file
+//! (`QueryPosition::Method` carries the member's raw name and descriptor), skips the
+//! published prefix of that one step and continues — so it never re-reads the units before
+//! the boundary, never re-runs an earlier step of the boundary unit, and re-decodes the
+//! boundary method alone when the page was cut inside one.
 //!
 //! This module is the single billing point for query results: every item and every
 //! domain diagnostic that enters the report is charged one `ResultItems` before it
@@ -18,10 +32,11 @@
 //! themselves, must not add or change public schema types, and must fill only
 //! their own file.
 //!
-//! The scan reports what it really did: `execution` mirrors the provider and scan
-//! outcome (`Complete`/`Partial`/`Cancelled`/`Failed`), coverage carries the
-//! provider ranges and this pass's own ordinal/byte ranges, and a page limit or an
-//! interruption never turns into `Complete`.
+//! The scan reports what it really did: `execution` mirrors the walk and scan
+//! outcome (`Complete`/`Partial`/`Cancelled`/`Failed`), coverage carries the ranges
+//! the invocation examined, and a page limit or an interruption never turns into
+//! `Complete`. A range the walk did not reach stays *unknown*: it is not named as
+//! examined, and `Partial` says the scope was not covered — never the empty answer.
 //!
 //! Two relations have no resolver in P1: `references_definition` and
 //! `may_dispatch_to` run the raw constant-pool probe and publish its candidates under
@@ -41,9 +56,10 @@ pub(crate) mod resource;
 
 use crate::query::{
     ConsumerKind, ConsumerSchema, LiteralValue, QUERY_ENGINE_SCHEMA, QueryBoundary, QueryCoverage,
-    QueryCursor, QueryPage, QueryRelation, QueryRequest, QueryTarget, XrefCertainty, XrefItem,
-    XrefTarget, cursor_digest, not_requested_coverage, unsupported_categories,
+    QueryCursor, QueryPage, QueryPosition, QueryRelation, QueryRequest, QueryTarget, XrefCertainty,
+    XrefItem, XrefTarget, cursor_digest, not_requested_coverage, unsupported_categories,
 };
+use code::CodeOutcome;
 use jarde_reader::artifact::{
     ArtifactKind, ArtifactSnapshot, PhysicalEntry, budget_dimension_code,
 };
@@ -52,10 +68,13 @@ use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
     ByteSpan, ClassBytesId, ContainerId, ContainerOrigin, Coverage, CoverageDimension,
     CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity, Digest, ExecutionReport,
-    JvmBytes, Location, PhysicalClassLocation, PhysicalDefinitionId, PhysicalVariant, Provenance,
-    SnapshotId, SymbolRef, TerminationReason, physical_variant_for_path,
+    JvmBytes, Location, PhysicalClassLocation, PhysicalDefinitionId, PhysicalEntryId,
+    PhysicalVariant, Provenance, SnapshotId, SymbolRef, TerminationReason,
+    physical_variant_for_path,
 };
+use jarde_reader::scope_cursor::ScopeCursor;
 use jarde_reader::view::{PhysicalScope, PhysicalView};
+use std::collections::VecDeque;
 
 /// Relations whose definition/dispatch resolution P1 does not perform but whose raw
 /// constant-pool candidates are still answerable facts.
@@ -289,7 +308,7 @@ pub(crate) fn scan(
         });
     }
 
-    let provider = ProviderScan::collect(snapshot, request, budget)?;
+    let mut stream = UnitStream::open(snapshot, request, budget)?;
     let unsupported = unsupported_categories(&request.consumers);
     // The sub-scans see the evidence probe; this `scan` reports everything under the
     // caller's request.
@@ -300,20 +319,20 @@ pub(crate) fn scan(
         CandidateRule::Exact(request.target.clone()),
         budget,
     );
-    let pass = scan_units(
+    let pass = run_pass(
         &mut ctx,
-        &provider,
+        &mut stream,
         request,
         request
             .cursor
             .as_ref()
             .map(|cursor| cursor.boundary.clone()),
-    );
+    )?;
 
-    // A boundary that does not exist in a complete unit stream cannot describe this
-    // snapshot/view/relation/schema binding. An incomplete provider may simply not
-    // have reached it yet, and reports a partial status instead.
-    if pass.resume_pending && matches!(provider.execution, ExecutionReport::Complete { .. }) {
+    // A boundary that no unit of a walk which reached the end of the scope matched cannot
+    // describe this snapshot/view/relation/schema binding. A walk that stopped may simply
+    // not have reached it, and reports a partial status instead.
+    if pass.resume_pending && stream.exhausted() {
         return Err(Error::invalid_input(
             "query_cursor_mismatch",
             "cursor boundary does not exist in this snapshot/view/relation/schema binding",
@@ -329,14 +348,16 @@ pub(crate) fn scan(
         None
     };
     let (scanned_ranges, skipped_ranges) =
-        provider.coverage_parts(&pass.examined, pass.standalone_examined);
-    // `complete_within_schema` needs both: no interruption or page limit, and no
-    // known range left unexamined (a skip can also come from a continued page or
-    // from a schema whose producers never read a standalone CLASS root).
+        stream.coverage_parts(&pass.examined, pass.standalone_examined);
+    // `complete_within_schema` needs all of it: no interruption or page limit, no known
+    // range left unexamined (a skip can also come from a continued page or from a schema
+    // whose producers never read a standalone CLASS root), and a walk that really reached
+    // the end of the scope instead of stopping inside it.
     let complete = pass.issue.is_none()
         && !pass.stopped_early
         && unsupported.is_empty()
-        && skipped_ranges.is_empty();
+        && skipped_ranges.is_empty()
+        && stream.exhausted();
     let execution = jarde_reader::accounting::with_usage(
         pass.issue.unwrap_or(ExecutionReport::Complete {
             usage: budget.usage(),
@@ -363,7 +384,7 @@ pub(crate) fn scan(
         scanned_items: pass.scanned_items,
         unknown_candidates: pass.unknown_candidates,
     };
-    let mut diagnostics = provider.diagnostics.clone();
+    let mut diagnostics = stream.diagnostics().to_vec();
     diagnostics.extend(pass.diagnostics);
     Ok(ScanResult {
         page: QueryPage {
@@ -430,16 +451,17 @@ pub fn scan_candidates(
             diagnostics: Vec::new(),
         });
     }
-    let provider = ProviderScan::collect(snapshot, &request, budget)?;
+    let mut stream = UnitStream::open(snapshot, &request, budget)?;
     let unsupported = unsupported_categories(&request.consumers);
     let mut ctx = ScanContext::new(snapshot, &request, filter, budget);
-    let pass = scan_units(&mut ctx, &provider, &request, None);
+    let pass = run_pass(&mut ctx, &mut stream, &request, None)?;
     let (scanned_ranges, skipped_ranges) =
-        provider.coverage_parts(&pass.examined, pass.standalone_examined);
+        stream.coverage_parts(&pass.examined, pass.standalone_examined);
     let complete = pass.issue.is_none()
         && !pass.stopped_early
         && unsupported.is_empty()
-        && skipped_ranges.is_empty();
+        && skipped_ranges.is_empty()
+        && stream.exhausted();
     let has_more = pass.stopped_early || pass.issue.is_some();
     let execution = jarde_reader::accounting::with_usage(
         pass.issue.unwrap_or(ExecutionReport::Complete {
@@ -467,7 +489,7 @@ pub fn scan_candidates(
         scanned_items: pass.scanned_items,
         unknown_candidates: pass.unknown_candidates,
     };
-    let mut diagnostics = provider.diagnostics.clone();
+    let mut diagnostics = stream.diagnostics().to_vec();
     diagnostics.extend(pass.diagnostics);
     Ok(CandidateScan {
         has_more,
@@ -478,16 +500,17 @@ pub fn scan_candidates(
     })
 }
 
-/// Outcome of one pass over the provider's units.
+/// Outcome of one pass over the scope's units.
 ///
 /// The pass reports what the scan really did, in the terms both entries need: the items it
 /// published in scan order, whether a limit or a stop kept it from reaching the end of the
-/// range, the position it last published, the containers and bytes it examined, and the stops
-/// and diagnostics it produced. The caller decides what those facts mean for its own report
-/// (a page and a cursor, or a candidate list).
+/// range, the step position it last published, the containers and bytes it examined, and the
+/// stops and diagnostics it produced. The caller decides what those facts mean for its own
+/// report (a page and a cursor, or a candidate list).
 struct UnitPass {
     items: Vec<XrefItem>,
-    /// Position immediately after the last published item.
+    /// Position of the next published item: the step it comes from and how many of that
+    /// step's items this page already published.
     boundary: Option<QueryBoundary>,
     /// The item limit stopped the pass.
     stopped_early: bool,
@@ -502,147 +525,383 @@ struct UnitPass {
     unknown_candidates: u64,
 }
 
-/// Walks the provider's units and runs every consumer sub-scan on each one.
+/// Why a unit's scan ended before the unit's program did.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum UnitEnd {
+    /// The page filled: the boundary names the next item.
+    Page,
+    /// A refused charge or a producer's error ended the pass.
+    Terminal,
+}
+
+/// Pulls units from the scope's walk and runs each one as a program of steps.
 ///
-/// This is the whole scan both entries share, so the order (containers in provider order,
-/// entries by ordinal, then the fixed consumer sub-scan order inside one unit), the billing
-/// (one `ResultItems` per published item and per domain diagnostic, charged by this pass
-/// alone) and the stop semantics (the prefix published before a refused charge, a limit or an
-/// interruption stays) cannot drift between them. `request` carries the item limit and the
-/// relation; `resume` is the boundary a continuation replays from.
-fn scan_units(
+/// This is the whole scan both entries share, so the order (the walk's own physical order,
+/// then the fixed producer order inside one unit, then each producer's own position order),
+/// the billing (one `ResultItems` per published item and per domain diagnostic, charged by
+/// this pass alone) and the stop semantics (the prefix published before a refused charge, a
+/// limit or an interruption stays) cannot drift between them. `request` carries the item
+/// limit and the relation; `resume` is the boundary a continuation resumes from.
+fn run_pass(
     ctx: &mut ScanContext<'_>,
-    provider: &ProviderScan,
+    stream: &mut UnitStream<'_>,
     request: &QueryRequest,
     resume: Option<QueryBoundary>,
-) -> UnitPass {
-    // The provider's own terminal state, if any, already limits this run.
+) -> Result<UnitPass> {
     let mut pass = UnitPass {
         items: Vec::new(),
         boundary: None,
         stopped_early: false,
         resume_pending: false,
-        issue: match &provider.execution {
-            ExecutionReport::Complete { .. } => None,
-            other => Some(other.clone()),
-        },
+        // The provider's own terminal state, if it already stopped: an enumeration that
+        // was cancelled or refused publishes no unit, and the scan must report the stop
+        // it was handed instead of an empty, complete answer.
+        issue: stream.execution(),
         diagnostics: Vec::new(),
         examined: Vec::new(),
         standalone_examined: 0,
         scanned_items: 0,
         unknown_candidates: 0,
     };
+    let keep_relation = keeps_pool_evidence(request.relation);
     let mut pending = resume;
-    let mut skip_items = 0_u64;
-    let mut published = 0_u64;
-
-    'units: for unit in &provider.units {
-        // Units before the cursor boundary were published by an earlier page: they
-        // are neither re-read nor re-billed here.
-        if let Some(resume) = &pending {
-            if resume.container != *unit.origin() || resume.ordinal != unit.ordinal() {
-                continue;
+    'units: loop {
+        // A full page stops the scan instead of looking for the next item. It is checked
+        // before the walk is asked for another unit, so a page limit leaves the units
+        // behind it neither read nor materialized, and `has_more` stays a conservative
+        // "stopped before the end of the range".
+        if request.max_items != 0 && to_u64(pass.items.len())? >= request.max_items {
+            pass.stopped_early = true;
+            break 'units;
+        }
+        // The next unit — and, for the incremental walk, the directory it is read from.
+        // A cancelled or exhausted request is observed by the walk *before* it examines
+        // an entry, and by this check before an already-enumerated unit is scanned, so no
+        // unit work starts after a stop.
+        let unit = match stream.next_unit(ctx.budget()) {
+            Ok(Some(unit)) => unit,
+            Ok(None) => break 'units,
+            Err(error) => {
+                pass.issue = merge_issue(pass.issue, terminal_execution(&error, ctx.usage()));
+                pass.diagnostics.push(terminal_diagnostic(&error, None));
+                break 'units;
             }
-            skip_items = resume.item_index;
-            pending = None;
+        };
+        // Units before the cursor boundary were published by an earlier page: they
+        // are neither read nor re-billed here.
+        if let Some(resume) = &pending
+            && (resume.container != *unit.origin() || resume.ordinal != unit.ordinal())
+        {
+            continue;
         }
         // Cooperative interruption is checked before any unit work, so a cancelled
         // or exhausted request never reports more than the published prefix.
         if let Err(error) = ctx.budget().poll() {
             pass.issue = merge_issue(pass.issue, terminal_execution(&error, ctx.usage()));
-            pass.diagnostics
-                .push(terminal_diagnostic(&error, Some(unit)));
+            pass.diagnostics.push(terminal_diagnostic(&error, None));
             break 'units;
         }
-        // A full page stops the scan instead of looking for the next item: the page
-        // limit must bound the work, so `has_more` stays a conservative "stopped
-        // before the end of the range" and a continuation may still be empty.
-        if request.max_items != 0 && published >= request.max_items {
-            pass.stopped_early = true;
-            break 'units;
-        }
-
+        let (position, skip) = match pending.take() {
+            Some(boundary) => (boundary.position, boundary.item_index),
+            None => (QueryPosition::Resource, 0),
+        };
+        let mut scan = UnitScan::open(position, skip);
         ctx.begin_unit();
-        let mut unit_items = Vec::new();
-        let scan_error = scan_unit(ctx, unit, &mut unit_items).err();
-        // The probe answered as a raw constant-pool probe, but the caller asked a relation
-        // P1 does not resolve. Each item keeps the caller's relation and stays an
-        // unanalysed candidate: derivation, consumer, operation, certainty and evidence
-        // are the facts the probe found, and nothing here expands or resolves them.
-        if keeps_pool_evidence(request.relation) {
-            for item in &mut unit_items {
-                item.relation = request.relation;
-            }
-        }
-        record_examined(&mut pass.examined, unit);
-        if let Some(length) = ctx.materialized_length(unit) {
-            pass.standalone_examined = length;
-        }
-
-        for (index, item) in unit_items.into_iter().enumerate() {
-            let unknown = item.certainty == XrefCertainty::Unknown;
-            if (index as u64) < skip_items {
-                // Replayed prefix of a continuation: already published and billed, so
-                // it counts as scanned but is neither published nor charged again.
+        record_examined(&mut pass.examined, &unit);
+        let mut end: Option<UnitEnd> = None;
+        loop {
+            let mut items = Vec::new();
+            let step = scan.step(ctx, &unit, &mut items);
+            for item in items {
+                if scan.skip_pending() {
+                    // Replayed prefix of a continued step: an earlier page already
+                    // published and billed it, so it counts as scanned but is neither
+                    // published nor charged again.
+                    scan.skip_one();
+                    pass.scanned_items += 1;
+                    pass.unknown_candidates += u64::from(item.certainty == XrefCertainty::Unknown);
+                    continue;
+                }
+                if request.max_items != 0 && to_u64(pass.items.len())? >= request.max_items {
+                    end = Some(UnitEnd::Page);
+                    break;
+                }
+                if let Err(error) = ctx.charge_result_item() {
+                    pass.issue = merge_issue(pass.issue, terminal_execution(&error, ctx.usage()));
+                    pass.diagnostics
+                        .push(terminal_diagnostic(&error, Some(&unit)));
+                    end = Some(UnitEnd::Terminal);
+                    break;
+                }
+                let mut item = item;
+                // The probe answered as a raw constant-pool probe, but the caller asked a
+                // relation P1 does not resolve. Each item keeps the caller's relation and
+                // stays an unanalysed candidate: derivation, consumer, operation,
+                // certainty and evidence are the facts the probe found, and nothing here
+                // expands or resolves them.
+                if keep_relation {
+                    item.relation = request.relation;
+                }
                 pass.scanned_items += 1;
-                pass.unknown_candidates += u64::from(unknown);
-                continue;
+                pass.unknown_candidates += u64::from(item.certainty == XrefCertainty::Unknown);
+                scan.publish_one();
+                pass.boundary = Some(boundary_of(
+                    &unit,
+                    scan.position().clone(),
+                    scan.published(),
+                ));
+                pass.items.push(item);
             }
-            if request.max_items != 0 && published >= request.max_items {
+            if end.is_some() {
+                break;
+            }
+            // A step that answers fewer items than a resumed position already published
+            // does not describe this unit: the cursor is refused instead of skipping an
+            // item it never published.
+            if scan.skip_pending() {
+                return Err(cursor_position_mismatch());
+            }
+            // The step's own domain diagnostics are charged after its items, exactly as a
+            // unit's were; a refused charge keeps the prefix and stops.
+            for diagnostic in ctx.take_diagnostics() {
+                if let Err(error) = ctx.charge_result_item() {
+                    pass.issue = merge_issue(pass.issue, terminal_execution(&error, ctx.usage()));
+                    pass.diagnostics
+                        .push(terminal_diagnostic(&error, Some(&unit)));
+                    end = Some(UnitEnd::Terminal);
+                    break;
+                }
+                pass.diagnostics.push(diagnostic);
+            }
+            if end.is_some() {
+                break;
+            }
+            match step {
+                Err(error) if is_cursor_position_mismatch(&error) => return Err(error),
+                Err(error) => {
+                    pass.issue = merge_issue(pass.issue, terminal_execution(&error, ctx.usage()));
+                    pass.diagnostics
+                        .push(terminal_diagnostic(&error, Some(&unit)));
+                    end = Some(UnitEnd::Terminal);
+                    break;
+                }
+                Ok(outcome) => {
+                    // Every item and diagnostic of the step was published: the walk stands
+                    // at the step that follows, so the position the next page resumes at is
+                    // that step — never the step that just finished.
+                    scan.finish_step();
+                    pass.boundary = Some(boundary_of(
+                        &unit,
+                        scan.position().clone(),
+                        scan.published(),
+                    ));
+                    if let Some(length) = ctx.materialized_length(&unit) {
+                        pass.standalone_examined = length;
+                    }
+                    match outcome {
+                        StepOutcome::Finished => break,
+                        StepOutcome::Stepped => {
+                            if request.max_items != 0
+                                && to_u64(pass.items.len())? >= request.max_items
+                            {
+                                end = Some(UnitEnd::Page);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if let Some(end) = end {
+            if end == UnitEnd::Page {
                 pass.stopped_early = true;
-                break 'units;
             }
-            if let Err(error) = ctx.charge_result_item() {
-                pass.issue = merge_issue(pass.issue, terminal_execution(&error, ctx.usage()));
-                pass.diagnostics
-                    .push(terminal_diagnostic(&error, Some(unit)));
-                break 'units;
-            }
-            published += 1;
-            pass.scanned_items += 1;
-            pass.unknown_candidates += u64::from(unknown);
-            pass.boundary = Some(QueryBoundary {
-                container: unit.origin().clone(),
-                ordinal: unit.ordinal(),
-                item_index: index as u64 + 1,
-            });
-            pass.items.push(item);
-        }
-        skip_items = 0;
-
-        let unit_diagnostics = ctx.take_diagnostics();
-        for diagnostic in unit_diagnostics {
-            if let Err(error) = ctx.charge_result_item() {
-                pass.issue = merge_issue(pass.issue, terminal_execution(&error, ctx.usage()));
-                pass.diagnostics
-                    .push(terminal_diagnostic(&error, Some(unit)));
-                break 'units;
-            }
-            pass.diagnostics.push(diagnostic);
-        }
-
-        if let Some(error) = scan_error {
-            pass.issue = merge_issue(pass.issue, terminal_execution(&error, ctx.usage()));
-            pass.diagnostics
-                .push(terminal_diagnostic(&error, Some(unit)));
             break 'units;
         }
     }
 
+    pass.examined = merge_examined(pass.examined, stream.examined());
     pass.resume_pending = pending.is_some();
-    pass
+    Ok(pass)
 }
 
-/// Fixed consumer sub-scan order inside one unit.
+/// One unit's scan: the producer program, resumed where the previous page stopped.
 ///
-/// The order defines the item order of a unit, so a continuation replays the same
-/// sequence. Each sub-scan owns its own file and its own budget dimensions; this
-/// function only fixes the order in which they answer one unit.
-fn scan_unit(ctx: &mut ScanContext<'_>, unit: &ScanUnit, out: &mut Vec<XrefItem>) -> Result<()> {
-    resource::scan(ctx, unit, out)?;
-    code::scan(ctx, unit, out)?;
-    metadata::scan(ctx, unit, out)?;
-    bootstrap::scan(ctx, unit, out)
+/// The program is fixed for every unit — [`Producer::Resource`], then [`Producer::Code`]
+/// (the raw pool probe, or the instruction stream of one method after another), then
+/// [`Producer::Metadata`], then [`Producer::Bootstrap`] — so a position names the same step
+/// in every page of one request. A step never starts after the page filled, and the items a
+/// started step produced beyond the page are dropped instead of published.
+struct UnitScan {
+    /// The producer whose step is running.
+    producer: Producer,
+    /// The producer the step after it belongs to.
+    next: Producer,
+    /// The step the items of the running step belong to.
+    position: QueryPosition,
+    /// The step that follows it.
+    next_position: QueryPosition,
+    /// The code producer's own state: opened by its step, kept across the steps after it.
+    code: code::CodeWalk,
+    /// Items of the running step this page published.
+    published: u64,
+    /// Items of the running step an earlier page published: skipped, never published twice.
+    skip: u64,
+}
+
+/// The producers of one unit, in the order their items come out.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum Producer {
+    Resource,
+    Code,
+    Metadata,
+    Bootstrap,
+    /// Every producer of the unit ran.
+    Done,
+}
+
+/// What one step of a unit's scan did.
+enum StepOutcome {
+    /// The step is over; the unit's next step runs next.
+    Stepped,
+    /// The unit's whole program ran.
+    Finished,
+}
+
+impl UnitScan {
+    /// Opens one unit's scan at the position a fresh page or a continuation starts from.
+    fn open(position: QueryPosition, skip: u64) -> Self {
+        let producer = producer_of(&position);
+        Self {
+            producer,
+            next: producer,
+            position: position.clone(),
+            next_position: position,
+            code: code::CodeWalk::unopened(),
+            published: 0,
+            skip,
+        }
+    }
+
+    /// The step the items of the running step belong to.
+    fn position(&self) -> &QueryPosition {
+        &self.position
+    }
+
+    /// Items of the running step this page already published.
+    fn published(&self) -> u64 {
+        self.published
+    }
+
+    /// Whether the resumed position still owes items to an earlier page.
+    fn skip_pending(&self) -> bool {
+        self.skip > 0
+    }
+
+    /// Consumes one replayed item of the resumed position.
+    fn skip_one(&mut self) {
+        self.skip -= 1;
+        self.published += 1;
+    }
+
+    /// Counts one item of the running step as published by this request.
+    ///
+    /// The count covers the items an earlier page published (the replayed prefix) and the
+    /// items this page just published, so it is exactly the item count the boundary carries.
+    fn publish_one(&mut self) {
+        self.published += 1;
+    }
+
+    /// Runs the next step of the unit's program into `out`.
+    ///
+    /// The step's own position does not move here: the run records the boundary from it while
+    /// it publishes the step's items, and only [`UnitScan::finish_step`] stands the walk at
+    /// the step that follows. A page that fills inside a step therefore keeps the position of
+    /// that step, and a page that fills exactly at its last item keeps the step after it.
+    fn step(
+        &mut self,
+        ctx: &mut ScanContext<'_>,
+        unit: &ScanUnit,
+        out: &mut Vec<XrefItem>,
+    ) -> Result<StepOutcome> {
+        match self.producer {
+            Producer::Resource => {
+                let outcome = resource::scan(ctx, unit, out);
+                self.next = Producer::Code;
+                self.next_position = QueryPosition::Code;
+                outcome.map(|()| StepOutcome::Stepped)
+            }
+            Producer::Code => match self.code.step(ctx, unit, self.position.clone(), out)? {
+                CodeOutcome::Stepped(position) => {
+                    self.next = Producer::Code;
+                    self.next_position = position;
+                    Ok(StepOutcome::Stepped)
+                }
+                CodeOutcome::Finished => {
+                    self.next = Producer::Metadata;
+                    self.next_position = QueryPosition::Metadata;
+                    Ok(StepOutcome::Stepped)
+                }
+            },
+            Producer::Metadata => {
+                let outcome = metadata::scan(ctx, unit, out);
+                self.next = Producer::Bootstrap;
+                self.next_position = QueryPosition::Bootstrap;
+                outcome.map(|()| StepOutcome::Stepped)
+            }
+            Producer::Bootstrap => {
+                let outcome = bootstrap::scan(ctx, unit, out);
+                self.next = Producer::Done;
+                self.next_position = QueryPosition::UnitComplete;
+                outcome.map(|()| StepOutcome::Stepped)
+            }
+            Producer::Done => Ok(StepOutcome::Finished),
+        }
+    }
+
+    /// Stands at the step that follows the one whose items were all published.
+    fn finish_step(&mut self) {
+        self.producer = self.next;
+        self.position = self.next_position.clone();
+        self.published = 0;
+    }
+}
+
+/// The producer a position belongs to.
+fn producer_of(position: &QueryPosition) -> Producer {
+    match position {
+        QueryPosition::Resource => Producer::Resource,
+        QueryPosition::Code | QueryPosition::Method { .. } => Producer::Code,
+        QueryPosition::Metadata => Producer::Metadata,
+        QueryPosition::Bootstrap => Producer::Bootstrap,
+        QueryPosition::UnitComplete => Producer::Done,
+    }
+}
+
+/// One unit's position in the report's own terms.
+fn boundary_of(unit: &ScanUnit, position: QueryPosition, item_index: u64) -> QueryBoundary {
+    QueryBoundary {
+        container: unit.origin().clone(),
+        ordinal: unit.ordinal(),
+        position,
+        item_index,
+    }
+}
+
+/// The error a continuation carries when its position does not describe the unit it names.
+fn cursor_position_mismatch() -> Error {
+    Error::invalid_input(
+        "query_cursor_mismatch",
+        "cursor position does not exist in the unit the boundary names",
+    )
+}
+
+/// Whether one producer's failure is a refused cursor position rather than a scan result.
+///
+/// A position that cannot be honoured is a binding error, not a partial scan: it is returned
+/// as an error instead of being reported as damage of the unit.
+fn is_cursor_position_mismatch(error: &Error) -> bool {
+    matches!(error, Error::InvalidInput { code, .. } if code == "query_cursor_mismatch")
 }
 
 /// One scan unit: a container entry, or the standalone CLASS snapshot root.
@@ -997,50 +1256,100 @@ struct MaterializedUnit {
     length: u64,
 }
 
+#[derive(Clone)]
 struct ExaminedContainer {
     container: ContainerId,
     first: u64,
     last_exclusive: u64,
 }
 
-/// Provider-derived unit stream plus the physical facts of this request.
-struct ProviderScan {
-    units: Vec<ScanUnit>,
-    containers: Vec<ProviderContainer>,
-    scanned: Vec<CoverageRange>,
-    skipped: Vec<CoverageRange>,
-    diagnostics: Vec<Diagnostic>,
-    execution: ExecutionReport,
-    standalone_class_bytes: Option<u64>,
+/// The units one request's scope and consumer schema need, pulled one at a time.
+///
+/// Which stream a request gets is the request's own decision, and that is the first half of
+/// "scan by demand": `resource` is the only consumer that reads an entry which is not a
+/// class, so a request that names it asks about every entry of every container — its
+/// denominator *is* the whole range — and is answered from the provider's own report. A
+/// request that does not name it can only produce items from class candidates, so it walks
+/// the scope through the reader's incremental scope cursor, which reads one container's
+/// directory at a time and descends into a nested container exactly when the scan reaches
+/// the entry that holds it.
+enum UnitStream<'a> {
+    /// A standalone CLASS snapshot: its root is the one unit, and no range is enumerated.
+    Standalone { unit: Option<ScanUnit>, bytes: u64 },
+    /// Every entry of the scope, in the provider's own order.
+    Enumerated {
+        units: VecDeque<ScanUnit>,
+        containers: Vec<ProviderContainer>,
+        scanned: Vec<CoverageRange>,
+        skipped: Vec<CoverageRange>,
+        diagnostics: Vec<Diagnostic>,
+        execution: ExecutionReport,
+    },
+    /// The scope's class candidates, walked one container at a time.
+    Walked(WalkedScope<'a>),
 }
 
+/// One container the provider enumerated, with the entry count its report established.
 struct ProviderContainer {
     origin: ContainerOrigin,
     known_entries: u64,
 }
 
-impl ProviderScan {
-    fn collect(
-        snapshot: &ArtifactSnapshot,
+/// The scope's class candidates, walked by the reader's incremental scope cursor.
+///
+/// The walk reads a container's directory once and hands one class candidate over per pull,
+/// so the methods and the nested containers behind the page's stop are never reached: a
+/// nested container is materialized when the walk *descends* into the entry that holds it,
+/// which happens only while the scan keeps pulling. What the walk examined is its own
+/// product too: an entry ordinal it passed, and the ordinal of a descent, are the ranges
+/// this invocation really examined — a container it never entered is left unknown instead
+/// of being counted as examined or as empty.
+struct WalkedScope<'a> {
+    snapshot: &'a ArtifactSnapshot,
+    cursor: ScopeCursor,
+    examined: Vec<ExaminedContainer>,
+    exhausted: bool,
+}
+
+impl<'a> UnitStream<'a> {
+    /// Opens the unit stream this request's scope and consumer schema need.
+    ///
+    /// Opening reads nothing for a standalone snapshot and nothing for the walk: the
+    /// walk's first container is opened by its first pull, and the enumerated stream reads
+    /// the range it is about to hand over.
+    fn open(
+        snapshot: &'a ArtifactSnapshot,
         request: &QueryRequest,
         budget: &mut Budget,
     ) -> Result<Self> {
         match (snapshot.kind(), &request.physical.scope) {
-            (ArtifactKind::StandaloneClass, PhysicalScope::SnapshotAll) => Ok(Self {
-                units: vec![ScanUnit {
+            (ArtifactKind::StandaloneClass, PhysicalScope::SnapshotAll) => Ok(Self::Standalone {
+                unit: Some(ScanUnit {
                     origin: root_origin(snapshot.id()),
                     ordinal: 0,
                     kind: UnitKind::StandaloneRoot,
-                }],
-                containers: Vec::new(),
-                scanned: Vec::new(),
-                skipped: Vec::new(),
-                diagnostics: Vec::new(),
-                execution: ExecutionReport::Complete {
-                    usage: budget.usage(),
-                },
-                standalone_class_bytes: Some(snapshot.len()),
+                }),
+                bytes: snapshot.len(),
             }),
+            // A request that names the resource consumer asks about entries no other
+            // consumer can answer, so its range is the provider's own enumeration. Every
+            // other schema walks the scope's class candidates instead — but only where a
+            // scope really holds more than one container: a whole-snapshot scope *is* its
+            // root container, one directory product the provider's own enumeration
+            // publishes with its per-entry charges, its duplicate diagnostic and its
+            // ranges, and the walk would parse and bill exactly the same records before
+            // its first unit. The tree scope is the one where the walk changes the work:
+            // a nested container is read only when the scan reaches the entry holding it.
+            _ if !request.consumers.kinds.contains(&ConsumerKind::Resource)
+                && matches!(request.physical.scope, PhysicalScope::ArtifactTree { .. }) =>
+            {
+                Ok(Self::Walked(WalkedScope {
+                    snapshot,
+                    cursor: snapshot.scope_cursor(&request.physical.scope)?,
+                    examined: Vec::new(),
+                    exhausted: false,
+                }))
+            }
             (ArtifactKind::Zip, PhysicalScope::SnapshotAll) => {
                 let report = snapshot.enumerate(budget)?;
                 let origin = root_origin(&report.snapshot);
@@ -1057,7 +1366,7 @@ impl ProviderScan {
                         kind: UnitKind::Entry(entry.clone()),
                     })
                     .collect();
-                Ok(Self {
+                Ok(Self::Enumerated {
                     units,
                     containers: vec![ProviderContainer {
                         origin,
@@ -1067,18 +1376,17 @@ impl ProviderScan {
                     skipped: report.coverage.artifact_structural.skipped,
                     diagnostics: report.diagnostics,
                     execution: report.execution,
-                    standalone_class_bytes: None,
                 })
             }
             // The tree provider rejects a non-ZIP snapshot itself; its error is
             // propagated instead of being rewritten here.
             (_, PhysicalScope::ArtifactTree { .. }) => {
                 let report = snapshot.enumerate_artifact_tree(budget)?;
-                let mut units = Vec::new();
+                let mut units = VecDeque::new();
                 let mut containers = Vec::new();
                 for container in &report.containers {
                     for entry in &container.entries {
-                        units.push(ScanUnit {
+                        units.push_back(ScanUnit {
                             origin: container.origin.clone(),
                             ordinal: entry.id.ordinal,
                             kind: UnitKind::Entry(entry.clone()),
@@ -1093,94 +1401,258 @@ impl ProviderScan {
                         known_entries,
                     });
                 }
-                Ok(Self {
+                Ok(Self::Enumerated {
                     units,
                     containers,
                     scanned: report.coverage.artifact_structural.scanned,
                     skipped: report.coverage.artifact_structural.skipped,
                     diagnostics: report.diagnostics,
                     execution: report.execution,
-                    standalone_class_bytes: None,
                 })
             }
         }
     }
 
-    /// Provider ranges plus this pass's own ordinal or byte coverage.
+    /// The next unit of the scope's own physical order, or `None` at the end of the scope.
+    fn next_unit(&mut self, budget: &mut Budget) -> Result<Option<ScanUnit>> {
+        match self {
+            Self::Standalone { unit, .. } => Ok(unit.take()),
+            Self::Enumerated { units, .. } => Ok(units.pop_front()),
+            Self::Walked(walk) => walk.next_unit(budget),
+        }
+    }
+
+    /// The stream's own terminal state, when it stopped before the scan pulled anything.
+    fn execution(&self) -> Option<ExecutionReport> {
+        match self {
+            Self::Enumerated { execution, .. } => match execution {
+                ExecutionReport::Complete { .. } => None,
+                other => Some(other.clone()),
+            },
+            Self::Standalone { .. } | Self::Walked(_) => None,
+        }
+    }
+
+    /// Whether this walk reached the end of the scope with nothing left unknown.
     ///
-    /// Provider ranges are carried verbatim (they were already billed by the
-    /// provider); the `xref_scan_entries` / `xref_scan_bytes` ranges describe what
-    /// this invocation examined, so a page limit, a continuation or a schema that
-    /// never reads a unit's bytes shows up as a skipped range instead of a claim.
+    /// An enumerated range is part of the stream by construction; an incremental walk is
+    /// only exhausted once it really returned the end of the scope.
+    fn exhausted(&self) -> bool {
+        match self {
+            Self::Standalone { unit, .. } => unit.is_none(),
+            Self::Enumerated {
+                units, execution, ..
+            } => units.is_empty() && matches!(execution, ExecutionReport::Complete { .. }),
+            Self::Walked(walk) => walk.exhausted,
+        }
+    }
+
+    /// The walk's own diagnostics, named where each failing subtree hangs from.
+    fn diagnostics(&self) -> &[Diagnostic] {
+        match self {
+            Self::Standalone { .. } => &[],
+            Self::Enumerated { diagnostics, .. } => diagnostics,
+            Self::Walked(walk) => walk.cursor.diagnostics(),
+        }
+    }
+
+    /// The ordinal prefixes this walk examined, by container.
+    fn examined(&self) -> &[ExaminedContainer] {
+        match self {
+            Self::Standalone { .. } | Self::Enumerated { .. } => &[],
+            Self::Walked(walk) => &walk.examined,
+        }
+    }
+
+    /// The stream's own ranges plus this pass's own ordinal or byte coverage.
+    ///
+    /// The provider's own ranges are carried verbatim (they were already billed by the
+    /// provider); the `xref_scan_entries` / `xref_scan_bytes` ranges describe what this
+    /// invocation examined, so a page limit, a continuation or a schema that never reads a
+    /// unit's bytes shows up instead of a claim.
+    ///
+    /// The two walks describe a container's remainder differently, and the difference is
+    /// the honest one: an enumerated container has a known entry count, so the ordinals no
+    /// unit reached are named as skipped; a walked container only establishes the prefix
+    /// this invocation looked at, so the range behind it stays *unknown* — it is not named
+    /// as examined and not claimed as empty, and the coverage state is `Partial` unless the
+    /// walk itself reached the end of the scope.
     fn coverage_parts(
         &self,
         examined: &[ExaminedContainer],
         standalone_examined: u64,
     ) -> (Vec<CoverageRange>, Vec<CoverageRange>) {
-        let mut scanned = self.scanned.clone();
-        let mut skipped = self.skipped.clone();
-        for container in &self.containers {
-            let id = &container.origin.current_container().0;
-            let label = format!("container:{id}:xref_scan_entries");
-            let known = container.known_entries;
-            match examined
-                .iter()
-                .find(|entry| entry.container.0 == *id)
-                .map(|entry| (entry.first.min(known), entry.last_exclusive.min(known)))
-            {
-                Some((first, last_exclusive)) => {
-                    if first > 0 {
-                        skipped.push(CoverageRange {
-                            label: label.clone(),
-                            start: 0,
-                            end: first,
-                        });
-                    }
-                    if first < last_exclusive {
-                        scanned.push(CoverageRange {
-                            label: label.clone(),
-                            start: first,
-                            end: last_exclusive,
-                        });
-                    }
-                    if last_exclusive < known {
-                        skipped.push(CoverageRange {
-                            label,
-                            start: last_exclusive,
-                            end: known,
-                        });
+        match self {
+            Self::Standalone { bytes, .. } => {
+                let label = "standalone_class:xref_scan_bytes".to_string();
+                let mut scanned = Vec::new();
+                let mut skipped = Vec::new();
+                let examined = standalone_examined.min(*bytes);
+                if examined > 0 {
+                    scanned.push(CoverageRange {
+                        label: label.clone(),
+                        start: 0,
+                        end: examined,
+                    });
+                }
+                if examined < *bytes {
+                    skipped.push(CoverageRange {
+                        label,
+                        start: examined,
+                        end: *bytes,
+                    });
+                }
+                (scanned, skipped)
+            }
+            Self::Enumerated {
+                containers,
+                scanned,
+                skipped,
+                ..
+            } => {
+                let mut scanned = scanned.clone();
+                let mut skipped = skipped.clone();
+                for container in containers {
+                    let id = &container.origin.current_container().0;
+                    let label = format!("container:{id}:xref_scan_entries");
+                    let known = container.known_entries;
+                    match examined
+                        .iter()
+                        .find(|entry| entry.container.0 == *id)
+                        .map(|entry| (entry.first.min(known), entry.last_exclusive.min(known)))
+                    {
+                        Some((first, last_exclusive)) => {
+                            if first > 0 {
+                                skipped.push(CoverageRange {
+                                    label: label.clone(),
+                                    start: 0,
+                                    end: first,
+                                });
+                            }
+                            if first < last_exclusive {
+                                scanned.push(CoverageRange {
+                                    label: label.clone(),
+                                    start: first,
+                                    end: last_exclusive,
+                                });
+                            }
+                            if last_exclusive < known {
+                                skipped.push(CoverageRange {
+                                    label,
+                                    start: last_exclusive,
+                                    end: known,
+                                });
+                            }
+                        }
+                        None => {
+                            if known > 0 {
+                                skipped.push(CoverageRange {
+                                    label,
+                                    start: 0,
+                                    end: known,
+                                });
+                            }
+                        }
                     }
                 }
-                None => {
-                    if known > 0 {
-                        skipped.push(CoverageRange {
-                            label,
-                            start: 0,
-                            end: known,
-                        });
-                    }
-                }
+                (scanned, skipped)
+            }
+            Self::Walked(_) => {
+                let scanned = examined
+                    .iter()
+                    .filter(|entry| entry.first < entry.last_exclusive)
+                    .map(|entry| CoverageRange {
+                        label: format!("container:{}:xref_scan_entries", entry.container.0),
+                        start: entry.first,
+                        end: entry.last_exclusive,
+                    })
+                    .collect();
+                (scanned, Vec::new())
             }
         }
-        if let Some(total) = self.standalone_class_bytes {
-            let label = "standalone_class:xref_scan_bytes".to_string();
-            let examined = standalone_examined.min(total);
-            if examined > 0 {
-                scanned.push(CoverageRange {
-                    label: label.clone(),
-                    start: 0,
-                    end: examined,
-                });
-            }
-            if examined < total {
-                skipped.push(CoverageRange {
-                    label,
-                    start: examined,
-                    end: total,
-                });
+    }
+}
+
+impl WalkedScope<'_> {
+    /// The next class candidate of the scope, or `None` at the end of the walk.
+    ///
+    /// The candidate's own record is looked up in the container the walk is inside, which
+    /// is the authority for the entry's identity: the ordinal and the raw name the walk
+    /// handed over are checked against the record at that coordinate before the unit is
+    /// built, and a container that cannot be read completely is refused instead of being
+    /// answered with the entries it managed to read.
+    fn next_unit(&mut self, budget: &mut Budget) -> Result<Option<ScanUnit>> {
+        let Some(class) = self.cursor.next_class(budget)? else {
+            self.exhausted = true;
+            return Ok(None);
+        };
+        match class.location {
+            PhysicalClassLocation::StandaloneRoot { snapshot } => Ok(Some(ScanUnit {
+                origin: root_origin(&snapshot),
+                ordinal: 0,
+                kind: UnitKind::StandaloneRoot,
+            })),
+            PhysicalClassLocation::ArchiveEntry { entry } => {
+                let record = self
+                    .snapshot
+                    .container_record(&entry, budget)?
+                    .ok_or_else(|| {
+                        Error::invalid_input(
+                            "entry_not_found",
+                            "the walked entry is not a record of the container it names",
+                        )
+                    })?;
+                self.observe(&record.id);
+                Ok(Some(ScanUnit {
+                    origin: record.id.origin.clone(),
+                    ordinal: record.id.ordinal,
+                    kind: UnitKind::Entry(record),
+                }))
             }
         }
-        (scanned, skipped)
+    }
+
+    /// Records the ordinal prefix this invocation examined for one entry's container and for
+    /// every container above it.
+    ///
+    /// The walk examines a container's entries in ordinal order before it descends, so an
+    /// entry at ordinal `n` means the container's own directory was examined up to and
+    /// including `n`. An ancestor's prefix is the descent that reached the child: the child
+    /// entry's own ordinal in that ancestor. Both are lower bounds of what the walk really
+    /// looked at (a container it left behind was examined in full, which the walk does not
+    /// report), and a lower bound never claims work that did not happen.
+    fn observe(&mut self, entry: &PhysicalEntryId) {
+        self.observe_prefix(&entry.origin, entry.ordinal);
+        for depth in (0..entry.origin.steps.len()).rev() {
+            let step = &entry.origin.steps[depth];
+            let parent = ContainerOrigin {
+                snapshot: entry.origin.snapshot.clone(),
+                root_container: entry.origin.root_container.clone(),
+                steps: entry.origin.steps[..depth].to_vec(),
+            };
+            self.observe_prefix(&parent, step.via_ordinal);
+        }
+    }
+
+    /// Merges one examined ordinal into the prefix of its container.
+    fn observe_prefix(&mut self, origin: &ContainerOrigin, ordinal: u64) {
+        let container = origin.current_container().clone();
+        let end = ordinal.saturating_add(1);
+        match self
+            .examined
+            .iter_mut()
+            .find(|entry| entry.container == container)
+        {
+            Some(entry) => {
+                entry.first = entry.first.min(ordinal);
+                entry.last_exclusive = entry.last_exclusive.max(end);
+            }
+            None => self.examined.push(ExaminedContainer {
+                container,
+                first: ordinal,
+                last_exclusive: end,
+            }),
+        }
     }
 }
 
@@ -1227,6 +1699,30 @@ fn record_examined(examined: &mut Vec<ExaminedContainer>, unit: &ScanUnit) {
             last_exclusive: end,
         }),
     }
+}
+
+/// The union of two examined-container lists, per container.
+///
+/// The pass records the units it started and the walk records the ordinal prefixes it looked
+/// at; the walk's prefixes are the wider statement, and a range they do not cover is not
+/// examined by this invocation at all.
+fn merge_examined(
+    mut examined: Vec<ExaminedContainer>,
+    other: &[ExaminedContainer],
+) -> Vec<ExaminedContainer> {
+    for entry in other {
+        match examined
+            .iter_mut()
+            .find(|held| held.container == entry.container)
+        {
+            Some(held) => {
+                held.first = held.first.min(entry.first);
+                held.last_exclusive = held.last_exclusive.max(entry.last_exclusive);
+            }
+            None => examined.push(entry.clone()),
+        }
+    }
+    examined
 }
 
 fn covered_end(dimension: &CoverageDimension) -> Option<u64> {

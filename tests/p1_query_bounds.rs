@@ -622,9 +622,16 @@ fn high_fanout_pages_splice_back_to_the_whole_scan() {
             }
         }
     }
+    // The whole body is covered by whole pages: 2 048 hits at 128 per page is 16 pages with
+    // an item, and the page that filled exactly at the last item of the body's only step
+    // keeps a conservative continuation, so one more page reports the end of the range.
+    // That extra page is what "stops before the next step" costs: the page limit is
+    // checked between steps, so the walk never starts the metadata producer to learn that
+    // nothing is left behind it.
     assert_eq!(
         pages,
-        u32::try_from(HITS / usize::try_from(PAGE).expect("page fits usize")).expect("page count"),
+        u32::try_from(HITS / usize::try_from(PAGE).expect("page fits usize")).expect("page count")
+            + 1,
         "the whole body is covered by whole pages"
     );
     assert_eq!(
@@ -667,7 +674,7 @@ fn cancellation_at_the_high_fanout_unit_boundary_publishes_nothing() {
         "nothing was published, so nothing was billed"
     );
 
-    // The same bytes as the only entry of an archive: the provider's own enumeration is
+    // The same bytes as the only entry of a jar: the provider's own enumeration is
     // cancelled too, so the entry is never established and the scan reports the
     // cancellation with an empty published prefix (the skipped ordinal stays visible in
     // the coverage ranges instead of being reported as complete).
@@ -680,7 +687,7 @@ fn cancellation_at_the_high_fanout_unit_boundary_publishes_nothing() {
         .expect("a cancelled enumeration is reported, not returned as an error");
     assert!(
         matches!(report.execution, ExecutionReport::Cancelled { .. }),
-        "a cancelled enumeration is never complete: {:?}",
+        "a cancelled walk is never complete: {:?}",
         report.execution
     );
     assert!(report.items.is_empty());

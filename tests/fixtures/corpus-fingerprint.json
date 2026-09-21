@@ -1016,8 +1016,8 @@
       "path": "tests/fixtures/p1-golden/multi-release.json"
     },
     {
-      "blake3": "a52ff64e7adda4849cfda1736b1231332eb4f6f71bdef6b13ea6a9d0d71eb4be",
-      "bytes": 12798,
+      "blake3": "0d6313d45ebe155b16d5c113fa8b13b706770a37b4ef324916c0cb127c3e45d9",
+      "bytes": 11852,
       "path": "tests/fixtures/p1-golden/nested.json"
     },
     {
@@ -1249,6 +1249,16 @@
       "blake3": "3697d4178bbed31ebe7811b7bcfb275f1530242197e12685878bbc6bdb22e8d7",
       "bytes": 361,
       "path": "tests/fixtures/p3-nested-eval/v8/NestedEval.class"
+    },
+    {
+      "blake3": "ce74f4cdced429e39c2e20ce36b8987f1aa0057f1277249bab84c26f8ce882c8",
+      "bytes": 1658,
+      "path": "tests/fixtures/p3-parameter-slots/SlotTypes.java"
+    },
+    {
+      "blake3": "c06e57e9e7730ea4bf496c82c04b9e569176b288c15754bfb341367b44ae21fa",
+      "bytes": 605,
+      "path": "tests/fixtures/p3-parameter-slots/v8/SlotTypes.class"
     },
     {
       "blake3": "106f605183cf2d2a10d6d53d65f6d4473825c583db63707b95aea21563df5c63",
