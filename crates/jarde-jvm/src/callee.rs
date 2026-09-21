@@ -438,9 +438,11 @@ impl CalleeClass<'_> {
     fn decode(&self, located: CalleeRecord<'_>, budget: &mut Budget) -> Result<MethodCodeFacts> {
         budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
         match self {
-            Self::Read(read) => {
-                jarde_reader::classfile::method_code_facts(&read.bytes, located.record, budget)
-            }
+            Self::Read(read) => jarde_reader::classfile::method_code_facts(
+                read.read.bytes(),
+                located.record,
+                budget,
+            ),
             Self::Prepared(prepared) => prepared.method_code(located.ordinal, budget),
         }
     }

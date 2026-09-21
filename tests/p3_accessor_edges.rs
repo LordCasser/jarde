@@ -34,6 +34,16 @@ use std::collections::BTreeSet;
 const CALL_SITE: u32 = 3;
 const FIELD_SITE: u32 = 1;
 
+/// The counting tests need the process-global port to themselves: one target runs its tests in
+/// parallel, and a count taken while another test is reading a class would be read as this
+/// request's own. Every test here takes the gate (they are all short), so the one test that reads
+/// the port can.
+static GATE: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
+fn gate() -> std::sync::MutexGuard<'static, ()> {
+    GATE.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
+}
+
 fn limits() -> Limits {
     Limits {
         input_bytes: 1 << 20,
@@ -441,6 +451,21 @@ fn recover(
     name: &[u8],
     descriptor: &[u8],
 ) -> (RecoveredMethod, UsageSnapshot) {
+    let request = request_for(snapshot, class, name, descriptor);
+    let mut budget = Budget::new(limits());
+    let recovered = Engine::new()
+        .recover_method(std::slice::from_ref(snapshot), &request, &mut budget)
+        .expect("the recovery of a member of the fixture runs");
+    (recovered, budget.usage())
+}
+
+/// One method-analysis request over one member of the fixture, as the CLI-shaped entries build it.
+fn request_for(
+    snapshot: &ArtifactSnapshot,
+    class: &[u8],
+    name: &[u8],
+    descriptor: &[u8],
+) -> MethodAnalysisRequest {
     let domain = LoadDomain {
         loader: LoaderId("app".to_string()),
         parent_loader: None,
@@ -468,16 +493,11 @@ fn recover(
         domains: vec![domain],
         providers: Vec::new(),
     };
-    let request = MethodAnalysisRequest {
+    MethodAnalysisRequest {
         environment,
         method: method_id(snapshot, class, name, descriptor),
         stages: AnalysisStage::ALL.to_vec(),
-    };
-    let mut budget = Budget::new(limits());
-    let recovered = Engine::new()
-        .recover_method(std::slice::from_ref(snapshot), &request, &mut budget)
-        .expect("the recovery of a member of the fixture runs");
-    (recovered, budget.usage())
+    }
 }
 
 /// The physical identity of one member of the fixture's class, as the reader states a definition.
@@ -561,6 +581,7 @@ fn anchors_of<'r>(report: &'r RecoveryReport, text: &str) -> Anchors<'r> {
 
 #[test]
 fn the_two_original_edges_survive_a_recovery_run_field_by_field() {
+    let _gate = gate();
     let class = accessor_class();
     let callers = |snapshot: &ArtifactSnapshot| {
         consumers(
@@ -643,6 +664,7 @@ fn the_two_original_edges_survive_a_recovery_run_field_by_field() {
 /// bodies were paid for.
 #[test]
 fn the_anchors_name_the_member_each_field_access_is_in_and_only_named_bodies_are_read() {
+    let _gate = gate();
     let class = accessor_class();
     let snapshot = open(&class);
 
@@ -783,10 +805,13 @@ fn the_anchors_name_the_member_each_field_access_is_in_and_only_named_bodies_are
         usage.method_bodies, 3,
         "one body per named member, not one per declared member: {declared:?}"
     );
+    // One class header for the whole request (D2 3.3): the run read the presented body's own
+    // definition, and the members it declares were read from the *preparation* built over that
+    // same read — the payload carries a body's tables, not its bytes, and the class is therefore
+    // read once and prepared once.
     assert_eq!(
-        usage.class_headers, 2,
-        "the presented body's own definition, and that same definition read again for the members \
-         it declares — the payload carries a body's tables, not its bytes"
+        usage.class_headers, 1,
+        "the presented body's own definition, prepared once for the members it declares"
     );
     assert_eq!(
         recovered.analysis().reads.len(),
@@ -886,6 +911,7 @@ fn clone_class() -> Vec<u8> {
 /// refuses the candidate with both names stated, and the call keeps the call it had.
 #[test]
 fn a_call_to_another_classs_same_named_member_is_not_read_from_this_class() {
+    let _gate = gate();
     let class = foreign_call_class();
     let snapshot = open(&class);
     let (recovered, usage) = recover(&class, &snapshot, b"foreign", b"()I");
@@ -911,8 +937,10 @@ fn a_call_to_another_classs_same_named_member_is_not_read_from_this_class() {
         usage.method_bodies, 1,
         "no body of this class was read for it — the presented body is the one attempt"
     );
+    // The refusal is decided from the prepared class (D2 3.3), which is the request's one read of
+    // this definition: no second header read happens for a call site that names another class.
     assert_eq!(
-        usage.class_headers, 2,
+        usage.class_headers, 1,
         "the read is a header read of the same definition"
     );
 
@@ -944,6 +972,7 @@ fn a_call_to_another_classs_same_named_member_is_not_read_from_this_class() {
 /// one node and still say which member it is in — the shape a canonical clone produces.
 #[test]
 fn a_bytecode_index_a_clone_repeats_still_names_the_member_it_is_in() {
+    let _gate = gate();
     let class = clone_class();
     let snapshot = open(&class);
     let (recovered, usage) = recover(&class, &snapshot, b"sub", b"(I)I");
@@ -1025,4 +1054,92 @@ fn quoted_bcis(text: &str) -> Vec<u32> {
                 .map(|bci| bci.parse::<u32>().expect("a quoted BCI is a number"))
         })
         .collect()
+}
+
+// ---------------------------------------------------------------------------------------------
+// D2 3.3: one read, one preparation, for the presented body and the callees it named
+// ---------------------------------------------------------------------------------------------
+
+/// D2 3.3's count gate: the driver run and the same-class callee read share **one** materialization
+/// of the presented body's class and **one** preparation over it.
+///
+/// The fixture is the one above: a body whose two call sites name two members of its own class, so
+/// the request really has a same-class callee read to pay for. At the D0 revision that read was a
+/// second class read of the same definition (`class_headers == 2`, and the class was materialized
+/// twice); D2 hands the run's own read to the preparation, so the definition is read once — and the
+/// preparation is the one figure that shows the callee read consumed it instead of reading again.
+///
+/// The port is test-support only, and this file is a plain target: the case is compiled only in the
+/// build that has the port.
+#[cfg(feature = "test-support")]
+#[test]
+fn the_driver_and_its_same_class_callees_share_one_read_and_one_preparation() {
+    use jarde::d0_counts;
+
+    let _gate = gate();
+    let class = accessor_class_with(false);
+    let snapshot = open(&class);
+    let request = request_for(&snapshot, &class, b"both", b"()I");
+    let mut budget = Budget::new(limits());
+    let before = d0_counts::snapshot();
+    let recovered = Engine::new()
+        .recover_method(std::slice::from_ref(&snapshot), &request, &mut budget)
+        .expect("the recovery of the fixture's member runs");
+    let counted = before.since(d0_counts::snapshot());
+    let usage = budget.usage();
+    println!(
+        "recover_method (same-class callees): materializations={} preparations={} body_decodes={} \
+         | class_headers={} method_bodies={}",
+        counted.class_materializations,
+        counted.class_preparations,
+        counted.body_decodes,
+        usage.class_headers,
+        usage.method_bodies
+    );
+
+    // The callee evidence is really there: the members the call sites named were read, from the
+    // definition the presented body was read from.
+    let callees = recovered.callees().expect("the body named two call sites");
+    assert_eq!(
+        callees
+            .members()
+            .iter()
+            .map(|member| member.identity().name.0.clone())
+            .collect::<Vec<_>>(),
+        vec![b"access$200".to_vec(), b"access$300".to_vec()],
+        "the members the call sites named, in candidate order: {:?}",
+        callees.members()
+    );
+    assert_eq!(
+        counted.class_materializations, 1,
+        "the presented body's own definition is materialized once, for the whole request"
+    );
+    assert_eq!(
+        counted.class_preparations, 1,
+        "and one preparation over that read serves the presented body and its callees"
+    );
+    assert_eq!(
+        counted.body_decodes, 1,
+        "the *driver's* own decode is the one this facade counts; the two callee bodies are decoded \
+         by the callee read itself, and their number is what `method_bodies` states"
+    );
+    assert_eq!(
+        usage.class_headers, 1,
+        "no member's read charged a class header of its own: {usage:?}"
+    );
+    assert_eq!(
+        usage.method_bodies, 3,
+        "one body attempt per decoded body: {usage:?}"
+    );
+    assert_eq!(
+        recovered
+            .analysis()
+            .reads
+            .iter()
+            .filter(|read| read.reason == ReadReason::DriverMethodBody)
+            .count(),
+        1,
+        "the loader binding check still ran, once, over the request's own read: {:?}",
+        recovered.analysis().reads
+    );
 }

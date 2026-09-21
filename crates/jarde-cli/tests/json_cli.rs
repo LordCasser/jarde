@@ -1253,7 +1253,10 @@ fn a_presented_accessor_and_the_members_it_reads_cross_the_wire() {
         json!("callee_member_body"),
         "{read}"
     );
-    assert_eq!(read["usage"]["class_headers"], 2, "{read}");
+    // One class header for the whole request (`add-demand-driven-core-results` task 3.3): the run
+    // read the presented body's own definition, and this callee read consumed the preparation built
+    // over that same read instead of reading the definition again.
+    assert_eq!(read["usage"]["class_headers"], 1, "{read}");
     assert_eq!(read["usage"]["method_bodies"], 2, "{read}");
 
     // And the presented call is recorded as presented, with the member it read.

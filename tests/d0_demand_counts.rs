@@ -22,9 +22,15 @@
 //!
 //! Each assertion states the number this revision really produces, named as the D-phase task it
 //! belongs to: a later phase that changes the work must change this file *deliberately*, with the
-//! new number recorded in the change's verification. The two figures D02 is about — a class-source
-//! request materializing its class twice and preparing it once — are asserted as the frozen baseline,
-//! not as a goal.
+//! new number recorded in the change's verification.
+//!
+//! **Re-frozen by D2 (3.1–3.3).** The D0 baseline this file was written with — a class-source
+//! request materializing its class twice (the binding read and a second read for the preparation)
+//! and preparing it once, and a class view decoding a body without preparing the class it decoded
+//! it from — is exactly what D2 removed: the selected definition is now materialized once, the one
+//! preparation is built over *that* read, and a view that decodes a body prepares the class once
+//! for every body it asked for. The figures below are that shape, and the old ones are recorded in
+//! the change's verification beside them.
 
 #![cfg(feature = "test-support")]
 
@@ -332,7 +338,10 @@ fn one_requested_body_decodes_one_body_and_runs_no_recovery() {
         "the requested member's body is decoded, not refused"
     );
     assert_eq!(counted.class_materializations, 1);
-    assert_eq!(counted.class_preparations, 0);
+    // D2 3.2: the body this view decodes is decoded against **one** preparation of the class the
+    // binding read — the same read, not a second one — so the class is materialized once and
+    // prepared once, whatever the number of requested bodies.
+    assert_eq!(counted.class_preparations, 1);
     assert_eq!(counted.body_decodes, 1);
     assert_eq!(counted.recovery_runs, 0);
     assert!(counted.owned_records > 0);
@@ -343,8 +352,15 @@ fn one_requested_body_decodes_one_body_and_runs_no_recovery() {
     println!("class_view owned_records = {}", counted.owned_records);
 }
 
+/// D02's shape, re-frozen by D2: one materialization of the selected class, one preparation over
+/// that same read, one body decode per member that declares a body.
+///
+/// The D0 baseline this test was written with said two materializations (`class_headers == 2`: the
+/// binding read and the preparation's own read) and one preparation. D2 3.1/3.2 handed the binding
+/// read to the preparation, so the second materialization is gone; the run's own body work — the
+/// decodes, the presentations and the published records — is unchanged.
 #[test]
-fn a_class_source_request_frozen_baseline_two_materializations_one_preparation() {
+fn a_class_source_request_materializes_its_class_once_and_prepares_it_once() {
     let _gate = gate();
     let engine = Engine::new();
     let snapshot = open(SCOPE);
@@ -365,11 +381,12 @@ fn a_class_source_request_frozen_baseline_two_materializations_one_preparation()
         panic!("the identity binds one definition");
     };
     assert_eq!(report.methods.len(), 8, "every member is presented");
-    // D02's frozen baseline: the class is materialized twice (the binding read and the preparation's
-    // own read) and prepared once. D2's target is one materialization for the selected definition;
-    // this assertion is what that change must *deliberately* rewrite.
-    assert_eq!(usage.class_headers, 2);
-    assert_eq!(counted.class_materializations, 2);
+    // D2 3.1/3.2, the figures this test re-freezes: the selected definition is materialized **once**
+    // — the binding's own read, over which the one preparation is built — and the request charges
+    // one class header for it. The D0 baseline was two of each (the binding read and a second read
+    // for the preparation), which is the shape D2 removed.
+    assert_eq!(usage.class_headers, 1);
+    assert_eq!(counted.class_materializations, 1);
     assert_eq!(counted.class_preparations, 1);
     // One decode and one presentation per member that declares a body.
     assert_eq!(counted.body_decodes, 8);

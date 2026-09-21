@@ -513,20 +513,25 @@ fn the_text_mode_writes_the_librarys_own_source() {
     // among them — as the JSON value the document holds, so a member's text cannot end up in the
     // class text twice.
     let bookkeeping = stderr_text(&output);
-    // Two class reads whatever the member count — the binding read and the one preparation the
-    // member bodies are decoded against — and one body attempt per member that declares one. The
-    // three members of this sample are three bodies, so a per-member class read would say 5 here.
+    // **One** class read whatever the member count — the binding read, over which the one
+    // preparation the member bodies are decoded against is built (`add-demand-driven-core-results`
+    // task 3.2: the selected definition is materialized once, and a presentation is not a reason for
+    // a second read) — and one body attempt per member that declares one. The three members of this
+    // sample are three bodies, so a per-member class read would say 4 here, and a second read for
+    // the preparation would say 2.
     assert!(
-        bookkeeping.contains("usage.class_headers = 2"),
-        "the class read and its one preparation: {bookkeeping}"
+        bookkeeping.contains("usage.class_headers = 1"),
+        "one materialization, one preparation: {bookkeeping}"
     );
     assert!(
         bookkeeping.contains("usage.method_bodies = 3"),
         "one body attempt per member: {bookkeeping}"
     );
+    // The class's bytes are *parsed* twice — the binding's own member walk and the one preparation
+    // built over that same read — which is two parses of one read, not two reads.
     assert!(
         bookkeeping.contains("usage.class_bytes = 606"),
-        "the class bytes are read twice, once per read: {bookkeeping}"
+        "one read, parsed for its members and once more for the preparation: {bookkeeping}"
     );
     assert!(bookkeeping.contains("execution.status = \"complete\""));
     assert!(

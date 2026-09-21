@@ -195,6 +195,32 @@ pub enum ParsePolicy {
     Structure,
 }
 
+/// What the consumer of a trusted class read does with the container that class was read out of.
+///
+/// One class read can serve two kinds of consumer, and they ask different questions of the container
+/// the class lives in:
+///
+/// * a **method analysis** reads the container again — its loader binding query walks the declared
+///   positions, and a position inside a container is answered by that container's verified directory
+///   ([`PreparedClassRead::container_facts`] is what keeps every such query from parsing the
+///   directory again);
+/// * a **body decoder** (a class view) asks the container nothing at all: it locates a member in the
+///   class's own member table and decodes its `Code` entry out of the class bytes.
+///
+/// A read states which of the two it is for, because reaching a container is work: a consumer that
+/// never reads its container must not pay for its directory. The value says nothing about the
+/// class, the bytes or the identity — those are the read's own either way.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ContainerHandover {
+    /// Reach and keep the container's verified facts: this read's consumer reads that container
+    /// again, and the product it keeps is what those reads are answered from.
+    Keep,
+    /// Reach nothing of the container: this read's consumer decodes bodies out of the read and asks
+    /// the container nothing.
+    NotNeeded,
+}
+
 /// The ordinal of one method record inside its class, counted in declaration order from 0.
 ///
 /// An ordinal is a position inside one class's own member table and nothing else. It is not a name,

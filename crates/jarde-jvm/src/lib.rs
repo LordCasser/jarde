@@ -54,6 +54,6 @@ pub use callee::{
     read_callees, read_prepared_callees,
 };
 pub use engine::{
-    analyze_method, analyze_method_ir, analyze_prepared_method_ir, declaration_references,
-    reflection_patterns, resolve_symbol,
+    AnalyzedMethod, analyze_method, analyze_method_ir, analyze_method_ir_owning_the_read,
+    analyze_prepared_method_ir, declaration_references, reflection_patterns, resolve_symbol,
 };

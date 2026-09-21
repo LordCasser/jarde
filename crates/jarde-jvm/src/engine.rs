@@ -20,7 +20,7 @@ use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
     Coverage, Diagnostic, DiagnosticSeverity, ExecutionReport, TerminationReason,
 };
-use jarde_reader::prepared::PreparedClass;
+use jarde_reader::prepared::{PreparedClass, PreparedClassRead};
 
 use crate::environment::{EnvironmentIdentity, EnvironmentProblem};
 use crate::frame::{FrameMethod, FrameOutcome, IR_FRAME_DEFERRED, IR_FRAME_INCONSISTENT};
@@ -125,6 +125,57 @@ pub fn analyze_method_ir(
     request: &MethodAnalysisRequest,
     budget: &mut Budget,
 ) -> Result<MethodIrAnalysis> {
+    Ok(analyze_request(content, request, DriverInput::Content, budget)?.analysis)
+}
+
+/// One method-analysis run, with the class read the run performed handed over beside it
+/// (`add-demand-driven-core-results` tasks 3.1/3.3).
+///
+/// A consumer of one operation may need the class this run read a second time — the recovery
+/// presentation's same-class callee read is exactly that consumer — and the run keeps nothing of the
+/// read it performed beyond the tables it published: a caller that only has
+/// [`analyze_method_ir`]'s payload would have to read the definition again. This value is that run
+/// and the trusted read it was answered from, so the operation can *prepare* the class once over the
+/// very bytes it decoded from and hand that preparation to the consumer instead.
+#[derive(Debug)]
+pub struct AnalyzedMethod {
+    analysis: MethodIrAnalysis,
+    read: Option<PreparedClassRead>,
+}
+
+impl AnalyzedMethod {
+    /// The report and payload of the run, as [`analyze_method_ir`] publishes them.
+    pub fn analysis(&self) -> &MethodIrAnalysis {
+        &self.analysis
+    }
+
+    /// The trusted read this run's driver class was read as, when the run read one.
+    ///
+    /// `None` exactly when this run read no class of its own: a request whose environment was
+    /// rejected reads nothing, and neither does one whose driver member declares no body beyond the
+    /// read that located it. The read is the one the run's own `raw_facts` pass consumed — the same
+    /// definition, the same bytes, the same identity — and it keeps the container the class was read
+    /// out of, so a later loader binding query over that container is answered from it.
+    pub fn read(&self) -> Option<&PreparedClassRead> {
+        self.read.as_ref()
+    }
+
+    /// The run's analysis and the read it performed, by value.
+    pub fn into_parts(self) -> (MethodIrAnalysis, Option<PreparedClassRead>) {
+        (self.analysis, self.read)
+    }
+}
+
+/// The same analysis as [`analyze_method_ir`], handing over the class read the run performed.
+///
+/// One run, one read: this entry performs exactly what [`analyze_method_ir`] performs — the same
+/// request and schedule validation, the same environment check, the same passes, the same report,
+/// the same charges — and returns the trusted read of the class that run read beside the result.
+pub fn analyze_method_ir_owning_the_read(
+    content: &[ArtifactSnapshot],
+    request: &MethodAnalysisRequest,
+    budget: &mut Budget,
+) -> Result<AnalyzedMethod> {
     analyze_request(content, request, DriverInput::Content, budget)
 }
 
@@ -175,7 +226,7 @@ pub fn analyze_prepared_method_ir(
     request: &MethodAnalysisRequest,
     budget: &mut Budget,
 ) -> Result<MethodIrAnalysis> {
-    analyze_request(content, request, DriverInput::Prepared(prepared), budget)
+    Ok(analyze_request(content, request, DriverInput::Prepared(prepared), budget)?.analysis)
 }
 
 /// One validated request and the run it performed, from whichever source its driver read comes.
@@ -189,17 +240,20 @@ fn analyze_request(
     request: &MethodAnalysisRequest,
     source: DriverInput<'_>,
     budget: &mut Budget,
-) -> Result<MethodIrAnalysis> {
+) -> Result<AnalyzedMethod> {
     let analyzed = run_request(content, request, source, budget)?;
-    Ok(MethodIrAnalysis::new(
-        crate::ir::analysis_report(
-            request,
-            analyzed.problems,
-            analyzed.environment_identity,
-            analyzed.run,
+    Ok(AnalyzedMethod {
+        analysis: MethodIrAnalysis::new(
+            crate::ir::analysis_report(
+                request,
+                analyzed.problems,
+                analyzed.environment_identity,
+                analyzed.run,
+            ),
+            analyzed.ir,
         ),
-        analyzed.ir,
-    ))
+        read: analyzed.read,
+    })
 }
 
 /// Where the `raw_facts` pass reads the driver member's class from.
@@ -229,6 +283,9 @@ struct Analyzed {
     environment_identity: EnvironmentIdentity,
     run: crate::ir::AnalysisRun,
     ir: MethodIr,
+    /// The trusted read this run's driver class was read as, when the run read one: the read the
+    /// `raw_facts` pass consumed, handed over so a consumer of the same class does not read it again.
+    read: Option<PreparedClassRead>,
 }
 
 /// Validates one method-analysis request and runs it.
@@ -242,7 +299,7 @@ fn run_request(
     let scheduled = crate::passes::validate_requested_stages(&request.stages)?;
     let (problems, environment_identity) =
         crate::environment::validate_environment(content, &request.environment);
-    let (run, ir) = if problems.is_empty() {
+    let (run, ir, read) = if problems.is_empty() {
         run_method_analysis(content, request, source, scheduled, budget)
     } else {
         // A rejected environment never yields a definition and never starts a read, so the
@@ -258,6 +315,7 @@ fn run_request(
                 budget,
             ),
             MethodIr::new(None, None, None, None, None, Vec::new(), None),
+            None,
         )
     };
     Ok(Analyzed {
@@ -265,6 +323,7 @@ fn run_request(
         environment_identity,
         run,
         ir,
+        read,
     })
 }
 
@@ -323,13 +382,18 @@ fn report_unimplemented(
 /// under `ir_frame_deferred` where an uninitialized value stands in a place that would need a
 /// conversion this build does not define and under `ir_frame_inconsistent` where the bytes
 /// contradict themselves.
+#[allow(
+    clippy::type_complexity,
+    reason = "one run's three products (its report state, its payload and the read it consumed) \
+              returned together; a struct for them would be a fourth public type for one caller"
+)]
 fn run_method_analysis(
     content: &[ArtifactSnapshot],
     request: &crate::ir::MethodAnalysisRequest,
     source: DriverInput<'_>,
     scheduled: &[PassDescriptor],
     budget: &mut Budget,
-) -> (crate::ir::AnalysisRun, MethodIr) {
+) -> (crate::ir::AnalysisRun, MethodIr, Option<PreparedClassRead>) {
     let mut run = crate::ir::AnalysisRun {
         body: MethodBodyState::NotInspected,
         stages: scheduled
@@ -380,6 +444,10 @@ fn run_method_analysis(
     // The names 4.3 published, over exactly those frames and the canonical graph: the artifact the
     // next slice consumes, kept in this run for the same reason and handed over with it.
     let mut ssa_table: Option<Box<crate::ssa::SsaTable>> = None;
+    // The trusted read the `raw_facts` pass consumed, when it consumed one: it travels out of this
+    // run so a consumer of the same class (the recovery presentation's callee read) does not read
+    // the definition again.
+    let mut read = None;
     for (index, pass) in scheduled.iter().enumerate() {
         if !implemented(pass.phase) {
             stop = stop.or(Some(report_unimplemented(
@@ -395,17 +463,20 @@ fn run_method_analysis(
                         version: read_version,
                         declaration: read_declaration,
                         member: read_member,
+                        class_read,
                     }) => {
                         version = Some(read_version);
                         declaration = Some(read_declaration);
                         member = read_member;
+                        read = class_read;
                         *facts
                     }
-                    Ok(DriverRead::DeclaredWithoutBody) => {
+                    Ok(DriverRead::DeclaredWithoutBody(class_read)) => {
                         // The member declares no body: no pass can run, and the request is
                         // complete as far as its input allows. Every scheduled stage stays
                         // `NotPerformed`, which is what "no phase ran" means, and the body fact
                         // says why.
+                        read = class_read;
                         break;
                     }
                     Err(error) => {
@@ -902,7 +973,7 @@ fn run_method_analysis(
         bootstrap_methods,
         member,
     );
-    (run, ir)
+    (run, ir, read)
 }
 
 /// What the `raw_facts` pass found for the driver method.
@@ -928,10 +999,16 @@ enum DriverRead {
         /// the enum is moved once per request and the common path is the one that does not move a
         /// `MethodDeclaration` by value.
         member: Option<Box<MethodDeclaration>>,
+        /// The trusted read this body came from, when the pass read one itself
+        /// ([`DriverInput::Content`]): the read a consumer of the same class consumes instead of
+        /// reading the definition again. `None` for [`DriverInput::Prepared`], whose read is the
+        /// caller's own and stays the caller's own.
+        class_read: Option<PreparedClassRead>,
     },
     /// The member's own declaration says it has no body: there is nothing to analyze, and that
-    /// is a fact about the member rather than a failure of the request.
-    DeclaredWithoutBody,
+    /// is a fact about the member rather than a failure of the request. The class was still read to
+    /// state that, so the read travels with it when this pass performed one.
+    DeclaredWithoutBody(Option<PreparedClassRead>),
 }
 
 /// The declaration facts a later pass reads beside the decoded body.
@@ -1058,14 +1135,16 @@ fn read_driver_method(
         driver_member_body(member, run)?,
         DriverMember::DeclaredWithoutBody
     ) {
-        return Ok(DriverRead::DeclaredWithoutBody);
+        // The class was read to state this, and the read is handed over with the statement: a
+        // consumer of the same class (the recovery presentation's callee read) may still need it.
+        return Ok(DriverRead::DeclaredWithoutBody(Some(read.read.clone())));
     }
     // One body read attempt, charged before the read; the member has a body, so the attempt is
     // a body the request really demands. From here on the body is a located one: a decode that
     // fails is a failure of this pass, not a missing body.
     budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
     run.body = MethodBodyState::Present;
-    let decoded = jarde_reader::classfile::method_code_facts(&read.bytes, member, budget)?;
+    let decoded = jarde_reader::classfile::method_code_facts(read.read.bytes(), member, budget)?;
     // The facts of the very read the body came from, as the tail of the pass reads them: the
     // class file's version (the dialect of every later pass is this and nothing else, classified
     // once by the reader's own rule over the two version fields), the class's own name and flags,
@@ -1073,7 +1152,7 @@ fn read_driver_method(
     // constant pool this request reads. The read's own bundle travels **by handle**: this request
     // keeps one pool, and the pool of no other class is read for it.
     let class = DriverClass {
-        bytes: &read.bytes,
+        bytes: read.read.bytes(),
         version: jarde_reader::classfile::version_capability(
             read.header.facts.major_version,
             read.header.facts.minor_version,
@@ -1084,7 +1163,18 @@ fn read_driver_method(
         // passes: the payload no longer takes the pool out of the facts, it holds the same facts.
         facts: Arc::clone(&read.header.facts),
     };
-    finish_driver_read(run, class, member, decoded, request.method.clone(), budget)
+    // The read this pass performed travels out of the pass (`DriverRead::Decoded::class_read`): it
+    // is the class a consumer of the same request's operation prepares once instead of reading
+    // again (`AnalyzedMethod::read`).
+    finish_driver_read(
+        run,
+        class,
+        member,
+        decoded,
+        request.method.clone(),
+        Some(read.read.clone()),
+        budget,
+    )
 }
 
 /// Whether the member declares a `Code` attribute at all, decided from the header's shells so
@@ -1162,6 +1252,7 @@ fn finish_driver_read(
     record: &MemberHeader,
     decoded: MethodCodeFacts,
     identity: jarde_reader::model::PhysicalMethodId,
+    class_read: Option<PreparedClassRead>,
     budget: &mut Budget,
 ) -> Result<DriverRead> {
     run.coverage = jarde_reader::classfile::method_code_coverage(
@@ -1222,6 +1313,7 @@ fn finish_driver_read(
             access_flags,
         )
         .map(Box::new),
+        class_read,
     })
 }
 
@@ -1367,7 +1459,7 @@ fn read_prepared_driver_method(
         driver_member_body(&record.header, run)?,
         DriverMember::DeclaredWithoutBody
     ) {
-        return Ok(DriverRead::DeclaredWithoutBody);
+        return Ok(DriverRead::DeclaredWithoutBody(None));
     }
     // The same charge the direct read makes, before the same decode: the member has a body, so the
     // attempt is a body the request really demands, and a decode that fails is a failure of this
@@ -1394,6 +1486,9 @@ fn read_prepared_driver_method(
         &record.header,
         decoded,
         request.method.clone(),
+        // The prepared input's read is the caller's own: this pass consumed it, it did not perform
+        // one, so there is nothing to hand back.
+        None,
         budget,
     )
 }

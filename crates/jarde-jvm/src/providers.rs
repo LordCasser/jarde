@@ -77,7 +77,7 @@ use jarde_reader::model::{
     PhysicalClassLocation, PhysicalDefinitionId, PhysicalEntryId, PhysicalVariant, SnapshotId,
     physical_variant_for_path,
 };
-use jarde_reader::prepared::PreparedClass;
+use jarde_reader::prepared::{PreparedClass, PreparedClassRead};
 use jarde_reader::view::{DelegationPolicy, LoadDomain, LoadRoot, LoaderId, ModuleMode};
 use std::collections::VecDeque;
 use std::sync::Arc;
@@ -1971,6 +1971,41 @@ pub(crate) fn read_definition_content(
     definition: &PhysicalDefinitionId,
     budget: &mut Budget,
 ) -> Result<DefinitionContent> {
+    let read = read_definition_class(content, definition, budget)?;
+    let label = definition_label(definition);
+    let facts = class_facts(read.bytes(), budget).map_err(|error| at_origin(error, &label))?;
+    Ok(DefinitionContent {
+        read,
+        header: ClassHeaderFacts {
+            facts: Arc::new(facts),
+        },
+    })
+}
+
+/// The bytes of one definition, read by identity as a **class task's** read
+/// (`add-demand-driven-core-results` tasks 3.1/3.3).
+///
+/// This is the read [`read_definition_content`] performs — the same snapshot lookup, the same
+/// header attempt charge, the same directed entry access, the same bytes-identity check and the
+/// same error values, in the same order — stated as the reader's own once-read class value
+/// ([`PreparedClassRead`]) instead of as a buffer. That is what lets one request **prepare** this
+/// class and share the preparation with every consumer of it (the analysis run, the callee read of
+/// the same class, the presentation) rather than reading the definition once per consumer.
+///
+/// The class's parsed facts are deliberately *not* part of this read: a consumer that needs them
+/// performs that parse itself ([`read_definition_content`] for a direct driver read), and a
+/// consumer that prepares the class reads the structure its own way. The read carries **no**
+/// container handle: its consumer performs one loader binding query over the container the class
+/// came out of, and that query reaches the container by origin exactly as the direct read's own
+/// query does — one directory read for the query, not a second one taken on the read's way to it.
+/// An operation whose class has many consumers (a class-source presentation, whose every member
+/// runs such a query) reaches the container once for the whole operation instead
+/// ([`ArtifactSnapshot::prepared_read_of`] with [`ContainerHandover::Keep`]).
+pub(crate) fn read_definition_class(
+    content: &[ArtifactSnapshot],
+    definition: &PhysicalDefinitionId,
+    budget: &mut Budget,
+) -> Result<PreparedClassRead> {
     let label = definition_label(definition);
     let Some(snapshot) = content
         .iter()
@@ -2002,23 +2037,28 @@ pub(crate) fn read_definition_content(
         Error::invalid_input("class_size_overflow", "class length does not fit u64")
     })?;
     require_definition_bytes(definition, &digest, length, &label)?;
-    let facts = class_facts(&bytes, budget).map_err(|error| at_origin(error, &label))?;
-    Ok(DefinitionContent {
-        bytes,
-        header: ClassHeaderFacts {
-            facts: Arc::new(facts),
-        },
-    })
+    let class_bytes = ClassBytesId { digest, length };
+    snapshot
+        .prepared_read_of(
+            definition.location.clone(),
+            class_bytes,
+            bytes,
+            jarde_reader::prepared::ContainerHandover::NotNeeded,
+            budget,
+        )
+        .map_err(|error| at_origin(error, &label))
 }
 
-/// The bytes and the header facts of one class definition, read by identity.
+/// The trusted read and the header facts of one class definition, read by identity.
 ///
 /// A body demand needs both halves of the same read: it locates the member in the header and
 /// decodes the `Code` attribute from the bytes the definition names. Returning them together
 /// keeps that one read — one charge, one identity check — instead of making the caller read
 /// the same definition twice and compare two readings itself.
 pub(crate) struct DefinitionContent {
-    pub(crate) bytes: Vec<u8>,
+    /// The read that produced the header facts: the bytes the definition names, as the reader's
+    /// own class-task read, so a consumer that prepares this class does not read it again.
+    pub(crate) read: PreparedClassRead,
     pub(crate) header: ClassHeaderFacts,
 }
 
