@@ -42,7 +42,7 @@
 //! semantic fields only — identity, order, content, outcome — and [`fingerprint`] states exactly
 //! which fields of a summary it reads.
 //!
-//! This module is compiled into five test targets, and each of them uses a different part of it:
+//! This module is compiled into several test targets, and each of them uses a different part of it:
 //! the fixture a target does not read is not an unused definition, it is another target's fixture.
 #![allow(dead_code)]
 
