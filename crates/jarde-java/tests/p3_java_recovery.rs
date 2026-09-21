@@ -265,7 +265,8 @@ fn recover_body(
     budget: &mut Budget,
 ) -> jarde_java::RecoveryReport {
     recover(
-        &RecoveryRequest::new(payload.analysis.ir(), facts, jarde_java::pass::JAVA_8),
+        &RecoveryRequest::new(payload.analysis.ir(), facts, jarde_java::pass::JAVA_8)
+            .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
         budget,
     )
 }
@@ -1586,7 +1587,8 @@ fn a_payload_without_the_tables_the_recovery_needs_states_that_instead_of_an_emp
     let facts = RecoveryFacts::new(MethodFacts::new("absent", "()V", 0));
     let mut recovery_budget = Budget::new(limits());
     let report = recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, jarde_java::pass::JAVA_8),
+        &RecoveryRequest::new(analysis.ir(), &facts, jarde_java::pass::JAVA_8)
+            .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
         &mut recovery_budget,
     );
     assert!(!report.produced());
@@ -2690,7 +2692,8 @@ fn recover_class_under(
     let facts = facts_of(class, b"method", 0, Vec::new());
     let mut budget = Budget::new(limits());
     recover(
-        &RecoveryRequest::new(payload.analysis.ir(), &facts, profile),
+        &RecoveryRequest::new(payload.analysis.ir(), &facts, profile)
+            .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
         &mut budget,
     )
 }
@@ -3222,7 +3225,8 @@ fn a_budget_that_refuses_the_emission_of_a_lambda_body_hands_out_nothing() {
     let whole = {
         let mut budget = Budget::new(limits());
         recover(
-            &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8),
+            &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
+                .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
             &mut budget,
         )
         .text
@@ -3233,7 +3237,8 @@ fn a_budget_that_refuses_the_emission_of_a_lambda_body_hands_out_nothing() {
         ..limits()
     });
     let stopped = recover(
-        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8),
+        &RecoveryRequest::new(payload.analysis.ir(), &facts, jarde_java::pass::JAVA_8)
+            .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
         &mut budget,
     );
     assert!(!stopped.produced(), "{:?}", stopped.outcome);

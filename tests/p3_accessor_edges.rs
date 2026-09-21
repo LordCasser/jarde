@@ -454,7 +454,12 @@ fn recover(
     let request = request_for(snapshot, class, name, descriptor);
     let mut budget = Budget::new(limits());
     let recovered = Engine::new()
-        .recover_method(std::slice::from_ref(snapshot), &request, &mut budget)
+        .recover_method_with_evidence(
+            std::slice::from_ref(snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut budget,
+        )
         .expect("the recovery of a member of the fixture runs");
     (recovered, budget.usage())
 }
@@ -1083,7 +1088,12 @@ fn the_driver_and_its_same_class_callees_share_one_read_and_one_preparation() {
     let mut budget = Budget::new(limits());
     let before = d0_counts::snapshot();
     let recovered = Engine::new()
-        .recover_method(std::slice::from_ref(&snapshot), &request, &mut budget)
+        .recover_method_with_evidence(
+            std::slice::from_ref(&snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut budget,
+        )
         .expect("the recovery of the fixture's member runs");
     let counted = before.since(d0_counts::snapshot());
     let usage = budget.usage();

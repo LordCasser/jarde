@@ -172,9 +172,10 @@ fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -
         stages: AnalysisStage::ALL.to_vec(),
     };
     engine
-        .recover_method(
+        .recover_method_with_evidence(
             slice::from_ref(&fixture.snapshot),
             &request,
+            &RecoveryEvidenceRequest::all(),
             &mut Budget::new(limits()),
         )
         .expect("a legal request is answered, not raised")

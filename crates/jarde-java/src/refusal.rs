@@ -66,6 +66,60 @@ impl Refusal {
     }
 }
 
+/// One refusal as the report states it in **every** evidence selection: the code and the one
+/// readable sentence, without the owning record (change `add-demand-driven-core-results`, D1).
+///
+/// The record a rule publishes is the optional evidence — the candidate's whole account, which a
+/// caller asks for by selecting [`crate::RecoveryEvidenceKind::RuleDetails`] — while the refusal
+/// itself is a core gap: "this candidate was not presented, for this reason, at this position" is
+/// part of the answer whatever the caller selected. So a rule states the gap at the same site it
+/// states the record, from the same refusal, and the two cannot drift.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct Gap {
+    at: Option<u32>,
+    code: &'static str,
+    message: String,
+}
+
+impl Gap {
+    /// One gap about the whole body, with the refusal's own code and sentence.
+    pub(crate) fn whole(code: &'static str, message: impl Into<String>) -> Self {
+        Self {
+            at: None,
+            code,
+            message: message.into(),
+        }
+    }
+
+    /// One gap at a position of the driver body's own bytecode.
+    ///
+    /// The position orders the gaps a report states (they are delivered in driver order, like the
+    /// records they stand beside), and the sentence the caller states names it too — this layer's
+    /// diagnostics carry their position in their own message, not in a second field.
+    pub(crate) fn at(code: &'static str, at: u32, message: impl Into<String>) -> Self {
+        Self {
+            at: Some(at),
+            code,
+            message: message.into(),
+        }
+    }
+
+    /// The driver position this gap is about, when it is about one.
+    pub(crate) fn position(&self) -> Option<u32> {
+        self.at
+    }
+
+    /// The diagnostic code the gap is reported under.
+    pub(crate) fn code(&self) -> &'static str {
+        self.code
+    }
+
+    /// What the gap says, in one sentence.
+    pub(crate) fn message(&self) -> &str {
+        &self.message
+    }
+}
+
 /// The code one rule's refusal under one declared requirement is reported with.
 pub(crate) fn requirement_code(rule: &str, requirement: Precondition) -> &'static str {
     match (rule, requirement) {

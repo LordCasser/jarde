@@ -44,9 +44,10 @@
 
 use serde::Serialize;
 
+use crate::evidence::Publication;
 use crate::facts::{ACC_ABSTRACT, ACC_STATIC, DeclaringClass, MethodFacts};
 use crate::pass::{DECLARATION, Precondition, RuleVersion};
-use crate::refusal::Refusal;
+use crate::refusal::{Gap, Refusal};
 
 /// The pass answerable for every verdict of this module.
 pub(crate) const RULE: RuleVersion = DECLARATION.rule();
@@ -109,10 +110,12 @@ impl DeclarationForm {
     }
 }
 
-/// The declaration one run could read, and the record of how it read it.
+/// The declaration one run could read, the record of how it read it — when the run publishes rule
+/// records — and the refusal as the report states it in every selection.
 pub(crate) struct Plan {
     declaration: Option<Declaration>,
-    record: DeclarationRecord,
+    record: Option<DeclarationRecord>,
+    refusal: Option<Gap>,
 }
 
 impl Plan {
@@ -121,9 +124,16 @@ impl Plan {
         self.declaration.as_ref()
     }
 
-    /// The record, whether the declaration was read or refused.
-    pub(crate) fn record(&self) -> &DeclarationRecord {
-        &self.record
+    /// The record, whether the declaration was read or refused. `None` when this run does not
+    /// publish rule records: the record is the optional evidence, and the envelope the artifact
+    /// carries is written from [`Self::declaration`] either way.
+    pub(crate) fn record(&self) -> Option<&DeclarationRecord> {
+        self.record.as_ref()
+    }
+
+    /// Why the run stated no declaration, as the gap every selection carries.
+    pub(crate) fn refusal(&self) -> Option<&Gap> {
+        self.refusal.as_ref()
     }
 }
 
@@ -141,33 +151,55 @@ pub(crate) struct Declaration {
     pub(crate) member_flags: u16,
 }
 
+/// The name plus descriptor the request spells one member with.
+fn identity_of(method: &MethodFacts) -> String {
+    format!("{}{}", method.name(), method.descriptor())
+}
+
 /// Reads one member's declaration from the facts the caller stated.
-pub(crate) fn plan(method: &MethodFacts) -> Plan {
-    let method_identity = format!("{}{}", method.name(), method.descriptor());
-    let mut record = DeclarationRecord {
-        method: method_identity,
-        member_flags: method.access_flags(),
-        declaring_class: method
-            .declaring_class()
-            .map(|class| class.name().to_string()),
-        interface: method.declaring_class().map(DeclaringClass::is_interface),
-        form: None,
-        presented: false,
-        refusal: None,
-    };
+///
+/// The decision is taken for every selection — the envelope's declaration line is written from
+/// [`Plan::declaration`] whether the caller asked for rule records or not — and only the *record* is
+/// gated by `publication`: a declaration record that was not selected is not built, not copied into
+/// the report and not kept, while the refusal it states is delivered as a gap in every selection.
+pub(crate) fn plan(method: &MethodFacts, publication: Publication) -> Plan {
+    let method_identity = identity_of(method);
+    let mut record = publication.publishes(&[]).then(|| {
+        crate::demand_counts::record_built(crate::evidence::RecoveryEvidenceKind::RuleDetails);
+        DeclarationRecord {
+            method: identity_of(method),
+            member_flags: method.access_flags(),
+            declaring_class: method
+                .declaring_class()
+                .map(|class| class.name().to_string()),
+            interface: method.declaring_class().map(DeclaringClass::is_interface),
+            form: None,
+            presented: false,
+            refusal: None,
+        }
+    });
+    /// Prepares the record for one refusal, when this run publishes rule records at all, and states
+    /// the same refusal as a gap.
+    macro_rules! refuse {
+        ($refusal:expr) => {{
+            let refusal = $refusal;
+            let gap = DeclarationRefusal::of(&refusal, &method_identity);
+            if let Some(prepared) = record.as_mut() {
+                prepared.refusal = Some(DeclarationRefusal::of(&refusal, &prepared.method));
+            }
+            Plan {
+                declaration: None,
+                record,
+                refusal: Some(Gap::whole(gap.code, gap.message)),
+            }
+        }};
+    }
     let Some(flags) = method.access_flags() else {
-        record.refusal = Some(DeclarationRefusal::of(
-            &Refusal::unmet(
-                &DECLARATION,
-                MEMBER_FLAGS,
-                "this run was not told which access flags the class declares for this member, so neither `static` nor `abstract` — which is what tells an interface's `default` method from its others — can be read".to_string(),
-            ),
-            &record.method,
+        return refuse!(Refusal::unmet(
+            &DECLARATION,
+            MEMBER_FLAGS,
+            "this run was not told which access flags the class declares for this member, so neither `static` nor `abstract` — which is what tells an interface's `default` method from its others — can be read".to_string(),
         ));
-        return Plan {
-            declaration: None,
-            record,
-        };
     };
     // The two initializers are decided from the member itself: neither is a `default` or a `static`
     // method question, and a class file names them in its own way (`<init>`/`<clinit>`).
@@ -191,29 +223,27 @@ pub(crate) fn plan(method: &MethodFacts) -> Plan {
         }),
     };
     let Some(form) = form else {
-        record.refusal = Some(DeclarationRefusal::of(
-            &Refusal::unmet(
-                &DECLARATION,
-                DECLARING_CLASS,
-                "this run was not told which class declares this member, so whether the member is an interface's `default` method or a class's ordinary one cannot be read".to_string(),
-            ),
-            &record.method,
+        return refuse!(Refusal::unmet(
+            &DECLARATION,
+            DECLARING_CLASS,
+            "this run was not told which class declares this member, so whether the member is an interface's `default` method or a class's ordinary one cannot be read".to_string(),
         ));
-        return Plan {
-            declaration: None,
-            record,
-        };
     };
-    record.form = Some(form);
-    record.presented = true;
+    if let Some(record) = record.as_mut() {
+        record.form = Some(form);
+        record.presented = true;
+    }
     Plan {
         declaration: Some(Declaration {
             form,
-            declaring_class: record.declaring_class.clone(),
-            interface: record.interface,
+            declaring_class: method
+                .declaring_class()
+                .map(|class| class.name().to_string()),
+            interface: method.declaring_class().map(DeclaringClass::is_interface),
             member_flags: flags,
         }),
         record,
+        refusal: None,
     }
 }
 
@@ -288,6 +318,12 @@ mod tests {
         DeclaringClass::new(name, flags)
     }
 
+    /// The selection these cases present under: every category, which is what the record-level
+    /// assertions below are about.
+    fn publication() -> Publication {
+        Publication::of(&crate::RecoveryEvidenceRequest::all())
+    }
+
     #[test]
     fn an_interfaces_non_abstract_method_is_a_default_method_and_a_classs_is_not() {
         // The same member flags, two classes: what decides the form is the class, which is exactly
@@ -297,6 +333,7 @@ mod tests {
             &MethodFacts::new("run", "()V", 1)
                 .with_access_flags(flags)
                 .with_declaring_class(class("p/Shape", ACC_INTERFACE | ACC_PUBLIC)),
+            publication(),
         );
         assert_eq!(
             in_interface.declaration().map(|d| d.form),
@@ -306,6 +343,7 @@ mod tests {
             &MethodFacts::new("run", "()V", 1)
                 .with_access_flags(flags)
                 .with_declaring_class(class("p/Shape", ACC_PUBLIC)),
+            publication(),
         );
         assert_eq!(
             in_class.declaration().map(|d| d.form),
@@ -322,6 +360,7 @@ mod tests {
             &MethodFacts::new("run", "()V", 1)
                 .with_access_flags(ACC_PUBLIC | ACC_ABSTRACT)
                 .with_declaring_class(class("p/Shape", interface)),
+            publication(),
         );
         assert_eq!(
             abstract_method.declaration().map(|d| d.form),
@@ -331,13 +370,17 @@ mod tests {
             &MethodFacts::new("run", "()V", 0)
                 .with_access_flags(ACC_PUBLIC | ACC_STATIC)
                 .with_declaring_class(class("p/Shape", interface)),
+            publication(),
         );
         assert_eq!(
             static_method.declaration().map(|d| d.form),
             Some(DeclarationForm::StaticInterfaceMethod)
         );
         // A constructor is decided without the class's own flags: the form does not depend on them.
-        let constructor = plan(&MethodFacts::new("<init>", "()V", 1).with_access_flags(0));
+        let constructor = plan(
+            &MethodFacts::new("<init>", "()V", 1).with_access_flags(0),
+            publication(),
+        );
         assert_eq!(
             constructor.declaration().map(|d| d.form),
             Some(DeclarationForm::Constructor)
@@ -354,24 +397,42 @@ mod tests {
         let without_flags = plan(
             &MethodFacts::new("run", "()V", 1)
                 .with_declaring_class(class("p/Shape", ACC_INTERFACE | ACC_PUBLIC)),
+            publication(),
         );
         assert!(without_flags.declaration().is_none());
         assert_eq!(
-            without_flags.record().refusal.as_ref().map(|r| r.code),
+            without_flags
+                .record()
+                .and_then(|record| record.refusal.as_ref())
+                .map(|r| r.code),
             Some("jre_declaration_flags_missing")
         );
         assert!(
             without_flags
                 .record()
-                .refusal
-                .as_ref()
+                .and_then(|record| record.refusal.as_ref())
                 .is_some_and(|r| r.requirement.as_deref() == Some("the `access_flags` attribute"))
         );
-        let without_class = plan(&MethodFacts::new("run", "()V", 1).with_access_flags(ACC_PUBLIC));
+        // The same refusal is what every selection carries, as the gap the report states.
         assert_eq!(
-            without_class.record().refusal.as_ref().map(|r| r.code),
+            without_flags.refusal().map(|gap| gap.code()),
+            Some("jre_declaration_flags_missing")
+        );
+        let without_class = plan(
+            &MethodFacts::new("run", "()V", 1).with_access_flags(ACC_PUBLIC),
+            publication(),
+        );
+        assert_eq!(
+            without_class
+                .record()
+                .and_then(|record| record.refusal.as_ref())
+                .map(|r| r.code),
             Some("jre_declaration_class_not_in_run")
         );
-        assert!(!without_class.record().presented());
+        assert!(
+            !without_class
+                .record()
+                .is_some_and(|record| record.presented())
+        );
     }
 }

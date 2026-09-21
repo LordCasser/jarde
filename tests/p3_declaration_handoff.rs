@@ -212,7 +212,12 @@ fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -
     let request = request_of(fixture, name, descriptor);
     let mut budget = Budget::new(limits());
     engine
-        .recover_method(slice::from_ref(&fixture.snapshot), &request, &mut budget)
+        .recover_method_with_evidence(
+            slice::from_ref(&fixture.snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut budget,
+        )
         .expect("a legal request is answered, not raised")
 }
 
@@ -254,7 +259,12 @@ fn recover_with(
     let mut request = request_of(fixture, name, descriptor);
     request.stages = stages;
     engine
-        .recover_method(slice::from_ref(&fixture.snapshot), &request, budget)
+        .recover_method_with_evidence(
+            slice::from_ref(&fixture.snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            budget,
+        )
         .expect("a stopped run is an answer, not a raised error")
 }
 
@@ -1031,12 +1041,15 @@ fn a_stopped_run_publishes_no_declaration_and_no_class_facts() {
     let facts =
         RecoveryFacts::new(MethodFacts::new("value", "()I", 1).with_access_flags(ACC_PUBLIC));
     let mut budget = Budget::new(limits());
+    // The low-level entry states the selection too: this case reads the declaration record, so it
+    // asks for the rule records explicitly instead of relying on a default.
     let low = jarde_java::recover(
         &jarde_java::RecoveryRequest::new(
             analyzed.ir(),
             &facts,
             request.environment.runtime.profile.clone(),
-        ),
+        )
+        .with_evidence(jarde_java::RecoveryEvidenceRequest::all()),
         &mut budget,
     );
     let record = declaration(&low);

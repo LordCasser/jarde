@@ -56,7 +56,7 @@ use jarde::{
     BudgetDimension, BulkDiagnosticEvent, BulkFinalEvent, BulkHeaderEvent, BulkRecoveryReport,
     BulkRecoveryRequest, BulkStop, ClassEndEvent, ClassPreparedEvent, CountedBudgetDimension,
     DeliveryAccount, Error, ExecutionReport, FactsCache, FactsCapacity, Limits, MethodResultEvent,
-    RecoverySink, SinkControl, task_budget,
+    RecoveryEvidenceRequest, RecoverySink, SinkControl, task_budget,
 };
 use serde::Serialize;
 use std::fs::{File, OpenOptions};
@@ -280,11 +280,17 @@ pub(crate) fn run(args: Export) -> Result<ExitCode, Failure> {
         Ok(file) => file,
         Err(error) => return Err(Failure::export_failed(error, opened.budget.usage())),
     };
+    // The selection every method's presentation materializes, stated where this adapter builds the
+    // request: the export is the full audit of a scope — every method of every class, assembled into
+    // one stream — so it asks for every evidence category, and a caller that wants less states it
+    // through the library's own request rather than getting a reduced document it did not ask for
+    // (change `add-demand-driven-core-results`, D1).
     let request = BulkRecoveryRequest::for_scope(
         declaration.bind(&opened.snapshot, &opened.scope),
         workers,
         method_limits()?,
-    );
+    )
+    .with_evidence(RecoveryEvidenceRequest::all());
     let mut stream = Stream::new(file, output, framing);
     // One process, one library operation: the stream is this call's sink, and there is no second run
     // behind it — not a serial retry, not a per-method process.

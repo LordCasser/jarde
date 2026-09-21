@@ -47,9 +47,10 @@ use serde::Serialize;
 
 use crate::build::stack_operands;
 use crate::decode::Operations;
+use crate::evidence::Publication;
 use crate::facts::{DeclaringClass, FieldAccess, Operation, internal_form};
 use crate::pass::{FIELD, Precondition, RuleVersion};
-use crate::refusal::Refusal;
+use crate::refusal::{Gap, Refusal};
 
 /// The pass answerable for every verdict of this module.
 pub(crate) const RULE: RuleVersion = FIELD.rule();
@@ -59,9 +60,15 @@ const DECLARING_CLASS: Precondition = Precondition::Metadata {
     attribute: "declaring_class",
 };
 
-/// Every field instruction of one body this rule read, and the ones it claimed.
+/// Every field instruction of one body this rule read, the ones it claimed, and the gaps it states
+/// in every selection.
 pub(crate) struct Plan {
     claimed: BTreeMap<u32, (Evidence, Shape)>,
+    /// Why a field instruction was not presented, in BCI order. A gap is not the optional evidence:
+    /// it is what every selection reports about an instruction this rule refused.
+    refusals: Vec<Gap>,
+    /// The records, when this run published rule records: the presented access of every claimed
+    /// instruction and the refusal of every other one, in BCI order.
     records: Vec<FieldRecord>,
 }
 
@@ -70,6 +77,7 @@ impl Plan {
     pub(crate) fn empty() -> Self {
         Self {
             claimed: BTreeMap::new(),
+            refusals: Vec::new(),
             records: Vec::new(),
         }
     }
@@ -91,10 +99,24 @@ impl Plan {
             .map(|(evidence, shape)| (evidence, shape))
     }
 
+    /// Every field instruction the rule read and did not present, in BCI order.
+    pub(crate) fn refusals(&self) -> &[Gap] {
+        &self.refusals
+    }
+
     /// Every field instruction read, presented or refused, in BCI order — the evidence a report
-    /// reads back.
+    /// reads back when this run selected rule records.
     pub(crate) fn records(&self) -> &[FieldRecord] {
         &self.records
+    }
+
+    /// How many field instructions the rule read, and how many of them it presented. The two counts
+    /// are the rule's own work over the whole body, so the report states them whatever the caller
+    /// selected and whatever range the selection carried.
+    pub(crate) fn counts(&self) -> (u64, u64) {
+        let presented = u64::try_from(self.claimed.len()).unwrap_or(u64::MAX);
+        let refused = u64::try_from(self.refusals.len()).unwrap_or(u64::MAX);
+        (presented + refused, presented)
     }
 }
 
@@ -133,6 +155,7 @@ pub(crate) fn plan(
     ssa: &SsaTable,
     operations: &Operations,
     declaring: Option<&DeclaringClass>,
+    publication: Publication,
 ) -> Plan {
     let mut plan = Plan::empty();
     for instruction in ssa.blocks().iter().flat_map(|block| block.instructions()) {
@@ -157,15 +180,35 @@ pub(crate) fn plan(
         };
         match verify(instruction, &evidence, ssa, declaring) {
             Ok(shape) => {
-                plan.claimed.insert(at, (evidence.clone(), shape));
-                plan.records.push(FieldRecord::of_presented(&evidence));
+                // The record is built only when the run publishes rule records *and* the
+                // instruction's own BCI is inside the selected driver range.
+                if publication.publishes(&[at]) {
+                    crate::demand_counts::record_built(
+                        crate::evidence::RecoveryEvidenceKind::RuleDetails,
+                    );
+                    plan.records.push(FieldRecord::of_presented(&evidence));
+                }
+                plan.claimed.insert(at, (evidence, shape));
             }
-            Err(refusal) => plan
-                .records
-                .push(FieldRecord::of_refused(&evidence, &refusal)),
+            Err(refusal) => {
+                // The refusal *shape* is the gap every selection carries; the record that owns it
+                // is built only when this run publishes rule records and the instruction's BCI is
+                // inside the selected driver range.
+                let refusal = FieldRefusal::of(&refusal, evidence.bci);
+                plan.refusals
+                    .push(Gap::at(refusal.code, evidence.bci, refusal.message.clone()));
+                if publication.publishes(&[at]) {
+                    crate::demand_counts::record_built(
+                        crate::evidence::RecoveryEvidenceKind::RuleDetails,
+                    );
+                    plan.records
+                        .push(FieldRecord::of(&evidence, false, Some(refusal)));
+                }
+            }
         }
     }
     plan.records.sort_by_key(|record| record.bci);
+    plan.refusals.sort_by_key(|gap| gap.position());
     plan
 }
 
@@ -308,12 +351,7 @@ impl FieldRecord {
         Self::of(evidence, true, None)
     }
 
-    /// One record of a refused access.
-    fn of_refused(evidence: &Evidence, refusal: &Refusal) -> Self {
-        Self::of(evidence, false, Some(refusal))
-    }
-
-    fn of(evidence: &Evidence, presented: bool, refusal: Option<&Refusal>) -> Self {
+    fn of(evidence: &Evidence, presented: bool, refusal: Option<FieldRefusal>) -> Self {
         Self {
             bci: evidence.bci,
             access: match evidence.access {
@@ -325,7 +363,7 @@ impl FieldRecord {
             name: evidence.name.clone(),
             descriptor: evidence.descriptor.clone(),
             presented,
-            refusal: refusal.map(|refusal| FieldRefusal::of(refusal, evidence.bci)),
+            refusal,
         }
     }
 }

@@ -8,7 +8,7 @@ use jarde::{
     EnumerationReport, Error, InspectionMode, JvmBytes, Limits, MethodAnalysisReport,
     MethodAnalysisRequest, MethodSelector, PhysicalEntry, PhysicalMethodId, PhysicalScope,
     PhysicalView, QueryCursor, QueryRelation, QueryReport, QueryRequest, QueryTarget,
-    RecoveryReport, ResolutionEnvironment, UsageSnapshot,
+    RecoveryEvidenceRequest, RecoveryReport, ResolutionEnvironment, UsageSnapshot,
 };
 use serde::{Deserialize, Serialize};
 use std::ffi::OsStr;
@@ -174,6 +174,14 @@ enum Operation {
         environment: Box<ResolutionEnvironment>,
         method: PhysicalMethodId,
         stages: Vec<AnalysisStage>,
+        /// The optional evidence this request wants delivered (change
+        /// `add-demand-driven-core-results`, D1). A document that states none asks for the ordinary
+        /// recovery: the necessary results and no optional detail record, which is what
+        /// `Engine::recover_method` answers too. The selection is propagated verbatim — this
+        /// adapter chooses no default of its own — and the library refuses a category it does not
+        /// materialize rather than answering with nothing.
+        #[serde(default)]
+        evidence: RecoveryEvidenceRequest,
     },
 }
 
@@ -472,6 +480,7 @@ fn execute(
             environment,
             method,
             stages,
+            evidence,
         } => {
             // The adapter binds the content once and calls **one** library entry: the entry runs the
             // analysis and presents the payload of that very run, so no second analysis happens
@@ -482,7 +491,12 @@ fn execute(
                 stages,
             };
             engine
-                .recover_method(slice::from_ref(&snapshot), &request, budget)
+                .recover_method_with_evidence(
+                    slice::from_ref(&snapshot),
+                    &request,
+                    &evidence,
+                    budget,
+                )
                 .map(|recovered| {
                     let (analysis, report, callees) = recovered.into_parts();
                     OperationResult::RecoverMethod {

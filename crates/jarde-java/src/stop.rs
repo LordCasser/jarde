@@ -46,6 +46,20 @@ pub enum StopReason {
     /// further: `code` is the stable name of what interrupted the run — `jre_budget_interrupted`,
     /// [`RECURSION_BOUND_CODE`] or [`RECURSION_REENTRY_CODE`] — and `at` is the node it stopped on.
     Interrupted { code: &'static str, at: Option<u32> },
+    /// The request's own evidence selection cannot be answered for this body (change
+    /// `add-demand-driven-core-results`, D1): a category this entry does not materialize, a driver
+    /// range stated without a category, or a range this body's decoded instructions cannot support.
+    /// Nothing was presented — the refusal is the request's fact and not the body's — and the run
+    /// never widens an unsupported selection into a full-evidence delivery.
+    EvidenceRefused {
+        /// The stable name of the refusal ([`crate::evidence::UNSUPPORTED_KIND_CODE`],
+        /// [`crate::evidence::RANGE_SHAPE_CODE`] or [`crate::evidence::RANGE_REFUSAL_CODE`]).
+        code: &'static str,
+        /// The instruction index the refusal is about, when it is about one.
+        at: Option<u32>,
+        /// One sentence stating what could not be applied.
+        message: String,
+    },
 }
 
 /// The code of a run a budget poll interrupted without a flagged cancellation: the elapsed bound
@@ -74,6 +88,7 @@ impl StopReason {
         match self {
             Self::IrTableMissing { .. } => None,
             Self::Budget { at, .. } | Self::Cancelled { at } | Self::Interrupted { at, .. } => *at,
+            Self::EvidenceRefused { at, .. } => *at,
         }
     }
 

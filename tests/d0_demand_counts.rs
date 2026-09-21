@@ -202,6 +202,15 @@ impl OptionalRecords {
         }
     }
 
+    /// Every published record of the **optional** categories, across categories.
+    ///
+    /// `fallbacks` and `diagnostics` are necessary results — every selection delivers the fallback
+    /// codes and the gaps this run states — so they are counted beside the optional tables rather
+    /// than inside them: what an unrequested category must not contribute is a *record*.
+    fn optional_total(&self) -> usize {
+        self.total() - self.fallbacks - self.diagnostics
+    }
+
     /// Every published record, across categories.
     fn total(&self) -> usize {
         self.regions
@@ -352,13 +361,16 @@ fn one_requested_body_decodes_one_body_and_runs_no_recovery() {
     println!("class_view owned_records = {}", counted.owned_records);
 }
 
-/// D02's shape, re-frozen by D2: one materialization of the selected class, one preparation over
-/// that same read, one body decode per member that declares a body.
+/// D02's shape, re-frozen by D2, and the D1 evidence selection re-frozen beside it: one
+/// materialization of the selected class, one preparation over that same read, one body decode per
+/// member that declares a body — and, in the ordinary request, **not one** owning detail record.
 ///
 /// The D0 baseline this test was written with said two materializations (`class_headers == 2`: the
-/// binding read and the preparation's own read) and one preparation. D2 3.1/3.2 handed the binding
-/// read to the preparation, so the second materialization is gone; the run's own body work — the
-/// decodes, the presentations and the published records — is unchanged.
+/// binding read and the preparation's own read) and one preparation, and it asserted that "the
+/// frozen revision's default request publishes every optional table". D2 3.1/3.2 removed the second
+/// materialization; D1 made the ordinary request select no optional evidence at all, so the assertion
+/// is re-frozen the other way: the default publishes *none* of them, and the same request with
+/// [`RecoveryEvidenceRequest::all`] publishes them with the same text and the same decisions.
 #[test]
 fn a_class_source_request_materializes_its_class_once_and_prepares_it_once() {
     let _gate = gate();
@@ -370,7 +382,7 @@ fn a_class_source_request_materializes_its_class_once_and_prepares_it_once() {
     let outcome = engine
         .class_source(
             std::slice::from_ref(&snapshot),
-            &class_source_request(&snapshot, definition),
+            &class_source_request(&snapshot, definition.clone()),
             &mut budget,
         )
         .expect("the class-source request is answered");
@@ -393,8 +405,10 @@ fn a_class_source_request_materializes_its_class_once_and_prepares_it_once() {
     assert_eq!(counted.recovery_runs, 8);
     assert_eq!(usage.method_bodies, 8);
 
-    // The D3/D4 baseline: the default (and today only) request publishes every optional category the
-    // members really have, and the published records are counted here per category.
+    // D1's own re-freeze: the ordinary request publishes **none** of the optional categories, and
+    // the request that states the full selection publishes them with the same text and the same
+    // decisions. "Nothing is constructed and then hidden" is what the two runs together say: the
+    // constructions of the unselected run are counted where they would happen.
     let published: Vec<OptionalRecords> = report
         .methods
         .iter()
@@ -404,20 +418,84 @@ fn a_class_source_request_materializes_its_class_once_and_prepares_it_once() {
         })
         .collect();
     assert_eq!(published.len(), 8);
-    let regions: usize = published.iter().map(|records| records.regions).sum();
-    let segments: usize = published.iter().map(|records| records.segments).sum();
-    let rules: usize = published.iter().map(|records| records.rules).sum();
-    let diagnostics: usize = published.iter().map(|records| records.diagnostics).sum();
-    let total: usize = published.iter().map(OptionalRecords::total).sum();
-    println!(
-        "class_source optional records: total={total} regions={regions} segments={segments} \
-         rules={rules} diagnostics={diagnostics} per-member={published:?}"
+    let total: usize = published.iter().map(OptionalRecords::optional_total).sum();
+    println!("class_source default selection: optional records={total} per-member={published:?}");
+    assert_eq!(
+        total, 0,
+        "the ordinary request materializes no optional detail record at all"
     );
+    for method in &report.methods {
+        if let ClassSourceOutcome::Recovered { report, .. } = &method.outcome {
+            for kind in RecoveryEvidenceKind::SUPPORTED {
+                assert_eq!(
+                    report.evidence.state(kind),
+                    EvidenceState::NotRequested,
+                    "the report states the selection it was presented under"
+                );
+            }
+        }
+    }
+
+    // The same request, with the full selection: every category the fixture's members really have is
+    // materialized, and the class text is what the ordinary request produced — byte for byte.
+    let mut detailed_budget = fresh_budget();
+    let before = d0_counts::snapshot();
+    let detailed = engine
+        .class_source_with_evidence(
+            std::slice::from_ref(&snapshot),
+            &class_source_request(&snapshot, definition),
+            &RecoveryEvidenceRequest::all(),
+            &mut detailed_budget,
+        )
+        .expect("the same request with an explicit selection is answered");
+    let detailed_counts = before.since(d0_counts::snapshot());
+    let OperationOutcome::Performed(detailed) = detailed else {
+        panic!("the identity binds one definition");
+    };
+    assert_eq!(
+        detailed.text, report.text,
+        "the evidence selection does not move one byte of the assembled class"
+    );
+    assert_eq!(detailed_counts.class_materializations, 1);
+    assert_eq!(detailed_counts.class_preparations, 1);
+    assert_eq!(detailed_counts.body_decodes, 8);
+    assert_eq!(detailed_counts.recovery_runs, 8);
+    let detailed_published: Vec<OptionalRecords> = detailed
+        .methods
+        .iter()
+        .filter_map(|method| match &method.outcome {
+            ClassSourceOutcome::Recovered { report, .. } => Some(OptionalRecords::of(report)),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(detailed_published.len(), 8);
+    for (default, full) in published.iter().zip(detailed_published.iter()) {
+        assert_eq!(
+            (default.diagnostics, default.fallbacks, default.lambdas,),
+            (full.diagnostics, full.fallbacks, full.lambdas,),
+            "the necessary results and the gaps do not depend on the selection"
+        );
+    }
+    let regions: usize = detailed_published.iter().map(|r| r.regions).sum();
+    let segments: usize = detailed_published.iter().map(|r| r.segments).sum();
+    let rules: usize = detailed_published.iter().map(|r| r.rules).sum();
+    println!("class_source full selection: regions={regions} segments={segments} rules={rules}");
     assert!(
-        regions >= 8 && segments >= 8 && rules >= 8 && diagnostics >= 8,
-        "at the frozen revision the default request publishes every optional table"
+        regions >= 8 && segments >= 8 && rules >= 8,
+        "the full selection publishes the categories the fixture really has"
     );
-    assert_eq!(published.len(), report.methods.len());
+    assert_eq!(detailed_published.len(), detailed.methods.len());
+    for method in detailed.methods.iter() {
+        if let ClassSourceOutcome::Recovered { report, .. } = &method.outcome {
+            for kind in RecoveryEvidenceKind::SUPPORTED {
+                assert_eq!(
+                    report.evidence.state(kind),
+                    EvidenceState::Complete,
+                    "{kind:?}"
+                );
+            }
+        }
+    }
 }
 
 #[test]

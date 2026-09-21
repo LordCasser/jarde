@@ -138,9 +138,10 @@ fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -
         stages: AnalysisStage::ALL.to_vec(),
     };
     engine
-        .recover_method(
+        .recover_method_with_evidence(
             slice::from_ref(&fixture.snapshot),
             &request,
+            &RecoveryEvidenceRequest::all(),
             &mut Budget::new(limits()),
         )
         .expect("a legal request is answered, not raised")
@@ -174,7 +175,12 @@ fn recovered_with_budget(
         stages: AnalysisStage::ALL.to_vec(),
     };
     engine
-        .recover_method(slice::from_ref(&fixture.snapshot), &request, budget)
+        .recover_method_with_evidence(
+            slice::from_ref(&fixture.snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            budget,
+        )
         .expect("a legal request is answered, not raised")
 }
 
@@ -572,7 +578,12 @@ fn the_type_decision_is_billed_and_a_stopped_run_commits_nothing() {
     // `x`'s write at BCI 1; with the plan's billing removed, that same bound reaches the first
     // statement's charge at BCI 9 instead, so this assertion is what stops the billing from being
     // dropped silently.
-    const RELAYED_IR_ITEMS: u64 = 381;
+    //
+    // The evidence selection this file presents under is the full one (`RecoveredEvidenceRequest::all`,
+    // `recover` above), and this body's two region records are materialized by the evidence phase:
+    // two more `IrItems` charges (`add-demand-driven-core-results`, D1). The plan's three entries are
+    // still three of the run's own charges, which is what this assertion is about.
+    const RELAYED_IR_ITEMS: u64 = 383;
     const IR_ITEMS_BEFORE_THE_PLAN: u64 = 369;
     let engine = Engine::new();
     let fixture = fixture(&engine, SAMPLE);

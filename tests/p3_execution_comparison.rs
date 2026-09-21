@@ -2669,8 +2669,17 @@ fn run_sample(sample: &Sample, entry: Entry) -> SampleOutcome {
         let recovered: &RecoveredMethod = match &bulk {
             None => {
                 let mut budget = Budget::new(limits());
+                // The full evidence, stated here: this harness reads the segment table and the
+                // region records to check that every index the text quotes is anchored, so it asks
+                // for them instead of inheriting the ordinary default
+                // (`add-demand-driven-core-results`, D1).
                 asked = engine
-                    .recover_method(slice::from_ref(&snapshot), &request, &mut budget)
+                    .recover_method_with_evidence(
+                        slice::from_ref(&snapshot),
+                        &request,
+                        &RecoveryEvidenceRequest::all(),
+                        &mut budget,
+                    )
                     .expect("a legal request is answered, not raised");
                 &asked
             }

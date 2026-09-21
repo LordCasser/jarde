@@ -42,7 +42,7 @@ use jarde_reader::classfile::{
     BootstrapMethodFacts, CpEntryFacts, DescriptorKind, descriptor_facts,
 };
 
-use crate::accessor::{self, AccessorRecord, AccessorShape};
+use crate::accessor::{self, AccessorRecord, AccessorRefusal, AccessorShape};
 use crate::ast::{
     BinaryOp, ConcatPart, ConstructorTarget, Expr, ExprKind, LambdaParam, ResourceDecl, Stmt,
     StmtKind, SwitchArm, Type,
@@ -51,6 +51,7 @@ use crate::bridge;
 use crate::concat;
 use crate::decode::Operations;
 use crate::enumswitch;
+use crate::evidence::Publication;
 use crate::facts::{
     ArithmeticOp, CallTarget, ClassMembers, CompareOp, ConstantValue, DynamicSite, InvokeKind,
     Operation,
@@ -61,6 +62,7 @@ use crate::init;
 use crate::lambda::{self, LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal, Reach, Refusal};
 use crate::names::{LocalVariable, NameTable, RenderedName};
 use crate::pass::{LAMBDA, Precondition, RecoveryProfile};
+use crate::refusal::Gap;
 use crate::region::{Continuation, LoopForm, Region};
 use crate::reuse;
 use crate::source_map::{Origin, OriginSet};
@@ -92,6 +94,17 @@ pub(crate) struct Program {
     /// its callee and what this build did with it (P3 2.2, A12). As for a lambda, a refusal is part
     /// of the answer: a call that kept the call it had says which link of the verification failed.
     pub(crate) accessors: Vec<AccessorRecord>,
+    /// Every dynamic site this build did not present, with the refusal that says which link failed.
+    /// A gap is not the optional evidence: it is what every selection reports about this rule.
+    pub(crate) lambda_refusals: Vec<Gap>,
+    /// Every accessor call site this build did not present, with the refusal that says which link
+    /// failed.
+    pub(crate) accessor_refusals: Vec<Gap>,
+    /// How many dynamic sites this build presented, and how many accessor call sites. The counts
+    /// describe the rule's work over the whole body, so the report states them whatever the request
+    /// selected — which is what makes the summary lines of two selections say the same thing.
+    pub(crate) lambdas_presented: u64,
+    pub(crate) accessors_presented: u64,
 }
 
 /// The facts of one run the build reads beside the regions and the region tree's own inputs.
@@ -757,6 +770,7 @@ pub(crate) fn build(
     operations: &Operations,
     inputs: Inputs<'_>,
     regions: &[Region],
+    publication: Publication,
     budget: &mut Budget,
 ) -> Result<Program, StopReason> {
     let mut instructions: BTreeMap<u32, &SsaInstruction> = BTreeMap::new();
@@ -809,6 +823,11 @@ pub(crate) fn build(
         accessors: Vec::new(),
         deferred: Vec::new(),
         declarations,
+        publication,
+        lambdas_presented: 0,
+        lambda_refusals: Vec::new(),
+        accessors_presented: 0,
+        accessor_refusals: Vec::new(),
     };
     // A slot whose uses span more than one top-level region is declared wherever every one of them
     // can see it: at the start of the body, before the first region's text.
@@ -823,6 +842,10 @@ pub(crate) fn build(
         stmts: builder.stmts,
         lambdas: builder.lambdas,
         accessors: builder.accessors,
+        lambda_refusals: builder.lambda_refusals,
+        accessor_refusals: builder.accessor_refusals,
+        lambdas_presented: builder.lambdas_presented,
+        accessors_presented: builder.accessors_presented,
     })
 }
 
@@ -891,6 +914,17 @@ struct Builder<'a> {
     /// of the region that contains all of its uses, and every consumer of a variable's type reads
     /// this one decision instead of deciding again.
     declarations: Declarations,
+    /// The rule-evidence half of this run's selection: which of the two rules this build decides
+    /// publish their owning records at all, and which driver positions those records are restricted
+    /// to. The rules themselves run for every selection — a presented accessor is presented as a
+    /// field access whatever the caller asked to have delivered.
+    publication: Publication,
+    /// How many dynamic sites this build presented, and every site it did not.
+    lambdas_presented: u64,
+    lambda_refusals: Vec<Gap>,
+    /// How many accessor call sites this build presented, and every one it did not.
+    accessors_presented: u64,
+    accessor_refusals: Vec<Gap>,
 }
 
 impl Builder<'_> {
@@ -1451,12 +1485,7 @@ impl Builder<'_> {
                 match verdict {
                     accessor::Verdict::Ordinary => {}
                     accessor::Verdict::Refused { evidence, refusal } => {
-                        self.accessors.push(AccessorRecord::of(
-                            at,
-                            &evidence,
-                            None,
-                            Some(&refusal),
-                        ));
+                        self.publish_accessor(at, &evidence, None, Some(&refusal));
                     }
                     accessor::Verdict::Accessor { evidence, shape } => match shape.kind {
                         // A read accessor's value is written where the value is *consumed*: the
@@ -1471,12 +1500,7 @@ impl Builder<'_> {
                                 "jre_accessor_unconsumed",
                                 "nothing in this method reads the field the accessor returns, so the invocation the call site makes has no place in the body".to_string(),
                             );
-                            self.accessors.push(AccessorRecord::of(
-                                at,
-                                &evidence,
-                                None,
-                                Some(&refusal),
-                            ));
+                            self.publish_accessor(at, &evidence, None, Some(&refusal));
                         }
                         AccessorShape::FieldWrite => {
                             return self.accessor_write(at, instruction, target, evidence, shape);
@@ -2548,8 +2572,7 @@ impl Builder<'_> {
                 Some(Ok(receiver)) => {
                     let origin = OriginSet::new(Origin::direct(bci))
                         .plus_derived(Origin::derived(shape.field_bci).in_method(&shape.method));
-                    self.accessors
-                        .push(AccessorRecord::of(bci, &evidence, Some(&shape), None));
+                    self.publish_accessor(bci, &evidence, Some(&shape), None);
                     let field = Expr::new(
                         ExprKind::Field {
                             receiver: Box::new(receiver),
@@ -2581,8 +2604,7 @@ impl Builder<'_> {
                             "the instance the accessor call at BCI {bci} reads produces no expression this subset writes: {reason}"
                         ),
                     );
-                    self.accessors
-                        .push(AccessorRecord::of(bci, &evidence, None, Some(&refusal)));
+                    self.publish_accessor(bci, &evidence, None, Some(&refusal));
                 }
             }
         }
@@ -2640,19 +2662,13 @@ impl Builder<'_> {
                                 "the write accessor call at BCI {at} was not presented: {reason}"
                             ),
                         );
-                        self.accessors.push(AccessorRecord::of(
-                            at,
-                            &evidence,
-                            None,
-                            Some(&refusal),
-                        ));
+                        self.publish_accessor(at, &evidence, None, Some(&refusal));
                         return self.call_statement(at, instruction, target);
                     }
                 };
                 let origin = OriginSet::new(Origin::direct(at))
                     .plus_derived(Origin::derived(shape.field_bci).in_method(&shape.method));
-                self.accessors
-                    .push(AccessorRecord::of(at, &evidence, Some(&shape), None));
+                self.publish_accessor(at, &evidence, Some(&shape), None);
                 self.push(Stmt::new(
                     StmtKind::FieldAssign {
                         receiver,
@@ -2672,8 +2688,7 @@ impl Builder<'_> {
                     "jre_accessor_arguments",
                     format!("the write accessor call at BCI {at} was not presented: {reason}"),
                 );
-                self.accessors
-                    .push(AccessorRecord::of(at, &evidence, None, Some(&refusal)));
+                self.publish_accessor(at, &evidence, None, Some(&refusal));
                 self.call_statement(at, instruction, target)
             }
         }
@@ -3236,9 +3251,14 @@ impl Builder<'_> {
         let plan = match verdict.outcome {
             Ok(plan) => plan,
             Err(refusal) => {
-                let record =
-                    Self::lambda_record(bci, site, &evidence, None, Some(&refusal), &unrendered());
-                self.lambdas.push(record);
+                self.publish_lambda(
+                    bci,
+                    site,
+                    &evidence,
+                    None,
+                    Some(refusal.clone()),
+                    &unrendered(),
+                );
                 return Err(refusal.message().to_string());
             }
         };
@@ -3251,9 +3271,14 @@ impl Builder<'_> {
                 "jre_lambda_unconsumed",
                 "nothing in this method reads the instance the site creates, so the invocation the site makes has no place in the body".to_string(),
             );
-            let record =
-                Self::lambda_record(bci, site, &evidence, None, Some(&refusal), &unrendered());
-            self.lambdas.push(record);
+            self.publish_lambda(
+                bci,
+                site,
+                &evidence,
+                None,
+                Some(refusal.clone()),
+                &unrendered(),
+            );
             return Err(refusal.message().to_string());
         }
         // Every captured value has to be replayable before any of its text is written: the value is
@@ -3272,9 +3297,14 @@ impl Builder<'_> {
                         at.map_or_else(|| "unknown".to_string(), |at| at.to_string())
                     ),
                 );
-                let record =
-                    Self::lambda_record(bci, site, &evidence, None, Some(&refusal), &unrendered());
-                self.lambdas.push(record);
+                self.publish_lambda(
+                    bci,
+                    site,
+                    &evidence,
+                    None,
+                    Some(refusal.clone()),
+                    &unrendered(),
+                );
                 return Err(refusal.message().to_string());
             }
         }
@@ -3295,9 +3325,14 @@ impl Builder<'_> {
                         at.map_or_else(|| "unknown".to_string(), |at| at.to_string())
                     ),
                 );
-                let record =
-                    Self::lambda_record(bci, site, &evidence, None, Some(&refusal), &unrendered());
-                self.lambdas.push(record);
+                self.publish_lambda(
+                    bci,
+                    site,
+                    &evidence,
+                    None,
+                    Some(refusal.clone()),
+                    &unrendered(),
+                );
                 return Err(refusal.message().to_string());
             };
             captured.push(LambdaCapture { bci: at });
@@ -3402,9 +3437,69 @@ impl Builder<'_> {
                 )
             }
         };
-        let record = Self::lambda_record(bci, site, &evidence, Some(plan.form), None, &captured);
-        self.lambdas.push(record);
+        self.publish_lambda(bci, site, &evidence, Some(plan.form), None, &captured);
         Ok(expr)
+    }
+
+    /// One dynamic site's verdict: its refusal stated as a gap in every selection, and its record
+    /// built only when this run publishes rule records and the site's own positions — the site and
+    /// every capture it reads — are inside the selected driver range.
+    ///
+    /// The decision is taken **before** the record is built, so a site the selection excludes costs
+    /// no owning record at all, and the counts the report states about this rule are the rule's own
+    /// work over the whole body whatever the selection was.
+    fn publish_lambda(
+        &mut self,
+        bci: u32,
+        site: &DynamicSite,
+        evidence: &crate::lambda::Evidence,
+        form: Option<LambdaForm>,
+        refusal: Option<Refusal>,
+        captures: &[LambdaCapture],
+    ) {
+        let shape = refusal.map(|refusal| LambdaRefusal::of(&refusal, bci));
+        match &shape {
+            Some(shape) => {
+                self.lambda_refusals
+                    .push(Gap::at(shape.code, bci, shape.message.clone()))
+            }
+            None => self.lambdas_presented += 1,
+        }
+        let mut positions = vec![bci];
+        positions.extend(captures.iter().filter_map(|capture| capture.bci));
+        if self.publication.publishes(&positions) {
+            self.lambdas.push(Self::lambda_record(
+                bci, site, evidence, form, shape, captures,
+            ));
+        }
+    }
+
+    /// One accessor verdict at one call site: its refusal stated as a gap in every selection, and
+    /// its record built only when this run publishes rule records and the call site is inside the
+    /// selected driver range.
+    ///
+    /// The callee's own bytecode index is deliberately not a driver position: the call site is the
+    /// driver's instruction, and what the record says about the callee (its identity, its field and
+    /// the index the field access is at) travels inside the record as the proof of the verdict.
+    fn publish_accessor(
+        &mut self,
+        call_site: u32,
+        evidence: &accessor::Evidence,
+        presented: Option<&accessor::Shape>,
+        refusal: Option<&Refusal>,
+    ) {
+        let shape = refusal.map(|refusal| AccessorRefusal::of(refusal, call_site));
+        match &shape {
+            Some(shape) => {
+                self.accessor_refusals
+                    .push(Gap::at(shape.code, call_site, shape.message.clone()))
+            }
+            None => self.accessors_presented += 1,
+        }
+        if self.publication.publishes(&[call_site]) {
+            self.accessors
+                .push(AccessorRecord::of(call_site, evidence, presented, shape));
+        }
     }
 
     /// The record of one dynamic site, as the report reads it back.
@@ -3413,7 +3508,7 @@ impl Builder<'_> {
         site: &DynamicSite,
         evidence: &crate::lambda::Evidence,
         form: Option<LambdaForm>,
-        refusal: Option<&Refusal>,
+        refusal: Option<LambdaRefusal>,
         captures: &[LambdaCapture],
     ) -> LambdaRecord {
         LambdaRecord {
@@ -3429,7 +3524,7 @@ impl Builder<'_> {
             implementation: evidence.implementation.clone(),
             captures: captures.to_vec(),
             form,
-            refusal: refusal.map(|refusal| LambdaRefusal::of(refusal, bci)),
+            refusal,
         }
     }
 

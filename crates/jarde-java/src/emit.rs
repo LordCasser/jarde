@@ -45,6 +45,7 @@ use jarde_reader::model::PhysicalMethodId;
 
 use crate::ast::{BinaryOp, Expr, ExprKind, Stmt, StmtKind};
 use crate::declaration::Declaration;
+use crate::evidence::SegmentPublication;
 use crate::facts::RecoveryFacts;
 use crate::source_map::{OriginSet, Segment, SourceMap};
 use crate::stop::{StopReason, poll};
@@ -53,7 +54,13 @@ use crate::stop::{StopReason, poll};
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub(crate) struct Emitted {
     pub(crate) text: String,
+    /// The segment table of [`Self::text`], when the request selected the source map.
     pub(crate) source_map: SourceMap,
+    /// How many spans this emission anchored, whether or not the request selected the table that
+    /// holds them: the figure is the *emission's* own work, and the report states it in one summary
+    /// whatever the selection was (change `add-demand-driven-core-results`, D1). A count is not a
+    /// segment: nothing here is an owning record a caller could read back.
+    pub(crate) segments: u64,
     /// How many bytes the recovery run wrote, which is what a stopped run reports.
     pub(crate) written: u64,
     /// How many statements of the body this emission wrote as Java. A [`StmtKind::Fallback`] is not
@@ -80,9 +87,10 @@ pub(crate) fn emit(
     facts: &RecoveryFacts,
     declaration: Option<&Declaration>,
     member: Option<&PhysicalMethodId>,
+    segments: SegmentPublication,
     budget: &mut Budget,
 ) -> Result<Emitted, StopReason> {
-    let mut emitter = Emitter::new(budget, member);
+    let mut emitter = Emitter::new(budget, member, segments);
     emitter.envelope(facts, declaration)?;
     emitter.stmts(stmts, 1)?;
     emitter.put("}\n", None)?;
@@ -93,7 +101,12 @@ pub(crate) fn emit(
 struct Emitter<'a> {
     budget: &'a mut Budget,
     text: String,
+    /// The spans this emission anchors, when the request selected the segment table at all.
     segments: Vec<Segment>,
+    /// How many spans this emission anchored, selected or not.
+    anchored: u64,
+    /// Which of them the segment table holds.
+    publication: SegmentPublication,
     written: u64,
     limit: u64,
     /// The member body every anchor of this emission belongs to, when the payload stated one.
@@ -104,12 +117,18 @@ struct Emitter<'a> {
 }
 
 impl<'a> Emitter<'a> {
-    fn new(budget: &'a mut Budget, member: Option<&'a PhysicalMethodId>) -> Self {
+    fn new(
+        budget: &'a mut Budget,
+        member: Option<&'a PhysicalMethodId>,
+        publication: SegmentPublication,
+    ) -> Self {
         let limit = budget.limits().output_bytes;
         Self {
             budget,
             text: String::new(),
             segments: Vec::new(),
+            anchored: 0,
+            publication,
             written: 0,
             limit,
             member,
@@ -178,7 +197,15 @@ impl<'a> Emitter<'a> {
         let end = self.text.len();
         if end > start {
             let origin = origin.in_body(self.member);
-            self.segments.push(Segment::new(start, end, origin));
+            self.anchored += 1;
+            // The record is built only when the request selected it — over the positions this very
+            // segment states for itself, which is the whole of its evidence.
+            if self.publication.records(origin.bcis()) {
+                crate::demand_counts::record_built(
+                    crate::evidence::RecoveryEvidenceKind::SourceMap,
+                );
+                self.segments.push(Segment::new(start, end, origin));
+            }
         }
         Ok(())
     }
@@ -638,6 +665,7 @@ impl<'a> Emitter<'a> {
         Emitted {
             text: self.text,
             source_map,
+            segments: self.anchored,
             written: self.written,
             statements: self.statements,
         }
@@ -818,7 +846,7 @@ mod tests {
         // observed: the buffer itself holds nothing after a refusal, so no consumer that ever gets
         // hold of an emitter can read a half-written node out of it.
         let mut budget = budget_with(32);
-        let mut emitter = Emitter::new(&mut budget, None);
+        let mut emitter = Emitter::new(&mut budget, None, SegmentPublication::Whole);
         emitter
             .put("// a first line\n", None)
             .expect("within the bound");
@@ -842,13 +870,27 @@ mod tests {
         let stmts = body();
         let exact = {
             let mut budget = budget_with(1 << 20);
-            emit(&stmts, &facts(), None, None, &mut budget)
-                .expect("an ample budget writes")
-                .written
+            emit(
+                &stmts,
+                &facts(),
+                None,
+                None,
+                SegmentPublication::Whole,
+                &mut budget,
+            )
+            .expect("an ample budget writes")
+            .written
         };
         let mut budget = budget_with(exact);
-        let emitted =
-            emit(&stmts, &facts(), None, None, &mut budget).expect("the exact bound is allowed");
+        let emitted = emit(
+            &stmts,
+            &facts(),
+            None,
+            None,
+            SegmentPublication::Whole,
+            &mut budget,
+        )
+        .expect("the exact bound is allowed");
         assert_eq!(emitted.written, exact);
         assert!(
             emitted.text.contains("run();"),
@@ -857,7 +899,15 @@ mod tests {
         );
 
         let mut budget = budget_with(exact - 1);
-        let stop = emit(&stmts, &facts(), None, None, &mut budget).expect_err("one byte short");
+        let stop = emit(
+            &stmts,
+            &facts(),
+            None,
+            None,
+            SegmentPublication::Whole,
+            &mut budget,
+        )
+        .expect_err("one byte short");
         match stop {
             StopReason::Budget {
                 dimension,
@@ -891,9 +941,16 @@ mod tests {
         )];
         let whole = {
             let mut budget = budget_with(1 << 20);
-            emit(&stmts, &facts(), None, None, &mut budget)
-                .expect("ample")
-                .written
+            emit(
+                &stmts,
+                &facts(),
+                None,
+                None,
+                SegmentPublication::Whole,
+                &mut budget,
+            )
+            .expect("ample")
+            .written
         };
         // Every bound below the artifact's own size refuses somewhere, and at least one of them
         // refuses while the assignment's *expression* is being written: the emitter stops inside a
@@ -902,7 +959,14 @@ mod tests {
         let mut inside_a_node = 0usize;
         for bound in 1..whole {
             let mut budget = budget_with(bound);
-            match emit(&stmts, &facts(), None, None, &mut budget) {
+            match emit(
+                &stmts,
+                &facts(),
+                None,
+                None,
+                SegmentPublication::Whole,
+                &mut budget,
+            ) {
                 Ok(emitted) => panic!("a {bound}-byte bound produced {} bytes", emitted.written),
                 Err(StopReason::Budget { written, at, .. }) => {
                     assert!(
@@ -926,7 +990,15 @@ mod tests {
     fn the_segment_table_covers_the_nodes_in_writing_order() {
         let stmts = body();
         let mut budget = budget_with(1 << 20);
-        let emitted = emit(&stmts, &facts(), None, None, &mut budget).expect("ample");
+        let emitted = emit(
+            &stmts,
+            &facts(),
+            None,
+            None,
+            SegmentPublication::Whole,
+            &mut budget,
+        )
+        .expect("ample");
         // Two nodes, because a statement contains its expression, and the table is in completion
         // order: the expression's span is recorded when its own writes finish, the statement's when
         // the indentation and the terminator around it are written too.
@@ -993,7 +1065,15 @@ mod tests {
             OriginSet::new(Origin::direct(8)),
         )];
         let mut budget = budget_with(1 << 20);
-        let emitted = emit(&stmts, &facts(), None, None, &mut budget).expect("ample");
+        let emitted = emit(
+            &stmts,
+            &facts(),
+            None,
+            None,
+            SegmentPublication::Whole,
+            &mut budget,
+        )
+        .expect("ample");
         assert!(
             emitted
                 .text
@@ -1077,7 +1157,15 @@ mod tests {
             OriginSet::new(Origin::direct(1)),
         )];
         let mut budget = budget_with(1 << 20);
-        emit(&stmts, &facts(), None, None, &mut budget).expect("an ample budget writes")
+        emit(
+            &stmts,
+            &facts(),
+            None,
+            None,
+            SegmentPublication::Whole,
+            &mut budget,
+        )
+        .expect("an ample budget writes")
     }
 
     /// One statement, with its own anchors, as the body's whole text.
@@ -1088,7 +1176,15 @@ mod tests {
         }
         let stmts = vec![Stmt::new(kind, origin)];
         let mut budget = budget_with(1 << 20);
-        emit(&stmts, &facts(), None, None, &mut budget).expect("an ample budget writes")
+        emit(
+            &stmts,
+            &facts(),
+            None,
+            None,
+            SegmentPublication::Whole,
+            &mut budget,
+        )
+        .expect("an ample budget writes")
     }
 
     /// Every position whose text is followed by something that binds tighter than a binary

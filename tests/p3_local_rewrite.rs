@@ -187,7 +187,12 @@ fn recover_all(
         stages: AnalysisStage::ALL.to_vec(),
     };
     engine
-        .recover_method(slice::from_ref(&fixture.snapshot), &request, budget)
+        .recover_method_with_evidence(
+            slice::from_ref(&fixture.snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            budget,
+        )
         .expect("a legal request is answered, not raised")
 }
 

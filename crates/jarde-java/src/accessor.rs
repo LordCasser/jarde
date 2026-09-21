@@ -568,7 +568,7 @@ impl AccessorRecord {
         call_site: u32,
         evidence: &Evidence,
         presented: Option<&Shape>,
-        refusal: Option<&Refusal>,
+        refusal: Option<AccessorRefusal>,
     ) -> Self {
         Self {
             call_site,
@@ -580,7 +580,7 @@ impl AccessorRecord {
             field: evidence.field.clone(),
             shape: evidence.shape,
             presented: presented.is_some(),
-            refusal: refusal.map(|refusal| AccessorRefusal::of(refusal, call_site)),
+            refusal,
         }
     }
 
