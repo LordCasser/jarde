@@ -2,7 +2,7 @@
 
 ## 1. 固定边界与反例
 
-- [ ] 1.1 冻结实现起点、构建配置、输入/方法清单和已有正确性缺口；复用三项归档及 T1–T4 关闭证据，登记独立 T5/CLI 文档预算等边界，在新增的真实普通 worker 栈上复跑深链进程门禁；verification 不把工作树或旧主线程结果冒充固定候选（B01/B10；A13–A18）。
+- [x] 1.1 冻结实现起点、构建配置、输入/方法清单和已有正确性缺口；复用三项归档及 T1–T4 关闭证据，登记独立 T5/CLI 文档预算等边界，在新增的真实普通 worker 栈上复跑深链进程门禁；verification 不把工作树或旧主线程结果冒充固定候选（B01/B10；A13–A18）。 证据：verification §11（候选与构建、输入/方法清单、已有缺口、T5 等独立边界登记、T1 深链门禁在真实 worker 栈上的复跑、口径限制）；三项归档与 T1–T4 的关闭证据按原索引引用，未重开。
 - [x] 1.2 固定库请求/事件/汇总及 CLI JSONL schema，记录本设计允许的 API 变更与 effective defaults；用 schema/序列样例验证物理身份、无 Body、重复声明、共享证据引用、末尾无 Final、0/非法配置均有明确行为（B01/B07/B08）。证据：`src/bulk.rs` 的请求/事件/汇总类型 + `crates/jarde-cli/src/export.rs` 的 JSONL 六种 `kind`（`header`/`class_prepared`/`method`/`diagnostic`/`class_end`/`final`）；`crates/jarde-cli/tests/export_cli.rs` 10 项覆盖 record 形状、物理身份与成员 ordinal、无 Body 与未产出分桶、`--jobs 0|abc|1.5` 拒绝、`final` 缺失即非完成；effective defaults 固定为：CLI `export` 自带 16 项 counted 维度上限（`1<<40`）、2 小时墙钟与 `FactsCapacity(1<<14, 1<<27)`，全部经 header 发布（本地实测两个语料默认配置整包到达 `final`）。允许的 API 变更：`OVERRIDABLE_BUDGET_DIMENSIONS` 从 5 项扩到 15 个 counted 维度 + `elapsed_millis`（`tests/task_operations.rs` 相应断言为本次有意改变，未知维度/零值仍拒绝）。
 - [x] 1.3 建立小型可再生语料和测量计数：flat/nested STORED/DEFLATED、同字节多 origin、M 方法大类、损坏后缀、深表达式及慢 sink；旧逐方法直接/共享 store 臂保存真实总账，验证计数不作为耗时结论（B01/B02/B10）。 证据：`tests/p5_bulk_corpus.rs`（6 类：flat/nested、STORED/DEFLATED 双向、同字节多 origin、M=64 大类、损坏后缀三类、16/64 层深表达式；9 个计费代理逐 case 钉住并由 ignored `record_the_billing_table` 重录；187 方法上 direct vs retaining 两臂的八个"工作"维度逐项相等、六个"读"维度下降）；模块头写明计数不是耗时结论，墙钟只打印不断言。
 
