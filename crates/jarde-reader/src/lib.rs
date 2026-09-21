@@ -21,6 +21,13 @@ pub mod artifact;
 pub mod budget;
 pub mod classfile;
 pub mod error;
+// The incremental entry cursor is the traversal base with the class-only filter removed: it walks
+// the containers a scope holds one entry at a time and hands over every entry with the container's
+// own verified record and its class/resource classification, descending into a nested archive only
+// when a caller really pulls through the entry that holds it. It is a module of its own because it
+// owns that order, the per-container "reached/unknown" boundary and the charges a pull makes
+// necessary — the facts a structural query needs and a class-only dispatch does not.
+pub mod entry_cursor;
 // The facts cache (P5 2.3) is opt-in state a caller attaches to a budget; it is a module of its own
 // because it owns an identity, a store and a report, and because the entry points that consult it
 // (`classfile::class_facts`, `classfile::inspect_header`) must not be the place that decides what a

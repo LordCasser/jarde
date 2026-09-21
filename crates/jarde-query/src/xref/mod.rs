@@ -6,11 +6,15 @@
 //!
 //! 1. [`UnitStream`] yields one unit at a time — the standalone CLASS root, the entries a
 //!    request's schema needs in the scope's own physical order. Which stream a request gets
-//!    is the request's own decision: `resource` is the only consumer that reads an entry
-//!    that is not a class, so a request that names it enumerates every entry of every
-//!    container through the provider's report, and every other schema walks the scope's
-//!    class candidates through the reader's incremental scope cursor, descending into a
-//!    nested container only when the scan reaches the entry that holds it.
+//!    is the request's own decision, and the entries are the reason there are two of them:
+//!    `resource` is the only consumer that reads an entry which is not a class, so a request
+//!    that names it walks *every* entry of every container through the reader's incremental
+//!    entry cursor, while every other schema can only produce items from class candidates
+//!    and walks those through the reader's incremental scope cursor. Both descend into a
+//!    nested container only when the scan pulls through the entry that holds it, so nothing
+//!    behind the page's stop is read, expanded or charged — and a whole-snapshot class-only
+//!    request keeps the provider's own enumeration of the one container that scope *is*,
+//!    which is the same single directory product either walk would have to build.
 //! 2. [`UnitScan`] runs one unit as a program of steps — `resource`, then the code producer
 //!    (the raw pool probe, or the instruction stream of one method after another), then
 //!    `metadata`, then `bootstrap` — and stops *between* steps and *between* the items of
@@ -64,6 +68,7 @@ use jarde_reader::artifact::{
     ArtifactKind, ArtifactSnapshot, PhysicalEntry, budget_dimension_code,
 };
 use jarde_reader::budget::{Budget, CountedBudgetDimension, UsageSnapshot};
+use jarde_reader::entry_cursor::EntryCursor;
 use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
     ByteSpan, ClassBytesId, ContainerId, ContainerOrigin, Coverage, CoverageDimension,
@@ -74,7 +79,6 @@ use jarde_reader::model::{
 };
 use jarde_reader::scope_cursor::ScopeCursor;
 use jarde_reader::view::{PhysicalScope, PhysicalView};
-use std::collections::VecDeque;
 
 /// Relations whose definition/dispatch resolution P1 does not perform but whose raw
 /// constant-pool candidates are still answerable facts.
@@ -553,10 +557,10 @@ fn run_pass(
         boundary: None,
         stopped_early: false,
         resume_pending: false,
-        // The provider's own terminal state, if it already stopped: an enumeration that
-        // was cancelled or refused publishes no unit, and the scan must report the stop
-        // it was handed instead of an empty, complete answer.
-        issue: stream.execution(),
+        // No stream seeds a terminal state: every unit comes from a walk whose own failures
+        // arrive as errors at its pull, and every subtree it could not read is folded in once
+        // the pass is over (see `UnitStream::subtree_issue`).
+        issue: None,
         diagnostics: Vec::new(),
         examined: Vec::new(),
         standalone_examined: 0,
@@ -721,6 +725,12 @@ fn run_pass(
     }
 
     pass.examined = merge_examined(pass.examined, stream.examined());
+    // A subtree the walk could not read bounds the report without ending the scan: the entries
+    // behind it are unknown, so the pass is not complete, and the state names why. It is folded
+    // here rather than seeded up front because a walk discovers the subtree as it pulls.
+    if let Some(subtree) = stream.subtree_issue() {
+        pass.issue = merge_issue(pass.issue, subtree);
+    }
     pass.resume_pending = pending.is_some();
     Ok(pass)
 }
@@ -1268,31 +1278,37 @@ struct ExaminedContainer {
 /// Which stream a request gets is the request's own decision, and that is the first half of
 /// "scan by demand": `resource` is the only consumer that reads an entry which is not a
 /// class, so a request that names it asks about every entry of every container — its
-/// denominator *is* the whole range — and is answered from the provider's own report. A
-/// request that does not name it can only produce items from class candidates, so it walks
-/// the scope through the reader's incremental scope cursor, which reads one container's
-/// directory at a time and descends into a nested container exactly when the scan reaches
-/// the entry that holds it.
+/// denominator *is* the whole range — and is answered by the reader's incremental *entry*
+/// cursor, which reaches one container at a time and descends into a nested container
+/// exactly when the scan pulls through the entry that holds it. Every other schema can only
+/// produce items from class candidates, so it walks the same range through the reader's
+/// incremental *scope* cursor, which is that same walk with the class filter applied.
+///
+/// No stream collects a provider report: the query has no eager range to apply a page size
+/// to, and the only directory products it pays for are the ones a walk opened on its way to
+/// the units it handed over.
 enum UnitStream<'a> {
     /// A standalone CLASS snapshot: its root is the one unit, and no range is enumerated.
     Standalone { unit: Option<ScanUnit>, bytes: u64 },
-    /// Every entry of the scope, in the provider's own order.
-    Enumerated {
-        units: VecDeque<ScanUnit>,
-        containers: Vec<ProviderContainer>,
-        scanned: Vec<CoverageRange>,
-        skipped: Vec<CoverageRange>,
-        diagnostics: Vec<Diagnostic>,
-        execution: ExecutionReport,
-    },
+    /// The scope's own entries, walked one container at a time.
+    Entries(EntryScope),
     /// The scope's class candidates, walked one container at a time.
     Walked(WalkedScope<'a>),
 }
 
-/// One container the provider enumerated, with the entry count its report established.
-struct ProviderContainer {
-    origin: ContainerOrigin,
-    known_entries: u64,
+/// Every entry of a scope, walked by the reader's incremental entry cursor.
+///
+/// The walk validates one container's directory at a time and hands one entry over per pull, so a
+/// nested container is materialized only when the walk *descends* into the entry that holds it, and
+/// an entry's own bytes are read only when a consumer asks for them. That validation is this
+/// invocation's own work — the ranges below state it, container by container — so the walk opens
+/// each container itself rather than being answered from a store or from a product another consumer
+/// happens to hold (the reader's `walked_container_facts` is that access). The containers it reached
+/// are the ones it may state a denominator for; a container behind the page's stop was never opened
+/// and stays unknown.
+struct EntryScope {
+    cursor: EntryCursor,
+    exhausted: bool,
 }
 
 /// The scope's class candidates, walked by the reader's incremental scope cursor.
@@ -1314,13 +1330,13 @@ struct WalkedScope<'a> {
 impl<'a> UnitStream<'a> {
     /// Opens the unit stream this request's scope and consumer schema need.
     ///
-    /// Opening reads nothing for a standalone snapshot and nothing for the walk: the
-    /// walk's first container is opened by its first pull, and the enumerated stream reads
-    /// the range it is about to hand over.
+    /// Opening reads nothing at all: a standalone snapshot's unit is its own root, a walk's
+    /// first container is opened by its first pull, and no stream collects a range it has not
+    /// been asked for yet.
     fn open(
         snapshot: &'a ArtifactSnapshot,
         request: &QueryRequest,
-        budget: &mut Budget,
+        _budget: &mut Budget,
     ) -> Result<Self> {
         match (snapshot.kind(), &request.physical.scope) {
             (ArtifactKind::StandaloneClass, PhysicalScope::SnapshotAll) => Ok(Self::Standalone {
@@ -1331,16 +1347,11 @@ impl<'a> UnitStream<'a> {
                 }),
                 bytes: snapshot.len(),
             }),
-            // A request that names the resource consumer asks about entries no other
-            // consumer can answer, so its range is the provider's own enumeration. Every
-            // other schema walks the scope's class candidates instead — but only where a
-            // scope really holds more than one container: a whole-snapshot scope *is* its
-            // root container, one directory product the provider's own enumeration
-            // publishes with its per-entry charges, its duplicate diagnostic and its
-            // ranges, and the walk would parse and bill exactly the same records before
-            // its first unit. The tree scope is the one where the walk changes the work:
-            // a nested container is read only when the scan reaches the entry holding it.
-            _ if !request.consumers.kinds.contains(&ConsumerKind::Resource)
+            // A request that does not name the resource consumer can only produce items from
+            // class candidates, so over a tree it walks them through the reader's class-only
+            // cursor — the same walk this file has always used for that scope, which reads one
+            // container at a time and descends only while the scan keeps pulling.
+            _ if !wants_resource(request)
                 && matches!(request.physical.scope, PhysicalScope::ArtifactTree { .. }) =>
             {
                 Ok(Self::Walked(WalkedScope {
@@ -1350,66 +1361,21 @@ impl<'a> UnitStream<'a> {
                     exhausted: false,
                 }))
             }
-            (ArtifactKind::Zip, PhysicalScope::SnapshotAll) => {
-                let report = snapshot.enumerate(budget)?;
-                let origin = root_origin(&report.snapshot);
-                let known_entries = match covered_end(&report.coverage.artifact_structural) {
-                    Some(end) => end,
-                    None => to_u64(report.entries.len())?,
-                };
-                let units = report
-                    .entries
-                    .iter()
-                    .map(|entry| ScanUnit {
-                        origin: origin.clone(),
-                        ordinal: entry.id.ordinal,
-                        kind: UnitKind::Entry(entry.clone()),
-                    })
-                    .collect();
-                Ok(Self::Enumerated {
-                    units,
-                    containers: vec![ProviderContainer {
-                        origin,
-                        known_entries,
-                    }],
-                    scanned: report.coverage.artifact_structural.scanned,
-                    skipped: report.coverage.artifact_structural.skipped,
-                    diagnostics: report.diagnostics,
-                    execution: report.execution,
-                })
-            }
-            // The tree provider rejects a non-ZIP snapshot itself; its error is
-            // propagated instead of being rewritten here.
-            (_, PhysicalScope::ArtifactTree { .. }) => {
-                let report = snapshot.enumerate_artifact_tree(budget)?;
-                let mut units = VecDeque::new();
-                let mut containers = Vec::new();
-                for container in &report.containers {
-                    for entry in &container.entries {
-                        units.push_back(ScanUnit {
-                            origin: container.origin.clone(),
-                            ordinal: entry.id.ordinal,
-                            kind: UnitKind::Entry(entry.clone()),
-                        });
-                    }
-                    let known_entries = match covered_end(&container.coverage.artifact_structural) {
-                        Some(end) => end,
-                        None => to_u64(container.entries.len())?,
-                    };
-                    containers.push(ProviderContainer {
-                        origin: container.origin.clone(),
-                        known_entries,
-                    });
-                }
-                Ok(Self::Enumerated {
-                    units,
-                    containers,
-                    scanned: report.coverage.artifact_structural.scanned,
-                    skipped: report.coverage.artifact_structural.skipped,
-                    diagnostics: report.diagnostics,
-                    execution: report.execution,
-                })
-            }
+            // Every other request asks about entries no class candidate carries — the
+            // resource consumer is the one that reads an entry which is not a class — so its
+            // range is the scope's entries, pulled one at a time. Nothing behind the page's
+            // stop is opened: a nested container is expanded only when the walk descends into
+            // the entry that holds it, and no entry's bytes are read before a consumer asks.
+            //
+            // This is also the whole-snapshot class-only request: the one container that scope
+            // *is* is the directory product the walk has to build before its first unit either
+            // way, and pulling its entries from the walk costs exactly what enumerating them
+            // into a report did — without building the report. A non-ZIP snapshot is refused by
+            // the walk itself, whose refusal is propagated instead of being rewritten here.
+            _ => Ok(Self::Entries(EntryScope {
+                cursor: snapshot.entry_cursor(&request.physical.scope)?,
+                exhausted: false,
+            })),
         }
     }
 
@@ -1417,32 +1383,21 @@ impl<'a> UnitStream<'a> {
     fn next_unit(&mut self, budget: &mut Budget) -> Result<Option<ScanUnit>> {
         match self {
             Self::Standalone { unit, .. } => Ok(unit.take()),
-            Self::Enumerated { units, .. } => Ok(units.pop_front()),
+            Self::Entries(scope) => scope.next_unit(budget),
             Self::Walked(walk) => walk.next_unit(budget),
-        }
-    }
-
-    /// The stream's own terminal state, when it stopped before the scan pulled anything.
-    fn execution(&self) -> Option<ExecutionReport> {
-        match self {
-            Self::Enumerated { execution, .. } => match execution {
-                ExecutionReport::Complete { .. } => None,
-                other => Some(other.clone()),
-            },
-            Self::Standalone { .. } | Self::Walked(_) => None,
         }
     }
 
     /// Whether this walk reached the end of the scope with nothing left unknown.
     ///
     /// An enumerated range is part of the stream by construction; an incremental walk is
-    /// only exhausted once it really returned the end of the scope.
+    /// only exhausted once it really returned the end of the scope *and* left no subtree
+    /// unread — a container the walk could not open is unknown, so the walk has not
+    /// established the scope's contents even when it walked past it.
     fn exhausted(&self) -> bool {
         match self {
             Self::Standalone { unit, .. } => unit.is_none(),
-            Self::Enumerated {
-                units, execution, ..
-            } => units.is_empty() && matches!(execution, ExecutionReport::Complete { .. }),
+            Self::Entries(scope) => scope.exhausted && scope.cursor.issue().is_none(),
             Self::Walked(walk) => walk.exhausted,
         }
     }
@@ -1451,15 +1406,27 @@ impl<'a> UnitStream<'a> {
     fn diagnostics(&self) -> &[Diagnostic] {
         match self {
             Self::Standalone { .. } => &[],
-            Self::Enumerated { diagnostics, .. } => diagnostics,
+            Self::Entries(scope) => scope.cursor.diagnostics(),
             Self::Walked(walk) => walk.cursor.diagnostics(),
+        }
+    }
+
+    /// The stop one walk recorded for a subtree it could not read, if any.
+    ///
+    /// A subtree that stays unknown bounds the *report* without ending the scan, so this is
+    /// merged into the pass's own issue once the pass is over; a stream that reported it as
+    /// its terminal state would claim more than the scan really stopped on.
+    fn subtree_issue(&self) -> Option<ExecutionReport> {
+        match self {
+            Self::Entries(scope) => scope.cursor.issue().cloned(),
+            Self::Standalone { .. } | Self::Walked(_) => None,
         }
     }
 
     /// The ordinal prefixes this walk examined, by container.
     fn examined(&self) -> &[ExaminedContainer] {
         match self {
-            Self::Standalone { .. } | Self::Enumerated { .. } => &[],
+            Self::Standalone { .. } | Self::Entries(_) => &[],
             Self::Walked(walk) => &walk.examined,
         }
     }
@@ -1471,12 +1438,17 @@ impl<'a> UnitStream<'a> {
     /// invocation examined, so a page limit, a continuation or a schema that never reads a
     /// unit's bytes shows up instead of a claim.
     ///
-    /// The two walks describe a container's remainder differently, and the difference is
-    /// the honest one: an enumerated container has a known entry count, so the ordinals no
-    /// unit reached are named as skipped; a walked container only establishes the prefix
-    /// this invocation looked at, so the range behind it stays *unknown* — it is not named
-    /// as examined and not claimed as empty, and the coverage state is `Partial` unless the
+    /// The walks describe a container's remainder differently, and the difference is the
+    /// honest one: an enumerated container has a known entry count, so the ordinals no unit
+    /// reached are named as skipped; a walked container only establishes the prefix this
+    /// invocation looked at, so the range behind it stays *unknown* — it is not named as
+    /// examined and not claimed as empty, and the coverage state is `Partial` unless the
     /// walk itself reached the end of the scope.
+    ///
+    /// The entry walk sits between the two, and for the same reason: every container it
+    /// *reached* states its own denominator (its directory was validated in full, so the
+    /// ordinals no unit of this invocation examined are named as skipped), while a container
+    /// it never opened states nothing at all — no range, no denominator, no empty claim.
     fn coverage_parts(
         &self,
         examined: &[ExaminedContainer],
@@ -1504,59 +1476,7 @@ impl<'a> UnitStream<'a> {
                 }
                 (scanned, skipped)
             }
-            Self::Enumerated {
-                containers,
-                scanned,
-                skipped,
-                ..
-            } => {
-                let mut scanned = scanned.clone();
-                let mut skipped = skipped.clone();
-                for container in containers {
-                    let id = &container.origin.current_container().0;
-                    let label = format!("container:{id}:xref_scan_entries");
-                    let known = container.known_entries;
-                    match examined
-                        .iter()
-                        .find(|entry| entry.container.0 == *id)
-                        .map(|entry| (entry.first.min(known), entry.last_exclusive.min(known)))
-                    {
-                        Some((first, last_exclusive)) => {
-                            if first > 0 {
-                                skipped.push(CoverageRange {
-                                    label: label.clone(),
-                                    start: 0,
-                                    end: first,
-                                });
-                            }
-                            if first < last_exclusive {
-                                scanned.push(CoverageRange {
-                                    label: label.clone(),
-                                    start: first,
-                                    end: last_exclusive,
-                                });
-                            }
-                            if last_exclusive < known {
-                                skipped.push(CoverageRange {
-                                    label,
-                                    start: last_exclusive,
-                                    end: known,
-                                });
-                            }
-                        }
-                        None => {
-                            if known > 0 {
-                                skipped.push(CoverageRange {
-                                    label,
-                                    start: 0,
-                                    end: known,
-                                });
-                            }
-                        }
-                    }
-                }
-                (scanned, skipped)
-            }
+            Self::Entries(scope) => scope.coverage_parts(examined),
             Self::Walked(_) => {
                 let scanned = examined
                     .iter()
@@ -1570,6 +1490,121 @@ impl<'a> UnitStream<'a> {
                 (scanned, Vec::new())
             }
         }
+    }
+}
+
+/// Whether one request names the consumer that reads an entry which is not a class.
+fn wants_resource(request: &QueryRequest) -> bool {
+    request.consumers.kinds.contains(&ConsumerKind::Resource)
+}
+
+impl EntryScope {
+    /// The next entry of the scope, or `None` at the end of the walk.
+    ///
+    /// The record the cursor hands over is the container's own verified record, so the unit is
+    /// built from it directly: the walk already checked the ordinal and the raw name against the
+    /// directory it parsed, and no entry behind the caller's stop is opened on the way.
+    fn next_unit(&mut self, budget: &mut Budget) -> Result<Option<ScanUnit>> {
+        let Some(entry) = self.cursor.next_entry(budget)? else {
+            self.exhausted = true;
+            return Ok(None);
+        };
+        Ok(Some(ScanUnit {
+            origin: entry.entry.id.origin.clone(),
+            ordinal: entry.entry.id.ordinal,
+            kind: UnitKind::Entry(entry.entry),
+        }))
+    }
+
+    /// The ranges this walk established, plus the pass's own examined prefixes.
+    ///
+    /// Every container the walk *opened* published its whole directory as validated work — the
+    /// same per-record charges the provider's own enumeration makes, and the one statement a
+    /// validated directory can make about itself — and the entries of it that no unit of this
+    /// invocation examined stay named as skipped. A container the walk stopped before opening
+    /// appears with the count its own directory declares and without one validated record: its
+    /// range is named as skipped, never as examined. A container the walk never reached at all
+    /// appears in neither side: its entry count was never established, so no range may claim it as
+    /// examined or as empty. The scope's own root container keeps the provider's label, because it
+    /// *is* the range a whole-snapshot request would have enumerated.
+    fn coverage_parts(
+        &self,
+        examined: &[ExaminedContainer],
+    ) -> (Vec<CoverageRange>, Vec<CoverageRange>) {
+        let mut scanned = Vec::new();
+        let mut skipped = Vec::new();
+        for (index, container) in self.cursor.containers().iter().enumerate() {
+            let id = &container.origin.current_container().0;
+            let known = container.entries;
+            let directory_label = if index == 0 {
+                "central_directory_entries".to_string()
+            } else {
+                format!("container:{id}:central_directory_entries")
+            };
+            let directory = (known > 0).then_some(CoverageRange {
+                label: directory_label,
+                start: 0,
+                end: known,
+            });
+            let label = format!("container:{id}:xref_scan_entries");
+            if !container.walked {
+                // The walk never opened this container: the count is the directory's own
+                // declaration, and not one of its records was validated or examined.
+                if let Some(range) = directory {
+                    skipped.push(range);
+                }
+                if known > 0 {
+                    skipped.push(CoverageRange {
+                        label,
+                        start: 0,
+                        end: known,
+                    });
+                }
+                continue;
+            }
+            if let Some(range) = directory {
+                scanned.push(range);
+            }
+            match examined
+                .iter()
+                .find(|entry| entry.container.0 == *id)
+                .map(|entry| (entry.first.min(known), entry.last_exclusive.min(known)))
+            {
+                Some((first, last_exclusive)) => {
+                    if first > 0 {
+                        skipped.push(CoverageRange {
+                            label: label.clone(),
+                            start: 0,
+                            end: first,
+                        });
+                    }
+                    if first < last_exclusive {
+                        scanned.push(CoverageRange {
+                            label: label.clone(),
+                            start: first,
+                            end: last_exclusive,
+                        });
+                    }
+                    if last_exclusive < known {
+                        skipped.push(CoverageRange {
+                            label,
+                            start: last_exclusive,
+                            end: known,
+                        });
+                    }
+                }
+                None => {
+                    if known > 0 {
+                        skipped.push(CoverageRange {
+                            label,
+                            start: 0,
+                            end: known,
+                        });
+                    }
+                }
+            }
+        }
+        (scanned, skipped)
     }
 }
 
@@ -1723,15 +1758,6 @@ fn merge_examined(
         }
     }
     examined
-}
-
-fn covered_end(dimension: &CoverageDimension) -> Option<u64> {
-    dimension
-        .scanned
-        .iter()
-        .chain(dimension.skipped.iter())
-        .map(|range| range.end)
-        .max()
 }
 
 fn root_origin(snapshot: &SnapshotId) -> ContainerOrigin {
