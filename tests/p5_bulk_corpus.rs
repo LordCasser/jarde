@@ -580,14 +580,14 @@ impl Billing {
 impl Billing {
     /// `flat-mixed`: four classes at one root and nothing nested.
     const FLAT_MIXED: Self = Self {
-        archive_entries: 96,
+        archive_entries: 8,
         entry_bytes: 1813,
         class_bytes: 1813,
         class_headers: 0,
         method_bodies: 17,
         ir_items: 1850,
         analysis_steps: 783,
-        result_items: 125,
+        result_items: 37,
         output_bytes: 4112,
     };
     /// `nested-mixed`: three containers, two of them nested, five classes.
@@ -598,14 +598,14 @@ impl Billing {
     /// below is the same shape with one store attached, and its two ledgers are where that difference
     /// is recorded — as counts of addressed reads, which is all either row states.
     const NESTED_MIXED: Self = Self {
-        archive_entries: 227,
-        entry_bytes: 18639,
+        archive_entries: 25,
+        entry_bytes: 8061,
         class_bytes: 2381,
         class_headers: 0,
         method_bodies: 26,
         ir_items: 3201,
         analysis_steps: 1242,
-        result_items: 266,
+        result_items: 64,
         output_bytes: 6083,
     };
     /// `two-origins-one-identity`: one class file behind two physical origins, and the only case with
@@ -615,50 +615,50 @@ impl Billing {
     /// why the run is `partial` for it. The row pins the cost of that shape; it does not claim a
     /// formula for it.
     const TWO_ORIGINS: Self = Self {
-        archive_entries: 130,
-        entry_bytes: 9940,
+        archive_entries: 43,
+        entry_bytes: 7522,
         class_bytes: 2686,
         class_headers: 4,
         method_bodies: 12,
         ir_items: 1555,
         analysis_steps: 642,
-        result_items: 130,
+        result_items: 43,
         output_bytes: 3093,
     };
     /// `many-method-class`: 107 members behind three read classes, one of them generated wide.
     const MANY_METHOD_CLASS: Self = Self {
-        archive_entries: 336,
+        archive_entries: 6,
         entry_bytes: 7683,
         class_bytes: 7683,
         class_headers: 0,
         method_bodies: 107,
         ir_items: 16940,
         analysis_steps: 7055,
-        result_items: 452,
+        result_items: 122,
         output_bytes: 25710,
     };
     /// `damaged-tail`: the readable classes only; the damaged entries cost their own attempts.
     const DAMAGED_TAIL: Self = Self {
-        archive_entries: 92,
+        archive_entries: 17,
         entry_bytes: 1881,
         class_bytes: 1019,
         class_headers: 0,
         method_bodies: 12,
         ir_items: 1555,
         analysis_steps: 642,
-        result_items: 110,
+        result_items: 35,
         output_bytes: 3093,
     };
     /// `deep-expression`: the two generated chains and the nested-evaluation sample.
     const DEEP_EXPRESSION: Self = Self {
-        archive_entries: 22,
+        archive_entries: 4,
         entry_bytes: 753,
         class_bytes: 753,
         class_headers: 0,
         method_bodies: 7,
         ir_items: 2443,
         analysis_steps: 871,
-        result_items: 36,
+        result_items: 18,
         output_bytes: 1854,
     };
 

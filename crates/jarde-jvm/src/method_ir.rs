@@ -42,10 +42,12 @@
 //! * [`MethodIr::constant_pool`] — the class's own constant pool as the same read decoded it,
 //!   which is where a reference's owner, name and descriptor and an `ldc`'s value live.
 //!
-//! Both are moved in, never copied, never re-decoded: the payload is what *that* run read. A
-//! consumer therefore has exactly one source for the polarity of a branch, the slot of a load and
-//! the value of a constant, and the compiler enforces it — there is no parameter left through
-//! which a caller could hand in a second opinion.
+//! Both travel with the payload and neither is re-decoded: the body is moved in, and the pool is
+//! read through the facts bundle of the very read that produced it, held by handle — one bundle per
+//! read, shared by every payload decoded from it, never a copy per method. A consumer therefore has
+//! exactly one source for the polarity of a branch, the slot of a load and the value of a constant,
+//! and the compiler enforces it — there is no parameter left through which a caller could hand in a
+//! second opinion.
 //!
 //! # The class's bootstrap table travels with them too (P3 2.1)
 //!
@@ -93,14 +95,22 @@
 //! * **Who reads it.** Any consumer that holds `&MethodIr`: 1.3's `jarde-java` reads the graph,
 //!   the frames, the names and the effects through those borrows and returns before the payload
 //!   is dropped.
-//! * **Why not `Arc`, a cache or a second lifetime.** One request produces one payload for one
-//!   consumer in a synchronous engine; there is nothing to share it with, no second reader that
-//!   could outlive the first, and no cross-request identity a cache could key on without deciding
-//!   a question (staleness against the bytes read) that no slice has asked. A cache would also
-//!   have to keep the work of an earlier request alive past the budget that paid for it, which is
-//!   exactly the accounting this pipeline is built to keep honest. If a future slice really needs
-//!   the tables of a finished request to outlive their scope, that is a new decision with its own
-//!   owner and budget story — not something this seam should assume on its behalf.
+//! * **Why the decode facts are shared by handle and the tables are not.** The tables of one run
+//!   are that run's own: a canonical graph, frames and names are derived values with no second
+//!   consumer, and nothing here shares them. The *facts bundle* the body was decoded from is the
+//!   opposite case — it is read once (by this request's own header read, or by the preparation of a
+//!   class whose methods are analysed one after another) and immutable, so `M` methods of one
+//!   prepared class hold `M` handles to one bundle instead of `M` copies of one constant pool and
+//!   one member table ([`crate::engine::analyze_prepared_method_ir`], and
+//!   [`jarde_reader::prepared::PreparedClass::facts_handle`] for the handle itself). Each payload
+//!   still states its own pool ([`MethodIr::constant_pool`]) and its own decoded body; what it does
+//!   not do is re-allocate what it did not derive.
+//! * **Why no cache and no second lifetime.** One request produces one payload for one consumer in a
+//!   synchronous engine, and the sharing above is a lifetime rather than a store: a payload keeps
+//!   the read's bundle alive exactly as long as the payload itself lives, and a class task that
+//!   prepared a class hands out one handle rather than deciding when a cache entry becomes stale.
+//!   Nothing here keeps the tables of a *finished* request alive, and no identity beyond the read a
+//!   payload is a payload of enters this seam.
 //!
 //! # Billing, stops and cancellation do not change here
 //!
@@ -132,8 +142,9 @@ pub use crate::ssa::{
 };
 
 use crate::ir::MethodAnalysisReport;
-use jarde_reader::classfile::{BootstrapMethodFacts, CpEntryFacts, MethodCodeFacts};
+use jarde_reader::classfile::{BootstrapMethodFacts, ClassFacts, CpEntryFacts, MethodCodeFacts};
 use jarde_reader::model::{JvmBytes, PhysicalMethodId};
+use std::sync::Arc;
 
 /// The access-flag bit a member sets when it is `static` (JVMS 4.6).
 const ACC_STATIC: u16 = 0x0008;
@@ -337,7 +348,16 @@ pub struct MethodIr {
     frames: Option<Box<FrameTable>>,
     ssa: Option<Box<SsaTable>>,
     code: Option<Box<MethodCodeFacts>>,
-    constant_pool: Vec<CpEntryFacts>,
+    /// The facts bundle of the read that decoded [`Self::code`], held as the **shared handle** of
+    /// that read ([`jarde_reader::prepared::PreparedClass::facts_handle`] for a prepared class, the
+    /// request's own header read otherwise).
+    ///
+    /// The class's constant pool is read through this handle ([`Self::constant_pool`]) instead of
+    /// being copied per payload: `M` methods of one prepared class share **one** pool allocation, its
+    /// member table and its attribute shells, and each payload keeps its own tables above it. The
+    /// direct path shares the bundle its own single read produced, so one request still produces one
+    /// pool.
+    facts: Option<Arc<ClassFacts>>,
     bootstrap_methods: Vec<BootstrapMethodFacts>,
     declaration: Option<Box<MethodDeclaration>>,
 }
@@ -345,17 +365,21 @@ pub struct MethodIr {
 impl MethodIr {
     /// One payload from the artifacts of one run, in the order the passes publish them.
     ///
-    /// `code`, `constant_pool` and `bootstrap_methods` are the facts the `raw_facts` pass read:
-    /// the decoded body, the class's own constant pool and its `BootstrapMethods` table. All three
-    /// are moved in beside the tables, and all three are present exactly when the graph is — the
-    /// graph is built from the decode they came out of, and a class that declares no bootstrap
-    /// table states that with an empty one.
+    /// `code`, `facts` and `bootstrap_methods` are the facts the `raw_facts` pass read: the decoded
+    /// body, the read's own facts bundle (whose constant pool [`Self::constant_pool`] reads) and the
+    /// class's `BootstrapMethods` table. All three travel with the tables, and all three are present
+    /// exactly when the graph is — the graph is built from the decode they came out of, and a class
+    /// that declares no bootstrap table states that with an empty one.
+    ///
+    /// `facts` is the **handle** of the read, not a copy of it: the direct entry hands over the bundle
+    /// its one header read produced, and a prepared class hands over the bundle its preparation
+    /// produced, which every method of that class shares.
     pub(crate) fn new(
         canonical: Option<Box<CanonicalCfg>>,
         frames: Option<Box<FrameTable>>,
         ssa: Option<Box<SsaTable>>,
         code: Option<Box<MethodCodeFacts>>,
-        constant_pool: Vec<CpEntryFacts>,
+        facts: Option<Arc<ClassFacts>>,
         bootstrap_methods: Vec<BootstrapMethodFacts>,
         declaration: Option<Box<MethodDeclaration>>,
     ) -> Self {
@@ -371,12 +395,16 @@ impl MethodIr {
             canonical.is_none() || code.is_some(),
             "the canonical graph is built from the decoded body: a payload holding a graph without its decode facts is not one run's artifact"
         );
+        debug_assert!(
+            code.is_some() == facts.is_some(),
+            "the pool travels with the read that decoded the body: a payload states a body and the facts it was read from, or neither"
+        );
         Self {
             canonical,
             frames,
             ssa,
             code,
-            constant_pool,
+            facts,
             bootstrap_methods,
             declaration,
         }
@@ -420,8 +448,16 @@ impl MethodIr {
     /// descriptor, an `ldc`'s constant. Together with [`Self::code`] it is one decode's answer to
     /// "what does this instruction name", which is why it travels with the payload instead of
     /// being resolved a second time by a consumer.
+    ///
+    /// It is read out of the run's own facts bundle, which the payload holds as a handle: the slice
+    /// this returns is the *same allocation* for every payload decoded from one read — the pointer
+    /// is the evidence a caller can check — and no method of a prepared class ever gets a copy of
+    /// it.
     pub fn constant_pool(&self) -> &[CpEntryFacts] {
-        &self.constant_pool
+        match &self.facts {
+            Some(facts) => &facts.constant_pool,
+            None => &[],
+        }
     }
 
     /// The class's `BootstrapMethods` table as the same header read decoded it; empty when the
@@ -534,7 +570,7 @@ mod tests {
             .expect("the assembled class declares `method`");
         let facts =
             method_code_facts(&bytes, member, &mut budget).expect("the assembled body decodes");
-        let pool = header.constant_pool.clone();
+        let pool = &header.constant_pool;
         let raw = raw_cfg(&facts, &mut budget).expect("the assembled body has a raw graph");
         let contexts = match call_contexts(&facts, &raw, header.major_version, &mut budget)
             .expect("the call-context walk runs")
@@ -573,7 +609,7 @@ mod tests {
             descriptor: b"()V",
             owner: b"Test",
             super_class: Some(b"java/lang/Object"),
-            pool: &pool,
+            pool,
             loader: &loader,
         };
         let table = match frames(&facts, &graph, &method, &mut budget).expect("the budget is ample")
@@ -593,7 +629,7 @@ mod tests {
             Some(table),
             Some(names),
             Some(Box::new(facts)),
-            pool,
+            Some(Arc::new(header)),
             Vec::new(),
             // These parts are assembled instead of read, so the payload states no member declaration:
             // the declaration facts (P3 3.1) come from the header read that locates the member, and

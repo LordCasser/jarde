@@ -12,6 +12,11 @@
 //! produced, and no exported constructor for a state it has not established.
 
 pub mod accounting;
+// The artifact module owns the immutable snapshots and their bounded reads, and with them the two
+// things a consumer of a container shares: the container facts some live handle still holds
+// (`ContainerFactsHandle`, handed out by a scope walk and by a prepared class read) and the
+// class-bytes ceiling a prepared class read is admitted under before anything of it is
+// materialized.
 pub mod artifact;
 pub mod budget;
 pub mod classfile;
@@ -32,17 +37,21 @@ pub mod modern;
 pub mod multi_release;
 // The prepared class view (bulk task 2.1) is a lifecycle of one trusted read, not a cache layer: a
 // class task holds one for as long as it decodes that class's methods, and every method consumer of
-// that class shares it by reference. It is a module of its own because it owns the multi-valued
-// method locator and the "one walk, one decoder" invariant the bulk operation's class granularity
-// rests on.
+// that class shares it — the structural payload by the handle `PreparedClass::facts_handle` hands
+// out, never by a copy of the constant pool or the member table. It is a module of its own because it
+// owns the multi-valued method locator and the "one walk, one decoder" invariant the bulk
+// operation's class granularity rests on.
 pub mod prepared;
 pub mod release_registry;
 pub mod runtime_matrix;
 // The incremental physical traversal cursor (bulk task 3.1) is a discovery handover, not a
 // report: it walks the containers a scope holds one entry at a time and hands over one class
-// candidate per pull, so a coordinator can keep at most one dispatch window outstanding. It is a
-// module of its own because it owns the walk order, the per-subtree "unknown" boundary and the
-// cancellation checks, none of which belong to the snapshot's materializing reads.
+// candidate per pull — together with the container it is inside, as the active handle
+// `ScopeCursor::container_facts` hands out — so a coordinator can keep at most one dispatch window
+// outstanding and a class task can read its own container without parsing the directory again. It is
+// a module of its own because it owns the walk order, the per-subtree "unknown" boundary, the
+// cancellation checks and the completeness it is allowed to state, none of which belong to the
+// snapshot's materializing reads.
 pub mod scope_cursor;
 #[cfg(any(test, feature = "test-support"))]
 mod test_fixtures;

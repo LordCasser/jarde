@@ -27,19 +27,27 @@
 //! charge per entry the directory parse examines, `check_nested_depth` per container the cursor
 //! descends into (the depth check the ancestor walk applies), and the container reads' own charges.
 //!
-//! # Failure and cancellation
+//! # Failure, cancellation and what "complete" means
 //!
 //! * The **root** container failing is an `Err`: there is no scope to walk and no prefix to report.
 //! * A **child** container failing records a [`Diagnostic`] carrying the physical position of the
 //!   entry it hangs from and leaves that subtree **unknown** — not walked, not counted, and never
 //!   reported as a complete denominator ([`ScopeCursor::coverage_state`] states it, and the caller
 //!   must not treat the items it got as the whole scope).
-//! * A budget stop or a cancellation is observed at every entry and ends the walk with `Err` as soon
-//!   as it is observed; the cursor then stays stopped, so a later call yields nothing.
+//! * The **request's own cancellation is observed before every item**, the standalone root and the
+//!   first entry of a container included: [`Budget::poll`] runs before the step is looked at, so a
+//!   cancelled request yields no candidate at all and the first `next_class` answers
+//!   [`Error::Cancelled`]. A budget stop or a cancellation ends the walk with `Err` as soon as it is
+//!   observed; the cursor then stays stopped, so a later call yields nothing.
+//! * [`ScopeCursor::coverage_state`] is `CompleteWithinSchema` only once the walk really reached the
+//!   **end of the scope** with nothing left unknown. A cursor that has yielded a prefix of a scope it
+//!   has not exhausted reports `Partial`, because "the denominator is not known yet" is exactly what a
+//!   progressive consumer has to be able to read from the cursor itself rather than infer from a
+//!   caller's own bookkeeping.
 
 use crate::artifact::{
-    ArtifactKind, ArtifactSnapshot, ContainerFacts, NestedArchiveState, child_container_facts,
-    root_origin, tree_diagnostic,
+    ArtifactKind, ArtifactSnapshot, ContainerFacts, ContainerFactsHandle, NestedArchiveState,
+    child_container_facts, root_origin, tree_diagnostic,
 };
 use crate::budget::{Budget, BudgetDimension};
 use crate::error::{Error, Result};
@@ -92,8 +100,15 @@ pub struct ScopeCursor {
     started: bool,
     /// Every failure that ended a subtree, with the physical position of the entry it hangs from.
     diagnostics: Vec<Diagnostic>,
-    /// Whether every container the scope holds was walked.
+    /// Whether every container the scope holds was walked *and* nothing of it was left unknown.
     complete: bool,
+    /// Whether the walk reached the end of the scope: the standalone root was yielded and the scope
+    /// found empty behind it, or the last container was left behind.
+    ///
+    /// A prefix of a scope that has not been exhausted cannot report a complete denominator, so this
+    /// flag is what [`ScopeCursor::coverage_state`] requires beside [`Self::complete`]. It is never
+    /// set for a walk that stopped — a stop leaves the scope unexhausted, which is the honest state.
+    exhausted: bool,
     /// Whether the walk has stopped; a stopped cursor yields nothing further.
     stopped: bool,
 }
@@ -139,6 +154,7 @@ impl ScopeCursor {
             started: false,
             diagnostics: Vec::new(),
             complete: true,
+            exhausted: false,
             stopped: false,
         })
     }
@@ -146,6 +162,26 @@ impl ScopeCursor {
     /// The snapshot this cursor walks.
     pub fn snapshot(&self) -> &SnapshotId {
         self.snapshot.id()
+    }
+
+    /// The verified facts of the container the cursor is currently walking, as an **active handle**
+    /// the caller may keep.
+    ///
+    /// The walk holds one container at a time — the one whose entries it is yielding — and this hands
+    /// that product out as the same strong reference the walk itself keeps
+    /// ([`crate::artifact::ContainerFactsHandle`]). A caller that dispatches the candidate elsewhere
+    /// (a class task that runs after the cursor has moved on) holds this handle for as long as it
+    /// needs the container, and every read of that container — the class entry's own verified read
+    /// and the loader binding query of a method request — is then answered from the same product
+    /// instead of parsing the directory again, whatever the caller's facts cache is doing.
+    ///
+    /// `None` two ways, and both are "this walk has no container facts to hand over": the cursor has
+    /// not opened a container yet (`next_class` opens the root on its first call), and a standalone
+    /// `CLASS` snapshot has no container at all.
+    pub fn container_facts(&self) -> Option<ContainerFactsHandle> {
+        self.stack.last().map(|walk| ContainerFactsHandle {
+            facts: Arc::clone(&walk.facts),
+        })
     }
 
     /// Every failure that ended a subtree, each carrying the physical position it hangs from.
@@ -157,13 +193,16 @@ impl ScopeCursor {
         &self.diagnostics
     }
 
-    /// Whether every container this scope holds was walked.
+    /// Whether every container this scope holds was walked, to the end.
     ///
-    /// `CompleteWithinSchema` is the walk reaching the end of the scope with no subtree left
-    /// unread; `Partial` is any subtree skipped or any failure that ended the walk, and it is the
-    /// state a caller has to check before treating its item count as a scope-wide denominator.
+    /// `CompleteWithinSchema` is the walk reaching the **end of the scope** with no subtree left
+    /// unread; `Partial` is everything else, and there are three ways to be there: the walk has not
+    /// gone far enough yet (a cursor that yielded one candidate of a scope it has not exhausted), a
+    /// subtree was skipped or a failure ended the walk, and the standalone root before the scope was
+    /// found empty behind it. It is the state a caller has to check before treating its item count as
+    /// a scope-wide denominator.
     pub fn coverage_state(&self) -> CoverageState {
-        if self.complete {
+        if self.exhausted && self.complete {
             CoverageState::CompleteWithinSchema
         } else {
             CoverageState::Partial
@@ -190,7 +229,13 @@ impl ScopeCursor {
     }
 
     /// One step of the walk: the next candidate, or `None` when the scope is exhausted.
+    ///
+    /// The request is polled **before** the step is looked at, so every item — the standalone root
+    /// and the first entry of a container included — is subject to the cancellation and the deadline
+    /// the caller's budget already holds. Reaching the end of the scope is what sets
+    /// [`ScopeCursor::coverage_state`]'s completeness; a stop or a failure leaves it unexhausted.
     fn advance(&mut self, budget: &mut Budget) -> Result<Option<ScopeClass>> {
+        budget.poll()?;
         if self.standalone_pending {
             self.standalone_pending = false;
             return Ok(Some(ScopeClass {
@@ -204,7 +249,9 @@ impl ScopeCursor {
         if !self.started {
             self.started = true;
             if self.snapshot.kind() != ArtifactKind::Zip {
-                // A standalone CLASS snapshot holds exactly its root, which the arm above yields.
+                // A standalone CLASS snapshot holds exactly its root, which the arm above yielded:
+                // the scope is exhausted behind the one item it has.
+                self.exhausted = true;
                 return Ok(None);
             }
             // The root container's own failure is an `Err`: the scope has no readable prefix at
@@ -212,6 +259,7 @@ impl ScopeCursor {
             // prefix as the container's contents.
             let root = root_origin(self.snapshot.id());
             let facts = self.snapshot.container_facts(&root, budget)?;
+            self.snapshot.hold_container_facts(&facts);
             self.stack.push(ContainerWalk { facts, position: 0 });
         }
         loop {
@@ -219,6 +267,9 @@ impl ScopeCursor {
             // cursor is even looked at, so a cancelled request neither examines nor yields it.
             budget.poll()?;
             let Some(index) = self.stack.len().checked_sub(1) else {
+                // The outermost container was left behind and nothing is above it: the walk reached
+                // the end of the scope, and only now can it state a complete denominator.
+                self.exhausted = true;
                 return Ok(None);
             };
             let position = self.stack[index].position;
@@ -244,7 +295,14 @@ impl ScopeCursor {
                     // container that hangs from it.
                     let child = child_container_facts(&self.stack[index].facts, position, budget);
                     match child {
-                        Ok(facts) => self.stack.push(ContainerWalk { facts, position: 0 }),
+                        Ok(facts) => {
+                            // The walk keeps the child's verified facts for as long as it is inside
+                            // that container, so a consumer of this walk — a class read, a binding
+                            // query — reaches the same product by origin instead of parsing the
+                            // directory again.
+                            self.snapshot.hold_container_facts(&facts);
+                            self.stack.push(ContainerWalk { facts, position: 0 })
+                        }
                         Err(error) if walk_stops(&error) => return Err(error),
                         Err(error) => {
                             // The subtree is left unknown and named where it hangs from; the rest

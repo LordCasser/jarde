@@ -426,3 +426,144 @@ fn a_nested_depth_limit_is_reported_the_way_the_tree_walk_reports_it() {
         "a refused descent does not raise the accepted-depth high water"
     );
 }
+
+#[test]
+fn a_walk_that_has_not_reached_the_end_reports_a_prefix_not_a_denominator() {
+    // The completeness plane is the reader's own statement about the scope, and a progressive
+    // consumer reads it *before* knowing whether more is coming: a cursor that has yielded one
+    // candidate of a scope it has not exhausted cannot state that the scope is covered, because the
+    // denominator it would be stating is not known yet. Only reaching the end of the scope (with
+    // nothing left unknown) makes it complete.
+    let (snapshot, mut budget) = open(nested_fixture(), limits());
+    let mut cursor = snapshot.scope_cursor(&tree_scope()).unwrap();
+    assert_eq!(
+        cursor.coverage_state(),
+        CoverageState::Partial,
+        "a cursor that has not walked anything yet states no coverage"
+    );
+    let first = cursor
+        .next_class(&mut budget)
+        .unwrap()
+        .expect("the fixture declares a class first");
+    assert_eq!(
+        first.entry.as_ref().unwrap().raw_name.0,
+        b"BOOT-INF/classes/App.class"
+    );
+    assert_eq!(
+        cursor.coverage_state(),
+        CoverageState::Partial,
+        "one candidate of a scope the walk has not finished is a prefix, not a denominator"
+    );
+    assert!(
+        cursor.diagnostics().is_empty(),
+        "and nothing failed: this is what 'not finished yet' looks like"
+    );
+
+    // The same cursor, walked to its end: now the plane may state a complete scope.
+    let rest = drain(&mut cursor, &mut budget);
+    assert_eq!(rest.len(), 2, "the two candidates after the first");
+    assert_eq!(
+        cursor.coverage_state(),
+        CoverageState::CompleteWithinSchema,
+        "the walk reached the end of an undamaged scope"
+    );
+}
+
+#[test]
+fn a_standalone_snapshot_reports_its_scope_complete_only_behind_its_one_root() {
+    // The standalone scope's one item is not the whole scope by itself: the walk still has to find
+    // that nothing follows it, which is what the next pull states.
+    let (snapshot, mut budget) = open(CLASS_FIXTURE.to_vec(), limits());
+    let mut cursor = snapshot.scope_cursor(&PhysicalScope::SnapshotAll).unwrap();
+    assert_eq!(cursor.coverage_state(), CoverageState::Partial);
+    let root = cursor
+        .next_class(&mut budget)
+        .unwrap()
+        .expect("the standalone root is the scope's one candidate");
+    assert!(root.entry.is_none(), "the standalone candidate is the root");
+    assert_eq!(
+        cursor.coverage_state(),
+        CoverageState::Partial,
+        "the walk has not been to the end of the scope yet"
+    );
+    assert_eq!(cursor.next_class(&mut budget).unwrap(), None);
+    assert_eq!(
+        cursor.coverage_state(),
+        CoverageState::CompleteWithinSchema,
+        "and now it has"
+    );
+}
+
+#[test]
+fn a_cancelled_request_yields_nothing_at_all_not_even_the_first_candidate() {
+    // Cancellation is observed before **every** item, the standalone root and the first entry of a
+    // container included: a request that was already cancelled neither examines an entry nor hands a
+    // candidate on, so a consumer can never receive an item from a request whose budget says stop.
+    let token = CancellationToken::new();
+    token.cancel();
+
+    let (zip_snapshot, _budget) = open(nested_fixture(), limits());
+    let mut zip_cursor = zip_snapshot.scope_cursor(&tree_scope()).unwrap();
+    let mut cancelled = Budget::with_cancellation_token(limits(), token.clone());
+    assert!(
+        matches!(
+            zip_cursor.next_class(&mut cancelled),
+            Err(Error::Cancelled { .. })
+        ),
+        "the tree walk observes the cancellation before its first entry"
+    );
+    assert_eq!(
+        zip_cursor.coverage_state(),
+        CoverageState::Partial,
+        "and a stopped walk never claims a complete scope"
+    );
+    assert_eq!(zip_cursor.next_class(&mut cancelled).unwrap(), None);
+
+    let (standalone, _budget) = open(CLASS_FIXTURE.to_vec(), limits());
+    let mut standalone_cursor = standalone
+        .scope_cursor(&PhysicalScope::SnapshotAll)
+        .unwrap();
+    assert!(
+        matches!(
+            standalone_cursor.next_class(&mut cancelled),
+            Err(Error::Cancelled { .. })
+        ),
+        "the standalone root is yielded only by a request that may still work"
+    );
+    assert_eq!(standalone_cursor.next_class(&mut cancelled).unwrap(), None);
+    assert_eq!(standalone_cursor.coverage_state(), CoverageState::Partial);
+}
+
+#[test]
+fn a_cancellation_after_a_candidate_keeps_the_prefix_it_confirmed() {
+    // The other half: a walk that was cancelled after it handed something over keeps what it
+    // handed over, states that the scope is not covered, and yields nothing more.
+    let token = CancellationToken::new();
+    let (snapshot, mut budget) = open(nested_fixture(), limits());
+    let mut cursor = snapshot.scope_cursor(&tree_scope()).unwrap();
+    let prefix = [cursor
+        .next_class(&mut budget)
+        .unwrap()
+        .expect("the fixture declares a class first")];
+    token.cancel();
+    let mut cancelled = Budget::with_cancellation_token(limits(), token.clone());
+    assert!(matches!(
+        cursor.next_class(&mut cancelled),
+        Err(Error::Cancelled { .. })
+    ));
+    assert_eq!(
+        budget.usage().archive_entries,
+        4,
+        "the prefix really was charged before the stop: the root's four entries"
+    );
+    assert_eq!(cursor.next_class(&mut cancelled).unwrap(), None);
+    assert_eq!(cursor.coverage_state(), CoverageState::Partial);
+    assert_eq!(
+        prefix
+            .iter()
+            .map(|item| item.entry.as_ref().unwrap().raw_name.0.clone())
+            .collect::<Vec<_>>(),
+        vec![b"BOOT-INF/classes/App.class".to_vec()],
+        "the candidate the walk already handed over stands"
+    );
+}
