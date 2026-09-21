@@ -272,3 +272,18 @@ review 的 R1–R8 全部有落点，逐条给出**修复位置与验证**；未
 **T1 进程门禁（普通 worker 栈）**：debug `a_deep_concatenation_chain_answers_in_a_subprocess`、release `the_deep_chain_answers_in_the_optimized_build`，以及本 change 新增的批量版 `a_deep_concatenation_chain_is_presented_by_a_bulk_worker`（debug，随 workspace 跑）与 `a_deep_chain_reaches_a_bulk_worker_in_the_optimized_build`（release，显式 `#[ignore]` 门禁）。批量版用 `--jobs 2` 把类任务放到库自己用**默认 stack_size** 创建的工作线程上；128 KiB 栈探针会以 `jarde-bulk-0 has overflowed its stack` abort，证明门禁针对的是 worker 栈而不是主线程。
 
 **不冒充**：本页出现的所有读数都来自 release 二进制在**本机**的运行，未控制 OS page cache、未记录同机负载；跨工具比较写在 `evidence/comparison-notes.md` 并声明两边产出单位不同。
+
+## 12. 默认配置裁决（任务 6.3 的当前结论，未完成项明列）
+
+**已裁定的部分（有实测支撑）**
+
+| 决策 | 值 | 依据 |
+| --- | --- | --- |
+| CLI `export` 的总量默认 | 16 个 counted 维度 = `1<<40`，墙钟 2 h | 默认配置下两个真实语料整包到达 `final`（bcprov 2,430 类/15,003 方法、s2-009 7,200 类/57,180 方法） |
+| 方法局部上限 | 任务单请求默认（16 MiB 输出 / 30 s 等），**不继承**整包 ceiling | 局部 512 B 时只有部分方法以 `StopReason::Budget{output_bytes}` 停止、`report.stop == None`、其余方法照常交付 |
+| 操作内保留 | 调用方 store 容量 `1<<14` answers / 128 MiB；CLI 默认附带，库不自行发明 | 无 store 时同一 s2-009 scope 在 30 s 墙钟内只推进到 5.7M `archive_entries`（应为 10,358）；附带后目录各解析一次 |
+| worker 默认 | `--jobs auto` = `available_parallelism()` 再按窗口缩减，两个值都发布 | 头部记录；窗口不足时缩减而不缩小单项容量 |
+
+**未裁定（需要架构决策，不在本轮）**：窗口的有序交付是当前第一瓶颈（`take_front` 等待≈墙钟 94%，采样 condvar 70–75%，jobs=8 比 4 慢 5–7%）。要动它需要换窗口设计（例如按类分批发布或允许更深的批次窗口），属结构性决策，不以"再调参数"收尾。此处如实记录为未完成，不勾选 6.3。
+
+**本轮新增的相关证据**：活动容器随任务交接后，同一 3 容器/8 条目/4 类 fixture 在每个 worker 数与三种 store 配置下 `archive_entries` 恒为 8（此前按类数增长到 50）；查询分页的"页满即停"与 descriptor 统一（数组一槽）不改变导出路径的计费口径，但会改变同语料的方法文本（接收者与数组参数拼写），因此任何跨版本耗时对照必须固定候选。
