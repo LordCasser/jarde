@@ -2,8 +2,13 @@
 //! `openspec/changes/add-demand-driven-core-results/verification.md` §7.3.
 //!
 //! ```text
-//! cargo run --release --example demand_workloads -- <artifact> <roots.json> <workload> <arm> [repeats]
+//! cargo run --release --example demand_workloads -- <artifact> <roots.json> <scope.json> <workload> <arm> [repeats]
 //! ```
+//!
+//! `scope` is the physical scope as JSON — `{"kind":"snapshot_all"}` or
+//! `{"kind":"artifact_tree","root_container":"root"}` — because a whole-package measurement must
+//! walk the same containers the CLI's own export walks; measuring a nested WAR through
+//! `snapshot_all` would quietly measure the root container instead of the artifact.
 //!
 //! `workload` is one of `nav-class`, `nav-decl`, `recover-one`, `sweep`, `expand`, `page-small`,
 //! `page-abandon`; `arm` is `essential` or `all`. Every run prints one JSON line with what the
@@ -106,10 +111,14 @@ impl RecoverySink for FirstDelivery {
     }
 }
 
-fn environment_request(snapshot: &ArtifactSnapshot, roots: Vec<LoadRoot>) -> EnvironmentRequest {
+fn environment_request(
+    snapshot: &ArtifactSnapshot,
+    roots: Vec<LoadRoot>,
+    scope_for_environment: PhysicalScope,
+) -> EnvironmentRequest {
     EnvironmentRequest {
         snapshot: snapshot.id().clone(),
-        scope: PhysicalScope::SnapshotAll,
+        scope: scope_for_environment.clone(),
         policy: EnvironmentPolicy::ExplicitClasspath { roots },
         profile: RuntimeProfile {
             java_release: 8,
@@ -148,6 +157,7 @@ fn run() -> Result<()> {
     let mut arguments = std::env::args().skip(1);
     let artifact = arguments.next().expect("an artifact path");
     let roots_path = arguments.next().expect("a roots document");
+    let scope_text = arguments.next().expect("a scope document");
     let workload = arguments.next().expect("a workload name");
     let arm = arguments.next().expect("an arm: essential or all");
     let repeats: usize = arguments
@@ -165,14 +175,22 @@ fn run() -> Result<()> {
 
     let engine = Engine::new();
     let roots = declared_roots(&roots_path);
-    let mut opened = Budget::new(limits()?);
+    let scope: PhysicalScope =
+        serde_json::from_str(&scope_text).expect("the scope document parses as a physical scope");
+    // The host holds a bounded store, as the MCP design says it does and as the CLI's own defaults
+    // do (change `add-parallel-bulk-recovery`, task 5.4). Without one a whole-package walk re-parses
+    // every container it revisits — measured at 5.7M `archive_entries` for the WAR this harness
+    // measures against 10,358 with a store — so a storeless sweep would measure a configuration
+    // nobody ships.
+    let capacity = jarde::FactsCapacity::new(1 << 14, 1 << 27);
+    let store = jarde::FactsCache::current(capacity);
+    let mut opened = Budget::new(limits()?).with_facts_cache(store.clone());
     let snapshot = engine.open(ArtifactInput::Path(PathBuf::from(&artifact)), &mut opened)?;
 
     // The class and member every workload works on: the first candidate the walk finds, so the
     // measurement is not confounded by the caller's choice of a favourable sample.
-    let mut discovery = Budget::new(limits()?);
-    let listing =
-        engine.list_class_declarations(&snapshot, &PhysicalScope::SnapshotAll, &mut discovery)?;
+    let mut discovery = Budget::new(limits()?).with_facts_cache(store.clone());
+    let listing = engine.list_class_declarations(&snapshot, &scope, &mut discovery)?;
     let class_name = listing
         .items
         .first()
@@ -181,7 +199,7 @@ fn run() -> Result<()> {
     let view = performed(
         engine.class_view(
             &snapshot,
-            &PhysicalScope::SnapshotAll,
+            &scope,
             &ClassViewRequest {
                 class: ClassRef::Name {
                     class: ClassNameQuery::internal(
@@ -207,11 +225,11 @@ fn run() -> Result<()> {
         let mut returned_bytes = 0_u64;
         let (class_headers, method_bodies, ir_items, code_bytes, detail) = match workload.as_str() {
             "nav-class" => {
-                let mut budget = Budget::new(limits()?);
+                let mut budget = Budget::new(limits()?).with_facts_cache(store.clone());
                 let report = performed(
                     engine.class_view(
                         &snapshot,
-                        &PhysicalScope::SnapshotAll,
+                        &scope,
                         &ClassViewRequest {
                             class: ClassRef::Definition {
                                 definition: view.class.clone(),
@@ -237,11 +255,11 @@ fn run() -> Result<()> {
                 )
             }
             "nav-decl" => {
-                let mut budget = Budget::new(limits()?);
+                let mut budget = Budget::new(limits()?).with_facts_cache(store.clone());
                 let report = performed(
                     engine.class_view(
                         &snapshot,
-                        &PhysicalScope::SnapshotAll,
+                        &scope,
                         &ClassViewRequest {
                             class: ClassRef::Definition {
                                 definition: view.class.clone(),
@@ -273,9 +291,9 @@ fn run() -> Result<()> {
                     method: MethodRef::Method {
                         method: member.clone(),
                     },
-                    environment: environment_request(&snapshot, roots.clone()),
+                    environment: environment_request(&snapshot, roots.clone(), scope.clone()),
                 };
-                let mut budget = Budget::new(limits()?);
+                let mut budget = Budget::new(limits()?).with_facts_cache(store.clone());
                 let report = performed(
                     engine.recover_target_with_evidence(
                         slice::from_ref(&snapshot),
@@ -308,7 +326,7 @@ fn run() -> Result<()> {
                     // A later request states the artifact the first run committed, under its own
                     // budget, and the run compares what it commits against it.
                     if let Some(binding) = recovery.artifact.binding() {
-                        let mut follow_up = Budget::new(limits()?);
+                        let mut follow_up = Budget::new(limits()?).with_facts_cache(store.clone());
                         let expanded = performed(
                             engine.recover_target_with_evidence(
                                 slice::from_ref(&snapshot),
@@ -339,7 +357,7 @@ fn run() -> Result<()> {
                 )
             }
             "sweep" => {
-                let mut budget = Budget::new(limits()?);
+                let mut budget = Budget::new(limits()?).with_facts_cache(store.clone());
                 let mut sink = FirstDelivery::default();
                 let workers = std::thread::available_parallelism()
                     .map(|value| value.get())
@@ -347,7 +365,7 @@ fn run() -> Result<()> {
                 let report = engine.recover_all(
                     slice::from_ref(&snapshot),
                     &BulkRecoveryRequest::for_scope(
-                        environment_request(&snapshot, roots.clone()),
+                        environment_request(&snapshot, roots.clone(), scope.clone()),
                         workers,
                         limits()?,
                     )
@@ -374,7 +392,7 @@ fn run() -> Result<()> {
             }
             "page-small" | "page-abandon" => {
                 let pages = if workload == "page-abandon" { 2 } else { 1 };
-                let mut budget = Budget::new(limits()?);
+                let mut budget = Budget::new(limits()?).with_facts_cache(store.clone());
                 let mut cursor: Option<jarde::QueryCursor> = None;
                 let mut items = 0_u64;
                 let mut last = None;
@@ -390,7 +408,7 @@ fn run() -> Result<()> {
                             },
                             physical: PhysicalView {
                                 snapshot: snapshot.id().clone(),
-                                scope: PhysicalScope::SnapshotAll,
+                                scope: scope.clone(),
                             },
                             consumers: jarde::ConsumerSchema::new(
                                 1,
@@ -436,14 +454,23 @@ fn run() -> Result<()> {
             }
         };
         let total = started.elapsed();
-        println!(
-            "{{\"workload\":\"{workload}\",\"arm\":\"{arm}\",\"run\":{repeat},\
-             \"first_micros\":{},\"total_micros\":{},\"returned_bytes\":{returned_bytes},\
-             \"class_headers\":{class_headers},\"method_bodies\":{method_bodies},\
-             \"ir_items\":{ir_items},\"code_bytes\":{code_bytes},\"detail\":\"{detail}\"}}",
-            first.map_or(0, |value| value.as_micros()),
-            total.as_micros(),
-        );
+        // The line is built by the same serializer the rest of this repository writes JSON with: a
+        // detail string that happens to hold quotes (`presentation=["content", "quality"]`) is data,
+        // and hand-rolled quoting would silently produce a document no reader can parse.
+        let sample = serde_json::json!({
+            "workload": workload,
+            "arm": arm,
+            "run": repeat,
+            "first_micros": first.map_or(0, |value| value.as_micros()),
+            "total_micros": total.as_micros(),
+            "returned_bytes": returned_bytes,
+            "class_headers": class_headers,
+            "method_bodies": method_bodies,
+            "ir_items": ir_items,
+            "code_bytes": code_bytes,
+            "detail": detail,
+        });
+        println!("{sample}");
     }
     Ok(())
 }

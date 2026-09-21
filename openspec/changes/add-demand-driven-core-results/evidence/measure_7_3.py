@@ -16,6 +16,10 @@ import sys
 import time
 
 EXAMPLE = "./target/release/examples/demand_workloads"
+# The scope every workload must run under, as the CLI's own operations state it: a whole package is
+# walked as a tree (nested containers included), a standalone class as the snapshot it is.
+TREE_SCOPE = '{"kind":"artifact_tree","root_container":"root"}'
+CLASS_SCOPE = '{"kind":"snapshot_all"}'
 WORKLOADS = [
     "nav-class",
     "nav-decl",
@@ -28,11 +32,11 @@ WORKLOADS = [
 ARMS = ["essential", "all"]
 
 
-def one_run(artifact, roots, workload, arm):
+def one_run(artifact, roots, scope, workload, arm):
     """One measured run: the example's own JSON line plus this process's peak RSS."""
     started = time.perf_counter()
     process = subprocess.run(
-        ["/usr/bin/time", "-l", EXAMPLE, artifact, roots, workload, arm, "1"],
+        ["/usr/bin/time", "-l", EXAMPLE, artifact, roots, scope, workload, arm, "1"],
         capture_output=True,
         text=True,
     )
@@ -44,8 +48,13 @@ def one_run(artifact, roots, workload, arm):
     sample = json.loads(line)
     sample["process_wall_seconds"] = round(wall, 4)
     for entry in process.stderr.splitlines():
+        # `/usr/bin/time -l` on macOS prints the peak in bytes, number first and column name after;
+        # a machine whose `time` prints it the other way round would still be read, because the first
+        # numeric field of the named line is what is taken.
         if "maximum resident set size" in entry:
-            sample["max_rss_bytes"] = int(entry.split()[-1])
+            numbers = [field for field in entry.split() if field.isdigit()]
+            if numbers:
+                sample["max_rss_bytes"] = int(numbers[0])
     return sample
 
 
@@ -54,18 +63,19 @@ def main():
     repeats = int(sys.argv[4]) if len(sys.argv) > 4 else 10
     workloads = sys.argv[5:] or WORKLOADS
 
+    scope = CLASS_SCOPE if artifact.endswith(".class") else TREE_SCOPE
     samples = []
     for repeat in range(repeats):
         for workload in workloads:
             for arm in ARMS:
-                sample = one_run(artifact, roots, workload, arm)
+                sample = one_run(artifact, roots, scope, workload, arm)
                 sample["repeat"] = repeat
                 sample["label"] = label
                 samples.append(sample)
                 print(json.dumps(sample, sort_keys=True), flush=True)
 
     print()
-    print(f"=== {label}: {repeats} interleaved repeats ===")
+    print(f"=== {label}: {repeats} interleaved repeats, scope {scope} ===")
     header = f"{'workload':<13} {'arm':<10} {'first ms (median/min/max)':<30} " \
              f"{'total ms (median/min/max)':<30} {'returned B':>12} {'RSS MiB':>9}"
     print(header)
