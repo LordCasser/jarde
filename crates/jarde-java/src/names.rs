@@ -32,6 +32,13 @@
 //!    is [`crate::reuse`]'s decision, taken from the same run's own SSA; this module only decides the
 //!    spelling of the variables that decision states.
 //!
+//! One slot is neither named from evidence nor from an ordinal: local slot 0 of a member that is not
+//! `static` holds the **receiver** (JVMS 4.10.1.9), which is written [`RECEIVER`] wherever the body
+//! reads it, whatever the debug table states for that slot and whether or not it states anything at
+//! all. A caller states that its member is one of those with
+//! [`NameTable::build_with_receiver`], from the member's own `ACC_STATIC` fact — never from a name
+//! the class file happens to carry.
+//!
 //! The grammar accepted here is the practical subset for names that reach a recovered body: ASCII
 //! `$`/`_`/letters followed by those plus digits. A non-ASCII identifier character is treated as
 //! unspellable and aliased — widening the accepted grammar is a 3.1 question with its own corpus
@@ -102,6 +109,17 @@ pub const JAVA_KEYWORDS: &[&str] = &[
     "while",
     "_",
 ];
+
+/// The text the receiver of a member's body is written as (JVMS 4.10.1.9).
+///
+/// Local slot 0 of a member that is not `static` holds the receiver, and the receiver is written as
+/// the keyword in every position the body reads that slot in — a field read `this.f`, a call
+/// `this.m()`, an argument `f(this)`. The spelling is a fact about the **slot** and not a name read
+/// out of the class: a `LocalVariableTable` may call slot 0 `this`, `this$0`, `self` or nothing at
+/// all, and the slot is the receiver under every one of those. It is the one spelling this module
+/// writes that is a Java keyword, which is what makes it collision-free: no local or parameter a
+/// body declares can carry it, because Java forbids declaring it.
+pub const RECEIVER: &str = "this";
 
 /// Whether `text` is an identifier this layer is willing to write.
 pub fn is_java_identifier(text: &str) -> bool {
@@ -335,7 +353,30 @@ impl NameTable {
     /// table states a name for every variable of every slot the body has: it is the local slots the
     /// body's frames declare, not the debug names it happens to carry, that say which slots a
     /// recovered statement can mention.
+    ///
+    /// Slot 0 of this layout is a **parameter**, so this is the constructor for a `static` member —
+    /// or for a caller that stated no member flags. A body whose slot 0 holds the receiver takes
+    /// [`Self::build_with_receiver`] instead.
     pub fn build(parameters: u16, slots: u16, evidence: &[SlotEvidence]) -> Self {
+        Self::decide(parameters, slots, evidence, false)
+    }
+
+    /// The same table for a body whose slot 0 holds the **receiver** (JVMS 4.10.1.9).
+    ///
+    /// Slot 0 is then written as [`RECEIVER`] wherever the body reads it, whatever the evidence
+    /// states for the slot: a debug name that happens to be `this` must not be taken for a keyword
+    /// to alias into `this_`, and a body with no debug table must get `this` rather than the ordinal
+    /// name `arg0`. Which member takes a receiver is the caller's own fact — the member's
+    /// `ACC_STATIC` bit, read from the member declaration the same run already holds — and this
+    /// module is *told* the answer instead of reading a name or a slot ordinal to find it.
+    ///
+    /// Every other slot keeps the rules [`Self::build`] states for it.
+    pub fn build_with_receiver(parameters: u16, slots: u16, evidence: &[SlotEvidence]) -> Self {
+        Self::decide(parameters, slots, evidence, true)
+    }
+
+    /// The one naming walk both constructors above state their input to.
+    fn decide(parameters: u16, slots: u16, evidence: &[SlotEvidence], receiver: bool) -> Self {
         let mut table = Self {
             names: BTreeMap::new(),
             aliased: 0,
@@ -346,18 +387,22 @@ impl NameTable {
             .max(u16::try_from(evidence.len()).unwrap_or(u16::MAX));
         let mut taken: BTreeMap<String, LocalVariable> = BTreeMap::new();
         for slot in 0..slots {
+            // The receiver is the whole of slot 0: every variable the evidence states for that slot
+            // is a read of the same instance, so none of them is spelled as the evidence names it.
+            let receiver_slot = receiver && slot == 0;
             let vars = evidence
                 .get(usize::from(slot))
                 .map_or_else(|| SlotEvidence::Unnamed.vars(), SlotEvidence::vars);
             for (index, raw) in vars.into_iter().enumerate() {
                 let variable = LocalVariable::new(slot, u16::try_from(index).unwrap_or(u16::MAX));
-                let (text, aliased) = match &raw {
-                    None => {
+                let (text, aliased) = match (receiver_slot, &raw) {
+                    (true, _) => (RECEIVER.to_string(), None),
+                    (false, None) => {
                         table.invented += 1;
                         (invented_name(slot, parameters), None)
                     }
-                    Some(raw) if is_java_identifier(raw) => (raw.clone(), None),
-                    Some(raw) => (alias_for(raw), Some(AliasReason::Unspellable)),
+                    (false, Some(raw)) if is_java_identifier(raw) => (raw.clone(), None),
+                    (false, Some(raw)) => (alias_for(raw), Some(AliasReason::Unspellable)),
                 };
                 let (text, aliased) = match taken.get(&text) {
                     None => (text, aliased),
@@ -501,6 +546,83 @@ mod tests {
             table,
             "the same evidence, the same table"
         );
+    }
+
+    #[test]
+    fn the_receiver_is_spelled_by_its_identity_and_not_by_the_name_the_table_states() {
+        // A `LocalVariableTable` that names slot 0 `this` — what javac writes for an instance
+        // member — is not a name to alias: the slot is the receiver (JVMS 4.10.1.9) and the keyword
+        // is how it is written. The evidence stays readable as evidence.
+        let named = NameTable::build_with_receiver(
+            3,
+            3,
+            &[
+                SlotEvidence::Whole("this".to_string()),
+                SlotEvidence::Whole("left".to_string()),
+                SlotEvidence::Whole("right".to_string()),
+            ],
+        );
+        let receiver = LocalVariable::whole(0);
+        assert_eq!(named.text(receiver), Some(RECEIVER));
+        assert_eq!(
+            named.name(receiver).and_then(RenderedName::raw),
+            Some("this"),
+            "the record still states what the table said"
+        );
+        assert_eq!(
+            named.name(receiver).and_then(RenderedName::aliased),
+            None,
+            "the receiver is not an alias of the name it was given"
+        );
+        assert!(!named.any_aliased());
+        assert_eq!(named.invented(), 0);
+        // Every other slot keeps the rule it had.
+        assert_eq!(named.text(LocalVariable::whole(1)), Some("left"));
+        assert_eq!(named.text(LocalVariable::whole(2)), Some("right"));
+
+        // The spelling does not come from the table at all: `this$0`, `self` and no record at all
+        // are one spelling.
+        for evidence in [
+            SlotEvidence::Whole("this$0".to_string()),
+            SlotEvidence::Whole("self".to_string()),
+            SlotEvidence::Unnamed,
+        ] {
+            let table = NameTable::build_with_receiver(2, 2, &[evidence, SlotEvidence::Unnamed]);
+            assert_eq!(table.text(receiver), Some(RECEIVER));
+            assert_eq!(
+                table.text(LocalVariable::whole(1)),
+                Some("arg1"),
+                "the parameter above the receiver keeps the ordinal rule"
+            );
+            assert_eq!(
+                table.invented(),
+                1,
+                "only the parameter without evidence was named by its ordinal"
+            );
+            assert!(!table.any_aliased());
+        }
+    }
+
+    #[test]
+    fn a_static_members_slot_zero_is_a_parameter_and_keeps_its_own_naming() {
+        // The counterexample: slot 0 of a `static` member is its first parameter (or a local), so
+        // the ordinal rule and the keyword alias apply to it exactly as to every other slot — the
+        // receiver spelling is not a decoration of slot 0.
+        let unnamed = NameTable::build(1, 2, &[]);
+        assert_eq!(unnamed.text(LocalVariable::whole(0)), Some("arg0"));
+        assert_ne!(unnamed.text(LocalVariable::whole(0)), Some(RECEIVER));
+
+        let named = NameTable::build(2, 2, &[SlotEvidence::Whole("seed".to_string())]);
+        assert_eq!(named.text(LocalVariable::whole(0)), Some("seed"));
+        assert_eq!(named.text(LocalVariable::whole(1)), Some("arg1"));
+
+        // A debug table that names a `static` method's slot 0 `this` states a name Java cannot
+        // spell, and it takes the alias path it took before: the fact that decides the receiver is
+        // the member's own `ACC_STATIC`, never the name in front of it.
+        let aliased = NameTable::build(1, 1, &[SlotEvidence::Whole("this".to_string())]);
+        assert_eq!(aliased.text(LocalVariable::whole(0)), Some("this_"));
+        assert_eq!(aliased.aliased(), 1);
+        assert!(aliased.any_aliased());
     }
 
     #[test]

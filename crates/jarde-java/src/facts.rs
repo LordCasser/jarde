@@ -209,6 +209,23 @@ impl MethodFacts {
         matches!(self.access_flags, Some(flags) if flags & ACC_BRIDGE != 0)
     }
 
+    /// Whether this member's slot 0 holds a receiver, which JVMS 4.10.1.9 puts there.
+    ///
+    /// The member's own `ACC_STATIC` bit is the whole answer: an instance method and a constructor
+    /// take a receiver, a `static` method and a static initializer do not. Nothing else is read —
+    /// not the descriptor, not the number of parameter slots, and not a debug name that happens to
+    /// spell `this` — because the presentation writes `this` for exactly this slot and a keyword
+    /// written into a member that never had a receiver would be a body no compiler accepts.
+    ///
+    /// A caller that stated no flags states no receiver either: the run writes `arg<slot>`/the
+    /// debug name for slot 0 then, which is the same "no fact, no claim" answer
+    /// [`Self::parameter_types`] gives the flagless case. Unlike the slot *placement* that method
+    /// derives from a stated count, a receiver is an identity only the flags state, so an absent
+    /// answer here stays absent.
+    pub fn has_receiver(&self) -> bool {
+        matches!(self.access_flags, Some(flags) if flags & ACC_STATIC == 0)
+    }
+
     /// The method's own name as the class file spells it.
     pub fn name(&self) -> &str {
         &self.name
@@ -865,5 +882,43 @@ mod tests {
         assert!(CompareOp::JumpIfGreaterOrEqual.reads_two());
         assert!(!CompareOp::JumpIfZero.reads_two());
         assert!(!CompareOp::JumpIfNotNull.reads_two());
+    }
+
+    #[test]
+    fn the_receiver_is_decided_by_the_members_own_static_flag_and_by_nothing_else() {
+        // JVMS 4.10.1.9: slot 0 holds the receiver exactly when the member is not `static`. A
+        // constructor and an instance method take one; a `static` method and a static initializer do
+        // not; and a caller that stated no flags states no receiver — the ordinal naming then covers
+        // slot 0, which is the answer this layer gives instead of writing a `this` it cannot prove.
+        assert!(
+            MethodFacts::new("value", "()I", 1)
+                .with_access_flags(ACC_PUBLIC)
+                .has_receiver()
+        );
+        assert!(
+            MethodFacts::new("<init>", "()V", 1)
+                .with_access_flags(0)
+                .has_receiver()
+        );
+        assert!(
+            !MethodFacts::new("of", "(I)LH;", 1)
+                .with_access_flags(ACC_PUBLIC | ACC_STATIC)
+                .has_receiver()
+        );
+        assert!(
+            !MethodFacts::new("<clinit>", "()V", 0)
+                .with_access_flags(ACC_STATIC)
+                .has_receiver()
+        );
+        assert!(!MethodFacts::new("value", "()I", 1).has_receiver());
+        // The flag is read, never a name or a count: the same identity without the flags answers
+        // `false`, and a `static` member whose count places its parameters as if it took a receiver
+        // answers `false` too.
+        assert!(!MethodFacts::new("of", "(I)LH;", 2).has_receiver());
+        assert!(
+            !MethodFacts::new("value", "()I", 1)
+                .with_access_flags(ACC_PUBLIC | ACC_STATIC)
+                .has_receiver()
+        );
     }
 }

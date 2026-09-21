@@ -380,7 +380,14 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         request.facts.debug_locals(),
         &build::resource_slots(&recovered.regions),
     );
-    let names = NameTable::build(request.facts.method().parameters(), slots, reuse.evidence());
+    let names = if request.facts.method().has_receiver() {
+        // Slot 0 holds the receiver (JVMS 4.10.1.9), so it is spelled as one: the answer comes from
+        // the member's own flags and from nothing else, which is why the naming is told it instead of
+        // finding it out from a debug name or a slot ordinal.
+        NameTable::build_with_receiver(request.facts.method().parameters(), slots, reuse.evidence())
+    } else {
+        NameTable::build(request.facts.method().parameters(), slots, reuse.evidence())
+    };
     // The two shapes this run decides *before* a single statement is written, each from this run's
     // own tables: the concatenation chains the body builds (P3 2.2) and the bridge verdict for the
     // member itself, when its declaration or its body makes it one. Both are decisions about the

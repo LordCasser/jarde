@@ -32,7 +32,7 @@ use jarde_java::{
 };
 use jarde_jvm::engine::analyze_method_ir;
 use jarde_jvm::environment::ResolutionEnvironment;
-use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest, Quality, Representation};
+use jarde_jvm::ir::{AnalysisStage, MethodAnalysisRequest, Quality, Representation, SyntaxStatus};
 use jarde_reader::artifact::{ArtifactInput, ArtifactSnapshot};
 use jarde_reader::budget::{Budget, Limits};
 use jarde_reader::classfile::{class_facts, method_code_facts};
@@ -1273,7 +1273,7 @@ fn a_declared_bridge_is_presented_as_the_forward_it_is_with_the_cast_it_erases()
         report.text
     );
     assert!(
-        report.text.contains("return self.real();"),
+        report.text.contains("return this.real();"),
         "{}",
         report.text
     );
@@ -1325,7 +1325,7 @@ fn a_bridge_without_a_cast_is_presented_without_any_erasure() {
         vec![Some("self".into())],
     );
     assert!(
-        report.text.contains("return self.real();"),
+        report.text.contains("return this.real();"),
         "{}",
         report.text
     );
@@ -1389,7 +1389,7 @@ fn a_bridge_that_does_something_besides_forward_is_refused_and_its_body_kept() {
     // the member, and the store it performs keeps its statement.
     assert_eq!(report.representation, Representation::Java);
     assert!(
-        report.text.contains("self.real();") && report.text.contains("return local1;"),
+        report.text.contains("this.real();") && report.text.contains("return local1;"),
         "{}",
         report.text
     );
@@ -1692,7 +1692,7 @@ fn a_synthetic_accessors_call_site_is_presented_as_the_field_access_it_forwards(
     assert_eq!(report.representation, Representation::Java);
     assert_eq!(report.quality, Quality::Structured);
     assert!(report.text.contains("int local1 = 0;"), "{}", report.text);
-    assert!(report.text.contains("return self.f;"), "{}", report.text);
+    assert!(report.text.contains("return this.f;"), "{}", report.text);
 
     // The evidence: the call site, the member the class declared (with its flags), the field the
     // member's own body reads, and which of the two bodies it is.
@@ -1723,7 +1723,7 @@ fn a_synthetic_accessors_call_site_is_presented_as_the_field_access_it_forwards(
         .source_map
         .segments()
         .iter()
-        .find(|segment| segment.text(&report.text) == "self.f")
+        .find(|segment| segment.text(&report.text) == "this.f")
         .expect("the field access is a node of its own");
     assert_eq!(field.origin().primary().bci(), 3);
     assert_eq!(field.origin().primary().provenance(), Provenance::Direct);
@@ -1747,7 +1747,7 @@ fn a_write_accessor_becomes_the_assignment_it_performs() {
     );
     assert!(report.produced(), "{:?}", report.stop());
     assert_eq!(report.representation, Representation::Java);
-    assert!(report.text.contains("self.f = value;"), "{}", report.text);
+    assert!(report.text.contains("this.f = value;"), "{}", report.text);
     assert_eq!(report.accessors.len(), 1);
     let accessor = &report.accessors[0];
     assert!(accessor.presented());
@@ -1784,7 +1784,7 @@ fn an_accessor_whose_body_does_more_than_forward_is_refused() {
     );
     assert_eq!(refusal.rule.citation(), "accessor@1");
     // The call it had is the call it keeps: nothing about the member's body is presented.
-    assert!(report.text.contains("access$200(self)"), "{}", report.text);
+    assert!(report.text.contains("access$200(this)"), "{}", report.text);
 }
 
 #[test]
@@ -1820,7 +1820,7 @@ fn a_member_the_class_declares_without_a_body_is_refused_as_itself() {
         "and never as a member the class does not declare: {}",
         refusal.message
     );
-    assert!(report.text.contains("access$100(self)"), "{}", report.text);
+    assert!(report.text.contains("access$100(this)"), "{}", report.text);
 }
 
 #[test]
@@ -1833,7 +1833,7 @@ fn the_anchor_of_a_presented_field_access_states_the_member_its_bci_is_in() {
     let report = present(&class, b"both_fields", b"()I", 1, vec![Some("self".into())]);
     assert!(report.produced(), "{:?}", report.stop());
     assert!(
-        report.text.contains("return self.f + self.f;"),
+        report.text.contains("return this.f + this.f;"),
         "{}",
         report.text
     );
@@ -1853,7 +1853,7 @@ fn the_anchor_of_a_presented_field_access_states_the_member_its_bci_is_in() {
                 .into_iter()
                 .next()
                 .unwrap_or_else(|| panic!("the call site at BCI {call_site} anchors a node"));
-            assert_eq!(node.text(&report.text), "self.f", "{}", report.text);
+            assert_eq!(node.text(&report.text), "this.f", "{}", report.text);
             let derived = node.origin().derived();
             assert_eq!(derived.len(), 1);
             assert_eq!(
@@ -1911,7 +1911,7 @@ fn a_member_the_class_did_not_declare_synthetic_is_not_an_accessor() {
         "{}",
         refusal.message
     );
-    assert!(report.text.contains("access$300(self)"), "{}", report.text);
+    assert!(report.text.contains("access$300(this)"), "{}", report.text);
 }
 
 #[test]
@@ -1931,7 +1931,7 @@ fn a_run_with_no_member_table_states_the_table_it_is_missing() {
         refusal.requirement.as_deref(),
         Some("the `class members` table of this run")
     );
-    assert!(report.text.contains("access$100(self)"), "{}", report.text);
+    assert!(report.text.contains("access$100(this)"), "{}", report.text);
 }
 
 #[test]
@@ -1947,12 +1947,14 @@ fn a_body_that_builds_a_concatenation_out_of_an_accessor_is_presented_as_both() 
     assert!(report.produced(), "{:?}", report.stop());
     assert_eq!(report.representation, Representation::Java);
     assert_eq!(report.quality, Quality::Structured);
-    // **Changed by the concatenation-conversion fix (was: `return self.f + "!";`).** `self.f` is an
-    // `int`, so the chain's first `+` is not a string concatenation: the empty string starts it, and
-    // the field read is converted where `append(int)` converted it. The value is the same (`"" +
-    // self.f` is `String.valueOf(self.f)`), and the accessor is still presented as the field read.
+    // **Changed by the concatenation-conversion fix (was: `return self.f + "!";` — the receiver was
+    // spelled by the debug name of the fixture's slot 0 then, and is `this` since it is spelled by
+    // its identity).** `this.f` is an `int`, so the chain's first `+` is not a string concatenation:
+    // the empty string starts it, and the field read is converted where `append(int)` converted it.
+    // The value is the same (`"" + this.f` is `String.valueOf(this.f)`), and the accessor is still
+    // presented as the field read.
     assert!(
-        report.text.contains("return \"\" + self.f + \"!\";"),
+        report.text.contains("return \"\" + this.f + \"!\";"),
         "{}",
         report.text
     );
@@ -3207,7 +3209,7 @@ fn an_anonymous_classs_use_is_presented_with_the_enclosing_instance_it_really_re
     // The construction is one expression: the class the pool names (`p/Outer$1`, the name the
     // compiler minted) and the value the site really read as its argument.
     assert!(
-        report.text.contains("return new p.Outer$1(self);"),
+        report.text.contains("return new p.Outer$1(this);"),
         "{}",
         report.text
     );
@@ -3711,6 +3713,39 @@ fn inner_constructor_class() -> Vec<u8> {
 }
 
 #[test]
+fn a_debug_table_that_names_slot_zero_this_is_not_a_keyword_to_alias() {
+    // The same constructor body with the name a `-g` build's `LocalVariableTable` really states for
+    // slot 0: `this`. The slot is the **receiver** (JVMS 4.10.1.9), so it is written as the keyword —
+    // not as the alias `this_` the keyword rule would make of that debug name, and not as the ordinal
+    // `arg0` a body with no table gets.
+    let (class, _code) = constructor_class();
+    let report = present_in(&class, b"<init>", b"()V", 1, vec![Some("this".into())]);
+    assert!(report.produced(), "{:?}", report.stop());
+    assert!(report.text.contains("this.f = 5;"), "{}", report.text);
+    assert!(!report.text.contains("this_"), "{}", report.text);
+    assert!(!report.text.contains("arg0"), "{}", report.text);
+    // The evidence the table states is not hidden, so nothing is aliased and nothing is reported as
+    // an alias of a name this layer could not write.
+    assert!(
+        report.aliased_names.is_empty(),
+        "{:?}",
+        report.aliased_names
+    );
+    assert_eq!(report.syntax_status, SyntaxStatus::Unchecked);
+    assert!(
+        !report
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "jre_name_aliased"),
+        "{:?}",
+        report.diagnostics
+    );
+    // The static field write beside it keeps its own spelling: this reaches slot 0 of an instance
+    // member and nothing else.
+    assert!(report.text.contains("Test.g = 7;"), "{}", report.text);
+}
+
+#[test]
 fn a_constructors_field_initializers_are_written_after_its_constructor_call_and_in_order() {
     let (class, _code) = constructor_class();
     let report = present_in(&class, b"<init>", b"()V", 1, vec![Some("self".into())]);
@@ -3738,7 +3773,7 @@ fn a_constructors_field_initializers_are_written_after_its_constructor_call_and_
     // **The order is the invariant**: the constructor call first, then the instance initializer,
     // then the static one — never reordered, never moved out of the constructor.
     let super_line = line_with(&report, "super();");
-    let field_line = line_with(&report, "self.f = 5;");
+    let field_line = line_with(&report, "this.f = 5;");
     let static_line = line_with(&report, "Test.g = 7;");
     let return_line = line_with(&report, "return;");
     assert!(
@@ -3800,7 +3835,7 @@ fn a_write_made_before_the_constructor_call_stays_where_the_bytecode_made_it() {
     // names the class being constructed — and it stays **before** the constructor call, which is
     // where the bytes put it (JLS 12.5 runs the instance initializers after `super(…)`, and this one
     // is the compiler's own pre-call write).
-    let write_line = line_with(&report, "self.this$0 = outer;");
+    let write_line = line_with(&report, "this.this$0 = outer;");
     let super_line = line_with(&report, "super();");
     assert!(
         write_line < super_line,
@@ -3874,7 +3909,9 @@ fn the_oracle_agrees_with_the_run_on_a_constructor_and_on_a_construction() {
     let report = present_in(&class, b"<init>", b"()V", 1, vec![Some("self".into())]);
     assert!(report.produced(), "{:?}", report.stop());
     let pool = read_pool(&class);
-    let from_bytes = run_bytecode(&code, &pool, &["self"]);
+    // The model's entry locals are the names the artifact writes, slot 0 first: the receiver of this
+    // instance method is `this` (JVMS 4.10.1.9), whatever the fixture's debug table calls it.
+    let from_bytes = run_bytecode(&code, &pool, &["this"]);
     let from_text = run_text_effects(&report.text);
     assert_eq!(
         from_bytes.effects,
@@ -3901,9 +3938,9 @@ fn the_oracle_agrees_with_the_run_on_a_constructor_and_on_a_construction() {
         1,
         vec![Some("self".into())],
     );
-    let from_bytes = run_bytecode(&code, &read_pool(&class), &["self"]);
+    let from_bytes = run_bytecode(&code, &read_pool(&class), &["this"]);
     let from_text = run_text_effects(&report.text);
-    assert_eq!(from_bytes.effects, vec!["new p.Outer$1(self)".to_string()]);
+    assert_eq!(from_bytes.effects, vec!["new p.Outer$1(this)".to_string()]);
     assert!(
         compare_effects(&from_bytes, &from_text).is_ok(),
         "{from_bytes:?} against {from_text:?}\n{}",
@@ -3915,13 +3952,13 @@ fn the_oracle_agrees_with_the_run_on_a_constructor_and_on_a_construction() {
 fn the_oracle_rejects_a_constructor_whose_field_writes_are_in_another_order() {
     let (class, code) = constructor_class();
     let report = present_in(&class, b"<init>", b"()V", 1, vec![Some("self".into())]);
-    let from_bytes = run_bytecode(&code, &read_pool(&class), &["self"]);
+    let from_bytes = run_bytecode(&code, &read_pool(&class), &["this"]);
     // The same artifact with the two writes swapped: the bytecode wrote `f` before `g`, and the model
     // is required to see the swap however equal the two numbers happen to look.
     let swapped = report
         .text
-        .replace("self.f = 5;", "\u{0}")
-        .replace("Test.g = 7;", "self.f = 5;")
+        .replace("this.f = 5;", "\u{0}")
+        .replace("Test.g = 7;", "this.f = 5;")
         .replace('\u{0}', "Test.g = 7;");
     assert!(swapped.contains("Test.g = 7;"), "{swapped}");
     let from_text = run_text_effects(&swapped);
@@ -3936,7 +3973,7 @@ fn the_oracle_rejects_a_constructor_whose_field_writes_are_in_another_order() {
 fn the_oracle_rejects_a_constructor_call_written_after_its_field_initializers() {
     let (class, code) = constructor_class();
     let report = present_in(&class, b"<init>", b"()V", 1, vec![Some("self".into())]);
-    let from_bytes = run_bytecode(&code, &read_pool(&class), &["self"]);
+    let from_bytes = run_bytecode(&code, &read_pool(&class), &["this"]);
     // JLS 12.5: the instance initializers run **after** the constructor call. An artifact that writes
     // them before it is a different program — the initializers would run on an object whose
     // superclass constructor has not run — and the model has to see that.
@@ -3946,7 +3983,7 @@ fn the_oracle_rejects_a_constructor_call_written_after_its_field_initializers() 
         .replace("    return;\n", "    super();\n    return;\n");
     assert!(moved.contains("super();"), "{moved}");
     assert!(
-        moved.find("super();").expect("the call") > moved.find("self.f = 5;").expect("the write"),
+        moved.find("super();").expect("the call") > moved.find("this.f = 5;").expect("the write"),
         "{moved}"
     );
     let from_text = run_text_effects(&moved);
