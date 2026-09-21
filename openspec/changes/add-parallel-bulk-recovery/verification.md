@@ -196,11 +196,79 @@ review 的 R1–R8 全部有落点，逐条给出**修复位置与验证**；未
 
 - CLI `export` 中位数（10 次交错）：bcprov 4.41 / 4.44 / 4.65 / 4.88 s（jobs 1/2/4/6），s2-009 19.31 / 15.71 / 16.90 / 17.91 s。
 - 归因（三档 sink，计数完全相同）：bcprov discard 3.26 / 3.50 / 3.84 s、encode 3.55 / 3.60 / 3.90 s、write 4.78 / 4.23 / 4.95 s；s2-009 discard 11.16 / 11.21 / 12.23 s、encode 12.93 / 11.63 / 12.75 s。
-- 结论：**并行收益在操作内部就消失**（丢弃 sink 时 4 worker 不快于 1 worker），JSON 编码 0.3–1.5 s，写 357 MB / 2.37 GB 另占约 1.5 s / 6 s；"单线程交付是瓶颈"的旧假设被这组数据证伪。热点定位（锁竞争/有序等待/类倾斜）与据此的优化是任务 6.3 的当前工作项，尚无结论。
-- 方法集对账（6.2，jadx join 文档 vs 本轮 `export`）：bcprov 双向差 0（15,003 方法 / 2,430 类）；s2-009 jadx 侧 0 缺失、jarde 侧多 10 个（6 个 `<init>` + 4 个），是**同名多物理 origin** 的物理盈余而非缺失。
+- 结论：**并行收益在操作内部就消失**（丢弃 sink 时 4 worker 不快于 1 worker），JSON 编码 0.3–1.5 s，写 357 MB / 2.37 GB 另占约 1.5 s / 6 s；"单线程交付是瓶颈"的旧假设被这组数据证伪。
+- **热点已定位并修复**（`evidence/cost-attribution.md` 第二轮）：总账一把锁 + 每次 charge 两次临界区，entry 耗时随 worker 数 60 → 180 ns 且串行（bcprov 4 worker 临界区 2.91 s、s2-009 7.91 s）。改成按维度 cache-line 对齐的原子准入（CAS 仍是唯一许可、无预借、无本地累积，entry 数与计费表逐项不变）后：bcprov 4.17 → 3.12 s、s2-009 12.63 → 9.94 s（discard，3 次中位数），总账 43 ns/entry，**并行符号翻转**（1 worker 不再最快）。
+- **下一瓶颈（未优化，架构决策级）**：窗口的有序交付——`take_front` 等待约占墙钟 94%，condvar 采样 70–75%；jobs=8 比 4 慢 5–7%，加深窗口无益。轮次延迟/最早类产量/窗口准入谁最终定界仍未证实。
+- 方法集对账（6.2）：原脚本输出 bcprov 双向差 0、s2-009 仅 jarde 多 10（6 个 `<init>` + 4 个）。**该脚本丢弃 origin/package，不能证明物理一一覆盖。** 后续直接类声明清点仍确认 S2-009 的完整类名签名并集比历史 jadx 清单多 10；它们来自另一物理版本，不能等同“物理仅多 10 个”。精确分母及局限见 §11。
 
 未做的仍在原任务：3.2 的重开项已闭、4.5 的旧串行 fingerprint 对照与差异白名单、6.1 的 A–E 全集与事先声明判据、6.3 的默认配置裁决、6.4 的候选固化与 JDK 门禁记录。
 
 ## 10. 测量本身的口径限制
 
 本页所有耗时都是**一台机器、未控制 OS page cache、未记录同机负载**的单次或少量样本，只用来说明形状与归因方向，不构成吞吐结论，也不用于 jadx 对比；跨工具结论见 `evidence/comparison-notes.md`（那里写明两边产出单位不同）。
+
+
+## 11. S2-009 同名多 origin 复核
+
+本次直接读取 `S2-009.war` 及 nested JAR 的 class 声明表（只读 CP/this_class/method 表，未运行方法恢复），与已有 jadx join 文档的完整类名/name/descriptor 集合比较。输入 SHA-256：`dda30ca7a2587391e95bfc0b868726818311b1521dd15f68fd5feefd9ca1fc7c`。该清点不是恢复质量或运行时装载结果证明。
+
+| 口径 | 数量 |
+| --- | ---: |
+| 物理 class 条目 | 7,200 |
+| 不同声明类名 | 7,171 |
+| 多物理来源的同名类组 | 29 |
+| 物理方法声明（含无 Body 与构造器） | 57,180 |
+| 完整 this_class + name + descriptor 的并集 | 56,892 |
+| 历史 jadx 名称签名集合 | 56,882 |
+| 物理记录超过名称签名并集 | 288 |
+| 名称签名并集仅 jarde 有 | 10 |
+| 名称签名集合仅 jadx 有 | 0 |
+| 本次 class 声明读取失败 | 0 |
+
+10 个额外签名全部位于 `WEB-INF/lib/commons-logging-api-1.1.jar`，对应的 7 个类也存在于 `WEB-INF/lib/commons-logging-1.1.1.jar`，两侧同名类的 SHA-256 **均不相同**。后者这 7 个类的方法签名集合与历史 jadx 清单逐类相等；前者含下列 6 个构造器与 4 个名为 `access$0` 的方法差异。因此应登记为“另一物理版本独有的名称签名”；不能删除它们以对齐数量，也不能计作 jarde 多恢复了 10 个正确方法。
+
+以下类名前缀均为 `org/apache/commons/logging/`：
+
+| 类名后缀 | 仅在该并集一侧出现的方法签名 |
+| --- | --- |
+| `LogFactory` | `access$0(Ljava/lang/String;)V` |
+| `LogFactory$2` | `<init>(Ljava/lang/ClassLoader;Ljava/lang/String;)V` |
+| `impl/SimpleLog` | `access$0()Ljava/lang/ClassLoader;` |
+| `impl/WeakHashtable$1` | `<init>(Ljava/util/Enumeration;)V` |
+| `impl/WeakHashtable$Entry` | `<init>(Lorg/apache/commons/logging/impl/WeakHashtable$2;Ljava/lang/Object;Ljava/lang/Object;)V` |
+| `impl/WeakHashtable$Referenced` | `<init>(Lorg/apache/commons/logging/impl/WeakHashtable$2;Ljava/lang/Object;)V`；`<init>(Lorg/apache/commons/logging/impl/WeakHashtable$2;Ljava/lang/Object;Ljava/lang/ref/ReferenceQueue;)V`；`access$0(Lorg/apache/commons/logging/impl/WeakHashtable$Referenced;)Ljava/lang/Object;` |
+| `impl/WeakHashtable$WeakKey` | `<init>(Lorg/apache/commons/logging/impl/WeakHashtable$2;Ljava/lang/Object;Ljava/lang/ref/ReferenceQueue;Lorg/apache/commons/logging/impl/WeakHashtable$Referenced;)V`；`access$0(Lorg/apache/commons/logging/impl/WeakHashtable$WeakKey;)Lorg/apache/commons/logging/impl/WeakHashtable$Referenced;` |
+
+**对账器缺陷与证据限制。** `evidence/join.py:52–59` 只取 entry raw_name，丢弃 container 链及 ordinal；`:71–73` 又只保留 basename。例：`a/Foo.m()V` 与 `b/Foo.m()V` 会被判相同；两个 nested jar 内的同一路径、同签名会被 set 合并。descriptor 即使含引用类型也不能补回 owner/origin。本例用完整声明名重算后仍得到 10，但这不使旧算法可靠。
+
+已读取的历史输入 `/tmp/jarde-bench/candidate-8586356/timing/jadx_join_struts2__s2-009__S2-009_war.json` 的 `dex` 为 **空列表**。方法集合吻合支持版本选择的解释，但缺少 jadx 实际来源选择的原始证据，不能宣布严格的物理 join 完成。其原始资产与来源映射仍需由正式 harness 保存，不能依赖该临时路径关闭 6.2。标准清点应复用 reader 的声明读取，不另建产品解析器。
+
+产品裁决：物理枚举/export 保留所有定义；MCP 名字查询可按完整声明名展示候选摘要，按需展开 origin/字节身份差异；已有 loader/roots/profile 能唯一选择时显示该选择及其它来源，不能证明的关系保留未决。显式选定 origin 也不能绕过该环境的绑定校验；纯物理字节码检查与环境相关恢复各守其契约。相同内容最多复用不含来源/环境的解析事实，不合并身份，不默认共享受绑定影响的恢复结论。
+
+## 11. 固定候选与基线（任务 1.1）
+
+**候选提交**：`CANDIDATE_SHA`（本轮全部实现提交的 HEAD；工作树态一律不当作候选）。
+
+**构建与工具**：rustc/cargo 1.98.1（Homebrew）· macOS 26.6.2 arm64 · 12 核 / 24 GiB · release 构建用于本页性能读数 · OpenJDK 23.0.1（受控编译执行对照）· jadx 1.5.6（跨工具对照）。
+
+**输入与方法清单**（vulhub 12 artifact；本轮逐项复核字节数与 sha256[:16] 与协议一致）：
+
+| 语料 | 类 | 方法声明 | 无 Body | produced | explanation_only | not_produced |
+| --- | --- | --- | --- | --- | --- | --- |
+| bcprov-jdk15on-152.jar | 2,430 | 15,003 | 508 | 12,041 | 2,451 | 3 |
+| S2-009.war（含 53 容器） | 7,200 | 57,180 | 3,635 | 44,501 | 8,726 | 318 |
+
+方法集对账（6.2）：jadx 侧成员集与 jarde 的声明集 bcprov 双向差 0；s2-009 上 jadx 缺 0、jarde 多 10（6 个 `<init>` + 4），是**同名多物理 origin** 的物理盈余（`two-origins` 语料可复现同一行为：第二个 origin 的成员为 `not_produced`，class_end `Failed`，聚合 partial）而不是缺失。
+
+**已有正确性缺口（不是本轮引入，也不由本轮修复）**：
+
+- `org/bouncycastle/jce/X509LDAPCertStoreParameters.equal`：自 `8807fa5` 起由"有产出（带 fallback/循环区段诊断）"变为 `jre_recursion_bound` 拒绝（递归上界的代价）；
+- `ClassMemberFacts::method_count` 在成员走查停在字段表时为 0（消费者若把它读成"声明了 N 个方法"会错，见未决项）；
+- 单方法入口对同一 definition 读两次（driver + callee；既有 `class_headers == 2` 断言钉住）；
+- 生成型语料（`tests/p5_bulk_corpus.rs` 的 6 类）不入 `corpus-fingerprint.json`，钉住它们的是该文件的计费表。
+
+**局部类型 / concat 修正的实际状态**：均已独立归档——`2026-09-21-unify-local-type-decisions`、`2026-09-21-re-express-string-concatenation`（后者附四 job 绿的 CI 记录）。本 change 不代修、不重开。
+
+**T1 进程门禁（普通 worker 栈）**：debug `a_deep_concatenation_chain_answers_in_a_subprocess`、release `the_deep_chain_answers_in_the_optimized_build`，以及本 change 新增的批量版 `a_deep_concatenation_chain_is_presented_by_a_bulk_worker`（debug，随 workspace 跑）与 `a_deep_chain_reaches_a_bulk_worker_in_the_optimized_build`（release，显式 `#[ignore]` 门禁）。批量版用 `--jobs 2` 把类任务放到库自己用**默认 stack_size** 创建的工作线程上；128 KiB 栈探针会以 `jarde-bulk-0 has overflowed its stack` abort，证明门禁针对的是 worker 栈而不是主线程。
+
+**不冒充**：本页出现的所有读数都来自 release 二进制在**本机**的运行，未控制 OS page cache、未记录同机负载；跨工具比较写在 `evidence/comparison-notes.md` 并声明两边产出单位不同。
