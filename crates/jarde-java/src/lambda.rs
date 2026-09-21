@@ -87,7 +87,10 @@
 
 use serde::Serialize;
 
-use jarde_reader::classfile::{BootstrapMethodFacts, CpEntryFacts, CpEntryKind, cp_entry};
+use jarde_reader::classfile::{
+    Base, BaseType, BootstrapMethodFacts, CpEntryFacts, CpEntryKind, DescriptorComponent,
+    DescriptorCursor, DescriptorKind, cp_entry, descriptor_facts,
+};
 
 use crate::ast::Type;
 use crate::facts::DynamicSite;
@@ -824,6 +827,46 @@ fn source_name(internal: &str) -> String {
     internal.replace('/', ".")
 }
 
+/// The Java type one descriptor component names (JVMS 4.3.2), or `None` when it names no type this
+/// layer can write.
+///
+/// This is the repository's one descriptor → Java type spelling. The production itself belongs to
+/// the reader ([`DescriptorComponent`]: base type, object name, array dimensions), so nothing here
+/// reads bytes; what this function owns is the *type the text writes* — a primitive's own name, an
+/// array spelled from its element outwards with one `[]` per dimension, and an object type's
+/// internal name spelled with [`source_name`]. A name that is not UTF-8 states no Java type, so it
+/// is refused here instead of being written lossily into a type position.
+pub fn type_of_component(component: &DescriptorComponent) -> Option<Type> {
+    let base = match component.base() {
+        Base::Primitive(BaseType::Boolean) => Type::Boolean,
+        Base::Primitive(BaseType::Byte) => Type::Byte,
+        Base::Primitive(BaseType::Char) => Type::Char,
+        Base::Primitive(BaseType::Short) => Type::Short,
+        Base::Primitive(BaseType::Int) => Type::Int,
+        Base::Primitive(BaseType::Long) => Type::Long,
+        Base::Primitive(BaseType::Float) => Type::Float,
+        Base::Primitive(BaseType::Double) => Type::Double,
+        // A class type with no name is no type at all (JVMS 4.2: a binary name is not empty), and
+        // the reader refuses one before it becomes a component; the same rule is stated here, where
+        // the type is written.
+        Base::Object(name) => {
+            let name = std::str::from_utf8(&name.0).ok()?;
+            if name.is_empty() {
+                return None;
+            }
+            Type::Reference(source_name(name))
+        }
+    };
+    if component.dimensions() == 0 {
+        return Some(base);
+    }
+    Some(Type::Reference(format!(
+        "{}{}",
+        base.spell(),
+        "[]".repeat(usize::try_from(component.dimensions()).ok()?)
+    )))
+}
+
 /// One descriptor's parameters and return type, as this layer reads them.
 ///
 /// `None` for the return type is `V`. Only the `(…)…` form is read: a field descriptor reaching here
@@ -831,73 +874,33 @@ fn source_name(internal: &str) -> String {
 ///
 /// Shared with the pattern rules of P3 2.2, which read the same descriptors for their own purposes
 /// (the `append` overloads a concatenation calls, the erased signature a bridge forwards, the
-/// declaration of an accessor): one reader of the subset's descriptors, not four.
+/// declaration of an accessor): one reading of the production, and the reader's own — this function
+/// only turns its facts into the types this layer writes.
 pub(crate) fn parse_method(descriptor: &str) -> Option<(Vec<Type>, Option<Type>)> {
-    let bytes = descriptor.as_bytes();
-    if bytes.first() != Some(&b'(') {
-        return None;
-    }
-    let mut at = 1;
-    let mut params = Vec::new();
-    loop {
-        match bytes.get(at)? {
-            b')' => break,
-            _ => {
-                let (ty, next) = parse_type(bytes, at)?;
-                params.push(ty);
-                at = next;
-            }
-        }
-    }
-    at += 1;
-    if bytes.get(at) == Some(&b'V') {
-        return (at + 1 == bytes.len()).then_some((params, None));
-    }
-    let (returns, next) = parse_type(bytes, at)?;
-    (next == bytes.len()).then_some((params, Some(returns)))
+    let facts = descriptor_facts(descriptor.as_bytes(), DescriptorKind::Method).ok()?;
+    let parameters = facts
+        .parameters()
+        .iter()
+        .map(type_of_component)
+        .collect::<Option<Vec<Type>>>()?;
+    let returns = match facts.result() {
+        Some(component) => Some(type_of_component(component)?),
+        None => None,
+    };
+    Some((parameters, returns))
 }
 
 /// One type of a descriptor, and where the next one starts.
 ///
 /// Published to the crate because this is the repository's one descriptor→Java type spelling:
 /// [`crate::build::spell_reference`] reads the frames' own array descriptors through it, so a
-/// declaration and a lambda parameter cannot spell `[[Ljava/lang/String;` two different ways.
+/// declaration and a lambda parameter cannot spell `[[Ljava/lang/String;` two different ways. The
+/// bytes are the reader's reading of the production ([`DescriptorCursor`]) and the spelling is
+/// [`type_of_component`]'s, so both entries above read one descriptor the one way.
 pub(crate) fn parse_type(bytes: &[u8], at: usize) -> Option<(Type, usize)> {
-    match bytes.get(at)? {
-        b'Z' => Some((Type::Boolean, at + 1)),
-        b'B' => Some((Type::Byte, at + 1)),
-        b'C' => Some((Type::Char, at + 1)),
-        b'S' => Some((Type::Short, at + 1)),
-        b'I' => Some((Type::Int, at + 1)),
-        b'J' => Some((Type::Long, at + 1)),
-        b'F' => Some((Type::Float, at + 1)),
-        b'D' => Some((Type::Double, at + 1)),
-        b'L' => {
-            let end = bytes[at + 1..].iter().position(|byte| *byte == b';')? + at + 1;
-            let name = std::str::from_utf8(&bytes[at + 1..end]).ok()?;
-            // A class type with no name states no class: `L;` and `[L;` are descriptors of a type
-            // this layer cannot spell, and `None` says so here rather than letting an empty name
-            // reach a type position (`[]` is no Java type either).
-            if name.is_empty() {
-                return None;
-            }
-            Some((Type::Reference(source_name(name)), end + 1))
-        }
-        b'[' => {
-            let mut dimensions = 0;
-            let mut probe = at;
-            while bytes.get(probe) == Some(&b'[') {
-                dimensions += 1;
-                probe += 1;
-            }
-            let (element, next) = parse_type(bytes, probe)?;
-            Some((
-                Type::Reference(format!("{}{}", element.spell(), "[]".repeat(dimensions))),
-                next,
-            ))
-        }
-        _ => None,
-    }
+    let mut cursor = DescriptorCursor::at_offset(bytes, at);
+    let component = cursor.field_type().ok()?;
+    Some((type_of_component(&component)?, cursor.position()))
 }
 
 #[cfg(test)]

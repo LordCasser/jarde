@@ -90,7 +90,7 @@ pub use declaration::{DeclarationForm, DeclarationRecord, DeclarationRefusal};
 pub use enumswitch::{EnumSwitchRecord, EnumSwitchRefusal, IndexCall, TableRead};
 pub use field::{FieldRecord, FieldRefusal};
 pub use init::{InitRecord, InitRefusal, NewRecord, NewRefusal};
-pub use lambda::{LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal};
+pub use lambda::{LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal, type_of_component};
 pub use pass::{IrTable, Pass, Precondition, RecoveryProfile, RuleVersion};
 pub use report::{
     RecoveryContent, RecoveryOutcome, RecoveryReport, RecoveryRequest, RegionRecord, recover,

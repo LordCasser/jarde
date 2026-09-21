@@ -3026,6 +3026,223 @@ pub fn entry_descriptor(kind: &CpEntryKind) -> Option<EntryDescriptor> {
     })
 }
 
+/// A base type of the descriptor grammar (JVMS 4.3.2).
+///
+/// The eight primitives are named as the format names them and not as a value's slot class: this
+/// is the descriptor production's own vocabulary, so it keeps the four int-shaped primitives
+/// (`boolean`, `byte`, `char`, `short`) apart, which a *frame* cannot.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum BaseType {
+    /// `B`.
+    Byte,
+    /// `C`.
+    Char,
+    /// `D`.
+    Double,
+    /// `F`.
+    Float,
+    /// `I`.
+    Int,
+    /// `J`.
+    Long,
+    /// `S`.
+    Short,
+    /// `Z`.
+    Boolean,
+}
+
+impl BaseType {
+    /// Whether a value of this type fills two local slots (JVMS 2.6.1).
+    ///
+    /// Only `long` and `double` do, and only when the component names the primitive itself: an
+    /// **array** of either is a reference like every other array ([`DescriptorComponent::slots`]).
+    pub const fn is_category_two(self) -> bool {
+        matches!(self, Self::Long | Self::Double)
+    }
+}
+
+/// What one descriptor component names at its base (JVMS 4.3.2).
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum Base {
+    /// One of the eight primitives.
+    Primitive(BaseType),
+    /// `L<internal name>;`: the bytes exactly as they stand between the two delimiters, and never
+    /// text-decoded here.
+    ///
+    /// The bytes are kept as written, empty included: whether an empty interior is a **class
+    /// reference** is JVMS 4.2's rule (a binary name is not empty) and is stated by whoever
+    /// publishes a type — [`DescriptorComponent::object_name`], [`descriptor_types`] and the layers
+    /// that spell a type each refuse it — while a consumer that only carries the descriptor
+    /// spelling, like a frame's named reference, keeps the bytes it read.
+    Object(JvmBytes),
+}
+
+/// One component of a descriptor: what it names, how many array dimensions it has, and the bytes
+/// it was read from (JVMS 4.3.2).
+///
+/// A component is the whole of what one parameter, one field type or one return type states, so a
+/// caller never reads a descriptor itself. The two facts a consumer above needs and the bytes alone
+/// do not give are [`Self::slots`] — the local slots a value of this type fills — and
+/// [`Self::object_name`], the class an array's element or a reference names.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DescriptorComponent {
+    base: Base,
+    dimensions: u32,
+    span: ByteSpan,
+}
+
+impl DescriptorComponent {
+    /// The primitive or object type this component's base is.
+    pub fn base(&self) -> &Base {
+        &self.base
+    }
+
+    /// The component's array dimensions: `0` for a base type written on its own, and one per `[`.
+    pub fn dimensions(&self) -> u32 {
+        self.dimensions
+    }
+
+    /// Whether the component is an array (`[`-prefixed).
+    pub fn is_array(&self) -> bool {
+        self.dimensions > 0
+    }
+
+    /// The byte range of this component inside the descriptor [`descriptor_facts`] read.
+    pub fn span(&self) -> ByteSpan {
+        self.span.clone()
+    }
+
+    /// This component's own bytes, inside the descriptor they were read from.
+    ///
+    /// The span is stated relative to the descriptor the facts were read from, so this is the one
+    /// way a consumer cuts a component out of it: `None` exactly when `descriptor` is another
+    /// buffer than that one.
+    pub fn bytes<'a>(&self, descriptor: &'a [u8]) -> Option<&'a [u8]> {
+        let start = usize::try_from(self.span.start).ok()?;
+        let end = start.checked_add(usize::try_from(self.span.length).ok()?)?;
+        descriptor.get(start..end)
+    }
+
+    /// The object type this component names, whatever its dimensions: `[[Ljava/lang/String;` names
+    /// `java/lang/String`, and a primitive component names no class at all.
+    ///
+    /// An empty name is published as the empty bytes it is: `L;` states a reference component whose
+    /// interior is not a binary name (JVMS 4.2), and the component states the bytes rather than
+    /// deciding what a type position may write. [`DescriptorFacts`] keeps it and the consumers that
+    /// publish a *type* refuse it.
+    pub fn object_name(&self) -> Option<&JvmBytes> {
+        match &self.base {
+            Base::Object(name) => Some(name),
+            Base::Primitive(_) => None,
+        }
+    }
+
+    /// The local slots one value of this type fills (JVMS 2.6.1).
+    ///
+    /// A `long` or a `double` fills two slots, and **every other component fills one** — an array
+    /// is a reference whatever its element type, so `[J` and `[[D` each fill one slot just as `[I`
+    /// does. Slot occupancy is a fact of the type and not of its bytes: the next parameter starts
+    /// after this many slots, which is the rule every consumer of this type must use.
+    pub fn slots(&self) -> u16 {
+        if self.dimensions > 0 {
+            return 1;
+        }
+        match self.base {
+            Base::Primitive(base) if base.is_category_two() => 2,
+            _ => 1,
+        }
+    }
+}
+
+/// One descriptor read once, as the facts its production states (JVMS 4.3.2/4.3.3).
+///
+/// A `Field` or `Return` descriptor is one [`Self::single`] component (`None` for a return
+/// descriptor's `V`); a `Method` descriptor is its [`Self::parameters`] in declaration order plus
+/// its [`Self::result`]. Which of the two shapes a value is comes from [`DescriptorKind`], and the
+/// components are the same in either case, so a consumer of one descriptor kind never walks bytes.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DescriptorFacts {
+    kind: DescriptorKind,
+    single: Option<DescriptorComponent>,
+    parameters: Vec<DescriptorComponent>,
+    result: Option<DescriptorComponent>,
+}
+
+impl DescriptorFacts {
+    /// The production this descriptor was read as.
+    pub fn kind(&self) -> DescriptorKind {
+        self.kind
+    }
+
+    /// A `Field` descriptor's one field type, or a `Return` descriptor's one type.
+    pub fn single(&self) -> Option<&DescriptorComponent> {
+        self.single.as_ref()
+    }
+
+    /// A `Method` descriptor's parameters, in declaration order: the position of a parameter in
+    /// this list is its position in the descriptor.
+    pub fn parameters(&self) -> &[DescriptorComponent] {
+        &self.parameters
+    }
+
+    /// A `Method` descriptor's result type, or `None` for `V`.
+    pub fn result(&self) -> Option<&DescriptorComponent> {
+        self.result.as_ref()
+    }
+
+    /// Every component this descriptor names, in the order the bytes write them: the parameters and
+    /// then the result of a method descriptor, and the one component of a field or return
+    /// descriptor.
+    pub fn components(&self) -> impl Iterator<Item = &DescriptorComponent> {
+        self.single
+            .iter()
+            .chain(self.parameters.iter())
+            .chain(self.result.iter())
+    }
+
+    /// How many local slots the parameters occupy together (JVMS 2.6.1), or `None` when they do
+    /// not fit the `u16` a local index is.
+    ///
+    /// This is the parameters' own occupancy and **excludes a receiver**: `this` is a fact of the
+    /// member's flags and not of its descriptor, so the layer that states the member's slots is the
+    /// one that adds it.
+    pub fn parameter_slots(&self) -> Option<u16> {
+        self.parameters.iter().try_fold(0u16, |slots, component| {
+            slots.checked_add(component.slots())
+        })
+    }
+}
+
+/// One field, method or return descriptor read whole (JVMS 4.3).
+///
+/// A descriptor that does not parse exactly is a structured error instead of a partial set of
+/// components, so a caller can never publish a fact about a descriptor it did not read completely —
+/// and there is only one reader of the production, so two consumers of the same descriptor cannot
+/// read its slots or its names differently.
+pub fn descriptor_facts(descriptor: &[u8], kind: DescriptorKind) -> Result<DescriptorFacts> {
+    let mut cursor = DescriptorCursor::new(descriptor);
+    let mut facts = DescriptorFacts {
+        kind,
+        single: None,
+        parameters: Vec::new(),
+        result: None,
+    };
+    match kind {
+        DescriptorKind::Field => facts.single = Some(cursor.field_type()?),
+        DescriptorKind::Return => facts.single = cursor.return_type()?,
+        DescriptorKind::Method => {
+            cursor.expect_byte(b'(')?;
+            while cursor.peek() != Some(b')') {
+                facts.parameters.push(cursor.field_type()?);
+            }
+            cursor.expect_byte(b')')?;
+            facts.result = cursor.return_type()?;
+        }
+    }
+    cursor.expect_end()?;
+    Ok(facts)
+}
+
 /// Object types a field, method or return descriptor names, in first-appearance order and
 /// once per descriptor.
 ///
@@ -3034,23 +3251,34 @@ pub fn entry_descriptor(kind: &CpEntryKind) -> Option<EntryDescriptor> {
 /// `[[Ljava/lang/String;` mentions `java/lang/String`. A descriptor that does not parse
 /// exactly is a structured error instead of a partial type set, so a caller can never
 /// publish the types of a descriptor it did not read completely.
+///
+/// One shape the production parses does not name a type: `L;` — and every array of it — states a
+/// reference component whose interior is empty, and JVMS 4.2 says a binary name is not empty. A
+/// descriptor carrying one is a structured error here, where a *type* would be published, and the
+/// same bytes stay readable as a component through [`descriptor_facts`].
+///
+/// This is [`descriptor_facts`] projected onto the names: one reader of the production, so the
+/// object types a consumer publishes and the slots a consumer derives can never come from two
+/// different readings of the same bytes.
 #[allow(dead_code)]
 pub fn descriptor_types(descriptor: &[u8], kind: DescriptorKind) -> Result<Vec<JvmBytes>> {
-    let mut reader = DescriptorReader::new(descriptor);
+    let facts = descriptor_facts(descriptor, kind)?;
     let mut types = Vec::new();
-    match kind {
-        DescriptorKind::Field => descriptor_field_type(&mut reader, &mut types)?,
-        DescriptorKind::Return => descriptor_return_type(&mut reader, &mut types)?,
-        DescriptorKind::Method => {
-            reader.expect_byte(b'(')?;
-            while reader.peek() != Some(b')') {
-                descriptor_field_type(&mut reader, &mut types)?;
-            }
-            reader.expect_byte(b')')?;
-            descriptor_return_type(&mut reader, &mut types)?;
+    for component in facts.components() {
+        let Some(name) = component.object_name() else {
+            continue;
+        };
+        if name.0.is_empty() {
+            return Err(Error::invalid_input(
+                DESCRIPTOR_CODE,
+                format!(
+                    "object type name is empty (at byte {} of the region)",
+                    component.span().start
+                ),
+            ));
         }
+        push_unique(&mut types, name.0.clone());
     }
-    reader.expect_end()?;
     Ok(types)
 }
 
@@ -3065,51 +3293,90 @@ pub fn push_unique(types: &mut Vec<JvmBytes>, name: Vec<u8>) {
     }
 }
 
-/// `ReturnDescriptor`: `V` or a field type.
-fn descriptor_return_type(
-    reader: &mut DescriptorReader<'_>,
-    types: &mut Vec<JvmBytes>,
-) -> Result<()> {
-    if reader.peek() == Some(b'V') {
-        reader.skip(1)?;
-        return Ok(());
-    }
-    descriptor_field_type(reader, types)
-}
-
-/// One field type, recording its object type when it has one.
-fn descriptor_field_type(
-    reader: &mut DescriptorReader<'_>,
-    types: &mut Vec<JvmBytes>,
-) -> Result<()> {
-    while reader.peek() == Some(b'[') {
-        reader.skip(1)?;
-    }
-    match reader.peek() {
-        Some(b'B' | b'C' | b'D' | b'F' | b'I' | b'J' | b'S' | b'Z') => reader.skip(1),
-        Some(b'L') => {
-            let name = reader.object_name()?;
-            push_unique(types, name);
-            Ok(())
-        }
-        _ => Err(reader.malformed("descriptor component is not a field type")),
-    }
-}
-
 /// Bounded cursor over one descriptor.
 ///
 /// The reader owns the same guarantees as the metadata consumer's region reader: every
-/// read is bounds-checked, and a caller must reach [`DescriptorReader::expect_end`], so a
+/// read is bounds-checked, and a caller must reach [`DescriptorCursor::expect_end`], so a
 /// descriptor that does not end exactly at its end is an error instead of a truncated
 /// type set.
-struct DescriptorReader<'a> {
+///
+/// The whole-descriptor entry point is [`descriptor_facts`]; this cursor is for the two callers
+/// that read one component of a longer buffer — a descriptor read at an offset — and it is the
+/// same reader, so a component read through it is the component [`descriptor_facts`] would state.
+pub struct DescriptorCursor<'a> {
     bytes: &'a [u8],
     at: usize,
 }
 
-impl<'a> DescriptorReader<'a> {
-    const fn new(bytes: &'a [u8]) -> Self {
+impl<'a> DescriptorCursor<'a> {
+    /// A cursor at the start of one descriptor.
+    pub const fn new(bytes: &'a [u8]) -> Self {
         Self { bytes, at: 0 }
+    }
+
+    /// A cursor at one offset of a buffer, for a caller that already knows where a component
+    /// starts (the position [`Self::position`] answered for the component before it).
+    pub const fn at_offset(bytes: &'a [u8], at: usize) -> Self {
+        Self { bytes, at }
+    }
+
+    /// How many bytes this cursor has read.
+    pub const fn position(&self) -> usize {
+        self.at
+    }
+
+    /// One field type, read whole (JVMS 4.3.2).
+    pub fn field_type(&mut self) -> Result<DescriptorComponent> {
+        let start = self.at;
+        let mut dimensions = 0u32;
+        while self.peek() == Some(b'[') {
+            self.skip(1)?;
+            dimensions = dimensions
+                .checked_add(1)
+                .ok_or_else(|| self.malformed("descriptor component has too many dimensions"))?;
+        }
+        let base = match self.peek() {
+            Some(b'B') => Base::Primitive(BaseType::Byte),
+            Some(b'C') => Base::Primitive(BaseType::Char),
+            Some(b'D') => Base::Primitive(BaseType::Double),
+            Some(b'F') => Base::Primitive(BaseType::Float),
+            Some(b'I') => Base::Primitive(BaseType::Int),
+            Some(b'J') => Base::Primitive(BaseType::Long),
+            Some(b'S') => Base::Primitive(BaseType::Short),
+            Some(b'Z') => Base::Primitive(BaseType::Boolean),
+            Some(b'L') => Base::Object(JvmBytes(self.object_name()?)),
+            _ => return Err(self.malformed("descriptor component is not a field type")),
+        };
+        if matches!(base, Base::Primitive(_)) {
+            self.skip(1)?;
+        }
+        Ok(DescriptorComponent {
+            base,
+            dimensions,
+            span: ByteSpan::new(
+                u64::try_from(start).map_err(|_| self.malformed("descriptor is too long"))?,
+                u64::try_from(self.at - start)
+                    .map_err(|_| self.malformed("descriptor is too long"))?,
+            ),
+        })
+    }
+
+    /// A `ReturnDescriptor`: `V` or a field type.
+    pub fn return_type(&mut self) -> Result<Option<DescriptorComponent>> {
+        if self.peek() == Some(b'V') {
+            self.skip(1)?;
+            return Ok(None);
+        }
+        self.field_type().map(Some)
+    }
+
+    /// Whether this cursor reached the end of its bytes.
+    pub fn expect_end(&self) -> Result<()> {
+        if self.at == self.bytes.len() {
+            Ok(())
+        } else {
+            Err(self.malformed("structure does not end at the region end"))
+        }
     }
 
     fn peek(&self) -> Option<u8> {
@@ -3144,15 +3411,11 @@ impl<'a> DescriptorReader<'a> {
         }
     }
 
-    fn expect_end(&self) -> Result<()> {
-        if self.at == self.bytes.len() {
-            Ok(())
-        } else {
-            Err(self.malformed("structure does not end at the region end"))
-        }
-    }
-
-    /// One descriptor object type name: `L <internal name> ;`.
+    /// One descriptor object type's interior: `L <bytes> ;`.
+    ///
+    /// The bytes are returned as written, empty included: the production says where the name ends,
+    /// and what an empty interior *is* — no binary name at all, JVMS 4.2 — is the publisher's rule
+    /// and not this reader's ([`Base::Object`]).
     fn object_name(&mut self) -> Result<Vec<u8>> {
         self.expect_byte(b'L')?;
         let start = self.at;
@@ -3161,9 +3424,6 @@ impl<'a> DescriptorReader<'a> {
                 break;
             }
             self.at += 1;
-        }
-        if start == self.at {
-            return Err(self.malformed("object type name is empty"));
         }
         let name = self.bytes[start..self.at].to_vec();
         self.expect_byte(b';')?;
@@ -10386,6 +10646,11 @@ mod tests {
     /// methods and the default constructor) and moves neither of the last three: every one of its
     /// members is a straight-line `StringBuilder` chain or a one-line helper, so no body declares an
     /// exception table, branches, or — like every other P3 sample — a subroutine.
+    ///
+    /// The `p3-parameter-slots` sample adds its own class and ten bodies (nine methods and the
+    /// explicit constructor) and moves neither of the last three: every body is one local load
+    /// (or, for the constructor, one field write) and its return, so no body declares an exception
+    /// table, branches, or a subroutine.
     #[test]
     fn repository_class_fixtures_validate_without_false_target_rejections() {
         let fixtures = class_fixture_paths();
@@ -10465,7 +10730,7 @@ mod tests {
                 branch_targets,
                 subroutines
             ),
-            (50, 236, 44, 125, 8),
+            (51, 246, 44, 125, 8),
             "fixture population changed: re-measure these counts"
         );
     }
@@ -10638,5 +10903,204 @@ mod tests {
             class_member_facts(&bytes, &mut budget),
             Err(Error::Cancelled { .. })
         ));
+    }
+
+    /// JVMS 2.6.1: a component's slot occupancy is its own, and an **array** of a `long` or a
+    /// `double` fills one slot like every other array.
+    ///
+    /// This is the one place the slot rule is stated, so this is where it is pinned: the primitive
+    /// is two slots, the array of that same primitive is one, and a second dimension changes
+    /// nothing.
+    #[test]
+    fn an_arrays_element_type_does_not_widen_the_array() {
+        for (descriptor, expected, object_name) in [
+            (&b"I"[..], 1u16, None),
+            (b"J", 2, None),
+            (b"D", 2, None),
+            (b"[I", 1, None),
+            (b"[J", 1, None),
+            (b"[D", 1, None),
+            (b"[[J", 1, None),
+            (b"[[[D", 1, None),
+            (b"Ljava/lang/String;", 1, Some(&b"java/lang/String"[..])),
+            (b"[Ljava/lang/String;", 1, Some(b"java/lang/String")),
+            (b"[[Ljava/lang/String;", 1, Some(b"java/lang/String")),
+            (b"[Lp/Outer$Inner;", 1, Some(b"p/Outer$Inner")),
+        ] {
+            let facts = descriptor_facts(descriptor, DescriptorKind::Field).expect("a field type");
+            let component = facts.single().expect("one component");
+            assert_eq!(
+                component.slots(),
+                expected,
+                "`{}` occupies {expected} slot(s)",
+                String::from_utf8_lossy(descriptor)
+            );
+            assert_eq!(
+                component.object_name().map(|name| name.0.clone()),
+                object_name.map(<[u8]>::to_vec),
+                "`{}` names its object type whatever its dimensions",
+                String::from_utf8_lossy(descriptor)
+            );
+            assert_eq!(
+                component.span(),
+                crate::model::ByteSpan::new(0, u64::try_from(descriptor.len()).unwrap()),
+                "one component is the whole descriptor"
+            );
+            assert_eq!(
+                descriptor_types(descriptor, DescriptorKind::Field)
+                    .expect("the projection reads the same bytes")
+                    .len(),
+                usize::from(object_name.is_some()),
+                "the object types are the projection of the same read"
+            );
+        }
+
+        // The parameter list states the positions and the occupancy together: `[J` is one slot, so
+        // the `int` after it starts at slot 1 — the shape a wide-element array used to shift.
+        let method = descriptor_facts(b"([JJI)V", DescriptorKind::Method).expect("a method");
+        let widths: Vec<u16> = method
+            .parameters()
+            .iter()
+            .map(DescriptorComponent::slots)
+            .collect();
+        assert_eq!(widths, vec![1, 2, 1]);
+        assert_eq!(method.parameter_slots(), Some(4));
+        assert_eq!(
+            method
+                .parameters()
+                .iter()
+                .map(|component| component.dimensions())
+                .collect::<Vec<_>>(),
+            vec![1, 0, 0]
+        );
+        assert!(method.result().is_none(), "`V` states no result");
+        assert_eq!(method.kind(), DescriptorKind::Method);
+    }
+
+    /// A descriptor that is not its production is one structured error: a partial set of
+    /// components is never published, and the components of an unread descriptor never reach a
+    /// consumer that derives slots from them.
+    ///
+    /// One shape is readable as a component and still names no type: `L;` states a reference whose
+    /// interior is empty, which JVMS 4.2 refuses as a binary name. The reader keeps the bytes, the
+    /// slots rule reads them (an array of one is still one slot), and the publish-a-type entry
+    /// point refuses them — which is the split the frame layer and the spelling layer each rely on.
+    #[test]
+    fn a_descriptor_that_does_not_parse_publishes_no_component() {
+        for (descriptor, kind) in [
+            (&b""[..], DescriptorKind::Field),
+            (b"V", DescriptorKind::Field),
+            (b"II", DescriptorKind::Field),
+            (b"Ljava/lang/String", DescriptorKind::Field),
+            (b"[Z]", DescriptorKind::Field),
+            (b"", DescriptorKind::Method),
+            (b"I", DescriptorKind::Method),
+            (b"(J)", DescriptorKind::Method),
+            (b"(J", DescriptorKind::Method),
+            (b"(J)V)", DescriptorKind::Method),
+            (b"(Q)V", DescriptorKind::Method),
+            (b"([J)Q", DescriptorKind::Method),
+        ] {
+            let error = descriptor_facts(descriptor, kind).expect_err("not its production");
+            assert!(
+                matches!(
+                    &error,
+                    Error::InvalidInput { code, .. } if code == DESCRIPTOR_CODE
+                ),
+                "`{}` is refused with the reader's own code, got {error}",
+                String::from_utf8_lossy(descriptor)
+            );
+            assert!(
+                descriptor_types(descriptor, kind).is_err(),
+                "the projection refuses what the one reader refuses"
+            );
+        }
+        for (descriptor, kind) in [
+            (&b"L;"[..], DescriptorKind::Field),
+            (b"[L;", DescriptorKind::Field),
+            (b"(L;)V", DescriptorKind::Method),
+        ] {
+            let facts = descriptor_facts(descriptor, kind).expect("the production parses");
+            assert!(
+                facts.components().all(|component| component
+                    .object_name()
+                    .is_some_and(|name| name.0.is_empty())),
+                "`{}` states an object type with no name",
+                String::from_utf8_lossy(descriptor)
+            );
+            assert_eq!(
+                descriptor_facts(descriptor, kind)
+                    .expect("the same reading")
+                    .components()
+                    .map(DescriptorComponent::slots)
+                    .sum::<u16>(),
+                facts
+                    .components()
+                    .map(DescriptorComponent::slots)
+                    .sum::<u16>(),
+                "the slots of a component are stated whether its name is writable or not"
+            );
+            assert!(
+                matches!(
+                    descriptor_types(descriptor, kind),
+                    Err(Error::InvalidInput { code, .. }) if code == DESCRIPTOR_CODE
+                ),
+                "`{}` publishes no class reference",
+                String::from_utf8_lossy(descriptor)
+            );
+        }
+        // A return descriptor's `V` is a component set of none, not an error — and a bare array is
+        // a field type whether the caller asked for one or for a return type.
+        assert!(
+            descriptor_facts(b"V", DescriptorKind::Return)
+                .expect("`V` is a return descriptor")
+                .single()
+                .is_none()
+        );
+        assert_eq!(
+            descriptor_facts(b"[J", DescriptorKind::Return)
+                .expect("a return type is a field type")
+                .single()
+                .expect("one component")
+                .slots(),
+            1
+        );
+    }
+
+    /// The cursor reads one component of a longer buffer at the position it states, which is the
+    /// shape a caller reading a descriptor at an offset needs.
+    #[test]
+    fn the_cursor_reads_one_component_at_a_time() {
+        let bytes = &b"[[JI)Lp/Q;"[..];
+        let mut cursor = DescriptorCursor::new(bytes);
+        let first = cursor.field_type().expect("one component");
+        assert_eq!(first.slots(), 1);
+        assert_eq!(first.dimensions(), 2);
+        assert_eq!(cursor.position(), 3, "`[[J` is three bytes");
+        let second = cursor.field_type().expect("the next component");
+        assert_eq!(second.slots(), 1, "`I` is one slot");
+        assert_eq!(second.dimensions(), 0);
+        assert_eq!(second.object_name(), None);
+        assert_eq!(cursor.position(), 4);
+        assert!(cursor.expect_end().is_err(), "a `)` is left over");
+
+        let mut at_offset = DescriptorCursor::at_offset(bytes, 5);
+        let object = at_offset
+            .field_type()
+            .expect("the object type at its offset");
+        assert_eq!(object.slots(), 1);
+        assert_eq!(
+            object.object_name().map(|name| name.0.clone()),
+            Some(b"p/Q".to_vec())
+        );
+        assert_eq!(at_offset.position(), bytes.len());
+        assert!(
+            at_offset.expect_end().is_ok(),
+            "the component ends the buffer"
+        );
+
+        let mut returns = DescriptorCursor::new(&b"V"[..]);
+        assert!(returns.return_type().expect("`V`").is_none());
+        assert!(returns.expect_end().is_ok());
     }
 }

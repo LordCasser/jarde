@@ -56,9 +56,11 @@ use crate::{
     budget_dimension_code,
 };
 use jarde_java::{
-    LocalVariable, NameTable, RecoveryContent, RecoveryFacts, RecoveryReport, SlotEvidence, Type,
-    alias_for, comment_text, is_java_identifier,
+    LocalVariable, NameTable, RecoveryContent, RecoveryFacts, RecoveryReport, SlotEvidence,
+    alias_for, comment_text, is_java_identifier, type_of_component,
 };
+use jarde_jvm::method_ir::parameter_positions;
+use jarde_reader::classfile::{DescriptorComponent, DescriptorKind, descriptor_facts};
 use serde::{Deserialize, Serialize};
 
 // ---------------------------------------------------------------------------------------------
@@ -390,131 +392,70 @@ fn written_name(raw: &[u8]) -> (String, bool) {
     }
 }
 
-/// One descriptor component as Java source spells its type, with the slots it occupies.
+/// One descriptor component as Java source spells its type.
 ///
-/// The base spellings are the recovery layer's own ([`Type::spell`]), so this presentation and the
-/// statements of a recovered body cannot disagree about how a primitive is written; what is read
-/// here is the descriptor production itself (JVMS 4.3.2), because neither layer above states it:
-/// the reader's exported `descriptor_types` publishes *object names alone* — deduplicated, without
-/// primitives and without array dimensions — and a [`Type`] states a reference without naming it
-/// unless a rule proved one.
-fn descriptor_type(reader: &mut Descriptor<'_>) -> Option<(String, u16)> {
-    let mut dimensions = 0u32;
-    while reader.peek() == Some(b'[') {
-        reader.take()?;
-        dimensions = dimensions.checked_add(1)?;
-    }
-    let (base, width) = match reader.take()? {
-        b'B' => (Type::Byte, 1),
-        b'C' => (Type::Char, 1),
-        b'D' => (Type::Double, 2),
-        b'F' => (Type::Float, 1),
-        b'I' => (Type::Int, 1),
-        b'J' => (Type::Long, 2),
-        b'S' => (Type::Short, 1),
-        b'Z' => (Type::Boolean, 1),
-        b'L' => {
-            let start = reader.at;
-            while reader.peek()? != b';' {
-                reader.take()?;
-            }
-            // An empty object name is not a type name (JVMS 4.2: a binary name is not empty), so it
-            // is refused here rather than written as an empty spelling. Nothing else about the name
-            // is checked: what an internal name may contain is the format's rule and not this
-            // presentation's to enforce, and the bytes stay published in the report either way.
-            if reader.at == start {
-                return None;
-            }
-            let name = class_name(&reader.bytes[start..reader.at]);
-            reader.take()?;
-            (Type::Reference(name), 1)
-        }
-        _ => return None,
-    };
-    let mut text = base.spell().to_owned();
-    for _ in 0..dimensions {
-        text.push_str("[]");
-    }
-    Some((text, width))
+/// The spelling is the recovery layer's own ([`type_of_component`]), so this presentation and the
+/// statements of a recovered body cannot disagree about how a type is written: a primitive is the
+/// primitive's own name, and an array is spelled from its element outwards with one `[]` per
+/// dimension. Nothing about the production is read here — the reader states it
+/// ([`jarde_reader::classfile::descriptor_facts`]) — and an object name Java cannot write is
+/// refused rather than spelled lossily into a type position.
+fn source_type(component: &DescriptorComponent) -> Option<String> {
+    Some(type_of_component(component)?.spell().to_owned())
 }
 
 /// One field descriptor as Java source spells it (JVMS 4.3.2), or `None` when the bytes are not
 /// that production.
 fn field_type(descriptor: &[u8]) -> Option<String> {
-    let mut reader = Descriptor {
-        bytes: descriptor,
-        at: 0,
-    };
-    let (text, _) = descriptor_type(&mut reader)?;
-    if reader.at == descriptor.len() {
-        Some(text)
-    } else {
-        None
-    }
+    let facts = descriptor_facts(descriptor, DescriptorKind::Field).ok()?;
+    source_type(facts.single()?)
 }
 
-/// One method descriptor read as Java source types (JVMS 4.3.3).
+/// One method descriptor as this presentation writes its declaration.
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct Signature {
-    /// The parameters in declaration order: the type as Java spells it, and the slot the parameter
-    /// occupies with no receiver counted.
+    /// The parameters in declaration order: the type as Java spells it, and the **local slot** the
+    /// parameter occupies, with the receiver counted.
+    ///
+    /// The slot is the JVM layer's derivation from the descriptor's own facts
+    /// ([`parameter_positions`]): `this` holds slot 0 of a member that is not `static`, and each
+    /// parameter starts where the one before it ended — a `long`/`double` filling two slots and
+    /// **an array of either filling one**, like every other array.
     parameters: Vec<(String, u16)>,
     /// The return type, or `None` for `V`.
     returns: Option<String>,
-    /// How many slots the parameters occupy together: the sum of their widths.
+    /// How many slots the parameters occupy together, the receiver included: the first slot a body
+    /// of this member may declare a local in.
     slots: u16,
 }
 
-/// One method descriptor as Java source spells it, or `None` when the bytes are not that production.
-fn method_descriptor(descriptor: &[u8]) -> Option<Signature> {
-    let mut reader = Descriptor {
-        bytes: descriptor,
-        at: 0,
+/// One method descriptor as Java source spells it, or `None` when the bytes are not that production
+/// or state a type this presentation cannot write.
+///
+/// The descriptor is read **once**, by the reader's own facts, and everything the declaration needs
+/// comes from that one reading: the types are the recovery layer's spelling of the reader's
+/// components, and the slots are the JVM layer's derivation from those same components. So a
+/// signature's parameter names and the body's references to them are one reading of one descriptor
+/// — never two parses that could place a parameter in two different slots.
+fn method_descriptor(descriptor: &[u8], is_static: bool) -> Option<Signature> {
+    let facts = descriptor_facts(descriptor, DescriptorKind::Method).ok()?;
+    let positions = parameter_positions(&facts, is_static)?;
+    let parameters = facts
+        .parameters()
+        .iter()
+        .zip(positions)
+        .map(|(component, slot)| Some((source_type(component)?, slot)))
+        .collect::<Option<Vec<(String, u16)>>>()?;
+    let returns = match facts.result() {
+        Some(component) => Some(source_type(component)?),
+        None => None,
     };
-    if reader.take()? != b'(' {
-        return None;
-    }
-    let mut parameters = Vec::new();
-    let mut slot = 0u16;
-    while reader.peek()? != b')' {
-        let (text, width) = descriptor_type(&mut reader)?;
-        parameters.push((text, slot));
-        slot = slot.checked_add(width)?;
-    }
-    reader.take()?;
-    let returns = if reader.peek()? == b'V' {
-        reader.take()?;
-        None
-    } else {
-        Some(descriptor_type(&mut reader)?.0)
-    };
-    if reader.at == descriptor.len() {
-        Some(Signature {
-            parameters,
-            returns,
-            slots: slot,
-        })
-    } else {
-        None
-    }
-}
-
-/// One descriptor's bytes, read from the left.
-struct Descriptor<'a> {
-    bytes: &'a [u8],
-    at: usize,
-}
-
-impl Descriptor<'_> {
-    fn peek(&self) -> Option<u8> {
-        self.bytes.get(self.at).copied()
-    }
-
-    fn take(&mut self) -> Option<u8> {
-        let byte = self.peek()?;
-        self.at += 1;
-        Some(byte)
-    }
+    let slots = u16::from(!is_static).checked_add(facts.parameter_slots()?)?;
+    Some(Signature {
+        parameters,
+        returns,
+        slots,
+    })
 }
 
 /// The declaration line one class is written as, without its opening brace.
@@ -585,7 +526,8 @@ fn class_declaration(name: &str, facts: &ClassDeclarationFacts) -> String {
     line
 }
 
-/// The names the parameters of one member are written with, in slot order.
+/// The names the parameters of one member are written with, in **slot** order: index 0 is slot 0,
+/// which is the receiver of a member that is not `static` and the first parameter of one that is.
 ///
 /// The names are the recovery layer's own — [`NameTable`] over the debug names the member's run
 /// read — so the signature and the body spell one parameter the same way: a slot the debug table
@@ -673,14 +615,19 @@ pub(crate) struct Spelled {
 }
 
 /// Whether this presentation can write a declaration for a member whose raw descriptor these bytes
-/// are: a method descriptor (JVMS 4.3.3).
+/// are: a method descriptor (JVMS 4.3.3) whose every type is one Java source spells.
 ///
 /// A member this answers `false` for is published as
 /// [`ClassSourceOutcome::Unspelled`](crate::ClassSourceOutcome::Unspelled), and no recovery run is
 /// performed for it — a run whose artifact could not be placed under a declaration would be work
 /// whose result this presentation has nowhere to write.
 pub(crate) fn spellable_descriptor(descriptor: &[u8]) -> bool {
-    method_descriptor(descriptor).is_some()
+    match descriptor_facts(descriptor, DescriptorKind::Method) {
+        Ok(facts) => facts
+            .components()
+            .all(|component| type_of_component(component).is_some()),
+        Err(_) => false,
+    }
 }
 
 /// Spells one method's declaration, and the marker its own spelling needs.
@@ -704,7 +651,9 @@ pub(crate) fn spell_method(
             };
         }
         b"<init>" => {
-            let Some(signature) = method_descriptor(&item.descriptor.raw().0) else {
+            let Some(signature) =
+                method_descriptor(&item.descriptor.raw().0, is_static(item.access_flags))
+            else {
                 return Spelled {
                     declaration: None,
                     marker: Some(not_a_descriptor(item, "method")),
@@ -716,7 +665,7 @@ pub(crate) fn spell_method(
                 declaration.push(' ');
             }
             declaration.push_str(class);
-            declaration.push_str(&arguments(item, facts, &signature));
+            declaration.push_str(&arguments(facts, &signature));
             return Spelled {
                 declaration: Some(declaration),
                 marker: None,
@@ -724,7 +673,8 @@ pub(crate) fn spell_method(
         }
         _ => {}
     }
-    let Some(signature) = method_descriptor(&item.descriptor.raw().0) else {
+    let Some(signature) = method_descriptor(&item.descriptor.raw().0, is_static(item.access_flags))
+    else {
         return Spelled {
             declaration: None,
             marker: Some(not_a_descriptor(item, "method")),
@@ -760,7 +710,7 @@ pub(crate) fn spell_method(
     declaration.push_str(returns);
     declaration.push(' ');
     declaration.push_str(&name);
-    declaration.push_str(&arguments(item, facts, &signature));
+    declaration.push_str(&arguments(facts, &signature));
     Spelled {
         declaration: Some(declaration),
         marker: aliased.then(|| aliased_name(item)),
@@ -812,20 +762,19 @@ fn spell_field(item: &FieldItem) -> Spelled {
 /// The argument list one declaration is written with: every parameter of the descriptor, in
 /// declaration order, each with its type and its name.
 ///
-/// A parameter's slot is its own position in the descriptor shifted by the receiver: an instance
-/// member's slot 0 holds `this`, which the descriptor says nothing about, so the member's own
-/// `ACC_STATIC` decides the shift. A `long`/`double` parameter occupies two slots, and the
-/// descriptor's own widths are what say so.
-fn arguments(item: &MethodItem, facts: Option<&RecoveryFacts>, signature: &Signature) -> String {
-    let receiver = u16::from(!is_static(item.access_flags));
-    let names = parameter_names(facts, signature.slots.saturating_add(receiver));
+/// A parameter's slot is the JVM layer's own derivation ([`Signature::parameters`]) — `this` holds
+/// slot 0 of a member that is not `static`, a `long`/`double` fills two slots and an **array of
+/// either fills one** — and the name is the one the body's own statements use for that slot
+/// ([`parameter_names`]), so the declaration and the body cannot name two different slots for one
+/// parameter.
+fn arguments(facts: Option<&RecoveryFacts>, signature: &Signature) -> String {
+    let names = parameter_names(facts, signature.slots);
     let written: Vec<String> = signature
         .parameters
         .iter()
         .map(|(ty, slot)| {
-            let slot = slot.saturating_add(receiver);
             let name = names
-                .get(usize::from(slot))
+                .get(usize::from(*slot))
                 .cloned()
                 .unwrap_or_else(|| format!("arg{slot}"));
             format!("{ty} {name}")
@@ -1358,7 +1307,7 @@ mod tests {
     #[test]
     fn one_method_descriptor_is_spelled_with_its_slots_and_its_return_type() {
         let signature =
-            method_descriptor(b"(JLjava/lang/String;[I)V").expect("a method descriptor");
+            method_descriptor(b"(JLjava/lang/String;[I)V", true).expect("a method descriptor");
         assert_eq!(
             signature.parameters,
             vec![
@@ -1371,10 +1320,55 @@ mod tests {
         assert_eq!(signature.returns, None, "`V` states no return type");
         assert_eq!(signature.slots, 4);
 
-        let empty = method_descriptor(b"()[Ljava/lang/Object;").expect("a method descriptor");
+        let empty = method_descriptor(b"()[Ljava/lang/Object;", true).expect("a method descriptor");
         assert!(empty.parameters.is_empty());
         assert_eq!(empty.returns.as_deref(), Some("java.lang.Object[]"));
         assert_eq!(empty.slots, 0);
+    }
+
+    /// JVMS 2.6.1: an array fills **one** slot whatever its element type, and a member that is not
+    /// `static` puts its receiver in slot 0 — the two facts the parameter names of a declaration are
+    /// looked up by, and the two the body's own `arg<slot>` names are numbered by.
+    #[test]
+    fn an_arrays_element_width_does_not_move_the_parameters_after_it() {
+        let static_mixed = method_descriptor(b"([JI)V", true).expect("a method descriptor");
+        assert_eq!(
+            static_mixed.parameters,
+            vec![("long[]".to_owned(), 0), ("int".to_owned(), 1)],
+            "`long[]` is a reference: the `int` after it is at slot 1, not at slot 2"
+        );
+        assert_eq!(static_mixed.slots, 2);
+
+        let instance_mixed = method_descriptor(b"([JI)V", false).expect("a method descriptor");
+        assert_eq!(
+            instance_mixed.parameters,
+            vec![("long[]".to_owned(), 1), ("int".to_owned(), 2)],
+            "slot 0 holds the receiver of a member that is not static"
+        );
+        assert_eq!(instance_mixed.slots, 3);
+
+        let double_grid = method_descriptor(b"([[DJ)J", true).expect("a method descriptor");
+        assert_eq!(
+            double_grid.parameters,
+            vec![("double[][]".to_owned(), 0), ("long".to_owned(), 1)],
+            "a two-dimensional `double[][]` is one slot, and the `long` after it two"
+        );
+        assert_eq!(double_grid.slots, 3);
+
+        // The controls: a `double` written on its own really is two slots, and an `int[]` (whose
+        // element is one slot wide) reads the same way before and after this rule.
+        let wide = method_descriptor(b"(DI)J", true).expect("a method descriptor");
+        assert_eq!(
+            wide.parameters,
+            vec![("double".to_owned(), 0), ("int".to_owned(), 2)]
+        );
+        assert_eq!(wide.slots, 3);
+        assert_eq!(wide.returns.as_deref(), Some("long"));
+        let narrow_array = method_descriptor(b"([II)V", true).expect("a method descriptor");
+        assert_eq!(
+            narrow_array.parameters,
+            vec![("int[]".to_owned(), 0), ("int".to_owned(), 1)]
+        );
     }
 
     #[test]
@@ -1387,9 +1381,12 @@ mod tests {
             b"(I",
             b"(I)Z ",
             b"not-a-descriptor",
+            // An object name Java cannot write is no type: a type position states a Java type or
+            // states that it could not be written, and a lossy spelling is neither.
+            b"(L\xff;)V",
         ] {
             assert_eq!(
-                method_descriptor(descriptor),
+                method_descriptor(descriptor, true),
                 None,
                 "descriptor {}",
                 String::from_utf8_lossy(descriptor)
@@ -1398,6 +1395,7 @@ mod tests {
         }
         assert!(spellable_descriptor(b"()V"));
         assert!(spellable_descriptor(b"(JLjava/lang/String;[I)V"));
+        assert!(spellable_descriptor(b"([JI)V"));
     }
 
     #[test]

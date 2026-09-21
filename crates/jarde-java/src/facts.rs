@@ -32,9 +32,12 @@
 
 use std::collections::BTreeMap;
 
+use jarde_jvm::method_ir::parameter_positions;
+use jarde_reader::classfile::{DescriptorKind, descriptor_facts};
 use jarde_reader::model::PhysicalMethodId;
 
 use crate::ast::Type;
+use crate::lambda::type_of_component;
 use crate::names::DebugLocal;
 
 /// The access-flag bit a class or a member sets when it is `public`.
@@ -126,68 +129,51 @@ impl MethodFacts {
     /// method has one is a declaration fact the caller states. A run that states **neither** the
     /// flags nor a count that places the parameters (a descriptor whose slots could start at 0 or at
     /// 1 and a count that agrees with both) states no type at all rather than guessing one.
+    ///
+    /// The descriptor is read once, through the reader's own facts, and the slots are the JVM
+    /// layer's own derivation of them ([`parameter_positions`]): an array of a `long` or a `double`
+    /// is one slot, so the parameter after it is placed where the bytes really put it. A reference —
+    /// an object type or an array of either — is stated as the conservative `Object`: which class a
+    /// reference names is not this fact's question, which is whether the value is a `boolean`.
     pub fn parameter_types(&self) -> BTreeMap<u16, Type> {
-        let Some((arguments, _)) = self
-            .descriptor
-            .strip_prefix('(')
-            .and_then(|rest| rest.split_once(')'))
-        else {
+        let Ok(facts) = descriptor_facts(self.descriptor.as_bytes(), DescriptorKind::Method) else {
             return BTreeMap::new();
         };
-        let mut types = BTreeMap::new();
-        let mut slot = 0u16;
-        let mut characters = arguments.chars().peekable();
-        while let Some(character) = characters.next() {
-            let ty = match character {
-                'Z' => Type::Boolean,
-                'B' => Type::Byte,
-                'C' => Type::Char,
-                'S' => Type::Short,
-                'I' => Type::Int,
-                'J' => Type::Long,
-                'F' => Type::Float,
-                'D' => Type::Double,
-                'L' | '[' => {
-                    while matches!(characters.peek(), Some('[')) {
-                        characters.next();
-                    }
-                    if character == 'L' || characters.peek() == Some(&'L') {
-                        for next in characters.by_ref() {
-                            if next == ';' {
-                                break;
-                            }
-                        }
-                    }
-                    Type::Reference("Object".to_string())
-                }
-                _ => return BTreeMap::new(),
-            };
-            let wide = matches!(ty, Type::Long | Type::Double);
-            types.insert(slot, ty);
-            slot = slot.saturating_add(if wide { 2 } else { 1 });
-        }
-        let described = slot;
-        let receiver = match self.access_flags {
-            Some(flags) => flags & ACC_STATIC == 0,
+        let is_static = match self.access_flags {
+            Some(flags) => flags & ACC_STATIC != 0,
             None => {
                 // The caller stated no flags: the count it did state places the parameters when it
                 // agrees with exactly one of the two layouts.
+                let Some(described) = facts.parameter_slots() else {
+                    return BTreeMap::new();
+                };
                 if self.parameters == described {
-                    false
-                } else if self.parameters == described.saturating_add(1) {
                     true
+                } else if self.parameters == described.saturating_add(1) {
+                    false
                 } else {
                     return BTreeMap::new();
                 }
             }
         };
-        if !receiver {
-            return types;
+        let Some(positions) = parameter_positions(&facts, is_static) else {
+            return BTreeMap::new();
+        };
+        let mut types = BTreeMap::new();
+        for (component, slot) in facts.parameters().iter().zip(positions) {
+            let ty = match component.object_name() {
+                // A reference states `Object` whether it is an object type or an array: the boolean
+                // question is the only one this fact answers about a reference.
+                Some(_) => Type::Reference("Object".to_string()),
+                None if component.is_array() => Type::Reference("Object".to_string()),
+                None => match type_of_component(component) {
+                    Some(ty) => ty,
+                    None => return BTreeMap::new(),
+                },
+            };
+            types.insert(slot, ty);
         }
         types
-            .into_iter()
-            .map(|(slot, ty)| (slot.saturating_add(1), ty))
-            .collect()
     }
 
     /// The class the member is declared in, when the caller stated it.
@@ -920,5 +906,68 @@ mod tests {
                 .with_access_flags(ACC_PUBLIC | ACC_STATIC)
                 .has_receiver()
         );
+    }
+
+    #[test]
+    fn parameter_types_places_an_arrays_successor_one_slot_past_the_array() {
+        // JVMS 2.6.1, and the one place this fact can go wrong: an array of a `long` or a `double`
+        // fills **one** slot, so the `int` after `[J` is at slot 1 and not at slot 2.
+        let static_facts = MethodFacts::new("f", "(Z[JI)J", 3).with_access_flags(ACC_STATIC);
+        assert_eq!(
+            static_facts.parameter_types(),
+            BTreeMap::from([
+                (0, Type::Boolean),
+                (1, Type::Reference("Object".into())),
+                (2, Type::Int)
+            ])
+        );
+
+        // The same descriptor on an instance member: the receiver is slot 0 and every parameter
+        // moves up one, which is the numbering `parameter_slots` counts too.
+        let instance_facts = MethodFacts::new("f", "(Z[JI)J", 4).with_access_flags(0);
+        assert_eq!(
+            instance_facts.parameter_types(),
+            BTreeMap::from([
+                (1, Type::Boolean),
+                (2, Type::Reference("Object".into())),
+                (3, Type::Int),
+            ])
+        );
+
+        // A `double` fills two slots and a `double[][]` fills one — the same cell shape stated the
+        // two ways it can be: the `long` after the array is one slot past the array and not two.
+        assert_eq!(
+            MethodFacts::new("g", "(D[[DI)J", 4)
+                .with_access_flags(ACC_STATIC)
+                .parameter_types(),
+            BTreeMap::from([
+                (0, Type::Double),
+                (2, Type::Reference("Object".into())),
+                (3, Type::Int),
+            ])
+        );
+
+        // A caller that stated no flags states the layout the count places: 3 slots is the static
+        // reading, 4 is the instance one, and a count that agrees with neither states nothing.
+        assert_eq!(
+            MethodFacts::new("f", "(Z[JI)J", 3).parameter_types(),
+            static_facts.parameter_types()
+        );
+        assert_eq!(
+            MethodFacts::new("f", "(Z[JI)J", 4).parameter_types(),
+            instance_facts.parameter_types()
+        );
+        assert!(
+            MethodFacts::new("f", "(Z[JI)J", 5)
+                .parameter_types()
+                .is_empty()
+        );
+        // A descriptor that is not a method descriptor states no type at all.
+        assert!(
+            MethodFacts::new("f", "not-a-descriptor", 1)
+                .parameter_types()
+                .is_empty()
+        );
+        assert!(MethodFacts::new("f", "([J", 1).parameter_types().is_empty());
     }
 }
