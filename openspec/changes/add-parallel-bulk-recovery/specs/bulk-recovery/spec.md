@@ -111,3 +111,28 @@ CLI SHALL 通过同一库操作提供 `export`，接收显式 input/scope/policy
 
 - **WHEN** 全量产物含 explanation_only 或 not_produced
 - **THEN** 汇总分别计数，并保留原方法报告；遍历完成不升级其 content/quality，不宣称整包 Java 源码已经恢复或编译成功（B07/B08）
+
+
+### Requirement: Active state ends with demand rather than retention admission
+
+物理游标及已派发任务 SHALL 持有消费所需的可信容器事实，retention 关闭、满额或被清理 MUST NOT 使仍持有的事实重新物化。串行与并行路径 SHALL 在交付/处置完成后退役类状态；内存中未退役类记录不得随已完成类总数增长。单类物化 SHALL 先满足 max_class_bytes 及适用的读取额度；整包总额度不得隐式取代独立的方法局部限制。
+
+#### Scenario: One worker finishes before the request deadline
+
+- **WHEN** 单 worker 已交付所有成员和 ClassEnd，剩余操作仅需发布 Final
+- **THEN** 已结束类不遗留待结束槽，正常清理不进入 worker 等待超时；不能由无任务可等待的固定延迟耗尽 deadline（B03/B05/B06）
+
+#### Scenario: A current container cannot enter retention
+
+- **WHEN** 游标仍持有一个 container，而 store 为零容量、超容量或刚被 clear
+- **THEN** 同次操作派发该 container 的类继续使用其可信事实；目录和 nested backing 不因 cache miss 重建，最后消费者释放才结束活动引用（B02/B09）
+
+#### Scenario: Discovery has only yielded a prefix
+
+- **WHEN** ScopeCursor 尚未开始或仅返回部分候选，或者 standalone 首项前已取消
+- **THEN** 前缀不报范围完整；已取消的游标不返回新候选，只有实际穷尽且不存在未知子树时才报告 CompleteWithinSchema（B01/B06）
+
+#### Scenario: Source text and its encoded record each fit but their total does not
+
+- **WHEN** 正文构造和 JSONL 交付各自小于 output_bytes 上限，但累计工作已超过同一操作额度
+- **THEN** 第二部分不得通过独立 allowance 再花一次额度；真实停止进入总账，不能发布最终 Complete，Final 自身许可也不得在汇总取样后漏计（B04/B08）
