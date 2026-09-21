@@ -1435,6 +1435,90 @@ const CONCAT_CONVERSION: Sample = Sample {
             their text byte for byte",
 };
 
+/// The parameter-**slot** sample: a parameter after an array of a `long` or a `double` sits one
+/// slot past the array and not two (JVMS 2.6.1 — an array is a reference whatever its element type).
+///
+/// Two of this file's own readings are what make the sample discriminating, and both are independent
+/// of the layer the defect lived in:
+///
+/// * `descriptor_parts` places each parameter from the descriptor's own types (`[J` is one slot), so
+///   the wrapper's declaration is the *correct* numbering whatever the run states — `arg1` after a
+///   `long[]`, `arg3` after a `long` and a `long[]`, `arg2` after a receiver and a `long[]`;
+/// * the assertion beside `MethodFacts::parameter_types` above requires the run's parameter-type
+///   fact to place a primitive parameter in the slot the descriptor states, so a fact derived from
+///   the array's *element* width (`{0: long, 2: —, 4: int}` for `(J[JI)I`) fails there before any
+///   wrapper is compiled.
+///
+/// The bodies of this sample read the parameter their descriptor places last, so a run that placed
+/// it elsewhere would also write a name the wrapper does not declare — a body javac refuses.
+const PARAMETER_SLOTS: Sample = Sample {
+    label: "p3-parameter-slots/v8 (javac 23.0.1, --release 8 -g:none)",
+    class: "SlotTypes",
+    bytes: include_bytes!("fixtures/p3-parameter-slots/v8/SlotTypes.class"),
+    classpath: &[],
+    // No member of this sample calls another, and the one name the bodies use besides their
+    // parameters (`offset`, read by the constructor) belongs to a member this comparison does not
+    // wrap: nothing here has to resolve to the committed class.
+    extends: None,
+    scaffold: &[],
+    counter: None,
+    measured: &[],
+    // The default input set is the right one, and it is what makes a wrong slot observable rather
+    // than merely mis-named: every parameter type here has more than one value (`7`/`0`/`-1`,
+    // `5L`/`0L`/`-1L`, `1.5`), so a member that read the wrong parameter would answer a different
+    // line for the same input. An array parameter's only default is `null` (`sample_values`'
+    // fallback), which both sides answer as `null`.
+    inputs: None,
+    quotes: &[],
+    // Nothing in this sample is refused, so nothing here rests on the original's own answers beyond
+    // the positive comparison every executed member already makes: the two sides are the original
+    // class and the compiled text, run under one generated driver.
+    baseline: None,
+    members: &[
+        Member {
+            name: "afterArray",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "afterNested",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "afterGrid",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "betweenWide",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "arraysOnly",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "echoArray",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "control",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "instanceAfterArray",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "instanceWide",
+            expect: Expect::Executed,
+        },
+    ],
+    point: "one parameter's slot is the descriptor's own statement and never the array element's \
+            width: `(J[JI)I` puts the `int` at slot 3 and `([JI)I` on an instance member puts it at \
+            slot 2, while the pre-fix reading used the element's width for the array and placed \
+            those parameters at slots 4 and 3 — a declaration the member's own body (whose names \
+            come from the real slots) then disagreed with",
+};
+
 const REQUIRED: &[&Sample] = &[
     &LOCAL_REWRITE,
     &SCOPE_NO_DEBUG,
@@ -1450,6 +1534,7 @@ const REQUIRED: &[&Sample] = &[
     &ARRAY_TYPES,
     &HOISTED_BOOLEAN,
     &CONCAT_CONVERSION,
+    &PARAMETER_SLOTS,
 ];
 
 const CORPUS: &[&Sample] = &[

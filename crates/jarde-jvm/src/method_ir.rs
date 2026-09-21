@@ -142,7 +142,10 @@ pub use crate::ssa::{
 };
 
 use crate::ir::MethodAnalysisReport;
-use jarde_reader::classfile::{BootstrapMethodFacts, ClassFacts, CpEntryFacts, MethodCodeFacts};
+use jarde_reader::classfile::{
+    BootstrapMethodFacts, ClassFacts, CpEntryFacts, DescriptorFacts, DescriptorKind,
+    MethodCodeFacts, descriptor_facts,
+};
 use jarde_reader::model::{JvmBytes, PhysicalMethodId};
 use std::sync::Arc;
 
@@ -278,62 +281,41 @@ impl MethodDeclaration {
     }
 }
 
-/// The local slots one method descriptor's parameters occupy (JVM 2.6.1).
+/// The local slot every parameter of one method descriptor starts at, in declaration order
+/// (JVMS 2.6.1).
 ///
-/// The walk is the descriptor's own: `this` takes slot 0 when the member is not `static`, and a
-/// `long` or `double` parameter takes two slots where every other type takes one. The return
-/// descriptor is not read — it occupies no local slot — and `None` means the descriptor is not one
-/// this walk can read.
-fn parameter_slots(descriptor: &[u8], is_static: bool) -> Option<u16> {
-    let mut rest = descriptor.strip_prefix(b"(")?;
-    let mut slots = u32::from(!is_static);
-    let mut closed = false;
-    while let Some((&first, tail)) = rest.split_first() {
-        if first == b')' {
-            closed = true;
-            break;
-        }
-        rest = match first {
-            b'J' | b'D' => {
-                slots += 2;
-                tail
-            }
-            b'B' | b'C' | b'F' | b'I' | b'S' | b'Z' => {
-                slots += 1;
-                tail
-            }
-            b'L' => {
-                let end = tail.iter().position(|byte| *byte == b';')?;
-                slots += 1;
-                &tail[end + 1..]
-            }
-            b'[' => {
-                // An array parameter is one slot whatever its element type, so the `[`-chain is
-                // read only to find where the parameter ends.
-                let mut element = tail;
-                while let Some((&b'[', rest)) = element.split_first() {
-                    element = rest;
-                }
-                match element.split_first() {
-                    Some((&b'L', after)) => {
-                        let end = after.iter().position(|byte| *byte == b';')?;
-                        element = &after[end + 1..];
-                    }
-                    Some((&(b'B' | b'C' | b'D' | b'F' | b'I' | b'J' | b'S' | b'Z'), after)) => {
-                        element = after;
-                    }
-                    _ => return None,
-                }
-                slots += 1;
-                element
-            }
-            _ => return None,
-        };
-    }
-    if !closed {
+/// The descriptor's components are the reader's own facts ([`DescriptorFacts`]), and each one
+/// states the slots a value of its type fills: a `long` or a `double` fills two, and **an array of
+/// either fills one** like every other array. This is the one place that per-component fact becomes
+/// the positions a member's local table really has — slot 0 holds `this` for a member that is not
+/// `static`, and each parameter starts where the one before it ended — so a signature's parameter
+/// names, a frame's argument slots and a member's parameter count cannot disagree: they are all
+/// read from here.
+///
+/// `None` when the facts are not a method descriptor's, or when the positions do not fit the `u16`
+/// a local index is.
+pub fn parameter_positions(facts: &DescriptorFacts, is_static: bool) -> Option<Vec<u16>> {
+    if facts.kind() != DescriptorKind::Method {
         return None;
     }
-    u16::try_from(slots).ok()
+    let mut next = u16::from(!is_static);
+    let mut positions = Vec::with_capacity(facts.parameters().len());
+    for component in facts.parameters() {
+        positions.push(next);
+        next = next.checked_add(component.slots())?;
+    }
+    Some(positions)
+}
+
+/// The local slots one method descriptor's parameters occupy (JVM 2.6.1), `this` included for an
+/// instance member.
+///
+/// `None` when the descriptor is not one this layer can read: the count is derived from the
+/// descriptor's own facts, so a descriptor the format does not allow states no count at all
+/// instead of one nobody could justify.
+fn parameter_slots(descriptor: &[u8], is_static: bool) -> Option<u16> {
+    let facts = descriptor_facts(descriptor, DescriptorKind::Method).ok()?;
+    u16::from(!is_static).checked_add(facts.parameter_slots()?)
 }
 
 /// The IR payload of one method-analysis request: the tables that run published, each present

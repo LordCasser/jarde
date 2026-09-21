@@ -113,7 +113,10 @@ use std::collections::BTreeMap;
 use std::collections::VecDeque;
 
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
-use jarde_reader::classfile::{CpEntryFacts, CpEntryKind, InstructionOperands, MethodCodeFacts};
+use jarde_reader::classfile::{
+    Base, BaseType, CpEntryFacts, CpEntryKind, DescriptorComponent, DescriptorCursor,
+    DescriptorKind, InstructionOperands, MethodCodeFacts, descriptor_facts,
+};
 use jarde_reader::error::{Error, Result};
 use jarde_reader::view::LoaderId;
 
@@ -121,6 +124,7 @@ use crate::canonical::{
     CanonicalBlock, CanonicalBlockId, CanonicalCfg, CanonicalEdgeKind, CanonicalHandlerRow,
     CanonicalThrowSite,
 };
+use crate::method_ir::parameter_positions;
 
 /// Stop code of a body this build does not state the frames of.
 ///
@@ -1443,6 +1447,42 @@ struct Param {
     name: Option<Vec<u8>>,
 }
 
+/// One descriptor component as the frame states it: the slot class of its value, and — for a
+/// reference — the name [`RefType::Named`] carries.
+///
+/// The component is the reader's own reading of the production ([`DescriptorComponent`]); what this
+/// layer adds is the **slot class**, which is the frame's vocabulary and not the descriptor's: the
+/// four int-shaped primitives are one class here ([`Ty::Int`]), and **an array is a reference
+/// whatever its element type** — `[J` is not a `long`, and `[[D` is not a `double`. The name is the
+/// bytes the component spans, exactly as the class file spells the type (`Ljava/lang/String;`,
+/// `[I`, `[[Ljava/lang/String;`), which is the form the frames keep a named reference in.
+fn component_frame_type(
+    descriptor: &[u8],
+    component: &DescriptorComponent,
+) -> Norm<(Ty, Option<Vec<u8>>)> {
+    let base = match component.base() {
+        Base::Primitive(BaseType::Float) => Ty::Float,
+        Base::Primitive(BaseType::Long) => Ty::Long,
+        Base::Primitive(BaseType::Double) => Ty::Double,
+        // `boolean`, `byte`, `char`, `short` and `int` are one slot class: the descriptor states
+        // which of them the *parameter* is, and a frame cannot (the note on [`Ty`]).
+        Base::Primitive(_) => Ty::Int,
+        Base::Object(_) => Ty::Ref,
+    };
+    let ty = if component.is_array() { Ty::Ref } else { base };
+    if ty != Ty::Ref {
+        return Ok((ty, None));
+    }
+    let bytes = component.bytes(descriptor).ok_or_else(|| {
+        Problem::Inconsistent(format!(
+            "the descriptor component at [{}..+{}] is outside the descriptor it was read from",
+            component.span().start,
+            component.span().length
+        ))
+    })?;
+    Ok((ty, Some(bytes.to_vec())))
+}
+
 /// Parses one field descriptor at the start of `bytes`.
 ///
 /// Returns the slot class, the number of bytes the descriptor used, and — for a reference — the
@@ -1450,87 +1490,34 @@ struct Param {
 /// class-file format does not allow is a contradiction of the body: the reader keeps the bytes and
 /// does not validate them, so this is where a malformed one is refused.
 fn parse_field_type(bytes: &[u8]) -> Norm<(Ty, usize, Option<Vec<u8>>)> {
-    let Some((&first, rest)) = bytes.split_first() else {
-        return inconsistent("a field descriptor is empty".to_string());
-    };
-    Ok(match first {
-        b'B' | b'C' | b'I' | b'S' | b'Z' => (Ty::Int, 1, None),
-        b'F' => (Ty::Float, 1, None),
-        b'J' => (Ty::Long, 1, None),
-        b'D' => (Ty::Double, 1, None),
-        b'L' => {
-            let Some(semicolon) = rest.iter().position(|byte| *byte == b';') else {
-                return inconsistent(format!(
-                    "the field descriptor `{}` is a class type without its `;`",
-                    String::from_utf8_lossy(bytes)
-                ));
-            };
-            let length = semicolon + 2;
-            (Ty::Ref, length, Some(bytes[..length].to_vec()))
-        }
-        b'[' => {
-            let (_, element, _) = parse_field_type(rest)?;
-            let length = element + 1;
-            (Ty::Ref, length, Some(bytes[..length].to_vec()))
-        }
-        _ => {
-            return inconsistent(format!(
-                "`{}` is not a field descriptor",
-                String::from_utf8_lossy(bytes)
-            ));
-        }
-    })
+    let mut cursor = DescriptorCursor::new(bytes);
+    let component = cursor
+        .field_type()
+        .map_err(|error| Problem::Inconsistent(error.to_string()))?;
+    let (ty, name) = component_frame_type(bytes, &component)?;
+    let length = usize::try_from(component.span().length).map_err(|_| {
+        Problem::Inconsistent("a descriptor component is longer than usize".to_string())
+    })?;
+    Ok((ty, length, name))
 }
 
 /// Parses a method descriptor `(parameters)return`.
 fn parse_method_descriptor(bytes: &[u8]) -> Norm<(Vec<Param>, Option<Param>)> {
-    let Some((&b'(', rest)) = bytes.split_first() else {
-        return inconsistent(format!(
-            "`{}` is not a method descriptor",
-            String::from_utf8_lossy(bytes)
-        ));
-    };
-    let mut params = Vec::new();
-    let mut offset = 0usize;
-    loop {
-        match rest.get(offset) {
-            Some(b')') => {
-                offset += 1;
-                break;
-            }
-            Some(_) => {
-                let (ty, length, name) = parse_field_type(&rest[offset..])?;
-                params.push(Param { ty, name });
-                offset += length;
-            }
-            None => {
-                return inconsistent(format!(
-                    "the method descriptor `{}` is not terminated by `)`",
-                    String::from_utf8_lossy(bytes)
-                ));
-            }
-        }
+    let facts = descriptor_facts(bytes, DescriptorKind::Method)
+        .map_err(|error| Problem::Inconsistent(error.to_string()))?;
+    let mut parameters = Vec::with_capacity(facts.parameters().len());
+    for component in facts.parameters() {
+        let (ty, name) = component_frame_type(bytes, component)?;
+        parameters.push(Param { ty, name });
     }
-    let returns = match rest.get(offset) {
-        Some(b'V') if offset + 1 == rest.len() => None,
-        Some(_) => {
-            let (ty, length, name) = parse_field_type(&rest[offset..])?;
-            if offset + length != rest.len() {
-                return inconsistent(format!(
-                    "the method descriptor `{}` has bytes after its return type",
-                    String::from_utf8_lossy(bytes)
-                ));
-            }
+    let returns = match facts.result() {
+        Some(component) => {
+            let (ty, name) = component_frame_type(bytes, component)?;
             Some(Param { ty, name })
         }
-        None => {
-            return inconsistent(format!(
-                "the method descriptor `{}` names no return type",
-                String::from_utf8_lossy(bytes)
-            ));
-        }
+        None => None,
     };
-    Ok((params, returns))
+    Ok((parameters, returns))
 }
 
 /// The value one slot class produces, named where the class file names the type.
@@ -2590,7 +2577,6 @@ pub(crate) fn caught_reference(method: &FrameMethod<'_>, row: &CanonicalHandlerR
 fn entry_frame(method: &FrameMethod<'_>, facts: &MethodCodeFacts) -> Norm<Frame> {
     let slots = usize::from(facts.max_locals);
     let mut locals = vec![Value::Top; slots];
-    let mut next = 0usize;
     if method.access_flags & ACC_STATIC == 0 {
         if slots == 0 {
             return inconsistent(format!(
@@ -2603,11 +2589,23 @@ fn entry_frame(method: &FrameMethod<'_>, facts: &MethodCodeFacts) -> Norm<Frame>
         } else {
             named(method.owner.to_vec(), method)
         };
-        next = 1;
     }
-    let (params, _returns) = parse_method_descriptor(method.descriptor)?;
-    for param in params {
-        let width = param.ty.slots();
+    // One reading of the descriptor, and two facts from it: the slot class each parameter's value
+    // has (this layer's vocabulary) and the slot each parameter starts at (the JVM layer's own
+    // derivation, `this` included when the member is not `static`).
+    let descriptor = descriptor_facts(method.descriptor, DescriptorKind::Method)
+        .map_err(|error| Problem::Inconsistent(error.to_string()))?;
+    let positions = parameter_positions(&descriptor, method.access_flags & ACC_STATIC != 0)
+        .ok_or_else(|| {
+            Problem::Inconsistent(format!(
+                "the descriptor `{}` states more parameter slots than a local index holds",
+                String::from_utf8_lossy(method.descriptor)
+            ))
+        })?;
+    for (component, position) in descriptor.parameters().iter().zip(positions) {
+        let next = usize::from(position);
+        let (ty, name) = component_frame_type(method.descriptor, component)?;
+        let width = ty.slots();
         if next + width > slots {
             return inconsistent(format!(
                 "the descriptor `{}` needs more local slots than the method declares \
@@ -2615,11 +2613,10 @@ fn entry_frame(method: &FrameMethod<'_>, facts: &MethodCodeFacts) -> Norm<Frame>
                 String::from_utf8_lossy(method.descriptor)
             ));
         }
-        locals[next] = value_of(param.ty, param.name, method);
+        locals[next] = value_of(ty, name, method);
         if width == 2 {
             locals[next + 1] = Value::Second;
         }
-        next += width;
     }
     Ok(Frame {
         locals,

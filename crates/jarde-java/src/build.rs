@@ -38,7 +38,10 @@ use jarde_jvm::method_ir::{
     ValueId,
 };
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
-use jarde_reader::classfile::{BootstrapMethodFacts, CpEntryFacts};
+use jarde_reader::classfile::{
+    Base, BaseType, BootstrapMethodFacts, CpEntryFacts, DescriptorComponent, DescriptorKind,
+    descriptor_facts,
+};
 
 use crate::accessor::{self, AccessorRecord, AccessorShape};
 use crate::ast::{
@@ -3387,29 +3390,22 @@ pub(crate) fn typed_arguments(descriptor: &str, arguments: Vec<Expr>) -> Vec<Exp
 /// The parameter type descriptors one method descriptor states, in order
 /// (`(Ljava/lang/String;Z)V` → `["Ljava/lang/String;", "Z"]`), or `None` when it does not parse.
 ///
-/// Only the parameter list is read: the return type is not part of how an argument is spelled, and a
-/// descriptor whose `)` is missing states no parameters a caller could line arguments up with.
+/// The components are the reader's own reading of the production ([`descriptor_facts`]), and each
+/// one's bytes are cut out of the descriptor by the span the reader stated: the argument list this
+/// answers is what a call's own descriptor says, in the same reading every other consumer of that
+/// descriptor uses. A descriptor that does not parse states no parameters a caller could line
+/// arguments up with, so the whole list is `None` rather than a prefix.
 fn parameter_descriptors(descriptor: &str) -> Option<Vec<&str>> {
-    let arguments = descriptor.strip_prefix('(')?.split_once(')')?.0;
-    let bytes = arguments.as_bytes();
-    let mut types = Vec::new();
-    let mut at = 0usize;
-    while at < bytes.len() {
-        let start = at;
-        while bytes.get(at) == Some(&b'[') {
-            at += 1;
-        }
-        match bytes.get(at) {
-            // A reference type runs to its `;`: its name may hold any character, so scanning for the
-            // terminator is the only reading that cannot split one in two.
-            Some(b'L') => at = arguments[at..].find(';')? + at + 1,
-            // Every other field descriptor is one character (a primitive or an element type).
-            Some(_) => at += 1,
-            None => return None,
-        }
-        types.push(&arguments[start..at]);
-    }
-    Some(types)
+    let bytes = descriptor.as_bytes();
+    let facts = descriptor_facts(bytes, DescriptorKind::Method).ok()?;
+    facts
+        .parameters()
+        .iter()
+        .map(|component| {
+            let raw = component.bytes(bytes)?;
+            std::str::from_utf8(raw).ok()
+        })
+        .collect()
 }
 
 /// Whether the class's own descriptors state that one value is a boolean.
@@ -3463,13 +3459,18 @@ fn store_operand(operations: &Operations, instruction: &SsaInstruction) -> Optio
 ///
 /// The return side of the same reading [`MethodFacts::parameter_types`] makes for the parameters:
 /// the frames state one `int` shape for the four int-sized primitives, so only a descriptor says
-/// whether the position it types holds a `boolean`. A descriptor this reading cannot parse states no
-/// return type at all, and a body presented under it keeps every value as it was rendered.
+/// whether the position it types holds a `boolean`. The descriptor is read by the reader's own facts
+/// ([`descriptor_facts`]), so the return position is the one component that production states and
+/// not a substring of the text. A descriptor this reading cannot parse states no return type at all,
+/// and a body presented under it keeps every value as it was rendered.
 pub(crate) fn returns_boolean(descriptor: &str) -> bool {
-    descriptor
-        .strip_prefix('(')
-        .and_then(|rest| rest.split_once(')'))
-        .is_some_and(|(_, returns)| returns == "Z")
+    let Ok(facts) = descriptor_facts(descriptor.as_bytes(), DescriptorKind::Method) else {
+        return false;
+    };
+    matches!(
+        facts.result().map(DescriptorComponent::base),
+        Some(Base::Primitive(BaseType::Boolean))
+    )
 }
 
 /// The value one instruction reads out of one local slot, when it reads that slot at all.
