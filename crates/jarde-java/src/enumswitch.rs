@@ -39,16 +39,22 @@ use serde::Serialize;
 
 use crate::build::stack_operands;
 use crate::decode::Operations;
+use crate::evidence::Publication;
 use crate::facts::{FieldAccess, InvokeKind, Operation};
 use crate::pass::{ENUMSWITCH, Precondition, RuleVersion};
-use crate::refusal::Refusal;
+use crate::refusal::{Gap, Refusal};
 
 /// The pass answerable for every verdict of this module.
 pub(crate) const RULE: RuleVersion = ENUMSWITCH.rule();
 
-/// The table read one body performs, and the ones it does not.
+/// The table read one body performs, the ones it does not, and the gaps it states in every
+/// selection.
 pub(crate) struct Plan {
     claimed: BTreeMap<u32, (TableRead, IndexCall)>,
+    /// Why a candidate read was not presented, in BCI order: what every selection reports about the
+    /// rule's refusals, beside the records only a selected run materializes.
+    refusals: Vec<Gap>,
+    /// The records, when this run published rule records.
     records: Vec<EnumSwitchRecord>,
 }
 
@@ -57,6 +63,7 @@ impl Plan {
     pub(crate) fn empty() -> Self {
         Self {
             claimed: BTreeMap::new(),
+            refusals: Vec::new(),
             records: Vec::new(),
         }
     }
@@ -75,14 +82,31 @@ impl Plan {
         self.claimed.get(&bci).map(|(table, index)| (table, index))
     }
 
-    /// Every candidate read, presented or refused, in BCI order.
+    /// Every candidate read the rule refused, in BCI order.
+    pub(crate) fn refusals(&self) -> &[Gap] {
+        &self.refusals
+    }
+
+    /// Every candidate read, presented or refused, in BCI order — the evidence a report reads back
+    /// when this run selected rule records.
     pub(crate) fn records(&self) -> &[EnumSwitchRecord] {
         &self.records
+    }
+
+    /// How many candidate reads the rule read, and how many of them it presented.
+    pub(crate) fn counts(&self) -> (u64, u64) {
+        let presented = u64::try_from(self.claimed.len()).unwrap_or(u64::MAX);
+        let refused = u64::try_from(self.refusals.len()).unwrap_or(u64::MAX);
+        (presented + refused, presented)
     }
 }
 
 /// Reads every candidate dispatch-table read of one body.
-pub(crate) fn plan(ssa: &SsaTable, operations: &Operations) -> Plan {
+///
+/// The decision is taken for every selection; `publication` gates the *records* only — a record the
+/// request did not select, or one whose read is outside the selected driver range, is not built —
+/// while the refusal of a candidate is stated as a gap in every selection.
+pub(crate) fn plan(ssa: &SsaTable, operations: &Operations, publication: Publication) -> Plan {
     let mut plan = Plan::empty();
     for instruction in ssa.blocks().iter().flat_map(|block| block.instructions()) {
         let at = instruction.bci();
@@ -91,25 +115,41 @@ pub(crate) fn plan(ssa: &SsaTable, operations: &Operations) -> Plan {
         }
         match verify(instruction, ssa, operations) {
             Ok((table, index)) => {
-                plan.claimed.insert(at, (table.clone(), index.clone()));
-                plan.records.push(EnumSwitchRecord {
-                    read: at,
-                    table: Some(table),
-                    index: Some(index),
-                    presented: true,
-                    refusal: None,
-                });
+                if publication.publishes(&[at]) {
+                    crate::demand_counts::record_built(
+                        crate::evidence::RecoveryEvidenceKind::RuleDetails,
+                    );
+                    plan.records.push(EnumSwitchRecord {
+                        read: at,
+                        table: Some(table.clone()),
+                        index: Some(index.clone()),
+                        presented: true,
+                        refusal: None,
+                    });
+                }
+                plan.claimed.insert(at, (table, index));
             }
-            Err(refusal) => plan.records.push(EnumSwitchRecord {
-                read: at,
-                table: None,
-                index: None,
-                presented: false,
-                refusal: Some(EnumSwitchRefusal::of(&refusal, at)),
-            }),
+            Err(refusal) => {
+                let refusal = EnumSwitchRefusal::of(&refusal, at);
+                plan.refusals
+                    .push(Gap::at(refusal.code, at, refusal.message.clone()));
+                if publication.publishes(&[at]) {
+                    crate::demand_counts::record_built(
+                        crate::evidence::RecoveryEvidenceKind::RuleDetails,
+                    );
+                    plan.records.push(EnumSwitchRecord {
+                        read: at,
+                        table: None,
+                        index: None,
+                        presented: false,
+                        refusal: Some(refusal),
+                    });
+                }
+            }
         }
     }
     plan.records.sort_by_key(|record| record.read);
+    plan.refusals.sort_by_key(|gap| gap.position());
     plan
 }
 

@@ -42,12 +42,13 @@
 use crate::ErrorResponse;
 use clap::{ArgAction, Args, Subcommand, ValueEnum};
 use jarde::{
-    ArtifactInput, ArtifactSnapshot, BodyRef, Budget, BudgetOverride, ClassNameQuery, ClassRef,
-    ClassSourceReport, ClassSourceRequest, ClassViewReport, ClassViewRequest, ConsumerKind,
-    ConsumerSchema, CountedBudgetDimension, Engine, EnvironmentPolicy, EnvironmentRequest, Error,
-    ExecutionReport, JvmBytes, LayoutMode, LoadRoot, LoaderId, MethodOperationRequest,
-    MethodRecoveryReport, MethodRef, MultiReleasePolicy, OperationOutcome, PhysicalDefinitionId,
-    PhysicalScope, PhysicalView, QueryRelation, QueryRequest, QueryTarget, ReferenceGrouping,
+    ArtifactInput, ArtifactSnapshot, BodyRef, Budget, BudgetOverride, BytecodeRange,
+    ClassNameQuery, ClassRef, ClassSourceReport, ClassSourceRequest, ClassViewReport,
+    ClassViewRequest, ConsumerKind, ConsumerSchema, CountedBudgetDimension, Engine,
+    EnvironmentPolicy, EnvironmentRequest, Error, ExecutionReport, JvmBytes, LayoutMode, LoadRoot,
+    LoaderId, MethodOperationRequest, MethodRecoveryReport, MethodRef, MultiReleasePolicy,
+    OperationOutcome, PhysicalDefinitionId, PhysicalScope, PhysicalView, QueryRelation,
+    QueryRequest, QueryTarget, RecoveryEvidenceKind, RecoveryEvidenceRequest, ReferenceGrouping,
     ReferenceSource, RuntimeProfile, SymbolRef, UsageSnapshot, task_budget,
 };
 use serde::Serialize;
@@ -312,6 +313,8 @@ pub(crate) struct ClassView {
 pub(crate) struct ClassSource {
     #[command(flatten)]
     common: Common,
+    #[command(flatten)]
+    evidence: EvidenceArgs,
     /// The class to present: a name (`a/b/C`, a class file's internal name, or `a.b.C`,
     /// source-style dotted), or the physical definition identity a listing printed as a JSON
     /// document (or `@FILE`).
@@ -329,6 +332,8 @@ pub(crate) struct ClassSource {
 pub(crate) struct Recover {
     #[command(flatten)]
     common: Common,
+    #[command(flatten)]
+    evidence: EvidenceArgs,
     /// The method to recover, by the physical method identity a member listing printed (JSON, or
     /// `@FILE`).
     #[arg(long, value_name = "JSON")]
@@ -347,6 +352,94 @@ pub(crate) struct Recover {
     descriptor: Option<String>,
     #[command(flatten)]
     environment: EnvironmentArgs,
+}
+
+/// The optional evidence a recovery-bearing command materializes (change
+/// `add-demand-driven-core-results`, D1).
+///
+/// The default is *nothing optional*: the ordinary recovery delivers the necessary results — the
+/// artifact, its planes, its core gaps and its stops — and a caller that wants the detail records of
+/// the audit asks for them by name. The two shorthands are `essential` (the default, stated) and
+/// `all` (every category this entry materializes), and a spelling the library's own vocabulary does
+/// not hold is a usage error rather than an ignored word.
+#[derive(Debug, Args)]
+pub(crate) struct EvidenceArgs {
+    /// One category to materialize, by the library's own snake_case name: `source_map`,
+    /// `region_details`, `rule_details`, `name_details`, `read_details`; or `all`/`essential`.
+    /// Repeatable.
+    #[arg(long = "evidence", value_name = "KIND", action = ArgAction::Append)]
+    evidence: Vec<String>,
+    /// The driver method's own bytecode range the selected evidence is restricted to, written
+    /// `START..END` (the end exclusive), for example `--evidence-bci 0..12`.
+    #[arg(long = "evidence-bci", value_name = "START..END")]
+    evidence_bci: Option<String>,
+}
+
+impl EvidenceArgs {
+    /// The selection these arguments state.
+    ///
+    /// The names are read through [`RecoveryEvidenceKind::parse`], so this adapter can neither spell
+    /// a category the library does not know nor drop one it does; `read_details` parses and is then
+    /// refused by the library itself, with the library's own code, because the category a request
+    /// knows and an entry materializes are two different statements.
+    pub(crate) fn selection(&self) -> Result<RecoveryEvidenceRequest, Error> {
+        let mut kinds = Vec::new();
+        for spelling in &self.evidence {
+            match spelling.as_str() {
+                "all" => {
+                    if self.evidence.len() > 1 {
+                        return Err(Error::invalid_input(
+                            "cli_evidence_kind",
+                            "`all` states every evidence category and cannot be combined with a named one",
+                        ));
+                    }
+                    kinds = RecoveryEvidenceKind::SUPPORTED.to_vec();
+                }
+                "essential" => {
+                    if self.evidence.len() > 1 {
+                        return Err(Error::invalid_input(
+                            "cli_evidence_kind",
+                            "`essential` states that no optional evidence is wanted and cannot be combined with a named category",
+                        ));
+                    }
+                }
+                other => match RecoveryEvidenceKind::parse(other) {
+                    Some(kind) => kinds.push(kind),
+                    None => {
+                        return Err(Error::invalid_input(
+                            "cli_evidence_kind",
+                            format!(
+                                "`{other}` is not an evidence category: this build serves {}",
+                                RecoveryEvidenceKind::ALL
+                                    .map(RecoveryEvidenceKind::spell)
+                                    .join(", ")
+                            ),
+                        ));
+                    }
+                },
+            }
+        }
+        let mut selection = RecoveryEvidenceRequest::essential().with_kinds(kinds);
+        if let Some(range) = &self.evidence_bci {
+            let (start, end) = range.split_once("..").ok_or_else(|| {
+                Error::invalid_input(
+                    "cli_evidence_bci_range",
+                    format!("`{range}` is not a driver bytecode range: write it `START..END`"),
+                )
+            })?;
+            let bound = |text: &str| {
+                text.trim().parse::<u32>().map_err(|_| {
+                    Error::invalid_input(
+                        "cli_evidence_bci_range",
+                        format!("`{text}` is not a bytecode index of a driver range"),
+                    )
+                })
+            };
+            selection =
+                selection.with_driver_bci_range(BytecodeRange::new(bound(start)?, bound(end)?));
+        }
+        Ok(selection)
+    }
 }
 
 /// How the request's own load positions are declared.
@@ -924,6 +1017,7 @@ fn recover(args: Recover) -> Result<(Answer, Session), Failure> {
         method_name,
         descriptor,
         environment,
+        evidence,
     } = args;
     let method = match (method, class_name, method_name) {
         (Some(identity), None, None) => MethodRef::Method {
@@ -955,8 +1049,11 @@ fn recover(args: Recover) -> Result<(Answer, Session), Failure> {
         // content binding this adapter makes; the policy, the profile and the loader are the caller's.
         environment: declaration.bind(&session.snapshot, &session.scope),
     };
+    // The selection this invocation states — `essential` unless the caller named categories — is
+    // propagated verbatim: the adapter chooses no default of its own.
+    let evidence = evidence.selection()?;
     let outcome = session.call(|engine, snapshot, budget| {
-        engine.recover_target(slice::from_ref(snapshot), &request, budget)
+        engine.recover_target_with_evidence(slice::from_ref(snapshot), &request, &evidence, budget)
     })?;
     let mut answer = Answer::outcome(&outcome, method_recovery_plane)?;
     answer.body = Some(RECOVERED_BODY);
@@ -974,6 +1071,7 @@ fn class_source(args: ClassSource) -> Result<(Answer, Session), Failure> {
         common,
         class,
         environment,
+        evidence,
     } = args;
     // The parameter is read before the artifact is opened, as in every other command: a value this
     // adapter cannot read never becomes a read of anything.
@@ -986,8 +1084,9 @@ fn class_source(args: ClassSource) -> Result<(Answer, Session), Failure> {
         // content binding this adapter makes; the policy, the profile and the loader are the caller's.
         environment: declaration.bind(&session.snapshot, &session.scope),
     };
+    let evidence = evidence.selection()?;
     let outcome = session.call(|engine, snapshot, budget| {
-        engine.class_source(slice::from_ref(snapshot), &request, budget)
+        engine.class_source_with_evidence(slice::from_ref(snapshot), &request, &evidence, budget)
     })?;
     let mut answer = Answer::outcome(&outcome, class_source_plane)?;
     answer.body = Some(CLASS_SOURCE_TEXT);

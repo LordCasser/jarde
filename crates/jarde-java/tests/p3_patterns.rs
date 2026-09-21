@@ -268,7 +268,8 @@ fn recover_body(
     members: Option<&ClassMembers>,
     budget: &mut Budget,
 ) -> jarde_java::RecoveryReport {
-    let request = RecoveryRequest::new(payload.analysis.ir(), facts, jarde_java::pass::JAVA_8);
+    let request = RecoveryRequest::new(payload.analysis.ir(), facts, jarde_java::pass::JAVA_8)
+        .with_evidence(jarde_java::RecoveryEvidenceRequest::all());
     let request = match members {
         Some(members) => request.with_members(members),
         None => request,

@@ -58,6 +58,10 @@ use crate::declaration::{self, DeclarationRecord};
 use crate::decode::Operations;
 use crate::emit::{Emitted, emit};
 use crate::enumswitch::{self, EnumSwitchRecord};
+use crate::evidence::{
+    EvidencePayload, EvidencePhase, EvidenceRefusal, Publication, RecoveryEvidence,
+    RecoveryEvidenceKind, RecoveryEvidenceRequest, SegmentPublication,
+};
 use crate::facts::{ClassMembers, RecoveryFacts};
 use crate::field::{self, FieldRecord};
 use crate::init::{self, InitRecord, NewRecord};
@@ -94,16 +98,28 @@ pub struct RecoveryRequest<'a> {
     /// (P3 2.2). A caller that did not read the class's members states `None`, and the accessor rule
     /// then records the table it is missing rather than guessing from a call's name.
     pub members: Option<&'a ClassMembers>,
+    /// Which **optional evidence** this request wants delivered (change
+    /// `add-demand-driven-core-results`, D1): the categories of detail records, and the driver BCI
+    /// range they are restricted to. [`RecoveryEvidenceRequest::essential`] — the default
+    /// [`RecoveryRequest::new`] states — selects none of them, and the run then delivers the
+    /// necessary results: the artifact, the planes, the core gaps and the stops. The selection never
+    /// decides whether a rule runs, whether a value is proven or whether a region is refused.
+    pub evidence: RecoveryEvidenceRequest,
 }
 
 impl<'a> RecoveryRequest<'a> {
     /// One request over one payload, one fact set and one profile, with no member table.
+    ///
+    /// The evidence selection is [`RecoveryEvidenceRequest::essential`]: the ordinary recovery, which
+    /// delivers the necessary results and materializes no optional detail record. A caller that
+    /// wants detail states it with [`RecoveryRequest::with_evidence`].
     pub fn new(ir: &'a MethodIr, facts: &'a RecoveryFacts, profile: RecoveryProfile) -> Self {
         Self {
             ir,
             facts,
             profile,
             members: None,
+            evidence: RecoveryEvidenceRequest::essential(),
         }
     }
 
@@ -111,6 +127,16 @@ impl<'a> RecoveryRequest<'a> {
     /// is decided from (P3 2.2, A12).
     pub fn with_members(mut self, members: &'a ClassMembers) -> Self {
         self.members = Some(members);
+        self
+    }
+
+    /// The same request, selecting the optional evidence this run materializes.
+    ///
+    /// The selection is the caller's own statement and is echoed in the report beside what each
+    /// category really delivered ([`RecoveryReport::evidence`]); it is never a second way to ask for
+    /// a different *decision*.
+    pub fn with_evidence(mut self, evidence: RecoveryEvidenceRequest) -> Self {
+        self.evidence = evidence;
         self
     }
 }
@@ -265,6 +291,13 @@ pub struct RecoveryReport {
     pub declaration: Option<DeclarationRecord>,
     /// Every fallback the run had to keep, with its code.
     pub fallbacks: Vec<&'static str>,
+    /// The evidence selection this run was presented under, and what each category delivered
+    /// (change `add-demand-driven-core-results`, D1).
+    ///
+    /// The status list is fixed-size — one entry per category, whatever the selection was — and it is
+    /// the answer to "was this asked for, and did it arrive", which no empty `Vec` and no `None` can
+    /// give on its own. It is checked against this report's own payload before the run returns.
+    pub evidence: RecoveryEvidence,
     /// The names the presentation decided, when the run reached the naming step.
     pub aliased_names: Vec<String>,
     /// What the run states about itself, in the fact layer's diagnostic vocabulary.
@@ -304,10 +337,15 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     // including the ones that stop before any pass runs — echoes the request's own profile, so a
     // stopped report cannot claim a rule set the request did not declare.
     let profile = request.profile.clone();
+    // The selection this run is presented under, taken once: every path below — the refusals, the
+    // stopped reports and the report itself — echoes the request's own statement, so no report can
+    // claim an evidence selection the request did not make.
+    let selection = request.evidence.clone();
     let Some(canonical) = request.ir.canonical() else {
         return stopped(
             method,
             profile.clone(),
+            &selection,
             StopReason::IrTableMissing { table: "canonical" },
             budget,
         );
@@ -316,6 +354,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         return stopped(
             method,
             profile.clone(),
+            &selection,
             StopReason::IrTableMissing { table: "frames" },
             budget,
         );
@@ -324,6 +363,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         return stopped(
             method,
             profile.clone(),
+            &selection,
             StopReason::IrTableMissing { table: "ssa" },
             budget,
         );
@@ -336,15 +376,25 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         return stopped(
             method,
             profile.clone(),
+            &selection,
             StopReason::IrTableMissing { table: "code" },
             budget,
         );
     };
+    // The request's own applicability check: a category this entry does not materialize, or a
+    // driver range this body cannot support, is refused *before* anything is presented, with the
+    // read this run already performed still charged. An unsupported or illegal selection is never
+    // widened into a full-evidence delivery.
+    if let Err(refusal) = selection.check(code) {
+        return refused(method, profile.clone(), &selection, refusal, budget);
+    }
+    let publication = Publication::of(&selection);
     let operations = Operations::of(code, request.ir.constant_pool());
     if canonical.blocks().is_empty() {
         return stopped(
             method,
             profile.clone(),
+            &selection,
             StopReason::IrTableMissing {
                 table: "canonical blocks",
             },
@@ -353,7 +403,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     }
     let view = match NormalFlowView::build(canonical, budget) {
         Ok(view) => view,
-        Err(stop) => return stopped(method, profile.clone(), stop, budget),
+        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
     let recovered: Recovered = match crate::region::recover(
         canonical,
@@ -365,7 +415,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         budget,
     ) {
         Ok(recovered) => recovered,
-        Err(stop) => return stopped(method, profile.clone(), stop, budget),
+        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
     // The slots the names are decided for are the body's own local slots: the frames table states
     // how many there are, and a local the debug metadata never named still needs a name.
@@ -392,20 +442,25 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     // own tables: the concatenation chains the body builds (P3 2.2) and the bridge verdict for the
     // member itself, when its declaration or its body makes it one. Both are decisions about the
     // bytes, not about the text, which is why they are taken here and read by the builder.
-    let chains = concat::plan(ssa, &operations);
-    let bridge = bridge::plan(request.facts.method(), ssa, &operations);
+    let chains = concat::plan(ssa, &operations, publication);
+    let bridge = bridge::plan(request.facts.method(), ssa, &operations, publication);
     // The four shapes P3 2.3 reads — each decided before a statement is written, each from this run's
     // own tables. The construction sites reserve the concatenation chains' instructions, because one
     // instruction is never two shapes: the allocation a verified chain builds is written inside the
     // `+` expression and not a second time as a `new`.
-    let sites = init::sites(ssa, &operations, chains.owned());
-    let prologues = init::prologue(ssa, &operations, request.facts.method());
-    let fields = field::plan(ssa, &operations, request.facts.method().declaring_class());
-    let enums = enumswitch::plan(ssa, &operations);
+    let sites = init::sites(ssa, &operations, chains.owned(), publication);
+    let prologues = init::prologue(ssa, &operations, request.facts.method(), publication);
+    let fields = field::plan(
+        ssa,
+        &operations,
+        request.facts.method().declaring_class(),
+        publication,
+    );
+    let enums = enumswitch::plan(ssa, &operations, publication);
     // The declaration is read from the two facts the caller stated and decides the artifact's
     // envelope; it never decides a statement, and it is the only shape of this slice that is read
     // without an instruction to read it from.
-    let declaration = declaration::plan(request.facts.method());
+    let declaration = declaration::plan(request.facts.method(), publication);
     // The type each parameter slot holds, as the member's own **descriptor** states it (P3-R5): the
     // frames cannot tell a `boolean` parameter from an `int` one, and the descriptor can.
     let parameter_types = request.facts.method().parameter_types();
@@ -437,10 +492,11 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             enums: &enums,
         },
         &recovered.regions,
+        publication,
         budget,
     ) {
         Ok(program) => program,
-        Err(stop) => return stopped(method, profile.clone(), stop, budget),
+        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
     let emitted: Emitted = match emit(
         &program.stmts,
@@ -453,10 +509,11 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             .ir
             .declaration()
             .map(|declaration| declaration.identity()),
+        SegmentPublication::of(&selection),
         budget,
     ) {
         Ok(emitted) => emitted,
-        Err(stop) => return stopped(method, profile.clone(), stop, budget),
+        Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
     // What the artifact that was just committed holds. The classification is taken here, from the
     // emission itself, and not from the AST the build had produced: a statement that was built and
@@ -481,26 +538,23 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             ));
         }
     }
-    let aliased_names: Vec<String> = names
+    // The names the presentation could not write as the source spelled them: a core gap, stated in
+    // every selection from the naming table itself. What it states is the count and the affected
+    // slots — the alias the run wrote instead, and the raw spelling it could not write, are
+    // NameDetails and are materialized only when the request selects them.
+    let aliased_slots: Vec<String> = names
         .names()
         .filter(|name| name.aliased().is_some())
-        .map(|name| {
-            format!(
-                "slot {} written as `{}` (source spelling `{}`)",
-                name.slot(),
-                name.text(),
-                name.raw().unwrap_or("")
-            )
-        })
+        .map(|name| format!("slot {}", name.slot()))
         .collect();
-    if !aliased_names.is_empty() {
+    if !aliased_slots.is_empty() {
         diagnostics.push(diagnostic(
             "jre_name_aliased",
             DiagnosticSeverity::Warning,
             &format!(
                 "{} local name(s) could not be written as the source spelled them: {}",
-                aliased_names.len(),
-                aliased_names.join("; ")
+                aliased_slots.len(),
+                aliased_slots.join(", ")
             ),
         ));
     }
@@ -511,13 +565,94 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             "{} region(s), {} statement(s), {} segment(s), {} byte(s) written from {} canonical block(s)",
             recovered.regions.len(),
             program.statements,
-            emitted.source_map.len(),
+            emitted.segments,
             emitted.written,
             recovered.blocks
         ),
     ));
-    let regions = region_records(&recovered.regions);
-    let mut rules = recovered.rules();
+    // ---------------------------------------------------------------------------------------
+    // The evidence phase: the artifact is committed, and what the request selected is materialized
+    // now, one owning record at a time and within the same budget.
+    //
+    // A refusal here stops the *materialization* and nothing else: the text, its planes and the
+    // gaps above stay exactly what this run produced, the category that was in flight reports the
+    // prefix it delivered, the categories the phase never reached stay `NotPerformed`, and the
+    // run's execution states the real stop. The categories whose records the run had to build to
+    // reach this point — the rule records, decided where the rules decide, and the segment table,
+    // written by the same writes that produce the text — are delivered in full exactly when the run
+    // reached this line.
+    // ---------------------------------------------------------------------------------------
+    let mut evidence = RecoveryEvidence::pending(&selection);
+    let mut phase = EvidencePhase::new();
+    let range = selection.driver_bci_range();
+    if selection.requests(RecoveryEvidenceKind::SourceMap) {
+        evidence.delivered(RecoveryEvidenceKind::SourceMap);
+    }
+    if selection.requests(RecoveryEvidenceKind::RuleDetails) {
+        evidence.delivered(RecoveryEvidenceKind::RuleDetails);
+    }
+
+    // The region records: the run holds every region either way, and the records are built here —
+    // one by one, each after the charge that pays for it — only for the regions the selected driver
+    // range intersects. A region is kept or dropped as a unit, with the origins it states for
+    // itself.
+    let mut regions: Vec<RegionRecord> = Vec::new();
+    if selection.requests(RecoveryEvidenceKind::RegionDetails) {
+        let mut delivered = 0usize;
+        // The phase may already have stopped in an earlier category, and a category it never entered
+        // is `NotPerformed` rather than an empty delivery: what the run did not examine is not a
+        // legal empty result.
+        let mut complete = !phase.stopped();
+        for region in &recovered.regions {
+            if !in_driver_range(region, range) {
+                continue;
+            }
+            if !phase.may_continue(budget) {
+                complete = false;
+                break;
+            }
+            regions.push(region_record(region));
+            delivered += 1;
+        }
+        match (complete, delivered) {
+            (true, _) => evidence.delivered(RecoveryEvidenceKind::RegionDetails),
+            (false, 0) => {}
+            (false, delivered) => {
+                evidence.stopped(RecoveryEvidenceKind::RegionDetails, count_of(delivered))
+            }
+        }
+    }
+
+    // The names the presentation had to replace: per local slot rather than per bytecode index, so a
+    // driver range neither selects nor drops one of them — a request that selects this category over
+    // a range gets it whole.
+    let mut aliased_names: Vec<String> = Vec::new();
+    if selection.requests(RecoveryEvidenceKind::NameDetails) {
+        let mut delivered = 0usize;
+        let mut complete = !phase.stopped();
+        for name in names.names().filter(|name| name.aliased().is_some()) {
+            if !phase.may_continue(budget) {
+                complete = false;
+                break;
+            }
+            aliased_names.push(aliased_name(name));
+            delivered += 1;
+        }
+        match (complete, delivered) {
+            (true, _) => evidence.delivered(RecoveryEvidenceKind::NameDetails),
+            (false, 0) => {}
+            (false, delivered) => {
+                evidence.stopped(RecoveryEvidenceKind::NameDetails, count_of(delivered))
+            }
+        }
+    }
+
+    let regions = regions;
+    let mut rules = if selection.requests(RecoveryEvidenceKind::RuleDetails) {
+        recovered.rules()
+    } else {
+        Vec::new()
+    };
     // A dynamic site is a rule's answer too: the record names `lambda@1` whether it presented the
     // site or refused it, so the report's rule list states both. A body with no site names no
     // lambda rule, which is why the list is built from the records rather than from the table.
@@ -530,7 +665,10 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     // The three shapes of P3 2.2 are rules' answers in the same way, and each record says which
     // rule: a body with none of them names none of the rules.
     let concats = chains.records().to_vec();
-    let bridges: Vec<BridgeRecord> = bridge.iter().map(|plan| plan.record().clone()).collect();
+    let bridges: Vec<BridgeRecord> = bridge
+        .iter()
+        .filter_map(|plan| plan.record().cloned())
+        .collect();
     for rule in concats
         .iter()
         .map(ConcatRecord::rule)
@@ -542,13 +680,13 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         .chain(prologues.record().map(InitRecord::rule))
         // The declaration rule is listed when it *wrote* something: its output is the envelope line,
         // and a run that was not told the declaration facts wrote none. The refusal is not invisible
-        // for that — the record and its diagnostic name the rule — but a rule that concluded nothing
+        // for that — the gap and its diagnostic name the rule — but a rule that concluded nothing
         // about these bytes is not a rule that produced this artifact.
         .chain(
             declaration
                 .record()
-                .presented()
-                .then(|| declaration.record().rule()),
+                .filter(|record| record.presented())
+                .map(DeclarationRecord::rule),
         )
     {
         if !rules.contains(&rule) {
@@ -557,109 +695,85 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     }
     // The refusals are diagnostics of their own: a site that was not presented says which link of
     // the chain failed, whether it was the class's table, the factory, the SAM's shape or a value
-    // this layer may not replay (A04).
-    for lambda in &program.lambdas {
-        if let Some(refusal) = &lambda.refusal {
-            diagnostics.push(diagnostic(
-                refusal.code,
-                DiagnosticSeverity::Warning,
-                &refusal.message,
-            ));
-        }
+    // this layer may not replay (A04). Every one of them is stated from the *gap* the rule recorded
+    // where it decided, so closing the rule records does not close the gaps.
+    for gap in &program.lambda_refusals {
+        diagnostics.push(diagnostic(
+            gap.code(),
+            DiagnosticSeverity::Warning,
+            gap.message(),
+        ));
     }
-    if !program.lambdas.is_empty() {
+    let lambda_sites = program.lambdas_presented + count_of(program.lambda_refusals.len());
+    if lambda_sites > 0 {
         diagnostics.push(diagnostic(
             "jre_lambda_sites",
             DiagnosticSeverity::Info,
             &format!(
-                "{} dynamic site(s) read under {}: {} presented, {} refused",
-                program.lambdas.len(),
+                "{lambda_sites} dynamic site(s) read under {}: {} presented, {} refused",
                 LAMBDA.rule(),
-                program
-                    .lambdas
-                    .iter()
-                    .filter(|site| site.presented())
-                    .count(),
-                program
-                    .lambdas
-                    .iter()
-                    .filter(|site| !site.presented())
-                    .count(),
+                program.lambdas_presented,
+                program.lambda_refusals.len(),
             ),
         ));
     }
     // The three shapes of 2.2 report the same way: every refusal is a diagnostic of its own, and a
     // summary states how many candidates were read and how many were presented. A run that read no
     // candidate of a shape says nothing about that shape's rule at all.
-    for record in &concats {
-        if let Some(refusal) = &record.refusal {
-            diagnostics.push(diagnostic(
-                refusal.code,
-                DiagnosticSeverity::Warning,
-                &refusal.message,
-            ));
-        }
+    for gap in chains.refusals() {
+        diagnostics.push(diagnostic(
+            gap.code(),
+            DiagnosticSeverity::Warning,
+            gap.message(),
+        ));
     }
-    if !concats.is_empty() {
+    let (concat_read, concat_presented) = chains.counts();
+    if concat_read > 0 {
         diagnostics.push(diagnostic(
             "jre_concat_chains",
             DiagnosticSeverity::Info,
             &format!(
-                "{} concatenation candidate(s) read under {}: {} presented, {} refused",
-                concats.len(),
+                "{concat_read} concatenation candidate(s) read under {}: {concat_presented} presented, {} refused",
                 CONCAT.rule(),
-                concats.iter().filter(|record| record.presented()).count(),
-                concats.iter().filter(|record| !record.presented()).count(),
+                concat_read - concat_presented,
             ),
         ));
     }
-    for record in &program.accessors {
-        if let Some(refusal) = &record.refusal {
-            diagnostics.push(diagnostic(
-                refusal.code,
-                DiagnosticSeverity::Warning,
-                &refusal.message,
-            ));
-        }
+    for gap in &program.accessor_refusals {
+        diagnostics.push(diagnostic(
+            gap.code(),
+            DiagnosticSeverity::Warning,
+            gap.message(),
+        ));
     }
-    if !program.accessors.is_empty() {
+    let accessor_sites = program.accessors_presented + count_of(program.accessor_refusals.len());
+    if accessor_sites > 0 {
         diagnostics.push(diagnostic(
             "jre_accessor_sites",
             DiagnosticSeverity::Info,
             &format!(
-                "{} accessor call site(s) read under {}: {} presented as a field access, {} refused",
-                program.accessors.len(),
+                "{accessor_sites} accessor call site(s) read under {}: {} presented as a field access, {} refused",
                 ACCESSOR.rule(),
-                program
-                    .accessors
-                    .iter()
-                    .filter(|record| record.presented())
-                    .count(),
-                program
-                    .accessors
-                    .iter()
-                    .filter(|record| !record.presented())
-                    .count(),
+                program.accessors_presented,
+                program.accessor_refusals.len(),
             ),
         ));
     }
-    for record in &bridges {
-        if let Some(refusal) = &record.refusal {
-            diagnostics.push(diagnostic(
-                refusal.code,
-                DiagnosticSeverity::Warning,
-                &refusal.message,
-            ));
-        }
+    if let Some(gap) = bridge.as_ref().and_then(|plan| plan.refusal()) {
+        diagnostics.push(diagnostic(
+            gap.code(),
+            DiagnosticSeverity::Warning,
+            gap.message(),
+        ));
     }
-    if !bridges.is_empty() {
+    if let Some(plan) = bridge.as_ref() {
         diagnostics.push(diagnostic(
             "jre_bridge",
             DiagnosticSeverity::Info,
             &format!(
                 "the body was read under {}: {}",
                 BRIDGE.rule(),
-                if bridges.iter().any(|record| record.presented()) {
+                if plan.presented() {
                     "presented as the forward it is"
                 } else {
                     "not presented as a forward"
@@ -671,76 +785,53 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     // its own, and a summary states how many candidates were read and how many were presented. A body
     // that read none of a shape says nothing about that shape's rule at all — except for the
     // declaration, which every body has and which therefore always states what it read.
-    for record in sites.records() {
-        if let Some(refusal) = &record.refusal {
-            diagnostics.push(diagnostic(
-                refusal.code,
-                DiagnosticSeverity::Warning,
-                &refusal.message,
-            ));
-        }
+    for gap in sites.refusals() {
+        diagnostics.push(diagnostic(
+            gap.code(),
+            DiagnosticSeverity::Warning,
+            gap.message(),
+        ));
     }
-    if !sites.records().is_empty() {
+    let (new_read, new_presented) = sites.counts();
+    if new_read > 0 {
         diagnostics.push(diagnostic(
             "jre_new_sites",
             DiagnosticSeverity::Info,
             &format!(
-                "{} construction candidate(s) read under {}: {} presented as `new`, {} refused",
-                sites.records().len(),
+                "{new_read} construction candidate(s) read under {}: {new_presented} presented as `new`, {} refused",
                 NEW.rule(),
-                sites
-                    .records()
-                    .iter()
-                    .filter(|record| record.presented())
-                    .count(),
-                sites
-                    .records()
-                    .iter()
-                    .filter(|record| !record.presented())
-                    .count(),
+                new_read - new_presented,
             ),
         ));
     }
-    for record in fields.records() {
-        if let Some(refusal) = &record.refusal {
-            diagnostics.push(diagnostic(
-                refusal.code,
-                DiagnosticSeverity::Warning,
-                &refusal.message,
-            ));
-        }
+    for gap in fields.refusals() {
+        diagnostics.push(diagnostic(
+            gap.code(),
+            DiagnosticSeverity::Warning,
+            gap.message(),
+        ));
     }
-    if !fields.records().is_empty() {
+    let (field_read, field_presented) = fields.counts();
+    if field_read > 0 {
         diagnostics.push(diagnostic(
             "jre_field_accesses",
             DiagnosticSeverity::Info,
             &format!(
-                "{} field instruction(s) read under {}: {} presented, {} refused",
-                fields.records().len(),
+                "{field_read} field instruction(s) read under {}: {field_presented} presented, {} refused",
                 FIELD.rule(),
-                fields
-                    .records()
-                    .iter()
-                    .filter(|record| record.presented())
-                    .count(),
-                fields
-                    .records()
-                    .iter()
-                    .filter(|record| !record.presented())
-                    .count(),
+                field_read - field_presented,
             ),
         ));
     }
-    for record in enums.records() {
-        if let Some(refusal) = &record.refusal {
-            diagnostics.push(diagnostic(
-                refusal.code,
-                DiagnosticSeverity::Warning,
-                &refusal.message,
-            ));
-        }
+    for gap in enums.refusals() {
+        diagnostics.push(diagnostic(
+            gap.code(),
+            DiagnosticSeverity::Warning,
+            gap.message(),
+        ));
     }
-    if !enums.records().is_empty() {
+    let (enum_read, enum_presented) = enums.counts();
+    if enum_read > 0 {
         // The boundary is stated where the shape is: the read is the bytecode's own dispatch, and the
         // mapping from its entries to enum constants is a class-level fact of *another* class this
         // run never read (P3 2.3).
@@ -748,63 +839,61 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             "jre_enumswitch",
             DiagnosticSeverity::Info,
             &format!(
-                "{} dispatch-table read(s) read under {}: {} presented as the table read the bytecode performs, {} refused; the constants those entries stand for are the enum class's own declaration, which this run does not hold, so no `case T.CONST:` label is written",
-                enums.records().len(),
+                "{enum_read} dispatch-table read(s) read under {}: {enum_presented} presented as the table read the bytecode performs, {} refused; the constants those entries stand for are the enum class's own declaration, which this run does not hold, so no `case T.CONST:` label is written",
                 ENUMSWITCH.rule(),
-                enums
-                    .records()
-                    .iter()
-                    .filter(|record| record.presented())
-                    .count(),
-                enums
-                    .records()
-                    .iter()
-                    .filter(|record| !record.presented())
-                    .count(),
+                enum_read - enum_presented,
             ),
         ));
     }
-    if let Some(record) = prologues.record() {
-        if let Some(refusal) = &record.refusal {
-            diagnostics.push(diagnostic(
-                refusal.code,
-                DiagnosticSeverity::Warning,
-                &refusal.message,
-            ));
-        } else {
-            diagnostics.push(diagnostic(
-                "jre_constructor_prologue",
-                DiagnosticSeverity::Info,
-                &format!(
-                    "the body is an instance initializer and its prologue is written under {} as `{}`: the call at BCI {} names `{}`, and the class that declares this constructor is `{}`",
-                    INIT.rule(),
-                    record.target.map_or("?", |target| target.spell()),
-                    record.bci.unwrap_or(0),
-                    record.class.as_deref().unwrap_or("?"),
-                    record.declared.as_deref().unwrap_or("?"),
-                ),
-            ));
-        }
-    }
-    let declaration_record = declaration.record().clone();
-    if let Some(refusal) = &declaration_record.refusal {
+    if let Some(gap) = prologues.refusal() {
         diagnostics.push(diagnostic(
-            refusal.code,
+            gap.code(),
             DiagnosticSeverity::Warning,
-            &refusal.message,
+            gap.message(),
         ));
-    } else {
+    } else if let Some(prologue) = prologues.prologue() {
+        diagnostics.push(diagnostic(
+            "jre_constructor_prologue",
+            DiagnosticSeverity::Info,
+            &format!(
+                "the body is an instance initializer and its prologue is written under {} as `{}`: the call at BCI {} names `{}`, and the class that declares this constructor is `{}`",
+                INIT.rule(),
+                prologue.target.spell(),
+                prologue.bci,
+                prologue.class,
+                prologue.declared,
+            ),
+        ));
+    }
+    if let Some(gap) = declaration.refusal() {
+        diagnostics.push(diagnostic(
+            gap.code(),
+            DiagnosticSeverity::Warning,
+            gap.message(),
+        ));
+    } else if let Some(declared) = declaration.declaration() {
         diagnostics.push(diagnostic(
             "jre_declaration",
             DiagnosticSeverity::Info,
             &format!(
                 "the artifact's envelope states the member's declaration under {}: {}",
                 DECLARATION.rule(),
-                declaration_record.form.map_or("?", |form| form.spell())
+                declared.form.spell()
             ),
         ));
     }
-    RecoveryReport {
+    // The stop of the evidence phase, when it stopped: stated in the same vocabulary every other
+    // stop of this layer uses, and never as a claim about the artifact.
+    let execution = if phase.stopped() {
+        let reason = phase.reason(budget);
+        diagnostics.push(stop_diagnostic(&reason));
+        stop_execution(&reason, budget.usage())
+    } else {
+        ExecutionReport::Complete {
+            usage: budget.usage(),
+        }
+    };
+    let report = RecoveryReport {
         profile: request.profile.clone(),
         representation: if structured {
             Representation::Java
@@ -824,9 +913,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         compile_status: CompileStatus::NotAttempted,
         semantic_validation: SemanticValidation::Unproven,
         verification: VerificationStatus::NotPerformed,
-        execution: ExecutionReport::Complete {
-            usage: budget.usage(),
-        },
+        execution,
         outcome: RecoveryOutcome::Produced,
         content,
         text: emitted.text,
@@ -840,32 +927,91 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         fields: fields.records().to_vec(),
         enum_switches: enums.records().to_vec(),
         init: prologues.record().cloned(),
-        declaration: Some(declaration_record),
+        declaration: declaration.record().cloned(),
         fallbacks,
         aliased_names,
         diagnostics,
         method,
         rules,
+        evidence,
+    };
+    debug_assert!(
+        report.evidence.agrees_with(&report),
+        "the evidence status list disagrees with the payload it describes"
+    );
+    report
+}
+
+/// One replaced name, as a selected `NameDetails` category states it.
+fn aliased_name(name: &crate::names::RenderedName) -> String {
+    crate::demand_counts::record_built(RecoveryEvidenceKind::NameDetails);
+    format!(
+        "slot {} written as `{}` (source spelling `{}`)",
+        name.slot(),
+        name.text(),
+        name.raw().unwrap_or("")
+    )
+}
+
+/// One count as the report states it.
+fn count_of(value: usize) -> u64 {
+    u64::try_from(value).unwrap_or(u64::MAX)
+}
+
+/// Whether one region is inside the selected driver range.
+///
+/// The range selects the records that *intersect* it and a record is kept or dropped as a unit: the
+/// region's own blocks are the positions it states for itself.
+fn in_driver_range(region: &Region, range: Option<crate::evidence::BytecodeRange>) -> bool {
+    range.is_none_or(|range| range.intersects_any(region.blocks().iter().map(|block| block.bci())))
+}
+
+/// One region record, with its fallbacks stated: what a selected `RegionDetails` category holds for
+/// one region, built when the evidence phase materializes it.
+///
+/// The construction is counted **here**, in the function that builds the record, rather than at the
+/// call site: a record built anywhere and then dropped is a record that was built, and the port
+/// (`crate::demand_counts`) exists to say so.
+fn region_record(region: &Region) -> RegionRecord {
+    crate::demand_counts::record_built(RecoveryEvidenceKind::RegionDetails);
+    let blocks: Vec<u32> = region.blocks().iter().map(|block| block.bci()).collect();
+    let reasons = region.fallbacks();
+    RegionRecord {
+        bci: blocks.first().copied().unwrap_or(0),
+        structured: region.is_structured(),
+        blocks,
+        code: reasons.first().map(FallbackReason::code),
+        message: reasons.first().map(FallbackReason::message),
+        rule: region.rule(),
     }
 }
 
-/// One region record per recovered region, with its fallbacks stated.
-fn region_records(regions: &[Region]) -> Vec<RegionRecord> {
-    regions
-        .iter()
-        .map(|region| {
-            let blocks: Vec<u32> = region.blocks().iter().map(|block| block.bci()).collect();
-            let reasons = region.fallbacks();
-            RegionRecord {
-                bci: blocks.first().copied().unwrap_or(0),
-                structured: region.is_structured(),
-                blocks,
-                code: reasons.first().map(FallbackReason::code),
-                message: reasons.first().map(FallbackReason::message),
-                rule: region.rule(),
-            }
-        })
-        .collect()
+impl EvidencePayload for RecoveryReport {
+    /// How many owning records of one category this report holds right now.
+    ///
+    /// The count is read off the payload itself — the same fields the status list is checked against
+    /// — so the check cannot drift from what a caller receives.
+    fn owning_records(&self, kind: RecoveryEvidenceKind) -> u64 {
+        match kind {
+            RecoveryEvidenceKind::SourceMap => count_of(self.source_map.len()),
+            RecoveryEvidenceKind::RegionDetails => count_of(self.regions.len()),
+            RecoveryEvidenceKind::RuleDetails => count_of(
+                self.lambdas.len()
+                    + self.concats.len()
+                    + self.accessors.len()
+                    + self.bridges.len()
+                    + self.news.len()
+                    + self.fields.len()
+                    + self.enum_switches.len()
+                    + usize::from(self.init.is_some())
+                    + usize::from(self.declaration.is_some()),
+            ),
+            RecoveryEvidenceKind::NameDetails => count_of(self.aliased_names.len()),
+            // The read evidence a presentation consumed is published beside this report by the entry
+            // that performed the read: this layer materializes none of it yet.
+            RecoveryEvidenceKind::ReadDetails => 0,
+        }
+    }
 }
 
 /// The content of a committed artifact, from the statements its emission wrote: an artifact that
@@ -883,48 +1029,140 @@ fn content_of(emitted: &Emitted) -> RecoveryContent {
 fn stopped(
     method: String,
     profile: RecoveryProfile,
+    selection: &RecoveryEvidenceRequest,
     reason: StopReason,
     budget: &Budget,
 ) -> RecoveryReport {
-    let usage: UsageSnapshot = budget.usage();
-    let (execution, code, severity) = match &reason {
-        StopReason::IrTableMissing { table: _ } => (
-            ExecutionReport::Partial {
-                reason: TerminationReason::Unsupported {
-                    code: "jre_ir_table_missing".to_string(),
-                },
-                usage,
-            },
-            "jre_ir_table_missing",
-            DiagnosticSeverity::Error,
-        ),
-        StopReason::Budget { dimension, .. } => (
-            ExecutionReport::Partial {
-                reason: TerminationReason::BudgetExceeded {
-                    dimension: BudgetDimension::from(*dimension),
-                },
-                usage,
-            },
-            "jre_output_budget",
-            DiagnosticSeverity::Error,
-        ),
-        StopReason::Cancelled { .. } => (
-            ExecutionReport::Cancelled { usage },
-            "jre_cancelled",
-            DiagnosticSeverity::Warning,
-        ),
-        StopReason::Interrupted { code, .. } => (
-            ExecutionReport::Partial {
-                reason: TerminationReason::Error {
-                    code: (*code).to_string(),
-                },
-                usage,
-            },
-            *code,
-            DiagnosticSeverity::Error,
-        ),
+    let execution = stop_execution(&reason, budget.usage());
+    RecoveryReport {
+        method,
+        profile,
+        rules: Vec::new(),
+        representation: Representation::Bytecode,
+        quality: Quality::Fallback,
+        syntax_status: SyntaxStatus::NotJava,
+        compile_status: CompileStatus::NotAttempted,
+        semantic_validation: SemanticValidation::Unproven,
+        verification: VerificationStatus::NotPerformed,
+        execution,
+        outcome: RecoveryOutcome::Stopped(reason.clone()),
+        // Nothing was committed, so there is no content to describe. A stop is never classified from
+        // whatever the failed run had built or written before it refused.
+        content: RecoveryContent::NotProduced,
+        text: String::new(),
+        source_map: SourceMap::default(),
+        regions: Vec::new(),
+        lambdas: Vec::new(),
+        concats: Vec::new(),
+        accessors: Vec::new(),
+        bridges: Vec::new(),
+        news: Vec::new(),
+        fields: Vec::new(),
+        enum_switches: Vec::new(),
+        init: None,
+        declaration: None,
+        fallbacks: Vec::new(),
+        // Nothing of a selected category was materialized, and the status list says exactly that
+        // rather than leaving an empty `Vec` to be read as "this body has no such evidence".
+        evidence: RecoveryEvidence::pending(selection),
+        aliased_names: Vec::new(),
+        diagnostics: vec![stop_diagnostic(&reason)],
+    }
+}
+
+/// The report of a run whose own evidence selection cannot be answered for this body.
+///
+/// The refusal is the *request's* fact, not the body's: the decode succeeded, the run could have
+/// presented the method, and what it cannot do is apply the selection the caller stated. So nothing
+/// is presented — a refused selection is never widened into a full-evidence delivery, and a category
+/// this entry does not materialize is never answered with nothing — every category the request
+/// selected states `NotPerformed`, and the report carries the refusal's own code and position.
+fn refused(
+    method: String,
+    profile: RecoveryProfile,
+    selection: &RecoveryEvidenceRequest,
+    refusal: EvidenceRefusal,
+    budget: &Budget,
+) -> RecoveryReport {
+    let reason = StopReason::EvidenceRefused {
+        code: refusal.code,
+        at: refusal.at,
+        message: refusal.message,
     };
-    let message = match &reason {
+    RecoveryReport {
+        method,
+        profile,
+        rules: Vec::new(),
+        representation: Representation::Bytecode,
+        quality: Quality::Fallback,
+        syntax_status: SyntaxStatus::NotJava,
+        compile_status: CompileStatus::NotAttempted,
+        semantic_validation: SemanticValidation::Unproven,
+        verification: VerificationStatus::NotPerformed,
+        execution: stop_execution(&reason, budget.usage()),
+        outcome: RecoveryOutcome::Stopped(reason.clone()),
+        content: RecoveryContent::NotProduced,
+        text: String::new(),
+        source_map: SourceMap::default(),
+        regions: Vec::new(),
+        lambdas: Vec::new(),
+        concats: Vec::new(),
+        accessors: Vec::new(),
+        bridges: Vec::new(),
+        news: Vec::new(),
+        fields: Vec::new(),
+        enum_switches: Vec::new(),
+        init: None,
+        declaration: None,
+        fallbacks: Vec::new(),
+        evidence: RecoveryEvidence::pending(selection),
+        aliased_names: Vec::new(),
+        diagnostics: vec![stop_diagnostic(&reason)],
+    }
+}
+
+/// The execution plane one stop states, in the fact layer's own vocabulary.
+fn stop_execution(reason: &StopReason, usage: UsageSnapshot) -> ExecutionReport {
+    match reason {
+        StopReason::IrTableMissing { .. } => ExecutionReport::Partial {
+            reason: TerminationReason::Unsupported {
+                code: "jre_ir_table_missing".to_string(),
+            },
+            usage,
+        },
+        StopReason::EvidenceRefused { code, .. } => ExecutionReport::Partial {
+            reason: TerminationReason::Unsupported {
+                code: (*code).to_string(),
+            },
+            usage,
+        },
+        StopReason::Budget { dimension, .. } => ExecutionReport::Partial {
+            reason: TerminationReason::BudgetExceeded {
+                dimension: BudgetDimension::from(*dimension),
+            },
+            usage,
+        },
+        StopReason::Cancelled { .. } => ExecutionReport::Cancelled { usage },
+        StopReason::Interrupted { code, .. } => ExecutionReport::Partial {
+            reason: TerminationReason::Error {
+                code: (*code).to_string(),
+            },
+            usage,
+        },
+    }
+}
+
+/// The one diagnostic a stop states: its code, its severity and its sentence, in the vocabulary the
+/// fact layer already uses.
+fn stop_diagnostic(reason: &StopReason) -> Diagnostic {
+    let (code, severity) = match reason {
+        StopReason::IrTableMissing { .. } => ("jre_ir_table_missing", DiagnosticSeverity::Error),
+        StopReason::EvidenceRefused { code, .. } => (*code, DiagnosticSeverity::Error),
+        StopReason::Budget { .. } => ("jre_output_budget", DiagnosticSeverity::Error),
+        StopReason::Cancelled { .. } => ("jre_cancelled", DiagnosticSeverity::Warning),
+        StopReason::Interrupted { code, .. } => (*code, DiagnosticSeverity::Error),
+    };
+    let message = match reason {
         StopReason::IrTableMissing { table } => format!(
             "the payload of this run has no {table} table, so no body can be presented from it"
         ),
@@ -964,38 +1202,9 @@ fn stopped(
                 at.map_or("no node".to_string(), |bci| format!("BCI {bci}"))
             ),
         },
+        StopReason::EvidenceRefused { message, .. } => message.clone(),
     };
-    RecoveryReport {
-        method,
-        profile,
-        rules: Vec::new(),
-        representation: Representation::Bytecode,
-        quality: Quality::Fallback,
-        syntax_status: SyntaxStatus::NotJava,
-        compile_status: CompileStatus::NotAttempted,
-        semantic_validation: SemanticValidation::Unproven,
-        verification: VerificationStatus::NotPerformed,
-        execution,
-        outcome: RecoveryOutcome::Stopped(reason),
-        // Nothing was committed, so there is no content to describe. A stop is never classified from
-        // whatever the failed run had built or written before it refused.
-        content: RecoveryContent::NotProduced,
-        text: String::new(),
-        source_map: SourceMap::default(),
-        regions: Vec::new(),
-        lambdas: Vec::new(),
-        concats: Vec::new(),
-        accessors: Vec::new(),
-        bridges: Vec::new(),
-        news: Vec::new(),
-        fields: Vec::new(),
-        enum_switches: Vec::new(),
-        init: None,
-        declaration: None,
-        fallbacks: Vec::new(),
-        aliased_names: Vec::new(),
-        diagnostics: vec![diagnostic(code, severity, &message)],
-    }
+    diagnostic(code, severity, &message)
 }
 
 /// One diagnostic in the fact layer's vocabulary.

@@ -127,7 +127,12 @@ fn recover_with(engine: &Engine, fixture: &Fixture, name: &[u8], release: u16) -
     };
     let mut budget = Budget::new(limits());
     engine
-        .recover_method(slice::from_ref(&fixture.snapshot), &request, &mut budget)
+        .recover_method_with_evidence(
+            slice::from_ref(&fixture.snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut budget,
+        )
         .expect("a legal request is answered, not raised")
 }
 

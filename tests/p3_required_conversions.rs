@@ -148,9 +148,10 @@ fn recover(engine: &Engine, fixture: &Fixture, name: &[u8], descriptor: &[u8]) -
         stages: AnalysisStage::ALL.to_vec(),
     };
     engine
-        .recover_method(
+        .recover_method_with_evidence(
             slice::from_ref(&fixture.snapshot),
             &request,
+            &RecoveryEvidenceRequest::all(),
             &mut Budget::new(limits()),
         )
         .expect("a legal request is answered, not raised")
@@ -386,6 +387,9 @@ fn the_conversion_costs_no_ir_item_and_no_normalization_clone() {
         stages: AnalysisStage::ALL.to_vec(),
     };
     let mut budget = Budget::new(limits());
+    // The ordinary recovery, stated as such: this case is about what the run's own IR dimensions
+    // charge, and the optional evidence of a selected category is billed beside them rather than
+    // inside them (`add-demand-driven-core-results`, D1).
     let recovered = engine
         .recover_method(slice::from_ref(&sample.snapshot), &request, &mut budget)
         .expect("a legal request is answered, not raised");

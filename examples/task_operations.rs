@@ -32,8 +32,8 @@ use jarde::{
     ArtifactInput, BudgetOverride, ClassNameQuery, ClassRef, ClassViewRequest, ConsumerKind,
     ConsumerSchema, Engine, EnvironmentPolicy, EnvironmentRequest, JvmBytes, MethodOperation,
     MethodOperationRequest, MethodRef, OperationOutcome, PhysicalScope, QueryRelation,
-    QueryRequest, QueryTarget, RecoveryContent, RecoveryPresentationPart, ReferenceGrouping,
-    SymbolRef, task_budget, task_limits, validate_environment,
+    QueryRequest, QueryTarget, RecoveryContent, RecoveryEvidenceRequest, RecoveryPresentationPart,
+    ReferenceGrouping, SymbolRef, task_budget, task_limits, validate_environment,
 };
 use std::env;
 use std::path::{Path, PathBuf};
@@ -175,7 +175,13 @@ fn run(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
 
     if let Some(method) = requested {
         let mut budget = task_budget(&overrides)?;
-        let recovery = match engine.recover_target(
+        // The evidence selection is stated here: the ordinary recovery asks for the necessary
+        // results and for nothing optional (`RecoveryEvidenceRequest::essential`), and a caller that
+        // wants the audit records asks for them by name (`all`, or one category at a time). The
+        // selection never decides what the run *does* — the artifact and every gap are the same —
+        // only which optional records exist beside them.
+        let evidence = RecoveryEvidenceRequest::essential();
+        let recovery = match engine.recover_target_with_evidence(
             slice::from_ref(&snapshot),
             &MethodOperationRequest {
                 method: MethodRef::Method {
@@ -183,6 +189,7 @@ fn run(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
                 },
                 environment: environment.clone(),
             },
+            &evidence,
             &mut budget,
         )? {
             OperationOutcome::Performed(report) => report,
@@ -200,8 +207,16 @@ fn run(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
                 RecoveryPresentationPart::Stop { .. } => "stop",
             })
             .collect();
+        let evidence_line: Vec<String> = recovery
+            .recovered
+            .recovery()
+            .evidence
+            .categories()
+            .iter()
+            .map(|category| format!("{}={:?}", category.kind.spell(), category.state))
+            .collect();
         println!(
-            "recovery of `{}`: operation={:?} stages={} presentation={:?} content={:?} stop={} text_bytes={}",
+            "recovery of `{}`: operation={:?} stages={} presentation={:?} content={:?} stop={} text_bytes={} evidence=[{}]",
             String::from_utf8_lossy(&method.name.0),
             MethodOperation::Recovery,
             recovery.stages.len(),
@@ -209,6 +224,7 @@ fn run(path: PathBuf) -> Result<(), Box<dyn std::error::Error>> {
             recovery.presentation.content,
             recovery.presentation.stop.is_some(),
             recovery.recovered.recovery().text.len(),
+            evidence_line.join(", "),
         );
         if recovery.presentation.content == RecoveryContent::NotProduced {
             println!(

@@ -5,9 +5,9 @@ use jarde::{
     InspectionMode, JvmBytes, LayoutMode, Limits, LoadDomain, LoadRoot, LoaderId,
     MethodAnalysisReport, MethodAnalysisRequest, MethodBodyState, MethodSelector, ModuleMode,
     MultiReleasePolicy, PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId,
-    PhysicalScope, PhysicalVariant, PhysicalView, Quality, Representation, ResolutionEnvironment,
-    RuntimeProfile, RuntimeUncertainty, RuntimeView, SemanticValidation, StageState, SyntaxStatus,
-    TerminationReason, UsageSnapshot, VerificationStatus,
+    PhysicalScope, PhysicalVariant, PhysicalView, Quality, RecoveryEvidenceRequest, Representation,
+    ResolutionEnvironment, RuntimeProfile, RuntimeUncertainty, RuntimeView, SemanticValidation,
+    StageState, SyntaxStatus, TerminationReason, UsageSnapshot, VerificationStatus,
 };
 use serde_json::{Value, json};
 use std::fs;
@@ -395,15 +395,28 @@ fn method_operation(request: &MethodAnalysisRequest) -> Value {
     operation
 }
 
+/// The evidence selection the recovery cases in this file ask for: the full one, so that the wire
+/// document and the library's own report of the *same* request can be compared field by field
+/// (`add-demand-driven-core-results`, D1). The ordinary recovery states nothing here and delivers
+/// the necessary results only; a case that wants the records says so, on both sides of the wire.
+fn recovery_evidence() -> RecoveryEvidenceRequest {
+    RecoveryEvidenceRequest::all()
+}
+
 /// The `recover_method` operation of one library request: the same three fields the analysis
-/// operation carries (the payload is the library's own serialization plus the operation tag, so
-/// this adapter is not a second schema of it), under the recovery kind.
+/// operation carries plus the evidence selection this case states (the payload is the library's own
+/// serialization plus the operation tag, so this adapter is not a second schema of it), under the
+/// recovery kind.
 fn recover_operation(request: &MethodAnalysisRequest) -> Value {
     let mut operation = method_operation(request);
-    operation
+    let fields = operation
         .as_object_mut()
-        .expect("the request serializes as an object")
-        .insert("kind".to_string(), json!("recover_method"));
+        .expect("the request serializes as an object");
+    fields.insert("kind".to_string(), json!("recover_method"));
+    fields.insert(
+        "evidence".to_string(),
+        serde_json::to_value(recovery_evidence()).expect("a selection serializes"),
+    );
     operation
 }
 
@@ -1113,7 +1126,12 @@ fn recovery_matches_the_library_entry_field_by_field() {
         .open(ArtifactInput::Path(class_path), &mut budget)
         .expect("open the fixture directly");
     let direct = engine
-        .recover_method(std::slice::from_ref(&snapshot), &analysis, &mut budget)
+        .recover_method_with_evidence(
+            std::slice::from_ref(&snapshot),
+            &analysis,
+            &recovery_evidence(),
+            &mut budget,
+        )
         .expect("the same request through the library");
 
     assert_eq!(
@@ -1221,7 +1239,12 @@ fn a_presented_accessor_and_the_members_it_reads_cross_the_wire() {
         .open(ArtifactInput::Path(class_path), &mut budget)
         .expect("open the fixture directly");
     let direct = engine
-        .recover_method(std::slice::from_ref(&snapshot), &analysis, &mut budget)
+        .recover_method_with_evidence(
+            std::slice::from_ref(&snapshot),
+            &analysis,
+            &recovery_evidence(),
+            &mut budget,
+        )
         .expect("the same request through the library");
     let callees = direct.callees().expect("the call site names a member");
 
@@ -1335,7 +1358,12 @@ fn a_recovery_request_that_asks_for_no_ssa_stops_inside_a_successful_response() 
         .open(ArtifactInput::Path(class_path), &mut budget)
         .expect("open the fixture directly");
     let direct = engine
-        .recover_method(std::slice::from_ref(&snapshot), &analysis, &mut budget)
+        .recover_method_with_evidence(
+            std::slice::from_ref(&snapshot),
+            &analysis,
+            &recovery_evidence(),
+            &mut budget,
+        )
         .expect("the same request through the library");
     assert_eq!(
         strip_elapsed_document(&value["result"]["report"]),
@@ -1453,7 +1481,12 @@ fn one_recovery_through_both_entry_paths(path: &Path, name: &[u8], descriptor: &
         .open(ArtifactInput::Path(path.to_path_buf()), &mut budget)
         .expect("open the fixture directly");
     let direct = engine
-        .recover_method(std::slice::from_ref(&snapshot), &analysis, &mut budget)
+        .recover_method_with_evidence(
+            std::slice::from_ref(&snapshot),
+            &analysis,
+            &recovery_evidence(),
+            &mut budget,
+        )
         .expect("the same request through the library");
 
     let member = String::from_utf8_lossy(name);

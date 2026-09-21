@@ -406,8 +406,16 @@ fn library_report(path: &Path, class: ClassRef, policy: EnvironmentPolicy) -> Cl
             loader: LoaderId("app".to_owned()),
         },
     };
+    // The full-evidence selection, stated on both sides of the comparison: the document cases in
+    // this file read the member reports' own records, and a category nobody selected is a category
+    // the library does not materialize (`add-demand-driven-core-results`, D1).
     match engine
-        .class_source(slice::from_ref(&snapshot), &request, &mut budget)
+        .class_source_with_evidence(
+            slice::from_ref(&snapshot),
+            &request,
+            &jarde::RecoveryEvidenceRequest::all(),
+            &mut budget,
+        )
         .expect("a legal request is answered")
     {
         jarde::OperationOutcome::Performed(report) => report,
@@ -469,6 +477,8 @@ fn the_text_mode_writes_the_librarys_own_source() {
     let fixture = repository_fixture(HISTORICAL);
     let output = run(&[
         "class-source",
+        "--evidence",
+        "all",
         "--input",
         path_of(&fixture),
         "--policy",
@@ -556,6 +566,8 @@ fn the_same_command_twice_writes_the_same_bytes() {
     let fixture = repository_fixture(HISTORICAL);
     let args = [
         "class-source",
+        "--evidence",
+        "all",
         "--input",
         path_of(&fixture),
         "--policy",
@@ -587,6 +599,8 @@ fn the_output_file_receives_the_same_document_as_standard_output() {
     let target = directory.path.join("HistoricalControlFlow.java");
     let output = run(&[
         "class-source",
+        "--evidence",
+        "all",
         "--input",
         path_of(&fixture),
         "--policy",
@@ -625,6 +639,8 @@ fn the_json_mode_is_the_librarys_own_document() {
     let fixture = directory.write("Probe.class", &bytes);
     let output = run(&[
         "class-source",
+        "--evidence",
+        "all",
         "--input",
         path_of(&fixture),
         "--policy",
@@ -715,6 +731,8 @@ fn a_member_without_a_body_and_a_stopped_member_are_marked_in_the_text() {
     let fixture = directory.write("Probe.class", &bytes);
     let output = run(&[
         "class-source",
+        "--evidence",
+        "all",
         "--input",
         path_of(&fixture),
         "--policy",
@@ -821,6 +839,8 @@ fn a_member_that_cannot_be_spelled_is_stated_in_the_text() {
     let fixture = directory.write("Odd.class", &bytes);
     let output = run(&[
         "class-source",
+        "--evidence",
+        "all",
         "--input",
         path_of(&fixture),
         "--policy",
@@ -838,6 +858,8 @@ fn a_member_that_cannot_be_spelled_is_stated_in_the_text() {
     // The member that cannot be spelled was not run: only the other one's body was read.
     let document = stdout_json(&run(&[
         "class-source",
+        "--evidence",
+        "all",
         "--input",
         path_of(&fixture),
         "--policy",
@@ -880,6 +902,8 @@ fn a_name_two_definitions_answer_to_exits_three() {
     let fixture = directory.write("app.jar", &archive);
     let output = run(&[
         "class-source",
+        "--evidence",
+        "all",
         "--input",
         path_of(&fixture),
         "--policy",
@@ -912,6 +936,8 @@ fn a_name_two_definitions_answer_to_exits_three() {
     let argument = serde_json::to_string(&definition).expect("the identity serializes");
     let output = run(&[
         "class-source",
+        "--evidence",
+        "all",
         "--input",
         path_of(&fixture),
         "--policy",
@@ -956,6 +982,8 @@ fn a_definition_of_another_artifact_is_a_usage_error() {
     let argument = serde_json::to_string(&foreign).expect("the identity serializes");
     let output = run(&[
         "class-source",
+        "--evidence",
+        "all",
         "--input",
         path_of(&fixture),
         "--policy",
@@ -981,6 +1009,8 @@ fn a_policy_that_does_not_fit_the_input_is_a_usage_error() {
     let fixture = directory.write("Probe.class", &probe_class());
     let output = run(&[
         "class-source",
+        "--evidence",
+        "all",
         "--input",
         path_of(&fixture),
         "--class",
@@ -1000,6 +1030,8 @@ fn a_missing_class_parameter_is_a_usage_error() {
     let fixture = repository_fixture(HISTORICAL);
     let output = run(&[
         "class-source",
+        "--evidence",
+        "all",
         "--input",
         path_of(&fixture),
         "--policy",
@@ -1071,6 +1103,8 @@ fn a_class_parameter_that_is_not_a_definition_is_a_usage_error() {
     let fixture = repository_fixture(HISTORICAL);
     let output = run(&[
         "class-source",
+        "--evidence",
+        "all",
         "--input",
         path_of(&fixture),
         "--policy",
@@ -1083,5 +1117,161 @@ fn a_class_parameter_that_is_not_a_definition_is_a_usage_error() {
         stderr_text(&output).contains("cli_definition_json"),
         "{}",
         stderr_text(&output)
+    );
+}
+
+/// An invocation that states no evidence asks for the ordinary recovery: the necessary results and
+/// no optional record, on both sides of the adapter.
+///
+/// This is the adapter's half of "an ordinary recovery defaults to Essential": the CLI invents no
+/// default of its own — the selection it passes is the one it read — so the document it writes and
+/// the library report of the same request agree about every category being `NotRequested` and
+/// about the segment table being absent (change `add-demand-driven-core-results`, D1).
+#[test]
+fn an_invocation_that_states_no_evidence_asks_for_none() {
+    let bytes = probe_class();
+    let directory = TempDir::new();
+    let fixture = directory.write("Probe.class", &bytes);
+    let output = run(&[
+        "class-source",
+        "--input",
+        path_of(&fixture),
+        "--policy",
+        "single-class",
+        "--class",
+        "p/Probe",
+        "--format",
+        "json",
+    ]);
+    assert_eq!(status(&output), EXIT_INCOMPLETE, "{}", stderr_text(&output));
+    let document = stdout_json(&output);
+    let methods = document["methods"]
+        .as_array()
+        .expect("the class has members");
+    let mut recovered = 0usize;
+    for method in methods {
+        let Some(report) = method["outcome"].get("report") else {
+            continue;
+        };
+        if report.is_null() {
+            continue;
+        }
+        recovered += 1;
+        assert!(
+            report["source_map"]["segments"]
+                .as_array()
+                .is_some_and(|segments| segments.is_empty()),
+            "no segment table was asked for: {report}"
+        );
+        let categories = report["evidence"]["categories"]
+            .as_array()
+            .expect("the status list is fixed-size");
+        assert_eq!(categories.len(), 5, "one entry per category: {report}");
+        for category in categories {
+            assert_eq!(
+                category["state"]["state"], "not_requested",
+                "an unstated category is not requested: {report}"
+            );
+        }
+        assert_eq!(
+            report["evidence"]["requested"]["kinds"],
+            json!([]),
+            "and the report echoes the empty selection"
+        );
+    }
+    assert!(
+        recovered > 0,
+        "the fixture's members really ran: {document}"
+    );
+}
+
+/// A spelling this vocabulary does not hold is a usage error, never an ignored word.
+#[test]
+fn an_unknown_evidence_category_is_a_usage_error() {
+    let fixture = repository_fixture(HISTORICAL);
+    let output = run(&[
+        "class-source",
+        "--evidence",
+        "region_detail",
+        "--input",
+        path_of(&fixture),
+        "--policy",
+        "single-class",
+        "--class",
+        "HistoricalControlFlow",
+    ]);
+    assert_eq!(status(&output), EXIT_USAGE, "{}", stderr_text(&output));
+    assert!(
+        stderr_text(&output).contains("cli_evidence_kind"),
+        "{}",
+        stderr_text(&output)
+    );
+}
+
+/// A category this layer's vocabulary holds but this entry does not materialize is refused by the
+/// library, with the library's own code — not answered with an empty delivery.
+#[test]
+fn a_category_the_entry_does_not_materialize_is_refused_by_the_library() {
+    let bytes = probe_class();
+    let directory = TempDir::new();
+    let fixture = directory.write("Probe.class", &bytes);
+    let output = run(&[
+        "class-source",
+        "--evidence",
+        "read_details",
+        "--input",
+        path_of(&fixture),
+        "--policy",
+        "single-class",
+        "--class",
+        "p/Probe",
+        "--format",
+        "json",
+    ]);
+    assert_eq!(status(&output), EXIT_INCOMPLETE, "{}", stderr_text(&output));
+    let document = stdout_json(&output);
+    let methods = document["methods"]
+        .as_array()
+        .expect("the class has members");
+    let mut refusals = 0usize;
+    for method in methods {
+        let Some(report) = method["outcome"].get("report") else {
+            continue;
+        };
+        if report.is_null() {
+            continue;
+        }
+        // Every member states a stop: the refusal of the selection where the run's own analysis
+        // reached the presentation, and the analysis's own missing table where it did not (the
+        // refused selection is stated before anything is presented, so a member whose analysis
+        // stopped first states that instead — both are stops, and neither is an empty delivery).
+        let stopped = report["outcome"]
+            .get("stopped")
+            .unwrap_or_else(|| panic!("{report}"));
+        let code = stopped
+            .get("evidence_refused")
+            .map(|refusal| refusal["code"].clone())
+            .or_else(|| {
+                stopped
+                    .get("ir_table_missing")
+                    .map(|_| json!("jre_ir_table_missing"))
+            })
+            .unwrap_or_else(|| panic!("a stated stop: {report}"));
+        if code == json!("jre_evidence_kind_unsupported") {
+            refusals += 1;
+        }
+        assert_eq!(report["text"], json!(""));
+        for category in report["evidence"]["categories"]
+            .as_array()
+            .expect("the status list is fixed-size")
+        {
+            if category["kind"] == "read_details" {
+                assert_eq!(category["state"]["state"], "not_performed", "{report}");
+            }
+        }
+    }
+    assert!(
+        refusals > 0,
+        "the members whose analysis reached the presentation state the refusal: {document}"
     );
 }

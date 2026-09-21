@@ -1680,13 +1680,16 @@ fn recovery_of(code: &[u8], max_locals: u16) -> RecoveryReport {
     recovery_of_class(&class)
 }
 
-/// The recovery report of one assembled class file's own `method()V`.
+/// The recovery report of one assembled class file's own `method()V`, under the **full-evidence**
+/// selection: these cases read the records this layer publishes, so they state the selection they
+/// need instead of inheriting the ordinary default.
 fn recovery_of_class(class: &[u8]) -> RecoveryReport {
     let analysis = analyze(class);
     let facts = RecoveryFacts::new(MethodFacts::new("method", "()V", 0));
     let mut budget = Budget::new(limits());
     recover(
-        &RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8),
+        &RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
+            .with_evidence(crate::RecoveryEvidenceRequest::all()),
         &mut budget,
     )
 }
@@ -1896,7 +1899,8 @@ mod tests {
         let facts = RecoveryFacts::new(MethodFacts::new("method", "()V", 0));
         let mut budget = Budget::new(limits());
         let report = recover(
-            &RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8),
+            &RecoveryRequest::new(analysis.ir(), &facts, crate::pass::JAVA_8)
+                .with_evidence(crate::RecoveryEvidenceRequest::all()),
             &mut budget,
         );
         assert!(report.produced(), "{:?}", report.outcome);

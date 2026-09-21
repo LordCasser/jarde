@@ -56,10 +56,11 @@ use serde::Serialize;
 use crate::ast::Type;
 use crate::build::stack_operands;
 use crate::decode::Operations;
+use crate::evidence::Publication;
 use crate::facts::Operation;
 use crate::lambda::parse_method;
 use crate::pass::{CONCAT, Precondition, RuleVersion};
-use crate::refusal::Refusal;
+use crate::refusal::{Gap, Refusal};
 
 /// The classes whose chain is a string concatenation, in the order the design lists them.
 ///
@@ -97,6 +98,10 @@ pub(crate) struct Chain {
 pub(crate) struct Plan {
     chains: BTreeMap<u32, Chain>,
     owned: BTreeSet<u32>,
+    /// Why a candidate chain was not presented, in BCI order: what every selection reports about
+    /// this rule's refusals, beside the records only a selected run materializes.
+    refusals: Vec<Gap>,
+    /// The records, when this run published rule records.
     records: Vec<ConcatRecord>,
 }
 
@@ -106,6 +111,7 @@ impl Plan {
         Self {
             chains: BTreeMap::new(),
             owned: BTreeSet::new(),
+            refusals: Vec::new(),
             records: Vec::new(),
         }
     }
@@ -128,9 +134,22 @@ impl Plan {
         self.chains.get(&bci)
     }
 
-    /// Every chain and every refusal, in BCI order — the evidence a report reads back.
+    /// Every candidate chain the rule refused, in BCI order.
+    pub(crate) fn refusals(&self) -> &[Gap] {
+        &self.refusals
+    }
+
+    /// Every chain and every refusal, in BCI order — the evidence a report reads back when this run
+    /// selected rule records.
     pub(crate) fn records(&self) -> &[ConcatRecord] {
         &self.records
+    }
+
+    /// How many candidate chains the rule read, and how many of them it presented.
+    pub(crate) fn counts(&self) -> (u64, u64) {
+        let presented = u64::try_from(self.chains.len()).unwrap_or(u64::MAX);
+        let refused = u64::try_from(self.refusals.len()).unwrap_or(u64::MAX);
+        (presented + refused, presented)
     }
 }
 
@@ -213,7 +232,7 @@ impl ConcatRefusal {
 /// The walk runs over the **SSA blocks**, because a chain is a contiguous run of instructions of
 /// one block: a chain a branch cuts in two is not this shape and is refused with the split stated
 /// rather than presented as an expression the bytecode never evaluated as one.
-pub(crate) fn plan(ssa: &SsaTable, operations: &Operations) -> Plan {
+pub(crate) fn plan(ssa: &SsaTable, operations: &Operations, publication: Publication) -> Plan {
     let blocks: Vec<Vec<&SsaInstruction>> = ssa
         .blocks()
         .iter()
@@ -243,36 +262,60 @@ pub(crate) fn plan(ssa: &SsaTable, operations: &Operations) -> Plan {
             ) {
                 Ok(chain) => {
                     if let Some(shared) = chain.owned.iter().find(|bci| plan.owned.contains(bci)) {
-                        plan.records.push(refused(
-                            head,
-                            &ty,
-                            &ConcatRefusal::of(
-                                &Refusal::shape(
-                                    "jre_concat_overlap",
-                                    format!(
-                                        "the instruction at BCI {shared} belongs to another chain this run already claimed, and one instruction is not two concatenations"
-                                    ),
+                        let refusal = ConcatRefusal::of(
+                            &Refusal::shape(
+                                "jre_concat_overlap",
+                                format!(
+                                    "the instruction at BCI {shared} belongs to another chain this run already claimed, and one instruction is not two concatenations"
                                 ),
-                                head,
                             ),
-                        ));
+                            head,
+                        );
+                        plan.refusals
+                            .push(Gap::at(refusal.code, head, refusal.message.clone()));
+                        if publication.publishes(&[head]) {
+                            crate::demand_counts::record_built(
+                                crate::evidence::RecoveryEvidenceKind::RuleDetails,
+                            );
+                            plan.records.push(refused(head, &ty, &refusal));
+                        }
                         continue;
                     }
                     for bci in &chain.owned {
                         plan.owned.insert(*bci);
                     }
-                    plan.records.push(record_of(&chain, true, None));
+                    if publication.publishes(&chain_positions(&chain)) {
+                        crate::demand_counts::record_built(
+                            crate::evidence::RecoveryEvidenceKind::RuleDetails,
+                        );
+                        plan.records.push(record_of(&chain, true, None));
+                    }
                     plan.chains.insert(chain.tail, chain);
                 }
                 Err(refusal) => {
-                    plan.records
-                        .push(refused(head, &ty, &ConcatRefusal::of(&refusal, head)))
+                    let refusal = ConcatRefusal::of(&refusal, head);
+                    plan.refusals
+                        .push(Gap::at(refusal.code, head, refusal.message.clone()));
+                    if publication.publishes(&[head]) {
+                        crate::demand_counts::record_built(
+                            crate::evidence::RecoveryEvidenceKind::RuleDetails,
+                        );
+                        plan.records.push(refused(head, &ty, &refusal));
+                    }
                 }
             }
         }
     }
     plan.records.sort_by_key(|record| record.head);
+    plan.refusals.sort_by_key(|gap| gap.position());
     plan
+}
+
+/// Every driver BCI one chain states: its head, its `toString` and each `append`.
+fn chain_positions(chain: &Chain) -> Vec<u32> {
+    let mut positions = vec![chain.head, chain.tail];
+    positions.extend(chain.appends.iter().map(|(bci, _)| *bci));
+    positions
 }
 
 /// One record of a presented chain.

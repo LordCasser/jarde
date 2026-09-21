@@ -25,8 +25,8 @@ use jarde::{
     ClassTarget, ContainerId, ContainerOrigin, DelegationPolicy, Engine, ExecutionReport,
     HeaderProvider, InspectionMode, JvmBytes, LayoutMode, Limits, LoadDomain, LoadRoot, LoaderId,
     MethodAnalysisRequest, ModuleMode, MultiReleasePolicy, PhysicalDefinitionId, PhysicalEntryId,
-    PhysicalMethodId, PhysicalScope, PhysicalVariant, PhysicalView, ResolutionEnvironment,
-    RuntimeProfile, RuntimeUncertainty, RuntimeView, TerminationReason,
+    PhysicalMethodId, PhysicalScope, PhysicalVariant, PhysicalView, RecoveryEvidenceRequest,
+    ResolutionEnvironment, RuntimeProfile, RuntimeUncertainty, RuntimeView, TerminationReason,
 };
 use serde_json::{Map, Value, json};
 use std::fs;
@@ -458,10 +458,17 @@ fn entry_of(
 fn recovery_operation(request: &MethodAnalysisRequest) -> Value {
     let mut operation =
         serde_json::to_value(request).expect("a method-analysis request serializes");
-    operation
+    let fields = operation
         .as_object_mut()
-        .expect("the request serializes as an object")
-        .insert("kind".to_string(), json!("recover_method"));
+        .expect("the request serializes as an object");
+    fields.insert("kind".to_string(), json!("recover_method"));
+    // The evidence selection this loop asks for is stated on **both** sides of the wire: this test
+    // reads the segment table's physical paths, and an unrequested category is a category the
+    // library does not materialize (`add-demand-driven-core-results`, D1).
+    fields.insert(
+        "evidence".to_string(),
+        serde_json::to_value(RecoveryEvidenceRequest::all()).expect("a selection serializes"),
+    );
     operation
 }
 
@@ -562,9 +569,10 @@ fn cli_enumeration_then_recovery(name: &str, prefix: &[u8]) -> Value {
         .open(ArtifactInput::Path(path.clone()), &mut library_budget)
         .expect("open the fixture for the comparison");
     let direct = engine
-        .recover_method(
+        .recover_method_with_evidence(
             std::slice::from_ref(&library_snapshot),
             &analysis,
+            &RecoveryEvidenceRequest::all(),
             &mut library_budget,
         )
         .expect("the same request through the library");

@@ -60,6 +60,7 @@ pub mod bridge;
 pub mod concat;
 pub mod declaration;
 pub mod enumswitch;
+pub mod evidence;
 pub mod facts;
 pub mod field;
 pub mod guard;
@@ -75,6 +76,7 @@ pub mod stop;
 
 pub(crate) mod build;
 pub(crate) mod decode;
+pub(crate) mod demand_counts;
 pub(crate) mod emit;
 #[cfg(test)]
 mod oracle;
@@ -88,6 +90,10 @@ pub use bridge::{BridgeRecord, BridgeRefusal};
 pub use concat::{ConcatAppend, ConcatRecord, ConcatRefusal};
 pub use declaration::{DeclarationForm, DeclarationRecord, DeclarationRefusal};
 pub use enumswitch::{EnumSwitchRecord, EnumSwitchRefusal, IndexCall, TableRead};
+pub use evidence::{
+    BytecodeRange, EvidenceCategory, EvidenceState, RecoveryEvidence, RecoveryEvidenceKind,
+    RecoveryEvidenceRequest,
+};
 pub use field::{FieldRecord, FieldRefusal};
 pub use init::{InitRecord, InitRefusal, NewRecord, NewRefusal};
 pub use lambda::{LambdaCapture, LambdaForm, LambdaRecord, LambdaRefusal, type_of_component};

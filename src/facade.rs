@@ -17,7 +17,7 @@ use crate::ir::{AnalysisStage, NoBodyKind, Quality};
 use crate::resolver::{
     DeclarationRefItem, DeclarationRefReport, HeaderRead, ResolutionAnalysis, ResolvedMemberRef,
 };
-use jarde_java::{RecoveryContent, RecoveryReport, StopReason};
+use jarde_java::{RecoveryContent, RecoveryEvidenceRequest, RecoveryReport, StopReason};
 use jarde_query::query::{
     ConsumerKind, ConsumerSchema, QueryAnalysis, QueryCoverage, QueryPage, QueryRelation,
     QueryReport, QueryRequest, XrefDerivation, XrefItem,
@@ -325,7 +325,31 @@ impl Engine {
         request: &crate::ir::MethodAnalysisRequest,
         budget: &mut Budget,
     ) -> Result<RecoveredMethod> {
-        self.recover_bound_method(content, request, None, budget)
+        self.recover_bound_method(
+            content,
+            request,
+            None,
+            &RecoveryEvidenceRequest::essential(),
+            budget,
+        )
+    }
+
+    /// The same request as [`Engine::recover_method`], with the optional evidence the caller wants
+    /// delivered stated explicitly (change `add-demand-driven-core-results`, D1).
+    ///
+    /// This is the *same* entry — one binding, one run, one presentation — with the selection the
+    /// caller states instead of the ordinary default: the run performs every check and writes the
+    /// same artifact whatever is selected, and the selection decides which optional detail records
+    /// are materialized, which of them a driver BCI range restricts, and what
+    /// [`RecoveredMethod::recovery`]'s evidence status list then states.
+    pub fn recover_method_with_evidence(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &crate::ir::MethodAnalysisRequest,
+        evidence: &RecoveryEvidenceRequest,
+        budget: &mut Budget,
+    ) -> Result<RecoveredMethod> {
+        self.recover_bound_method(content, request, None, evidence, budget)
     }
 
     /// One recovery request whose target binding already read the class it selected (D2 3.1/3.3).
@@ -349,6 +373,7 @@ impl Engine {
         content: &[ArtifactSnapshot],
         request: &crate::ir::MethodAnalysisRequest,
         binding: Option<&ConfirmedRead>,
+        evidence: &RecoveryEvidenceRequest,
         budget: &mut Budget,
     ) -> Result<RecoveredMethod> {
         // The binding's own read, stated once more in the shape a class task consumes: adopting it
@@ -362,12 +387,12 @@ impl Engine {
                 )?),
                 // The content the binding read from is not provided to this request: the run states
                 // that, in the vocabulary its own read uses for it.
-                None => return self.recover_own_read(content, request, budget),
+                None => return self.recover_own_read(content, request, evidence, budget),
             },
             None => None,
         };
         let Some(read) = bound_read else {
-            return self.recover_own_read(content, request, budget);
+            return self.recover_own_read(content, request, evidence, budget);
         };
         // One prepared class over one materialization (`crate::d0_counts`): the run and the callee
         // read below consume this one, and the definition the binding selected is read by neither.
@@ -379,7 +404,14 @@ impl Engine {
             // (`crate::d0_counts`): counted after the run, so a stop before `raw_facts` counts none.
             crate::d0_counts::body_decoded();
         }
-        recovery_presented(content, request, analyzed, Some(&prepared), budget)
+        recovery_presented(
+            content,
+            request,
+            analyzed,
+            Some(&prepared),
+            evidence,
+            budget,
+        )
     }
 
     /// One recovery request whose class the run reads itself, with that read handed to the
@@ -395,6 +427,7 @@ impl Engine {
         &self,
         content: &[ArtifactSnapshot],
         request: &crate::ir::MethodAnalysisRequest,
+        evidence: &RecoveryEvidenceRequest,
         budget: &mut Budget,
     ) -> Result<RecoveredMethod> {
         let run = jarde_jvm::analyze_method_ir_owning_the_read(content, request, budget)?;
@@ -408,7 +441,7 @@ impl Engine {
             // it rather than reading the definition again.
             crate::d0_counts::class_materialized();
         }
-        recovery_read(content, request, analyzed, read, budget)
+        recovery_read(content, request, analyzed, read, evidence, budget)
     }
 
     /// One whole physical scope recovered in one operation: every class it holds prepared once,
@@ -1117,6 +1150,23 @@ impl Engine {
         request: &MethodOperationRequest,
         budget: &mut Budget,
     ) -> Result<OperationOutcome<MethodRecoveryReport>> {
+        self.recover_target_with_evidence(
+            content,
+            request,
+            &RecoveryEvidenceRequest::essential(),
+            budget,
+        )
+    }
+
+    /// The same operation as [`Engine::recover_target`], with the optional evidence the caller wants
+    /// delivered stated explicitly (change `add-demand-driven-core-results`, D1).
+    pub fn recover_target_with_evidence(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &MethodOperationRequest,
+        evidence: &RecoveryEvidenceRequest,
+        budget: &mut Budget,
+    ) -> Result<OperationOutcome<MethodRecoveryReport>> {
         let operation = MethodOperation::Recovery;
         let bound = match bind_method(content, request, budget)? {
             MethodBinding::Bound(bound) => bound,
@@ -1141,6 +1191,7 @@ impl Engine {
                 stages: stages.clone(),
             },
             read.as_ref(),
+            evidence,
             budget,
         )?;
         let presentation = RecoveryPresentation::of(recovered.recovery());
@@ -1213,6 +1264,27 @@ impl Engine {
         &self,
         content: &[ArtifactSnapshot],
         request: &ClassSourceRequest,
+        budget: &mut Budget,
+    ) -> Result<OperationOutcome<ClassSourceReport>> {
+        self.class_source_with_evidence(
+            content,
+            request,
+            &RecoveryEvidenceRequest::essential(),
+            budget,
+        )
+    }
+
+    /// The same presentation as [`Engine::class_source`], with the optional evidence the caller
+    /// wants delivered stated explicitly (change `add-demand-driven-core-results`, D1).
+    ///
+    /// The assembled class text does not depend on the selection: what changes is which optional
+    /// detail records each member's own recovery run materializes, and what the evidence status list
+    /// of that run states about them.
+    pub fn class_source_with_evidence(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &ClassSourceRequest,
+        evidence: &RecoveryEvidenceRequest,
         budget: &mut Budget,
     ) -> Result<OperationOutcome<ClassSourceReport>> {
         // The identity the caller gave is checked against the request's own physical view before the
@@ -1420,7 +1492,9 @@ impl Engine {
                             // counts, so a member whose run was never entered — because the class could
                             // not be prepared — stays in that plane's skipped range.
                             attempted = attempted.saturating_add(1);
-                            match recover_prepared_member(content, &request, prepared, budget) {
+                            match recover_prepared_member(
+                                content, &request, prepared, evidence, budget,
+                            ) {
                                 Ok(recovered) => {
                                     let analysis = ClassSourceRunFacts {
                                         execution: recovered.analysis().execution.clone(),
@@ -1581,6 +1655,7 @@ fn recover_prepared_member(
     content: &[ArtifactSnapshot],
     request: &crate::ir::MethodAnalysisRequest,
     prepared: &jarde_reader::prepared::PreparedClass<'_>,
+    evidence: &RecoveryEvidenceRequest,
     budget: &mut Budget,
 ) -> Result<RecoveredMethod> {
     let analyzed = jarde_jvm::analyze_prepared_method_ir(content, prepared, request, budget)?;
@@ -1589,7 +1664,7 @@ fn recover_prepared_member(
         // member body this presentation really decoded.
         crate::d0_counts::body_decoded();
     }
-    recovery_presented(content, request, analyzed, Some(prepared), budget)
+    recovery_presented(content, request, analyzed, Some(prepared), evidence, budget)
 }
 
 /// The class view's own coverage plus this presentation's one plane: the members a body run was
@@ -3117,13 +3192,14 @@ pub(crate) fn recovery_presented(
     request: &crate::ir::MethodAnalysisRequest,
     analyzed: jarde_jvm::method_ir::MethodIrAnalysis,
     prepared: Option<&jarde_reader::prepared::PreparedClass<'_>>,
+    evidence: &RecoveryEvidenceRequest,
     budget: &mut Budget,
 ) -> Result<RecoveredMethod> {
     let callee_class = match prepared {
         Some(prepared) => CalleeClass::Prepared(prepared),
         None => CalleeClass::None,
     };
-    recovery_from(content, request, analyzed, callee_class, budget)
+    recovery_from(content, request, analyzed, callee_class, evidence, budget)
 }
 
 /// The same presentation for a caller that holds the read the run performed, not a preparation
@@ -3138,13 +3214,14 @@ fn recovery_read(
     request: &crate::ir::MethodAnalysisRequest,
     analyzed: jarde_jvm::method_ir::MethodIrAnalysis,
     read: Option<jarde_reader::prepared::PreparedClassRead>,
+    evidence: &RecoveryEvidenceRequest,
     budget: &mut Budget,
 ) -> Result<RecoveredMethod> {
     let callee_class = match &read {
         Some(read) => CalleeClass::Read(read),
         None => CalleeClass::None,
     };
-    recovery_from(content, request, analyzed, callee_class, budget)
+    recovery_from(content, request, analyzed, callee_class, evidence, budget)
 }
 
 /// The class one recovery presentation reads its same-class callee evidence from.
@@ -3170,6 +3247,7 @@ fn recovery_from(
     request: &crate::ir::MethodAnalysisRequest,
     analyzed: jarde_jvm::method_ir::MethodIrAnalysis,
     callee_class: CalleeClass<'_>,
+    evidence: &RecoveryEvidenceRequest,
     budget: &mut Budget,
 ) -> Result<RecoveredMethod> {
     let facts = crate::facade::recovery_facts(
@@ -3204,7 +3282,8 @@ fn recovery_from(
         }
     };
     let members = callees.as_ref().map(member_table);
-    let request = jarde_java::RecoveryRequest::new(analyzed.ir(), &facts, profile);
+    let request = jarde_java::RecoveryRequest::new(analyzed.ir(), &facts, profile)
+        .with_evidence(evidence.clone());
     let recovery = jarde_java::recover(
         &match &members {
             Some(members) => request.with_members(members),

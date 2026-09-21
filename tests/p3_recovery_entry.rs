@@ -163,7 +163,12 @@ fn one_recovery_request_reads_one_body_and_presents_that_member() {
     let request = add_request(&snapshot, &inspected);
     let mut budget = Budget::new(limits());
     let recovered = engine
-        .recover_method(slice::from_ref(&snapshot), &request, &mut budget)
+        .recover_method_with_evidence(
+            slice::from_ref(&snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut budget,
+        )
         .expect("a legal request is answered, not raised");
 
     // A16: one header read, one body attempted, whatever the class declares.
@@ -254,7 +259,12 @@ fn a_recovery_request_that_asks_for_no_ssa_stops_inside_a_successful_answer() {
 
     let mut budget = Budget::new(limits());
     let recovered = engine
-        .recover_method(slice::from_ref(&snapshot), &request, &mut budget)
+        .recover_method_with_evidence(
+            slice::from_ref(&snapshot),
+            &request,
+            &RecoveryEvidenceRequest::all(),
+            &mut budget,
+        )
         .expect("a legal request is answered, not raised");
     let report = recovered.recovery();
     assert!(

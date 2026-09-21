@@ -973,7 +973,13 @@ fn recovered_markers(
         markers.push(marker.clone());
     }
     let member = label(item);
-    if let Some(stop) = stop_code(&report.execution) {
+    // A run **stopped** before it had an artifact: the artifact is absent, and the marker says which
+    // plane of the run ended it. The recovery's *outcome* is what decides this, not the execution
+    // plane alone: a run whose evidence phase stopped after the artifact was committed is a produced
+    // member with a non-`Complete` execution, and it is marked as such below
+    // (`add-demand-driven-core-results`, D1).
+    if report.stop().is_some() {
+        let stop = stop_code(&report.execution).unwrap_or_else(|| "unstated".to_owned());
         // Two planes can state a stop of the same run, and they can name different causes: the
         // analysis stops first (a refused charge, a damaged body) and the recovery layer then stops
         // on the table that run never published. Both are written, because "the artifact was not
@@ -1007,6 +1013,13 @@ fn recovered_markers(
     if let Some(code) = stop_code(&analysis.execution) {
         markers.push(format!(
             "// jarde: diagnosed stop: the run for `{member}` did not complete ({code}); the text below is what that run produced"
+        ));
+    }
+    if let Some(stop) = stop_code(&report.execution) {
+        // The artifact is here and the run is not `Complete`: what stopped is the optional evidence
+        // this request selected, and saying so is different from saying the member was not recovered.
+        markers.push(format!(
+            "// jarde: evidence stopped: the run for `{member}` produced the text below; the evidence it selected stopped ({stop})"
         ));
     }
     markers

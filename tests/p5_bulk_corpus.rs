@@ -577,6 +577,13 @@ impl Billing {
 /// case declares, or the operation's own read pattern — and the case's name says which shape. It is
 /// not a target, not a budget and not a time: see this file's header for what a count may and may not
 /// be read as, and `openspec/benchmark-protocol.md` for the rule every comparison row follows.
+///
+/// **Re-pinned by D1 of `add-demand-driven-core-results`.** The operation's own constructor states
+/// the full evidence selection (`BulkRecoveryRequest::for_scope`), and the evidence phase now charges
+/// one `IrItems` per optional owning record it materializes. That is the *shape* of the work moving:
+/// the artifact, the reads, the decodes and the passes are unchanged, and the rows below move on
+/// `ir_items` alone (by the number of records each shape really has). The per-case rows and the two
+/// arms were regenerated with `record_the_billing_table` and the arms' own reader, not hand-edited.
 impl Billing {
     /// `flat-mixed`: four classes at one root and nothing nested.
     const FLAT_MIXED: Self = Self {
@@ -585,7 +592,7 @@ impl Billing {
         class_bytes: 1813,
         class_headers: 0,
         method_bodies: 17,
-        ir_items: 1850,
+        ir_items: 1870,
         analysis_steps: 783,
         result_items: 37,
         output_bytes: 4112,
@@ -603,7 +610,7 @@ impl Billing {
         class_bytes: 2381,
         class_headers: 0,
         method_bodies: 26,
-        ir_items: 3201,
+        ir_items: 3230,
         analysis_steps: 1242,
         result_items: 64,
         output_bytes: 6083,
@@ -620,7 +627,7 @@ impl Billing {
         class_bytes: 2686,
         class_headers: 4,
         method_bodies: 12,
-        ir_items: 1555,
+        ir_items: 1570,
         analysis_steps: 642,
         result_items: 43,
         output_bytes: 3093,
@@ -632,7 +639,7 @@ impl Billing {
         class_bytes: 7683,
         class_headers: 0,
         method_bodies: 107,
-        ir_items: 16940,
+        ir_items: 17064,
         analysis_steps: 7055,
         result_items: 122,
         // 25716 and not 25710: this case is the one that holds `Guarded` and `BooleanContexts`, and
@@ -649,7 +656,7 @@ impl Billing {
         class_bytes: 1019,
         class_headers: 0,
         method_bodies: 12,
-        ir_items: 1555,
+        ir_items: 1570,
         analysis_steps: 642,
         result_items: 35,
         output_bytes: 3093,
@@ -661,7 +668,7 @@ impl Billing {
         class_bytes: 753,
         class_headers: 0,
         method_bodies: 7,
-        ir_items: 2443,
+        ir_items: 2450,
         analysis_steps: 871,
         result_items: 18,
         output_bytes: 1854,
@@ -676,7 +683,7 @@ impl Billing {
         class_bytes: 327895,
         class_headers: 191,
         method_bodies: 181,
-        ir_items: 27544,
+        ir_items: 27754,
         analysis_steps: 11235,
         result_items: 1378,
         output_bytes: 43951,
@@ -691,7 +698,7 @@ impl Billing {
         class_bytes: 10817,
         class_headers: 191,
         method_bodies: 181,
-        ir_items: 27544,
+        ir_items: 27754,
         analysis_steps: 11235,
         result_items: 26,
         output_bytes: 43951,
@@ -1395,7 +1402,12 @@ fn the_old_per_method_arms_keep_their_ledger_and_the_same_text() {
             };
             let mut budget = Budget::new(bulk_support::limits());
             let one_at_a_time = Engine::new()
-                .recover_method(&content, &request, &mut budget)
+                .recover_method_with_evidence(
+                    &content,
+                    &request,
+                    &RecoveryEvidenceRequest::all(),
+                    &mut budget,
+                )
                 .expect("the direct arm recovers the member");
             direct.add(&budget.usage());
             assert_eq!(
@@ -1421,7 +1433,12 @@ fn the_old_per_method_arms_keep_their_ledger_and_the_same_text() {
 
             let mut budget = Budget::new(bulk_support::limits()).with_facts_cache(store.clone());
             let through_the_store = Engine::new()
-                .recover_method(&content, &request, &mut budget)
+                .recover_method_with_evidence(
+                    &content,
+                    &request,
+                    &RecoveryEvidenceRequest::all(),
+                    &mut budget,
+                )
                 .expect("the shared-store arm recovers the member");
             shared.add(&budget.usage());
             assert_eq!(

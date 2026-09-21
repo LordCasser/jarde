@@ -172,6 +172,16 @@ pub struct BulkRecoveryRequest {
     /// The retention ceiling of the whole result window. It must fit at least one
     /// `max_result_weight`; a smaller value is an input error.
     pub max_buffered_result_weight: u64,
+    /// The optional evidence every method's presentation materializes (change
+    /// `add-demand-driven-core-results`, D1).
+    ///
+    /// The operation is the *full export* of a scope — every method of every class, assembled into
+    /// one stream — so its own constructor states [`crate::RecoveryEvidenceRequest::all`], which is
+    /// what it has always delivered; a caller narrows it with
+    /// [`BulkRecoveryRequest::with_evidence`]. A document that states no selection is read as the
+    /// same full export, never as a third default.
+    #[serde(default = "crate::RecoveryEvidenceRequest::all")]
+    pub evidence: crate::RecoveryEvidenceRequest,
     /// Test-only fault injection for the worker lifecycle (task 4.2's evidence).
     #[cfg(feature = "test-support")]
     #[serde(skip)]
@@ -202,6 +212,7 @@ impl BulkRecoveryRequest {
             max_class_bytes: DEFAULT_MAX_CLASS_BYTES,
             max_result_weight: DEFAULT_MAX_RESULT_WEIGHT,
             max_buffered_result_weight: DEFAULT_MAX_BUFFERED_RESULT_WEIGHT,
+            evidence: crate::RecoveryEvidenceRequest::all(),
             #[cfg(feature = "test-support")]
             faults: BulkFaults::default(),
             #[cfg(feature = "test-support")]
@@ -217,6 +228,13 @@ impl BulkRecoveryRequest {
     #[cfg(feature = "test-support")]
     pub fn with_probe(mut self, probe: std::sync::Arc<BulkProbe>) -> Self {
         self.probe = Some(probe);
+        self
+    }
+
+    /// The same request with the evidence every method's presentation materializes stated
+    /// explicitly.
+    pub fn with_evidence(mut self, evidence: crate::RecoveryEvidenceRequest) -> Self {
+        self.evidence = evidence;
         self
     }
 
@@ -1505,6 +1523,12 @@ struct Operation<'a> {
     limits: &'a BulkLimits,
     ledger: &'a OperationLedger,
     stages: &'a [AnalysisStage],
+    /// The evidence selection every method's presentation runs under (change
+    /// `add-demand-driven-core-results`, D1): one operation states it once, and the presentation it
+    /// hands to each method consumes it verbatim. Nothing else of this operation depends on it —
+    /// the discovery, the class tasks, the window and the ledger are the same for every selection —
+    /// which is why this is a field of the shared facts rather than a second mode of the operation.
+    evidence: &'a crate::RecoveryEvidenceRequest,
     registry: &'a Registry,
     /// The store handle the entry budget carried, shared with every budget of this operation, so
     /// one operation consults one store whichever part of it is charging.
@@ -1935,6 +1959,7 @@ fn execute_method(
         &request,
         analyzed,
         Some(prepared),
+        operation.evidence,
         budget,
     ) {
         Ok(recovered) => {
@@ -3296,6 +3321,7 @@ pub fn recover_all(
         limits: &limits,
         ledger: &ledger,
         stages: crate::facade::MethodOperation::Recovery.stages(),
+        evidence: &request.evidence,
         registry: &registry,
         store,
         discovery_limits: budget.limits().clone(),
