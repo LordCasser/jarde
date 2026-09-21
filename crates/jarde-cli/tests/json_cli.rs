@@ -1234,7 +1234,7 @@ fn a_presented_accessor_and_the_members_it_reads_cross_the_wire() {
     // The text is the direct field expression the source had, and the call the compiler made is not
     // in it.
     let text = value["result"]["report"]["text"].as_str().expect("text");
-    assert!(text.contains("return arg0.f;"), "{text}");
+    assert!(text.contains("return this.f;"), "{text}");
     assert!(!text.contains("access$100("), "{text}");
 
     // The evidence the read states: one class, one member of it — with the reason the read happened

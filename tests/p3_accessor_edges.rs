@@ -617,7 +617,7 @@ fn the_two_original_edges_survive_a_recovery_run_field_by_field() {
     let report = recovered.recovery();
     assert!(report.produced(), "{:?}", report.outcome);
     assert!(
-        report.text.contains("return arg0.f;"),
+        report.text.contains("return this.f;"),
         "the direct field expression the source had:\n{}",
         report.text
     );
@@ -661,7 +661,7 @@ fn the_anchors_name_the_member_each_field_access_is_in_and_only_named_bodies_are
     assert_eq!(report.representation, Representation::Java, "{report:?}");
 
     // A12: the text is the direct field expressions the source had, not the calls a compiler made.
-    assert!(text.contains("return arg0.g + arg0.h;"), "{text}");
+    assert!(text.contains("return this.g + this.h;"), "{text}");
     assert!(
         !text.contains("access$200(") && !text.contains("access$300("),
         "the hidden calls are presented as the accesses they forward:\n{text}"
@@ -692,8 +692,8 @@ fn the_anchors_name_the_member_each_field_access_is_in_and_only_named_bodies_are
     // The anchors. Two nodes, each with the call site's own BCI as its own anchor and the field
     // access **inside the callee's body** as one it presents — where both callees put that access at
     // BCI 1, the same index the call site itself is at.
-    let field = anchors_of(report, "arg0.g");
-    let second = anchors_of(report, "arg0.h");
+    let field = anchors_of(report, "this.g");
+    let second = anchors_of(report, "this.h");
     assert_eq!(
         field.own,
         (FIELD_SITE, Some(&presented)),
@@ -733,14 +733,14 @@ fn the_anchors_name_the_member_each_field_access_is_in_and_only_named_bodies_are
         1,
         "the call site at BCI 1 is one node's own anchor"
     );
-    assert_eq!(direct[0].text(&report.text), "arg0.g");
+    assert_eq!(direct[0].text(&report.text), "this.g");
     let presented_here = report.source_map.derived_of_bci(FIELD_SITE);
     assert_eq!(
         presented_here.len(),
         1,
         "and the other callee's field access at BCI 1 is what one node presents there"
     );
-    assert_eq!(presented_here[0].text(&report.text), "arg0.h");
+    assert_eq!(presented_here[0].text(&report.text), "this.h");
 
     // The read: one class, and exactly the two members the call sites named — read from the
     // definition the presented body came from, with the reason the read states.
@@ -929,7 +929,7 @@ fn a_call_to_another_classs_same_named_member_is_not_read_from_this_class() {
         Some("jre_accessor_not_a_member")
     );
     assert!(
-        report.text.contains("access$100(arg0)"),
+        report.text.contains("access$100(this)"),
         "the call to another class keeps the call it had:\n{}",
         report.text
     );

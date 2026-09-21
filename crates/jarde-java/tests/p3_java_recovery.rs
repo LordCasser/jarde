@@ -1391,9 +1391,10 @@ fn a_committed_straight_line_body_is_presented_from_its_own_decode() {
     // The committed corpus, not an assembled fixture: `add(II)I` is `iload_1; iload_2; iadd;
     // ireturn`, and the operations come from the real decode's own BCIs, so nothing in this test
     // knows where the instructions are. `add` is an instance method, so its three parameter slots are
-    // `this`, `left` and `right`: slot 0 has no name of its own here because naming a receiver is a
-    // 3.1 decision with evidence this slice does not read (flags and descriptor), and an ordinal name
-    // is the deterministic answer until then.
+    // `this`, `left` and `right`: slot 0 has no name of its own here because a receiver is named from
+    // a declaration fact this file's facts do not state (the member's own flags), and an ordinal name
+    // is the deterministic answer without one — the naming layer writes `this` for slot 0 exactly
+    // when the flags say the member takes a receiver (`MethodFacts::has_receiver`).
     let payload = analyze(HISTORICAL_V45, b"add", b"(II)I");
     let facts = facts_of(HISTORICAL_V45, b"add", 3, Vec::new());
     let mut budget = Budget::new(limits());
