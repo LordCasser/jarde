@@ -464,3 +464,16 @@ test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; fini
 * **诚实标注为下界的见证**：三项（consumer work、可选记录构造、release）本轮用公开面统计；其中“可选记录构造”只能看到**已发布**的记录，构造后丢弃的记录不可见（§7.4）。D3 的 hook 必须在 `jarde-java` 内放置，才满足 D04 的“构造完整表再截断必须失败”。
 * **未完成**：D1–D4 的全部实现（1.2 的清点只是清单，不改语义；3.x/4.x/6.x 未开始）；`openspec/changes/add-demand-driven-core-results/tasks.md` 只勾选 1.1–1.3。
 * **未复跑项**：活动容器跨 worker 交接本轮未复核（属 bulk 流）；T5 的 6 行差异表沿用既有记录，本轮只复跑其中两行（`'A'`）。
+
+## D3（任务 4.1–4.6）验证记录（由主 Agent 复跑）
+
+该阶段的实现 agent 在写报告时被宿主机中断（其工作树代码完整、可编译）；以下证据由主 Agent 在其最终文件状态上复跑：
+
+| 命令 | 结果 |
+| --- | --- |
+| `cargo test --workspace --all-targets --all-features --locked` | **1535 passed / 0 failed / 11 ignored** |
+| `cargo test --test p3_execution_comparison --locked -- --ignored` | 3 passed（受控 JDK 编译执行对照） |
+| `cargo test -p jarde-java --locked` | 77 / 32 / 43 passed |
+| `cargo test --test d1_evidence_selection --all-features --locked` | 8 passed |
+
+接缝：`src/facade.rs` 的 `publish_read_details`（选中且产出才发布读取明细）、`crates/jarde-java/src/emit.rs:393`（仅选中 `SourceMap` 时记录 span）、`src/bulk.rs::result_weight`（按选择核算拥有字节，未选不计）。未做：agent 侧的两条变异反例没有留下原始输出，本记录不把它们写成已验证；D3 的"局部=完整投影"由 `the_driver_range_selects_the_records_it_intersects` 在 region 记录上给出。
