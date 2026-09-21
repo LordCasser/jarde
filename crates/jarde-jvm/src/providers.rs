@@ -80,6 +80,7 @@ use jarde_reader::model::{
 use jarde_reader::prepared::PreparedClass;
 use jarde_reader::view::{DelegationPolicy, LoadDomain, LoadRoot, LoaderId, ModuleMode};
 use std::collections::VecDeque;
+use std::sync::Arc;
 
 /// Suffix every archive entry of a class carries; the comparison is byte-exact.
 const CLASS_SUFFIX: &[u8] = b".class";
@@ -183,7 +184,15 @@ impl HeaderLookup {
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct ClassHeaderFacts {
-    pub(crate) facts: ClassFacts,
+    /// The parsed header facts, held as the **shared handle** the read produced.
+    ///
+    /// A header is immutable once parsed, several resolutions of one request and several requests of
+    /// one class task refer to the same one, and the bundle carries the class's whole structural
+    /// payload — constant pool included. Holding it behind an `Arc` is what keeps the handover of
+    /// that payload a pointer copy: cloning this struct (a resolution answering with the header it
+    /// already read, a memo returning a verified binding) clones one reference, never the pool and
+    /// the member tables beside it.
+    pub(crate) facts: Arc<ClassFacts>,
 }
 
 /// The header facts one lookup selected, or the identity of one node it resolved.
@@ -848,19 +857,22 @@ impl<'a> HeaderClosure<'a> {
     /// here: the facts are the caller's own evidence, and the definition's bytes were verified by
     /// the read that produced them.
     ///
-    /// The facts are cloned into the resolution the search answers with, exactly as a direct read
-    /// clones them for the lookup its own position elects; the caller's copy is untouched.
+    /// The facts are **shared** into the resolution the search answers with: the handle this entry
+    /// takes is cloned (one reference) for every lookup the search decides, whether it comes from the
+    /// request's own read or from a prepared class the caller prepared once for a whole class task.
+    /// Nothing of the bundle is copied, so `M` methods of one prepared class share one constant pool
+    /// and one member table, and the caller's own handle is untouched.
     pub(crate) fn bind_definition(
         &mut self,
         defining_loader: &LoaderId,
         definition: &PhysicalDefinitionId,
-        facts: &ClassFacts,
+        facts: &Arc<ClassFacts>,
         demand: HeaderDemand,
         budget: &mut Budget,
     ) -> Result<()> {
         let claimed = NodeIdentity::new(defining_loader, definition);
         let header = ClassHeaderFacts {
-            facts: facts.clone(),
+            facts: Arc::clone(facts),
         };
         // The read happened where the bytes were verified — in this request (`read_own_definition`)
         // or in the read that prepared the class — so the record is published here, under the
@@ -1783,7 +1795,9 @@ fn decide(
             require_candidate_name(&facts.this_class.raw().0, internal_name, &content)?;
             Ok(Some(HeaderLookup::found(
                 content.location,
-                ClassHeaderFacts { facts },
+                ClassHeaderFacts {
+                    facts: Arc::new(facts),
+                },
             )))
         }
         several => {
@@ -1937,7 +1951,9 @@ fn standalone_probe(
     }
     Ok(Some(HeaderLookup::found(
         location,
-        ClassHeaderFacts { facts },
+        ClassHeaderFacts {
+            facts: Arc::new(facts),
+        },
     )))
 }
 
@@ -1989,7 +2005,9 @@ pub(crate) fn read_definition_content(
     let facts = class_facts(&bytes, budget).map_err(|error| at_origin(error, &label))?;
     Ok(DefinitionContent {
         bytes,
-        header: ClassHeaderFacts { facts },
+        header: ClassHeaderFacts {
+            facts: Arc::new(facts),
+        },
     })
 }
 

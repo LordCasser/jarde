@@ -23,6 +23,26 @@
 //! it. A container's facts can be handed to the request's [`crate::facts_cache::FactsCache`] and
 //! retained across requests; the direct path is the same code with no cache attached, and nothing
 //! here requires one to exist.
+//!
+//! ## What a read is answered from, in order
+//!
+//! A container access asks the request's store first (a hit or nothing, as it always did), then the
+//! products **some live handle is still holding** — a [`crate::scope_cursor::ScopeCursor`]'s current
+//! container, a [`crate::prepared::PreparedClassRead`]'s, or any handle a consumer kept — and only
+//! then reads: ancestors walked, directory parsed, all of it charged. That order is what makes a
+//! store's admission decision one thing and a fact's lifetime another: a request that is already
+//! consuming a container keeps consuming it after the store is cleared, filled up or never attached
+//! at all, and a product nothing holds any more is not answered from the memory of it. See
+//! [`HeldContainerFacts`] for what the record is, and [`ContainerFactsHandle`] for the handle a
+//! consumer holds.
+//!
+//! ## The class-bytes ceiling
+//!
+//! [`ArtifactSnapshot::prepared_class_within`] and [`ArtifactSnapshot::prepared_root_class_within`]
+//! admit one class read under a caller's ceiling. It is applied before anything of the class is
+//! materialized — decided from the container directory's own record — and again while the bytes are
+//! produced, so the produced bytes are bounded by the ceiling rather than by the entry's declared or
+//! real size. [`ArtifactSnapshot::prepared_class`] is the same read with no ceiling.
 
 use crate::budget::{Budget, BudgetDimension, CountedBudgetDimension, UsageSnapshot};
 use crate::error::{Error, Result};
@@ -39,7 +59,7 @@ use std::collections::BTreeMap;
 use std::fs::{File, Metadata};
 use std::io::{Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::sync::{Arc, Mutex, MutexGuard, Weak};
 use std::time::SystemTime;
 
 const CLASS_MAGIC: &[u8; 4] = b"\xca\xfe\xba\xbe";
@@ -211,6 +231,17 @@ pub struct ArtifactSnapshot {
     id: SnapshotId,
     kind: ArtifactKind,
     bytes: Arc<[u8]>,
+    /// The container products some **live handle** of this snapshot still holds, by the physical
+    /// origin each was verified for.
+    ///
+    /// The index holds weak references and is consulted only after the request's facts store has
+    /// answered nothing: it is how a read reaches facts the caller is already consuming — a
+    /// [`crate::scope_cursor::ScopeCursor`]'s current container, a
+    /// [`crate::prepared::PreparedClassRead`]'s container, or a product retained under another
+    /// handle — instead of parsing the same directory again. It retains nothing, has no capacity and
+    /// no counters, and a dead entry is dropped the next time its origin is asked for; see
+    /// [`HeldContainerFacts`].
+    held_facts: Arc<Mutex<HeldContainerFacts>>,
 }
 
 impl ArtifactSnapshot {
@@ -225,7 +256,12 @@ impl ArtifactSnapshot {
         };
         let kind = classify(&bytes)?;
         let id = SnapshotId(blake3::hash(&bytes).to_hex().to_string());
-        Ok(Self { id, kind, bytes })
+        Ok(Self {
+            id,
+            kind,
+            bytes,
+            held_facts: Arc::new(Mutex::new(HeldContainerFacts::default())),
+        })
     }
 
     pub fn id(&self) -> &SnapshotId {
@@ -353,6 +389,7 @@ impl ArtifactSnapshot {
                 id: self.id.clone(),
                 kind: ArtifactKind::Zip,
                 bytes,
+                held_facts: Arc::new(Mutex::new(HeldContainerFacts::default())),
             };
             let mut report = temporary.enumerate(budget)?;
             for entry in &mut report.entries {
@@ -758,7 +795,7 @@ impl ArtifactSnapshot {
             ));
         }
         let mut materialized =
-            materialize_verified(&authoritative, &local, budget, accounting, &mut hook)?;
+            materialize_verified(&authoritative, &local, budget, accounting, None, &mut hook)?;
         materialized.entry = entry.id.clone();
         Ok(materialized)
     }
@@ -996,12 +1033,47 @@ impl ArtifactSnapshot {
     /// The read is charged once, as an intermediate read of that entry. A class task that decodes
     /// `N` methods therefore pays for one class read, not `N`.
     ///
+    /// The container's facts are the ones some live handle already holds when there are any (the
+    /// cursor that yielded this class, a read of the same container, or the request's store), so a
+    /// scope walk reads each container's directory once however many classes it prepares out of it;
+    /// see [`Self::container_facts`]. The returned read carries that product as an active handle
+    /// ([`crate::prepared::PreparedClassRead::container_facts`]) for as long as its consumer keeps it.
+    ///
     /// What this deliberately does **not** do is apply a loader, profile or version gate: a
     /// prepared read is bytes and the entry they came from, and the layers above keep applying the
     /// same environment and binding checks they apply to the same bytes read any other way.
     pub fn prepared_class(
         &self,
         entry: &PhysicalEntryId,
+        budget: &mut Budget,
+    ) -> Result<crate::prepared::PreparedClassRead> {
+        self.prepared_class_within(entry, u64::MAX, budget)
+    }
+
+    /// The same read, admitted under a **class-bytes ceiling** before it is materialized.
+    ///
+    /// `max_class_bytes` is the largest class this read may produce. It is applied twice, and both
+    /// applications matter:
+    ///
+    /// 1. **Before any byte of the class is read**, from the container directory's own record: the
+    ///    entry's declared uncompressed size is compared with the ceiling, and a larger class is
+    ///    refused under `class_bytes_ceiling` with nothing materialized, nothing decompressed and no
+    ///    `EntryBytes`/`ReadBytes`/`OutputBytes` charged for it. This is the application a caller uses
+    ///    to keep a whole operation inside a memory budget: the refusal costs the directory it was
+    ///    decided from and no allocation proportional to the class.
+    /// 2. **While the bytes are produced**, on every chunk the read produces, so a record that
+    ///    understates the entry's real size cannot smuggle the class past the ceiling: the read stops
+    ///    as soon as the produced length would cross it, instead of materializing the whole entry and
+    ///    comparing afterwards.
+    ///
+    /// The ceiling is a read admission and nothing else: it is not a class-file validation, not a
+    /// verdict about the bytes and not a substitute for the budget's own dimensions, which keep
+    /// applying exactly as they did. A ceiling of [`u64::MAX`] admits everything, which is what
+    /// [`Self::prepared_class`] states.
+    pub fn prepared_class_within(
+        &self,
+        entry: &PhysicalEntryId,
+        max_class_bytes: u64,
         budget: &mut Budget,
     ) -> Result<crate::prepared::PreparedClassRead> {
         budget.poll()?;
@@ -1022,10 +1094,14 @@ impl ArtifactSnapshot {
                 "entry ordinal does not match the requested raw name",
             ));
         }
-        let read = facts.read_prepared_class(position, budget)?;
+        let read = facts.read_prepared_class(position, Some(max_class_bytes), budget)?;
         let depth = u64::try_from(entry.origin.steps.len()).map_err(|_| {
             Error::invalid_input("nested_depth_overflow", "nested origin is too deep")
         })?;
+        // The read keeps this container for as long as its consumer keeps the read, so the product
+        // is recorded as held now: every later read of the same container — a method request's
+        // loader binding query, chiefly — reaches it instead of parsing the directory again.
+        self.hold_container_facts(&facts);
         Ok(crate::prepared::PreparedClassRead::new(
             PhysicalClassLocation::ArchiveEntry {
                 entry: record.id.clone(),
@@ -1039,6 +1115,7 @@ impl ArtifactSnapshot {
             read.backing,
             read.span,
             facts.backing_digest().clone(),
+            Some(ContainerFactsHandle { facts }),
         ))
     }
 
@@ -1053,6 +1130,22 @@ impl ArtifactSnapshot {
         &self,
         budget: &mut Budget,
     ) -> Result<crate::prepared::PreparedClassRead> {
+        self.prepared_root_class_within(u64::MAX, budget)
+    }
+
+    /// The same read, refused when this snapshot's own bytes cross `max_class_bytes`.
+    ///
+    /// A standalone `CLASS` snapshot is materialized by [`Self::open`], so the ceiling cannot stop the
+    /// file from being read — what it stops is *this read*: the file's length is compared with the
+    /// ceiling before any of the read's charges or any preparation, and a larger class is refused
+    /// under `class_bytes_ceiling` exactly as an archive entry of that size is. Nothing of the root
+    /// is copied for a refusal: the read hands out the snapshot's own bytes, and a refused read hands
+    /// out nothing.
+    pub fn prepared_root_class_within(
+        &self,
+        max_class_bytes: u64,
+        budget: &mut Budget,
+    ) -> Result<crate::prepared::PreparedClassRead> {
         budget.poll()?;
         if self.kind != ArtifactKind::StandaloneClass {
             return Err(Error::invalid_input(
@@ -1061,6 +1154,9 @@ impl ArtifactSnapshot {
             ));
         }
         let length = self.len();
+        if length > max_class_bytes {
+            return Err(class_bytes_ceiling(&self.id, length, max_class_bytes));
+        }
         budget.check(CountedBudgetDimension::EntryBytes, length)?;
         budget.check(CountedBudgetDimension::ReadBytes, length)?;
         budget.charge(CountedBudgetDimension::ReadBytes, length)?;
@@ -1079,20 +1175,36 @@ impl ArtifactSnapshot {
             self.bytes.clone(),
             ByteSpan::new(0, length),
             digest,
+            // A standalone root is not read out of a container directory: there is none, and the
+            // snapshot's own bytes are the whole class.
+            None,
         ))
     }
 
-    /// The verified facts of one container, from retention when a cache answers and from this
-    /// request's own read otherwise.
+    /// The verified facts of one container, from the facts some live handle already holds, from
+    /// retention when a store answers, and from this request's own read otherwise.
     ///
-    /// The direct path is this function with no cache attached: the same validation, the same
+    /// The direct path is this function with no store attached: the same validation, the same
     /// ancestor walk and the same directory parse, with the product dropped when the request ends.
     /// Nothing about the access depends on a cache existing.
     ///
-    /// It is crate-visible because the scope cursor ([`crate::scope_cursor::ScopeCursor`]) opens the
-    /// root container through this access rather than through a reader of its own, and because
-    /// [`child_container_facts`] reuses its products for the containers a walk descends into: one
-    /// container, one verification, one directory parse, however many consumers ask for it.
+    /// The order is the one the two retentions have: a store that holds the product answers first
+    /// (unchanged, counters included), then a product a **live handle** is still holding
+    /// ([`HeldContainerFacts`]) is reused, and only a container that neither answers is read — its
+    /// ancestors walked, its directory parsed, all of it charged. A store that is absent, full,
+    /// refused or cleared therefore never makes a consumer rebuild facts it is already holding.
+    ///
+    /// The held index is written by the consumers that keep a product — a walk
+    /// ([`crate::scope_cursor::ScopeCursor`]) and a prepared class read
+    /// ([`Self::prepared_class_within`]) — and never by this access itself: a product answered from
+    /// here and dropped by the caller is not "in use" by anybody, and a product a *store* retains is
+    /// that store's own decision, not a hold (the store answers for it first, and its counters stay
+    /// its own).
+    ///
+    /// It is crate-visible because the scope cursor opens the root container through this access
+    /// rather than through a reader of its own, and because [`child_container_facts`] reuses its
+    /// products for the containers a walk descends into: one container, one verification, one
+    /// directory parse, however many consumers ask for it.
     pub(crate) fn container_facts(
         &self,
         origin: &ContainerOrigin,
@@ -1101,11 +1213,62 @@ impl ArtifactSnapshot {
         if let Some(facts) = self.retained_container_facts(origin, budget)? {
             return Ok(facts);
         }
+        if let Some(facts) = self.held_container_facts(origin, budget)? {
+            return Ok(facts);
+        }
         let facts = self.build_container_facts(origin, budget)?;
         if let Some(cache) = budget.facts_cache() {
             cache.remember_container(&facts);
         }
         Ok(facts)
+    }
+
+    /// Records one container product as held by a live handle of this snapshot.
+    ///
+    /// Called by the consumers that **keep** a product for their own lifetime: the scope cursor as
+    /// it opens a container and descends into one, and every prepared class read that carries the
+    /// container it was read out of. Recording is idempotent and cheap — one map slot under the
+    /// product's origin and a weak reference — and it is what makes the product answerable to
+    /// *other* consumers of the same origin for as long as it lives. It is deliberately not called
+    /// by [`Self::container_facts`] itself: a product the caller dropped, or one a store retains,
+    /// is not a hold, and letting either register one would make a store's own retention decision
+    /// change what an unrelated request is answered from.
+    pub(crate) fn hold_container_facts(&self, facts: &Arc<ContainerFacts>) {
+        self.held_facts().hold(facts);
+    }
+
+    /// The verified facts of one container when some live handle still holds them.
+    ///
+    /// The current request decides first, exactly as a store hit does: the budget is polled, so a
+    /// cancelled or expired request is refused before anything is served, and the container's own
+    /// depth is checked against this request's `NestedDepth` limit, so facts reached under a wider
+    /// allowance are never handed to a request that may not reach that depth.
+    fn held_container_facts(
+        &self,
+        origin: &ContainerOrigin,
+        budget: &mut Budget,
+    ) -> Result<Option<Arc<ContainerFacts>>> {
+        budget.poll()?;
+        let depth = u64::try_from(origin.steps.len()).map_err(|_| {
+            Error::invalid_input(
+                "nested_depth_overflow",
+                "container origin is too deep to address",
+            )
+        })?;
+        budget.check_nested_depth(depth)?;
+        Ok(self.held_facts().held(origin))
+    }
+
+    /// The held-facts index, behind the one lock this snapshot keeps.
+    ///
+    /// The lock is not a concurrency feature of the reads themselves — nothing here runs work in
+    /// parallel — it is what keeps [`ArtifactSnapshot`] `Send + Sync` while one index is shared by
+    /// every clone of it, exactly like the budget's facts store. Like that store, a poisoned lock is
+    /// read as it stands: an index is not a reason to fail every later request.
+    fn held_facts(&self) -> MutexGuard<'_, HeldContainerFacts> {
+        self.held_facts
+            .lock()
+            .unwrap_or_else(|poisoned| poisoned.into_inner())
     }
 
     /// The facts of one container when the request's cache already holds them.
@@ -1296,6 +1459,7 @@ impl ArtifactSnapshot {
                 id: self.id.clone(),
                 kind: ArtifactKind::Zip,
                 bytes: bytes.clone(),
+                held_facts: Arc::new(Mutex::new(HeldContainerFacts::default())),
             };
             let parent = temporary.locate_entry_for_replay(
                 &current_origin,
@@ -1335,6 +1499,7 @@ impl ArtifactSnapshot {
             id: self.id.clone(),
             kind: ArtifactKind::Zip,
             bytes,
+            held_facts: Arc::new(Mutex::new(HeldContainerFacts::default())),
         };
         let authoritative = temporary.locate_entry_for_replay(
             &current_origin,
@@ -1700,6 +1865,99 @@ pub(crate) struct ContainerFacts {
     weight: u64,
 }
 
+/// One container's verified facts, held as an **active strong reference**.
+///
+/// This is the reader's handover of a product the running operation already has. The facts are
+/// immutable, they were verified for one physical origin of one snapshot, and a caller that holds
+/// this handle keeps them alive on its own terms — so a class read, a loader binding query or any
+/// other read of that container is answered from the same product instead of parsing the directory
+/// again. Nothing about a read is weakened by holding one: the entry's local header is still checked
+/// against this directory's record, its CRC and sizes are still re-established from the bytes, and
+/// the loader/profile/version checks of the layers above are untouched.
+///
+/// What it is **not**: a store, a cache or a second lifetime for the reader's own facts. It retains
+/// nothing by itself, has no capacity and no key beyond the physical origin, and dropping the last
+/// handle simply lets the product die (the request's [`crate::facts_cache::FactsCache`], if any,
+/// stays the only thing that retains facts nothing is using any more). Handles are handed out by
+/// [`ArtifactSnapshot::prepared_class`] — the read carries the container it was prepared from — and
+/// by [`crate::scope_cursor::ScopeCursor::container_facts`], which hands over the container the walk
+/// is currently inside.
+#[derive(Clone, Debug)]
+pub struct ContainerFactsHandle {
+    /// The shared product; `pub(crate)` because only this module builds handles.
+    pub(crate) facts: Arc<ContainerFacts>,
+}
+
+impl ContainerFactsHandle {
+    /// The physical origin of the container this product was verified for.
+    pub fn origin(&self) -> &ContainerOrigin {
+        self.facts.origin()
+    }
+}
+
+/// How many entries the held-facts index keeps before it sweeps the dead ones out of itself.
+///
+/// Below this figure the index is a handful of origins and a sweep would cost more than it saves;
+/// above it a sweep runs whenever the index has doubled since the last one, which keeps the total
+/// work of sweeping proportional to the number of holds taken.
+const HELD_FACTS_SWEEP_FLOOR: usize = 64;
+
+/// The container products some live handle of one snapshot still holds, by the origin they were read
+/// at.
+///
+/// A read consults this **after** the request's facts store has answered nothing, and it is the
+/// reason a store that is absent, full, refused or cleared does not make a request re-parse a
+/// directory whose product some consumer is still holding. The index stores weak references only: an
+/// entry is answerable exactly while the `Arc<ContainerFacts>` its holder recorded is alive — a
+/// walk's own stack, a prepared class read carrying the container it was read from — and a dead entry
+/// is dropped the next time its origin is asked for.
+///
+/// What is deliberately **not** a hold is a store's own retention: a product only a
+/// [`crate::facts_cache::FactsCache`] keeps is not one a consumer is using, that store answers for it
+/// first, and letting its retention register here would make one store's capacity decision change
+/// what an unrelated request is answered from.
+///
+/// This is deliberately **not** a store either: it retains no memory (a weak reference keeps nothing
+/// alive), it has no capacity, no declaration, no report and no counters, and it can never answer
+/// with a product this snapshot did not verify at that origin. What it decides is only *where* an
+/// answer comes from: a product that is already in use, or a fresh parse.
+#[derive(Debug, Default)]
+struct HeldContainerFacts {
+    by_origin: BTreeMap<ContainerOrigin, Weak<ContainerFacts>>,
+    /// The index's length when it was last swept of dead entries.
+    swept_at: usize,
+}
+
+impl HeldContainerFacts {
+    /// Records one live product under its origin.
+    ///
+    /// A sweep of dead entries may run first; it only ever removes entries nothing holds any more,
+    /// so every live product stays answerable across it.
+    fn hold(&mut self, facts: &Arc<ContainerFacts>) {
+        let origin = facts.origin().clone();
+        self.by_origin.insert(origin, Arc::downgrade(facts));
+        let sweep_above = self.swept_at.saturating_mul(2).max(HELD_FACTS_SWEEP_FLOOR);
+        if self.by_origin.len() > sweep_above {
+            self.by_origin.retain(|_, held| held.strong_count() > 0);
+            self.swept_at = self.by_origin.len();
+        }
+    }
+
+    /// The live product for one origin, or `None` when nothing holds it any more.
+    ///
+    /// A dead entry is removed here rather than kept: the product it remembered was released, and no
+    /// later lookup of that origin may be answered from the memory of it.
+    fn held(&mut self, origin: &ContainerOrigin) -> Option<Arc<ContainerFacts>> {
+        match self.by_origin.get(origin).and_then(Weak::upgrade) {
+            Some(facts) => Some(facts),
+            None => {
+                self.by_origin.remove(origin);
+                None
+            }
+        }
+    }
+}
+
 impl ContainerFacts {
     fn new(
         origin: ContainerOrigin,
@@ -1834,10 +2092,15 @@ impl ContainerFacts {
     fn read_prepared_class(
         &self,
         position: usize,
+        ceiling: Option<u64>,
         budget: &mut Budget,
     ) -> Result<PreparedEntryRead> {
         let record = self.record(position)?;
         check_entry_readable(record)?;
+        // The ceiling is decided from this directory's own record **before** anything of the entry is
+        // selected: a class the caller does not admit is refused with nothing materialized, and the
+        // read of it is not even started.
+        admit_class_bytes(record, ceiling)?;
         let archive = ZipArchive::from_slice(&self.backing).map_err(zip_invalid("zip_open"))?;
         budget.poll()?;
         let local = archive
@@ -1859,7 +2122,7 @@ impl ContainerFacts {
                 ));
             }
             budget.charge(CountedBudgetDimension::ReadBytes, compressed_len)?;
-            let digest = verify_stored_entry(&local, record, budget)?;
+            let digest = verify_stored_entry(&local, record, ceiling, budget)?;
             return Ok(PreparedEntryRead {
                 backing: self.backing.clone(),
                 span: record.layout.compressed_data.clone(),
@@ -1871,6 +2134,7 @@ impl ContainerFacts {
             &local,
             budget,
             MaterializationAccounting::Intermediate,
+            ceiling,
             &mut |_| {},
         )?;
         let length = as_u64(materialized.bytes.len())?;
@@ -1902,7 +2166,7 @@ impl ContainerFacts {
             .map_err(zip_invalid("local_entry"))?;
         budget.poll()?;
         verify_local_against_record(record, &local)?;
-        materialize_verified(record, &local, budget, accounting, &mut |_| {})
+        materialize_verified(record, &local, budget, accounting, None, &mut |_| {})
     }
 }
 
@@ -2095,12 +2359,16 @@ fn materialize_verified<F>(
     local: &rawzip::ZipSliceEntry<'_>,
     budget: &mut Budget,
     accounting: MaterializationAccounting,
+    ceiling: Option<u64>,
     hook: &mut F,
 ) -> Result<MaterializedEntry>
 where
     F: FnMut(usize),
 {
     check_entry_readable(record)?;
+    // The ceiling's pre-materialization half, applied wherever one is stated: the record's declared
+    // size decides it before a byte of the entry is produced.
+    admit_class_bytes(record, ceiling)?;
     budget.check(CountedBudgetDimension::EntryBytes, record.uncompressed_size)?;
     if accounting == MaterializationAccounting::CallerOutput {
         budget.check(
@@ -2125,7 +2393,16 @@ where
     let read_result = match record.compression {
         EntryCompression::Stored => {
             let reader = std::io::Cursor::new(local.data());
-            read_verified(local, reader, &mut output, budget, accounting, hook).and_then(|reader| {
+            read_verified(
+                local,
+                reader,
+                &mut output,
+                budget,
+                accounting,
+                ceiling,
+                hook,
+            )
+            .and_then(|reader| {
                 if reader.position() == local.data().len() as u64 {
                     Ok(())
                 } else {
@@ -2137,17 +2414,24 @@ where
         }
         EntryCompression::Deflated => {
             let decoder = flate2::bufread::DeflateDecoder::new(local.data());
-            read_verified(local, decoder, &mut output, budget, accounting, hook).and_then(
-                |decoder| {
-                    if decoder.total_in() == local.data().len() as u64 {
-                        Ok(())
-                    } else {
-                        Err(std::io::Error::other(
-                            "deflate stream has trailing compressed bytes",
-                        ))
-                    }
-                },
+            read_verified(
+                local,
+                decoder,
+                &mut output,
+                budget,
+                accounting,
+                ceiling,
+                hook,
             )
+            .and_then(|decoder| {
+                if decoder.total_in() == local.data().len() as u64 {
+                    Ok(())
+                } else {
+                    Err(std::io::Error::other(
+                        "deflate stream has trailing compressed bytes",
+                    ))
+                }
+            })
         }
         EntryCompression::Unsupported => unreachable!("unsupported method rejected above"),
     };
@@ -2226,6 +2510,7 @@ pub(crate) struct PreparedEntryRead {
 fn verify_stored_entry(
     local: &rawzip::ZipSliceEntry<'_>,
     record: &PhysicalEntry,
+    ceiling: Option<u64>,
     budget: &mut Budget,
 ) -> Result<Digest> {
     let reader = BudgetedEntryReader {
@@ -2246,6 +2531,15 @@ fn verify_stored_entry(
         total = total.checked_add(as_u64(count)?).ok_or_else(|| {
             Error::invalid_input("classfile_span_overflow", "entry size overflow")
         })?;
+        // A stored entry hands out the container's own backing, so this read copies nothing: there
+        // is no buffer for the ceiling to bound, but the length the read establishes is still the
+        // admission's own, and a stream longer than the ceiling is refused here rather than after it
+        // was verified in full.
+        if let Some(ceiling) = ceiling
+            && total > ceiling
+        {
+            return Err(class_bytes_ceiling_reached(total, ceiling));
+        }
     }
     let reader = verifier.into_inner().reader;
     if reader.position() != local.data().len() as u64 {
@@ -2776,12 +3070,22 @@ enum MaterializationAccounting {
     CallerOutput,
 }
 
+/// Reads one entry's data through the verifying reader, charging every chunk, and enforces
+/// `ceiling` **while the bytes are produced**.
+///
+/// The ceiling is not a comparison made after the read: each chunk is requested with the bytes the
+/// ceiling still allows (plus the one that would cross it), so an entry whose bytes are longer than
+/// it was admitted to be cannot be materialized past the ceiling at all — the produced buffer is
+/// bounded by `ceiling + 1` bytes whatever the entry's own declared or real size is, and the read
+/// that crosses the ceiling is refused with [`class_bytes_ceiling_reached`] instead of continuing.
+/// Without a ceiling the read is the plain chunked one it always was.
 fn read_verified<R: Read, F: FnMut(usize)>(
     entry: &rawzip::ZipSliceEntry<'_>,
     reader: R,
     output: &mut Vec<u8>,
     budget: &mut Budget,
     accounting: MaterializationAccounting,
+    ceiling: Option<u64>,
     hook: &mut F,
 ) -> std::io::Result<R> {
     let reader = BudgetedEntryReader {
@@ -2792,7 +3096,22 @@ fn read_verified<R: Read, F: FnMut(usize)>(
     let mut verifier = entry.verifying_reader(reader);
     let mut chunk = [0_u8; READ_CHUNK];
     loop {
-        let count = verifier.read(&mut chunk)?;
+        let request = match ceiling {
+            Some(ceiling) => {
+                let produced = u64::try_from(output.len())
+                    .map_err(|_| std::io::Error::other("output length overflow"))?;
+                if produced > ceiling {
+                    return Err(std::io::Error::other(BudgetReadError(
+                        class_bytes_ceiling_reached(produced, ceiling),
+                    )));
+                }
+                usize::try_from(ceiling.saturating_sub(produced).saturating_add(1))
+                    .unwrap_or(usize::MAX)
+                    .min(READ_CHUNK)
+            }
+            None => READ_CHUNK,
+        };
+        let count = verifier.read(&mut chunk[..request])?;
         if count == 0 {
             break;
         }
@@ -2800,6 +3119,52 @@ fn read_verified<R: Read, F: FnMut(usize)>(
         hook(output.len());
     }
     Ok(verifier.into_inner().reader)
+}
+
+/// The refusal of a class read whose entry's declared size crosses the ceiling it was admitted
+/// under, decided from the directory record and before any of the entry is materialized.
+fn admit_class_bytes(record: &PhysicalEntry, ceiling: Option<u64>) -> Result<()> {
+    let Some(ceiling) = ceiling else {
+        return Ok(());
+    };
+    if record.uncompressed_size > ceiling {
+        return Err(Error::invalid_input(
+            "class_bytes_ceiling",
+            format!(
+                "the class entry declares {} bytes and this read admits at most {ceiling}: the class \
+                 is refused before it is materialized, and nothing of it is read",
+                record.uncompressed_size
+            ),
+        ));
+    }
+    Ok(())
+}
+
+/// The refusal of a root class read whose own bytes cross the ceiling, decided before the read
+/// charges anything.
+fn class_bytes_ceiling(snapshot: &SnapshotId, length: u64, ceiling: u64) -> Error {
+    Error::invalid_input(
+        "class_bytes_ceiling",
+        format!(
+            "the class is {length} bytes and this read admits at most {ceiling}: {snapshot:?} is \
+             refused, and nothing of it is read"
+        ),
+    )
+}
+
+/// The refusal of a class read that crossed its ceiling while the bytes were being produced.
+///
+/// It is the same code as [`admit_class_bytes`]'s, because it is the same admission failing at the
+/// second point it is enforced: a directory record may understate an entry's real size, and the read
+/// then stops at the ceiling rather than materializing the rest of it.
+fn class_bytes_ceiling_reached(produced: u64, ceiling: u64) -> Error {
+    Error::invalid_input(
+        "class_bytes_ceiling",
+        format!(
+            "the class entry produced at least {produced} bytes and this read admits at most \
+             {ceiling}: the read stopped at the ceiling instead of materializing the whole entry"
+        ),
+    )
 }
 
 struct BudgetedEntryReader<'a, R> {
@@ -4362,5 +4727,65 @@ mod tests {
             snapshot.read_entry(&report.entries[0], &mut budget),
             Err(Error::InvalidInput { ref code, .. }) if code == "entry_integrity"
         ));
+    }
+
+    #[test]
+    fn the_ceiling_bounds_the_bytes_a_read_produces_not_the_bytes_it_hoped_for() {
+        // The ceiling is enforced **at the point of production**: each chunk is requested with only
+        // the bytes the ceiling still allows (plus the one that would cross it), so a read admitted
+        // for `ceiling` bytes can never produce more than `ceiling + 1` of them — and the read that
+        // crosses the ceiling is refused by this admission rather than left to the entry's own size
+        // check, which only knows what the entry declared.
+        let payload = vec![0x5a_u8; 4 * 1024];
+        let bytes = zip(&[(b"entry", &payload, STORE)]);
+        let archive = ZipArchive::from_slice(&bytes).unwrap();
+        let header = archive.entries().next_entry().unwrap().unwrap();
+        let local = archive.get_entry(header.wayfinder()).unwrap();
+
+        let mut ceiled = budget();
+        let mut output = Vec::new();
+        let error = read_verified(
+            &local,
+            Cursor::new(local.data()),
+            &mut output,
+            &mut ceiled,
+            MaterializationAccounting::Intermediate,
+            Some(64),
+            &mut |_| {},
+        )
+        .expect_err("the entry is longer than the ceiling admits");
+        assert!(
+            error
+                .get_ref()
+                .and_then(|inner| inner.downcast_ref::<BudgetReadError>())
+                .is_some_and(|error| matches!(&error.0, Error::InvalidInput { code, .. } if code == "class_bytes_ceiling")),
+            "the crossing is this admission's refusal, not the entry's own: {error}"
+        );
+        assert_eq!(
+            output.len(),
+            65,
+            "the read produced exactly one byte past the ceiling it may not cross"
+        );
+        assert!(
+            ceiled.usage().entry_bytes <= 65,
+            "and it charged no more than it produced: {:?}",
+            ceiled.usage()
+        );
+
+        // Without a ceiling the same read is the plain chunked one: the whole entry, and nothing
+        // about it changes for the reads that state no admission.
+        let mut unceiled = budget();
+        let mut output = Vec::new();
+        read_verified(
+            &local,
+            Cursor::new(local.data()),
+            &mut output,
+            &mut unceiled,
+            MaterializationAccounting::Intermediate,
+            None,
+            &mut |_| {},
+        )
+        .expect("a read without a ceiling admits the entry");
+        assert_eq!(output, payload);
     }
 }

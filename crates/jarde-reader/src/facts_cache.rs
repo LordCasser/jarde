@@ -64,6 +64,19 @@
 //!
 //! ## What a hit is, and what it can never be
 //!
+//! ## The store is not the only answer, and not a second lifetime
+//!
+//! A read asks this store **first**, exactly as it always has, and a hit changes nothing about what
+//! the read proves. What the store cannot answer is a container product some *live handle* still
+//! holds: a scope cursor inside its container, a prepared class read, or any other handle a consumer
+//! is keeping. That answer is the snapshot's own record of what is in use
+//! ([`crate::artifact::ContainerFactsHandle`]) and it is deliberately not part of this type — a
+//! store retains facts nothing is using any more, capacity-bounded and reportable, while a handle is
+//! a lifetime the consumer owns. The two are complementary, and neither can be reached from the
+//! other: clearing this store, filling it or refusing an insertion never makes a request re-parse a
+//! directory whose product it is still holding, and a released handle never makes this store answer
+//! something it does not hold.
+//!
 //! * **The read still happens.** The CP/Header cache sits *above* the bounded read and *below*
 //!   every consumer: the bytes are materialized, charged, CRC-checked and digested exactly as the
 //!   direct path does, and only the parse is skipped. Coverage, origins, read evidence and the

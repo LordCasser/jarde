@@ -13,7 +13,7 @@
 use jarde_reader::artifact::ArtifactSnapshot;
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{
-    BootstrapMethodFacts, BytecodeStop, CpEntryFacts, MemberHeader, MethodCodeFacts,
+    BootstrapMethodFacts, BytecodeStop, ClassFacts, MemberHeader, MethodCodeFacts,
     VersionCapability, version_rule_diagnostic,
 };
 use jarde_reader::error::{Error, Result};
@@ -31,6 +31,7 @@ use crate::ir::{
 use crate::method_ir::{MethodDeclaration, MethodIr, MethodIrAnalysis};
 use crate::passes::{FactLedger, IR_PASS_NOT_IMPLEMENTED, IrPhase, PassDescriptor, implemented};
 use crate::ssa::{IR_SSA_INCONSISTENT, SsaOutcome};
+use std::sync::Arc;
 
 /// Access flags that declare a member without a body: `ACC_ABSTRACT` and `ACC_NATIVE`.
 const ACC_ABSTRACT: u16 = 0x0400;
@@ -137,7 +138,11 @@ pub fn analyze_method_ir(
 /// member is located in the prepared member table, its body is decoded by the prepared class's own
 /// decoder (the same implementation [`jarde_reader::classfile::method_code_facts`] delegates to),
 /// and the class's constant pool, `BootstrapMethods` table and declaration come from the facts the
-/// preparation read.
+/// preparation read — taken as the preparation's **own shared handle**
+/// ([`jarde_reader::prepared::PreparedClass::facts_handle`]), so `M` methods of one class share one
+/// constant pool and one member table instead of each of them holding a copy. The binding check
+/// reads the same handle, the payload keeps it, and the class's declared name reaches the member's
+/// declaration exactly as the direct path states it.
 ///
 /// What that changes for a caller:
 ///
@@ -146,7 +151,9 @@ pub fn analyze_method_ir(
 ///   decodes behind one class read however many of those methods are analysed. (The binding search
 ///   below is the direct read's own, so a declared order that makes it examine another position
 ///   charges that position exactly as the direct read would: what is not charged twice is the
-///   definition's own read.);
+///   definition's own read. A container some live handle already holds is likewise not read again:
+///   the binding query of every method of one class reaches the verified directory the
+///   preparation's own read was answered from.);
 /// * the read record it publishes is still the driver demand
 ///   ([`crate::resolver::ReadReason::DriverMethodBody`]) of the definition the request names, and it
 ///   states the preparation as its source: the same bytes, the same physical identity, one read;
@@ -250,7 +257,7 @@ fn run_request(
                 crate::ir::METHOD_ANALYSIS_NOT_IMPLEMENTED,
                 budget,
             ),
-            MethodIr::new(None, None, None, None, Vec::new(), Vec::new(), None),
+            MethodIr::new(None, None, None, None, None, Vec::new(), None),
         )
     };
     Ok(Analyzed {
@@ -882,16 +889,16 @@ fn run_method_analysis(
     // pass above, so the pool handed over is the pool those passes read. The class's
     // `BootstrapMethods` table travels the same way (P3 2.1): it is the one fact an
     // `invokedynamic`'s bootstrap index resolves against, and it was read by that same header read.
-    let (constant_pool, bootstrap_methods) = match declaration {
-        Some(declaration) => (declaration.pool, declaration.bootstrap_methods),
-        None => (Vec::new(), Vec::new()),
+    let (fact_bundle, bootstrap_methods) = match declaration {
+        Some(declaration) => (Some(declaration.facts), declaration.bootstrap_methods),
+        None => (None, Vec::new()),
     };
     let ir = MethodIr::new(
         canonical_cfg,
         frame_table,
         ssa_table,
         facts.map(Box::new),
-        constant_pool,
+        fact_bundle,
         bootstrap_methods,
         member,
     );
@@ -937,18 +944,16 @@ enum DriverRead {
 struct FrameDeclaration {
     /// Raw access flags of the member.
     access_flags: u16,
-    /// Internal name of the class the member is declared in (`this_class`).
-    this_class: Vec<u8>,
-    /// Internal name of that class's superclass (`super_class`), absent for `java/lang/Object`.
+    /// The class's own facts, as the shared handle of the read that produced them: the class file's
+    /// internal name (`this_class`), its superclass, its constant pool and its attribute shells.
     ///
-    /// The frame pass reads it for one decision: whether an `invokespecial <init>` of that class
-    /// is one of the two constructor calls JVMS 4.9.2 lets an instance initialization method make
-    /// on its own uninitialized `this`. It is the class file's own name, taken from the one
-    /// header read this pass already performs — no second class is read to learn a superclass
-    /// chain this request does not hold.
-    super_class: Option<Vec<u8>>,
-    /// The class file's constant pool, in index order.
-    pool: Vec<CpEntryFacts>,
+    /// The frame pass reads the name as the type of an initialized `this`, the superclass for one
+    /// decision — whether an `invokespecial <init>` of that class is one of the two constructor
+    /// calls JVMS 4.9.2 lets an instance initialization method make on its own uninitialized `this`
+    /// — and the pool for every descriptor a named reference needs. All of it is the class file's
+    /// own statement, taken from the one header read this request already performed, and shared
+    /// rather than copied per method.
+    facts: Arc<ClassFacts>,
     /// The class's `BootstrapMethods` table, in attribute order; empty when it declares none.
     ///
     /// The one fact an `invokedynamic`'s `bootstrap_method_attr_index` resolves against, read from
@@ -974,9 +979,13 @@ fn frame_method<'a>(
         access_flags: declaration.access_flags,
         name: &request.method.name.0,
         descriptor: &request.method.descriptor.0,
-        owner: &declaration.this_class,
-        super_class: declaration.super_class.as_deref(),
-        pool: &declaration.pool,
+        owner: &declaration.facts.this_class.raw().0,
+        super_class: declaration
+            .facts
+            .super_class
+            .as_ref()
+            .map(|name| name.raw().0.as_slice()),
+        pool: &declaration.facts.constant_pool,
         loader: &request.environment.runtime.load_domain.loader,
     }
 }
@@ -1038,7 +1047,7 @@ fn read_driver_method(
     // other header read of this engine (a refused charge records nothing), and a binding the
     // loader refuses keeps the record of the read it was decided on.
     run.reads = crate::resolver::published_reads(&closure);
-    let mut read = read?;
+    let read = read?;
     let Some(member) = read.header.facts.methods.iter().find(|member| {
         member.name.raw().0 == request.method.name.0
             && member.descriptor.raw().0 == request.method.descriptor.0
@@ -1061,8 +1070,8 @@ fn read_driver_method(
     // class file's version (the dialect of every later pass is this and nothing else, classified
     // once by the reader's own rule over the two version fields), the class's own name and flags,
     // its superclass and its attribute shells — the `BootstrapMethods` table among them — and the
-    // constant pool this request keeps. The pool is *moved* out of the header facts: this request
-    // keeps one copy of it, and the pool of no other class is read for it.
+    // constant pool this request reads. The read's own bundle travels **by handle**: this request
+    // keeps one pool, and the pool of no other class is read for it.
     let class = DriverClass {
         bytes: &read.bytes,
         version: jarde_reader::classfile::version_capability(
@@ -1071,14 +1080,9 @@ fn read_driver_method(
         ),
         this_class: read.header.facts.this_class.raw().clone(),
         access_flags: read.header.facts.access_flags,
-        super_class: read
-            .header
-            .facts
-            .super_class
-            .as_ref()
-            .map(|name| name.raw().0.clone()),
-        attributes: &read.header.facts.attributes,
-        pool: std::mem::take(&mut read.header.facts.constant_pool),
+        // The one bundle this read produced, shared with the payload, the binding check and the
+        // passes: the payload no longer takes the pool out of the facts, it holds the same facts.
+        facts: Arc::clone(&read.header.facts),
     };
     finish_driver_read(run, class, member, decoded, request.method.clone(), budget)
 }
@@ -1112,10 +1116,12 @@ fn no_body_kind(access_flags: u16) -> Option<NoBodyKind> {
 /// frame pass or the class's own name and flags they put beside the member. A fact one source does
 /// not have fails to compile instead of quietly taking a default.
 ///
-/// A source that reads the bytes itself (the request's own read) owns the facts and **moves** the
-/// constant pool out of them; a source that consumes a prepared class owns nothing beyond the
-/// borrow and clones the pool into this run's payload, because the payload states the pool per run
-/// ([`crate::method_ir`]) and the prepared class is shared by every method of its class.
+/// Both sources hand over the **same bundle by handle**: the class facts one read produced, shared
+/// by every method that consumes them ([`jarde_reader::classfile::ClassFacts`]). The request's own
+/// read shares the bundle it just parsed; a prepared class shares the one its preparation produced,
+/// so `M` methods of that class share one constant pool and one member table instead of copying them
+/// per method. What each run still owns is what it produces: its decoded body, its tables and its
+/// `BootstrapMethods` table.
 struct DriverClass<'a> {
     /// The class bytes the body was decoded from: the span the read published.
     bytes: &'a [u8],
@@ -1125,12 +1131,9 @@ struct DriverClass<'a> {
     this_class: jarde_reader::model::JvmBytes,
     /// The class's own access flags.
     access_flags: u16,
-    /// Internal name of the class's superclass, absent for `java/lang/Object`.
-    super_class: Option<Vec<u8>>,
-    /// The class's attribute shells, in attribute order.
-    attributes: &'a [jarde_reader::classfile::AttributeShell],
-    /// The class's constant pool, owned by this run.
-    pool: Vec<CpEntryFacts>,
+    /// The class's own facts — its constant pool, its attribute shells and its name — as the shared
+    /// handle of the read that produced them.
+    facts: Arc<ClassFacts>,
 }
 
 /// The tail every driver read shares: the coverage plane of the decoded body and the facts the later
@@ -1174,23 +1177,24 @@ fn finish_driver_read(
         version,
         this_class,
         access_flags,
-        super_class,
-        attributes,
-        pool,
+        facts,
     } = class;
-    let bootstrap_methods = match attributes
+    let bootstrap_methods = match facts
+        .attributes
         .iter()
         .find(|shell| shell.name.raw().0.as_slice() == b"BootstrapMethods")
     {
-        Some(shell) => jarde_reader::classfile::bootstrap_methods(bytes, shell, &pool, budget)?,
+        Some(shell) => {
+            jarde_reader::classfile::bootstrap_methods(bytes, shell, &facts.constant_pool, budget)?
+        }
         None => Vec::new(),
     };
-    // The declaration facts the `frame` pass reads beside the body and the graph.
+    // The declaration facts the `frame` pass reads beside the body and the graph. The class's own
+    // facts stay the shared bundle the read produced; only the member's own flags and the class's
+    // declared name are this run's own values.
     let declaration = FrameDeclaration {
         access_flags: record.access_flags,
-        this_class: this_class.0.clone(),
-        super_class,
-        pool,
+        facts,
         bootstrap_methods,
     };
     Ok(DriverRead::Decoded {
@@ -1336,7 +1340,7 @@ fn read_prepared_driver_method(
     let bound = closure.bind_definition(
         &request.environment.runtime.load_domain.loader,
         &request.method.owner,
-        facts,
+        prepared.facts_handle(),
         crate::providers::HeaderDemand::DriverMethodBody,
         budget,
     );
@@ -1371,9 +1375,9 @@ fn read_prepared_driver_method(
     budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
     run.body = MethodBodyState::Present;
     let decoded = prepared.method_code(ordinal, budget)?;
-    // The class facts as the prepared read established them. The constant pool is *cloned* here
-    // rather than moved — the prepared class is shared by every method of its class, so this run
-    // takes its own copy for the payload shape the direct path states.
+    // The class facts as the prepared read established them, taken as the **shared handle** the
+    // preparation produced: every method of this class reads one constant pool and one member table
+    // through it, and the payload of each method holds that handle instead of a copy of the class.
     let class = DriverClass {
         bytes: prepared.bytes(),
         version: jarde_reader::classfile::version_capability(
@@ -1382,9 +1386,7 @@ fn read_prepared_driver_method(
         ),
         this_class: facts.this_class.raw().clone(),
         access_flags: facts.access_flags,
-        super_class: facts.super_class.as_ref().map(|name| name.raw().0.clone()),
-        attributes: &facts.attributes,
-        pool: facts.constant_pool.clone(),
+        facts: Arc::clone(prepared.facts_handle()),
     };
     finish_driver_read(
         run,

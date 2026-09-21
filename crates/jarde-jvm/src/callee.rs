@@ -344,7 +344,7 @@ pub fn read_prepared_callees(
     budget: &mut Budget,
 ) -> Result<CalleeReadReport> {
     crate::providers::require_prepared_definition(prepared, request.definition)?;
-    let facts = prepared.class_facts();
+    let facts = prepared.facts_handle();
     let mut closure = HeaderClosure::new(content, request.environment);
     let bound = closure.bind_definition(
         &request.environment.runtime.load_domain.loader,

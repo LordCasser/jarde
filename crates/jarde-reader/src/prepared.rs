@@ -31,16 +31,33 @@
 //!   applied here: those belong to `jarde-jvm` and the facade, which keep applying them to the same
 //!   bytes.
 //!
+//! # What one class task shares, and how
+//!
+//! A prepared class holds its structural payload — the declaration, the constant pool, the member
+//! records and the attribute shells — as **one bundle behind one handle**
+//! ([`PreparedClass::facts_handle`]). Every method consumer of that class takes that handle: a
+//! driver read, a callee read or an IR payload never copies the pool or the member table, so `M`
+//! methods of one class cost one bundle rather than `M` deep copies of one. The handle is what
+//! crosses a crate boundary here, and nothing else does: the payload the IR keeps holds the same
+//! allocation, which is why the two paths cannot drift in what they decoded.
+//!
+//! A prepared class also carries the container it was read out of, as the active handle
+//! [`PreparedClassRead::container_facts`] hands out. Holding it is what keeps a later read of that
+//! container — a method request's loader binding query, say — from parsing the same directory again,
+//! whether or not the caller attached a facts store and whatever that store decides about the
+//! product.
+//!
 //! # What it deliberately does not do
 //!
 //! A prepared class is not a cache and not a second reader. It does not consult the facts cache (one
-//! class is prepared once per class task and its facts are shared by reference, so a lookup keyed by
-//! a re-hash of the same bytes would buy nothing here), it does not decode a body nobody asked for,
+//! class is prepared once per class task and its facts are shared by handle, so a lookup keyed by a
+//! re-hash of the same bytes would buy nothing here), it does not decode a body nobody asked for,
 //! and it does not turn its facts into an analysis conclusion: dialect validation, verification and
 //! source recovery remain separate facts of the layers above.
 //!
 //! [`ArtifactSnapshot`]: crate::artifact::ArtifactSnapshot
 
+use crate::artifact::ContainerFactsHandle;
 use crate::budget::Budget;
 use crate::classfile::{
     self, AttributeShell, ClassFacts, MemberHeader, MemberTableStop, MethodCodeFacts,
@@ -66,6 +83,13 @@ use std::sync::Arc;
 /// its own (the bytes the verified read produced). [`PreparedClassRead::backing_digest`] is the
 /// trusted content identity of whichever backing that is — the container's own digest when nothing
 /// was copied, the class's content digest when the read produced the bytes.
+///
+/// [`PreparedClassRead::container_facts`] carries the third thing a class task keeps: the **active
+/// handle** of the container the class was read at. Holding it is what lets every later read of that
+/// container — the class's own body decodes do not need it, but a method request's loader binding
+/// query does — reach the verified directory the preparation already paid for instead of parsing it
+/// again, whether or not the caller attached a facts cache and regardless of what that cache does
+/// with the product.
 #[derive(Clone, Debug)]
 pub struct PreparedClassRead {
     /// The physical position of the class: an archive entry, or the root of a standalone snapshot.
@@ -82,6 +106,9 @@ pub struct PreparedClassRead {
     pub span: ByteSpan,
     /// Trusted content identity of `backing`, established by the read that materialized it.
     backing_digest: Digest,
+    /// The verified facts of the container this class was read out of, held as an active strong
+    /// reference; `None` for a standalone root, which has no container directory at all.
+    container_facts: Option<ContainerFactsHandle>,
 }
 
 impl PreparedClassRead {
@@ -108,7 +135,24 @@ impl PreparedClassRead {
         &self.backing_digest
     }
 
-    /// Builds one read out of the parts a snapshot path verified.
+    /// The verified facts of the container this class was read out of, as an active handle.
+    ///
+    /// This is the reader's own handover of what the operation already holds: the container's
+    /// complete directory, its multi-valued raw-name locator and its verified backing, kept alive by
+    /// this read and handed on to whoever keeps the read. A class task that holds the read holds the
+    /// container with it, so every read of that container — a method request's loader binding query
+    /// among them — is answered from this product instead of parsing the directory again, with no
+    /// cache required and with the cache's own retention decision out of the way.
+    ///
+    /// `None` for a standalone `CLASS` snapshot: it has no container directory, and its bytes are the
+    /// snapshot's own.
+    pub fn container_facts(&self) -> Option<ContainerFactsHandle> {
+        self.container_facts.clone()
+    }
+
+    /// Builds one read out of the parts a snapshot path verified, together with the container facts
+    /// it was read through.
+    #[allow(clippy::too_many_arguments)]
     pub(crate) fn new(
         location: PhysicalClassLocation,
         class_bytes: ClassBytesId,
@@ -117,6 +161,7 @@ impl PreparedClassRead {
         backing: Arc<[u8]>,
         span: ByteSpan,
         backing_digest: Digest,
+        container_facts: Option<ContainerFactsHandle>,
     ) -> Self {
         Self {
             location,
@@ -126,6 +171,7 @@ impl PreparedClassRead {
             backing,
             span,
             backing_digest,
+            container_facts,
         }
     }
 }
@@ -211,7 +257,14 @@ pub enum MethodCodeAttribute {
 /// [`PreparedClass::method_code`] for a body.
 pub struct PreparedClass<'a> {
     read: &'a PreparedClassRead,
-    facts: ClassFacts,
+    /// The shared structural payload, held as the handle its consumers share.
+    ///
+    /// One preparation produces one bundle — the declaration, the constant pool, the member records,
+    /// the attribute shells — and every method of that class consumes *that* allocation instead of a
+    /// copy of it: the handle is what a consumer hands to another consumer (the driver's binding
+    /// check, a callee read), and it is why `M` methods of one class cost one bundle rather than `M`
+    /// deep copies of one.
+    facts: Arc<ClassFacts>,
     /// The parser view of this class, held when its structure decoded as a whole. `None` exactly
     /// when the member table stopped, in which case no slot states a decodable `Code` entry.
     parser: Option<PreparedParser<'a>>,
@@ -294,7 +347,7 @@ impl<'a> PreparedClass<'a> {
         let method_count = count(facts.methods.len())?;
         Ok(Self {
             read,
-            facts,
+            facts: Arc::new(facts),
             parser: Some(PreparedParser { class, methods }),
             slots,
             located,
@@ -325,7 +378,7 @@ impl<'a> PreparedClass<'a> {
         let located = locate_slots(&slots);
         Ok(Self {
             read,
-            facts,
+            facts: Arc::new(facts),
             parser: None,
             slots,
             located,
@@ -392,6 +445,19 @@ impl<'a> PreparedClass<'a> {
     /// declares). Because the class attribute table follows the member tables, a stopped walk never
     /// reached it, so [`ClassFacts::attributes`] is empty and states nothing about that region.
     pub fn class_facts(&self) -> &ClassFacts {
+        &self.facts
+    }
+
+    /// The same payload as [`PreparedClass::class_facts`], as the shared handle every consumer of
+    /// this class reads.
+    ///
+    /// One preparation produces one bundle, and this is it: a consumer that hands the facts to
+    /// another consumer — the driver's loader binding check, the callee read of the same class —
+    /// clones this pointer instead of the class's constant pool and member tables, and the bundle
+    /// stays alive exactly as long as the prepared class's consumers keep a handle. Nothing about
+    /// what the facts state changes between the two accessors: they are one allocation, read two
+    /// ways.
+    pub fn facts_handle(&self) -> &Arc<ClassFacts> {
         &self.facts
     }
 
