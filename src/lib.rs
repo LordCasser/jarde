@@ -67,6 +67,16 @@ pub use jarde_java::{
 pub mod bulk;
 pub mod class_source;
 pub mod facade;
+// The D0 1.3 counting port (change `add-demand-driven-core-results`): a bounded, test-support-only
+// count of what the demand paths did — class materializations, preparations, body decodes, recovery
+// presentations and the owning records this facade built — beside the reader's `PreparedClass`
+// lifetime. It is deliberately *not* a report field: nothing here reaches a report, a stop record or
+// a fingerprint. A build without the feature keeps the same call sites and counts nothing, so the
+// module is a private one there and has no reading API at all.
+#[cfg(any(test, feature = "test-support"))]
+pub mod d0_counts;
+#[cfg(not(any(test, feature = "test-support")))]
+mod d0_counts;
 
 pub use artifact::*;
 pub use budget::{

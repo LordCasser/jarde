@@ -317,6 +317,11 @@ impl Engine {
         budget: &mut Budget,
     ) -> Result<RecoveredMethod> {
         let analyzed = jarde_jvm::analyze_method_ir(content, request, budget)?;
+        if analyzed.ir().code().is_some() {
+            // A decode was published, so this demand path really decoded one body
+            // (`crate::d0_counts`): counted after the run, so a stop before `raw_facts` counts none.
+            crate::d0_counts::body_decoded();
+        }
         recovery_presented(content, request, analyzed, None, budget)
     }
 
@@ -1207,13 +1212,19 @@ impl Engine {
             None
         };
         let prepared = match &prepared_read {
-            Some(read) => match jarde_reader::prepared::PreparedClass::prepare(read, budget) {
-                Ok(prepared) => Some(prepared),
-                Err(error) => {
-                    preparation = Some(error);
-                    None
+            Some(read) => {
+                // One prepared class over one materialization (`crate::d0_counts`). The gate that
+                // holds "one preparation per presentation" reads this count: a path that prepares
+                // the same read twice would prepare two.
+                crate::d0_counts::class_prepared();
+                match jarde_reader::prepared::PreparedClass::prepare(read, budget) {
+                    Ok(prepared) => Some(prepared),
+                    Err(error) => {
+                        preparation = Some(error);
+                        None
+                    }
                 }
-            },
+            }
             None => None,
         };
         let bodies = match (&prepared, preparation) {
@@ -1429,6 +1440,10 @@ fn read_prepared_definition(
     definition: &PhysicalDefinitionId,
     budget: &mut Budget,
 ) -> Result<jarde_reader::prepared::PreparedClassRead> {
+    // One class materialization for a preparation (`crate::d0_counts`): the D0 1.3 gate counts it
+    // here, at the one site that performs it, so a path that materializes the same class twice says
+    // so instead of hiding behind one charge.
+    crate::d0_counts::class_materialized();
     budget.charge(CountedBudgetDimension::ClassHeaders, 1)?;
     match definition.location.entry() {
         Some(entry) => snapshot.prepared_class(entry, budget),
@@ -1454,6 +1469,11 @@ fn recover_prepared_member(
     budget: &mut Budget,
 ) -> Result<RecoveredMethod> {
     let analyzed = jarde_jvm::analyze_prepared_method_ir(content, prepared, request, budget)?;
+    if analyzed.ir().code().is_some() {
+        // The prepared half of the same demand-path decode (`crate::d0_counts`): one count per
+        // member body this presentation really decoded.
+        crate::d0_counts::body_decoded();
+    }
     recovery_presented(content, request, analyzed, Some(prepared), budget)
 }
 
@@ -2987,8 +3007,19 @@ pub(crate) fn recovery_presented(
         },
         budget,
     );
+    // One recovery presentation over one analysis run (`crate::d0_counts`), and the owning records
+    // the publication below builds: the cloned analysis report itself, its stage records, its read
+    // records and its diagnostics. The recovery report's own optional tables are built in
+    // `jarde-java` and are counted there when that layer's hook is placed (D3).
+    let analysis = analyzed.report();
+    crate::d0_counts::recovery_presented_run();
+    crate::d0_counts::owned_records(
+        1 + u64::try_from(analysis.stages.len()).unwrap_or(u64::MAX)
+            + u64::try_from(analysis.reads.len()).unwrap_or(u64::MAX)
+            + u64::try_from(analysis.diagnostics.len()).unwrap_or(u64::MAX),
+    );
     Ok(RecoveredMethod {
-        analysis: analyzed.report().clone(),
+        analysis: analysis.clone(),
         recovery,
         callees,
         facts,
@@ -4485,6 +4516,11 @@ fn bind_class(
     match class {
         ClassRef::Definition { definition } => {
             require_definition_snapshot(snapshot, definition)?;
+            // One class materialization for this operation's own selected definition
+            // (`crate::d0_counts`): the D0 1.3 gate reads it beside the preparation read below, so a
+            // presentation that reads the same definition twice says so. A name-based request's
+            // *search* reads are the search's own cost and are not counted here.
+            crate::d0_counts::class_materialized();
             budget.charge(CountedBudgetDimension::ClassHeaders, 1)?;
             let read = read_definition(snapshot, definition, budget)?;
             let provenance = Some(definition_provenance(definition));
@@ -4957,6 +4993,16 @@ fn body_result(
     budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
     match method_code_facts(bytes, member, budget) {
         Ok(facts) => {
+            // One demand-path decode (`crate::d0_counts`), counted at the decode that really
+            // happened — a member that declares no `Code` returned above and counts nothing.
+            crate::d0_counts::body_decoded();
+            // The owning records this publication builds: the body record itself, its two vectors,
+            // and one record per instruction and per handler cloned into them. A view that decoded a
+            // body it then dropped would count the decode and not the records.
+            let records = 3
+                + u64::try_from(facts.instructions.len()).unwrap_or(u64::MAX)
+                + u64::try_from(facts.exception_handlers.len()).unwrap_or(u64::MAX);
+            crate::d0_counts::owned_records(records);
             let coverage = method_code_coverage(
                 facts.code_span.length,
                 &facts.instructions,
