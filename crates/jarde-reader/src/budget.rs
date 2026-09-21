@@ -1,5 +1,6 @@
 use crate::error::{Error, Result};
 use crate::facts_cache::FactsCache;
+use crate::ledger::{OperationLedger, UsageOwner};
 use serde::{Deserialize, Serialize};
 use std::sync::{
     Arc,
@@ -268,7 +269,12 @@ impl Limits {
 }
 
 impl UsageSnapshot {
-    fn get(&self, dimension: CountedBudgetDimension) -> u64 {
+    /// Counted usage of one dimension, addressed by value.
+    ///
+    /// Crate-internal because the operation ledger reads and writes the same slots a `Budget` does:
+    /// it is the store of one operation's totals, not a second public reading of them (that is
+    /// [`Budget::usage`], [`UsageSnapshot::counted_usage`] and the ledger's own snapshot methods).
+    pub(crate) fn get(&self, dimension: CountedBudgetDimension) -> u64 {
         match dimension {
             CountedBudgetDimension::InputBytes => self.input_bytes,
             CountedBudgetDimension::ArchiveEntries => self.archive_entries,
@@ -319,6 +325,33 @@ impl UsageSnapshot {
         *slot = slot.checked_add(amount)?;
         Some(())
     }
+
+    /// Writes one counted dimension's total, which the operation ledger has already admitted.
+    ///
+    /// Crate-internal for the same reason [`UsageSnapshot::get`] is, and checked by construction on
+    /// the caller's side: the ledger computes `consumed + requested` with a checked addition and
+    /// refuses the dimension before it writes anything, so the value handed here is one that passed
+    /// both an overflow check and the operation's limit.
+    pub(crate) fn set(&mut self, dimension: CountedBudgetDimension, consumed: u64) {
+        let slot = match dimension {
+            CountedBudgetDimension::InputBytes => &mut self.input_bytes,
+            CountedBudgetDimension::ArchiveEntries => &mut self.archive_entries,
+            CountedBudgetDimension::EntryBytes => &mut self.entry_bytes,
+            CountedBudgetDimension::ReadBytes => &mut self.read_bytes,
+            CountedBudgetDimension::ClassBytes => &mut self.class_bytes,
+            CountedBudgetDimension::AttributeBytes => &mut self.attribute_bytes,
+            CountedBudgetDimension::CodeBytes => &mut self.code_bytes,
+            CountedBudgetDimension::ResultItems => &mut self.result_items,
+            CountedBudgetDimension::OutputBytes => &mut self.output_bytes,
+            CountedBudgetDimension::ClassHeaders => &mut self.class_headers,
+            CountedBudgetDimension::MethodBodies => &mut self.method_bodies,
+            CountedBudgetDimension::IrItems => &mut self.ir_items,
+            CountedBudgetDimension::IrEdges => &mut self.ir_edges,
+            CountedBudgetDimension::AnalysisSteps => &mut self.analysis_steps,
+            CountedBudgetDimension::NormalizationClones => &mut self.normalization_clones,
+        };
+        *slot = consumed;
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -349,6 +382,18 @@ pub struct Budget {
     cancellation: CancellationToken,
     started_at: Instant,
     facts: Option<FactsCache>,
+    /// The operation's shared total, when this budget is doing part of one, and the part of it this
+    /// budget's work belongs to. Both are absent on the direct single-request path, which is what
+    /// [`Budget::new`] builds: attaching nothing keeps every entry point's numbers exactly where
+    /// they were.
+    ledger: Option<LedgerTarget>,
+}
+
+/// The operation total a budget bills to, and the work class it bills as.
+#[derive(Debug)]
+struct LedgerTarget {
+    ledger: OperationLedger,
+    owner: UsageOwner,
 }
 
 impl Budget {
@@ -363,6 +408,7 @@ impl Budget {
             cancellation,
             started_at: Instant::now(),
             facts: None,
+            ledger: None,
         }
     }
 
@@ -384,6 +430,52 @@ impl Budget {
         self.facts.as_ref()
     }
 
+    /// Bills this budget's work to the operation's shared total, as `owner`'s part of it.
+    ///
+    /// A bulk operation is one operation with N workers, and this is how a worker's budget states
+    /// that: every charge it makes is admitted against the operation's totals *and* against its own
+    /// local limits, and the operation's deadline and cancellation are checked before each of them.
+    /// The ledger is the one [`OperationLedger::new`] built from the budget that opened the
+    /// operation, so the entry's usage keeps counting and nothing here resumes a fresh allowance.
+    ///
+    /// Unlike [`Budget::with_facts_cache`], which takes the budget it is called on, this is called
+    /// on a budget the caller already owns — the entry budget a caller hands to an operation, or a
+    /// worker's own per-class or per-method budget — so it attaches in place. A budget that already
+    /// bills to a ledger is re-attached: the last ledger wins, and attaching the same ledger again
+    /// with another owner is how a caller states that its next work belongs to another part of the
+    /// operation.
+    pub fn with_ledger(&mut self, ledger: OperationLedger, owner: UsageOwner) {
+        self.ledger = Some(LedgerTarget { ledger, owner });
+    }
+
+    /// The operation's shared total this budget bills to, when it is doing part of one.
+    pub fn ledger(&self) -> Option<&OperationLedger> {
+        self.ledger
+            .as_ref()
+            .map(|target: &LedgerTarget| &target.ledger)
+    }
+
+    /// States which part of the operation this budget's work belongs to.
+    ///
+    /// Discovery/preparation, method execution and delivery are the three classes design decision 4
+    /// separates in the operation's totals, and one worker does more than one of them: preparing a
+    /// class is discovery, the methods it then executes are methods, and the encoded records it
+    /// hands on are delivery. A budget with no ledger attached has no attribution to move, so this
+    /// changes nothing there.
+    pub fn set_owner(&mut self, owner: UsageOwner) {
+        if let Some(target) = &mut self.ledger {
+            target.owner = owner;
+        }
+    }
+
+    /// The instant this request's clock started.
+    ///
+    /// The operation ledger reads it once so that an operation's `elapsed_millis` is one wall clock
+    /// over all of its workers instead of a sum of their durations.
+    pub(crate) fn started_at(&self) -> Instant {
+        self.started_at
+    }
+
     pub fn limits(&self) -> &Limits {
         &self.limits
     }
@@ -398,19 +490,57 @@ impl Budget {
         self.cancellation.clone()
     }
 
+    /// The cooperative checkpoints: cancellation and the deadline.
+    ///
+    /// A budget doing part of an operation checks the **operation's** cancellation and deadline
+    /// first ([`OperationLedger::poll`], which is also where the operation's first stop is recorded)
+    /// and its own after them: a worker reports the reason that stops the whole operation rather
+    /// than a local deadline that happened to expire in the same millisecond.
     pub fn poll(&self) -> Result<()> {
+        if let Some(target) = &self.ledger {
+            target.ledger.poll()?;
+        }
         self.check_cancelled()?;
         self.check_elapsed()
     }
 
+    /// Whether `requested` units of `dimension` would still fit, charging nothing.
+    ///
+    /// Both limits are asked: this budget's own, and — when it bills to an operation — the
+    /// operation's total. A probe records no stop: it refuses no work, and the operation's stop is
+    /// what a *refused charge* or an observed cancellation states.
     pub fn check(&self, dimension: CountedBudgetDimension, requested: u64) -> Result<()> {
         self.poll()?;
-        self.ensure_within(dimension, requested)
+        self.ensure_within(dimension, requested)?;
+        if let Some(target) = &self.ledger {
+            target.ledger.check(dimension, requested)?;
+        }
+        Ok(())
     }
 
+    /// Charges `requested` units of `dimension`.
+    ///
+    /// # Order of the checks (design decision 4)
+    ///
+    /// A budget doing part of an operation charges in this order, and the order is the semantics:
+    ///
+    /// 1. the checkpoints ([`Budget::poll`]): the operation's deadline and cancellation, then this
+    ///    budget's;
+    /// 2. this budget's own limit and checked addition, so a local limit stops the local work before
+    ///    the operation is asked for anything;
+    /// 3. the operation's total, taken atomically beside this budget's owner share
+    ///    ([`OperationLedger::charge`]);
+    /// 4. this budget's own usage.
+    ///
+    /// Work whose permit was refused started nothing and is billed nowhere. A cancellation that
+    /// arrives *after* the permit was taken does not undo the charge: the work was admitted, the
+    /// totals say so, and the next checkpoint stops it.
     pub fn charge(&mut self, dimension: CountedBudgetDimension, requested: u64) -> Result<()> {
         self.poll()?;
         self.ensure_within(dimension, requested)?;
+        if let Some(target) = &self.ledger {
+            target.ledger.charge(target.owner, dimension, requested)?;
+        }
         if self.usage.add(dimension, requested).is_none() {
             return Err(self.exceeded(dimension, requested));
         }
@@ -433,6 +563,9 @@ impl Budget {
                 consumed: depth.saturating_sub(1),
                 requested: 1,
             });
+        }
+        if let Some(target) = &self.ledger {
+            target.ledger.check_nested_depth(target.owner, depth)?;
         }
         self.usage.nested_depth = self.usage.nested_depth.max(depth);
         self.usage.elapsed_millis = self.elapsed_millis();
@@ -457,6 +590,11 @@ impl Budget {
                 consumed: depth.saturating_sub(1),
                 requested: 1,
             });
+        }
+        if let Some(target) = &self.ledger {
+            target
+                .ledger
+                .observe_dependency_depth(target.owner, depth)?;
         }
         self.usage.dependency_depth = self.usage.dependency_depth.max(depth);
         self.usage.elapsed_millis = self.elapsed_millis();

@@ -11,7 +11,7 @@ use crate::release_registry::{
     feature_registry,
 };
 use noak::reader::attributes::{ArrayType, Code, RawInstruction};
-use noak::reader::{Attribute, Class};
+use noak::reader::{Attribute, Class, Method};
 use serde::{Deserialize, Serialize};
 
 const ATTRIBUTE_HEADER_LENGTH: usize = 6;
@@ -797,7 +797,11 @@ fn read_member_record(
 ///
 /// A damaged record is what a member-table read publishes as a prefix plus a stop; an exceeded
 /// budget, a cancellation and an I/O failure are the request ending and travel on as errors.
-fn is_class_structure_damage(error: &Error) -> bool {
+///
+/// The predicate is crate-visible because the prepared read ([`crate::prepared::PreparedClass`])
+/// decides with it whether a failed structure read may be answered by the tolerant member walk at
+/// all: a request-ending failure must end the read instead of starting a second walk after a stop.
+pub(crate) fn is_class_structure_damage(error: &Error) -> bool {
     match error {
         Error::InvalidInput { .. } | Error::Unsupported { .. } => true,
         Error::BudgetExceeded { .. } | Error::Cancelled { .. } | Error::Io { .. } => false,
@@ -2536,9 +2540,44 @@ pub fn class_facts(bytes: &[u8], budget: &mut Budget) -> Result<ClassFacts> {
     Ok(facts)
 }
 
+/// One class's declaration, constant pool and member records, together with the parser view every
+/// later body read of that class goes through.
+///
+/// The three parts come from one read of the class: the facts are the answer `class_facts`
+/// publishes, `class` is the parser that produced them (its pool resolves an attribute's own
+/// content), and `methods` are the method records of [`ClassFacts::methods`] in the same order, so a
+/// body decode resolves its member without walking the member table again. Together they are what a
+/// prepared class holds for the lifetime of one class task
+/// ([`crate::prepared::PreparedClass`]), which is why they are handed over as one value rather than
+/// three separate reads.
+pub(crate) struct ClassStructure<'a> {
+    pub(crate) facts: ClassFacts,
+    pub(crate) class: Class<'a>,
+    /// The parser's method records, parallel to [`ClassFacts::methods`].
+    pub(crate) methods: Vec<Method<'a>>,
+}
+
 /// The direct read of [`class_facts`]: what the engine did before a cache could answer it, and what
 /// it still does whenever no cache answers.
 fn read_class_facts(bytes: &[u8], budget: &mut Budget) -> Result<ClassFacts> {
+    Ok(read_class_structure(bytes, budget)?.facts)
+}
+
+/// Reads one class's structure once and keeps the parser view next to the facts.
+///
+/// This is the read [`class_facts`] publishes the facts of, and the read
+/// [`crate::prepared::PreparedClass::prepare`] does once per class task. It performs exactly the
+/// checks that read always performed (the constant-pool guard, noak's decode, the trailing-byte
+/// rejection, the layout cross-check against noak's pool) and charges exactly what it charged:
+/// `ClassBytes` once, plus one `AttributeBytes` charge per attribute shell it reads.
+///
+/// The member records are materialized in the same pass that builds the facts and the parser that
+/// read them, so what this read costs does not depend on how many methods are later decoded: no
+/// body read rebuilds a parser, and none walks the member table again.
+pub(crate) fn read_class_structure<'a>(
+    bytes: &'a [u8],
+    budget: &mut Budget,
+) -> Result<ClassStructure<'a>> {
     budget.poll()?;
     budget.charge(CountedBudgetDimension::ClassBytes, to_u64(bytes.len())?)?;
     validate_constant_pool_slots(bytes, budget)?;
@@ -2597,6 +2636,9 @@ fn read_class_facts(bytes: &[u8], budget: &mut Budget) -> Result<ClassFacts> {
     }
 
     let mut methods = Vec::new();
+    // The parser's own method records are kept beside the headers: a later body decode resolves
+    // its member through one of these, so the walk below happens exactly once per class.
+    let mut method_records = Vec::new();
     for method in class.methods() {
         budget.poll()?;
         let method = method.map_err(map_decode_error)?;
@@ -2607,6 +2649,7 @@ fn read_class_facts(bytes: &[u8], budget: &mut Budget) -> Result<ClassFacts> {
             budget,
             AttributeItemBilling::NoResultItems,
         )?;
+        method_records.push(method.clone());
         methods.push(MemberHeader {
             name: jvm_string(method.name(), pool)?,
             descriptor: jvm_string(method.descriptor(), pool)?,
@@ -2623,18 +2666,87 @@ fn read_class_facts(bytes: &[u8], budget: &mut Budget) -> Result<ClassFacts> {
         AttributeItemBilling::NoResultItems,
     )?;
 
-    Ok(ClassFacts {
-        major_version: class.version().major,
-        minor_version: class.version().minor,
-        access_flags: class.access_flags().bits(),
-        this_class,
-        super_class,
-        interfaces,
-        fields,
-        methods,
-        attributes,
-        constant_pool,
+    Ok(ClassStructure {
+        facts: ClassFacts {
+            major_version: class.version().major,
+            minor_version: class.version().minor,
+            access_flags: class.access_flags().bits(),
+            this_class,
+            super_class,
+            interfaces,
+            fields,
+            methods,
+            attributes,
+            constant_pool,
+        },
+        class,
+        methods: method_records,
     })
+}
+
+/// The structure facts of a class whose member table did not read to its declared end.
+///
+/// A member record that does not decode fails noak's whole structure read, so the facts
+/// [`class_facts`] publishes do not exist for such a class — that is exactly why the prepared read
+/// has a second, tolerant walk. This is that walk's answer: the declaration, the constant pool and
+/// the member records the walk did read (the reliable prefix [`class_member_facts`] publishes),
+/// plus the [`MemberTableStop`] that ended it.
+///
+/// `Ok(None)` is "the member tables read to their declared end", which means the failure the caller
+/// saw was not member-table damage and it has to propagate its own error. A damaged declaration —
+/// no class-file magic, an unmeasurable constant pool, a truncated fixed part — is an `Err`, exactly
+/// as in every other structural read, because a class whose own declaration cannot be established
+/// has no prefix to publish.
+///
+/// # What the facts do and do not state
+///
+/// [`ClassFacts::attributes`] is empty because the class attribute table follows the member tables,
+/// so a walk that stopped inside them never reached it: nothing is stated about that region, and the
+/// stop this returns is the only complete statement about it. [`ClassMemberPrefix::field_count`] and
+/// [`ClassMemberPrefix::method_count`] are the counts the class file itself declares, so a caller
+/// can see that `facts.fields`/`facts.methods` hold a prefix rather than the whole table.
+pub(crate) fn read_class_member_prefix(
+    bytes: &[u8],
+    budget: &mut Budget,
+) -> Result<Option<ClassMemberPrefix>> {
+    let members = class_member_facts(bytes, budget)?;
+    let Some(stop) = members.stopped_at.clone() else {
+        return Ok(None);
+    };
+    // The constant pool is measured and resolved with the layout walk the raw path owns; noak's
+    // cross-check is not available here, because the structure that would provide it did not
+    // decode. The pool sits before the member tables, so a stop inside them never truncated it.
+    let layout = measure_constant_pool(bytes, budget)?;
+    let constant_pool = resolve_constant_pool(bytes, &layout, budget)?;
+    Ok(Some(ClassMemberPrefix {
+        facts: ClassFacts {
+            major_version: read_u16(bytes, 6)?,
+            minor_version: read_u16(bytes, 4)?,
+            access_flags: members.access_flags,
+            this_class: members.this_class,
+            super_class: members.super_class,
+            interfaces: members.interfaces,
+            fields: members.fields,
+            methods: members.methods,
+            attributes: Vec::new(),
+            constant_pool,
+        },
+        field_count: members.field_count,
+        method_count: members.method_count,
+        stop,
+    }))
+}
+
+/// The prefix facts [`read_class_member_prefix`] publishes, with the counts the class declares and
+/// the stop that ended the walk.
+pub(crate) struct ClassMemberPrefix {
+    pub(crate) facts: ClassFacts,
+    /// How many field records the class file declares (the whole table, not the prefix).
+    pub(crate) field_count: u64,
+    /// How many method records the class file declares (the whole table, not the prefix).
+    pub(crate) method_count: u64,
+    /// Where the member-table read stopped, with the code and message of the failure.
+    pub(crate) stop: MemberTableStop,
 }
 
 /// Slices one attribute content out of the class bytes and bills that entry.
@@ -4323,6 +4435,37 @@ pub fn method_code_facts(
             ));
         }
     };
+    // The one body decode. Everything from the located `Code` entry onwards is
+    // [`decode_method_code`], which is also what a prepared class calls: this entry point owns
+    // which member record the decode belongs to, never how a body is decoded.
+    decode_method_code(bytes, pool, method, &attribute, budget)
+}
+
+/// Turns one located `Code` attribute into the facts this crate publishes for a method body.
+///
+/// This is the **only** body decode in the crate. [`method_code_facts`] reaches it after locating
+/// a member by raw name and descriptor and the member's own `Code` entry through the parser;
+/// [`crate::prepared::PreparedClass::method_code`] reaches it with the member record and the `Code`
+/// entry its own preparation walk already located. Both then do exactly the same work, charge the
+/// same dimensions and publish the same [`MethodCodeFacts`], so a body decoded through a prepared
+/// class cannot drift from the same body decoded by the single-method entry point.
+///
+/// `bytes` is the class file every other argument was read from, `pool` is the parser's constant
+/// pool (the `Code` entry resolves its own content and its nested debug table through it),
+/// `method` is the member record the decode belongs to — the located attribute must be the one its
+/// shells describe, so a record from another class is a structured error rather than a silently
+/// wrong body — and `attribute` is that `Code` entry itself.
+///
+/// The charges are the ones the single-method entry point documents: one `AttributeBytes` charge
+/// for the `Code` entry's own shell, one `CodeBytes` charge per decoded instruction width, no
+/// `ClassBytes` (the class read paid it) and no `ResultItems`.
+pub(crate) fn decode_method_code<'a>(
+    bytes: &'a [u8],
+    pool: &noak::reader::cpool::ConstantPool<'a>,
+    method: &MemberHeader,
+    attribute: &Attribute<'a>,
+    budget: &mut Budget,
+) -> Result<MethodCodeFacts> {
     let content = attribute.content();
     let content_span = span_for_slice(bytes, content)?;
     if !member_has_code_shell(method, &content_span) {

@@ -22,11 +22,28 @@ pub mod error;
 // cache is keyed by.
 pub mod facts_cache;
 pub mod inspect;
+// The operation ledger (add-parallel-bulk-recovery 4.1) is the shared total a bulk operation's
+// workers bill their work to: one operation, N workers, one set of totals and one published stop,
+// with each worker's own budget keeping its local limits. It is a module of its own because it owns
+// that state, the stop vocabulary and the arithmetic that folds an entry budget into an operation.
+pub mod ledger;
 pub mod model;
 pub mod modern;
 pub mod multi_release;
+// The prepared class view (bulk task 2.1) is a lifecycle of one trusted read, not a cache layer: a
+// class task holds one for as long as it decodes that class's methods, and every method consumer of
+// that class shares it by reference. It is a module of its own because it owns the multi-valued
+// method locator and the "one walk, one decoder" invariant the bulk operation's class granularity
+// rests on.
+pub mod prepared;
 pub mod release_registry;
 pub mod runtime_matrix;
+// The incremental physical traversal cursor (bulk task 3.1) is a discovery handover, not a
+// report: it walks the containers a scope holds one entry at a time and hands over one class
+// candidate per pull, so a coordinator can keep at most one dispatch window outstanding. It is a
+// module of its own because it owns the walk order, the per-subtree "unknown" boundary and the
+// cancellation checks, none of which belong to the snapshot's materializing reads.
+pub mod scope_cursor;
 #[cfg(any(test, feature = "test-support"))]
 mod test_fixtures;
 pub mod view;

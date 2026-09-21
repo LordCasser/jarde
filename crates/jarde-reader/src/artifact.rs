@@ -27,9 +27,10 @@
 use crate::budget::{Budget, BudgetDimension, CountedBudgetDimension, UsageSnapshot};
 use crate::error::{Error, Result};
 use crate::model::{
-    ArchiveNameBytes, ByteSpan, ContainerId, ContainerOrigin, ContainerOriginStep, Coverage,
-    CoverageDimension, CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity,
-    ExecutionReport, Location, PhysicalEntryId, Provenance, SnapshotId, TerminationReason,
+    ArchiveNameBytes, ByteSpan, ClassBytesId, ContainerId, ContainerOrigin, ContainerOriginStep,
+    Coverage, CoverageDimension, CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity,
+    Digest, ExecutionReport, Location, PhysicalClassLocation, PhysicalEntryId, Provenance,
+    SnapshotId, TerminationReason,
 };
 use crate::view::{PhysicalScope, PhysicalView};
 use rawzip::{ZipArchive, ZipArchiveEntryWayfinder};
@@ -457,14 +458,7 @@ impl ArtifactSnapshot {
                     break;
                 }
                 let child_depth = depth.saturating_add(1);
-                let mut child_origin = origin.clone();
-                let child_id =
-                    derive_child_container(&origin, entry.id.ordinal, &entry.id.raw_name);
-                child_origin.steps.push(ContainerOriginStep {
-                    via_ordinal: entry.id.ordinal,
-                    via_raw_name: entry.id.raw_name.clone(),
-                    child_container: child_id,
-                });
+                let child_origin = derive_child_origin(&origin, &entry.id);
                 let mut child_bytes = None;
                 match budget.check_nested_depth(child_depth) {
                     Ok(()) => {
@@ -930,13 +924,176 @@ impl ArtifactSnapshot {
             .cloned())
     }
 
+    // -------------------------------------------------------------------------------------------
+    // Incremental physical traversal (bulk stream A)
+    // -------------------------------------------------------------------------------------------
+
+    /// Opens one physical scope for incremental traversal: one class candidate at a time, in the
+    /// scope's own order, without building a package-wide class list first.
+    ///
+    /// The scope's shape is checked here — a standalone `CLASS` snapshot holds no containers, so an
+    /// artifact-tree scope on one is an input error, and an artifact-tree scope has to name this
+    /// snapshot's own root container — and the walk itself happens in
+    /// [`crate::scope_cursor::ScopeCursor::next_class`], which is where the charging, the stop
+    /// semantics and the cancellation checks live.
+    pub fn scope_cursor(&self, scope: &PhysicalScope) -> Result<crate::scope_cursor::ScopeCursor> {
+        crate::scope_cursor::ScopeCursor::new(self.clone(), scope)
+    }
+
+    // -------------------------------------------------------------------------------------------
+    // Prepared class reads (bulk stream A)
+    // -------------------------------------------------------------------------------------------
+
+    /// The bytes of one container of this snapshot, without copying them out of the read that
+    /// materialized them.
+    ///
+    /// The root container's backing is the snapshot's own bytes — the same `Arc` every other read
+    /// of this snapshot shares — and a nested container's is the backing the verified read that
+    /// materialized it produced, reached along the container's real ancestor chain (so a forged
+    /// origin is refused at the step that does not derive, and no sibling entry is touched). What
+    /// the caller gets is a strong reference: it keeps the bytes alive on its own terms, whatever
+    /// happens to any cache in the meantime.
+    ///
+    /// This is not a second container reader: it is the same directed access every lookup uses, and
+    /// it hands out the backing that access already holds rather than re-reading anything.
+    pub fn container_backing(
+        &self,
+        origin: &ContainerOrigin,
+        budget: &mut Budget,
+    ) -> Result<Arc<[u8]>> {
+        budget.poll()?;
+        if origin.snapshot != self.id {
+            return Err(Error::invalid_input(
+                "entry_snapshot_mismatch",
+                "container origin does not belong to this snapshot",
+            ));
+        }
+        if origin.steps.is_empty() {
+            if origin.root_container != root_origin(&self.id).root_container {
+                return Err(Error::invalid_input(
+                    "entry_origin_mismatch",
+                    "container origin does not name this snapshot's root container",
+                ));
+            }
+            // A snapshot's root container is the snapshot itself, whichever artifact kind it is:
+            // one ZIP's own bytes, or one standalone CLASS file's.
+            return Ok(self.bytes.clone());
+        }
+        let facts = self.container_facts(origin, budget)?;
+        Ok(facts.backing().clone())
+    }
+
+    /// One class entry's verified read, for a class task that will decode many of its methods.
+    ///
+    /// The entry is located in its own container's **complete** central directory (a container whose
+    /// directory could not be read completely is refused, never answered), the record there is the
+    /// authority, and the entry's local header is checked against that record — raw name, local and
+    /// central header offsets, CRC, compressed and uncompressed sizes, the data descriptor when it
+    /// declares one, and the compressed span — before any byte is handed out. The entry's own bytes
+    /// are then read through the same verifying reader every other read uses. A mismatch on any of
+    /// those is the existing error code of that check, never a new one, and never a silent read.
+    ///
+    /// The read is charged once, as an intermediate read of that entry. A class task that decodes
+    /// `N` methods therefore pays for one class read, not `N`.
+    ///
+    /// What this deliberately does **not** do is apply a loader, profile or version gate: a
+    /// prepared read is bytes and the entry they came from, and the layers above keep applying the
+    /// same environment and binding checks they apply to the same bytes read any other way.
+    pub fn prepared_class(
+        &self,
+        entry: &PhysicalEntryId,
+        budget: &mut Budget,
+    ) -> Result<crate::prepared::PreparedClassRead> {
+        budget.poll()?;
+        if self.kind != ArtifactKind::Zip {
+            return Err(Error::invalid_input(
+                "not_zip",
+                "class entry reads require a ZIP snapshot",
+            ));
+        }
+        let facts = self.container_facts(&entry.origin, budget)?;
+        let position = usize::try_from(entry.ordinal).map_err(|_| {
+            Error::invalid_input("entry_count_overflow", "entry ordinal does not fit usize")
+        })?;
+        let record = facts.record(position)?;
+        if record.id.raw_name != entry.raw_name {
+            return Err(Error::invalid_input(
+                "entry_locator_mismatch",
+                "entry ordinal does not match the requested raw name",
+            ));
+        }
+        let read = facts.read_prepared_class(position, budget)?;
+        let depth = u64::try_from(entry.origin.steps.len()).map_err(|_| {
+            Error::invalid_input("nested_depth_overflow", "nested origin is too deep")
+        })?;
+        Ok(crate::prepared::PreparedClassRead::new(
+            PhysicalClassLocation::ArchiveEntry {
+                entry: record.id.clone(),
+            },
+            ClassBytesId {
+                digest: read.digest.clone(),
+                length: read.span.length,
+            },
+            entry.origin.current_container().clone(),
+            depth,
+            read.backing,
+            read.span,
+            facts.backing_digest().clone(),
+        ))
+    }
+
+    /// The standalone-root equivalent of [`Self::prepared_class`]: this CLASS file as one read.
+    ///
+    /// A standalone snapshot has no container directory to verify an address against, and it does
+    /// not need one: the open established the bytes this value holds, the snapshot identity is the
+    /// digest of exactly those bytes, and there is no entry to locate. What the read states is
+    /// therefore the root position, the whole file as the class bytes, and the snapshot's own digest
+    /// as the backing's — all of it already established, so nothing is hashed again.
+    pub fn prepared_root_class(
+        &self,
+        budget: &mut Budget,
+    ) -> Result<crate::prepared::PreparedClassRead> {
+        budget.poll()?;
+        if self.kind != ArtifactKind::StandaloneClass {
+            return Err(Error::invalid_input(
+                "not_standalone_class",
+                "root class reads are only available for a standalone CLASS snapshot",
+            ));
+        }
+        let length = self.len();
+        budget.check(CountedBudgetDimension::EntryBytes, length)?;
+        budget.check(CountedBudgetDimension::ReadBytes, length)?;
+        budget.charge(CountedBudgetDimension::ReadBytes, length)?;
+        budget.charge(CountedBudgetDimension::EntryBytes, length)?;
+        let digest = Digest(self.id.0.clone());
+        Ok(crate::prepared::PreparedClassRead::new(
+            PhysicalClassLocation::StandaloneRoot {
+                snapshot: self.id.clone(),
+            },
+            ClassBytesId {
+                digest: digest.clone(),
+                length,
+            },
+            root_origin(&self.id).root_container,
+            0,
+            self.bytes.clone(),
+            ByteSpan::new(0, length),
+            digest,
+        ))
+    }
+
     /// The verified facts of one container, from retention when a cache answers and from this
     /// request's own read otherwise.
     ///
     /// The direct path is this function with no cache attached: the same validation, the same
     /// ancestor walk and the same directory parse, with the product dropped when the request ends.
     /// Nothing about the access depends on a cache existing.
-    fn container_facts(
+    ///
+    /// It is crate-visible because the scope cursor ([`crate::scope_cursor::ScopeCursor`]) opens the
+    /// root container through this access rather than through a reader of its own, and because
+    /// [`child_container_facts`] reuses its products for the containers a walk descends into: one
+    /// container, one verification, one directory parse, however many consumers ask for it.
+    pub(crate) fn container_facts(
         &self,
         origin: &ContainerOrigin,
         budget: &mut Budget,
@@ -979,8 +1136,11 @@ impl ArtifactSnapshot {
         budget: &mut Budget,
     ) -> Result<Arc<ContainerFacts>> {
         self.check_container_origin(origin)?;
-        let backing = match origin.steps.split_last() {
-            None => self.bytes.clone(),
+        // The backing's trusted identity travels with it: the snapshot's own digest for the root
+        // container, and the digest the materializing read produced for a nested one. Neither is
+        // recomputed here, so handing a backing to a class read costs no hash of the container.
+        let (backing, backing_digest) = match origin.steps.split_last() {
+            None => (self.bytes.clone(), Digest(self.id.0.clone())),
             Some((step, parents)) => {
                 let parent_origin = ContainerOrigin {
                     snapshot: origin.snapshot.clone(),
@@ -1026,7 +1186,7 @@ impl ArtifactSnapshot {
                 if let Some(cache) = budget.facts_cache() {
                     cache.note_nested_materialization(materialized.bytes.len() as u64);
                 }
-                Arc::from(materialized.bytes)
+                (Arc::from(materialized.bytes), materialized.content_digest)
             }
         };
         let parsed = parse_container_directory(
@@ -1042,6 +1202,7 @@ impl ArtifactSnapshot {
         Ok(Arc::new(ContainerFacts::new(
             origin.clone(),
             backing,
+            backing_digest,
             parsed,
         )))
     }
@@ -1049,10 +1210,12 @@ impl ArtifactSnapshot {
     /// Checks that `origin` addresses a container of **this** snapshot and that every step of the
     /// chain derives from the one before it.
     ///
-    /// The derivation is the same one the tree walk uses, so an origin that was not produced by
-    /// reading this snapshot's entries cannot be addressed at all — a caller cannot name a
-    /// container that does not exist, or move a whole chain under another parent, by handing in a
-    /// fabricated `ContainerOrigin`.
+    /// The derivation is the one [`derive_child_origin`] performs and the tree walk uses, so a chain
+    /// reached through this function and a child reached from a held parent
+    /// ([`child_container_facts`]) name the same container. Because the rule is applied at every
+    /// step, an origin that was not produced by reading this snapshot's entries cannot be addressed
+    /// at all — a caller cannot name a container that does not exist, or move a whole chain under
+    /// another parent, by handing in a fabricated `ContainerOrigin`.
     fn check_container_origin(&self, origin: &ContainerOrigin) -> Result<()> {
         if self.kind != ArtifactKind::Zip {
             return Err(Error::invalid_input(
@@ -1520,10 +1683,17 @@ const NAME_TABLE_SLOT_WEIGHT: u64 = 48;
 /// which was verified in full before it was opened as an archive; a locator from this directory is
 /// therefore only ever used against this backing, and the recorded spans are re-checked against it
 /// on every read.
+///
+/// `backing_digest` is the trusted content identity of that backing, and it is **carried** rather
+/// than computed: the root container's backing is the snapshot's own bytes, whose digest is the
+/// snapshot identity the open established, and a nested container's backing is the output of the
+/// verified read that materialized it, which produced a digest of exactly those bytes. Neither has
+/// to be hashed again when a class read hands the backing out.
 #[derive(Debug)]
 pub(crate) struct ContainerFacts {
     origin: ContainerOrigin,
     backing: Arc<[u8]>,
+    backing_digest: Digest,
     entries: Vec<PhysicalEntry>,
     wayfinders: Vec<ZipArchiveEntryWayfinder>,
     names: BTreeMap<Vec<u8>, Vec<u64>>,
@@ -1531,11 +1701,17 @@ pub(crate) struct ContainerFacts {
 }
 
 impl ContainerFacts {
-    fn new(origin: ContainerOrigin, backing: Arc<[u8]>, parsed: ParsedDirectory) -> Self {
+    fn new(
+        origin: ContainerOrigin,
+        backing: Arc<[u8]>,
+        backing_digest: Digest,
+        parsed: ParsedDirectory,
+    ) -> Self {
         let weight = container_weight(backing.len() as u64, &parsed.entries, &parsed.names);
         Self {
             origin,
             backing,
+            backing_digest,
             entries: parsed.entries,
             wayfinders: parsed.wayfinders,
             names: parsed.names,
@@ -1545,6 +1721,25 @@ impl ContainerFacts {
 
     pub(crate) fn origin(&self) -> &ContainerOrigin {
         &self.origin
+    }
+
+    /// The bytes this container's own directory and its entries live in.
+    pub(crate) fn backing(&self) -> &Arc<[u8]> {
+        &self.backing
+    }
+
+    /// This container's complete central directory, in physical order.
+    ///
+    /// The records are the directory's own, so the ordinal of a record is the position it holds in
+    /// the archive: a walk that iterates this slice visits entries in exactly the order the archive
+    /// declares them.
+    pub(crate) fn entries(&self) -> &[PhysicalEntry] {
+        &self.entries
+    }
+
+    /// The trusted content identity of [`Self::backing`].
+    pub(crate) fn backing_digest(&self) -> &Digest {
+        &self.backing_digest
     }
 
     /// The residency weight this product contributes to a store that retains it.
@@ -1616,6 +1811,74 @@ impl ContainerFacts {
         materialized.entry = entry.id.clone();
         materialized.usage = budget.usage();
         Ok(materialized)
+    }
+
+    /// Reads one class entry of this directory for a prepared class, without copying its bytes when
+    /// the entry is stored.
+    ///
+    /// The verification is the one every read of this container performs and in the same order: the
+    /// address must exist in this directory and its local header must match the **record this
+    /// directory parsed** (raw name, offset, CRC, compressed and uncompressed sizes, the data
+    /// descriptor when it declares one, and the compressed span the record describes), and the
+    /// entry's own bytes are then read through the same verifying reader, so the CRC and the sizes
+    /// are re-established from the content itself. What differs is only where the verified bytes
+    /// end up: a stored entry stays where it is, so the caller gets the container's own backing and
+    /// the span inside it, and a deflated entry is produced by the shared materialization and handed
+    /// back as a backing of its own. The digest is computed from the chunks the verifying reader
+    /// checked, once, and it is the digest of the bytes the caller is about to read either way.
+    ///
+    /// The read is charged as an intermediate one — `ReadBytes` for the compressed selection,
+    /// `EntryBytes` for the logical bytes the read produced — exactly like the analysis read of the
+    /// same entry: the bytes are consumed inside the operation that asked for them, not returned as
+    /// its answer.
+    fn read_prepared_class(
+        &self,
+        position: usize,
+        budget: &mut Budget,
+    ) -> Result<PreparedEntryRead> {
+        let record = self.record(position)?;
+        check_entry_readable(record)?;
+        let archive = ZipArchive::from_slice(&self.backing).map_err(zip_invalid("zip_open"))?;
+        budget.poll()?;
+        let local = archive
+            .get_entry(self.wayfinders[position])
+            .map_err(zip_invalid("local_entry"))?;
+        budget.poll()?;
+        verify_local_against_record(record, &local)?;
+        if record.compression == EntryCompression::Stored {
+            budget.check(CountedBudgetDimension::EntryBytes, record.uncompressed_size)?;
+            budget.check(CountedBudgetDimension::ReadBytes, record.compressed_size)?;
+            let compressed_len = as_u64(local.data().len())?;
+            if compressed_len != record.compressed_size {
+                return Err(Error::invalid_input(
+                    "compressed_size_mismatch",
+                    format!(
+                        "central size {} differs from local data span {compressed_len}",
+                        record.compressed_size
+                    ),
+                ));
+            }
+            budget.charge(CountedBudgetDimension::ReadBytes, compressed_len)?;
+            let digest = verify_stored_entry(&local, record, budget)?;
+            return Ok(PreparedEntryRead {
+                backing: self.backing.clone(),
+                span: record.layout.compressed_data.clone(),
+                digest,
+            });
+        }
+        let materialized = materialize_verified(
+            record,
+            &local,
+            budget,
+            MaterializationAccounting::Intermediate,
+            &mut |_| {},
+        )?;
+        let length = as_u64(materialized.bytes.len())?;
+        Ok(PreparedEntryRead {
+            backing: Arc::from(materialized.bytes),
+            span: ByteSpan::new(0, length),
+            digest: materialized.content_digest,
+        })
     }
 
     /// Materializes one entry of this directory from its verified backing.
@@ -1837,24 +2100,7 @@ fn materialize_verified<F>(
 where
     F: FnMut(usize),
 {
-    if record.flags.encrypted || record.flags.strong_encryption {
-        return Err(Error::unsupported(
-            "encrypted_zip_entry",
-            "encrypted, strong-encryption, and AES entries are not supported",
-        ));
-    }
-    if !matches!(
-        record.compression,
-        EntryCompression::Stored | EntryCompression::Deflated
-    ) {
-        return Err(Error::unsupported(
-            "zip_compression_method",
-            format!(
-                "compression method {} is not supported",
-                record.compression_method
-            ),
-        ));
-    }
+    check_entry_readable(record)?;
     budget.check(CountedBudgetDimension::EntryBytes, record.uncompressed_size)?;
     if accounting == MaterializationAccounting::CallerOutput {
         budget.check(
@@ -1928,7 +2174,179 @@ where
     })
 }
 
-fn root_origin(snapshot: &SnapshotId) -> ContainerOrigin {
+/// The two refusals every read of one entry shares, before any byte is selected.
+///
+/// An encrypted entry and an entry whose compression method this reader does not implement are
+/// refused wherever they are met — the materializing read, the stored in-place read a prepared class
+/// uses, and the nested-container read — so "which entry can be read at all" is one rule rather than
+/// one per path.
+fn check_entry_readable(record: &PhysicalEntry) -> Result<()> {
+    if record.flags.encrypted || record.flags.strong_encryption {
+        return Err(Error::unsupported(
+            "encrypted_zip_entry",
+            "encrypted, strong-encryption, and AES entries are not supported",
+        ));
+    }
+    if !matches!(
+        record.compression,
+        EntryCompression::Stored | EntryCompression::Deflated
+    ) {
+        return Err(Error::unsupported(
+            "zip_compression_method",
+            format!(
+                "compression method {} is not supported",
+                record.compression_method
+            ),
+        ));
+    }
+    Ok(())
+}
+
+/// One entry's verified bytes, handed back without a copy when the entry is stored.
+///
+/// `span` indexes `backing` and yields the entry's bytes; `digest` is the trusted content identity of
+/// the bytes at that span — the container's own digest for a stored entry, and the digest of the
+/// produced bytes for one that had to be materialized.
+pub(crate) struct PreparedEntryRead {
+    pub(crate) backing: Arc<[u8]>,
+    pub(crate) span: ByteSpan,
+    pub(crate) digest: Digest,
+}
+
+/// Reads one stored entry through the same verifying reader every other read uses, without copying
+/// its bytes out of the container backing.
+///
+/// The bytes are where they are, so the read cannot hand back a buffer it filled; what it *can*
+/// establish is the same thing the copying read establishes, and it does: the CRC and the
+/// uncompressed size are re-established from the content by rawzip's verifying reader, the stream has
+/// to end exactly at the data the record names, the length has to be the recorded one, and the
+/// `EntryBytes` charges are made per chunk while the bytes pass. The digest is computed from those
+/// same verified chunks, so the identity handed to the caller describes bytes the read really
+/// checked rather than bytes it merely located.
+fn verify_stored_entry(
+    local: &rawzip::ZipSliceEntry<'_>,
+    record: &PhysicalEntry,
+    budget: &mut Budget,
+) -> Result<Digest> {
+    let reader = BudgetedEntryReader {
+        reader: std::io::Cursor::new(local.data()),
+        budget,
+        accounting: MaterializationAccounting::Intermediate,
+    };
+    let mut verifier = local.verifying_reader(reader);
+    let mut hasher = blake3::Hasher::new();
+    let mut chunk = [0_u8; READ_CHUNK];
+    let mut total = 0_u64;
+    loop {
+        let count = verifier.read(&mut chunk).map_err(map_verification_error)?;
+        if count == 0 {
+            break;
+        }
+        hasher.update(&chunk[..count]);
+        total = total.checked_add(as_u64(count)?).ok_or_else(|| {
+            Error::invalid_input("classfile_span_overflow", "entry size overflow")
+        })?;
+    }
+    let reader = verifier.into_inner().reader;
+    if reader.position() != local.data().len() as u64 {
+        return Err(Error::invalid_input(
+            "entry_integrity",
+            "stored entry has trailing compressed bytes",
+        ));
+    }
+    if total != record.uncompressed_size {
+        return Err(Error::invalid_input(
+            "uncompressed_size_mismatch",
+            format!(
+                "central size {} differs from the bytes the entry holds ({total})",
+                record.uncompressed_size
+            ),
+        ));
+    }
+    Ok(Digest(hasher.finalize().to_hex().to_string()))
+}
+
+/// The verified facts of one child container, reached from a parent whose facts the request already
+/// holds.
+///
+/// [`ArtifactSnapshot::container_facts`] can build any container's facts from its origin alone, by
+/// walking the ancestors that reach it — which is what a lookup that only knows an origin must do.
+/// A walk that already holds the parent's facts does not need that second walk: the parent's own
+/// complete directory is the authority for the child entry, so the child is reached from the record
+/// at `entry_position`, and one container is parsed once per request instead of once per path that
+/// reaches it. Nothing about the verification is skipped on the way: the record has to be an archive
+/// candidate, the nested-depth rule is applied to the child's depth, the entry is materialized
+/// through the parent's own verified read (record cross-check, local header, CRC and sizes), and the
+/// child's directory is parsed by the one parser and refused unless it is complete.
+pub(crate) fn child_container_facts(
+    parent: &ContainerFacts,
+    entry_position: usize,
+    budget: &mut Budget,
+) -> Result<Arc<ContainerFacts>> {
+    let parent_entry = parent.record(entry_position)?;
+    if parent_entry.nested_archive != NestedArchiveState::CandidateNotScanned {
+        return Err(Error::invalid_input(
+            "nested_parent_not_candidate",
+            "nested origin parent entry is not an archive candidate",
+        ));
+    }
+    let child_origin = derive_child_origin(&parent.origin, &parent_entry.id);
+    let depth = u64::try_from(child_origin.steps.len())
+        .map_err(|_| Error::invalid_input("nested_depth_overflow", "nested origin is too deep"))?;
+    budget.check_nested_depth(depth)?;
+    let materialized = parent.read_entry(
+        entry_position,
+        budget,
+        MaterializationAccounting::Intermediate,
+    )?;
+    if let Some(cache) = budget.facts_cache() {
+        cache.note_nested_materialization(materialized.bytes.len() as u64);
+    }
+    let backing: Arc<[u8]> = Arc::from(materialized.bytes);
+    let parsed = parse_container_directory(
+        &backing,
+        &child_origin,
+        DirectoryIntent::Locate,
+        budget,
+        &mut |_| {},
+    )?;
+    if !matches!(parsed.execution, ExecutionReport::Complete { .. }) {
+        return Err(container_refusal(budget, &child_origin, &parsed));
+    }
+    let facts = Arc::new(ContainerFacts::new(
+        child_origin,
+        backing,
+        materialized.content_digest,
+        parsed,
+    ));
+    if let Some(cache) = budget.facts_cache() {
+        cache.remember_container(&facts);
+    }
+    Ok(facts)
+}
+
+/// The origin of one container entry's child container, derived from the parent's origin and the
+/// entry's own identity.
+///
+/// One derivation, used by the artifact-tree walk and the scope cursor alike: a child container's id
+/// is a function of the parent's whole chain plus the entry's ordinal and raw name, so two paths that
+/// derived it differently would address different containers for the same physical entry — and the
+/// origin chain is exactly what the directed container access validates a step at a time.
+pub(crate) fn derive_child_origin(
+    parent: &ContainerOrigin,
+    entry: &PhysicalEntryId,
+) -> ContainerOrigin {
+    let mut child = parent.clone();
+    child.steps.push(ContainerOriginStep {
+        via_ordinal: entry.ordinal,
+        via_raw_name: entry.raw_name.clone(),
+        child_container: derive_child_container(parent, entry.ordinal, &entry.raw_name),
+    });
+    child
+}
+
+/// The origin of the one root container a snapshot establishes.
+pub(crate) fn root_origin(snapshot: &SnapshotId) -> ContainerOrigin {
     ContainerOrigin {
         snapshot: snapshot.clone(),
         root_container: ContainerId("root".into()),
@@ -2161,7 +2579,12 @@ fn tree_parent_provenance(parent_entry: &PhysicalEntry) -> Option<Provenance> {
     })
 }
 
-fn tree_diagnostic(error: &Error, parent_entry: Option<&PhysicalEntry>) -> Diagnostic {
+/// The diagnostic one failure publishes, located at the entry the failed read hangs from.
+///
+/// The severity, the code and the provenance are the whole-tree walk's own, and the scope cursor
+/// publishes through the same function so a subtree that could not be read has one shape wherever a
+/// request reports it.
+pub(crate) fn tree_diagnostic(error: &Error, parent_entry: Option<&PhysicalEntry>) -> Diagnostic {
     Diagnostic {
         code: match error {
             Error::InvalidInput { code, .. } | Error::Unsupported { code, .. } => code.clone(),

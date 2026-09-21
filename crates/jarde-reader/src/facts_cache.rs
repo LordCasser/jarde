@@ -28,7 +28,8 @@
 //!
 //! | key dimension | carrier |
 //! | --- | --- |
-//! | class content digest (and length) | the bytes the entry was parsed from, hashed here |
+//! | class content digest (and length) | the bytes the entry was parsed from — hashed here, or the
+//!   [`ClassBytesId`] a verified read already published |
 //! | parser / registry version | [`FactsIdentity::registry`], which is [`HIGHEST_REGISTERED_MAJOR`] |
 //! | parse policy | [`ParsePolicy`]: the structural facts, or the header under `InspectionMode` |
 //! | budget (completeness) | an entry is written **only** by a parse that ran to the end |
@@ -88,6 +89,23 @@
 //!   one. A container product is the other way round: it *is* one origin, and a lookup that names
 //!   another one cannot reach it.
 //!
+//! ## The shared handle, and the trusted digest
+//!
+//! An answer is immutable once written, so it is handed out as the handle the store holds
+//! (`Arc<ClassFacts>` / `Arc<HeaderInspection>`) instead of being copied: one class prepared once
+//! and consumed by every method of it is one payload, and the lock that answers a hit performs an
+//! `Arc::clone` and nothing else. A hold is separate from retention — clearing the store, a store
+//! that has room for nothing, or a later read rewriting the same key releases the store's own
+//! reference and leaves a live handle exactly as it was, which is what "a request that is already
+//! consuming these facts keeps consuming them" means.
+//!
+//! Each product has two entry shapes and they are the same consultation: [`FactsCache::structure_shared`]
+//! and [`FactsCache::header_shared`] hash the bytes, while [`FactsCache::trusted_structure`] and
+//! [`FactsCache::trusted_header`] take the content identity a verified read already published
+//! ([`ClassBytesId`]), so consuming one prepared class does not re-hash its backing per method. One
+//! content is one key either way, which is why a trusted lookup cannot be answered with another
+//! class's facts and why a digest or a length that does not match the bytes finds nothing.
+//!
 //! ## Capacity, weight and release
 //!
 //! Both layers share one budget and two bounds ([`FactsCapacity`]): a number of answers and a
@@ -112,7 +130,7 @@ use crate::artifact::ContainerFacts;
 use crate::budget::Budget;
 use crate::classfile::{ClassFacts, HeaderInspection, InspectionMode};
 use crate::error::{Error, Result};
-use crate::model::{ContainerOrigin, Digest};
+use crate::model::{ClassBytesId, ContainerOrigin, Digest};
 use crate::release_registry::HIGHEST_REGISTERED_MAJOR;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
@@ -265,14 +283,32 @@ pub(crate) struct FactsKey {
 }
 
 impl FactsKey {
+    /// The key for class bytes whose content identity a **verified read already computed**.
+    ///
+    /// A read that materialized the bytes already digested them for the entry it was read from, and
+    /// hashing the same backing again per lookup is work the cache is supposed to remove rather than
+    /// add. The digest and the length this takes are the ones such a read published
+    /// ([`ClassBytesId`]); a caller that has no such evidence keeps using [`Self::of`], which
+    /// hashes the bytes here.
+    ///
+    /// Both produce the **same key** for the same content: [`Self::of`] is this function applied to
+    /// the digest it computes, so a trusted lookup and a byte lookup of one class answer one entry.
+    pub(crate) fn from_trusted(digest: Digest, length: u64, policy: ParsePolicy) -> Self {
+        Self {
+            digest,
+            length,
+            policy,
+        }
+    }
+
     /// The class bytes' identity, hashed only when a cache is really consulted: the direct path
     /// computes no digest it does not already need, so attaching no cache costs no hashing.
     fn of(bytes: &[u8], policy: ParsePolicy) -> Self {
-        Self {
-            digest: Digest(blake3::hash(bytes).to_hex().to_string()),
-            length: bytes.len() as u64,
+        Self::from_trusted(
+            Digest(blake3::hash(bytes).to_hex().to_string()),
+            bytes.len() as u64,
             policy,
-        }
+        )
     }
 }
 
@@ -319,11 +355,18 @@ struct ContainerEntry {
     weight: u64,
 }
 
-/// One cached answer.
+/// One cached answer, held as the shared handle its consumers read.
+///
+/// The payload is an `Arc` because an answer is **immutable once written** and several consumers may
+/// hold it at once: a hit hands out `Arc::clone` inside the lock and copies nothing, so a class
+/// prepared once is not copied per method, and the handle a consumer holds stays valid after
+/// [`FactsCache::clear`], after the store has room for nothing else, and after a later read rewrites
+/// the same key. Sharing the handle never shares an origin: an answer carries none, and the caller
+/// that read the bytes binds the origin it read them from.
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum FactsPayload {
-    Structure(ClassFacts),
-    Header(HeaderInspection),
+    Structure(Arc<ClassFacts>),
+    Header(Arc<HeaderInspection>),
 }
 
 /// One entry: the payload plus the declaration it was written under.
@@ -598,40 +641,108 @@ impl FactsCache {
 
     /// The structural facts of `bytes`, when this store already holds them under this handle's
     /// declaration.
+    ///
+    /// The hit is answered with the store's **shared handle** and copied only where this signature
+    /// demands an owned value: the store's lock does an `Arc::clone`, and the one copy a caller that
+    /// needs a `ClassFacts` of its own pays happens outside it
+    /// ([`FactsCache::structure_shared`] is the entry point that avoids that copy entirely).
     pub(crate) fn structure(
         &self,
         bytes: &[u8],
         budget: &mut Budget,
     ) -> Result<Option<ClassFacts>> {
-        let taken = self.take(FactsKey::of(bytes, ParsePolicy::Structure), budget)?;
-        Ok(match taken {
-            // The policy check inside `take` makes this arm unreachable; it returns `None` rather
-            // than panicking, because a cache is not a place to abort a request.
-            Some(FactsPayload::Header(_)) | None => None,
-            Some(FactsPayload::Structure(facts)) => Some(facts),
-        })
+        Ok(self
+            .take_structure(FactsKey::of(bytes, ParsePolicy::Structure), budget)?
+            .map(Arc::unwrap_or_clone))
+    }
+
+    /// The structural facts of `bytes`, as the shared handle the store holds.
+    ///
+    /// The handle is the same allocation for every lookup of the same content: consuming one
+    /// prepared class from several methods does not copy the payload per method, and a handle a
+    /// caller already holds stays readable — with the content it was parsed from — after
+    /// [`FactsCache::clear`], after the store refuses what does not fit, and after a later read
+    /// rewrites the same key.
+    pub fn structure_shared(
+        &self,
+        bytes: &[u8],
+        budget: &mut Budget,
+    ) -> Result<Option<Arc<ClassFacts>>> {
+        self.take_structure(FactsKey::of(bytes, ParsePolicy::Structure), budget)
+    }
+
+    /// The structural facts of class bytes whose content identity a verified read already published.
+    ///
+    /// Same answer as [`FactsCache::structure_shared`] for the same bytes — the two keys are one key
+    /// — without hashing the backing again: `class_bytes` is the identity such a read computed once
+    /// ([`ClassBytesId`]). A digest that does not belong to the bytes the entry was parsed from is
+    /// not a near miss but another key: it finds nothing rather than answering something else.
+    pub fn trusted_structure(
+        &self,
+        class_bytes: &ClassBytesId,
+        budget: &mut Budget,
+    ) -> Result<Option<Arc<ClassFacts>>> {
+        self.take_structure(
+            FactsKey::from_trusted(
+                class_bytes.digest.clone(),
+                class_bytes.length,
+                ParsePolicy::Structure,
+            ),
+            budget,
+        )
     }
 
     /// Writes the structural facts of `bytes`. Only a parse that ran to the end reaches this.
     pub(crate) fn remember_structure(&self, bytes: &[u8], facts: &ClassFacts) {
         self.keep(
             FactsKey::of(bytes, ParsePolicy::Structure),
-            FactsPayload::Structure(facts.clone()),
+            FactsPayload::Structure(Arc::new(facts.clone())),
         );
     }
 
     /// The header inspection of `bytes` under `mode`, when this store holds one.
+    ///
+    /// The owned-value shape of [`FactsCache::header_shared`], for the same reason its structural
+    /// twin has one: the copy this signature asks for happens outside the lock.
     pub(crate) fn header(
         &self,
         bytes: &[u8],
         mode: InspectionMode,
         budget: &mut Budget,
     ) -> Result<Option<HeaderInspection>> {
-        let taken = self.take(FactsKey::of(bytes, ParsePolicy::of(mode)), budget)?;
-        Ok(match taken {
-            Some(FactsPayload::Header(inspection)) => Some(inspection),
-            Some(FactsPayload::Structure(_)) | None => None,
-        })
+        Ok(self
+            .take_header(FactsKey::of(bytes, ParsePolicy::of(mode)), budget)?
+            .map(Arc::unwrap_or_clone))
+    }
+
+    /// The header inspection of `bytes` under `mode`, as the shared handle the store holds.
+    pub fn header_shared(
+        &self,
+        bytes: &[u8],
+        mode: InspectionMode,
+        budget: &mut Budget,
+    ) -> Result<Option<Arc<HeaderInspection>>> {
+        self.take_header(FactsKey::of(bytes, ParsePolicy::of(mode)), budget)
+    }
+
+    /// The header inspection of class bytes whose content identity a verified read already published.
+    ///
+    /// The header twin of [`FactsCache::trusted_structure`], keyed the same way: the content digest
+    /// and the parse policy, so a `Strict` request is never answered with a `Forensic` read.
+    pub fn trusted_header(
+        &self,
+        class_bytes: &ClassBytesId,
+        mode: InspectionMode,
+        budget: &mut Budget,
+    ) -> Result<Option<Arc<HeaderInspection>>> {
+        self.take_header(
+            FactsKey::from_trusted(
+                class_bytes.digest.clone(),
+                class_bytes.length,
+                ParsePolicy::of(mode),
+            ),
+            budget,
+        )
     }
 
     /// Writes the header inspection of `bytes` under `mode`. The version gate has already accepted
@@ -644,7 +755,7 @@ impl FactsCache {
     ) {
         self.keep(
             FactsKey::of(bytes, ParsePolicy::of(mode)),
-            FactsPayload::Header(inspection.clone()),
+            FactsPayload::Header(Arc::new(inspection.clone())),
         );
     }
 
@@ -787,6 +898,10 @@ impl FactsCache {
     ///
     /// A hit polls the budget first: serving a fact from memory is not a way past a cancellation or
     /// an expired clock, and the request that asked for it still has to terminate.
+    ///
+    /// A hit hands out the payload's **handle**, not a copy of it: cloning the payload clones one
+    /// `Arc`, so this critical section is a map lookup and a pointer copy — never a deep copy of a
+    /// prepared class, and never anything held across a parse, a decompression or a sink call.
     fn take(&self, key: FactsKey, budget: &mut Budget) -> Result<Option<FactsPayload>> {
         budget.poll()?;
         let mut guard = self.shared();
@@ -811,6 +926,34 @@ impl FactsCache {
         let payload = entry.payload.clone();
         shared.counters.hits += 1;
         Ok(Some(payload))
+    }
+
+    /// The structural answer under `key`, as the shared handle, or `None` when this store has none.
+    ///
+    /// A payload of the other product answers nothing here — the policy check inside [`Self::take`]
+    /// discards it as unusable before this matches, so the arm below returns `None` instead of
+    /// panicking: a store is not a place to abort a request.
+    fn take_structure(
+        &self,
+        key: FactsKey,
+        budget: &mut Budget,
+    ) -> Result<Option<Arc<ClassFacts>>> {
+        Ok(match self.take(key, budget)? {
+            Some(FactsPayload::Structure(facts)) => Some(facts),
+            Some(FactsPayload::Header(_)) | None => None,
+        })
+    }
+
+    /// The header answer under `key`, as the shared handle, or `None` when this store has none.
+    fn take_header(
+        &self,
+        key: FactsKey,
+        budget: &mut Budget,
+    ) -> Result<Option<Arc<HeaderInspection>>> {
+        Ok(match self.take(key, budget)? {
+            Some(FactsPayload::Header(inspection)) => Some(inspection),
+            Some(FactsPayload::Structure(_)) | None => None,
+        })
     }
 
     /// Why an entry found under `key` is not answerable under this handle's declaration.
@@ -893,4 +1036,52 @@ impl FactsCache {
             }
         }
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A trusted digest and the bytes it was computed from are **one key**, and nothing else is.
+    ///
+    /// This is the whole of the "a caller with a trusted digest does not hash the backing again"
+    /// promise: a lookup that skips the hash has to land on the entry a byte lookup of the same
+    /// content wrote, and it must not land on anything else — a length that does not belong to the
+    /// content, or another parse policy's answer, is another key rather than a near miss.
+    #[test]
+    fn a_trusted_digest_and_the_bytes_it_came_from_are_one_key() {
+        let bytes = b"the bytes of one class";
+        let digest = Digest(blake3::hash(bytes).to_hex().to_string());
+        let length = bytes.len() as u64;
+        for policy in [
+            ParsePolicy::Structure,
+            ParsePolicy::Strict,
+            ParsePolicy::Forensic,
+        ] {
+            let hashed = FactsKey::of(bytes, policy);
+            assert_eq!(hashed.digest, digest, "{policy:?}");
+            assert_eq!(hashed.length, length, "{policy:?}");
+            assert_eq!(
+                hashed,
+                FactsKey::from_trusted(digest.clone(), length, policy),
+                "{policy:?}: a trusted digest and the bytes are two keys for one content"
+            );
+        }
+        assert_ne!(
+            FactsKey::of(bytes, ParsePolicy::Structure),
+            FactsKey::from_trusted(digest.clone(), length + 1, ParsePolicy::Structure),
+            "a length that does not belong to the content is another key"
+        );
+        assert_ne!(
+            FactsKey::from_trusted(digest.clone(), length, ParsePolicy::Strict),
+            FactsKey::from_trusted(digest, length, ParsePolicy::Forensic),
+            "two parse policies of one content are two answers"
+        );
+    }
+
+    // What the store does with a key it already holds — a clear, a capacity refusal, a later read
+    // writing the same key — is asserted from `tests/p5_shared_payload.rs`. A store is not built
+    // here on purpose: every entry point that builds one is a construction this crate's sources may
+    // not contain (`tests/p5_benchmark.rs`'s cache guard), which is the same reason the store's
+    // behaviour has always been tested through the root test crate.
 }
