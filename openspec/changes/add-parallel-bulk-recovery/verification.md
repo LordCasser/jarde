@@ -293,3 +293,22 @@ review 的 R1–R8 全部有落点，逐条给出**修复位置与验证**；未
 **CLI 文档预算边界**：`export` 的流额度与库总账已在 D2/4.6 后统一（同一本账、终态记录自身计入）；`recover`/`class-source` 等文档命令仍按既有 `output_bytes` 语义拒绝超限文档。CLI 深链门的"紧输出上限"不再 pin 具体停止种类（旧标定所依赖的冗余读已被 D2 移除），精确形状由库层 `p3_concat_conversion` 承担——这是登记在案的口径变化，不是放宽验收。
 
 **深链进程门禁（普通 worker 栈）复跑**：debug `a_deep_concatenation_chain_is_presented_by_a_bulk_worker`（随 workspace 跑）与 release `the_deep_chain_reaches_a_bulk_worker_in_the_optimized_build`（`--jobs 2` 把类任务放到库自建、未设 `stack_size` 的线程上）在本轮最终候选上通过；128 KiB 栈探针会以 `jarde-bulk-0` 溢出 abort，证明该门禁针对 worker 栈。
+
+## 13. 窗口二级额度的前后对照与默认裁决（任务 4.7 / 6.3）
+
+**机制**：`BulkLimits.shared_result_pool_weight` = 声明总窗口 − 生效 worker 数 × 单项容量（`saturating_sub`）；每个活动类先用自己的**预留**（第一条结果 `charge = 0`，永不等待），其余结果进共享池（`charge = max(weight, 1)`），池满才等。池为 0 时规则本身就让每个活动类回到"一个待交付结果"，无需特例分支。
+
+**探针口径（线程时间合计，每配置 1 样本）**：
+
+| 语料 | jobs | `place_method` 首版 → 现在 | `take_front` 首版 → 现在 |
+| --- | --- | --- | --- |
+| bcprov | 4 | 8.00 s → **0** | 3.10 s → 2.12 s |
+| bcprov | 8 | 20.63 s → **0** | 3.10 s → 1.56 s |
+| s2-009 | 4 | 25.47 s → **0** | 9.41 s → 6.41 s |
+| s2-009 | 8 | 67.53 s → **0** | 9.48 s → 4.96 s |
+
+**纯构建墙钟（3 次中位数，交错；测量期机器非空载，load 6.6→13.8，作形状证据）**：bcprov jobs=2 3.04→2.53 s、jobs=4 3.09→2.10 s、jobs=8 3.23→1.76 s；s2-009 jobs=2 9.41→8.20 s、jobs=4 9.78→6.85 s、jobs=8 10.49→6.04 s；jobs=1 两语料持平（串行不经过窗口）。每次运行的交付计数完全相同（records/methods 全同），时间差不是少做了工作。
+
+**6.3 默认配置裁决（本次可裁定的部分）**：有序窗口的二级额度**已确立为默认行为**——它按设计推导（不是开关），池容量随声明总窗口与生效 worker 数发布，池为 0 时与首版等价。两个真实语料上并行首次呈现单调收益（jobs=8 最快），因此"并行路径默认启用"有了非计时依赖：计数器与顺序断言在 1/N 下逐项一致（`bulk_recovery_workers`、`p1_budget_ledger`、`bulk_recovery_delivery`）。
+
+**仍未裁定**：是否对外宣称"接近/超过 jadx"仍需 `optimize-demand-workloads` 的协议化测量（≥10 次独立交错、控制 page cache 初态与负载）；本页数字只用于形状与归因。

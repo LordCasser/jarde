@@ -17,8 +17,10 @@
 //! rest of the pipeline cost beside the library's own work", and a comparison across programs
 //! would put a second build and a second set of process starts into the measurement.
 //!
-//! Nothing here asserts a duration. The example prints one line of counts and one line of the
-//! run's own `elapsed_millis`, and the caller decides what to compare.
+//! Nothing here asserts a duration. The example prints one line of counts, one line of the run's own
+//! `elapsed_millis`, and one line of the retention window the run reached — its effective class
+//! count, the shared pool the declaration funds outside the per-class reservations, and both
+//! high-water marks — and the caller decides what to compare.
 
 use jarde::{
     ArtifactInput, ArtifactSnapshot, Budget, BulkDiagnosticEvent, BulkFinalEvent, BulkHeaderEvent,
@@ -234,6 +236,18 @@ fn main() -> Result<()> {
         report.usage.ir_items,
         report.usage.analysis_steps,
         report.usage.elapsed_millis,
+    );
+    // The window, as the operation's own readings rather than as the declaration: the pool's capacity
+    // comes from the declared window and the effective worker count, and its high-water mark is what
+    // this run really placed there. A run whose two-level window is doing nothing shows a pool
+    // high-water of zero whatever its capacity is.
+    println!(
+        "window: active_classes={} pool_limit={} pool_high_water={} buffered_high_water={} buffered_limit={}",
+        report.window.active_classes,
+        report.summary.limits.shared_result_pool_weight,
+        report.window.shared_pool_weight_high_water,
+        report.window.buffered_weight_high_water,
+        report.window.buffered_weight_limit,
     );
     #[cfg(feature = "test-support")]
     println!(

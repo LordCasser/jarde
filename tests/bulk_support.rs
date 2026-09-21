@@ -860,8 +860,10 @@ impl Fields {
 /// per-method limits and the facts capacity), every discovery/execution/delivery count, every
 /// per-outcome bucket, whether the traversal reached the end, and the aggregate state with the
 /// reason it stopped for. What it does not read: the worker counts (the caller's scheduling
-/// parameter, which the targets remove before comparing), the operation's usage, the entry usage and
-/// the elapsed time.
+/// parameter, which the targets remove before comparing), the shared pool's capacity and its
+/// high-water mark (both derived from the effective worker count, so a fingerprint that read them
+/// would read the scheduling parameter back in), the operation's usage, the entry usage and the
+/// elapsed time.
 pub fn fingerprint(summary: &BulkSummary) -> Fingerprint {
     let mut fields = Fields::new();
     fields.structured(&summary.view);

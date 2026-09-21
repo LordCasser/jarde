@@ -323,6 +323,112 @@ fn a_cancellation_while_the_window_is_full_wakes_every_waiter() {
 }
 
 #[test]
+fn a_cancellation_wakes_a_producer_waiting_for_room_in_the_shared_pool() {
+    // Task 4.7 adds a second reason a producer can wait: the class's own seat is taken, and the
+    // shared pool — the declared window outside the reservations — has no room left. This case holds
+    // a run exactly there and cancels from inside the earliest class's callback.
+    //
+    // The window funds the two reservations of this run plus **one further byte**: the class's own
+    // seat is enough for its first result, and every result after it needs pool room that the class
+    // behind the front can take first. The earliest class is delivered through a slow sink, so the
+    // class behind it really does fill that one byte and then wait for room it cannot get until the
+    // earliest class moves on. A window whose pool wait did not observe the cancellation would never
+    // return; the port is attached so "a producer really waited for the pool" is a reading of this
+    // run rather than an assumption about it.
+    let (snapshot, _opened) = open(flat_fixture());
+    let content = vec![snapshot.clone()];
+    let mut setup = Budget::new(bulk_support::limits());
+    let roots = container_roots(&snapshot, &mut setup, &FLAT_PREFIXES);
+    let environment = environment(&snapshot, tree_scope(), roots);
+    // Learn the fixture's own result weights first, so the per-result ceiling below is one no result
+    // exceeds and the pool's one byte is the only room beyond the reservations.
+    let ceiling = {
+        let mut budget = Budget::new(bulk_support::limits());
+        let mut sink = Recorder::new();
+        let learned = Engine::new()
+            .recover_all(
+                &content,
+                &request(environment.clone(), 1),
+                &mut budget,
+                &mut sink,
+            )
+            .expect("the fixture's scope is recoverable");
+        assert_eq!(learned.summary.status(), "complete");
+        sink.methods()
+            .iter()
+            .map(|method| method.weight)
+            .max()
+            .expect("the fixture declares method records to learn a ceiling from")
+    };
+    assert!(ceiling > 1, "one byte of pool is smaller than every result");
+    let probe = Arc::new(BulkProbe::new());
+    let request = request(environment, 2)
+        .with_capacities(jarde::DEFAULT_MAX_CLASS_BYTES, ceiling, 2 * ceiling + 1)
+        .with_probe(Arc::clone(&probe));
+    let mut budget = Budget::new(bulk_support::limits());
+    let token = budget.cancellation_token();
+    let seen = Arc::new(AtomicUsize::new(0));
+    let counter = Arc::clone(&seen);
+    let mut sink = Recorder::new();
+    sink.hook = Some(Box::new(move |event: &Recorded| {
+        if let Recorded::Method(method) = event
+            && method.class_ordinal == 0
+            && counter.fetch_add(1, Ordering::SeqCst) == 0
+        {
+            std::thread::sleep(std::time::Duration::from_millis(150));
+            token.cancel();
+        }
+    }));
+    let started = std::time::Instant::now();
+    let report = Engine::new()
+        .recover_all(&content, &request, &mut budget, &mut sink)
+        .expect("a cancelled operation returns its report");
+    assert!(
+        started.elapsed() < std::time::Duration::from_secs(10),
+        "the producer waiting for pool room was woken: the call returned in {:?}",
+        started.elapsed()
+    );
+    assert_eq!(seen.load(Ordering::SeqCst), 1, "the hook really ran");
+    let reading = probe.reading();
+    let place = reading
+        .window
+        .iter()
+        .find(|row| row.site == "place_method")
+        .expect("the port reports the window's own sites");
+    assert!(
+        place.waits > 0,
+        "a producer really waited for room in the pool this case is about: {place:?}"
+    );
+    assert_eq!(
+        report.summary.limits.shared_result_pool_weight, 1,
+        "the window funds the two reservations and one further byte: {:?}",
+        report.summary.limits
+    );
+    assert!(
+        report.summary.status() == "cancelled" || report.summary.status() == "partial",
+        "the run states a stop rather than a completion: {:?}",
+        report.summary
+    );
+    assert!(!report.final_delivered, "no `Final` is claimed for it");
+    assert!(
+        report.summary.methods_executed >= report.summary.methods_delivered,
+        "the account still adds up: {:?}",
+        report.summary
+    );
+    let ordinals: Vec<(u64, u64)> = sink
+        .methods()
+        .iter()
+        .map(|method| (method.class_ordinal, method.member_ordinal))
+        .collect();
+    let mut sorted = ordinals.clone();
+    sorted.sort_unstable();
+    assert_eq!(
+        ordinals, sorted,
+        "the prefix the consumer confirmed is still the physical order"
+    );
+}
+
+#[test]
 fn a_consumer_that_stops_the_stream_keeps_its_prefix() {
     let (content, request, mut budget) = fixture(4);
     let mut sink = Recorder::new();

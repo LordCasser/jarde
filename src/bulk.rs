@@ -31,15 +31,25 @@
 //!
 //! # The window and its backpressure
 //!
-//! At most `W` class tasks are active at once, each has **one** pending method-result slot and a
-//! fixed small control slot for the `ClassPrepared` record, and the control slot carries no product
-//! weight. A worker that produced a result waits for its own class's slot to be taken before it
-//! starts the next method, so the retained product weight of the whole operation is bounded by
-//! `W * max_result_weight`, which the effective worker count makes no larger than
-//! `max_buffered_result_weight`. The coordinator always delivers from the **earliest** active class,
-//! so a slow first class cannot be overtaken by a later fast one and a full window can never form a
-//! capacity cycle: the earliest class's own slot is always free when the coordinator is waiting on
-//! it.
+//! At most `W` class tasks are active at once, and each of them holds two kinds of room in the
+//! window. A fixed small **control slot** for the `ClassPrepared` record, which carries no product
+//! weight at all, and a **reservation** of one `max_result_weight` of the result window: the first
+//! method result a class hands over always has a seat of its own, whatever the classes beside it are
+//! doing. The window capacity beyond those reservations is a **shared pool** of
+//! `max_buffered_result_weight - W * max_result_weight` bytes — at least zero, and derived from
+//! nothing but the declared window and the effective worker count
+//! ([`BulkLimits::shared_result_pool_weight`]) — and any active class may place further results in
+//! it until it is full. A pool placement is charged the result's own weight, or one unit when the
+//! record retains no product at all, so a pool of zero capacity takes no further placement and the
+//! window is then exactly the one-result-per-class window it replaced. The retained product weight
+//! of the whole operation is therefore bounded by `W * max_result_weight + pool`, which is the
+//! declared `max_buffered_result_weight`.
+//!
+//! The coordinator always delivers from the **earliest** active class, so a slow first class cannot
+//! be overtaken by a later fast one and a full window can never form a capacity cycle: the earliest
+//! class's own reservation is free whenever the coordinator waits on it, because the take the
+//! coordinator is waiting to perform is what frees it. A full pool of other classes' results can
+//! therefore only slow that class down to one result at a time, never stop it.
 //!
 //! A single method result larger than the fixed `max_result_weight` stops **that method** locally,
 //! with the weight and the limit it exceeded in its record: its Java text is discarded rather than
@@ -131,6 +141,17 @@ pub const DEFAULT_MAX_RESULT_WEIGHT: u64 = 2 * 1024 * 1024;
 /// The default whole-window retention ceiling, in bytes: sixteen results of the default per-result
 /// ceiling, so the default configuration can hold sixteen class tasks' pending results at once.
 pub const DEFAULT_MAX_BUFFERED_RESULT_WEIGHT: u64 = 32 * 1024 * 1024;
+
+/// What one placement in the shared pool costs at the very least, in weight units.
+///
+/// A result is charged what it owns, but a record that retains no product — a declaration without a
+/// body, a refusal, a result the per-result ceiling refused — owns no buffer to charge. It still
+/// takes a place in the window, and the window's capacity is the only thing bounding how many such
+/// records may wait at once, so every placement costs at least this much. One is the smallest honest
+/// statement of "this placement occupies room", and it is what makes a pool of zero capacity take no
+/// further placement at all: the window is then exactly the one-result-per-class window the shared
+/// pool was added to.
+const POOL_PLACEMENT_UNIT: u64 = 1;
 
 /// One bulk recovery request: the scope, the environment and the explicit resources.
 ///
@@ -293,6 +314,21 @@ pub struct BulkLimits {
     pub max_result_weight: u64,
     /// The whole-window retention ceiling, as the request declared it.
     pub max_buffered_result_weight: u64,
+    /// The weight the **shared pool** outside the per-class reservations may hold:
+    /// `max_buffered_result_weight - workers_effective * max_result_weight`, saturating at zero.
+    ///
+    /// Each active class keeps a reservation of one [`BulkLimits::max_result_weight`] — the first
+    /// result it hands over never waits for room — and this is the rest of the declared window, which
+    /// any active class may fill with further results. The figure is derived from the declared window
+    /// and the *effective* worker count alone: it does not move with `max_class_bytes`, with the
+    /// number of classes in the scope, or with anything else about the input. Zero means the pool
+    /// takes no further placement, so the window is exactly the one-result-per-class window that
+    /// came before it.
+    ///
+    /// The serial configuration publishes the same derivation — one effective worker, so one
+    /// reservation — although it has no queue in which to use the pool: the coordinator *is* the class
+    /// task there. What a run really used is [`BulkWindow::shared_pool_weight_high_water`].
+    pub shared_result_pool_weight: u64,
     /// The retention capacity of the store this operation reads through.
     pub facts_capacity: FactsCapacity,
 }
@@ -305,7 +341,9 @@ impl BulkLimits {
     /// `max_buffered_result_weight < max_result_weight` (the window cannot hold even one result if
     /// that result is as large as the per-result ceiling allows) and `max_class_bytes == 0` (no
     /// class could ever be prepared). The window-derived worker reduction is the one adjustment a
-    /// valid request may get, and it is published rather than hidden.
+    /// valid request may get, and it is published rather than hidden. The reservations and the shared
+    /// pool are derived from that same pair — the declared window and the effective worker count — so
+    /// they are consequences of the declaration rather than a second one.
     pub fn effective_from(
         request: &BulkRecoveryRequest,
         total: &Limits,
@@ -348,6 +386,13 @@ impl BulkLimits {
             .unwrap_or(usize::MAX)
             .min(request.workers)
             .max(1);
+        // The window each effective worker is promised: one reservation of the fixed per-result
+        // ceiling, plus the rest of the declared window as the pool they all share. The subtraction
+        // saturates rather than refusing: a window that funds nothing beyond the reservations is a
+        // valid declaration, and it is the pool of zero capacity.
+        let reserved = u64::try_from(effective)
+            .unwrap_or(u64::MAX)
+            .saturating_mul(request.max_result_weight);
         Ok(Self {
             workers_requested: request.workers,
             workers_effective: effective,
@@ -356,6 +401,7 @@ impl BulkLimits {
             max_class_bytes: request.max_class_bytes,
             max_result_weight: request.max_result_weight,
             max_buffered_result_weight: request.max_buffered_result_weight,
+            shared_result_pool_weight: request.max_buffered_result_weight.saturating_sub(reserved),
             facts_capacity,
         })
     }
@@ -831,6 +877,15 @@ pub struct BulkWindow {
     pub buffered_weight_high_water: u64,
     /// The largest weight one method result was accounted at.
     pub largest_result_weight: u64,
+    /// The most of the **shared pool** this run held at once: the weight of the pending results that
+    /// were placed beyond their own class's reservation. Zero is a run that never needed the pool
+    /// (every producer found its class's own seat free) and is also what the serial configuration
+    /// states, because it queues no result.
+    ///
+    /// The figure is what makes "the pool carried this run's extra results" a reading of the run
+    /// rather than an assumption about the formula in
+    /// [`BulkLimits::shared_result_pool_weight`]; the pool's capacity itself is published there.
+    pub shared_pool_weight_high_water: u64,
     /// The fixed per-result ceiling the run used.
     pub result_weight_limit: u64,
     /// The whole-window ceiling the run used.
@@ -1098,6 +1153,20 @@ struct ClassRefusal {
     execution: ExecutionReport,
 }
 
+/// One method record waiting for the coordinator in its class's slot, with what it holds of the
+/// window.
+///
+/// The **first** record a class hands over is seated by the class's own reservation and holds nothing
+/// of the shared pool; every further record is seated by the pool and holds the weight the pool
+/// charged for it. Both figures travel with the record so that delivering it, or retiring the slot it
+/// waits in, releases exactly what it held.
+struct PendingMethod {
+    event: Box<MethodResultEvent>,
+    /// What this placement holds of the shared pool: zero for the class's own reservation, and
+    /// `max(weight, 1)` for a placement the pool admitted (see [`POOL_PLACEMENT_UNIT`]).
+    pool_charge: u64,
+}
+
 /// What one class's slot holds for the coordinator.
 struct Slot {
     /// The class candidate this task is about, so the worker that takes it reads what the traversal
@@ -1116,8 +1185,10 @@ struct Slot {
     container: Option<ContainerFactsHandle>,
     /// The control record waiting for the coordinator, at most one (`ClassPrepared`).
     control: Option<ClassPreparedEvent>,
-    /// The method record waiting for the coordinator, at most one.
-    method: Option<Box<MethodResultEvent>>,
+    /// The method records waiting for the coordinator, in production order. The coordinator takes
+    /// them from the front, so a class's results are delivered in its declaration order; the first
+    /// one present is the class's own reserved seat and the rest were seated by the shared pool.
+    methods: VecDeque<PendingMethod>,
     /// The class task's own result, once it returned. Its presence makes the class "finished".
     ending: Option<ClassEnding>,
 }
@@ -1128,9 +1199,15 @@ impl Slot {
             class,
             container,
             control: None,
-            method: None,
+            methods: VecDeque::new(),
             ending: None,
         }
+    }
+
+    /// Whether this class's own reserved seat is free: nothing of its own is waiting for the
+    /// coordinator yet.
+    fn reservation_free(&self) -> bool {
+        self.methods.is_empty()
     }
 }
 
@@ -1176,6 +1253,12 @@ struct OperationState {
     /// The retained weight of the pending method records, and the most it ever was.
     retained_weight: u64,
     retained_weight_high_water: u64,
+    /// What the shared pool holds right now — the sum of the charges of the placements it admitted —
+    /// and the most it ever held. The charges are released when their records are delivered or when
+    /// the slot they wait in retires, never before: a record that was admitted kept the room it was
+    /// admitted into for as long as it was held.
+    pool_used: u64,
+    pool_used_high_water: u64,
     largest_result_weight: u64,
     /// The operation's close signal. Once set it is never replaced, so the first reason is the one
     /// the report states.
@@ -1191,14 +1274,20 @@ struct Registry {
     changed: Condvar,
     /// The operation's observation port: where a window wait is stated, when one is attached.
     observation: Observation,
+    /// The capacity of the shared pool outside the per-class reservations, as
+    /// [`BulkLimits::effective_from`] derived it from the declared window and the effective worker
+    /// count. It is fixed for the whole operation: no placement has to re-derive it, and no part of
+    /// the window can move it.
+    pool_capacity: u64,
 }
 
 impl Registry {
-    fn new(observation: Observation) -> Self {
+    fn new(observation: Observation, pool_capacity: u64) -> Self {
         Self {
             state: Mutex::new(OperationState::default()),
             changed: Condvar::new(),
             observation,
+            pool_capacity,
         }
     }
 
@@ -1418,9 +1507,18 @@ impl Registry {
         }
     }
 
-    /// Hands one method record to the class's slot, waiting — bounded — for its own slot to be
-    /// taken. The weight is accounted while the record waits, which is exactly what the window's
-    /// ceiling bounds.
+    /// Hands one method record to the class's slot, waiting — bounded — for room in the window.
+    ///
+    /// Room is the class's own reservation while nothing of its own is waiting: the first record a
+    /// class produces is always seated, which is what keeps the earliest class's progress independent
+    /// of every other class. After that the record needs room in the shared pool, and the pool is
+    /// charged the record's weight (or one unit when it retains nothing, see
+    /// [`POOL_PLACEMENT_UNIT`]); a pool with no room left is the only thing a producer waits for, and
+    /// the wait observes the operation's close signal every slice, so a consumer that stopped or a
+    /// cancellation releases a worker that is waiting here.
+    ///
+    /// Every seated record is accounted while it waits: the weight and the pool charge are what the
+    /// window's own ceilings bound, and they are released by the take that delivers the record.
     fn place_method(
         &self,
         index: u64,
@@ -1432,18 +1530,33 @@ impl Registry {
             let Some(position) = position_of(&state, index) else {
                 return Ok(false);
             };
-            let free = state
-                .slots
-                .get(position)
-                .is_some_and(|slot| slot.method.is_none());
-            if free {
-                let weight = event.weight;
+            let weight = event.weight;
+            let charge = weight.max(POOL_PLACEMENT_UNIT);
+            let seat = match state.slots.get(position) {
+                None => None,
+                // The class's own seat: reserved, so it is never charged to the pool and never waits
+                // for it, whatever the classes beside this one hold.
+                Some(slot) if slot.reservation_free() => Some(0),
+                // A further result of this class: seated by the shared pool while the pool has room
+                // for it. A full pool — of this class's results or of another's — is the one thing a
+                // producer waits for.
+                Some(_) if state.pool_used.saturating_add(charge) <= self.pool_capacity => {
+                    Some(charge)
+                }
+                Some(_) => None,
+            };
+            if let Some(pool_charge) = seat {
                 state.retained_weight = state.retained_weight.saturating_add(weight);
                 state.retained_weight_high_water =
                     state.retained_weight_high_water.max(state.retained_weight);
                 state.largest_result_weight = state.largest_result_weight.max(weight);
+                state.pool_used = state.pool_used.saturating_add(pool_charge);
+                state.pool_used_high_water = state.pool_used_high_water.max(state.pool_used);
                 if let Some(slot) = state.slots.get_mut(position) {
-                    slot.method = Some(Box::new(event));
+                    slot.methods.push_back(PendingMethod {
+                        event: Box::new(event),
+                        pool_charge,
+                    });
                 }
                 self.changed.notify_all();
                 return Ok(true);
@@ -1486,6 +1599,25 @@ fn position_of(state: &OperationState, index: u64) -> Option<usize> {
         return None;
     }
     slot_of(state, index)
+}
+
+/// Retires the front slot: the class is delivered, the front moves on, and everything its pending
+/// records held leaves the window with it.
+///
+/// A slot with records still waiting retires only on a stream that is closing (the ordinary take
+/// empties it first — control record, then method record by method record), and those records were
+/// never confirmed by the consumer. What they held is released all the same: nothing will take them
+/// any more, and a window that kept charging for them would report a fuller window than the
+/// operation ever holds.
+fn retire_front(state: &mut OperationState) {
+    let Some(slot) = state.slots.pop_front() else {
+        return;
+    };
+    for pending in &slot.methods {
+        state.retained_weight = state.retained_weight.saturating_sub(pending.event.weight);
+        state.pool_used = state.pool_used.saturating_sub(pending.pool_charge);
+    }
+    state.front = state.front.saturating_add(1);
 }
 
 /// Where one class's slot sits inside the window, whatever the operation's own state is.
@@ -2438,26 +2570,25 @@ fn take_front(registry: &Registry, budget: &Budget) -> Front {
         if state.ending.is_some() {
             return Front::Closed;
         }
-        // The front slot's control record is delivered before its method record, and taking one
-        // never removes the other: a worker that produced its result while the coordinator had not
-        // yet taken the class's `ClassPrepared` record has both pending, and the method record must
-        // survive that delivery.
-        let mut taken_weight = 0_u64;
-        let taken = match state.slots.front_mut() {
-            None => None,
-            Some(slot) => match slot.control.take() {
-                Some(control) => Some(Front::Control(Box::new(control))),
-                None => match slot.method.take() {
-                    Some(method) => {
-                        taken_weight = method.weight;
-                        Some(Front::Method(method))
-                    }
-                    None => None,
-                },
-            },
-        };
-        if taken_weight > 0 {
-            state.retained_weight = state.retained_weight.saturating_sub(taken_weight);
+        // The front slot's control record is delivered before its method records, and taking one
+        // never removes the others: a worker that produced its result while the coordinator had not
+        // yet taken the class's `ClassPrepared` record has both pending, and the method records must
+        // survive that delivery. The method records of one class leave in production order.
+        let mut taken: Option<Front> = None;
+        let mut leaving: Option<PendingMethod> = None;
+        if let Some(slot) = state.slots.front_mut() {
+            match slot.control.take() {
+                Some(control) => taken = Some(Front::Control(Box::new(control))),
+                None => leaving = slot.methods.pop_front(),
+            }
+        }
+        if let Some(pending) = leaving {
+            // The record leaves the window with this take: what it retained and what it held of the
+            // pool are released here and nowhere else, so the room this delivery made is what the
+            // next producer — of this class or of any other — can be seated by.
+            state.retained_weight = state.retained_weight.saturating_sub(pending.event.weight);
+            state.pool_used = state.pool_used.saturating_sub(pending.pool_charge);
+            taken = Some(Front::Method(pending.event));
         }
         if let Some(front) = taken {
             registry.changed.notify_all();
@@ -2470,8 +2601,7 @@ fn take_front(registry: &Registry, budget: &Budget) -> Front {
         });
         if let Some((ending, class)) = ended {
             let ordinal = state.front;
-            state.slots.pop_front();
-            state.front = state.front.saturating_add(1);
+            retire_front(&mut state);
             registry.changed.notify_all();
             return Front::Ended(Box::new(EndedClass {
                 ordinal,
@@ -2798,8 +2928,7 @@ fn drain_ended_classes(operation: &Operation<'_>, delivery: &mut Delivery<'_>) -
                     if let Some(ending) = slot.ending.take() {
                         let class = slot.class.clone();
                         let ordinal = state.front;
-                        state.slots.pop_front();
-                        state.front = state.front.saturating_add(1);
+                        retire_front(&mut state);
                         operation.registry.changed.notify_all();
                         break Some((ordinal, class, ending));
                     }
@@ -3225,6 +3354,7 @@ fn window_of(state: &OperationState, limits: &BulkLimits) -> BulkWindow {
         window_slots_high_water: state.slot_count_high_water,
         buffered_weight_high_water: state.retained_weight_high_water,
         largest_result_weight: state.largest_result_weight,
+        shared_pool_weight_high_water: state.pool_used_high_water,
         result_weight_limit: limits.max_result_weight,
         buffered_weight_limit: limits.max_buffered_result_weight,
     }
@@ -3313,7 +3443,7 @@ pub fn recover_all(
     let observation = Observation::of(request.probe.clone());
     #[cfg(not(feature = "test-support"))]
     let observation = Observation::of();
-    let registry = Registry::new(observation.clone());
+    let registry = Registry::new(observation.clone(), limits.shared_result_pool_weight);
     let operation = Operation {
         content,
         snapshot,
