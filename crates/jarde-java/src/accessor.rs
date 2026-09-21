@@ -96,6 +96,10 @@ pub(crate) enum Verdict {
 }
 
 /// Everything this rule read about one call site and its callee, in the vocabulary a report reads.
+///
+/// This is the *plan* side of the record: the walk keeps it in [`crate::build::AccessorSite`], and
+/// the owning record is materialized from it after the artifact is committed.
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct Evidence {
     pub(crate) owner: String,
     pub(crate) name: String,
@@ -564,10 +568,14 @@ pub struct AccessorRecord {
 
 impl AccessorRecord {
     /// One record from what the rule read and what the build did with it.
+    ///
+    /// Built by the evidence phase from the call site's decision, after the artifact is committed
+    /// (change `add-demand-driven-core-results`, D3): the walk records what it read and whether it
+    /// presented the call, and this is the owning record a selected `RuleDetails` materializes.
     pub(crate) fn of(
         call_site: u32,
         evidence: &Evidence,
-        presented: Option<&Shape>,
+        presented: bool,
         refusal: Option<AccessorRefusal>,
     ) -> Self {
         Self {
@@ -579,7 +587,7 @@ impl AccessorRecord {
             callee: evidence.identity.clone(),
             field: evidence.field.clone(),
             shape: evidence.shape,
-            presented: presented.is_some(),
+            presented,
             refusal,
         }
     }

@@ -82,6 +82,16 @@ pub(crate) const RECURSION_BOUND_CODE: &str = "jre_recursion_bound";
 /// diagnosis that called one the other would name a cause that did not stop it.
 pub(crate) const RECURSION_REENTRY_CODE: &str = "jre_recursion_reentry";
 
+/// The code of a run whose source-map replay did not agree with the artifact it was verifying
+/// against (change `add-demand-driven-core-results`, D3).
+///
+/// The map is materialized by replaying the decided AST through the same formatter the artifact came
+/// from, and every replayed write is compared with the artifact's own bytes at its own offset. This
+/// code states the one failure that comparison has: the two passes of one formatter disagree about
+/// what the artifact holds, so no offsets can be attached to it. The artifact the committing pass
+/// delivered is not touched by the stop — what fails is the map's materialization.
+pub(crate) const SOURCE_MAP_MISMATCH_CODE: &str = "jre_source_map_mismatch";
+
 impl StopReason {
     /// The node the run stopped at, when it stopped inside one.
     pub fn at(&self) -> Option<u32> {

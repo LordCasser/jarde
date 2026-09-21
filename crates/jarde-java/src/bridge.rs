@@ -55,6 +55,11 @@ use crate::refusal::{Gap, Refusal};
 pub(crate) const RULE: RuleVersion = BRIDGE.rule();
 
 /// What one body was decided to be, in the terms the builder reads.
+///
+/// The verdict is the *plan*: what the rule read (`forwarded`/`erased`), whether it presented the
+/// body, and the refusal when it did not. The owning [`BridgeRecord`] is built by
+/// [`Plan::materialize`] after the artifact is committed, and only when the request selected
+/// `RuleDetails`; the verdict itself, and the gap it states, are decided for every selection.
 pub(crate) struct Plan {
     /// The BCI of the `checkcast` this rule proved to be the erasure of the forward's return value,
     /// when the bridge has one. That instruction produces no text of its own: the value it casts is
@@ -64,10 +69,12 @@ pub(crate) struct Plan {
     /// The verdict is a decision about the whole body rather than about one position, so a driver
     /// range neither selects nor drops it.
     presented: bool,
+    /// What the forward was read as, as the record states it.
+    forwarded: Option<String>,
+    /// What the erased cast was read as, as the record states it.
+    erased: Option<String>,
     /// Why the body was not presented as a forward, when it was not.
-    refusal: Option<Gap>,
-    /// The record, when this run publishes rule records.
-    record: Option<BridgeRecord>,
+    refusal: Option<BridgeRefusal>,
 }
 
 impl Plan {
@@ -82,17 +89,39 @@ impl Plan {
     }
 
     /// Why it was not, as the gap every selection carries.
-    pub(crate) fn refusal(&self) -> Option<&Gap> {
-        self.refusal.as_ref()
+    pub(crate) fn refusal(&self) -> Option<Gap> {
+        self.refusal
+            .as_ref()
+            .map(|refusal| Gap::whole(refusal.code, refusal.message.clone()))
     }
 
-    /// The verdict to record for this method, when this run publishes rule records.
-    pub(crate) fn record(&self) -> Option<&BridgeRecord> {
-        self.record.as_ref()
+    /// The verdict's own record, when the request selected rule records and the phase can pay for
+    /// it: the one owning record of this rule, built after the artifact was committed.
+    ///
+    /// The verdict states no driver position of its own — it is about the whole body — so a driver
+    /// range neither selects nor drops it: a request that selected this category over a range gets
+    /// the verdict of the body it asked about.
+    pub(crate) fn materialize(
+        &self,
+        publication: Publication,
+        phase: &mut crate::evidence::EvidencePhase,
+        budget: &mut jarde_reader::budget::Budget,
+    ) -> (Option<BridgeRecord>, crate::evidence::Materialized) {
+        let selected = publication.publishes(&[]).then_some(());
+        let (records, reached) = phase.materialize(budget, selected, |()| {
+            crate::demand_counts::record_built(crate::evidence::RecoveryEvidenceKind::RuleDetails);
+            BridgeRecord {
+                forwarded: self.forwarded.clone(),
+                erased: self.erased.clone(),
+                presented: self.presented,
+                refusal: self.refusal.clone(),
+            }
+        });
+        (records.into_iter().next(), reached)
     }
 }
 
-/// The record one verdict publishes, when this run publishes rule records at all.
+/// One verdict as the rule read it, before the plan states it.
 struct Verdict {
     forwarded: Option<String>,
     erased: Option<String>,
@@ -101,29 +130,14 @@ struct Verdict {
 }
 
 impl Verdict {
-    /// The verdict's own record, for a run that selected rule records.
-    fn record(&self, publication: Publication) -> Option<BridgeRecord> {
-        publication.publishes(&[]).then(|| {
-            crate::demand_counts::record_built(crate::evidence::RecoveryEvidenceKind::RuleDetails);
-            BridgeRecord {
-                forwarded: self.forwarded.clone(),
-                erased: self.erased.clone(),
-                presented: self.presented,
-                refusal: self.refusal.clone(),
-            }
-        })
-    }
-
     /// The verdict as the plan states it — the refusal, too — whatever was selected.
-    fn plan(self, cast: Option<u32>, publication: Publication) -> Plan {
+    fn plan(self, cast: Option<u32>) -> Plan {
         Plan {
             cast,
             presented: self.presented,
-            refusal: self
-                .refusal
-                .as_ref()
-                .map(|refusal| Gap::whole(refusal.code, refusal.message.clone())),
-            record: self.record(publication),
+            forwarded: self.forwarded,
+            erased: self.erased,
+            refusal: self.refusal,
         }
     }
 }
@@ -134,12 +148,7 @@ impl Verdict {
 /// for a member whose body is exactly the forward-with-cast shape but whose declaration the run
 /// does not hold (the rule states the declaration it is missing). `None` for every other body: an
 /// ordinary member is not this rule's business, and it records nothing about it.
-pub(crate) fn plan(
-    facts: &MethodFacts,
-    ssa: &SsaTable,
-    operations: &Operations,
-    publication: Publication,
-) -> Option<Plan> {
+pub(crate) fn plan(facts: &MethodFacts, ssa: &SsaTable, operations: &Operations) -> Option<Plan> {
     let instructions: Vec<&SsaInstruction> = ssa
         .blocks()
         .iter()
@@ -171,7 +180,7 @@ pub(crate) fn plan(
                         forward.cast_bci,
                     )),
                 }
-                .plan(None, publication),
+                .plan(None),
             )
         }
         // The class declared this member and did not call it a bridge. Then the body — however much
@@ -192,7 +201,7 @@ pub(crate) fn plan(
                         forward.cast_bci,
                     )),
                 }
-                .plan(None, publication),
+                .plan(None),
             )
         }
         // A declared bridge: the rule states whether it presented the forward.
@@ -204,7 +213,7 @@ pub(crate) fn plan(
                     presented: true,
                     refusal: None,
                 }
-                .plan(Some(forward.cast_bci), publication),
+                .plan(Some(forward.cast_bci)),
             ),
             Ok(None) => Some(
                 Verdict {
@@ -213,7 +222,7 @@ pub(crate) fn plan(
                     presented: true,
                     refusal: None,
                 }
-                .plan(None, publication),
+                .plan(None),
             ),
             Err(refusal) => Some(
                 Verdict {
@@ -222,7 +231,7 @@ pub(crate) fn plan(
                     presented: false,
                     refusal: Some(BridgeRefusal::of(&refusal, 0)),
                 }
-                .plan(None, publication),
+                .plan(None),
             ),
         },
     }

@@ -1208,70 +1208,80 @@ fn an_unknown_evidence_category_is_a_usage_error() {
     );
 }
 
-/// A category this layer's vocabulary holds but this entry does not materialize is refused by the
-/// library, with the library's own code — not answered with an empty delivery.
+/// Every category of the vocabulary is a selection this entry answers (change
+/// `add-demand-driven-core-results`, D3): `read_details` used to be refused here, because the read
+/// evidence is published by the entry that performed the read rather than by the recovery report, and
+/// it is materialized now — the report states it, and the read the entry publishes beside it is what
+/// the category is.
 #[test]
-fn a_category_the_entry_does_not_materialize_is_refused_by_the_library() {
-    let bytes = probe_class();
-    let directory = TempDir::new();
-    let fixture = directory.write("Probe.class", &bytes);
-    let output = run(&[
-        "class-source",
-        "--evidence",
-        "read_details",
-        "--input",
-        path_of(&fixture),
-        "--policy",
-        "single-class",
-        "--class",
-        "p/Probe",
-        "--format",
-        "json",
-    ]);
-    assert_eq!(status(&output), EXIT_INCOMPLETE, "{}", stderr_text(&output));
-    let document = stdout_json(&output);
-    let methods = document["methods"]
-        .as_array()
-        .expect("the class has members");
-    let mut refusals = 0usize;
-    for method in methods {
-        let Some(report) = method["outcome"].get("report") else {
-            continue;
-        };
-        if report.is_null() {
-            continue;
-        }
-        // Every member states a stop: the refusal of the selection where the run's own analysis
-        // reached the presentation, and the analysis's own missing table where it did not (the
-        // refused selection is stated before anything is presented, so a member whose analysis
-        // stopped first states that instead — both are stops, and neither is an empty delivery).
-        let stopped = report["outcome"]
-            .get("stopped")
-            .unwrap_or_else(|| panic!("{report}"));
-        let code = stopped
-            .get("evidence_refused")
-            .map(|refusal| refusal["code"].clone())
-            .or_else(|| {
-                stopped
-                    .get("ir_table_missing")
-                    .map(|_| json!("jre_ir_table_missing"))
-            })
-            .unwrap_or_else(|| panic!("a stated stop: {report}"));
-        if code == json!("jre_evidence_kind_unsupported") {
-            refusals += 1;
-        }
-        assert_eq!(report["text"], json!(""));
-        for category in report["evidence"]["categories"]
+fn every_category_of_the_vocabulary_is_a_selection_this_entry_answers() {
+    for kind in ["read_details", "source_map", "rule_details"] {
+        let bytes = probe_class();
+        let directory = TempDir::new();
+        let fixture = directory.write("Probe.class", &bytes);
+        let output = run(&[
+            "class-source",
+            "--evidence",
+            kind,
+            "--input",
+            path_of(&fixture),
+            "--policy",
+            "single-class",
+            "--class",
+            "p/Probe",
+            "--format",
+            "json",
+        ]);
+        // The fixture's own `broken` member stops inside its decode, so a presented class is
+        // `incomplete` here whatever was selected — what this case is about is that the *selection*
+        // is not the thing that stopped it.
+        assert!(
+            [EXIT_COMPLETE, EXIT_INCOMPLETE].contains(&status(&output)),
+            "{kind}: {}",
+            stderr_text(&output)
+        );
+        let document = stdout_json(&output);
+        let methods = document["methods"]
             .as_array()
-            .expect("the status list is fixed-size")
-        {
-            if category["kind"] == "read_details" {
-                assert_eq!(category["state"]["state"], "not_performed", "{report}");
+            .expect("the class has members");
+        let mut chosen = 0usize;
+        for method in methods {
+            let Some(report) = method["outcome"].get("report") else {
+                continue;
+            };
+            if report.is_null() {
+                continue;
+            }
+            if let Some(stopped) = report["outcome"].get("stopped")
+                && let Some(refusal) = stopped.get("evidence_refused")
+            {
+                panic!("{kind} is a selection this entry answers, not a refusal: {refusal}");
+            }
+            for category in report["evidence"]["categories"]
+                .as_array()
+                .expect("the status list is fixed-size")
+            {
+                let state = category["state"]["state"].clone();
+                if category["kind"] == json!(kind) {
+                    if report["outcome"].get("stopped").is_some() {
+                        // A run that stopped before the evidence phase states so for a category it
+                        // selected: `not_performed` is not an empty delivery.
+                        assert_eq!(state, json!("not_performed"), "{kind}: {report}");
+                    } else {
+                        // A presented run's selected category is `complete` (an empty delivery
+                        // included) or states the prefix it delivered — never the `not_requested` an
+                        // unselected one is, and never an empty `Vec` standing in for a state.
+                        assert!(
+                            state == json!("complete") || state == json!("partial"),
+                            "{kind}: {report}"
+                        );
+                        chosen += 1;
+                    }
+                } else {
+                    assert_eq!(state, json!("not_requested"), "{kind}: {report}");
+                }
             }
         }
+        assert!(chosen > 0, "{kind} was stated by the presented members");
     }
-    assert!(
-        refusals > 0,
-        "the members whose analysis reached the presentation state the refusal: {document}"
-    );
 }

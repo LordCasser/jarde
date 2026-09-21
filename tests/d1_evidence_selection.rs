@@ -510,7 +510,7 @@ fn a_selection_this_entry_cannot_answer_is_refused_with_its_own_code() {
         .expect("the fixture has a member with an instruction wider than one byte");
     let (name, descriptor, interior) = target;
     let request = request(&scope, &definition, &name.0, &descriptor.0);
-    let cases: [(&str, RecoveryEvidenceRequest); 5] = [
+    let cases: [(&str, RecoveryEvidenceRequest); 4] = [
         (
             "shape",
             RecoveryEvidenceRequest::all().with_driver_bci_range(BytecodeRange::new(4, 1)),
@@ -527,10 +527,6 @@ fn a_selection_this_entry_cannot_answer_is_refused_with_its_own_code() {
             "range",
             RecoveryEvidenceRequest::all()
                 .with_driver_bci_range(BytecodeRange::new(interior, interior + 1)),
-        ),
-        (
-            "kind",
-            RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::ReadDetails),
         ),
     ];
     for (expected, selection) in &cases {
@@ -564,6 +560,26 @@ fn a_selection_this_entry_cannot_answer_is_refused_with_its_own_code() {
             "the refusal names the selection it refused"
         );
     }
+
+    // The fifth category used to be refused here, because the read evidence was published by the
+    // entry that performed the read rather than by this report. It is materialized now (change
+    // `add-demand-driven-core-results`, D3), so the same request is answered: the report presents the
+    // body, and the category is the read the entry published beside it.
+    let only_reads =
+        RecoveryEvidenceRequest::essential().with_kind(RecoveryEvidenceKind::ReadDetails);
+    let mut budget = Budget::new(limits());
+    let recovered = recover_with(&engine, &scope, &request, &only_reads, &mut budget);
+    let report = recovered.recovery();
+    assert!(
+        report.produced(),
+        "{only_reads:?} is a selection this entry answers: {:?}",
+        report.outcome
+    );
+    assert_eq!(
+        report.evidence.state(RecoveryEvidenceKind::ReadDetails),
+        EvidenceState::Complete,
+        "the read evidence category is what the entry that performed the read published"
+    );
 }
 
 /// A member with no body has no `Code`, and a request that asks for a position in it is refused in
@@ -640,13 +656,20 @@ fn a_range_over_a_body_with_no_code_is_refused_as_a_missing_table() {
 
 /// A selected category the phase stopped inside states the prefix it delivered, keeps the artifact
 /// the run had already committed, and says the run stopped.
+///
+/// The phase materializes its categories in one fixed order — the region records, the rule records,
+/// the name records, the source map — so the charge a bound of one short refuses is the *last*
+/// category's, and everything before it is complete. That is what the case below reads: the map
+/// reports the prefix of spans it recorded, every other selected category is `Complete`, and not one
+/// byte of the artifact moved.
 #[test]
 fn a_selected_category_that_stopped_states_its_prefix() {
     let engine = Engine::new();
     let scope = open(SCOPE);
     let definition = definition_of(&engine, &scope);
-    // The member with the most regions: the evidence phase materializes the region records first, so
-    // a member with more than one of them is the one a bound can stop inside.
+    // The member with the most regions: the phase has several region records, several rule records
+    // and a whole table of spans to materialize, so one short of the full run really stops inside a
+    // category rather than at its last record.
     let full = engine
         .class_source_with_evidence(
             slice::from_ref(&scope),
@@ -677,21 +700,23 @@ fn a_selected_category_that_stopped_states_its_prefix() {
     for method in &full.methods {
         if let ClassSourceOutcome::Recovered { report, .. } = &method.outcome
             && report.regions.len() >= 2
+            && report.source_map.len() >= 2
         {
             candidates.push((
                 method.item.identity.name.0.clone(),
                 method.item.identity.descriptor.0.clone(),
                 report.regions.len(),
+                report.source_map.len(),
                 report.text.len(),
             ));
         }
     }
-    let Some((name, descriptor, regions, text_bytes)) = candidates.into_iter().next() else {
-        panic!("the fixture has a member with more than one region to stop inside");
+    let Some((name, descriptor, regions, spans, text_bytes)) = candidates.into_iter().next() else {
+        panic!("the fixture has a member with more than one region and more than one span");
     };
     let request = request(&scope, &definition, &name, &descriptor);
-    // A bound that funds the artifact and every region record but one: measured from the run's own
-    // usage, so the prefix is one record rather than a guess.
+    // A bound that funds the artifact and all but one charge of the phase: measured from the run's
+    // own usage, so the prefix is one charge short rather than a guess.
     let mut measuring = Budget::new(limits());
     let complete = recover_with(
         &engine,
@@ -728,23 +753,37 @@ fn a_selected_category_that_stopped_states_its_prefix() {
         text_bytes,
         "and the phase does not touch one byte of it"
     );
-    let state = report.evidence.state(RecoveryEvidenceKind::RegionDetails);
+    // The categories the phase finished are complete, and the one the last charge belonged to — the
+    // source map, the last category of the fixed order — states the prefix it recorded.
+    for kind in [
+        RecoveryEvidenceKind::RegionDetails,
+        RecoveryEvidenceKind::RuleDetails,
+        RecoveryEvidenceKind::NameDetails,
+    ] {
+        assert_eq!(
+            report.evidence.state(kind),
+            EvidenceState::Complete,
+            "{kind:?}"
+        );
+    }
+    assert_eq!(
+        u64::try_from(report.regions.len()).expect("a small count"),
+        u64::try_from(regions).expect("a small count"),
+        "the complete category really holds its whole delivery"
+    );
+    let state = report.evidence.state(RecoveryEvidenceKind::SourceMap);
     let EvidenceState::Partial { delivered } = state else {
-        panic!("the phase stopped inside the region records: {state:?}");
+        panic!("the phase stopped inside the source map: {state:?}");
     };
     assert!(delivered >= 1, "{state:?}");
     assert_eq!(
-        u64::try_from(report.regions.len()).expect("a small count"),
-        delivered
+        u64::try_from(report.source_map.len()).expect("a small count"),
+        delivered,
+        "the prefix it states is the table it really holds"
     );
     assert!(
-        regions as u64 > delivered,
-        "the prefix is shorter than the full delivery ({regions} regions)"
-    );
-    assert_eq!(
-        report.evidence.state(RecoveryEvidenceKind::NameDetails),
-        EvidenceState::NotPerformed,
-        "a category the stopped phase never reached is not an empty result"
+        delivered < spans as u64,
+        "and the prefix is shorter than the full table ({spans} spans)"
     );
     assert!(!matches!(
         report.execution,

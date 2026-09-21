@@ -2178,7 +2178,9 @@ fn local_or_closing(
 ///   + the analysis report: the same two rules over
 ///       environment_problems (with their messages), requested_stages, stages, reads, diagnostics,
 ///       the member identity (its owner digest, its raw name and descriptor) and its origin set
-///   + the callee read: its class name, its members' identities and its refusal table
+///   + the callee read: its class name, its members' identities, its refusal table and — when the
+///       request selected `ReadDetails` — the decoded body of every member it kept, the header-read
+///       proofs it recorded and every refusal's own message
 ///   + the facts: the declaration's own name and descriptor (by length: the surface hands them over
 ///       as `&str`), and the debug-local table's own buffer
 /// ```
@@ -2258,13 +2260,24 @@ fn result_weight(recovered: &RecoveredMethod) -> u64 {
     weight.buffer(&analysis.reads);
     weight.diagnostics(&analysis.diagnostics);
 
-    // The callee read, when this request made one.
+    // The callee read, when this request made one. What the request selected decides which half of
+    // it is retained (change `add-demand-driven-core-results`, D3): the binding results — the
+    // members' identities and the refusals — are published either way, and `ReadDetails` adds the
+    // decoded body of every member and the header-read proofs. Every held part is counted, so a
+    // result that selected nothing optional is charged for nothing optional.
     if let Some(read) = recovered.callees() {
         weight.borrowed(read.class());
         weight.slice(read.members());
         weight.slice(read.refusals());
+        weight.slice(read.reads());
         for member in read.members() {
             weight.identity(member.identity());
+            if let Some(body) = member.body() {
+                weight.code_facts(body.facts());
+            }
+        }
+        for refusal in read.refusals() {
+            weight.borrowed(refusal.message());
         }
     }
 
@@ -2309,6 +2322,20 @@ impl Weight {
     /// One owned string's own allocation.
     fn text(&mut self, value: &String) {
         self.value(u64::try_from(value.capacity()).unwrap_or(u64::MAX));
+    }
+
+    /// One decoded body the result holds: the facts' own frame and the four tables behind it.
+    ///
+    /// The body's tables are the largest thing a selected `ReadDetails` retains, and they are held
+    /// exactly as the reader decoded them — one `Vec` per table, plus the facts value itself. The
+    /// tables the reader hands over as slices (`operands`) are counted by length, like every other
+    /// slice in this model, and the debug table it exposes as a borrowed value is not counted at all:
+    /// the figure stays a lower bound of what the result owns.
+    fn code_facts(&mut self, facts: &jarde_reader::classfile::MethodCodeFacts) {
+        self.frame::<jarde_reader::classfile::MethodCodeFacts>();
+        self.buffer(&facts.instructions);
+        self.slice(facts.operands());
+        self.buffer(&facts.exception_handlers);
     }
 
     /// One owned string that is not held, when it is held at all.

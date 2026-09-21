@@ -18,11 +18,13 @@
 //! request, and the only difference is that the owning records of the unselected categories are not
 //! built, are not copied into the report and are not kept.
 //!
-//! [`RecoveryEvidenceRequest::all`] is the other end: every category **this entry materializes**.
-//! `ReadDetails` is deliberately not one of them yet — the read evidence a presentation consumed is
-//! published beside the report by the entry that performed the read, and its *expansion* into the
-//! report is a later phase's work — so asking for it is refused explicitly ([`UNSUPPORTED_KIND_CODE`])
-//! rather than answered with nothing.
+//! [`RecoveryEvidenceRequest::all`] is the other end: every category of [`RecoveryEvidenceKind::ALL`].
+//! Four of them this layer materializes itself, and the fifth — `ReadDetails` — is materialized by
+//! the entry that performed the read, which publishes it beside the report and states it through
+//! [`crate::RecoveryReport::read_details_materialized`]: the report's list is fixed-size for every
+//! category, and a category this layer does not build still needs a state. A kind this vocabulary
+//! does not hold is refused explicitly ([`UNSUPPORTED_KIND_CODE`]) rather than answered with
+//! nothing.
 //!
 //! # The driver range selects evidence, never analysis
 //!
@@ -71,6 +73,7 @@ use serde::{Deserialize, Serialize};
 
 /// The code of a refusal of a category this entry does not materialize.
 pub const UNSUPPORTED_KIND_CODE: &str = "jre_evidence_kind_unsupported";
+
 /// The code of a refusal of a driver range that is not a range of this body's instructions.
 pub const RANGE_REFUSAL_CODE: &str = "jre_evidence_range_invalid";
 /// The code of a refusal of a driver range that cannot be a selection at all — reversed, or stated
@@ -130,7 +133,8 @@ impl BytecodeRange {
 ///
 /// The five are the categories the design of `add-demand-driven-core-results` fixes; four of them are
 /// materialized by this layer's own report, and the fifth (a read detail) is the entry's read
-/// evidence, whose expansion into a recovery report is a later phase's work.
+/// evidence: the entry that performed the read materializes it beside the report, and this layer's
+/// report states what that entry published.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum RecoveryEvidenceKind {
@@ -158,13 +162,13 @@ impl RecoveryEvidenceKind {
         Self::ReadDetails,
     ];
 
-    /// Every category this entry can materialize.
-    pub const SUPPORTED: [Self; 4] = [
-        Self::SourceMap,
-        Self::RegionDetails,
-        Self::RuleDetails,
-        Self::NameDetails,
-    ];
+    /// Every category a request may select: all five.
+    ///
+    /// Four are materialized by this layer's own report, and `ReadDetails` by the entry that
+    /// performed the read; the report states that one through
+    /// [`crate::RecoveryReport::read_details_materialized`]. A request that selects any of them is
+    /// answered, which is what [`RecoveryEvidenceRequest::check`] reads this list for.
+    pub const SUPPORTED: [Self; 5] = Self::ALL;
 
     /// The category's own name, as the request states it in a document.
     pub fn spell(self) -> &'static str {
@@ -277,9 +281,9 @@ impl RecoveryEvidenceRequest {
 
     /// Whether this selection can be answered for one decoded body.
     ///
-    /// The three refusals it states are the request's own: a category this entry does not
-    /// materialize, a range stated without any category to select, and a range this body cannot
-    /// support. `code` is the body the request really decoded: a range is only readable against the
+    /// The refusals it states are the request's own: a category this layer's vocabulary does not
+    /// hold, a range stated without any category to select, and a range this body cannot support.
+    /// `code` is the body the request really decoded: a range is only readable against the
     /// instructions that decode produced, so a range that needs the bytes is refused rather than
     /// widened — the read that produced them is part of this request either way.
     pub(crate) fn check(&self, code: &MethodCodeFacts) -> Result<(), EvidenceRefusal> {
@@ -292,9 +296,8 @@ impl RecoveryEvidenceRequest {
                 code: UNSUPPORTED_KIND_CODE,
                 at: None,
                 message: format!(
-                    "the recovery request asks for `{}`, a category this entry does not materialize: \
-                     the read evidence a presentation consumed is published beside this report by the \
-                     entry that performed the read",
+                    "the recovery request asks for `{}`, a category this layer's evidence vocabulary \
+                     does not hold",
                     kind.spell()
                 ),
             });
@@ -460,6 +463,18 @@ impl RecoveryEvidence {
         self.set(kind, EvidenceState::Partial { delivered });
     }
 
+    /// Installs what one category's materialization reached, in the states the list states them.
+    pub(crate) fn materialized(&mut self, kind: RecoveryEvidenceKind, reached: Materialized) {
+        match reached {
+            Materialized::Complete => self.delivered(kind),
+            Materialized::Partial { delivered } => self.stopped(kind, delivered),
+            // Nothing of the category was materialized, and the category stays in the state the
+            // selection put it in: `NotRequested` when it was not selected, `NotPerformed` when it
+            // was and the phase never built one record of it. Neither is an empty delivery.
+            Materialized::None => {}
+        }
+    }
+
     fn set(&mut self, kind: RecoveryEvidenceKind, state: EvidenceState) {
         self.categories[kind.index()] = EvidenceCategory { kind, state };
     }
@@ -470,15 +485,25 @@ impl RecoveryEvidence {
     /// holds nothing, a category the run did not perform holds nothing, and a category it delivered
     /// holds exactly `delivered` owning records when it is partial (a complete delivery holds
     /// whatever the body really has). The report checks this before it is handed out.
+    ///
+    /// `ReadDetails` is the one category this check reads differently: its owning records live
+    /// **beside** the report, in the read the entry performed, so this layer holds none of them and
+    /// the entry states what it published
+    /// ([`crate::RecoveryReport::read_details_materialized`]). The check therefore never asks this
+    /// report for that payload; the four categories the report really holds are checked exactly as
+    /// they are built.
     pub(crate) fn agrees_with(&self, payload: &dyn EvidencePayload) -> bool {
-        RecoveryEvidenceKind::ALL.into_iter().all(|kind| {
-            let held = payload.owning_records(kind);
-            match self.state(kind) {
-                EvidenceState::NotRequested | EvidenceState::NotPerformed => held == 0,
-                EvidenceState::Complete => true,
-                EvidenceState::Partial { delivered } => held == delivered,
-            }
-        })
+        RecoveryEvidenceKind::ALL
+            .into_iter()
+            .filter(|kind| *kind != RecoveryEvidenceKind::ReadDetails)
+            .all(|kind| {
+                let held = payload.owning_records(kind);
+                match self.state(kind) {
+                    EvidenceState::NotRequested | EvidenceState::NotPerformed => held == 0,
+                    EvidenceState::Complete => true,
+                    EvidenceState::Partial { delivered } => held == delivered,
+                }
+            })
     }
 }
 
@@ -486,6 +511,24 @@ impl RecoveryEvidence {
 pub(crate) trait EvidencePayload {
     /// The number of owning records of one category that are in the report right now.
     fn owning_records(&self, kind: RecoveryEvidenceKind) -> u64;
+}
+
+/// What one category's materialization reached, before the list states it.
+///
+/// The three are the phase's own answer to one category: it built everything the selection holds
+/// (an empty selection included), it built a prefix and stopped inside the category, or it built
+/// nothing at all because the phase had already stopped in an earlier one.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum Materialized {
+    /// Every record the category selected was built.
+    Complete,
+    /// The phase stopped after `delivered` records of this category were built.
+    Partial {
+        /// How many owning records of the category were built.
+        delivered: u64,
+    },
+    /// Nothing of this category was built: the phase had stopped before it was reached.
+    None,
 }
 
 /// The gated half of one selection the emitter reads: which spans of the text it anchors.
@@ -564,12 +607,17 @@ impl Publication {
 
 /// The one stage of a run that materializes optional evidence, and what it is allowed to spend.
 ///
-/// The phase is a stage of the same request as everything before it and is answered by the same
-/// budget: one owning record of a selected category is one `IrItems` charge, charged before the
-/// record is built, and the phase never resets a limit and never continues after a refusal. So a
-/// request whose allowance is spent delivers a real prefix and says so, and a request that selected
-/// nothing enters no phase at all. The artifact a previous stage committed is not touched by this
-/// phase: what a refusal ends is the *materialization*, not the run's text.
+/// The phase runs **after** the artifact is committed and is answered by the same budget as
+/// everything before it: one owning record of a selected category is one `IrItems` charge, charged
+/// before the record is built, and the phase never resets a limit and never continues after a
+/// refusal. So a request whose allowance is spent delivers a real prefix and says so, and a request
+/// that selected nothing enters no phase at all. The artifact a previous stage committed is not
+/// touched by this phase: what a refusal ends is the *materialization*, not the run's text.
+///
+/// The categories are materialized in one fixed order, cheapest first — the region records, the rule
+/// records, the name records and then the source map, which replays the whole decided AST. The order
+/// is stated here rather than left to the report because it is what a partial phase means: a prefix
+/// of *this* order.
 pub(crate) struct EvidencePhase {
     materialized: u64,
     stopped: bool,
@@ -582,6 +630,41 @@ impl EvidencePhase {
             materialized: 0,
             stopped: false,
         }
+    }
+
+    /// One category's materialization, one selected record at a time.
+    ///
+    /// `selected` yields exactly the records the category holds — the driver range is applied by the
+    /// caller, **before** each item is constructed, so a record outside the selection costs no
+    /// construction at all — and the phase asks for one charge before it builds one. The records the
+    /// phase reached are returned with what the category reached; the phase's own stop is left set,
+    /// so every later category states `NotPerformed` rather than an empty delivery.
+    pub(crate) fn materialize<T, R>(
+        &mut self,
+        budget: &mut Budget,
+        selected: impl IntoIterator<Item = T>,
+        build: impl FnMut(T) -> R,
+    ) -> (Vec<R>, Materialized) {
+        let mut records = Vec::new();
+        let mut build = build;
+        let mut complete = !self.stopped;
+        for item in selected {
+            if !self.may_continue(budget) {
+                complete = false;
+                break;
+            }
+            records.push(build(item));
+        }
+        let reached = if complete {
+            Materialized::Complete
+        } else if records.is_empty() {
+            Materialized::None
+        } else {
+            Materialized::Partial {
+                delivered: u64::try_from(records.len()).unwrap_or(u64::MAX),
+            }
+        };
+        (records, reached)
     }
 
     /// Whether the phase may materialize one more owning record, charging it to the run's budget.
@@ -834,18 +917,36 @@ mod tests {
         // Same bytes, same run, same artifact.
         assert_eq!(all.text, essential.text, "the artifact is the same text");
         assert_eq!(decisions(&all), decisions(&essential));
+        // The four categories this layer materializes are complete. The fifth — the read evidence —
+        // is `NotPerformed` until the entry that performed the read states what it published beside
+        // this report, which is the one thing `recover` cannot know.
         for kind in RecoveryEvidenceKind::SUPPORTED {
-            assert_eq!(
-                all.evidence.state(kind),
-                EvidenceState::Complete,
-                "{kind:?}"
-            );
+            let expected = if kind == RecoveryEvidenceKind::ReadDetails {
+                EvidenceState::NotPerformed
+            } else {
+                EvidenceState::Complete
+            };
+            assert_eq!(all.evidence.state(kind), expected, "{kind:?}");
         }
         assert!(all.evidence.agrees_with(&all));
         assert_eq!(
             all.evidence.requested().kinds().collect::<Vec<_>>(),
             RecoveryEvidenceKind::SUPPORTED.to_vec(),
             "the report echoes the selection it was presented under"
+        );
+        // And the entry's own statement is what makes the fifth complete: the report is the fixed
+        // list for every category, including the one it does not build.
+        let mut stated = all.clone();
+        stated.read_details_materialized();
+        assert_eq!(
+            stated.evidence.state(RecoveryEvidenceKind::ReadDetails),
+            EvidenceState::Complete
+        );
+        assert!(stated.evidence.agrees_with(&stated));
+        assert_eq!(
+            stated.evidence.state(RecoveryEvidenceKind::RegionDetails),
+            all.evidence.state(RecoveryEvidenceKind::RegionDetails),
+            "and stating one category never moves another"
         );
     }
 
@@ -919,12 +1020,16 @@ mod tests {
         // The fixture's slots are spelled `int` and `class` by the request's own facts (the 1.1
         // payload holds no debug table), so the presentation replaces both: the phase has one region
         // record and two name records to materialize, and the bound below is one charge short of the
-        // whole run.
+        // whole run. The selection is those two categories, so the category the last charge pays for
+        // is `NameDetails`: the source map and the rule records are other categories of the same
+        // phase, and a case about one category's prefix selects that category.
         let names = vec![
             crate::DebugLocal::named(0, "int"),
             crate::DebugLocal::named(2, "class"),
         ];
-        let selection = RecoveryEvidenceRequest::all();
+        let selection = RecoveryEvidenceRequest::essential()
+            .with_kind(RecoveryEvidenceKind::RegionDetails)
+            .with_kind(RecoveryEvidenceKind::NameDetails);
         let measuring = {
             let mut budget = jarde_reader::budget::Budget::new(limits());
             let facts = RecoveryFacts::new(MethodFacts::new("method", "()V", 0))

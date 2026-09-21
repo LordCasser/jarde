@@ -110,12 +110,15 @@ impl DeclarationForm {
     }
 }
 
-/// The declaration one run could read, the record of how it read it — when the run publishes rule
-/// records — and the refusal as the report states it in every selection.
+/// The declaration one run could read, the decision behind it — from which the owning record is
+/// materialized after the artifact is committed — and the refusal as the report states it in every
+/// selection.
 pub(crate) struct Plan {
     declaration: Option<Declaration>,
-    record: Option<DeclarationRecord>,
-    refusal: Option<Gap>,
+    /// The member the record is about, as the request named it (`name` plus descriptor).
+    identity: String,
+    /// Which of the two declaration facts was missing, when one was.
+    refusal: Option<Refusal>,
 }
 
 impl Plan {
@@ -124,16 +127,49 @@ impl Plan {
         self.declaration.as_ref()
     }
 
-    /// The record, whether the declaration was read or refused. `None` when this run does not
-    /// publish rule records: the record is the optional evidence, and the envelope the artifact
-    /// carries is written from [`Self::declaration`] either way.
-    pub(crate) fn record(&self) -> Option<&DeclarationRecord> {
-        self.record.as_ref()
+    /// Why the run stated no declaration, as the gap every selection carries.
+    pub(crate) fn refusal(&self) -> Option<Gap> {
+        self.refusal.as_ref().map(|refusal| {
+            let gap = DeclarationRefusal::of(refusal, &self.identity);
+            Gap::whole(gap.code, gap.message)
+        })
     }
 
-    /// Why the run stated no declaration, as the gap every selection carries.
-    pub(crate) fn refusal(&self) -> Option<&Gap> {
-        self.refusal.as_ref()
+    /// The declaration's own record, when the request selected rule records and the phase can pay
+    /// for it: the one owning record of this rule, built after the artifact was committed.
+    ///
+    /// The declaration states no driver position of its own — it is a verdict about the member — so
+    /// a driver range neither selects nor drops it.
+    pub(crate) fn materialize(
+        &self,
+        publication: Publication,
+        phase: &mut crate::evidence::EvidencePhase,
+        budget: &mut jarde_reader::budget::Budget,
+    ) -> (Option<DeclarationRecord>, crate::evidence::Materialized) {
+        let methods = self.identity.clone();
+        let selected = publication.publishes(&[]).then_some(());
+        let (records, reached) = phase.materialize(budget, selected, |()| {
+            crate::demand_counts::record_built(crate::evidence::RecoveryEvidenceKind::RuleDetails);
+            self.record(&methods)
+        });
+        (records.into_iter().next(), reached)
+    }
+
+    /// The record one decision publishes, built from the plan this holds.
+    fn record(&self, identity: &str) -> DeclarationRecord {
+        let declared = self.declaration.as_ref();
+        DeclarationRecord {
+            method: identity.to_string(),
+            member_flags: declared.map(|declaration| declaration.member_flags),
+            declaring_class: declared.and_then(|declaration| declaration.declaring_class.clone()),
+            interface: declared.and_then(|declaration| declaration.interface),
+            form: declared.map(|declaration| declaration.form),
+            presented: declared.is_some(),
+            refusal: self
+                .refusal
+                .as_ref()
+                .map(|refusal| DeclarationRefusal::of(refusal, identity)),
+        }
     }
 }
 
@@ -159,38 +195,19 @@ fn identity_of(method: &MethodFacts) -> String {
 /// Reads one member's declaration from the facts the caller stated.
 ///
 /// The decision is taken for every selection — the envelope's declaration line is written from
-/// [`Plan::declaration`] whether the caller asked for rule records or not — and only the *record* is
-/// gated by `publication`: a declaration record that was not selected is not built, not copied into
-/// the report and not kept, while the refusal it states is delivered as a gap in every selection.
-pub(crate) fn plan(method: &MethodFacts, publication: Publication) -> Plan {
+/// [`Plan::declaration`] whether the caller asked for rule records or not — and this function builds
+/// no owning record: the decision stays in the [`Plan`] and [`Plan::materialize`] writes the record
+/// from it after the artifact is committed.
+pub(crate) fn plan(method: &MethodFacts) -> Plan {
     let method_identity = identity_of(method);
-    let mut record = publication.publishes(&[]).then(|| {
-        crate::demand_counts::record_built(crate::evidence::RecoveryEvidenceKind::RuleDetails);
-        DeclarationRecord {
-            method: identity_of(method),
-            member_flags: method.access_flags(),
-            declaring_class: method
-                .declaring_class()
-                .map(|class| class.name().to_string()),
-            interface: method.declaring_class().map(DeclaringClass::is_interface),
-            form: None,
-            presented: false,
-            refusal: None,
-        }
-    });
-    /// Prepares the record for one refusal, when this run publishes rule records at all, and states
-    /// the same refusal as a gap.
+    /// States one refusal as the plan's decision: the gap every selection carries, and the evidence
+    /// the record a selected run materializes is written from.
     macro_rules! refuse {
         ($refusal:expr) => {{
-            let refusal = $refusal;
-            let gap = DeclarationRefusal::of(&refusal, &method_identity);
-            if let Some(prepared) = record.as_mut() {
-                prepared.refusal = Some(DeclarationRefusal::of(&refusal, &prepared.method));
-            }
             Plan {
                 declaration: None,
-                record,
-                refusal: Some(Gap::whole(gap.code, gap.message)),
+                identity: method_identity,
+                refusal: Some($refusal),
             }
         }};
     }
@@ -229,10 +246,6 @@ pub(crate) fn plan(method: &MethodFacts, publication: Publication) -> Plan {
             "this run was not told which class declares this member, so whether the member is an interface's `default` method or a class's ordinary one cannot be read".to_string(),
         ));
     };
-    if let Some(record) = record.as_mut() {
-        record.form = Some(form);
-        record.presented = true;
-    }
     Plan {
         declaration: Some(Declaration {
             form,
@@ -242,7 +255,7 @@ pub(crate) fn plan(method: &MethodFacts, publication: Publication) -> Plan {
             interface: method.declaring_class().map(DeclaringClass::is_interface),
             member_flags: flags,
         }),
-        record,
+        identity: method_identity,
         refusal: None,
     }
 }
@@ -318,10 +331,21 @@ mod tests {
         DeclaringClass::new(name, flags)
     }
 
-    /// The selection these cases present under: every category, which is what the record-level
-    /// assertions below are about.
-    fn publication() -> Publication {
-        Publication::of(&crate::RecoveryEvidenceRequest::all())
+    /// The one record one plan materializes under the full selection, built the way the evidence
+    /// phase builds it: after the decision, one charge for the record.
+    fn record(plan: &Plan) -> Option<DeclarationRecord> {
+        let mut budget = jarde_reader::budget::Budget::new(jarde_reader::budget::Limits {
+            ir_items: 1 << 20,
+            elapsed_millis: u64::MAX,
+            ..jarde_reader::budget::Limits::default()
+        });
+        let mut phase = crate::evidence::EvidencePhase::new();
+        let (record, _) = plan.materialize(
+            Publication::of(&crate::RecoveryEvidenceRequest::all()),
+            &mut phase,
+            &mut budget,
+        );
+        record
     }
 
     #[test]
@@ -333,7 +357,6 @@ mod tests {
             &MethodFacts::new("run", "()V", 1)
                 .with_access_flags(flags)
                 .with_declaring_class(class("p/Shape", ACC_INTERFACE | ACC_PUBLIC)),
-            publication(),
         );
         assert_eq!(
             in_interface.declaration().map(|d| d.form),
@@ -343,7 +366,6 @@ mod tests {
             &MethodFacts::new("run", "()V", 1)
                 .with_access_flags(flags)
                 .with_declaring_class(class("p/Shape", ACC_PUBLIC)),
-            publication(),
         );
         assert_eq!(
             in_class.declaration().map(|d| d.form),
@@ -360,7 +382,6 @@ mod tests {
             &MethodFacts::new("run", "()V", 1)
                 .with_access_flags(ACC_PUBLIC | ACC_ABSTRACT)
                 .with_declaring_class(class("p/Shape", interface)),
-            publication(),
         );
         assert_eq!(
             abstract_method.declaration().map(|d| d.form),
@@ -370,17 +391,13 @@ mod tests {
             &MethodFacts::new("run", "()V", 0)
                 .with_access_flags(ACC_PUBLIC | ACC_STATIC)
                 .with_declaring_class(class("p/Shape", interface)),
-            publication(),
         );
         assert_eq!(
             static_method.declaration().map(|d| d.form),
             Some(DeclarationForm::StaticInterfaceMethod)
         );
         // A constructor is decided without the class's own flags: the form does not depend on them.
-        let constructor = plan(
-            &MethodFacts::new("<init>", "()V", 1).with_access_flags(0),
-            publication(),
-        );
+        let constructor = plan(&MethodFacts::new("<init>", "()V", 1).with_access_flags(0));
         assert_eq!(
             constructor.declaration().map(|d| d.form),
             Some(DeclarationForm::Constructor)
@@ -397,20 +414,17 @@ mod tests {
         let without_flags = plan(
             &MethodFacts::new("run", "()V", 1)
                 .with_declaring_class(class("p/Shape", ACC_INTERFACE | ACC_PUBLIC)),
-            publication(),
         );
         assert!(without_flags.declaration().is_none());
         assert_eq!(
-            without_flags
-                .record()
-                .and_then(|record| record.refusal.as_ref())
+            record(&without_flags)
+                .and_then(|record| record.refusal)
                 .map(|r| r.code),
             Some("jre_declaration_flags_missing")
         );
         assert!(
-            without_flags
-                .record()
-                .and_then(|record| record.refusal.as_ref())
+            record(&without_flags)
+                .and_then(|record| record.refusal)
                 .is_some_and(|r| r.requirement.as_deref() == Some("the `access_flags` attribute"))
         );
         // The same refusal is what every selection carries, as the gap the report states.
@@ -418,21 +432,13 @@ mod tests {
             without_flags.refusal().map(|gap| gap.code()),
             Some("jre_declaration_flags_missing")
         );
-        let without_class = plan(
-            &MethodFacts::new("run", "()V", 1).with_access_flags(ACC_PUBLIC),
-            publication(),
-        );
+        let without_class = plan(&MethodFacts::new("run", "()V", 1).with_access_flags(ACC_PUBLIC));
         assert_eq!(
-            without_class
-                .record()
-                .and_then(|record| record.refusal.as_ref())
+            record(&without_class)
+                .and_then(|record| record.refusal)
                 .map(|r| r.code),
             Some("jre_declaration_class_not_in_run")
         );
-        assert!(
-            !without_class
-                .record()
-                .is_some_and(|record| record.presented())
-        );
+        assert!(!record(&without_class).is_some_and(|record| record.presented()));
     }
 }
