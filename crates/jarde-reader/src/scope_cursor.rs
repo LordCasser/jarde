@@ -64,6 +64,16 @@ use std::sync::Arc;
 /// scan apply, so one entry is one candidate wherever it is listed.
 const CLASS_FILE_SUFFIX: &[u8] = b".class";
 
+/// Whether one raw archive name is a class candidate by that rule.
+///
+/// This is the one spelling of the rule above, published so that a walk which yields *every* entry
+/// (not only the class candidates) classifies them by the same bytes the class-only walk filters
+/// them with. It is a pure name predicate: it reads no record and claims nothing about the entry's
+/// content.
+pub fn is_class_candidate_name(raw_name: &[u8]) -> bool {
+    raw_name.ends_with(CLASS_FILE_SUFFIX)
+}
+
 /// One class candidate the cursor yielded.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct ScopeClass {
@@ -346,7 +356,7 @@ fn step_of(walk: &ContainerWalk, position: usize, descend: bool) -> CursorStep {
         {
             CursorStep::Descend
         }
-        Some(record) if record.id.raw_name.0.ends_with(CLASS_FILE_SUFFIX) => CursorStep::Yield,
+        Some(record) if is_class_candidate_name(&record.id.raw_name.0) => CursorStep::Yield,
         Some(_) => CursorStep::Skip,
     }
 }
@@ -378,7 +388,10 @@ fn class_candidate(walk: &ContainerWalk, position: usize) -> Result<ScopeClass> 
 /// first two because no read may start after a stop, the third because an infrastructure failure is
 /// not damage in one container — while structure damage (an unreadable directory, an entry that is
 /// not an archive) and a refused nested depth leave that subtree unread and the walk running.
-fn walk_stops(error: &Error) -> bool {
+///
+/// The entry walk ([`crate::entry_cursor::EntryCursor`]) applies the same rule, so a subtree that
+/// could not be read has one meaning wherever a walk reports it.
+pub(crate) fn walk_stops(error: &Error) -> bool {
     match error {
         Error::Cancelled { .. } | Error::Io { .. } => true,
         Error::BudgetExceeded { dimension, .. } => *dimension != BudgetDimension::NestedDepth,

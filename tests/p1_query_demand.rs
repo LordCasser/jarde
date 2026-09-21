@@ -645,3 +645,397 @@ fn a_replayed_prefix_is_never_published_twice() {
          one unit — and nothing behind it"
     );
 }
+
+// ---------------------------------------------------------------------------
+// The same demand, over the entries a class-only walk filters out
+// ---------------------------------------------------------------------------
+
+/// Agent attributes in the dense manifest, so a small page fills up inside the first entry.
+const MANIFEST_HITS: usize = 12;
+
+/// One `Premain-Class` main-section line per hit, so the manifest unit answers one item each.
+fn dense_manifest() -> Vec<u8> {
+    let mut manifest = b"Manifest-Version: 1.0\r\n".to_vec();
+    for _ in 0..MANIFEST_HITS {
+        manifest.extend_from_slice(b"Premain-Class: com/example/Agent\r\n");
+    }
+    manifest.extend_from_slice(b"\r\n");
+    manifest
+}
+
+/// One class whose single member allocates `com/example/Agent`, so both consumers of the
+/// fixture's request answer from a class entry: the resource consumer from the manifest and the
+/// type consumer from each class body's `new`.
+///
+/// The body is `new <Agent>; pop; return`, so one member is decoded and exactly one reference is
+/// published per class file.
+fn agent_reference_class() -> Vec<u8> {
+    let mut pool = Pool::default();
+    let this_name = pool.utf8(b"p/Seed");
+    let this_class = pool.class(this_name);
+    let object_name = pool.utf8(b"java/lang/Object");
+    let super_class = pool.class(object_name);
+    let agent_name = pool.utf8(b"com/example/Agent");
+    let agent_class = pool.class(agent_name);
+    let void_descriptor = pool.utf8(b"()V");
+    let code_attribute = pool.utf8(b"Code");
+    let run = pool.utf8(b"run");
+
+    let mut code = vec![0xbb]; // new com/example/Agent
+    u16b(&mut code, agent_class);
+    code.push(0x57); // pop
+    code.push(0xb1); // return
+
+    let mut body = Vec::new();
+    u16b(&mut body, 1); // max_stack
+    u16b(&mut body, 0); // max_locals
+    u32b(
+        &mut body,
+        u32::try_from(code.len()).expect("the fixture code fits u32"),
+    );
+    body.extend_from_slice(&code);
+    u16b(&mut body, 0); // exception table
+    u16b(&mut body, 0); // code attributes
+
+    let mut methods = Vec::new();
+    u16b(&mut methods, 1); // methods
+    u16b(&mut methods, 0x0009); // public static
+    u16b(&mut methods, run);
+    u16b(&mut methods, void_descriptor);
+    u16b(&mut methods, 1); // attributes
+    u16b(&mut methods, code_attribute);
+    u32b(
+        &mut methods,
+        u32::try_from(body.len()).expect("the fixture body fits u32"),
+    );
+    methods.extend_from_slice(&body);
+
+    let mut bytes = 0xcafe_babe_u32.to_be_bytes().to_vec();
+    u16b(&mut bytes, 0); // minor
+    u16b(&mut bytes, 52); // major: Java 8
+    u16b(
+        &mut bytes,
+        u16::try_from(pool.entries.len() + 1).expect("the fixture pool fits u16"),
+    );
+    bytes.extend_from_slice(&pool.bytes());
+    u16b(&mut bytes, 0x0021); // public super
+    u16b(&mut bytes, this_class);
+    u16b(&mut bytes, super_class);
+    u16b(&mut bytes, 0); // interfaces
+    u16b(&mut bytes, 0); // fields
+    bytes.extend_from_slice(&methods);
+    u16b(&mut bytes, 0); // class attributes
+    bytes
+}
+
+/// The resource fixture: the dense manifest first, a class, then two nested containers.
+///
+/// The order is the point. A page that fills inside the manifest must not reach the class entry
+/// behind it, the containers behind *that*, or the classes inside them — and the whole traversal
+/// must, because the manifest is entry 0 and the nested containers are the last entries, be the
+/// same order a class-only walk finds its own candidates in.
+fn resource_artifact() -> Vec<u8> {
+    let manifest = dense_manifest();
+    let host = agent_reference_class();
+    let one = agent_reference_class();
+    let two = agent_reference_class();
+    let inner_one = jar_bytes(&[(b"p/One.class", &one)]);
+    let inner_two = jar_bytes(&[(b"p/Two.class", &two)]);
+    jar_bytes(&[
+        (b"META-INF/MANIFEST.MF", &manifest),
+        (b"p/Host.class", &host),
+        (b"lib/one.jar", &inner_one),
+        (b"lib/two.jar", &inner_two),
+    ])
+}
+
+/// One request over the whole artifact tree that reads both a resource and the class candidates.
+fn resource_request(
+    snapshot: &ArtifactSnapshot,
+    consumers: &[ConsumerKind],
+    max_items: u64,
+) -> QueryRequest {
+    QueryRequest {
+        relation: QueryRelation::MentionsSymbol,
+        target: QueryTarget::Symbol {
+            value: SymbolRef::Class {
+                owner: JvmBytes(b"com/example/Agent".to_vec()),
+            },
+        },
+        physical: PhysicalView {
+            snapshot: snapshot.id().clone(),
+            scope: PhysicalScope::ArtifactTree {
+                root_container: ContainerId("root".into()),
+            },
+        },
+        consumers: ConsumerSchema::new(1, consumers.iter().copied()),
+        max_items,
+        cursor: None,
+    }
+}
+
+/// The raw name of the entry one item was read from, resource items included.
+fn resource_entry(item: &XrefItem) -> Vec<u8> {
+    match &item.source.location {
+        Location::Resource { entry, .. } => entry.raw_name.0.clone(),
+        Location::Code { method, .. } => method
+            .owner
+            .entry()
+            .expect("every class of this fixture is an archive entry")
+            .raw_name
+            .0
+            .clone(),
+        other => panic!("expected a resource or code location, got {other:?}"),
+    }
+}
+
+/// The same fixture read by a request that names only the type consumer: that request walks the
+/// reader's class-only cursor, so its facts are what the entry walk's class half must reproduce.
+fn class_only(snapshot: &ArtifactSnapshot) -> (Vec<XrefItem>, UsageSnapshot) {
+    let (report, usage, _) = run(
+        snapshot,
+        &resource_request(snapshot, &[ConsumerKind::Type], 0),
+    );
+    (report.items, usage)
+}
+
+/// A08/A14 for the entries a class-only walk filters out: a dense first entry that answers a
+/// small page must not pay for the containers behind it.
+///
+/// The dense entry is the manifest, so the page fills inside the *first* record of the scope. The
+/// counted evidence is the budget's own dimensions (`archive_entries`, the read bytes, the code
+/// bytes) and the store's container counters (`directory_parses`, `nested_materializations`),
+/// never a duration: a scan that enumerated the whole tree before applying the page size moves
+/// every one of them.
+#[test]
+fn a_small_resource_page_stops_before_the_containers_behind_it() {
+    let snapshot = open(resource_artifact());
+    let (report, usage, store) = run(
+        &snapshot,
+        &resource_request(
+            &snapshot,
+            &[ConsumerKind::Resource, ConsumerKind::Type],
+            PAGE,
+        ),
+    );
+
+    // Every item of the page comes from the manifest, and only the manifest was read.
+    assert_eq!(u64::try_from(report.items.len()).unwrap(), PAGE);
+    for item in &report.items {
+        assert_eq!(resource_entry(item), b"META-INF/MANIFEST.MF");
+        assert_eq!(item.consumer, Some(ConsumerKind::Resource));
+        assert_eq!(item.operation, XrefOperation::ManifestAgent);
+        assert_eq!(
+            item.evidence.constant_pool_index, None,
+            "a resource fact carries no constant-pool position: its position is the entry"
+        );
+    }
+    let manifest_len = dense_manifest().len() as u64;
+    assert_eq!(
+        usage.archive_entries, 5,
+        "the root container's four records are the directory this request validated, plus the \
+         one-record locator of the manifest's own read"
+    );
+    assert_eq!(
+        (usage.read_bytes, usage.entry_bytes),
+        (manifest_len, manifest_len),
+        "the manifest is the only entry whose bytes (and CRC) were read"
+    );
+    assert_eq!(
+        usage.code_bytes, 0,
+        "no class body was decoded: the page stopped inside the first entry"
+    );
+    assert_eq!(
+        store.nested_materializations, 0,
+        "a small page never descends into the containers behind it"
+    );
+    assert_eq!(
+        store.directory_parses, 1,
+        "the walk opened the root container's directory and nothing else"
+    );
+
+    // The containers behind the page are unknown, not empty: no range names them at all.
+    assert!(report.page.has_more);
+    assert_eq!(
+        report.coverage.dimensions.artifact_structural.state,
+        CoverageState::Partial
+    );
+    let scanned = &report.coverage.dimensions.artifact_structural.scanned;
+    assert_eq!(
+        scanned
+            .iter()
+            .filter(|range| range.label == "container:root:xref_scan_entries")
+            .map(|range| (range.start, range.end))
+            .collect::<Vec<_>>(),
+        vec![(0, 1)],
+        "this invocation examined the manifest entry and nothing behind it"
+    );
+    assert_eq!(
+        scanned
+            .iter()
+            .filter(|range| range.label == "central_directory_entries")
+            .map(|range| (range.start, range.end))
+            .collect::<Vec<_>>(),
+        vec![(0, 4)],
+        "the directory this walk validated is stated with the four records it declared"
+    );
+    let full = run(
+        &snapshot,
+        &resource_request(&snapshot, &[ConsumerKind::Resource, ConsumerKind::Type], 0),
+    );
+    let small_labels = report
+        .coverage
+        .dimensions
+        .artifact_structural
+        .scanned
+        .iter()
+        .chain(&report.coverage.dimensions.artifact_structural.skipped)
+        .map(|range| range.label.as_str())
+        .collect::<Vec<_>>();
+    assert!(
+        small_labels
+            .iter()
+            .all(|label| *label == "central_directory_entries"
+                || label.starts_with("container:root:")),
+        "every range this page states belongs to the one container it reached: {small_labels:?}"
+    );
+    let full_labels = full
+        .0
+        .coverage
+        .dimensions
+        .artifact_structural
+        .scanned
+        .iter()
+        .map(|range| range.label.clone())
+        .collect::<Vec<_>>();
+    assert!(
+        full_labels
+            .iter()
+            .filter(|label| label.contains("central_directory_entries"))
+            .count()
+            == 3,
+        "the whole traversal states one validated directory per container it reached: {full_labels:?}"
+    );
+}
+
+/// The whole traversal pays for what it read: every container opened, every nested archive
+/// expanded, every class body decoded, and the counts a small page stayed below.
+#[test]
+fn the_whole_resource_traversal_pays_for_every_container_it_reaches() {
+    let snapshot = open(resource_artifact());
+    let consumers = [ConsumerKind::Resource, ConsumerKind::Type];
+    let (_, small_usage, small_store) =
+        run(&snapshot, &resource_request(&snapshot, &consumers, PAGE));
+    let (full, full_usage, full_store) =
+        run(&snapshot, &resource_request(&snapshot, &consumers, 0));
+
+    // The manifest answers one item per `Premain-Class` line, and every class candidate answers
+    // the type its own body allocates; the nested container entries answer neither.
+    assert_eq!(
+        full.items.iter().map(resource_entry).collect::<Vec<_>>(),
+        [
+            vec![b"META-INF/MANIFEST.MF".to_vec(); MANIFEST_HITS],
+            vec![
+                b"p/Host.class".to_vec(),
+                b"p/One.class".to_vec(),
+                b"p/Two.class".to_vec()
+            ],
+        ]
+        .concat(),
+        "container order, then entry ordinal: the manifest's items, then the classes, with the \
+         containers themselves contributing none"
+    );
+    assert_eq!(
+        full.items[MANIFEST_HITS..]
+            .iter()
+            .map(|item| (item.consumer, item.operation))
+            .collect::<Vec<_>>(),
+        vec![
+            (Some(ConsumerKind::Type), XrefOperation::New),
+            (Some(ConsumerKind::Type), XrefOperation::New),
+            (Some(ConsumerKind::Type), XrefOperation::New)
+        ]
+    );
+    assert!(matches!(full.execution, ExecutionReport::Complete { .. }));
+    assert_eq!(
+        full.coverage.dimensions.artifact_structural.state,
+        CoverageState::CompleteWithinSchema
+    );
+    assert!(!full.page.has_more);
+
+    // Every counted dimension the small page could have skipped is larger here, and the facts the
+    // small page avoided are exactly the ones behind it.
+    assert!(
+        full_usage.archive_entries > small_usage.archive_entries,
+        "the containers behind the page are records this traversal validated: {} vs {}",
+        full_usage.archive_entries,
+        small_usage.archive_entries
+    );
+    assert!(
+        full_usage.read_bytes > small_usage.read_bytes,
+        "the entries and the nested archives behind the page are bytes this traversal read: \
+         {} vs {}",
+        full_usage.read_bytes,
+        small_usage.read_bytes
+    );
+    assert!(
+        full_usage.code_bytes > 0 && small_usage.code_bytes == 0,
+        "the class bodies behind the page are code this traversal decoded, and the page that \
+         stopped inside the manifest decoded none: {} vs {}",
+        full_usage.code_bytes,
+        small_usage.code_bytes
+    );
+    assert!(
+        full_usage.result_items > small_usage.result_items,
+        "the items behind the page are items this traversal published: {} vs {}",
+        full_usage.result_items,
+        small_usage.result_items
+    );
+    assert_eq!(
+        small_store.nested_materializations, 0,
+        "a small page never expands a container behind it"
+    );
+    assert!(
+        full_store.nested_materializations >= 2,
+        "the whole traversal expands both nested containers at least once each: {}",
+        full_store.nested_materializations
+    );
+    assert_eq!(
+        (full_store.directory_parses, small_store.directory_parses),
+        (3, 1),
+        "the walk parses one directory per container it reached, and the small page parses the \
+         one it stopped in"
+    );
+    // The records of the traversal are not one charge per entry: a read that reaches *into* a
+    // container locates its entry by walking that container's directory again (the reader's own
+    // locator, charged per record up to the ordinal), and the demand pull does not remove that
+    // cost for the entries it really reads — only for the ones behind the page's stop.
+    assert!(
+        full_usage.archive_entries > 4 + 1,
+        "the four validated records, the two nested containers' records and the locators of the \
+         reads that reached into them: {}",
+        full_usage.archive_entries
+    );
+
+    // The class half is the one the class-only walk finds, in the same order and at the same cost:
+    // the two consumers share one unit stream, one item order and one decode per body.
+    let (class_items, class_usage) = class_only(&snapshot);
+    assert_eq!(
+        full.items[MANIFEST_HITS..],
+        class_items[..],
+        "the class candidates answer the same items the class-only walk publishes"
+    );
+    assert_eq!(
+        full_usage.code_bytes, class_usage.code_bytes,
+        "the entry walk decoded exactly the bodies the class-only walk decodes, and no more"
+    );
+    let (resource_only, _, _) = run(
+        &snapshot,
+        &resource_request(&snapshot, &[ConsumerKind::Resource], 0),
+    );
+    assert_eq!(
+        resource_only.items.len(),
+        MANIFEST_HITS,
+        "the resource consumer answers the manifest and nothing else of this fixture"
+    );
+}

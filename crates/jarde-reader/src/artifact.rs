@@ -1314,6 +1314,47 @@ impl ArtifactSnapshot {
         Ok(facts)
     }
 
+    /// The verified facts of one container, built for **this** request rather than answered from a
+    /// retention or from a product some other consumer is holding.
+    ///
+    /// This is the access a walk that *reports its own directory validation* uses: the entry cursor
+    /// states, per container it reached, that this invocation walked that container's directory to
+    /// its end — a range, a charged record count and a per-entry validation, all of them this
+    /// invocation's own work — so it opens the container directly. The listing it publishes is
+    /// therefore paid for exactly as the provider's own enumeration pays for it, whether or not the
+    /// request attached a store or another consumer of this snapshot happens to hold the same
+    /// product: an answer taken from either would make the range this walk reports describe work
+    /// this invocation did not do. The product is still offered to the request's store afterwards,
+    /// so a later read that states no such range — a nested entry read, a prepared class — is
+    /// answered from it as usual.
+    pub(crate) fn walked_container_facts(
+        &self,
+        origin: &ContainerOrigin,
+        budget: &mut Budget,
+    ) -> Result<Arc<ContainerFacts>> {
+        let facts = self.build_container_facts(origin, budget)?;
+        if let Some(cache) = budget.facts_cache() {
+            cache.remember_container(&facts);
+        }
+        Ok(facts)
+    }
+
+    /// The entry count the snapshot's own root container declares, read without opening it.
+    ///
+    /// This is the one denominator a request can state for a container it never got to examine: the
+    /// end-of-central-directory record of the snapshot's bytes declares how many entries the root
+    /// container holds, and that declaration is a property of those bytes. Nothing is materialized
+    /// and nothing is charged — the answer states a range, it does not read entries — and a
+    /// snapshot whose bytes do not locate their own record declares nothing at all.
+    pub(crate) fn declared_root_entries(&self) -> Option<u64> {
+        if self.kind != ArtifactKind::Zip {
+            return None;
+        }
+        ZipArchive::from_slice(&self.bytes)
+            .ok()
+            .map(|archive| archive.entries_hint())
+    }
+
     /// Records one container product as held by a live handle of this snapshot.
     ///
     /// Called by the consumers that **keep** a product for their own lifetime: the scope cursor as
@@ -2110,6 +2151,26 @@ impl ContainerFacts {
         }
     }
 
+    /// The records of this directory that repeat a raw name, as `(ordinal, first ordinal)`.
+    ///
+    /// The Publish intent of the one directory parser reports a repeat for every record whose name
+    /// it had already seen, in record order. A walk that yields this directory's records instead of
+    /// a report states the same fact about the same product, so the pairs are derived from the
+    /// locator rather than re-detected record by record by the caller.
+    pub(crate) fn repeated_names(&self) -> Vec<(u64, u64)> {
+        let mut repeated = Vec::new();
+        for positions in self.names.values() {
+            let Some((&first, rest)) = positions.split_first() else {
+                continue;
+            };
+            for position in rest {
+                repeated.push((*position, first));
+            }
+        }
+        repeated.sort_unstable();
+        repeated
+    }
+
     /// The one record of this directory at `position`, or the refusal that says the address does
     /// not exist in it.
     fn record(&self, position: usize) -> Result<&PhysicalEntry> {
@@ -2887,7 +2948,18 @@ fn record_tree_issue(
     diagnostics.push(tree_diagnostic(&error, Some(parent_entry)));
 }
 
-fn merge_tree_error(first_issue: &mut Option<ExecutionReport>, error: &Error, budget: &Budget) {
+/// Folds one subtree failure into the walk's own issue, in the tree walk's vocabulary.
+///
+/// A subtree that could not be read is never a stop of the walk itself: it bounds the report with
+/// the state that failure means — a cancellation, an exhausted dimension, an unsupported structure
+/// or an error code — while the walk keeps going. The entry walk
+/// ([`crate::entry_cursor::EntryCursor`]) reports through this same function, so one failure means
+/// one state wherever a walk carries it.
+pub(crate) fn merge_tree_error(
+    first_issue: &mut Option<ExecutionReport>,
+    error: &Error,
+    budget: &Budget,
+) {
     let execution = match error {
         Error::Cancelled { .. } => ExecutionReport::Cancelled {
             usage: budget.usage(),
