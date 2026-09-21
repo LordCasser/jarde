@@ -41,6 +41,13 @@
 //! member; the only field they differ in is `elapsed_millis`, the wall-clock reading every usage
 //! snapshot carries and the one field the repository's own fingerprint comparison normalizes away.
 //!
+//! The same read is what a **prepared** class hands to this pass, so the guards below are extended
+//! (never weakened) to cover the two entries that consume one: `read_prepared_driver_method` (bulk
+//! task 2.3, driver half) reads no class definition of its own, decodes through the prepared class's
+//! own decoder and charges no `ClassHeaders`, and `callee::read_prepared_callees` (the callee half)
+//! answers the members it is asked about without a second class read — while both keep the loader
+//! binding check and the per-body charges the direct paths make.
+//!
 //! What this file does **not** prove: that the class facts are correct in general (they are the
 //! reader's `this_class` and `access_flags` of one read, and the cross-check below is a second read by
 //! the same reader, not an independent parser); that the text the recovery layer is handed can spell
@@ -1174,6 +1181,142 @@ fn the_class_facts_are_taken_from_the_read_that_was_already_there() {
     assert!(
         pass.contains("request.method.clone(),"),
         "while the physical identity stays the request's own definition"
+    );
+}
+
+#[test]
+fn the_prepared_driver_read_consumes_the_class_the_caller_already_read() {
+    // The other half of the same pass (bulk task 2.3): a class the caller prepared
+    // (`jarde_reader::prepared`) is read once, and this entry must consume that read instead of
+    // opening a second one. The guard is at source level for the same reason the one above is: the
+    // numbers of a run cannot tell "one class read" from "two reads of the same class", because both
+    // report the same physical facts.
+    let source = read_repository_file("crates/jarde-jvm/src/engine.rs");
+    let start = source
+        .find("fn read_prepared_driver_method(")
+        .expect("the prepared driver pass is in this file");
+    let rest = &source[start..];
+    let end = rest
+        .find("\n/// The termination and diagnostic of a reader")
+        .expect("the prepared pass ends where the next helper begins");
+    let pass = &rest[..end];
+    assert_eq!(
+        pass.matches("read_own_definition").count()
+            + pass.matches("read_definition_content").count(),
+        0,
+        "the prepared pass reads no class definition: the caller's preparation is the read"
+    );
+    assert_eq!(
+        pass.matches("method_code_facts(").count(),
+        0,
+        "and builds no second decoder"
+    );
+    assert_eq!(
+        pass.matches("prepared.method_code(").count(),
+        1,
+        "it decodes each body through the prepared class's own decoder, the one the single-method \
+         path delegates to"
+    );
+    assert_eq!(
+        pass.matches("CountedBudgetDimension::ClassHeaders").count(),
+        0,
+        "the class read the preparation paid for is not charged again per method"
+    );
+    assert_eq!(
+        pass.matches("CountedBudgetDimension::MethodBodies").count(),
+        1,
+        "while the one body attempt of the request is still charged, before its decode"
+    );
+    assert!(
+        pass.contains("require_prepared_definition(prepared, &request.method.owner)"),
+        "the prepared class has to be the definition the request names"
+    );
+    assert!(
+        pass.contains("bind_definition("),
+        "and the loader binding check of the direct read is not skipped"
+    );
+    assert!(
+        pass.contains("finish_driver_read("),
+        "the tail of the read — the declaration, the pool, the bootstrap table and the member's own \
+         statement — is the same one the direct read uses"
+    );
+    // And the prepared lifecycle stays the caller's: the crate that consumes a prepared class never
+    // prepares one and never reaches the reader's own prepared accessors, so no prepared class is
+    // built, stored, memoized or handed on inside the consuming layer — it can only be borrowed from
+    // its caller for the duration of the call.
+    for path in [
+        "crates/jarde-jvm/src/engine.rs",
+        "crates/jarde-jvm/src/callee.rs",
+    ] {
+        let consuming = read_repository_file(path);
+        assert_eq!(
+            consuming.matches("PreparedClass::prepare").count()
+                + consuming.matches("prepared_root_class").count()
+                + consuming.matches("prepared_class(").count(),
+            0,
+            "{path} builds or re-reads a prepared class: the class lifecycle is the caller's"
+        );
+    }
+}
+
+#[test]
+fn the_prepared_callee_read_needs_no_second_class_read() {
+    // The callee half (bulk task 2.3): the class's own members a presented body's accessor call
+    // sites named, answered from the prepared class the same run was presented from — no
+    // `HeaderClosure::read_own_definition`, no `ClassHeaders`, and the same candidate loop, refusals
+    // and per-body charge the direct entry has.
+    let source = read_repository_file("crates/jarde-jvm/src/callee.rs");
+    let start = source
+        .find("pub fn read_prepared_callees(")
+        .expect("the prepared callee read is in this file");
+    let rest = &source[start..];
+    let end = rest
+        .find("\n/// The class one callee read answers from")
+        .expect("the prepared read ends where the shared candidate loop begins");
+    let pass = &rest[..end];
+    assert_eq!(
+        pass.matches("read_own_definition").count(),
+        0,
+        "the prepared callee read opens no header read of its own"
+    );
+    assert_eq!(
+        pass.matches("CountedBudgetDimension::ClassHeaders").count(),
+        0,
+        "and charges no class header for the definition the preparation read"
+    );
+    assert_eq!(
+        pass.matches("require_prepared_member_table(").count(),
+        1,
+        "a member table that stopped refuses the read instead of answering from its prefix"
+    );
+    assert_eq!(
+        pass.matches("bind_definition(").count(),
+        1,
+        "and the loader binding check of the direct read is not skipped"
+    );
+    assert_eq!(
+        pass.matches("callee_members(").count(),
+        1,
+        "the candidate loop, its refusals and its charges are the shared ones"
+    );
+    // One charge and one decoder per source, in the whole file: the shared loop cannot grow a second
+    // one without failing here.
+    assert_eq!(
+        source
+            .matches("budget.charge(CountedBudgetDimension::MethodBodies, 1)")
+            .count(),
+        1,
+        "one pre-decode body attempt for both sources of a callee read"
+    );
+    assert_eq!(
+        source.matches("classfile::method_code_facts(").count(),
+        1,
+        "one decode for a class this entry read itself"
+    );
+    assert_eq!(
+        source.matches("prepared.method_code(").count(),
+        1,
+        "and one for a class the caller prepared, which is the same implementation"
     );
 }
 

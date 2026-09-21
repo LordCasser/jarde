@@ -51,8 +51,9 @@ mod test_fixtures;
 
 pub use callee::{
     CalleeBody, CalleeCandidate, CalleeMember, CalleeReadReport, CalleeReadRequest, CalleeRefusal,
-    read_callees,
+    read_callees, read_prepared_callees,
 };
 pub use engine::{
-    analyze_method, analyze_method_ir, declaration_references, reflection_patterns, resolve_symbol,
+    analyze_method, analyze_method_ir, analyze_prepared_method_ir, declaration_references,
+    reflection_patterns, resolve_symbol,
 };

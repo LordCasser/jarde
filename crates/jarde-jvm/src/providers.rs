@@ -77,6 +77,7 @@ use jarde_reader::model::{
     PhysicalClassLocation, PhysicalDefinitionId, PhysicalEntryId, PhysicalVariant, SnapshotId,
     physical_variant_for_path,
 };
+use jarde_reader::prepared::PreparedClass;
 use jarde_reader::view::{DelegationPolicy, LoadDomain, LoadRoot, LoaderId, ModuleMode};
 use std::collections::VecDeque;
 
@@ -820,22 +821,65 @@ impl<'a> HeaderClosure<'a> {
         demand: HeaderDemand,
         budget: &mut Budget,
     ) -> Result<DefinitionContent> {
-        let claimed = NodeIdentity::new(defining_loader, definition);
         let content = read_definition_content(self.content, definition, budget)?;
+        self.bind_definition(
+            defining_loader,
+            definition,
+            &content.header.facts,
+            demand,
+            budget,
+        )?;
+        Ok(content)
+    }
+
+    /// Binds one definition whose bytes the request holds from a read that already happened.
+    ///
+    /// This is the second half of [`HeaderClosure::read_own_definition`], and it is also the whole
+    /// of what a **prepared** class owes the binding contract (bulk task 2.3): a class prepared
+    /// outside this crate is bytes that were read, verified and parsed once, so what is left to
+    /// decide is the one thing only the declared order can answer — whether the loader's own
+    /// environment really selects *this* `(loader, definition)` pair for the name the facts declare
+    /// — and the one thing only this request can record: the read it is evidence of.
+    ///
+    /// The check is [`HeaderClosure::read_own_definition`]'s, unchanged: the same search over the
+    /// same positions with the same `known` handover (a position holding exactly this definition is
+    /// decided from these facts and neither read nor charged), the same [`UNBOUND_DEFINITION`]
+    /// refusal, and the read recorded before the check decides. No byte of the definition is read
+    /// here: the facts are the caller's own evidence, and the definition's bytes were verified by
+    /// the read that produced them.
+    ///
+    /// The facts are cloned into the resolution the search answers with, exactly as a direct read
+    /// clones them for the lookup its own position elects; the caller's copy is untouched.
+    pub(crate) fn bind_definition(
+        &mut self,
+        defining_loader: &LoaderId,
+        definition: &PhysicalDefinitionId,
+        facts: &ClassFacts,
+        demand: HeaderDemand,
+        budget: &mut Budget,
+    ) -> Result<()> {
+        let claimed = NodeIdentity::new(defining_loader, definition);
+        let header = ClassHeaderFacts {
+            facts: facts.clone(),
+        };
+        // The read happened where the bytes were verified — in this request (`read_own_definition`)
+        // or in the read that prepared the class — so the record is published here, under the
+        // demand that caused it, before the binding check decides.
         self.record_read(defining_loader, definition, demand);
-        let name = content.header.facts.this_class.raw().0.clone();
-        // The definition this request just read is one position the verification search will
-        // walk: handing it over as `known` keeps that read the request's only read of this
-        // binding instead of reading the same bytes again for the position.
+        let name = header.facts.this_class.raw().0.clone();
+        // The definition the caller holds is one position the verification search will walk:
+        // handing it over as `known` keeps the bytes it came from read exactly once instead of
+        // reading the same immutable bytes again and charging a second `ClassHeaders` for the
+        // position.
         let known = ReadDefinition {
             definition,
-            header: &content.header,
+            header: &header,
         };
         let handle = self
             .demand_with(defining_loader, &name, demand, Some(&known), budget)
             .decision?;
         if self.resolution(handle).identity().as_ref() == Some(&claimed) {
-            return Ok(content);
+            return Ok(());
         }
         Err(unbound_definition(&claimed, &name, self.resolution(handle)))
     }
@@ -2012,6 +2056,74 @@ fn require_definition_bytes(
     ))
 }
 
+/// The definition a **prepared** class really is, or the refusal that says it is not the claimed
+/// one (bulk task 2.3).
+///
+/// A prepared class is evidence about exactly one physical class — the entry the read verified and
+/// the bytes it parsed — and an entry point that takes one is claiming that class is the definition
+/// the request names. The claim is checked here rather than assumed, because everything the
+/// prepared read stands for (its facts, its member table, the bytes a body is decoded from) would
+/// otherwise be attributed to a definition it is not:
+///
+/// * the physical coordinate has to be the claimed one, and
+/// * the trusted digest and length the preparation established have to be the class-bytes identity
+///   the definition states.
+///
+/// Both are refused under `class_definition_mismatch`, the code every definition-versus-bytes
+/// disagreement of this layer already uses, so a caller reads one vocabulary for one kind of
+/// mistake. What this does **not** decide is the loader binding: that is the declared order's own
+/// question and [`HeaderClosure::bind_definition`] answers it.
+pub(crate) fn require_prepared_definition(
+    prepared: &PreparedClass<'_>,
+    claimed: &PhysicalDefinitionId,
+) -> Result<()> {
+    if prepared.location() != &claimed.location {
+        return Err(Error::invalid_input(
+            "class_definition_mismatch",
+            format!(
+                "the prepared class is {}, but the request is about {}: a prepared input states the \
+                 one class it was prepared from, and no other",
+                location_label(prepared.location()),
+                definition_label(claimed)
+            ),
+        ));
+    }
+    require_definition_bytes(
+        claimed,
+        &prepared.class_bytes().digest,
+        prepared.class_bytes().length,
+        &definition_label(claimed),
+    )
+}
+
+/// Refuses a **prepared** class whose member table did not read to its declared end (bulk task 2.3).
+///
+/// A prepared class keeps the readable prefix of a member table that stopped
+/// ([`jarde_reader::prepared::PreparedClass::member_table_stop`]) and refuses every body read over
+/// it, because the records after the stop were never read. A consumer that *locates* a member before
+/// it decodes one has to make the same statement first: an empty locator answer means "no record
+/// this read read declares it", and a request that turns that into "this class declares no such
+/// member" would publish an incomplete read as a per-member conclusion.
+///
+/// The refusal reuses the stop's own code — it is the failure that really happened, and it is the
+/// code a body read of such a class answers with — and names the table position the walk stopped at,
+/// so a caller can point at the record rather than at a whole class. The readable prefix is not
+/// reported as absent: it stays exactly what the class's own read stated.
+pub(crate) fn require_prepared_member_table(prepared: &PreparedClass<'_>) -> Result<()> {
+    let Some(stop) = prepared.member_table_stop() else {
+        return Ok(());
+    };
+    Err(Error::invalid_input(
+        stop.code.clone(),
+        format!(
+            "the prepared class's member table stopped in the {:?} table at record {} (class \
+             offset {}): {}; the records after it were never read, so no member of this class can \
+             be located or decoded",
+            stop.phase, stop.index, stop.class_offset, stop.message
+        ),
+    ))
+}
+
 /// The refusal of a physical definition the declared loader's own environment does not bind.
 ///
 /// The message names both sides of the disagreement — the binding the request claimed and the
@@ -2055,11 +2167,17 @@ fn unbound_definition(claimed: &NodeIdentity, name: &[u8], decided: &ClassResolu
 /// Human-readable coordinate of one class definition, for the messages of the reads that name
 /// it by identity rather than by a search position.
 fn definition_label(definition: &PhysicalDefinitionId) -> String {
-    match &definition.location {
+    location_label(&definition.location)
+}
+
+/// The same label for a physical class location: what one coordinate is, without the bytes it
+/// names. A definition and a prepared read both state a location, and both are named the same way.
+fn location_label(location: &PhysicalClassLocation) -> String {
+    match location {
         PhysicalClassLocation::ArchiveEntry { entry } => format!(
             "the class definition at {} of snapshot `{}`",
             entry_label(entry),
-            definition.snapshot().0
+            location.snapshot().0
         ),
         PhysicalClassLocation::StandaloneRoot { snapshot } => format!(
             "the standalone CLASS definition of snapshot `{}`",

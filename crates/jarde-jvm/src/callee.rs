@@ -45,16 +45,27 @@
 //!
 //! The report is read-only evidence: the members are borrowed through accessors, the body facts are
 //! the reader's own type, and nothing here hands out a mutable internal of the analysis engine.
+//!
+//! # Two entries, one read
+//!
+//! [`read_callees`] performs the class read itself. [`read_prepared_callees`] is the same read from a
+//! class the caller already prepared (bulk task 2.3): same refusals, same member order, same charges
+//! per member, same read record — minus the read of the class definition itself and its
+//! `ClassHeaders` charge, which the preparation paid once for every method of that class. A bulk
+//! worker holds the prepared class
+//! beside the run it presents, so the members a presented body's call sites name come from the very
+//! member table, pool and decoder that run read its body with.
 
 use serde::Serialize;
 
 use jarde_reader::budget::{Budget, CountedBudgetDimension, UsageSnapshot};
-use jarde_reader::classfile::MethodCodeFacts;
+use jarde_reader::classfile::{MemberHeader, MethodCodeFacts};
 use jarde_reader::error::Result;
 use jarde_reader::model::{JvmBytes, PhysicalDefinitionId, PhysicalMethodId};
+use jarde_reader::prepared::{MethodOrdinal, PreparedClass};
 
 use crate::environment::ResolutionEnvironment;
-use crate::providers::{HeaderClosure, HeaderDemand};
+use crate::providers::{DefinitionContent, HeaderClosure, HeaderDemand};
 use crate::resolver::{HeaderRead, published_reads};
 
 /// One call site of a presented body: the member the call reaches, on the class it names, at the
@@ -263,6 +274,10 @@ impl CalleeReadReport {
 /// The order of the work is the order of the charges: one header read, then one `MethodBodies`
 /// attempt per distinct member the class declares with a body, each before the body is decoded. A
 /// candidate that repeats a member already read is answered by that member and charges nothing more.
+///
+/// This is the read for a caller that holds **no** prepared class; one that does — a bulk operation,
+/// which prepared the class once for all of its methods — uses
+/// [`read_prepared_callees`] and pays no class read at all.
 pub fn read_callees(
     content: &[jarde_reader::artifact::ArtifactSnapshot],
     request: &CalleeReadRequest<'_>,
@@ -279,19 +294,184 @@ pub fn read_callees(
     // by the binding check keeps the record of the bytes it was decided on.
     let reads = published_reads(&closure);
     let read = read?;
-    let class = String::from_utf8_lossy(&read.header.facts.this_class.raw().0).into_owned();
+    let (class, members, refusals) = callee_members(request, CalleeClass::Read(&read), budget)?;
+    // The header's constant pool is deliberately not published: the body facts above were decoded
+    // against it by this very read, and the caller above holds the pool of the same definition (the
+    // presented run's own), so a second copy of it on this report would be one fact stated twice.
+    Ok(CalleeReadReport {
+        class,
+        members,
+        refusals,
+        reads,
+        usage: budget.usage(),
+    })
+}
 
+/// The same read, from a class the caller already prepared (bulk task 2.3, callee half).
+///
+/// A bulk operation prepares one class once and analyses every method that class declares; the
+/// presented body's accessor candidates name members of that very class (a candidate of another
+/// class is refused by this read, as it always was), so the class's member table, its constant pool
+/// and the decoder that resolves a body against them are already in the caller's hands. This entry
+/// consumes them:
+///
+/// * **no second read of the definition and no `ClassHeaders` charge for it**: the members come
+///   from the prepared member table
+///   and the bodies from [`PreparedClass::method_code`], the same decoder
+///   [`jarde_reader::classfile::method_code_facts`] delegates to, so a member body read here and the
+///   same body read by [`read_callees`] cannot drift in their facts, their stop position or what
+///   they charge;
+/// * the **same refusals and the same member order** as [`read_callees`]: a candidate naming another
+///   class is `callee_not_this_class`, one the class declares no record for is `callee_not_declared`,
+///   and a member the class declares without a `Code` entry is answered as its declaration with no
+///   body (and no `MethodBodies` attempt);
+/// * the **same charges per member**: one `MethodBodies` attempt per distinct candidate the class
+///   declares with a body, before its decode, plus the body's own `AttributeBytes`/`CodeBytes`;
+/// * the **same read record**, under [`crate::resolver::ReadReason::CalleeMemberBody`], of the
+///   definition the request names — sourced from the preparation instead of a second read of those
+///   bytes.
+///
+/// The prepared class must be the definition the request names (its coordinate and trusted
+/// class-bytes identity: [`crate::providers::require_prepared_definition`]) and its member table
+/// must have read to its declared end ([`crate::providers::require_prepared_member_table`]; a
+/// stopped table cannot state that a class declares no member). The declared loader's binding check
+/// is the direct read's own ([`crate::providers::HeaderClosure::bind_definition`]), decided from the
+/// prepared facts, so a prepared input is not a way around it.
+pub fn read_prepared_callees(
+    content: &[jarde_reader::artifact::ArtifactSnapshot],
+    prepared: &PreparedClass<'_>,
+    request: &CalleeReadRequest<'_>,
+    budget: &mut Budget,
+) -> Result<CalleeReadReport> {
+    crate::providers::require_prepared_definition(prepared, request.definition)?;
+    let facts = prepared.class_facts();
+    let mut closure = HeaderClosure::new(content, request.environment);
+    let bound = closure.bind_definition(
+        &request.environment.runtime.load_domain.loader,
+        request.definition,
+        facts,
+        HeaderDemand::CalleeMemberBody,
+        budget,
+    );
+    let reads = published_reads(&closure);
+    bound?;
+    crate::providers::require_prepared_member_table(prepared)?;
+    let (class, members, refusals) =
+        callee_members(request, CalleeClass::Prepared(prepared), budget)?;
+    Ok(CalleeReadReport {
+        class,
+        members,
+        refusals,
+        reads,
+        usage: budget.usage(),
+    })
+}
+
+/// The class one callee read answers from.
+///
+/// Both sources answer the same three questions — the name the class declares for itself, which
+/// member record declares a raw name and descriptor, and how that record's body is decoded — so the
+/// candidate loop ([`callee_members`]) is written once and the two reads differ only here. The
+/// refusals, the candidate order and the deduplication that the report publishes are the loop's, not
+/// a source's.
+enum CalleeClass<'a> {
+    /// The header read this entry performed itself: the bytes and member records of that read.
+    Read(&'a DefinitionContent),
+    /// The class the caller already prepared: its shared facts, locator and decoder.
+    Prepared(&'a PreparedClass<'a>),
+}
+
+/// One member record a callee read located, with the coordinate its decode is asked with.
+#[derive(Clone, Copy)]
+struct CalleeRecord<'a> {
+    /// The record's own declaration, as its class states it (attribute shells only, no body).
+    record: &'a MemberHeader,
+    /// The record's ordinal inside its class's declaration order: the prepared locator's own ordinal
+    /// for a prepared class, and the position in the member table the read produced for one read
+    /// here — the same coordinate, because a class file's method table *is* its declaration order.
+    ordinal: MethodOrdinal,
+}
+
+impl CalleeClass<'_> {
+    /// The class's own internal name (`this_class`), lossily spelled as this report states it.
+    fn class_name(&self) -> String {
+        let declared = match self {
+            Self::Read(read) => read.header.facts.this_class.raw(),
+            Self::Prepared(prepared) => prepared.class_facts().this_class.raw(),
+        };
+        String::from_utf8_lossy(&declared.0).into_owned()
+    }
+
+    /// The first member record declaring this raw name and descriptor, in declaration order.
+    ///
+    /// The first record is the one a caller that names a member gets: two records under one
+    /// signature stay two declarations in the class, and which of them this read answers with is
+    /// decided by the body read's own ambiguity rule (the shared decoder refuses both when it is
+    /// asked for a body) rather than by an election here.
+    fn locate(&self, name: &[u8], descriptor: &[u8]) -> Option<CalleeRecord<'_>> {
+        match self {
+            Self::Read(read) => {
+                let position = read.header.facts.methods.iter().position(|member| {
+                    member.name.raw().0 == name && member.descriptor.raw().0 == descriptor
+                })?;
+                Some(CalleeRecord {
+                    record: &read.header.facts.methods[position],
+                    ordinal: MethodOrdinal(u32::try_from(position).unwrap_or(u32::MAX)),
+                })
+            }
+            Self::Prepared(prepared) => {
+                let ordinal = *prepared.locate_method(name, descriptor).first()?;
+                let slot = prepared.slot(ordinal)?;
+                Some(CalleeRecord {
+                    record: &slot.header,
+                    ordinal,
+                })
+            }
+        }
+    }
+
+    /// Decodes one located body, charging the `MethodBodies` attempt **before** the decode.
+    ///
+    /// The bytes are the ones the class was read from, the pool is that same read's, and the decode
+    /// is the one implementation both sources go through, so a body this entry answers with is the
+    /// body the single-method path publishes for it — facts, stop position and charges alike.
+    fn decode(&self, located: CalleeRecord<'_>, budget: &mut Budget) -> Result<MethodCodeFacts> {
+        budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
+        match self {
+            Self::Read(read) => {
+                jarde_reader::classfile::method_code_facts(&read.bytes, located.record, budget)
+            }
+            Self::Prepared(prepared) => prepared.method_code(located.ordinal, budget),
+        }
+    }
+}
+
+/// The members `request.candidates` name, read from one class in candidate order.
+///
+/// The whole policy of one callee read lives here, once, whatever the class was read from: a
+/// candidate whose owner is not the name this class declares for itself is refused
+/// (`callee_not_this_class`) rather than looked up in these bytes; a repeated candidate is answered
+/// by the member the first one read; a candidate the class declares no record for is refused
+/// (`callee_not_declared`); a record the class declares without a `Code` entry is answered as its own
+/// declaration with no body and no body attempt; and every other candidate costs one `MethodBodies`
+/// attempt before its decode.
+fn callee_members(
+    request: &CalleeReadRequest<'_>,
+    class: CalleeClass<'_>,
+    budget: &mut Budget,
+) -> Result<(String, Vec<CalleeMember>, Vec<CalleeRefusal>)> {
+    let class_name = class.class_name();
     let mut members: Vec<CalleeMember> = Vec::new();
     let mut refusals: Vec<CalleeRefusal> = Vec::new();
     let mut seen: Vec<(Vec<u8>, Vec<u8>)> = Vec::new();
     for candidate in request.candidates {
         let owner = String::from_utf8_lossy(&candidate.owner.0).into_owned();
-        if owner != class {
+        if owner != class_name {
             refusals.push(CalleeRefusal {
                 candidate: candidate.clone(),
                 code: "callee_not_this_class",
                 message: format!(
-                    "the call site at BCI {} names `{owner}.{}`, and this read is of the definition that declares `{class}`: a member of another class is not read from these bytes, however its name reads",
+                    "the call site at BCI {} names `{owner}.{}`, and this read is of the definition that declares `{class_name}`: a member of another class is not read from these bytes, however its name reads",
                     candidate.call_site,
                     String::from_utf8_lossy(&candidate.name.0)
                 ),
@@ -303,16 +483,12 @@ pub fn read_callees(
             continue;
         }
         seen.push(key);
-        let member = read.header.facts.methods.iter().find(|member| {
-            member.name.raw().0 == candidate.name.0
-                && member.descriptor.raw().0 == candidate.descriptor.0
-        });
-        let Some(member) = member else {
+        let Some(located) = class.locate(&candidate.name.0, &candidate.descriptor.0) else {
             refusals.push(CalleeRefusal {
                 candidate: candidate.clone(),
                 code: "callee_not_declared",
                 message: format!(
-                    "the call site at BCI {} names `{class}.{}` `{}`, and the class declares no such member of its own: the call reaches a member this run cannot read",
+                    "the call site at BCI {} names `{class_name}.{}` `{}`, and the class declares no such member of its own: the call reaches a member this run cannot read",
                     candidate.call_site,
                     String::from_utf8_lossy(&candidate.name.0),
                     String::from_utf8_lossy(&candidate.descriptor.0)
@@ -322,35 +498,25 @@ pub fn read_callees(
         };
         let identity = PhysicalMethodId {
             owner: request.definition.clone(),
-            name: member.name.raw().clone(),
-            descriptor: member.descriptor.raw().clone(),
+            name: located.record.name.raw().clone(),
+            descriptor: located.record.descriptor.raw().clone(),
         };
-        if !crate::engine::has_code_attribute(member) {
+        if !crate::engine::has_code_attribute(located.record) {
             // A member the class declares without a body is answered as itself: the declaration and
             // its flags are evidence, and no attempt is charged for a body that is not there.
             members.push(CalleeMember {
                 identity,
-                access_flags: member.access_flags,
+                access_flags: located.record.access_flags,
                 body: None,
             });
             continue;
         }
-        budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
-        let facts = jarde_reader::classfile::method_code_facts(&read.bytes, member, budget)?;
+        let facts = class.decode(located, budget)?;
         members.push(CalleeMember {
             identity,
-            access_flags: member.access_flags,
+            access_flags: located.record.access_flags,
             body: Some(CalleeBody::new(facts)),
         });
     }
-    // The header's constant pool is deliberately not published: the body facts above were decoded
-    // against it by this very read, and the caller above holds the pool of the same definition (the
-    // presented run's own), so a second copy of it on this report would be one fact stated twice.
-    Ok(CalleeReadReport {
-        class,
-        members,
-        refusals,
-        reads,
-        usage: budget.usage(),
-    })
+    Ok((class_name, members, refusals))
 }

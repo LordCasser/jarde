@@ -20,6 +20,7 @@ use jarde_reader::error::{Error, Result};
 use jarde_reader::model::{
     Coverage, Diagnostic, DiagnosticSeverity, ExecutionReport, TerminationReason,
 };
+use jarde_reader::prepared::PreparedClass;
 
 use crate::environment::{EnvironmentIdentity, EnvironmentProblem};
 use crate::frame::{FrameMethod, FrameOutcome, IR_FRAME_DEFERRED, IR_FRAME_INCONSISTENT};
@@ -97,7 +98,7 @@ pub fn analyze_method(
     request: &MethodAnalysisRequest,
     budget: &mut Budget,
 ) -> Result<MethodAnalysisReport> {
-    let analyzed = run_request(content, request, budget)?;
+    let analyzed = run_request(content, request, DriverInput::Content, budget)?;
     Ok(crate::ir::analysis_report(
         request,
         analyzed.problems,
@@ -123,7 +124,66 @@ pub fn analyze_method_ir(
     request: &MethodAnalysisRequest,
     budget: &mut Budget,
 ) -> Result<MethodIrAnalysis> {
-    let analyzed = run_request(content, request, budget)?;
+    analyze_request(content, request, DriverInput::Content, budget)
+}
+
+/// The same analysis, from a class the caller already prepared (bulk task 2.3, driver half).
+///
+/// A bulk operation prepares one class once and analyses every method that class declares
+/// (`jarde_reader::prepared`): this is the entry that runs the second half of that lifecycle. It
+/// performs **exactly** what [`analyze_method_ir`] performs — the same request and schedule
+/// validation, the same environment check, the same passes over the same `MethodIr` shape, the same
+/// report — with one difference: the `raw_facts` pass does not read the class again. The driver
+/// member is located in the prepared member table, its body is decoded by the prepared class's own
+/// decoder (the same implementation [`jarde_reader::classfile::method_code_facts`] delegates to),
+/// and the class's constant pool, `BootstrapMethods` table and declaration come from the facts the
+/// preparation read.
+///
+/// What that changes for a caller:
+///
+/// * the class's own read was paid **once**, by the preparation: this entry charges no
+///   `ClassHeaders` **for the definition it consumes**, and a class with `N` methods costs `N` body
+///   decodes behind one class read however many of those methods are analysed. (The binding search
+///   below is the direct read's own, so a declared order that makes it examine another position
+///   charges that position exactly as the direct read would: what is not charged twice is the
+///   definition's own read.);
+/// * the read record it publishes is still the driver demand
+///   ([`crate::resolver::ReadReason::DriverMethodBody`]) of the definition the request names, and it
+///   states the preparation as its source: the same bytes, the same physical identity, one read;
+/// * the loader binding is not skipped. The prepared class's own coordinate and trusted class-bytes
+///   identity must be the definition the request claims (`class_definition_mismatch` otherwise), and
+///   the declared loader's order must select exactly that `(loader, definition)` pair for the name
+///   the class declares ([`crate::providers::UNBOUND_DEFINITION`] otherwise) — the same checks the
+///   direct read performs, decided from the facts the preparation established instead of a second
+///   read of the same bytes.
+///
+/// What it deliberately does **not** do: it stores nothing, memoizes nothing and owns nothing of the
+/// prepared class beyond the borrow, so the caller keeps owning the class lifecycle (one
+/// preparation, its bodies decoded one at a time, the facts released when the class task ends). A
+/// caller that has no prepared class uses [`analyze_method_ir`] and gets the same report from the
+/// request's own read.
+pub fn analyze_prepared_method_ir(
+    content: &[ArtifactSnapshot],
+    prepared: &PreparedClass<'_>,
+    request: &MethodAnalysisRequest,
+    budget: &mut Budget,
+) -> Result<MethodIrAnalysis> {
+    analyze_request(content, request, DriverInput::Prepared(prepared), budget)
+}
+
+/// One validated request and the run it performed, from whichever source its driver read comes.
+///
+/// The two entries above differ in one thing only — where the driver member's class is read — and
+/// this is where that difference enters the pipeline: everything behind it
+/// ([`run_request`] and [`run_method_analysis`]) is one implementation, so a prepared input cannot
+/// take a second path through the request checks, the environment check or the passes.
+fn analyze_request(
+    content: &[ArtifactSnapshot],
+    request: &MethodAnalysisRequest,
+    source: DriverInput<'_>,
+    budget: &mut Budget,
+) -> Result<MethodIrAnalysis> {
+    let analyzed = run_request(content, request, source, budget)?;
     Ok(MethodIrAnalysis::new(
         crate::ir::analysis_report(
             request,
@@ -133,6 +193,23 @@ pub fn analyze_method_ir(
         ),
         analyzed.ir,
     ))
+}
+
+/// Where the `raw_facts` pass reads the driver member's class from.
+///
+/// A method-analysis request reads one class: the definition it names, under the environment it
+/// declares. Read here, it is one header read by identity — the read whose bytes the body is
+/// decoded from. Read somewhere else first, it is a
+/// [`PreparedClass`], and this pass consumes that read instead of repeating it. The two are the same
+/// pass with the same facts; this names the one difference between them, and it is deliberately
+/// request-local: no value of this type outlives the call that built it, and nothing of the prepared
+/// class is stored beside it.
+#[derive(Clone, Copy)]
+enum DriverInput<'a> {
+    /// The request's own content: one header read by identity, as every single-method request does.
+    Content,
+    /// A class the caller already prepared for this request's own definition.
+    Prepared(&'a PreparedClass<'a>),
 }
 
 /// One validated request and the run it performed: everything the report and the payload need.
@@ -151,6 +228,7 @@ struct Analyzed {
 fn run_request(
     content: &[ArtifactSnapshot],
     request: &MethodAnalysisRequest,
+    source: DriverInput<'_>,
     budget: &mut Budget,
 ) -> Result<Analyzed> {
     crate::ir::validate_request(content, request)?;
@@ -158,7 +236,7 @@ fn run_request(
     let (problems, environment_identity) =
         crate::environment::validate_environment(content, &request.environment);
     let (run, ir) = if problems.is_empty() {
-        run_method_analysis(content, request, scheduled, budget)
+        run_method_analysis(content, request, source, scheduled, budget)
     } else {
         // A rejected environment never yields a definition and never starts a read, so the
         // pipeline is not run at all; the report names the problems and the capability that did
@@ -241,6 +319,7 @@ fn report_unimplemented(
 fn run_method_analysis(
     content: &[ArtifactSnapshot],
     request: &crate::ir::MethodAnalysisRequest,
+    source: DriverInput<'_>,
     scheduled: &[PassDescriptor],
     budget: &mut Budget,
 ) -> (crate::ir::AnalysisRun, MethodIr) {
@@ -303,7 +382,7 @@ fn run_method_analysis(
         }
         match pass.phase {
             IrPhase::RawFacts => {
-                let decoded = match read_driver_method(content, request, &mut run, budget) {
+                let decoded = match read_driver(source, content, request, &mut run, budget) {
                     Ok(DriverRead::Decoded {
                         facts,
                         version: read_version,
@@ -902,6 +981,27 @@ fn frame_method<'a>(
     }
 }
 
+/// Reads the driver member through the source the request runs under.
+///
+/// The pass below ([`read_driver_method`]) reads the class itself; [`read_prepared_driver_method`]
+/// consumes a class its caller already prepared. Both answer with the same [`DriverRead`] and both
+/// fill the same planes of `run`, so the pipeline behind this dispatch — every pass, every stop and
+/// every table — cannot tell the two apart.
+fn read_driver(
+    source: DriverInput<'_>,
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    run: &mut crate::ir::AnalysisRun,
+    budget: &mut Budget,
+) -> Result<DriverRead> {
+    match source {
+        DriverInput::Content => read_driver_method(content, request, run, budget),
+        DriverInput::Prepared(prepared) => {
+            read_prepared_driver_method(content, prepared, request, run, budget)
+        }
+    }
+}
+
 /// Reads the driver method's class header and body, and fills the planes that follow from it.
 ///
 /// This is the work of the `raw_facts` pass: one header read by identity (which also charges
@@ -943,38 +1043,13 @@ fn read_driver_method(
         member.name.raw().0 == request.method.name.0
             && member.descriptor.raw().0 == request.method.descriptor.0
     }) else {
-        return Err(Error::invalid_input(
-            "classfile_method_not_found",
-            format!(
-                "the driver method `{}` `{}` is not declared by its own class definition",
-                String::from_utf8_lossy(&request.method.name.0),
-                String::from_utf8_lossy(&request.method.descriptor.0),
-            ),
-        ));
+        return Err(driver_member_not_found(request));
     };
-    if !has_code_attribute(member) {
-        return match no_body_kind(member.access_flags) {
-            Some(no_body_kind) => {
-                // The declaration says there is no body: the body plane states that fact, no
-                // pass can run on it, and the request is complete as far as its input allows.
-                run.body = MethodBodyState::DeclaredWithoutBody { no_body_kind };
-                run.diagnostics.push(Diagnostic {
-                    code: "ir_method_declared_without_body".to_string(),
-                    severity: DiagnosticSeverity::Info,
-                    message: format!(
-                        "the driver method declares no `Code` attribute and its access flags \
-                         say {no_body_kind:?}: the request has no body to analyze, so no phase ran"
-                    ),
-                    provenance: None,
-                });
-                Ok(DriverRead::DeclaredWithoutBody)
-            }
-            None => Err(Error::invalid_input(
-                "classfile_method_has_no_code",
-                "the driver method declares no `Code` attribute and is neither abstract nor \
-                 native, so its declaration contradicts the class-file format",
-            )),
-        };
+    if matches!(
+        driver_member_body(member, run)?,
+        DriverMember::DeclaredWithoutBody
+    ) {
+        return Ok(DriverRead::DeclaredWithoutBody);
     }
     // One body read attempt, charged before the read; the member has a body, so the attempt is
     // a body the request really demands. From here on the body is a located one: a decode that
@@ -982,87 +1057,30 @@ fn read_driver_method(
     budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
     run.body = MethodBodyState::Present;
     let decoded = jarde_reader::classfile::method_code_facts(&read.bytes, member, budget)?;
-    run.coverage = jarde_reader::classfile::method_code_coverage(
-        decoded.code_span.length,
-        &decoded.instructions,
-        decoded.exception_handlers.len(),
-        decoded.exception_handler_count,
-        &decoded.execution,
-        decoded.stopped_at.as_ref(),
-    )?;
-    Ok(DriverRead::Decoded {
-        facts: Box::new(decoded),
-        // The dialect of the later passes is the class file's version and nothing else, so it
-        // is classified here, once, from the same header the member was located in: the reader's
-        // own rule over the two version fields, not a second reading of them.
+    // The facts of the very read the body came from, as the tail of the pass reads them: the
+    // class file's version (the dialect of every later pass is this and nothing else, classified
+    // once by the reader's own rule over the two version fields), the class's own name and flags,
+    // its superclass and its attribute shells — the `BootstrapMethods` table among them — and the
+    // constant pool this request keeps. The pool is *moved* out of the header facts: this request
+    // keeps one copy of it, and the pool of no other class is read for it.
+    let class = DriverClass {
+        bytes: &read.bytes,
         version: jarde_reader::classfile::version_capability(
             read.header.facts.major_version,
             read.header.facts.minor_version,
         ),
-        // The same read carries the declaration facts the `frame` pass needs. The constant pool
-        // is *moved* out of the header facts: this request keeps one copy of it, and the pool of
-        // no other class is read for it.
-        //
-        // The class's `BootstrapMethods` table is read here too (P3 2.1): the attribute's shell was
-        // already enumerated by this header read, the bytes are the ones this read holds, and the
-        // pool it resolves against is the very pool this request keeps. A class that declares no
-        // such attribute reads nothing and charges nothing — a class *with* one pays its own
-        // attribute bytes, which is what every other attribute read in this pipeline does.
-        //
-        // A read that fails is propagated rather than swallowed: the reader validates that the
-        // bootstrap handle and every argument are loadable constants (JVMS 4.7.23), so a class that
-        // fails it is one whose structure contradicts the format, and this pass already treats a
-        // body read that fails the same way. An empty table therefore means "this class declares
-        // no bootstrap table", never "the table could not be read".
-        declaration: {
-            let pool = std::mem::take(&mut read.header.facts.constant_pool);
-            let bootstrap_methods = match read
-                .header
-                .facts
-                .attributes
-                .iter()
-                .find(|shell| shell.name.raw().0.as_slice() == b"BootstrapMethods")
-            {
-                Some(shell) => {
-                    jarde_reader::classfile::bootstrap_methods(&read.bytes, shell, &pool, budget)?
-                }
-                None => Vec::new(),
-            };
-            FrameDeclaration {
-                access_flags: member.access_flags,
-                this_class: read.header.facts.this_class.raw().0.clone(),
-                super_class: read
-                    .header
-                    .facts
-                    .super_class
-                    .as_ref()
-                    .map(|name| name.raw().0.clone()),
-                pool,
-                bootstrap_methods,
-            }
-        },
-        // The member's own declaration (P3 3.1), taken from the member this read located rather than
-        // from the request: the flags and the descriptor are what the class file states, and the
-        // parameter slots those two imply are derived once, here, from that same statement.
-        //
-        // The declaring class's own two facts travel with it (the declaring-class handoff): this
-        // header read is the one that already holds `this_class` and the class's access flags — the
-        // same read whose version, pool and attributes every pass above reads — so the class the
-        // member is declared in, and whether it is an interface, are stated from the bytes this
-        // request really read. Nothing here is derived from the request's owner spelling, the
-        // definition's entry name or the host classpath, and nothing else of the header is copied:
-        // the two fields are all a consumer needs to tell an interface's `default` method from an
-        // ordinary one.
-        member: MethodDeclaration::new(
-            member.access_flags,
-            member.name.raw().clone(),
-            member.descriptor.raw().clone(),
-            request.method.clone(),
-            read.header.facts.this_class.raw().clone(),
-            read.header.facts.access_flags,
-        )
-        .map(Box::new),
-    })
+        this_class: read.header.facts.this_class.raw().clone(),
+        access_flags: read.header.facts.access_flags,
+        super_class: read
+            .header
+            .facts
+            .super_class
+            .as_ref()
+            .map(|name| name.raw().0.clone()),
+        attributes: &read.header.facts.attributes,
+        pool: std::mem::take(&mut read.header.facts.constant_pool),
+    };
+    finish_driver_read(run, class, member, decoded, request.method.clone(), budget)
 }
 
 /// Whether the member declares a `Code` attribute at all, decided from the header's shells so
@@ -1083,6 +1101,299 @@ fn no_body_kind(access_flags: u16) -> Option<NoBodyKind> {
     } else {
         None
     }
+}
+
+/// The class one driver read produced, as the tail of the pass reads it.
+///
+/// Both sources of a driver read — the request's own header read and a class the caller already
+/// prepared — state exactly this: the bytes the member was located in and the class's own
+/// declaration facts. Naming them here is what lets that tail ([`finish_driver_read`]) be written
+/// **once**, so the two sources cannot drift in the version they classify, the pool they hand to the
+/// frame pass or the class's own name and flags they put beside the member. A fact one source does
+/// not have fails to compile instead of quietly taking a default.
+///
+/// A source that reads the bytes itself (the request's own read) owns the facts and **moves** the
+/// constant pool out of them; a source that consumes a prepared class owns nothing beyond the
+/// borrow and clones the pool into this run's payload, because the payload states the pool per run
+/// ([`crate::method_ir`]) and the prepared class is shared by every method of its class.
+struct DriverClass<'a> {
+    /// The class bytes the body was decoded from: the span the read published.
+    bytes: &'a [u8],
+    /// The class file's version, as the reader classifies it.
+    version: VersionCapability,
+    /// The class's own internal name (`this_class`), as the read that produced the bytes decoded it.
+    this_class: jarde_reader::model::JvmBytes,
+    /// The class's own access flags.
+    access_flags: u16,
+    /// Internal name of the class's superclass, absent for `java/lang/Object`.
+    super_class: Option<Vec<u8>>,
+    /// The class's attribute shells, in attribute order.
+    attributes: &'a [jarde_reader::classfile::AttributeShell],
+    /// The class's constant pool, owned by this run.
+    pool: Vec<CpEntryFacts>,
+}
+
+/// The tail every driver read shares: the coverage plane of the decoded body and the facts the later
+/// passes and the payload read.
+///
+/// Written once for both sources of [`DriverRead`]. `class` says where the bytes and the class facts
+/// came from, `record` is the member the read located in them and `identity` is the physical method
+/// the request states — never one re-derived from the read — so the member's own declaration, the
+/// class file's version, the `BootstrapMethods` table the `invokedynamic` sites resolve against and
+/// the pool the frame and SSA passes read are exactly what a single-method read publishes for the
+/// same bytes.
+///
+/// The class's `BootstrapMethods` table is read from *this* read's shells and bytes (P3 2.1): the
+/// shell was already enumerated where the class was read, the bytes are the ones the decode came
+/// from, and the pool it resolves against is the very pool this run keeps. A class that declares no
+/// such attribute reads nothing and charges nothing — a class *with* one pays its own attribute
+/// bytes, which is what every other attribute read in this pipeline does. A read that fails is
+/// propagated rather than swallowed: the reader validates that the bootstrap handle and every
+/// argument are loadable constants (JVMS 4.7.23), so a class that fails it is one whose structure
+/// contradicts the format, and this pass already treats a body read that fails the same way. An
+/// empty table therefore means "this class declares no bootstrap table", never "the table could not
+/// be read".
+fn finish_driver_read(
+    run: &mut crate::ir::AnalysisRun,
+    class: DriverClass<'_>,
+    record: &MemberHeader,
+    decoded: MethodCodeFacts,
+    identity: jarde_reader::model::PhysicalMethodId,
+    budget: &mut Budget,
+) -> Result<DriverRead> {
+    run.coverage = jarde_reader::classfile::method_code_coverage(
+        decoded.code_span.length,
+        &decoded.instructions,
+        decoded.exception_handlers.len(),
+        decoded.exception_handler_count,
+        &decoded.execution,
+        decoded.stopped_at.as_ref(),
+    )?;
+    let DriverClass {
+        bytes,
+        version,
+        this_class,
+        access_flags,
+        super_class,
+        attributes,
+        pool,
+    } = class;
+    let bootstrap_methods = match attributes
+        .iter()
+        .find(|shell| shell.name.raw().0.as_slice() == b"BootstrapMethods")
+    {
+        Some(shell) => jarde_reader::classfile::bootstrap_methods(bytes, shell, &pool, budget)?,
+        None => Vec::new(),
+    };
+    // The declaration facts the `frame` pass reads beside the body and the graph.
+    let declaration = FrameDeclaration {
+        access_flags: record.access_flags,
+        this_class: this_class.0.clone(),
+        super_class,
+        pool,
+        bootstrap_methods,
+    };
+    Ok(DriverRead::Decoded {
+        facts: Box::new(decoded),
+        version,
+        declaration,
+        // The member's own declaration (P3 3.1), taken from the member the read located rather than
+        // from the request: the flags and the descriptor are what the class file states, and the
+        // parameter slots those two imply are derived once, from that same statement.
+        //
+        // The declaring class's own two facts travel with it (the declaring-class handoff): the read
+        // that located the member is the one that holds `this_class` and the class's access flags —
+        // the same read whose version, pool and attributes every pass above reads — so the class the
+        // member is declared in, and whether it is an interface, are stated from the bytes this
+        // request really read. Nothing here is derived from the request's owner spelling, the
+        // definition's entry name or the host classpath, and nothing else of the read is copied:
+        // the two fields are all a consumer needs to tell an interface's `default` method from an
+        // ordinary one.
+        member: MethodDeclaration::new(
+            record.access_flags,
+            record.name.raw().clone(),
+            record.descriptor.raw().clone(),
+            identity,
+            this_class,
+            access_flags,
+        )
+        .map(Box::new),
+    })
+}
+
+/// Whether one located member record declares a body, or why it declares none.
+enum DriverMember {
+    /// The record has a `Code` entry: the pass charges one `MethodBodies` attempt and decodes it.
+    WithBody,
+    /// The record declares no body and its own flags say which kind (the run's body plane and
+    /// diagnostic are filled here).
+    DeclaredWithoutBody,
+}
+
+/// Decides, from one located member record, whether this request has a body to decode.
+///
+/// Both sources of a driver read locate the member's own record — the request's own header read, or
+/// the prepared class's member table — and both decide the same three things before any body read:
+/// a record with a `Code` entry has a body; a record without one whose flags declare `abstract` or
+/// `native` is a declaration that states there is no body, which the run's body plane publishes
+/// (`DeclaredWithoutBody`, with the diagnostic naming the kind and no phase run); and a record
+/// without one that declares neither contradicts the class-file format
+/// (`classfile_method_has_no_code`). Written once so the two sources cannot drift in the code, the
+/// body state or the diagnostic they publish for the same record.
+fn driver_member_body(
+    record: &MemberHeader,
+    run: &mut crate::ir::AnalysisRun,
+) -> Result<DriverMember> {
+    if has_code_attribute(record) {
+        return Ok(DriverMember::WithBody);
+    }
+    match no_body_kind(record.access_flags) {
+        Some(no_body_kind) => {
+            // The declaration says there is no body: the body plane states that fact, no pass can
+            // run on it, and the request is complete as far as its input allows.
+            run.body = MethodBodyState::DeclaredWithoutBody { no_body_kind };
+            run.diagnostics.push(Diagnostic {
+                code: "ir_method_declared_without_body".to_string(),
+                severity: DiagnosticSeverity::Info,
+                message: format!(
+                    "the driver method declares no `Code` attribute and its access flags \
+                     say {no_body_kind:?}: the request has no body to analyze, so no phase ran"
+                ),
+                provenance: None,
+            });
+            Ok(DriverMember::DeclaredWithoutBody)
+        }
+        None => Err(Error::invalid_input(
+            "classfile_method_has_no_code",
+            "the driver method declares no `Code` attribute and is neither abstract nor native, \
+             so its declaration contradicts the class-file format",
+        )),
+    }
+}
+
+/// The refusal of a driver request whose class declares no member under the requested raw name and
+/// descriptor, whichever source located nothing.
+fn driver_member_not_found(request: &crate::ir::MethodAnalysisRequest) -> Error {
+    Error::invalid_input(
+        "classfile_method_not_found",
+        format!(
+            "the driver method `{}` `{}` is not declared by its own class definition",
+            String::from_utf8_lossy(&request.method.name.0),
+            String::from_utf8_lossy(&request.method.descriptor.0),
+        ),
+    )
+}
+
+/// Reads the driver member out of a class the caller already prepared (bulk task 2.3).
+///
+/// The same pass as [`read_driver_method`], with the class read replaced by the prepared evidence
+/// the caller holds:
+///
+/// * the prepared class's own coordinate and class-bytes identity must be the definition the request
+///   names ([`crate::providers::require_prepared_definition`]) — the physical binding check of the
+///   direct read, decided from the identity its read established;
+/// * the declared loader's order must select exactly that `(loader, definition)` pair, which is the
+///   same binding check the direct read performs and the same read record it publishes
+///   ([`crate::providers::HeaderClosure::bind_definition`]). Nothing is read for it: the position
+///   holding this definition is answered from the facts the preparation read;
+/// * the member is located in the prepared member table, and one body attempt is charged before its
+///   decode, exactly as the direct read charges it. The decode is
+///   [`PreparedClass::method_code`], the same implementation
+///   [`jarde_reader::classfile::method_code_facts`] delegates to, so the two paths cannot drift in
+///   the facts a body publishes, in the code a stop answers with or in the bytes they charge;
+/// * the class file's version, the declaration facts and the member's own statement come from the
+///   prepared facts and the class bytes, through the same tail ([`finish_driver_read`]) the direct
+///   read uses.
+///
+/// What this costs and what it does not is the whole point of the entry: **no `ClassHeaders` charge
+/// for the definition itself** (the class was read, verified and parsed once, when it was prepared)
+/// and no second parse of it, while every per-body charge of the direct read stays — one
+/// `MethodBodies` attempt per decoded body, the body's own `AttributeBytes` and `CodeBytes`, and the
+/// attribute bytes the `BootstrapMethods` table costs this run. The binding check may still examine
+/// another position of the declared order and charge that read: it is the same check and the same
+/// charge the direct read makes.
+///
+/// A class whose member table did not read to its declared end is refused with the stop's own code
+/// ([`crate::providers::require_prepared_member_table`]) rather than answered from its prefix: the
+/// records after the stop were never read, so "this class declares no such member" is not a
+/// conclusion a prepared class may publish. The direct read of such a class is an error too (the
+/// strict structure read refuses it), and this refusal names the table position instead of guessing
+/// at the member.
+fn read_prepared_driver_method(
+    content: &[ArtifactSnapshot],
+    prepared: &PreparedClass<'_>,
+    request: &crate::ir::MethodAnalysisRequest,
+    run: &mut crate::ir::AnalysisRun,
+    budget: &mut Budget,
+) -> Result<DriverRead> {
+    crate::providers::require_prepared_definition(prepared, &request.method.owner)?;
+    let facts = prepared.class_facts();
+    // The read happened where the class was prepared, and this is the request that consumes it: the
+    // binding check and the record of the read are the direct read's, decided without reading a byte
+    // of the definition again. The record is published before the check is read, exactly like the
+    // direct path: a binding the declared loader refuses keeps the physical facts it was decided on.
+    let mut closure = crate::providers::HeaderClosure::new(content, &request.environment);
+    let bound = closure.bind_definition(
+        &request.environment.runtime.load_domain.loader,
+        &request.method.owner,
+        facts,
+        crate::providers::HeaderDemand::DriverMethodBody,
+        budget,
+    );
+    run.reads = crate::resolver::published_reads(&closure);
+    bound?;
+    crate::providers::require_prepared_member_table(prepared)?;
+    let located = prepared.locate_method(&request.method.name.0, &request.method.descriptor.0);
+    let Some(ordinal) = located.first().copied() else {
+        return Err(driver_member_not_found(request));
+    };
+    // The locator was built from this class's own slots, so an ordinal it answers with has a slot:
+    // the disagreement is refused rather than read as a member of some other position.
+    let record = prepared.slot(ordinal).ok_or_else(|| {
+        Error::invalid_input(
+            "classfile_method_header_mismatch",
+            format!(
+                "the prepared locator answered with method ordinal {}, which this class has no \
+                 record for",
+                ordinal.0
+            ),
+        )
+    })?;
+    if matches!(
+        driver_member_body(&record.header, run)?,
+        DriverMember::DeclaredWithoutBody
+    ) {
+        return Ok(DriverRead::DeclaredWithoutBody);
+    }
+    // The same charge the direct read makes, before the same decode: the member has a body, so the
+    // attempt is a body the request really demands, and a decode that fails is a failure of this
+    // pass rather than a missing body.
+    budget.charge(CountedBudgetDimension::MethodBodies, 1)?;
+    run.body = MethodBodyState::Present;
+    let decoded = prepared.method_code(ordinal, budget)?;
+    // The class facts as the prepared read established them. The constant pool is *cloned* here
+    // rather than moved — the prepared class is shared by every method of its class, so this run
+    // takes its own copy for the payload shape the direct path states.
+    let class = DriverClass {
+        bytes: prepared.bytes(),
+        version: jarde_reader::classfile::version_capability(
+            facts.major_version,
+            facts.minor_version,
+        ),
+        this_class: facts.this_class.raw().clone(),
+        access_flags: facts.access_flags,
+        super_class: facts.super_class.as_ref().map(|name| name.raw().0.clone()),
+        attributes: &facts.attributes,
+        pool: facts.constant_pool.clone(),
+    };
+    finish_driver_read(
+        run,
+        class,
+        &record.header,
+        decoded,
+        request.method.clone(),
+        budget,
+    )
 }
 
 /// The termination and diagnostic of a reader that stopped before the end of the body.
