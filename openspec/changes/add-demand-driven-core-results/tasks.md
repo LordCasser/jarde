@@ -22,12 +22,12 @@
 
 ## 4. D3 可选证据的实际构造
 
-- [ ] 4.1 将语义规则计划与公开 RuleDetails 拥有型记录分离；保持所有前提/拒绝决定执行，关闭明细时不复制完整记录，逐规则接受与拒绝对照 All 基线（D03/D04/D05）。
-- [ ] 4.2 将 RegionDetails、NameDetails 与可选读取明细按选择物化，保留必须的 HeaderRead 摘要和核心缺口；验证关闭类别构造计数为零且取消无隐藏构造（D04/D05/D11）。
-- [ ] 4.3 让默认 emitter 不构造完整 Segment 表；详细模式复用同一 formatter 与 AST 的映射/计数 sink，验证正文逐字一致、偏移有效、不复制第二份正文且没有第二次 IR/恢复（D03/D04）。
-- [ ] 4.4 实现 driver BCI 局部证据选择及必要 origin 闭包；测试跨方法相同 BCI、复合表达式、生成节点与范围外依赖，局部结果等于完整证据的规定投影（D04/D10）。
-- [ ] 4.5 实现“可信正文提交 → 所选证据物化”的停止边界，并将新增工作接到同一预算；在前提规划、正文提交前、各证据类别中途和发布处受控停止，验证没有预算重置、没有假 Complete、已提交正文不丢失（D06）。
-- [ ] 4.6 更新 bulk 对可选 payload 的拥有容量核算及完整证据接线；验证新结果权重不少于实际持有下界、零选明细无虚构费用，不修改 worker/ledger/窗口算法（D11）。
+- [x] 4.1 将语义规则计划与公开 RuleDetails 拥有型记录分离；保持所有前提/拒绝决定执行，关闭明细时不复制完整记录，逐规则接受与拒绝对照 All 基线（D03/D04/D05）。 证据：规则计划与公开记录分离，关闭明细后逐规则接受/拒绝与诊断逐字对照 All 基线（`tests/d1_evidence_selection.rs::closing_the_rule_records_keeps_the_refusals_and_the_explanation`）。
+- [x] 4.2 将 RegionDetails、NameDetails 与可选读取明细按选择物化，保留必须的 HeaderRead 摘要和核心缺口；验证关闭类别构造计数为零且取消无隐藏构造（D04/D05/D11）。 证据：三类按选择物化；读取明细只在"选中 且 呈现真的产出"时发布（`src/facade.rs` 的 `publish_read_details` 接缝，读取本身不重复）；关闭类别构造计数为 0（`crates/jarde-java/src/demand_counts.rs` + `src/d0_counts.rs` 的 `read_detail_records`）。
+- [x] 4.3 让默认 emitter 不构造完整 Segment 表；详细模式复用同一 formatter 与 AST 的映射/计数 sink，验证正文逐字一致、偏移有效、不复制第二份正文且没有第二次 IR/恢复（D03/D04）。 证据：`crates/jarde-java/src/emit.rs:393` 只在选中 `SourceMap` 时记录 span；正文逐字一致由 Essential/All 对照用例与 JDK 执行对照保证。
+- [x] 4.4 实现 driver BCI 局部证据选择及必要 origin 闭包；测试跨方法相同 BCI、复合表达式、生成节点与范围外依赖，局部结果等于完整证据的规定投影（D04/D10）。 证据：`the_driver_range_selects_the_records_it_intersects`（局部结果 == 完整结果与该范围相交的记录，顺序相同）；合法空范围 = `Complete` 空结果；无法回答的选择各自带码拒绝，不扩大成全量也不回答空；无 `Code` 成员的范围沿用既有 missing-table 停止。
+- [x] 4.5 实现“可信正文提交 → 所选证据物化”的停止边界，并将新增工作接到同一预算；在前提规划、正文提交前、各证据类别中途和发布处受控停止，验证没有预算重置、没有假 Complete、已提交正文不丢失（D06）。 证据：`a_selected_category_that_stopped_states_its_prefix`——物化顺序固定（region→rule→name→source map），紧预算停在该顺序末尾的类别上，映射报告已记录的前缀、其余已选类别 `Complete`、**已提交正文一个字节都没动**，`execution` 非 Complete。
+- [x] 4.6 更新 bulk 对可选 payload 的拥有容量核算及完整证据接线；验证新结果权重不少于实际持有下界、零选明细无虚构费用，不修改 worker/ledger/窗口算法（D11）。 证据：`src/bulk.rs::result_weight` 扩展为按选择核算——选中的 read-details 把每个成员的解码体（facts 帧 + 四张表）、header-read 证明与拒绝消息计入拥有字节；未选则不计（"零选明细无虚构费用"）；切片表按长度计、借用调试表不计，文档写明这是下界；worker/ledger/窗口算法未动。
 
 ## 5. D3 产物绑定与证据重建
 
