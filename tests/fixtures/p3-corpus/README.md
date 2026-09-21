@@ -162,17 +162,24 @@ text is not only the same text but the same behaviour:
 | sample through `recover_all` | members | executed | boundaries | traces |
 | --- | --- | --- | --- | --- |
 | `p3-scope/v8` (control flow: `scope`, `armOnly`, `reuse`; instance `receiver(J)J`) | 7 | 7 | 0 | identical (18 lines) |
-| `p3-declaration/v8` (`Holder.value()I` reads its receiver; `Holder.of(I)LHolder;`) | 2 | 1 | 1 | identical (3 lines) |
+| assembled `receiver-field/v52` (`value()I` reads the instance field through `this`; `bump()I` writes and reads it; `static scaled(I)I`) | 3 | 3 | 0 | identical (5 lines) |
 | `p3-local-rewrite/v8` (`post`, `saved`, `conditional`, `cast` refused) | 8 | 4 | 4 | identical (17 lines) |
 | `p3-handlers/v8` (guarded shapes, several refused with a code) | 22 | 12 | 10 | identical (78 lines) |
 | `p3-corpus/v8-missing-dep` (`viaAbsentLibrary` is not a compilation unit) | 2 | 1 | 1 | identical (3 lines) |
 
-The receiver-read row is the shape with an open owner: `Holder.value()I`'s body reads the instance
-field through the receiver, the presentation spells that receiver as the slot ordinal (`arg0.value`),
-and no wrapper declares `arg0` — so the text is not a compilation unit, and the test asserts that
-boundary (and the spelling it rests on) rather than treating it as a failure.
-`spell-the-instance-receiver-as-this` owns the spelling; when it lands, this row's expectation is what
-changes.
+The receiver-read row is the shape whose **committed** fixtures cannot be probed: `Holder.value()I`
+reads its own field, but that field is `private` in a `final` class, so a probe class can neither extend
+the class nor inherit the field (`javac`: `cannot find symbol: variable value`), and every other
+committed instance field is behind the same kind of wall (private, or declared by a `final` class, or
+read through a synthetic `this$0`, or read by no instance method of its class at all). The behavioural
+half therefore runs on a class this test assembles itself — the same shape with the visibility a probe
+needs, stated byte by byte in
+`tests/p3_execution_comparison.rs` and produced by no compiler — and it is where the receiver rule
+(`spell-the-instance-receiver-as-this`) is executed rather than only read: `return this.value;` and
+`this.value = this.value + 1;` compile against a probe class that extends the sample and shares its
+constructor's `7`, both traces say `7`/`8`, and the `static` member of the same file shows the same
+slot 0 spelled as the parameter it is (`arg0`). `Holder.value()I`'s own text is pinned by the receiver
+rule's own tests (`tests/p3_instance_receiver.rs`), which need no JDK.
 
 Beside the traces, the test holds the two entries against each other: the same member's text byte for
 byte, the same content and representation, the same executed set. It also asserts that every

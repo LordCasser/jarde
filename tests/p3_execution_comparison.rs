@@ -2141,10 +2141,14 @@ struct Collected {
 }
 
 impl RecoverySink for Collected {
+    /// The header, and with it the operation's own output account — which this sink does not use: it
+    /// keeps every record in memory and writes no byte of its own anywhere, so it charges nothing
+    /// against the total and only needs to see the event. A sink that owned an output destination
+    /// (the `export` adapter's) is the one that stores the handle and bills its records to it.
     fn header(
         &mut self,
         event: &BulkHeaderEvent,
-        _delivery: jarde::DeliveryAccount,
+        _delivery: DeliveryAccount,
     ) -> jarde::Result<SinkControl> {
         self.header = Some(event.clone());
         Ok(SinkControl::Continue)
@@ -2994,29 +2998,243 @@ fn the_corpus_is_read_the_same_way_by_every_legal_flag_set() {
 
 // -------------------------------------------------------------------------------------------
 // The same comparison through the bulk entry: the text `jarde-cli export` writes.
+//
+// The one sample this list cannot take from the corpus is assembled here, because the shape it needs
+// — an instance member whose body reads its own field — is behind a visibility wall in every committed
+// fixture (see `RECEIVER_FIELD_BYTES`).
 // -------------------------------------------------------------------------------------------
 
-/// A class whose one instance member **reads its receiver**, and whose one static member constructs
-/// the class.
+/// The `Code` attribute's own overhead, in bytes: `max_stack`, `max_locals`, the body's length, the
+/// empty exception table and the body's empty attribute table.
+const CODE_OVERHEAD: u32 = 2 + 2 + 4 + 2 + 2;
+
+/// One byte into an assembly buffer, at the cursor, which it then advances. Every line of the class
+/// file below is a line of this.
+macro_rules! emit {
+    ($out:ident, $at:ident, $($byte:expr),+ $(,)?) => {
+        $( $out[$at] = $byte; $at += 1; )+
+    };
+}
+
+/// One `CONSTANT_Utf8_info`: the tag, the length the text itself states, and the text.
+macro_rules! emit_utf8 {
+    ($out:ident, $at:ident, $text:expr) => {{
+        let text: &[u8] = $text;
+        let length = text.len() as u16;
+        emit!($out, $at, 1, (length >> 8) as u8, length as u8);
+        let mut index = 0;
+        while index < text.len() {
+            emit!($out, $at, text[index]);
+            index += 1;
+        }
+    }};
+}
+
+/// One two-byte value, most significant byte first.
+macro_rules! emit_u2 {
+    ($out:ident, $at:ident, $value:expr) => {{
+        let value: u16 = $value;
+        emit!($out, $at, (value >> 8) as u8, value as u8);
+    }};
+}
+
+/// One four-byte value, most significant byte first.
+macro_rules! emit_u4 {
+    ($out:ident, $at:ident, $value:expr) => {{
+        let value: u32 = $value;
+        emit!(
+            $out,
+            $at,
+            (value >> 24) as u8,
+            (value >> 16) as u8,
+            (value >> 8) as u8,
+            value as u8
+        );
+    }};
+}
+
+/// One `method_info` shell: the flags, the name and descriptor indexes, and its one `Code` attribute
+/// over `$body`. The attribute's own length is computed from the body rather than stated, so a body
+/// this file edits cannot leave a length behind it.
+macro_rules! emit_member {
+    ($out:ident, $at:ident, $access:expr, $name:expr, $descriptor:expr, $max_stack:expr,
+     $max_locals:expr, $body:expr) => {{
+        let body: &[u8] = $body;
+        emit_u2!($out, $at, $access);
+        emit_u2!($out, $at, $name);
+        emit_u2!($out, $at, $descriptor);
+        emit_u2!($out, $at, 1);
+        emit_u2!($out, $at, 13);
+        emit_u4!($out, $at, CODE_OVERHEAD + body.len() as u32);
+        emit_u2!($out, $at, $max_stack);
+        emit_u2!($out, $at, $max_locals);
+        emit_u4!($out, $at, body.len() as u32);
+        let mut index = 0;
+        while index < body.len() {
+            emit!($out, $at, body[index]);
+            index += 1;
+        }
+        emit_u2!($out, $at, 0);
+        emit_u2!($out, $at, 0);
+    }};
+}
+
+/// The assembled sample's own length: `10` (the magic, the minor and major versions and the pool's
+/// entry count) + `139` (the pool's twenty entries) + `10` (the class flags, `this_class`,
+/// `super_class`, the interface count and the field count) + `8` (the one `field_info`) + `2`
+/// (`methods_count`) + `139` (the four member shells and their `Code` attributes) + `2` (the class's own
+/// attribute table). [`receiver_field_class`] asserts that its writes fill exactly this many bytes, so a
+/// wrong number here is a compile error rather than a class file with trailing bytes.
+const RECEIVER_FIELD_LEN: usize = 10 + 139 + 10 + 8 + 2 + 139 + 2;
+
+/// `ReceiverField`'s bytes, and the sample the bulk comparison reads them as.
 ///
-/// This sample is the receiver-read shape, and it is in the bulk list as a **boundary the run
-/// states**: the presentation spells an instance method's receiver as the slot ordinal
-/// (`arg0.value`), which the wrapper declares nothing for — the wrapper of an instance member is an
-/// instance method, so its receiver is `this` and `arg0` names no local, field or parameter. `Holder`
-/// is also `final`, so no wrapper may extend it and inherit the field the body reads. The row below
-/// records that as the expected result rather than as a failure of the comparison, and the open change
-/// `spell-the-instance-receiver-as-this` owns the spelling it pins.
+/// The sample is the **receiver read**: an instance member whose body reads (and writes) its own
+/// instance field through `this`. No committed fixture of this repository can carry it in a probe's
+/// reach, and the reason is always the field's visibility or the class's finality:
 ///
-/// The static member is the same class's other half: it is executed, so the sample states both what
-/// the bulk entry does with a receiver read and what it does with an ordinary member of the same
-/// class.
-const HOLDER_RECEIVER: Sample = Sample {
-    label: "p3-declaration/v8 (javac 23.0.1, --release 8 -g:none)",
-    class: "Holder",
-    bytes: include_bytes!("fixtures/p3-declaration/v8/Holder.class"),
+/// * `p3-declaration/v8/Holder.class` is the closest — `value()I` reads its own `int value` — and
+///   that field is `private` in a `final` class: a probe can neither extend the class nor inherit the
+///   field, and javac refuses the text with `cannot find symbol: variable value`. Its receiver *is*
+///   spelled `this.value` now; the body is pinned at the text level by the receiver rule's own tests
+///   (`tests/p3_instance_receiver.rs`), and this file adds the behavioural half on a
+///   class a probe can read;
+/// * `p3-handlers/v8/Res.class` reads its own two fields, but both are `private` and the class declares
+///   no no-argument constructor, so a probe can neither inherit the fields nor construct the class;
+/// * `p4-modern/v16/RecordSample.class` and `r2-annotation-positions/v17/RecordOnly.class` are records:
+///   a `final` class whose fields are `private final`;
+/// * `p4-modern/v17/NestSample$Inner.class` reads the *host's* field through the synthetic `this$0`,
+///   so its receiver read is of another instance;
+/// * `p3-refused-cast/v8/External.class` carries the package-private `Object instance`, and no instance
+///   method of that class reads it — `RefusedCast.instanceCast(External)` reads it through a
+///   **parameter**, which is not a receiver.
+///
+/// So the bytes are assembled here, the way `crates/jarde-cli/tests/task_cli.rs` assembles its deep
+/// chain: deterministically, from this file's own statement of the shape, by no compiler. The shape is
+/// `p3-declaration`'s `Holder` with the visibility a probe needs — a package-private class with a
+/// package-private `int value` — beside the two members that make the read observable and the one that
+/// says the receiver rule is about instance members only.
+const RECEIVER_FIELD_BYTES: &[u8] = &receiver_field_class();
+
+/// `<init>()V`: `aload_0; invokespecial Object.<init>; aload_0; bipush 7; putfield value; return`.
+///
+/// The constructor is where the compared state comes from: both sides run their subject through it,
+/// and `7` is a value the field's own default would not answer, so a trace that says `7` is a trace of
+/// the sample's own field.
+const RECEIVER_FIELD_INIT: &[u8] = &[0x2a, 0xb7, 0x00, 12, 0x2a, 0x10, 7, 0xb5, 0x00, 8, 0xb1];
+
+/// `value()I`: `aload_0; getfield value; ireturn` — the receiver read itself.
+const RECEIVER_FIELD_VALUE: &[u8] = &[0x2a, 0xb4, 0x00, 8, 0xac];
+
+/// `bump()I`: `aload_0; aload_0; getfield value; iconst_1; iadd; putfield value; aload_0; getfield
+/// value; ireturn` — the same receiver written and read back, so the receiver is exercised in a
+/// `putfield` and not only in a `getfield`.
+const RECEIVER_FIELD_BUMP: &[u8] = &[
+    0x2a, 0x2a, 0xb4, 0x00, 8, 0x04, 0x60, 0xb5, 0x00, 8, 0x2a, 0xb4, 0x00, 8, 0xac,
+];
+
+/// `scaled(I)I`: `iload_0; iconst_2; imul; ireturn` — the same slot 0 in a `static` member, where it is
+/// a parameter and not a receiver.
+const RECEIVER_FIELD_SCALED: &[u8] = &[0x1a, 0x05, 0x68, 0xac];
+
+/// One class file, written entry by entry: `class ReceiverField` in the unnamed package.
+///
+/// It declares a package-private `int value` (non-final, so a probe class extending this class reads
+/// it), a constructor that sets it to `7`, an instance method that reads it through the receiver, an
+/// instance method that writes it through the receiver and reads it back, and a `static` method whose
+/// parameter sits at the same slot 0. It carries **no debug attributes** — no `LocalVariableTable` —
+/// so every name in a recovered body comes from the layer's own naming rules rather than from a table,
+/// which is what makes the receiver visible in the text at all.
+///
+/// The constant pool's entries are numbered in the comments (`1`..`20`), and the members and bodies
+/// above name them by those numbers.
+const fn receiver_field_class() -> [u8; RECEIVER_FIELD_LEN] {
+    let mut out = [0u8; RECEIVER_FIELD_LEN];
+    let mut at = 0;
+
+    // The header: the magic, class-file version 52.0, and the pool's entry count.
+    emit_u4!(out, at, 0xcafe_babe);
+    emit_u2!(out, at, 0);
+    emit_u2!(out, at, 52);
+    emit_u2!(out, at, 21);
+
+    // The pool.
+    emit_utf8!(out, at, b"ReceiverField"); // 1
+    emit!(out, at, 7);
+    emit_u2!(out, at, 1); // 2: Class 1
+    emit_utf8!(out, at, b"java/lang/Object"); // 3
+    emit!(out, at, 7);
+    emit_u2!(out, at, 3); // 4: Class 3
+    emit_utf8!(out, at, b"value"); // 5: the field, and the instance method that reads it
+    emit_utf8!(out, at, b"I"); // 6
+    emit!(out, at, 12);
+    emit_u2!(out, at, 5);
+    emit_u2!(out, at, 6); // 7: NameAndType 5:6
+    emit!(out, at, 9);
+    emit_u2!(out, at, 2);
+    emit_u2!(out, at, 7); // 8: Fieldref 2.7
+    emit_utf8!(out, at, b"<init>"); // 9
+    emit_utf8!(out, at, b"()V"); // 10
+    emit!(out, at, 12);
+    emit_u2!(out, at, 9);
+    emit_u2!(out, at, 10); // 11: NameAndType 9:10
+    emit!(out, at, 10);
+    emit_u2!(out, at, 4);
+    emit_u2!(out, at, 11); // 12: Methodref Object.<init>
+    emit_utf8!(out, at, b"Code"); // 13
+    emit_utf8!(out, at, b"()I"); // 14: the descriptor the two `int` methods share
+    emit!(out, at, 12);
+    emit_u2!(out, at, 5);
+    emit_u2!(out, at, 14); // 15: NameAndType value()I
+    emit_utf8!(out, at, b"bump"); // 16
+    emit!(out, at, 12);
+    emit_u2!(out, at, 16);
+    emit_u2!(out, at, 14); // 17: NameAndType bump()I
+    emit_utf8!(out, at, b"scaled"); // 18
+    emit_utf8!(out, at, b"(I)I"); // 19
+    emit!(out, at, 12);
+    emit_u2!(out, at, 18);
+    emit_u2!(out, at, 19); // 20: NameAndType scaled(I)I
+
+    // The class: `ACC_SUPER` alone. Package-private, so a probe class in the same unnamed package may
+    // extend it, and deliberately **not** `final` — a final class is the thing a probe cannot extend,
+    // and extending it is how the probe's body reads this class's own field.
+    emit_u2!(out, at, 0x0020);
+    emit_u2!(out, at, 2);
+    emit_u2!(out, at, 4);
+    emit_u2!(out, at, 0); // no interfaces
+    emit_u2!(out, at, 1); // one field
+    emit_u2!(out, at, 0x0000); // `int value`: package-private, non-final, no attributes
+    emit_u2!(out, at, 5);
+    emit_u2!(out, at, 6);
+    emit_u2!(out, at, 0);
+    emit_u2!(out, at, 4); // four methods
+    // The flags, the name and descriptor indexes, and the operand-stack height each body needs:
+    // `bump` needs three (`this`, the field it read, and the `1` it adds) and every other body two or
+    // one. A height that is too small is a class file the JVM's verifier refuses — which is what the
+    // first run of this sample was, before the `3` below was measured rather than guessed.
+    emit_member!(out, at, 0x0000, 9, 10, 2, 1, RECEIVER_FIELD_INIT);
+    emit_member!(out, at, 0x0001, 5, 14, 1, 1, RECEIVER_FIELD_VALUE);
+    emit_member!(out, at, 0x0001, 16, 14, 3, 1, RECEIVER_FIELD_BUMP);
+    emit_member!(out, at, 0x0009, 18, 19, 2, 1, RECEIVER_FIELD_SCALED);
+    emit_u2!(out, at, 0); // no class attributes
+
+    assert!(
+        at == RECEIVER_FIELD_LEN,
+        "the assembly writes exactly the buffer it states"
+    );
+    out
+}
+
+/// The receiver sample: the assembled class above, read through both entries like every other sample.
+const RECEIVER_FIELD: Sample = Sample {
+    label: "assembled receiver-field/v52 (this file's own bytes, no compiler produced them)",
+    class: "ReceiverField",
+    bytes: RECEIVER_FIELD_BYTES,
     classpath: &[],
-    // `Holder` is `final`: nothing may extend it, and the field `value()` reads is private to it.
-    extends: None,
+    // The probe class extends the sample, which is what puts the recovered body's `this` on an
+    // instance that really holds the field.
+    extends: Some("ReceiverField"),
     scaffold: &[],
     counter: None,
     measured: &[],
@@ -3026,20 +3244,21 @@ const HOLDER_RECEIVER: Sample = Sample {
     members: &[
         Member {
             name: "value",
-            expect: Expect::NotACompilationUnit(
-                "an instance method's receiver is spelled as the slot ordinal (`arg0.value`), which \
-                 the wrapper declares nothing for; `spell-the-instance-receiver-as-this` owns that \
-                 spelling",
-            ),
+            expect: Expect::Executed,
         },
         Member {
-            name: "of",
+            name: "bump",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "scaled",
             expect: Expect::Executed,
         },
     ],
-    point: "the receiver-read shape, stated as the boundary it is today: a body that reads `this` \
-            is written with the slot ordinal as the receiver and is not a compilation unit, while the \
-            same class's static member is written whole and behaves as the original does",
+    point: "the receiver read as behaviour: `value()I` reads the instance field through `this` and \
+            `bump()I` writes and reads it through `this`, both on a probe class that extends the \
+            sample and therefore shares its constructor's `7`, so the compared traces state `7` and \
+            `8`; the `static` member of the same file states its slot 0 as the parameter it is",
 };
 
 /// The samples the bulk comparison runs, and what each one is in the list for.
@@ -3052,8 +3271,9 @@ const HOLDER_RECEIVER: Sample = Sample {
 /// * `SCOPE_NO_DEBUG` — control flow (`scope`, `armOnly`, `reuse`, whose locals are written across
 ///   arms and read after a join) and the instance shape whose receiver sits below a category-2
 ///   parameter (`receiver(long)`, wrapped as an instance method);
-/// * `HOLDER_RECEIVER` — a body that really **reads** its receiver (`value()I` reads the instance
-///   field) and the same class's static member, which is executed;
+/// * `RECEIVER_FIELD` — a body that really **reads** its receiver (`value()I` reads the instance
+///   field, `bump()I` writes and reads it), on a class whose field a probe can inherit, beside the
+///   `static` member whose slot 0 is a parameter and must not be spelled as a receiver;
 /// * `LOCAL_REWRITE` — the refusals whose text quotes the bytecode it could not write (`post`,
 ///   `saved`, `conditional`, `cast`), with the count control that measures what the quoted text still
 ///   performs;
@@ -3064,7 +3284,7 @@ const HOLDER_RECEIVER: Sample = Sample {
 ///   a failure of the comparison.
 const BULK_COMPARISON: &[&Sample] = &[
     &SCOPE_NO_DEBUG,
-    &HOLDER_RECEIVER,
+    &RECEIVER_FIELD,
     &LOCAL_REWRITE,
     &GUARDED,
     &MISSING_DEPENDENCY,
@@ -3083,6 +3303,10 @@ const BULK_COMPARISON: &[&Sample] = &[
 #[ignore = "needs a JDK on PATH: it compiles the wrappers it generates with `javac --release 8` and \
             runs them (see tests/fixtures/p3-corpus/README.md)"]
 fn the_bulk_entrys_bodies_are_the_same_text_and_the_same_behaviour() {
+    // The same switch the two comparisons above read: with `P3_COMPARISON_TRACES` set, the traces both
+    // sides agreed on are printed as well, so the lines this case asserts about the receiver sample are
+    // also a run's own output rather than only a message inside an assertion.
+    let traces = std::env::var_os("P3_COMPARISON_TRACES").is_some();
     let mut members = 0usize;
     let mut boundaries = 0usize;
     let mut instance = Vec::new();
@@ -3163,32 +3387,77 @@ fn the_bulk_entrys_bodies_are_the_same_text_and_the_same_behaviour() {
             members += 1;
         }
         boundaries += sample_boundaries;
-        // The receiver-read shape this list has to carry, asserted the way `run_sample` asserts the
-        // count control: `Holder.value()I` is the body that reads its own instance field through the
-        // receiver, its text is **not** a compilation unit under this entry's wrapper either (the
-        // receiver is spelled as the slot ordinal), and the same class's static member is executed
-        // beside it. Stating it here means the list cannot lose that shape — or start executing it,
-        // which would mean the receiver is spelled some other way — without this case saying so.
-        if sample.class == "Holder" {
-            let value = bulk
-                .rows
-                .iter()
-                .find(|row| row.name == "value")
-                .expect("the receiver-read member is planned");
+        // The receiver read, asserted from the artifact **and** from the trace rather than from the
+        // run's own classification. `ReceiverField.value()I` and `bump()I` read the instance field
+        // through the receiver, so their text spells it `this.value` — the slot ordinal this layer
+        // wrote before the receiver rule landed would be `arg0.value`, which the wrapper declares no
+        // name for and which javac therefore refuses — and the traces both sides agreed on are the
+        // sample's own state: `7` is the constructor's value rather than the field's default, and `8`
+        // is the same field written through the same receiver and read back. The `static` member of
+        // the same file is the control: the same slot 0 is a parameter there, and a `this` written
+        // into it would be a body no compiler accepts.
+        if sample.class == "ReceiverField" {
+            let row = |name: &str| {
+                bulk.rows
+                    .iter()
+                    .find(|row| row.name == name)
+                    .unwrap_or_else(|| panic!("{}: `{name}` is planned", sample.label))
+            };
+            for name in ["value", "bump"] {
+                let member = row(name);
+                assert!(
+                    member.text.contains("this.value"),
+                    "{}: `{name}()I` reads the instance field through its receiver, so its text reads \
+                     `this.value`: {:?}\n{}",
+                    sample.label,
+                    member.refusal,
+                    member.text
+                );
+                assert!(
+                    !member.text.contains("arg0."),
+                    "{}: `{name}()I`'s receiver is not the slot ordinal: {}",
+                    sample.label,
+                    member.text
+                );
+                assert!(
+                    member.executed(),
+                    "{}: `{name}()I` compiles under a probe class that extends the sample and shares \
+                     its state: {:?}\n{}",
+                    sample.label,
+                    member.refusal,
+                    member.text
+                );
+            }
+            let scaled = row("scaled");
             assert!(
-                !value.executed() && value.text.contains("arg0."),
-                "{}: `value()I` reads its receiver, the presentation spells that receiver as the \
-                 slot ordinal, and the wrapper therefore declares nothing for it: {:?}\n{}",
+                !scaled.text.contains("this") && scaled.text.contains("arg0"),
+                "{}: `scaled(I)I` is `static`, so its slot 0 is a parameter and is spelled as one: \
+                 {:?}\n{}",
                 sample.label,
-                value.refusal,
-                value.text
+                scaled.refusal,
+                scaled.text
             );
             assert!(
-                bulk.executed.iter().any(|name| name == "of"),
-                "{}: the same class's static member is the executed half of this sample: {:?}",
+                scaled.executed(),
+                "{}: the `static` member runs as every other member of this list does: {:?}\n{}",
                 sample.label,
-                bulk.executed
+                scaled.refusal,
+                scaled.text
             );
+            for line in [
+                "value value()I [] -> 7",
+                "value bump()I [] -> 8",
+                "value scaled(I)I [7] -> 14",
+                "value scaled(I)I [0] -> 0",
+                "value scaled(I)I [-1] -> -2",
+            ] {
+                assert!(
+                    bulk.trace.contains(line),
+                    "{}: the compared traces state `{line}`:\n{}",
+                    sample.label,
+                    bulk.trace
+                );
+            }
         }
         println!(
             "\n## {} through {} — {} member(s), {} executed, {} boundary/boundaries, {} trace line(s) \
@@ -3200,6 +3469,9 @@ fn the_bulk_entrys_bodies_are_the_same_text_and_the_same_behaviour() {
             sample_boundaries,
             bulk.trace_lines
         );
+        if traces {
+            println!("{}", bulk.trace);
+        }
     }
 
     assert!(
