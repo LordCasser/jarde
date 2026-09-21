@@ -175,10 +175,15 @@ fn zero_and_tiny_retention_publish_the_same_scope_as_retention_with_room() {
         "a capacity of one byte refuses the answers a class read produces: {facts:?}"
     );
 
-    // (4) Retention is what stops the re-read, and nothing else changes: the run with room answered
-    //     from what it kept, and the run without it parsed the same directories again for every class
-    //     it held. The conclusion above is identical in both, which is the claim: not retaining
-    //     re-reads, it does not re-decide.
+    // (4) Retention is what decides the fate of a container **no consumer is holding**, and nothing
+    //     else changes. A container a class task is reading is never read twice in either run: the
+    //     walk hands its own active handle to the task that reads the class (task 3.4, whose own
+    //     target states that count on a scope of nested containers), so what is left for the store to
+    //     answer is the lookups that have to consult a container nothing holds — a member's binding
+    //     search that reaches a container no class task is reading any more. The run with room
+    //     answers those from what it kept; the run without it pays for the directory again. The
+    //     conclusion above is identical in both runs, which is the claim: not retaining re-reads, it
+    //     does not re-decide.
     let roomy_facts = roomy_store.report();
     assert!(
         roomy_facts.container_hits > 0 && roomy_facts.container_stored > 0,

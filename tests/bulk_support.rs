@@ -20,6 +20,11 @@
 //!   `lib/holder.jar` (stored, so a reader can reach it without inflating anything) holds one entry,
 //!   `d/Holder.class`, and the traversal descends into it at its own entry, so the scope is
 //!   `Scope.class`, `Shape.class`, `LambdaSample.class`, `d/Holder.class` — the nested class last.
+//! * [`handover_fixture`] holds **two nested containers and no class at the root's own level**:
+//!   `lib/classes.jar` (deflated) holds the four classes under `p/` and `res/assets.jar` (stored)
+//!   holds a manifest and a resource entry, so the walk leaves the container every class came from
+//!   while classes dispatched from it are still waiting to be read — the shape a class task's
+//!   container handover exists for.
 //!
 //! [`FLAT_PREFIXES`] and [`NESTED_PREFIXES`] are the load prefixes of those two scopes.
 //! [`container_roots`] turns one prefix list into the load roots the environment declares: each
@@ -93,6 +98,19 @@ pub const FLAT_PREFIXES: [&[u8]; 1] = [b""];
 /// `Holder` under the prefix its entry lives at: the class declares its name `Holder`, and the entry
 /// that holds it is `d/Holder.class`.
 pub const NESTED_PREFIXES: [&[u8]; 2] = [b"", b"d/"];
+
+/// The load prefix of [`handover_fixture`]'s class container: the one position the environment
+/// searches, declared on the container that really holds the classes. The asset container provides
+/// nothing and declares no root.
+pub const HANDOVER_PREFIXES: [&[u8]; 1] = [b"p/"];
+
+/// A small `META-INF/MANIFEST.MF`, so [`handover_fixture`]'s second container really holds a
+/// non-class entry of the shape an archive usually carries.
+const MANIFEST: &[u8] = b"Manifest-Version: 1.0\nCreated-By: jarde bulk fixture\n";
+
+/// An opaque resource entry, so that container holds something that is not a class and is not an
+/// archive candidate either.
+const RESOURCE: &[u8] = b"jarde handover fixture: this container holds no class\n";
 
 // ---------------------------------------------------------------------------------------------
 // Fixtures, scopes and requests
@@ -183,6 +201,37 @@ pub fn nested_fixture() -> Vec<u8> {
         (b"Shape.class", SHAPE, DEFLATE),
         (b"LambdaSample.class", LAMBDA, DEFLATE),
         (b"lib/holder.jar", &nested, STORE),
+    ])
+}
+
+/// One nested container that holds every class of the scope, and a second one that holds none.
+///
+/// The root container holds two archives and no class entry, so the whole scope sits one level down:
+/// `lib/classes.jar` (deflated) holds the four classes under the prefix `p/`, and `res/assets.jar`
+/// (stored) holds a manifest and a resource entry. The traversal descends into the class container
+/// first, yields its four classes, and goes on into the asset container — so the walk really does
+/// leave the container the classes came from while they are being read, and a class task that reads
+/// after it (the delay a test can ask for holds every task at the head) finds nothing holding that
+/// container but the handover the walk gave it.
+///
+/// The second container deliberately holds **no class**: a second container that provided classes
+/// would be a second search position, and every member's loader binding query would then walk it —
+/// parsing a directory no consumer is holding, which is the cache's own business rather than the
+/// handover this fixture exists to measure.
+pub fn handover_fixture() -> Vec<u8> {
+    let classes = zip(&[
+        (b"p/Scope.class", SCOPE, STORE),
+        (b"p/Shape.class", SHAPE, DEFLATE),
+        (b"p/LambdaSample.class", LAMBDA, DEFLATE),
+        (b"p/Holder.class", HOLDER, STORE),
+    ]);
+    let assets = zip(&[
+        (b"META-INF/MANIFEST.MF", MANIFEST, STORE),
+        (b"res/data.bin", RESOURCE, STORE),
+    ]);
+    zip(&[
+        (b"lib/classes.jar", &classes, DEFLATE),
+        (b"res/assets.jar", &assets, STORE),
     ])
 }
 
