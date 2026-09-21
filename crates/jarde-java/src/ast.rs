@@ -201,6 +201,23 @@ pub enum ExprKind {
     /// `"" + a` with in front of it (see [`ConcatPart::is_a_string`]), so the first part's
     /// conversion happens where the chain converts it.
     Concat { parts: Vec<ConcatPart> },
+    /// `(int) arg0` — one conversion this layer's own evidence requires, written by the text.
+    ///
+    /// This node exists because the conversion is a **build-time decision** and never a permission
+    /// the printer takes from the position it happens to write into. A `char`, a `byte` and a
+    /// `short` share one slot shape with an `int`, so a compiler writes no instruction when it
+    /// widens one of them: `append((int) c)` is `iload` plus the `append`, and a presentation that
+    /// writes the value's own text publishes the *other* conversion — `"" + c` converts a
+    /// character where the bytecode converted the code unit, and both texts compile. The build
+    /// compares the type the expression presents as ([`Expr::presented`]) with the type the
+    /// position requires (the `append`'s parameter descriptor, the callee's parameter, the member's
+    /// return type, the written variable's declaration, the field's descriptor) and writes this
+    /// node where the two differ and a **widening primitive conversion** (JLS 5.1.2) connects them.
+    ///
+    /// The printer writes exactly this node and nothing else: a cast's text is its own type and the
+    /// value it converts, so a position can no longer decide the value's type by writing the value
+    /// in a context of its own choosing.
+    Cast { ty: Type, value: Box<Expr> },
     /// `!value` — the negation of a **boolean** value.
     ///
     /// This node exists for one fact the frames cannot state: a `boolean` parameter and an `int`
@@ -298,17 +315,49 @@ pub struct Expr {
     pub kind: ExprKind,
     /// Where its text comes from.
     pub origin: OriginSet,
+    /// The type this expression's **text** is presented as, when this layer's own evidence states
+    /// one.
+    ///
+    /// This is the value the consuming positions read: a position that requires a type compares it
+    /// with its own requirement and writes [`ExprKind::Cast`] where the two differ. `None` is "this
+    /// layer states no type", never "no type": a `null`, a lambda and a method reference each state
+    /// none (a lambda's target type is not declared anywhere in a recovered body), an arithmetic
+    /// whose operands state none states none, and a position that requires a type converts nothing
+    /// whose own type it cannot state.
+    ///
+    /// Every type here is a **descriptor** or **declaration** fact of the run and never a guess from
+    /// the value's shape: the frames state one slot shape for the four int-sized primitives, so
+    /// `char`, `byte` and `short` reach this field from the member's own parameter descriptor and
+    /// from nothing else.
+    pub presented: Option<Type>,
 }
 
 impl Expr {
-    /// One expression from its shape and its anchors.
+    /// One expression from its shape and its anchors, presenting the type its own shape states.
     pub fn new(kind: ExprKind, origin: OriginSet) -> Self {
-        Self { kind, origin }
+        let presented = presented_of(&kind);
+        Self {
+            kind,
+            origin,
+            presented,
+        }
     }
 
     /// One expression anchored directly at one bytecode index.
     pub fn direct(kind: ExprKind, bci: u32) -> Self {
         Self::new(kind, OriginSet::new(crate::source_map::Origin::direct(bci)))
+    }
+
+    /// The same expression, presenting the type a fact of its **position** states: the descriptor a
+    /// callee declares, the type a call's result has, the declaration a local's variable was given,
+    /// the descriptor a claimed field access names.
+    ///
+    /// [`Self::new`] states what an expression's own shape states; this states what only the run's
+    /// tables hold, and it is called at the moment the node is built — where that fact is at hand —
+    /// so no consumer has to look a name or a BCI up again to learn what the text is.
+    pub fn presenting(mut self, ty: Type) -> Self {
+        self.presented = Some(ty);
+        self
     }
 
     /// The same expression, presenting a further anchor.
@@ -318,6 +367,83 @@ impl Expr {
             .clone()
             .plus_derived(crate::source_map::Origin::derived(bci));
         self
+    }
+}
+
+/// The type one expression states **by its own shape**, with no other fact consulted.
+///
+/// Three shapes state nothing and are the honest `None`s of [`Expr::presented`]: `null`, which has no
+/// type; a lambda and a method reference, whose target type a recovered body does not declare (it is
+/// the class the site is assigned to, which is a fact of the *assignment* and not of the site); and a
+/// type name used as a call's receiver, which is not a value at all.
+///
+/// The three shapes that state their type from a fact outside their own text — a local (the
+/// declaration its variable was given), a call (the callee's return descriptor) and a field read
+/// (the field's descriptor) — are `None` here and are given theirs where the node is built
+/// ([`Expr::presenting`]).
+fn presented_of(kind: &ExprKind) -> Option<Type> {
+    match kind {
+        ExprKind::Integer(_) => Some(Type::Int),
+        ExprKind::Long(_) => Some(Type::Long),
+        ExprKind::Boolean(_) => Some(Type::Boolean),
+        ExprKind::Str(_) => Some(Type::Reference("java.lang.String".to_string())),
+        ExprKind::New { ty, .. } => Some(Type::Reference(ty.clone())),
+        ExprKind::Cast { ty, .. } => Some(ty.clone()),
+        ExprKind::Concat { .. } => Some(Type::Reference("java.lang.String".to_string())),
+        ExprKind::Not { .. } => Some(Type::Boolean),
+        ExprKind::Binary { op, left, right } => binary_type(*op, left, right),
+        _ => None,
+    }
+}
+
+/// The type a binary expression's text is presented as, from the types its operands state.
+///
+/// An arithmetic is JLS 5.6.2's binary numeric promotion over its two operands, which is a rule over
+/// the operand *types* and therefore a rule this layer can state exactly when both operands state
+/// theirs: `int + long` is a `long`, and a `char`, a `byte` and a `short` operand all promote to
+/// `int` — which is the same fact that makes a chain of `iadd`s on them an `int` value. A
+/// comparison's own value is a `boolean` (`a < b` is one), and the positions that consume a value
+/// never read one: a test is written as the statement it is.
+///
+/// A `boolean` or reference operand states no arithmetic at all (`b + 1` is not a Java expression,
+/// and `a + b` on two references is a string concatenation, not an addition), so the layer states
+/// **no** type for it rather than a type no text of that shape has: the positions that require one
+/// then convert nothing, exactly as they did before this rule existed.
+fn binary_type(op: BinaryOp, left: &Expr, right: &Expr) -> Option<Type> {
+    if !matches!(
+        op,
+        BinaryOp::Add
+            | BinaryOp::Subtract
+            | BinaryOp::Multiply
+            | BinaryOp::Divide
+            | BinaryOp::Remainder
+    ) {
+        return Some(Type::Boolean);
+    }
+    let left = promotion_rank(left.presented.as_ref()?)?;
+    let right = promotion_rank(right.presented.as_ref()?)?;
+    Some(promoted(left.max(right)))
+}
+
+/// Where one operand's type sits in Java's binary numeric promotion (JLS 5.6.2), or `None` for a
+/// type no arithmetic takes.
+fn promotion_rank(ty: &Type) -> Option<u8> {
+    match ty {
+        Type::Byte | Type::Short | Type::Char | Type::Int => Some(0),
+        Type::Long => Some(1),
+        Type::Float => Some(2),
+        Type::Double => Some(3),
+        Type::Boolean | Type::Reference(_) => None,
+    }
+}
+
+/// The type one promotion rank stands for.
+fn promoted(rank: u8) -> Type {
+    match rank {
+        0 => Type::Int,
+        1 => Type::Long,
+        2 => Type::Float,
+        _ => Type::Double,
     }
 }
 

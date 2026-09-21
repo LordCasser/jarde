@@ -507,6 +507,16 @@ impl<'a> Emitter<'a> {
                 }
                 Ok(())
             }
+            ExprKind::Cast { ty, value } => {
+                // The conversion the build decided, written where the value is. The printer writes
+                // nothing else here: the type is the node's own, and the operand position is the
+                // cast's own (JLS 15.16 — a cast applies to a unary expression), so a looser operand
+                // keeps its group (`(int) (a + b)` and never `(int) a + b`).
+                emitter.put("(", at)?;
+                emitter.put(ty.spell(), at)?;
+                emitter.put(") ", at)?;
+                emitter.operand(value, UNARY)
+            }
             ExprKind::Not { value } => {
                 // The operand of `!` is at the unary level, so a looser value keeps its own group:
                 // `!a + b` would be `(!a) + b`, another tree than `!(a + b)`.
@@ -674,7 +684,10 @@ fn expression_binding(kind: &ExprKind) -> u8 {
         // binds where `+` binds — which is what makes it keep its own group in a receiver, an
         // argument that binds tighter, and the right-hand position of another `+`.
         ExprKind::Concat { .. } => binary_binding(BinaryOp::Add),
-        ExprKind::Not { .. } => UNARY,
+        // A cast and a `!` are the same level: both are UnaryExpressions (JLS 15.15–15.16), tighter
+        // than every binary operator and looser than a primary, so `(int) a + b` is `((int) a) + b`
+        // and a cast in a receiver position keeps its own group.
+        ExprKind::Not { .. } | ExprKind::Cast { .. } => UNARY,
         // A call, `new`, a field read, an array read, a literal, a name, a type name: every one of
         // them is read whole before any suffix or operator applies.
         _ => PRIMARY,

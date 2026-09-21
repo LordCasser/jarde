@@ -39,8 +39,7 @@ use jarde_jvm::method_ir::{
 };
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::classfile::{
-    Base, BaseType, BootstrapMethodFacts, CpEntryFacts, DescriptorComponent, DescriptorKind,
-    descriptor_facts,
+    BootstrapMethodFacts, CpEntryFacts, DescriptorKind, descriptor_facts,
 };
 
 use crate::accessor::{self, AccessorRecord, AccessorShape};
@@ -114,12 +113,14 @@ pub(crate) struct Inputs<'a> {
     /// The type each parameter slot holds, as the member's own descriptor states it (P3-R5): a
     /// `boolean` parameter and an `int` one share a slot shape, and only this fact tells them apart.
     pub(crate) parameter_types: &'a BTreeMap<u16, Type>,
-    /// Whether the member's own descriptor returns `Z` (`(I)Z`, `()Z`, …), as the same reading of
-    /// the same descriptor states it. The frames state one slot shape for the four int-sized
-    /// primitives, so this signature fact is what says whether a `return` in this body presents a
-    /// boolean; the caller derives it where it derives [`Self::parameter_types`], so that a builder
-    /// handed this run's facts never reads a second opinion out of a descriptor itself.
-    pub(crate) returns_boolean: bool,
+    /// The type the member's own descriptor **returns**, as the same reading of the same descriptor
+    /// states it (`None` for `V`, and for a descriptor this layer cannot read). The frames state one
+    /// slot shape for the four int-sized primitives, so this signature fact is what says whether a
+    /// `return` in this body presents a boolean — and it is the requirement every other `return` of
+    /// the body is written under; the caller derives it where it derives
+    /// [`Self::parameter_types`], so that a builder handed this run's facts never reads a second
+    /// opinion out of a descriptor itself.
+    pub(crate) return_type: Option<Type>,
     /// The names the presentation decided, in slot order.
     pub(crate) names: &'a NameTable,
     /// The variables each local slot holds (P3 3.4): one per slot unless the debug records name the
@@ -786,7 +787,7 @@ pub(crate) fn build(
         profile: inputs.profile,
         parameters: inputs.parameters,
         parameter_types: inputs.parameter_types,
-        returns_boolean: inputs.returns_boolean,
+        return_type: inputs.return_type,
         names: inputs.names,
         reuse: inputs.reuse,
         chains: inputs.chains,
@@ -841,9 +842,10 @@ struct Builder<'a> {
     parameters: u16,
     /// The type each parameter slot holds, as the member's own descriptor states it (P3-R5).
     parameter_types: &'a BTreeMap<u16, Type>,
-    /// Whether the member's own descriptor returns `Z`: the fact that decides whether a `return` of
-    /// this body presents a boolean (P3-R5's reading, in the return position).
-    returns_boolean: bool,
+    /// The type the member's own descriptor returns: the requirement every `return` of this body is
+    /// written under. It decides the boolean shape (P3-R5's reading, in the return position) and the
+    /// conversion every other return type requires of its value ([`meeting_position`]).
+    return_type: Option<Type>,
     names: &'a NameTable,
     /// The variables each local slot holds (P3 3.4): which of a slot's two variables a use point
     /// belongs to, and therefore which name that use is written with.
@@ -1543,7 +1545,7 @@ impl Builder<'_> {
                 // The increment writes an assignment and never a declaration: an `iinc` reads the
                 // slot as well as writing it, so its text is the same whether the variable was
                 // declared here or earlier.
-                let (_, target_name) = match self.write_target(*slot, at, "increment") {
+                let (variable, target_name) = match self.write_target(*slot, at, "increment") {
                     Ok(target) => target,
                     Err(reason) => {
                         return self.fallback(vec![at], &reason, at);
@@ -1554,14 +1556,35 @@ impl Builder<'_> {
                 } else {
                     (BinaryOp::Add, i64::from(*amount))
                 };
+                // The base of the increment presents the type its own declaration states, so the sum
+                // it is written as has the type the arithmetic really produces (`int` for the whole
+                // int-shaped family) and the assignment below can check it against the variable: an
+                // increment of a `char`, a `byte` or a `short` is an `int` write the variable's own
+                // type refuses, and no text of that variable's name states it.
+                let base = self.local(variable, &target_name, at);
                 let value = Expr::direct(
                     ExprKind::Binary {
                         op,
-                        left: Box::new(Expr::direct(ExprKind::Local(target_name.clone()), at)),
+                        left: Box::new(base),
                         right: Box::new(Expr::direct(ExprKind::Integer(magnitude), at)),
                     },
                     at,
                 );
+                let value = match self.decided_type(variable) {
+                    Some(Type::Boolean) => value,
+                    Some(ty) => match meeting_position(
+                        value,
+                        &ty,
+                        &format!(
+                            "the increment at BCI {at} writes `{target_name}`, which this run decided holds `{}`",
+                            ty.spell()
+                        ),
+                    ) {
+                        Ok(value) => value,
+                        Err(reason) => return self.fallback(vec![at], &reason, at),
+                    },
+                    None => value,
+                };
                 self.push(Stmt::new(
                     StmtKind::Assign {
                         name: target_name,
@@ -1691,22 +1714,36 @@ impl Builder<'_> {
     /// without it is refused: the `int` spelling this layer would otherwise write (`return 1;` in a
     /// `boolean` method) is text the member's own signature rejects, and a body that publishes it
     /// claims a Java method that does not compile. A member that returns anything else keeps the
-    /// value exactly as it was rendered.
+    /// value exactly as it was rendered, except for the conversion **that type** requires of the
+    /// value: `returned(char)` in a member whose own descriptor returns `int` states
+    /// `return (int) arg0;`, because the widening `return arg0;` relies on is the reader's to take on
+    /// faith and the position's own type is what the text states ([`meeting_position`]).
     fn return_expr(&mut self, value: ValueId, at: u32) -> Result<Expr, String> {
-        if !self.returns_boolean {
-            return self.render_value(value, at, 0);
+        let required = self.return_type.clone();
+        if matches!(required, Some(Type::Boolean)) {
+            if self.boolean_value(value, at) {
+                return self.render_value(value, at, 0).map(boolean_spelling);
+            }
+            // A value this layer cannot present at all keeps its own, more specific refusal: the
+            // boolean context is the *second* reason such a value is not written, and the first one
+            // is the evidence the value's own rendering is missing.
+            return match self.render_value(value, at, 0) {
+                Err(reason) => Err(reason),
+                Ok(_) => Err(format!(
+                    "the value at BCI {at} is returned from a method whose own descriptor returns `Z`, and this layer has no evidence that the value is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the member's own signature rejects"
+                )),
+            };
         }
-        if self.boolean_value(value, at) {
-            return self.render_value(value, at, 0).map(boolean_spelling);
-        }
-        // A value this layer cannot present at all keeps its own, more specific refusal: the
-        // boolean context is the *second* reason such a value is not written, and the first one is
-        // the evidence the value's own rendering is missing.
-        match self.render_value(value, at, 0) {
-            Err(reason) => Err(reason),
-            Ok(_) => Err(format!(
-                "the value at BCI {at} is returned from a method whose own descriptor returns `Z`, and this layer has no evidence that the value is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the member's own signature rejects"
-            )),
+        let rendered = self.render_value(value, at, 0)?;
+        match &required {
+            Some(ty) => meeting_position(
+                rendered,
+                ty,
+                &format!("the member's own descriptor returns `{}`", ty.spell()),
+            ),
+            // `V`, and a descriptor this layer cannot read: the member states no type for the value,
+            // so the value is written as it was rendered.
+            None => Ok(rendered),
         }
     }
 
@@ -1852,6 +1889,30 @@ impl Builder<'_> {
         value: Expr,
         at: u32,
     ) -> Result<(), StopReason> {
+        // The value meets the type the plan decided for this variable, read from that one decision
+        // **before** the declaration is marked written: a value that cannot meet it refuses the write
+        // whole — the declaration and the assignment both — so no name is declared that no value was
+        // published for, and the write that follows (if any) keeps its own answer.
+        //
+        // A `boolean` variable is deliberately not this shape: which value may be published as a
+        // boolean is the boolean rules' question (a `0`/`1` literal is how both are pushed, a proven
+        // boolean already prints what it is, and a value with no evidence is refused by
+        // [`Self::assignment`]), and this mechanism converts none of it.
+        let value = match self.decided_type(variable) {
+            Some(Type::Boolean) => value,
+            Some(ty) => match meeting_position(
+                value,
+                &ty,
+                &format!(
+                    "the write at BCI {at} stores into `{name}`, which this run decided holds `{}`",
+                    ty.spell()
+                ),
+            ) {
+                Ok(value) => value,
+                Err(reason) => return self.fallback(vec![at], &reason, at),
+            },
+            None => value,
+        };
         match self.declare(variable, at)? {
             Declaration::Declared(ty) => {
                 let value = if ty == Type::Boolean {
@@ -2056,6 +2117,42 @@ impl Builder<'_> {
         in_use == Some(denotes)
     }
 
+    /// One local's name as the expression it is written as, presenting the type its **declaration**
+    /// states.
+    ///
+    /// The type is the plan's one decision for that variable ([`Decided`]), which is also what the
+    /// declaration and every assignment of it were written with — never a second reading of the
+    /// frames, which state one slot shape for the four int-sized primitives and would therefore
+    /// present a `char` parameter as the `int` a `+` converts as a **number**: that reading is the
+    /// defect this rule closes (`append((int) c)` written `"" + c`). A variable whose type the plan
+    /// could not decide presents none, which is the honest answer: no position converts a value
+    /// whose own type it cannot state.
+    fn local(&self, variable: LocalVariable, name: &str, at: u32) -> Expr {
+        let local = Expr::direct(ExprKind::Local(name.to_string()), at);
+        match self.decided_type(variable) {
+            Some(ty) => local.presenting(ty),
+            None => local,
+        }
+    }
+
+    /// The type the plan decided for one variable, when it decided one.
+    ///
+    /// A **parameter** is decided by the member's own descriptor rather than by the plan: a
+    /// parameter slot is written by the caller and never by the body, so the plan's map — which is
+    /// keyed by the write each variable's type is decided from — holds no entry for it, while
+    /// [`crate::facts::MethodFacts::parameter_types`] states what it holds (and is the only fact
+    /// that can tell a `char`, a `byte` and a `short` from an `int`, since the frames state one
+    /// shape for all four).
+    fn decided_type(&self, variable: LocalVariable) -> Option<Type> {
+        if variable.slot() < self.parameters {
+            return self.parameter_types.get(&variable.slot()).cloned();
+        }
+        match self.decision(variable) {
+            Some(Decided::Type(ty)) => Some(ty.clone()),
+            Some(Decided::Unknown(_)) | None => None,
+        }
+    }
+
     /// Renders one SSA value as an expression, for a use at BCI `at`.
     ///
     /// `at` is the position at which the text produced here is **evaluated**: the instruction whose
@@ -2094,7 +2191,7 @@ impl Builder<'_> {
                     // name of the variable whose range covers this use.
                     match self.reuse.variable_at(*slot, at) {
                         Some(variable) => match self.names.text(variable) {
-                            Some(name) => Ok(Expr::direct(ExprKind::Local(name.to_string()), at)),
+                            Some(name) => Ok(self.local(variable, name, at)),
                             None => Err(format!("local {slot} has no name to write")),
                         },
                         None => Err(format!(
@@ -2144,9 +2241,7 @@ impl Builder<'_> {
                         // record covers the load's own BCI (P3 3.4).
                         match self.reuse.variable_at(*slot, bci) {
                             Some(variable) => match self.names.text(variable) {
-                                Some(name) => {
-                                    Ok(Expr::direct(ExprKind::Local(name.to_string()), bci))
-                                }
+                                Some(name) => Ok(self.local(variable, name, bci)),
                                 None => Err(format!("local {slot} has no name to write")),
                             },
                             None => Err(format!(
@@ -2260,13 +2355,20 @@ impl Builder<'_> {
                                 Expr::direct(ExprKind::Path(owner), bci)
                             }
                         };
-                        Ok(Expr::new(
+                        let field = Expr::new(
                             ExprKind::Field {
                                 receiver: Box::new(receiver),
                                 name: evidence.name.clone(),
                             },
                             OriginSet::new(Origin::direct(bci)),
-                        ))
+                        );
+                        // The read presents the type the field's own descriptor states: `field@1`
+                        // claimed this member by its pool entry, and the descriptor of that entry is
+                        // the fact that says what the read's value is.
+                        Ok(match descriptor_type(&evidence.descriptor) {
+                            Some(ty) => field.presenting(ty),
+                            None => field,
+                        })
                     }
                     // The dispatch-table read of an enum `switch`: the table, indexed by the call
                     // the switch reads its case index out of (P3 2.3). Both operands keep their own
@@ -2301,7 +2403,10 @@ impl Builder<'_> {
                                 index: Box::new(selector),
                             },
                             origin,
-                        ))
+                        )
+                        // The table the rule claimed is an `int[]` indexed by an `int`: the read's
+                        // value is the `int` the switch's selector is.
+                        .presenting(Type::Int))
                     }
                     other => Err(format!(
                         "the value at BCI {at} comes from an {other:?} at BCI {bci}, which produces no expression this subset writes"
@@ -2354,15 +2459,63 @@ impl Builder<'_> {
         for (_, value) in args {
             arguments.push(self.render_value(*value, at, depth + 1)?);
         }
-        let arguments = typed_arguments(target.descriptor(), arguments);
-        Ok(Expr::direct(
+        let arguments = self.arguments(target.descriptor(), arguments, bci)?;
+        let call = Expr::direct(
             ExprKind::Call {
                 receiver,
                 name: target.name().to_string(),
                 args: arguments,
             },
             bci,
-        ))
+        );
+        Ok(match return_type(target.descriptor()) {
+            Some(ty) => call.presenting(ty),
+            None => call,
+        })
+    }
+
+    /// The arguments of one invocation, each written as the **callee's own descriptor** requires.
+    ///
+    /// Two readings of the same descriptor, and both are the callee's facts: [`typed_arguments`]
+    /// spells the `boolean` a `Z` parameter declares (`append(true)`'s `iconst_1` is the `int`-shaped
+    /// `1`, and only the descriptor says so), and [`meeting_position`] states the primitive conversion
+    /// a wider parameter requires (`f(arg0)` for a `char` argument and an `int` parameter is the
+    /// widening the *compiler* performed with no instruction, so the text has to say it).
+    ///
+    /// A descriptor this layer cannot read, or one whose parameter count differs from the arguments
+    /// the call reads, leaves the arguments as they were rendered — the same "no fact, no claim"
+    /// answer [`typed_arguments`] gives.
+    ///
+    /// The arguments a **lambda's factory site** binds are deliberately not this shape: their types
+    /// are the `invokedynamic` descriptor's statement about the SAM and not about the implementation
+    /// the reference names ([`Self::lambda_expr`] builds them), so nothing there is re-typed. This
+    /// entry point serves the invocations a body really performs: `invoke*` and the constructor call
+    /// of a construction site and of a `super(…)`/`this(…)` prologue.
+    fn arguments(
+        &self,
+        descriptor: &str,
+        arguments: Vec<Expr>,
+        bci: u32,
+    ) -> Result<Vec<Expr>, String> {
+        let arguments = typed_arguments(descriptor, arguments);
+        let Some((parameters, _)) = lambda::parse_method(descriptor) else {
+            return Ok(arguments);
+        };
+        if parameters.len() != arguments.len() {
+            return Ok(arguments);
+        }
+        let mut written = Vec::with_capacity(arguments.len());
+        for (index, (argument, parameter)) in arguments.into_iter().zip(parameters).enumerate() {
+            written.push(meeting_position(
+                argument,
+                &parameter,
+                &format!(
+                    "the parameter {index} of the invocation at BCI {bci} is declared `{}`",
+                    parameter.spell()
+                ),
+            )?);
+        }
+        Ok(written)
     }
 
     /// Renders one invocation: a verified synthetic accessor's field access, or the call itself.
@@ -2397,13 +2550,25 @@ impl Builder<'_> {
                         .plus_derived(Origin::derived(shape.field_bci).in_method(&shape.method));
                     self.accessors
                         .push(AccessorRecord::of(bci, &evidence, Some(&shape), None));
-                    return Ok(Expr::new(
+                    let field = Expr::new(
                         ExprKind::Field {
                             receiver: Box::new(receiver),
                             name: shape.name.clone(),
                         },
                         origin,
-                    ));
+                    );
+                    // The type the read presents is the descriptor of the field the accessor's own
+                    // body named — the same evidence the record carries back.
+                    return Ok(
+                        match evidence
+                            .field
+                            .as_ref()
+                            .and_then(|field| descriptor_type(&field.descriptor))
+                        {
+                            Some(ty) => field.presenting(ty),
+                            None => field,
+                        },
+                    );
                 }
                 other => {
                     let reason = match other {
@@ -2438,17 +2603,52 @@ impl Builder<'_> {
         shape: accessor::Shape,
     ) -> Result<(), StopReason> {
         let rendered = match stack_operands(instruction).as_slice() {
-            [(_, receiver), (_, value)] => Some((*receiver, *value)),
+            // The second operand is the value the write stores. It is carried beside the two
+            // rendered expressions so that the field's own descriptor can decide what that value is
+            // spelled as — and so that a `boolean` field's proof reads the value the instruction
+            // really read, exactly as a `putfield` hands its own stored value.
+            [(_, receiver), (_, stored)] => {
+                let (receiver, stored) = (*receiver, *stored);
+                Some((
+                    self.render_value(receiver, at, 0),
+                    self.render_value(stored, at, 0),
+                    stored,
+                ))
+            }
             _ => None,
-        }
-        .map(|(receiver, value)| {
-            (
-                self.render_value(receiver, at, 0),
-                self.render_value(value, at, 0),
-            )
-        });
+        };
         match rendered {
-            Some((Ok(receiver), Ok(value))) => {
+            Some((Ok(receiver), Ok(value), stored)) => {
+                // The write is one position whether the accessor's body reads a `putfield` or the
+                // call site that used to spell it, so the value meets the type the field the
+                // accessor's own body writes declares: a `char`/`byte`/`short` value under an `int`
+                // descriptor states that conversion here too ([`Self::field_value`]).
+                let value = match self.field_value(
+                    evidence
+                        .field
+                        .as_ref()
+                        .map(|field| field.descriptor.as_str()),
+                    stored,
+                    value,
+                    at,
+                ) {
+                    Ok(value) => value,
+                    Err(reason) => {
+                        let refusal = Refusal::shape(
+                            "jre_accessor_arguments",
+                            format!(
+                                "the write accessor call at BCI {at} was not presented: {reason}"
+                            ),
+                        );
+                        self.accessors.push(AccessorRecord::of(
+                            at,
+                            &evidence,
+                            None,
+                            Some(&refusal),
+                        ));
+                        return self.call_statement(at, instruction, target);
+                    }
+                };
                 let origin = OriginSet::new(Origin::direct(at))
                     .plus_derived(Origin::derived(shape.field_bci).in_method(&shape.method));
                 self.accessors
@@ -2464,7 +2664,7 @@ impl Builder<'_> {
             }
             other => {
                 let reason = match other {
-                    Some((Err(reason), _)) | Some((_, Err(reason))) => reason,
+                    Some((Err(reason), _, _)) | Some((_, Err(reason), _)) => reason,
                     _ => "the call does not read exactly the instance and the value it writes"
                         .to_string(),
                 };
@@ -2529,7 +2729,7 @@ impl Builder<'_> {
         // construction site writes the call the class file holds, and `new Res(arg0, 0)` for a
         // `Res(String, boolean)` constructor is a call the member's own signature refuses to compile.
         let args = match self.invoke_descriptor(site.constructor) {
-            Some(descriptor) => typed_arguments(&descriptor, args),
+            Some(descriptor) => self.arguments(&descriptor, args, site.constructor)?,
             None => args,
         };
         let origin = site
@@ -2578,7 +2778,13 @@ impl Builder<'_> {
         // `super(…)`/`this(…)` is an invocation like any other: the constructor it names states the
         // parameter types its arguments are written under.
         let args = match self.invoke_descriptor(at) {
-            Some(descriptor) => typed_arguments(&descriptor, args),
+            Some(descriptor) => match self.arguments(&descriptor, args, at) {
+                Ok(args) => args,
+                Err(reason) => {
+                    let bcis = self.quoted_bcis(at);
+                    return self.fallback(bcis, &reason, at);
+                }
+            },
             None => args,
         };
         self.push(Stmt::new(
@@ -2636,19 +2842,23 @@ impl Builder<'_> {
                 }
             },
         };
-        let Some(value) = shape.value else {
+        let Some(stored) = shape.value else {
             return self.fallback(
                 self.quoted_bcis(at),
                 &format!("the field write at BCI {at} reads no value to store"),
                 at,
             );
         };
-        let value = match self.render_value(value, at, 0) {
+        let value = match self.render_value(stored, at, 0) {
             Ok(value) => value,
             Err(reason) => {
                 let bcis = self.quoted_bcis(at);
                 return self.fallback(bcis, &reason, at);
             }
+        };
+        let value = match self.field_value(Some(&evidence.descriptor), stored, value, at) {
+            Ok(value) => value,
+            Err(reason) => return self.fallback(vec![at], &reason, at),
         };
         self.push(Stmt::new(
             StmtKind::FieldAssign {
@@ -2658,6 +2868,48 @@ impl Builder<'_> {
             },
             OriginSet::new(Origin::direct(at)),
         ))
+    }
+
+    /// The value one field write is spelled as, from the field's **own descriptor**.
+    ///
+    /// A field write is a position like every other one this rule reads: the descriptor the pool
+    /// states for the member says what the value has to be presented as — the same reading a read of
+    /// the field presents — so a value that does not meet it is converted where the conversion is one
+    /// this layer states ([`meeting_position`]) and refused otherwise.
+    ///
+    /// A `boolean` field is the boolean rules' position, exactly as a variable the plan decided
+    /// `boolean` is: the frames state one slot shape for a `boolean` and an `int`, so the `0`/`1`
+    /// literal is spelled `false`/`true` where the evidence proves it (the same
+    /// [`Self::boolean_literal`]/[`Self::boolean_proven`] proof the `Z` return and the
+    /// boolean-decided variable read), and a value with no such evidence is refused rather than
+    /// published as an `int` the field's own type rejects. `stored` is the value the writing
+    /// instruction reads, which is the value that proof is about.
+    ///
+    /// A descriptor this layer cannot spell — and a write whose field no rule stated a descriptor
+    /// for — states no requirement, and the value is written as it was rendered.
+    fn field_value(
+        &self,
+        descriptor: Option<&str>,
+        stored: ValueId,
+        value: Expr,
+        at: u32,
+    ) -> Result<Expr, String> {
+        let Some(ty) = descriptor.and_then(descriptor_type) else {
+            return Ok(value);
+        };
+        if ty == Type::Boolean {
+            if !(self.boolean_literal(stored) || self.boolean_proven(stored, at)) {
+                return Err(format!(
+                    "the field written at BCI {at} is declared `boolean`, and this layer has no evidence that the value it reads at BCI {at} is a boolean (a `0`/`1` literal, a `boolean` parameter's load, the result of a call whose callee descriptor returns `Z`, a claimed field read whose descriptor is `Z`, or a local this body declared `boolean`): the `int` spelling this layer would write is text the field's own type rejects"
+                ));
+            }
+            return Ok(boolean_spelling(value));
+        }
+        meeting_position(
+            value,
+            &ty,
+            &format!("the field written at BCI {at} is declared `{}`", ty.spell()),
+        )
     }
 
     /// Whether the value a call produced is read by an instruction this build **writes it into**.
@@ -2916,6 +3168,18 @@ impl Builder<'_> {
                 }
                 part.value = boolean_spelling(part.value);
             }
+            // The part's own conversion, decided where the descriptor meets the value: a `char` part
+            // of an `append(I)` states `(int) arg0`, because `"" + arg0` is a string concatenation
+            // of a character where the `append` converted the code unit. Every other part is left
+            // exactly as it was rendered.
+            part.value = meeting_position(
+                part.value,
+                parameter,
+                &format!(
+                    "the `append` at BCI {append_bci} takes `{}`",
+                    parameter.spell()
+                ),
+            )?;
             parts.push(part);
         }
         let origin = chain
@@ -3379,12 +3643,164 @@ pub(crate) fn typed_arguments(descriptor: &str, arguments: Vec<Expr>) -> Vec<Exp
                 1 => true,
                 _ => return argument,
             };
-            Expr {
-                kind: ExprKind::Boolean(spelled),
-                origin: argument.origin,
-            }
+            // The value *is* the boolean the parameter declares, so the node it becomes presents
+            // that type: with the `0`/`1` literal gone, the text is `true`/`false` and nothing
+            // downstream converts it again.
+            Expr::new(ExprKind::Boolean(spelled), argument.origin)
         })
         .collect()
+}
+
+/// One value written where a position **requires a type**, with the conversion between the two made
+/// explicit in the expression.
+///
+/// This is the rule `make-required-conversions-explicit` states, and it exists because the
+/// conversion used to happen *in the printing context* instead of in the expression: `append((int) c)`
+/// — `c` a `char` — was written `"" + arg0 + "!"`, which is a different program (`"A!"` where the
+/// class answers `"65!"`) and compiles just as well. A `char`, a `byte` and a `short` share one slot
+/// shape with an `int`, so no instruction in the body states the conversion; the facts that do are
+/// the value's **presented** type ([`Expr::presented`], which reaches a local from its declaration
+/// and a call or a field read from a descriptor) and the position's requirement, which the caller
+/// states as the phrase `position` names it by.
+///
+/// Three outcomes, and the third is the one that keeps this honest:
+///
+/// * the two types are the same, an `int` **constant** is narrowed by the position's own rule
+///   (JLS 5.2/5.3: `byte b = 65;`, `f((char) 65)` written `f(65)`) or either side is a reference:
+///   the value is written exactly as it was rendered, with nothing added;
+/// * a **widening primitive conversion** (JLS 5.1.2) connects them: the value is wrapped in
+///   [`ExprKind::Cast`], so the text states the conversion the bytecode performed where the position
+///   reads it;
+/// * nothing this layer's evidence states connects them — a `boolean` beside another primitive,
+///   which no conversion relates at all (JLS 5.5), or a narrowing this layer cannot prove: the region
+///   is refused. Publishing the value's own text would write another value or text `javac` rejects,
+///   and "the two texts happen to compile" is exactly what the defect this rule closes was.
+fn meeting_position(value: Expr, required: &Type, position: &str) -> Result<Expr, String> {
+    let Some(presented) = value.presented.clone() else {
+        // The layer states no type for this value (`null`, a lambda, an arithmetic it cannot type):
+        // no mismatch is provable, so nothing is converted — a rule that refused here would refuse
+        // every value it cannot name, which is not what "the position requires a type" says.
+        return Ok(value);
+    };
+    if &presented == required || narrowed_constant(&value, required) {
+        return Ok(value);
+    }
+    match conversion(&presented, required) {
+        Conversion::Same => Ok(value),
+        Conversion::Widening => {
+            // The conversion node carries the value's own anchors: the conversion has no instruction
+            // of its own — that is the whole point of this rule — and the text it converts is the
+            // value's.
+            let origin = value.origin.clone();
+            Ok(Expr::new(
+                ExprKind::Cast {
+                    ty: required.clone(),
+                    value: Box::new(value),
+                },
+                origin,
+            ))
+        }
+        Conversion::Unspellable => Err(format!(
+            "the value at BCI {} is presented as `{}` and {position}, and no conversion this layer's \
+             evidence states connects the two: a widening primitive conversion (JLS 5.1.2) is the \
+             only one it writes, so the region is refused rather than published with the value the \
+             position would convert differently or with text `javac` refuses",
+            value.origin.primary().bci(),
+            presented.spell()
+        )),
+    }
+}
+
+/// How one value's presented type meets the type a consuming position requires of it.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum Conversion {
+    /// The text already is what the position reads.
+    Same,
+    /// A widening primitive conversion (JLS 5.1.2) connects the two, so the text states it.
+    Widening,
+    /// No conversion this layer's evidence states connects them.
+    Unspellable,
+}
+
+/// The conversion from one presented type to the type a position requires.
+///
+/// Two references, and a reference beside a primitive, are `Same`: a reference conversion is not
+/// this mechanism's question — `+`, `append`, an invocation, a return and a write all convert a
+/// reference the same way (`String.valueOf`/`toString`/the assignment's own conversion), and which
+/// class is assignable to which is a **subtype judgment** this layer deliberately does not make
+/// (`make-required-conversions-explicit`'s non-goal). `boolean` beside any other primitive is
+/// `Unspellable`: JLS 5.5 states there is no conversion between them at all, in either direction.
+fn conversion(presented: &Type, required: &Type) -> Conversion {
+    if presented == required {
+        return Conversion::Same;
+    }
+    if matches!(presented, Type::Reference(_)) || matches!(required, Type::Reference(_)) {
+        return Conversion::Same;
+    }
+    if widens(presented, required) {
+        Conversion::Widening
+    } else {
+        Conversion::Unspellable
+    }
+}
+
+/// Whether JLS 5.1.2's widening primitive conversion relates one type to the other.
+fn widens(presented: &Type, required: &Type) -> bool {
+    matches!(
+        (presented, required),
+        (
+            Type::Byte,
+            Type::Short | Type::Int | Type::Long | Type::Float | Type::Double
+        ) | (
+            Type::Short,
+            Type::Int | Type::Long | Type::Float | Type::Double
+        ) | (
+            Type::Char,
+            Type::Int | Type::Long | Type::Float | Type::Double
+        ) | (Type::Int, Type::Long | Type::Float | Type::Double)
+            | (Type::Long, Type::Float | Type::Double)
+            | (Type::Float, Type::Double)
+    )
+}
+
+/// Whether the value is an `int` **constant** the required type takes by constant narrowing
+/// (JLS 5.2 for an assignment, 5.3 for a method invocation or a `return`).
+///
+/// This is not a conversion the text has to state: `byte b = 65;` and `takes(65)` for a `short`
+/// parameter are already legal Java and already carry the value the bytecode pushed — a constant
+/// expression of type `int` narrows where it is representable. The rule exists because the
+/// alternative reading (every `int` in a narrower position is a mismatch) would refuse the shapes
+/// Java itself writes, and the check is the constant's own value, which is the fact the language
+/// narrows by.
+fn narrowed_constant(value: &Expr, required: &Type) -> bool {
+    let ExprKind::Integer(constant) = value.kind else {
+        return false;
+    };
+    match required {
+        Type::Byte => i8::try_from(constant).is_ok(),
+        Type::Short => i16::try_from(constant).is_ok(),
+        Type::Char => u16::try_from(constant).is_ok(),
+        _ => false,
+    }
+}
+
+/// The type one field descriptor states, when this layer can spell it.
+///
+/// A parameter's own descriptor is a field descriptor (JVMS 4.3.2/4.3.3), so this is the one
+/// reading of both: a callee's parameter, a field's own declaration, and the type a write has to
+/// meet.
+fn descriptor_type(descriptor: &str) -> Option<Type> {
+    let facts = descriptor_facts(descriptor.as_bytes(), DescriptorKind::Field).ok()?;
+    lambda::type_of_component(facts.single()?)
+}
+
+/// The type one method descriptor's **result** states, when this layer can spell it (`V` is `None`).
+///
+/// The member's own descriptor is the requirement every `return` of its body is written under, and a
+/// callee's descriptor is the type of the *value* a call site produces: the same reading answers
+/// both, and it is the reader's own reading of the production ([`lambda::parse_method`]).
+pub(crate) fn return_type(descriptor: &str) -> Option<Type> {
+    lambda::parse_method(descriptor)?.1
 }
 
 /// The parameter type descriptors one method descriptor states, in order
@@ -3459,18 +3875,13 @@ fn store_operand(operations: &Operations, instruction: &SsaInstruction) -> Optio
 ///
 /// The return side of the same reading [`MethodFacts::parameter_types`] makes for the parameters:
 /// the frames state one `int` shape for the four int-sized primitives, so only a descriptor says
-/// whether the position it types holds a `boolean`. The descriptor is read by the reader's own facts
-/// ([`descriptor_facts`]), so the return position is the one component that production states and
-/// not a substring of the text. A descriptor this reading cannot parse states no return type at all,
-/// and a body presented under it keeps every value as it was rendered.
-pub(crate) fn returns_boolean(descriptor: &str) -> bool {
-    let Ok(facts) = descriptor_facts(descriptor.as_bytes(), DescriptorKind::Method) else {
-        return false;
-    };
-    matches!(
-        facts.result().map(DescriptorComponent::base),
-        Some(Base::Primitive(BaseType::Boolean))
-    )
+/// whether the position it types holds a `boolean` — and a call's result is where that fact types a
+/// *value* ([`boolean_proof`]). The descriptor is read by the reader's own facts
+/// ([`descriptor_facts`]) through [`return_type`], so the return position is the one component that
+/// production states and not a substring of the text. A descriptor this reading cannot parse states
+/// no return type at all, and a value under it keeps the type it was rendered with.
+fn returns_boolean(descriptor: &str) -> bool {
+    matches!(return_type(descriptor), Some(Type::Boolean))
 }
 
 /// The value one instruction reads out of one local slot, when it reads that slot at all.
@@ -3532,16 +3943,16 @@ fn literal(constant: &ConstantValue) -> ExprKind {
 /// already prints what it is, and an expression of any other type is left untouched: the caller is
 /// the only place that knows its context, and this helper never invents one.
 fn boolean_spelling(expr: Expr) -> Expr {
-    let Expr { kind, origin } = expr;
-    let spelled = match kind {
+    let spelled = match &expr.kind {
         ExprKind::Integer(0) => false,
         ExprKind::Integer(1) => true,
-        _ => return Expr { kind, origin },
+        // Everything else keeps the expression exactly as it was, **including** the type it presents
+        // as: a value that already prints what it is says nothing new here, and the caller is the
+        // only place that knows its context.
+        _ => return expr,
     };
-    Expr {
-        kind: ExprKind::Boolean(spelled),
-        origin,
-    }
+    let Expr { origin, .. } = expr;
+    Expr::new(ExprKind::Boolean(spelled), origin)
 }
 
 /// The operator an arithmetic operation becomes.
@@ -3879,5 +4290,124 @@ mod tests {
         // A bare name is a name and not a descriptor: a class may be called `Lfoo`, so the forms
         // only a truncated descriptor could have are still read as the pool's own spelling.
         assert_eq!(spell_reference("Lfoo").as_deref(), Some("Lfoo"));
+    }
+
+    #[test]
+    fn a_position_converts_what_a_widening_conversion_states_and_nothing_else() {
+        // The conversions a compiler writes with no instruction, and which the text therefore has to
+        // state: the int-shaped family widened to `int`, and the widenings past it. Every one of them
+        // is JLS 5.1.2, and every one of them is *value-faithful*.
+        for (presented, required) in [
+            (Type::Char, Type::Int),
+            (Type::Char, Type::Long),
+            (Type::Byte, Type::Int),
+            (Type::Short, Type::Int),
+            (Type::Byte, Type::Short),
+            (Type::Int, Type::Long),
+            (Type::Int, Type::Float),
+            (Type::Int, Type::Double),
+            (Type::Long, Type::Double),
+            (Type::Float, Type::Double),
+        ] {
+            assert_eq!(
+                conversion(&presented, &required),
+                Conversion::Widening,
+                "{presented:?} → {required:?} is a widening primitive conversion"
+            );
+        }
+        // The same type needs nothing, and a reference beside anything is not this mechanism's
+        // question: `+`, `append`, an invocation, a return and a write all convert a reference the
+        // same way, and which class is assignable to which is a subtype judgment this layer does not
+        // make.
+        assert_eq!(conversion(&Type::Int, &Type::Int), Conversion::Same);
+        assert_eq!(
+            conversion(
+                &Type::Reference("java.lang.String".to_string()),
+                &Type::Reference("java.lang.Object".to_string())
+            ),
+            Conversion::Same
+        );
+        assert_eq!(
+            conversion(&Type::Reference("java.lang.Object".to_string()), &Type::Int),
+            Conversion::Same
+        );
+        // Nothing this layer's evidence states relates these: `boolean` and any other primitive have
+        // no conversion at all (JLS 5.5), and a narrowing is one the layer cannot prove.
+        for (presented, required) in [
+            (Type::Boolean, Type::Int),
+            (Type::Int, Type::Boolean),
+            (Type::Boolean, Type::Boolean),
+            (Type::Long, Type::Int),
+            (Type::Double, Type::Float),
+        ] {
+            let expected = if presented == required {
+                Conversion::Same
+            } else {
+                Conversion::Unspellable
+            };
+            assert_eq!(
+                conversion(&presented, &required),
+                expected,
+                "{presented:?} → {required:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn a_value_meets_a_position_by_a_cast_a_constant_or_a_refusal() {
+        fn named(ty: Type) -> Expr {
+            Expr::direct(ExprKind::Local("arg0".to_string()), 7).presenting(ty)
+        }
+        const POSITION: &str = "the `append` at BCI 8 takes `int`";
+
+        // A widening conversion becomes the node the printer writes, carrying the value's own
+        // anchors: the conversion has no instruction of its own to anchor it.
+        let converted = meeting_position(named(Type::Char), &Type::Int, POSITION)
+            .expect("`char` meets an `int` position by a widening conversion");
+        assert!(
+            matches!(converted.kind, ExprKind::Cast { ref ty, .. } if *ty == Type::Int),
+            "{:?}",
+            converted.kind
+        );
+        assert_eq!(converted.presented, Some(Type::Int));
+        assert_eq!(converted.origin.primary().bci(), 7);
+
+        // A value whose own type the layer states nothing about is written exactly as it was
+        // rendered: no mismatch is provable, so nothing is converted.
+        let unknown = Expr::direct(ExprKind::Null, 7);
+        let written = meeting_position(unknown.clone(), &Type::Int, POSITION).expect("no evidence");
+        assert_eq!(written.kind, unknown.kind);
+        assert_eq!(written.presented, None);
+
+        // An `int` constant narrows where the language narrows it (JLS 5.2/5.3), and one the type
+        // cannot hold is the mismatch it is.
+        let fits = Expr::direct(ExprKind::Integer(65), 7);
+        assert_eq!(
+            meeting_position(fits.clone(), &Type::Char, POSITION)
+                .expect("`65` is a `char` constant")
+                .kind,
+            fits.kind
+        );
+        assert!(
+            meeting_position(
+                Expr::direct(ExprKind::Integer(300), 7),
+                &Type::Byte,
+                POSITION
+            )
+            .is_err(),
+            "`300` is no `byte`"
+        );
+
+        // The refusal names the value's BCI, the type it presents as and the position that requires
+        // another one, so the report can be read without the text.
+        let message = meeting_position(named(Type::Boolean), &Type::Int, POSITION)
+            .expect_err("no conversion relates a `boolean` and an `int`");
+        assert!(
+            message.contains("BCI 7")
+                && message.contains("`boolean`")
+                && message.contains("`int`")
+                && message.contains("the `append` at BCI 8"),
+            "{message}"
+        );
     }
 }

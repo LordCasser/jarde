@@ -409,11 +409,12 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     // The type each parameter slot holds, as the member's own **descriptor** states it (P3-R5): the
     // frames cannot tell a `boolean` parameter from an `int` one, and the descriptor can.
     let parameter_types = request.facts.method().parameter_types();
-    // The same reading for the **return** position: whether this member's own signature returns a
-    // `boolean`. The builder reads it as this run's fact — like the parameter types, it is derived
-    // here rather than re-read out of a descriptor inside the layer that writes the statements
-    // (`(I)Z`, `()Z` and the rest of the descriptor spellings are the same fact).
-    let returns_boolean = build::returns_boolean(request.facts.method().descriptor());
+    // The same reading for the **return** position: the type this member's own signature returns,
+    // which decides both the boolean shape (`(I)Z`, `()Z` and the rest of the descriptor spellings
+    // are the same fact) and the conversion every other `return` type requires of its value. The
+    // builder reads it as this run's fact — like the parameter types, it is derived here rather than
+    // re-read out of a descriptor inside the layer that writes the statements.
+    let return_type = build::return_type(request.facts.method().descriptor());
     let program = match build::build(
         canonical,
         ssa,
@@ -424,7 +425,7 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             profile: request.profile.clone(),
             parameters: request.facts.method().parameters(),
             parameter_types: &parameter_types,
-            returns_boolean,
+            return_type,
             names: &names,
             reuse: &reuse,
             chains: &chains,

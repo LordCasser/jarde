@@ -1519,6 +1519,123 @@ const PARAMETER_SLOTS: Sample = Sample {
             come from the real slots) then disagreed with",
 };
 
+/// The `make-required-conversions-explicit` sample: every position that requires a type, with the
+/// value a compiler widens without writing an instruction.
+///
+/// A `char`, a `byte` and a `short` share one **slot shape** with an `int`, so `append((int) c)`,
+/// `widen(c)`, `return c;` and `int local = c;` are all a `load` plus the consumer's own
+/// instruction: nothing in the bytecode says which of the four conversions happened. The frames
+/// state `int`; the descriptors — the `append`'s own parameter, the callee's parameter, the member's
+/// return type, the local's declaration and the field's descriptor — state the type the value has to
+/// be presented as, and this comparison is what says whether the text converts the same value:
+/// `castPart('A')` is `"" + arg0 + "!"` before the fix, which answers `"A!"` where the class answers
+/// `"65!"`, and both texts compile under the member's own declaration.
+///
+/// The controls are what keep the conversion from being decoration: `intPart` (an `int` part of an
+/// `int` parameter), `kept` (a member returning the type its value is presented as) and `widen` (a
+/// body whose value is its own `int` parameter) must gain nothing, and the argument/return/write
+/// members must keep the values the original computes for every input below.
+const REQUIRED_CONVERSIONS: Sample = Sample {
+    label: "p3-required-conversions/v8 (javac 23.0.1, --release 8 -g:none)",
+    class: "RequiredConversions",
+    bytes: include_bytes!("fixtures/p3-required-conversions/v8/RequiredConversions.class"),
+    classpath: &[],
+    // The argument samples call the sample's own `widen`, so those names have to resolve to the
+    // committed body — the two sides then measure the same callee's answer for the same value.
+    extends: Some("RequiredConversions"),
+    scaffold: &[],
+    counter: None,
+    measured: &[],
+    // The finding's own inputs: `'A'` is the value the class answers `"65!"` for and the pre-fix text
+    // answered `"A!"` for, and every other value is one where a wrong conversion is visible in the
+    // trace (`'0'` is `48` and not the character `0`; `(byte) -1` is `255` as an `int` and never a
+    // negative one; `(short) 65` is the same code unit `'A'` is).
+    inputs: Some(&[
+        ("castPart", &[&["'A'"], &["'a'"], &["'0'"], &["'\\u0000'"]]),
+        (
+            "castPartLast",
+            &[&["\"a\"", "'A'"], &["\"\"", "'0'"], &["null", "'A'"]],
+        ),
+        ("intPart", &[&["7"], &["0"], &["-1"]]),
+        ("argued", &[&["'A'"], &["'0'"], &["'\\u0000'"]]),
+        (
+            "arguedByte",
+            &[&["(byte) 65"], &["(byte) -1"], &["(byte) 0"]],
+        ),
+        ("returned", &[&["'A'"], &["'\\u0000'"]]),
+        ("returnedShort", &[&["(short) 65"], &["(short) -1"]]),
+        ("kept", &[&["'A'"], &["'\\u0000'"]]),
+        ("declared", &[&["'A'"], &["'\\u0000'"]]),
+        ("assigned", &[&["'A'"], &["'\\u0000'"]]),
+        ("written", &[&["'A'"], &["'\\u0000'"]]),
+        ("widen", &[&["7"], &["0"], &["-1"]]),
+    ]),
+    quotes: &[],
+    // Nothing here is refused, so nothing rests on the original's own answers beyond what every
+    // executed member already proves: the two sides are the original class and the compiled text,
+    // run under one generated driver.
+    baseline: None,
+    members: &[
+        Member {
+            name: "castPart",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "castPartLast",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "intPart",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "widen",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "argued",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "arguedByte",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "returned",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "returnedShort",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "kept",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "declared",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "assigned",
+            expect: Expect::Executed,
+        },
+        Member {
+            name: "written",
+            expect: Expect::Executed,
+        },
+    ],
+    point: "C01/C02: the type a consuming position requires is decided where the expression is \
+            built, and the text states the conversion the bytecode performed — `castPart('A')` is \
+            `\"\" + (int) arg0 + \"!\"` and answers the class's `\"65!\"` where the pre-fix \
+            `\"\" + arg0 + \"!\"` answered `\"A!\"`, `castPartLast(\"a\", 'A')` is \
+            `arg0 + (int) arg1` and answers `\"a65\"` where `arg0 + arg1` answered `\"aA\"`, and \
+            `argued`/`returned`/`declared`/`assigned`/`written` state the callee's parameter, the \
+            member's return type and the written variable's and field's own type; the controls \
+            (`intPart`, `kept`, `widen`) gain nothing, and every member answers the original's own \
+            value for every input called here",
+};
+
 const REQUIRED: &[&Sample] = &[
     &LOCAL_REWRITE,
     &SCOPE_NO_DEBUG,
@@ -1535,6 +1652,7 @@ const REQUIRED: &[&Sample] = &[
     &HOISTED_BOOLEAN,
     &CONCAT_CONVERSION,
     &PARAMETER_SLOTS,
+    &REQUIRED_CONVERSIONS,
 ];
 
 const CORPUS: &[&Sample] = &[
