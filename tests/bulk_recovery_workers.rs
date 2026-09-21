@@ -292,3 +292,87 @@ fn the_request_is_checked_before_anything_is_dispatched() {
         );
     }
 }
+
+#[test]
+fn the_operations_total_and_a_methods_local_limit_are_two_declarations() {
+    // A tight **local** limit stops the method that met it and leaves the rest of the scope alone; the
+    // operation's own total stays the one the caller opened it with, and the two are published as
+    // themselves — `limits.method` for the local one and `limits.total` for the operation's. A
+    // per-method limit inherited from the operation's ceiling would make that impossible to see: the
+    // numbers would be one, and a whole-package ceiling would read as a per-method allowance.
+    let mut total = bulk_support::limits();
+    total.output_bytes = 1 << 30;
+    let mut method = bulk_support::limits();
+    method.output_bytes = 512;
+
+    let (snapshot, _opened) = open(flat_fixture());
+    let content = vec![snapshot.clone()];
+    let mut budget = Budget::new(total.clone());
+    let roots = container_roots(&snapshot, &mut budget, &FLAT_PREFIXES);
+    let environment = environment(&snapshot, tree_scope(), roots);
+    let request = BulkRecoveryRequest::for_scope(environment, 1, method.clone());
+    let mut sink = Recorder::new();
+    let report = Engine::new()
+        .recover_all(&content, &request, &mut budget, &mut sink)
+        .expect("the fixture's scope is recoverable");
+
+    assert_eq!(
+        report.summary.limits.method, method,
+        "the effective configuration publishes the local limits the request declared"
+    );
+    assert_eq!(
+        report.summary.limits.total, total,
+        "and the operation's own total beside them"
+    );
+    assert_eq!(
+        sink.header()
+            .expect("the stream published its header")
+            .limits,
+        report.summary.limits,
+        "the header states both, before anything is discovered"
+    );
+
+    // The local limit really bound methods: this fixture's bodies emit more than 512 bytes of text
+    // between them, so some method met its own allowance and stopped — with its own stop reason and
+    // without a text that claims to be an artifact.
+    let methods = sink.methods();
+    let stopped: Vec<&StopReason> = methods
+        .iter()
+        .filter_map(|method| method.stop_reason.as_ref())
+        .collect();
+    assert!(
+        !stopped.is_empty(),
+        "the local allowance stopped methods: {:?}",
+        sink.methods()
+    );
+    assert!(
+        stopped.iter().all(|reason| matches!(
+            reason,
+            StopReason::Budget {
+                dimension: CountedBudgetDimension::OutputBytes,
+                ..
+            }
+        )),
+        "every one of them states the dimension its own allowance refused: {stopped:?}"
+    );
+    assert!(
+        report.summary.outcomes.not_produced > 0,
+        "a method that stopped has no artifact: {:?}",
+        report.summary
+    );
+
+    // And the operation itself was not stopped: the whole scope was walked, every declared method's
+    // record was delivered, and no operation-level stop is recorded.
+    assert_eq!(
+        report.stop, None,
+        "a method's local limit is not the operation's stop: {:?}",
+        report.stop
+    );
+    assert!(report.summary.traversal_complete, "{:?}", report.summary);
+    assert_eq!(
+        report.summary.methods_delivered, report.summary.methods_declared,
+        "every declared method of the scope was delivered: {:?}",
+        report.summary
+    );
+    assert_eq!(report.summary.classes_refused, 0, "{:?}", report.summary);
+}
