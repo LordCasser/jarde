@@ -64,14 +64,32 @@ pub use jarde_java::{
     RecoveryRequest, RegionRecord, RuleVersion, SourceMap, StopReason, recover,
 };
 
+pub mod bulk;
+pub mod class_source;
 pub mod facade;
 
 pub use artifact::*;
 pub use budget::{
     Budget, BudgetDimension, CancellationToken, CountedBudgetDimension, Limits, UsageSnapshot,
 };
+// The bulk operation (change `add-parallel-bulk-recovery`, stream D): one entry over an explicit
+// physical scope, its request/limits/events/report types, and the typed sink it streams to. It is
+// exported the way `class_source` is — as a module path a caller may name, and as the product names
+// re-exported here so a consumer imports one set of names.
+pub use bulk::*;
+// The operation ledger (bulk stream B), as the names this facade's own surface needs: the total a
+// caller attaches to the budget of one operation, the three work classes a charge is attributed to,
+// and the first stop the operation observed — the record `recover_all`'s report publishes. A caller
+// that only runs operations the engine starts never names them; one that builds a budget for its own
+// operation does, and it should not have to know which crate owns them.
 pub use environment::*;
 pub use error::{Error, Result};
+pub use jarde_reader::ledger::{BulkStop, BulkStopKind, OperationLedger, UsageOwner};
+// The class-source presentation (the shortcut 1.1's Non-Goal list excluded and the user asked for):
+// the request, the report and the members' records, beside the assembly that spells one class as
+// Java text. The module is published the way the facade is — as a path a caller may name — and its
+// product types are re-exported here so a consumer of this crate imports one set of names.
+pub use class_source::*;
 pub use facade::*;
 pub use inspect::{ClassSource, ClassTarget, EngineBytecodeReport, EngineHeaderReport};
 // The facts cache (P5 2.3) crosses as the three names a caller needs to switch it on and read what
@@ -89,6 +107,47 @@ pub use jarde_query::query::{
 pub use jarde_reader::facts_cache::{
     CONTAINER_FACTS_SCHEMA, FACTS_FORMAT, FactsCache, FactsCapacity, FactsIdentity, FactsReport,
 };
+
+/// The opt-in facts store one operation reads through, as the budget that opened the operation
+/// carries it.
+///
+/// The store is *declared* in `jarde-reader` and *re-exported* two lines above, and this wrapper is
+/// the one place the engine reads a caller's handle off a budget: an operation that spans many
+/// budgets — the bulk operation builds one per class task and one per method — has to hand the same
+/// handle to every part of itself, so that one operation's reads hit one store and a caller that
+/// attached none reads exactly as every entry point always did. Keeping that single read here, beside
+/// the names the store crosses this facade under, is what lets `tests/p5_benchmark.rs` hold its rule
+/// that no second engine file grows a path into the cache
+/// (`the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler`).
+///
+/// The wrapper constructs nothing and enables nothing: an operation that is handed a budget without
+/// a store attaches none to the budgets it builds, and [`Budget::new`] keeps carrying none.
+#[derive(Debug)]
+pub(crate) struct OperationStore(Option<FactsCache>);
+
+impl OperationStore {
+    /// The store `budget` carries, if its caller attached one.
+    pub(crate) fn of(budget: &Budget) -> Self {
+        Self(budget.facts_cache().cloned())
+    }
+
+    /// The retention capacity of that store, or [`FactsCapacity::none`] when there is none.
+    pub(crate) fn capacity(&self) -> FactsCapacity {
+        match &self.0 {
+            Some(store) => store.capacity(),
+            None => FactsCapacity::none(),
+        }
+    }
+
+    /// `budget` reading through this store. A budget with no store attached is handed back
+    /// unchanged, so the shared handle never becomes a fresh one.
+    pub(crate) fn attached_to(&self, budget: Budget) -> Budget {
+        match &self.0 {
+            Some(store) => budget.with_facts_cache(store.clone()),
+            None => budget,
+        }
+    }
+}
 // The versioned plugin plane (P4 3.1) crosses the same way the query layer does: as its product
 // types and its registry functions, never as the query layer's module path — the entry point that
 // performs a request (`plugin::execute`) stays below and is reached through

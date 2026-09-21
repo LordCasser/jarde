@@ -1,10 +1,14 @@
 //! The task-oriented commands: friendly parameters over the library's own entries.
 //!
-//! Five commands, each a parameter layer over the library entry that owns the work — the two
+//! Six *report* commands, each a parameter layer over the library entry that owns the work — the two
 //! evidence levels of the class listing, the member listing, the reference scan and its grouping,
-//! the class view, and the task-oriented recovery. What this module owns is exactly three things:
-//! the mapping from a friendly parameter to a library request, the two renderings of the one
-//! report that came back, and the exit status that report's own planes state.
+//! the class view, the task-oriented recovery, and the class-source presentation that assembles one
+//! class as Java text. What this module owns for them is exactly three things: the mapping from a
+//! friendly parameter to a library request, the two renderings of the one report that came back, and
+//! the exit status that report's own planes state. The seventh command,
+//! `export`, is a *stream*: its records leave as the library produces them instead of becoming one
+//! document, so it lives in [`crate::export`] and shares the plumbing — the parameters, the opened
+//! request and the classification of a failure — that is stated here.
 //!
 //! The three are deliberately narrow:
 //!
@@ -39,12 +43,12 @@ use crate::ErrorResponse;
 use clap::{ArgAction, Args, Subcommand, ValueEnum};
 use jarde::{
     ArtifactInput, ArtifactSnapshot, BodyRef, Budget, BudgetOverride, ClassNameQuery, ClassRef,
-    ClassViewReport, ClassViewRequest, ConsumerKind, ConsumerSchema, CountedBudgetDimension,
-    Engine, EnvironmentPolicy, EnvironmentRequest, Error, ExecutionReport, JvmBytes, LayoutMode,
-    LoadRoot, LoaderId, MethodOperationRequest, MethodRecoveryReport, MethodRef,
-    MultiReleasePolicy, OperationOutcome, PhysicalDefinitionId, PhysicalScope, PhysicalView,
-    QueryRelation, QueryRequest, QueryTarget, ReferenceGrouping, ReferenceSource, RuntimeProfile,
-    SymbolRef, UsageSnapshot, task_budget,
+    ClassSourceReport, ClassSourceRequest, ClassViewReport, ClassViewRequest, ConsumerKind,
+    ConsumerSchema, CountedBudgetDimension, Engine, EnvironmentPolicy, EnvironmentRequest, Error,
+    ExecutionReport, JvmBytes, LayoutMode, LoadRoot, LoaderId, MethodOperationRequest,
+    MethodRecoveryReport, MethodRef, MultiReleasePolicy, OperationOutcome, PhysicalDefinitionId,
+    PhysicalScope, PhysicalView, QueryRelation, QueryRequest, QueryTarget, ReferenceGrouping,
+    ReferenceSource, RuntimeProfile, SymbolRef, UsageSnapshot, task_budget,
 };
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -118,6 +122,21 @@ pub(crate) enum Command {
     /// table and the presentation of that very run's payload, beside the environment the caller
     /// declared and the identities the library bound.
     Recover(Recover),
+    /// Present one whole class as Java source: its declaration, its fields and every member's body.
+    ///
+    /// Library entry: `Engine::class_source` — the class view's own read for the declaration and the
+    /// member tables, and one single-method recovery per member that declares a body, assembled into
+    /// one text. The text is the command's content in `--format text` (the shortcut's main path) and
+    /// the library's own report is the document in `--format json`, as for every other command here.
+    ClassSource(ClassSource),
+    /// Export every method declaration of a physical scope as one JSONL stream.
+    ///
+    /// Library entry: `Engine::recover_all` — one bulk operation over the scope, one record per class
+    /// prepared, method result and class end — written to `--output` as the library produces it. This
+    /// is the one command whose delivery is a stream rather than a rendered document: its parameters,
+    /// its records and its exit statuses live in [`crate::export`], and what it shares with the
+    /// commands above is the plumbing this module owns.
+    Export(crate::export::Export),
 }
 
 /// The parameters every task command carries.
@@ -290,6 +309,23 @@ pub(crate) struct ClassView {
 }
 
 #[derive(Debug, Args)]
+pub(crate) struct ClassSource {
+    #[command(flatten)]
+    common: Common,
+    /// The class to present: a name (`a/b/C`, a class file's internal name, or `a.b.C`,
+    /// source-style dotted), or the physical definition identity a listing printed as a JSON
+    /// document (or `@FILE`).
+    ///
+    /// The two are told apart by their first byte and nothing else: a value that starts with `{` or
+    /// `@` is the identity document, and anything else is a name. A name matching several physical
+    /// definitions is answered with every candidate and presents nothing (exit 3).
+    #[arg(long, value_name = "NAME|JSON")]
+    class: String,
+    #[command(flatten)]
+    environment: EnvironmentArgs,
+}
+
+#[derive(Debug, Args)]
 pub(crate) struct Recover {
     #[command(flatten)]
     common: Common,
@@ -319,7 +355,7 @@ pub(crate) struct Recover {
 /// shape, in the library's one place (`EnvironmentRequest::build`): nothing here reads a Manifest,
 /// activates a nested library or organizes a layout into roots.
 #[derive(Debug, Args)]
-struct EnvironmentArgs {
+pub(crate) struct EnvironmentArgs {
     /// The environment policy: `plain-jar` roots the snapshot's own root container at its own root,
     /// `single-class` roots one whole class file, and `explicit-classpath` takes the caller's own
     /// roots in the caller's own order.
@@ -329,6 +365,20 @@ struct EnvironmentArgs {
     /// repeatable and ordered. A tree enumeration's own identity is what a root names.
     #[arg(long = "root", value_name = "JSON", action = ArgAction::Append)]
     roots: Vec<String>,
+    /// All the load positions of `--policy explicit-classpath` as one JSON **array** of `LoadRoot`
+    /// documents (or `@FILE` naming one), in the order the array states.
+    ///
+    /// This is the same declaration as a repeated `--root`, in the form that scales: an artifact whose
+    /// tree holds tens of containers names them in one document instead of in tens of arguments. The
+    /// two spellings cannot be mixed — a root list has one order, and two interleaved option lists
+    /// have no single order to state — so naming both is a usage error.
+    #[arg(
+        long = "roots",
+        value_name = "JSON",
+        action = ArgAction::Append,
+        conflicts_with = "roots"
+    )]
+    root_documents: Vec<String>,
     /// The JDK release the run targets.
     #[arg(long, default_value_t = 8)]
     release: u16,
@@ -349,6 +399,27 @@ struct EnvironmentArgs {
     /// The loader that owns the request's one domain.
     #[arg(long, default_value = "app")]
     loader: String,
+}
+
+impl EnvironmentArgs {
+    /// The load positions `--policy explicit-classpath` takes, in the order they were declared.
+    ///
+    /// Two spellings, one declaration: repeated single documents, or one document that is an array of
+    /// them. Both hand the library the same `Vec<LoadRoot>` in the same order, and only one of them can
+    /// be present (clap refuses the pair), so "the order the caller wrote" is a property of the
+    /// request rather than of how this adapter happened to merge two lists.
+    fn load_roots(&self) -> Result<Vec<LoadRoot>, Error> {
+        let mut roots: Vec<LoadRoot> = Vec::new();
+        for root in &self.roots {
+            roots.push(parse_argument(root, "cli_root_json", "a load position")?);
+        }
+        for document in &self.root_documents {
+            let declared: Vec<LoadRoot> =
+                parse_argument(document, "cli_roots_json", "a list of load positions")?;
+            roots.extend(declared);
+        }
+        Ok(roots)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, ValueEnum)]
@@ -373,13 +444,37 @@ enum Layout {
 
 /// Runs one task command and returns the process exit status.
 pub fn run(command: Command) -> ExitCode {
-    let (answer, session) = match dispatch(command) {
-        Ok(dispatched) => dispatched,
-        Err(failure) => return failure.exit(),
-    };
-    match session.deliver(&answer) {
-        Ok(status) => status,
+    match dispatch(command) {
+        Ok(Dispatched::Report(pair)) => {
+            let (answer, session) = *pair;
+            match session.deliver(&answer) {
+                Ok(status) => status,
+                Err(failure) => failure.exit(),
+            }
+        }
+        Ok(Dispatched::Stream(status)) => status,
         Err(failure) => failure.exit(),
+    }
+}
+
+/// What one dispatched command produced.
+///
+/// The two shapes are the two delivery forms of this crate: a report command produces an [`Answer`]
+/// and keeps its [`Session`] so that the one document can be rendered, funded and written, while
+/// `export` is a stream whose records were delivered as the library produced them — its status is
+/// already decided by the time it returns, and there is no document left to render.
+///
+/// The report pair is boxed because it is two orders of magnitude larger than a status and is returned
+/// once per process: a status does not have to carry a budget, an artifact and a parameter set around
+/// with it.
+enum Dispatched {
+    Report(Box<(Answer, Session)>),
+    Stream(ExitCode),
+}
+
+impl From<(Answer, Session)> for Dispatched {
+    fn from(pair: (Answer, Session)) -> Self {
+        Self::Report(Box::new(pair))
     }
 }
 
@@ -389,10 +484,13 @@ pub fn run(command: Command) -> ExitCode {
 /// the classification, and the document — the library's own `Error` beside the usage of the budget
 /// the request ran under — says which code, message and dimension it was and what the request had
 /// already cost.
-struct Failure {
+///
+/// The type crosses to the streaming `export` command's module, which classifies its own ends; its
+/// fields do not, so the one document is still written here.
+pub(crate) struct Failure {
     status: ExitCode,
-    /// Boxed so a `Result` that carries a failure in its `Err` arm stays small: the error is the
-    /// one part whose size is the library's, and a failure is written once and then dropped.
+    /// Boxed so a `Result` that carries a failure in its `Err` arm stays small: the error is the one
+    /// part whose size is the library's, and a failure is written once and then dropped.
     error: Box<Error>,
     /// Boxed for the same reason: the usage snapshot is eighteen counts.
     usage: Box<UsageSnapshot>,
@@ -422,6 +520,34 @@ impl Failure {
                 message: error.to_string(),
             }),
             usage: Box::new(UsageSnapshot::default()),
+        }
+    }
+
+    /// A failure of the streaming `export` command: exit 2.
+    ///
+    /// The exit status is the one design decision 7 fixes for an input, infrastructure or I/O
+    /// failure, and it is the same number a request-level refusal exits with. It is *not* 1: that is
+    /// the report commands' "the one document could not be written", which is a different statement
+    /// from "the stream ended because a record could not be", and the streaming command keeps the
+    /// failure class even when a `final` record is already visible in the file.
+    pub(crate) fn export_failed(error: Error, usage: UsageSnapshot) -> Self {
+        Self {
+            status: ExitCode::from(EXIT_USAGE),
+            error: Box::new(error),
+            usage: Box::new(usage),
+        }
+    }
+
+    /// A stream that stopped before its scope did: exit 4.
+    ///
+    /// An unfinished stream is an incomplete result, not a failure of the input or of the output: the
+    /// records it delivered stand, and the exit status says the run did not reach the end its `final`
+    /// record would have confirmed.
+    pub(crate) fn export_stopped(error: Error, usage: UsageSnapshot) -> Self {
+        Self {
+            status: ExitCode::from(EXIT_INCOMPLETE),
+            error: Box::new(error),
+            usage: Box::new(usage),
         }
     }
 
@@ -510,6 +636,49 @@ impl Answer {
     }
 }
 
+/// One opened request's working state: the engine, the artifact it opened, the scope the caller
+/// declared and the budget that is funding it.
+///
+/// Every task command starts from these four values, and they are built in exactly one place. A
+/// report command keeps them beside its own rendering parameters in a [`Session`]; the streaming
+/// `export` command keeps them alone, because it writes every record as the library produces it
+/// instead of rendering a document and so has no rendering parameters to carry.
+pub(crate) struct Opened {
+    pub(crate) engine: Engine,
+    pub(crate) snapshot: ArtifactSnapshot,
+    pub(crate) scope: PhysicalScope,
+    pub(crate) budget: Budget,
+}
+
+impl Opened {
+    /// Opens one artifact under the task budget the parameters declare.
+    ///
+    /// This is the one place the adapter binds content: it opens `input` and hands *that* snapshot to
+    /// the library, exactly as the legacy operations do. Nothing else about a request is derived here
+    /// — the scope is the caller's, and every target identity is the library's own.
+    pub(crate) fn open(
+        input: &Path,
+        scope: Option<&str>,
+        overrides: &[String],
+    ) -> Result<Self, Failure> {
+        let overrides = budget_overrides(overrides)?;
+        let mut budget = task_budget(&overrides)?;
+        let engine = Engine::new();
+        let opened = engine.open(ArtifactInput::Path(input.to_path_buf()), &mut budget);
+        let snapshot = opened.map_err(|error| Failure::refused(error, budget.usage()))?;
+        let scope = match scope {
+            Some(document) => parse_argument(document, "cli_scope_json", "the physical scope")?,
+            None => PhysicalScope::SnapshotAll,
+        };
+        Ok(Self {
+            engine,
+            snapshot,
+            scope,
+            budget,
+        })
+    }
+}
+
 /// One opened request: the artifact, the scope, the budget and the caller's own parameters.
 struct Session {
     engine: Engine,
@@ -521,25 +690,13 @@ struct Session {
 
 impl Session {
     /// Opens one artifact under the task budget the parameters declare.
-    ///
-    /// This is the one place the adapter binds content: it opens `--input` and hands *that*
-    /// snapshot to the library, exactly as the legacy operations do. Nothing else about a request is
-    /// derived here — the scope is the caller's, and every target identity is the library's own.
     fn open(common: Common) -> Result<Self, Failure> {
-        let overrides = budget_overrides(&common.budget)?;
-        let mut budget = task_budget(&overrides)?;
-        let engine = Engine::new();
-        let opened = engine.open(ArtifactInput::Path(common.input.clone()), &mut budget);
-        let snapshot = opened.map_err(|error| Failure::refused(error, budget.usage()))?;
-        let scope = match common.scope.as_deref() {
-            Some(document) => parse_argument(document, "cli_scope_json", "the physical scope")?,
-            None => PhysicalScope::SnapshotAll,
-        };
+        let opened = Opened::open(&common.input, common.scope.as_deref(), &common.budget)?;
         Ok(Self {
-            engine,
-            snapshot,
-            scope,
-            budget,
+            engine: opened.engine,
+            snapshot: opened.snapshot,
+            scope: opened.scope,
+            budget: opened.budget,
             common,
         })
     }
@@ -613,13 +770,15 @@ impl Rendering {
     }
 }
 
-fn dispatch(command: Command) -> Result<(Answer, Session), Failure> {
+fn dispatch(command: Command) -> Result<Dispatched, Failure> {
     match command {
-        Command::ListClasses(args) => list_classes(args),
-        Command::ListMembers(args) => list_members(args),
-        Command::References(args) => references(args),
-        Command::ClassView(args) => class_view(args),
-        Command::Recover(args) => recover(args),
+        Command::ListClasses(args) => Ok(list_classes(args)?.into()),
+        Command::ListMembers(args) => Ok(list_members(args)?.into()),
+        Command::References(args) => Ok(references(args)?.into()),
+        Command::ClassView(args) => Ok(class_view(args)?.into()),
+        Command::Recover(args) => Ok(recover(args)?.into()),
+        Command::ClassSource(args) => Ok(class_source(args)?.into()),
+        Command::Export(args) => crate::export::run(args).map(Dispatched::Stream),
     }
 }
 
@@ -792,15 +951,9 @@ fn recover(args: Recover) -> Result<(Answer, Session), Failure> {
     let mut session = Session::open(common)?;
     let request = MethodOperationRequest {
         method,
-        environment: EnvironmentRequest {
-            // The snapshot is the one this invocation opened, like every other content binding this
-            // adapter makes; the scope, the policy, the profile and the loader are the caller's.
-            snapshot: session.snapshot.id().clone(),
-            scope: session.scope.clone(),
-            policy: declaration.policy,
-            profile: declaration.profile,
-            loader: declaration.loader,
-        },
+        // The snapshot and scope bound here are the ones this invocation opened, like every other
+        // content binding this adapter makes; the policy, the profile and the loader are the caller's.
+        environment: declaration.bind(&session.snapshot, &session.scope),
     };
     let outcome = session.call(|engine, snapshot, budget| {
         engine.recover_target(slice::from_ref(snapshot), &request, budget)
@@ -808,6 +961,53 @@ fn recover(args: Recover) -> Result<(Answer, Session), Failure> {
     let mut answer = Answer::outcome(&outcome, method_recovery_plane)?;
     answer.body = Some(RECOVERED_BODY);
     Ok((answer, session))
+}
+
+/// The one class-level text a class-source report carries: the assembled Java source.
+///
+/// Like [`RECOVERED_BODY`], it is a *field path*, so the text rendering writes exactly the value the
+/// JSON document holds under `text` and everything else the report publishes becomes bookkeeping.
+const CLASS_SOURCE_TEXT: &[&str] = &["text"];
+
+fn class_source(args: ClassSource) -> Result<(Answer, Session), Failure> {
+    let ClassSource {
+        common,
+        class,
+        environment,
+    } = args;
+    // The parameter is read before the artifact is opened, as in every other command: a value this
+    // adapter cannot read never becomes a read of anything.
+    let class = class_argument(&class)?;
+    let declaration = environment.declaration()?;
+    let mut session = Session::open(common)?;
+    let request = ClassSourceRequest {
+        class,
+        // The snapshot and scope bound here are the ones this invocation opened, like every other
+        // content binding this adapter makes; the policy, the profile and the loader are the caller's.
+        environment: declaration.bind(&session.snapshot, &session.scope),
+    };
+    let outcome = session.call(|engine, snapshot, budget| {
+        engine.class_source(slice::from_ref(snapshot), &request, budget)
+    })?;
+    let mut answer = Answer::outcome(&outcome, class_source_plane)?;
+    answer.body = Some(CLASS_SOURCE_TEXT);
+    Ok((answer, session))
+}
+
+/// One `--class` parameter: a name, or the identity document a listing printed.
+///
+/// The rule is the value's first byte: a definition identity is a JSON document (or `@FILE` naming
+/// one), and every other value is a name in either accepted spelling. A name is never parsed as a
+/// document and a document is never read as a name, so neither can silently become the other.
+fn class_argument(value: &str) -> Result<ClassRef, Error> {
+    if value.starts_with('{') || value.starts_with('@') {
+        return Ok(ClassRef::Definition {
+            definition: parse_argument(value, "cli_definition_json", "the definition identity")?,
+        });
+    }
+    Ok(ClassRef::Name {
+        class: class_name_query(value),
+    })
 }
 
 /// One budget override named by its `dimension=limit` spelling.
@@ -964,10 +1164,32 @@ fn consumer_schema(kinds: &[String]) -> Result<ConsumerSchema, Error> {
 ///
 /// Parsing the declaration and binding the opened snapshot are two steps: this one reads no
 /// artifact at all, so a parameter this adapter cannot read never becomes a read of anything.
-struct Declaration {
+pub(crate) struct Declaration {
     policy: EnvironmentPolicy,
     profile: RuntimeProfile,
     loader: LoaderId,
+}
+
+impl Declaration {
+    /// This declaration bound to the physical view one invocation opened.
+    ///
+    /// The adapter reads the caller's parameters — a policy, its roots, a profile and a loader — and
+    /// binds the one thing it owns: the artifact this invocation opened and the scope it takes. Every
+    /// command that carries an environment states the binding here rather than beside each other, so
+    /// no request can declare one view to the work and another to the resolver by accident.
+    pub(crate) fn bind(
+        &self,
+        snapshot: &ArtifactSnapshot,
+        scope: &PhysicalScope,
+    ) -> EnvironmentRequest {
+        EnvironmentRequest {
+            snapshot: snapshot.id().clone(),
+            scope: scope.clone(),
+            policy: self.policy.clone(),
+            profile: self.profile.clone(),
+            loader: self.loader.clone(),
+        }
+    }
 }
 
 impl EnvironmentArgs {
@@ -977,17 +1199,13 @@ impl EnvironmentArgs {
     /// hands the declaration to the library, which builds the environment and owns every check a
     /// policy has (a kind mismatch, a root the request did not provide). Nothing here reads a
     /// Manifest, activates a nested library or organizes a layout into roots.
-    fn declaration(&self) -> Result<Declaration, Error> {
+    pub(crate) fn declaration(&self) -> Result<Declaration, Error> {
         let policy = match self.policy {
             Policy::SingleClass => EnvironmentPolicy::SingleClass,
             Policy::PlainJar => EnvironmentPolicy::PlainJar,
-            Policy::ExplicitClasspath => {
-                let mut roots: Vec<LoadRoot> = Vec::new();
-                for root in &self.roots {
-                    roots.push(parse_argument(root, "cli_root_json", "a load position")?);
-                }
-                EnvironmentPolicy::ExplicitClasspath { roots }
-            }
+            Policy::ExplicitClasspath => EnvironmentPolicy::ExplicitClasspath {
+                roots: self.load_roots()?,
+            },
         };
         let profile = match &self.profile {
             Some(document) => parse_argument(document, "cli_profile_json", "the runtime profile")?,
@@ -1035,6 +1253,16 @@ fn class_view_plane(report: &ClassViewReport) -> Plane {
 /// The plane one recovery presentation ran under.
 fn method_recovery_plane(report: &MethodRecoveryReport) -> Plane {
     plane_of(&report.presentation.execution)
+}
+
+/// The plane one class-source presentation ran under: the report's own execution.
+///
+/// The library merges every member's run — its analysis plane and its recovery plane — into that one
+/// plane, so a class one of whose members stopped is already non-`Complete` there. The adapter reads
+/// it and derives nothing: walking `methods` here would be a second implementation of the library's
+/// merge, and the two would be free to disagree.
+fn class_source_plane(report: &ClassSourceReport) -> Plane {
+    plane_of(&report.execution)
 }
 
 fn document<T: Serialize>(value: &T) -> Result<Value, Failure> {

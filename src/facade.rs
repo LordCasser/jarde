@@ -8,6 +8,10 @@
 //! that type without publishing the layers behind it or the mutable internals they keep to
 //! themselves.
 
+use crate::class_source::{
+    self, ClassSourceDeclaration, ClassSourceField, ClassSourceMethod, ClassSourceReport,
+    ClassSourceRequest, ClassSourceRunFacts,
+};
 use crate::environment::{EnvironmentIdentity, EnvironmentProblem, ResolutionEnvironment};
 use crate::ir::{AnalysisStage, NoBodyKind, Quality};
 use crate::resolver::{
@@ -313,33 +317,28 @@ impl Engine {
         budget: &mut Budget,
     ) -> Result<RecoveredMethod> {
         let analyzed = jarde_jvm::analyze_method_ir(content, request, budget)?;
-        let facts = crate::facade::recovery_facts(
-            analyzed.ir().declaration(),
-            analyzed.ir().code(),
-            &request.method,
-        );
-        let profile = request.environment.runtime.profile.clone();
-        // The callee evidence one recovery run's own call sites justify, read on demand from the very
-        // definition the run read the presented body from (P3 3.2). It happens **between** the run
-        // and the presentation — not inside the recovery layer, which holds no artifact, no loader
-        // and no budget — and it is the only read this entry performs beyond the one run: a recovery
-        // request whose body names no such call site reads no member at all.
-        let callees = read_named_callees(content, request, analyzed.ir(), budget)?;
-        let members = callees.as_ref().map(member_table);
-        let request = jarde_java::RecoveryRequest::new(analyzed.ir(), &facts, profile);
-        let recovery = jarde_java::recover(
-            &match &members {
-                Some(members) => request.with_members(members),
-                None => request,
-            },
-            budget,
-        );
-        Ok(RecoveredMethod {
-            analysis: analyzed.report().clone(),
-            recovery,
-            callees,
-            facts,
-        })
+        recovery_presented(content, request, analyzed, None, budget)
+    }
+
+    /// One whole physical scope recovered in one operation: every class it holds prepared once,
+    /// every method of every prepared class recovered, in physical order (change
+    /// `add-parallel-bulk-recovery`, tasks 3.x and 4.x).
+    ///
+    /// The work is [`crate::bulk::recover_all`]'s; this is the facade's one-line delegation to it,
+    /// exactly as the other entries delegate to the layer that owns their work. The request, the
+    /// limits, the streamed events and the report are [`crate::bulk`]'s own types.
+    ///
+    /// Nothing here is reachable from the single-method entries, and none of them reaches it: this
+    /// is the one entry that starts workers, and it starts them only when the request asks for more
+    /// than one.
+    pub fn recover_all(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &crate::bulk::BulkRecoveryRequest,
+        budget: &mut Budget,
+        sink: &mut dyn crate::bulk::RecoverySink,
+    ) -> Result<crate::bulk::BulkRecoveryReport> {
+        crate::bulk::recover_all(content, request, budget, sink)
     }
 
     /// Lists the class **candidates** a physical scope holds, and the ordinary resources beside them.
@@ -1019,6 +1018,478 @@ impl Engine {
             presentation,
         }))
     }
+
+    /// Presents one class as Java source: its declaration, its fields and every member's body.
+    ///
+    /// The class is bound the task way, by the same rules and with the same checks the method
+    /// operations apply ([`bind_class`]): a friendly name searched with the navigation rules over the
+    /// environment's scope, or a physical definition used exactly as given — and a definition of
+    /// another artifact is `operation_target_snapshot_mismatch` before the environment is built,
+    /// never a same-named substitute of this snapshot. A name that several definitions answer to is
+    /// [`OperationOutcome::Ambiguous`] and presents nothing; a search that did not finish is
+    /// [`OperationOutcome::Incomplete`].
+    ///
+    /// **Nothing here reads or recovers on its own.** The class's declaration and member tables are
+    /// [`Engine::class_view`]'s own read — one `class_headers` attempt and one member walk over one
+    /// materialized definition — and every member body is one analysis run under
+    /// [`MethodOperation::Recovery`]'s stage table with the presentation of that same run's payload,
+    /// charged in the dimensions that run charges. What this entry adds is the assembly of those
+    /// results into one class text ([`crate::class_source`]) and the report that publishes the facts
+    /// beside the spelling.
+    ///
+    /// **One preparation, however many members the class has** (task 7.3). The class is prepared
+    /// once — [`jarde_reader::prepared::PreparedClass::prepare`], the reader's own once-read class
+    /// task, over the very definition the binding bound — and every member body is decoded against
+    /// that one preparation, through [`jarde_jvm::analyze_prepared_method_ir`] and
+    /// [`jarde_jvm::callee::read_prepared_callees`], which is the prepared half of exactly the run
+    /// [`Engine::recover_method`] performs. A member's run therefore charges no class header and no
+    /// class bytes of its own: it charges its `method_bodies` attempt and the decode dimensions, and
+    /// the callee evidence its call sites justify comes from the same prepared class.
+    ///
+    /// **What one request costs.** One class header and one member walk for the class-binding read,
+    /// one class header and one verified class read for the preparation — made exactly when the class
+    /// declares at least one member this presentation would run a body for — and then one body attempt
+    /// per member that declares one. Neither `class_headers` nor class bytes grow with the number of
+    /// members: a class with `N` bodies costs one preparation and `N` decodes. A member that declares
+    /// no body charges nothing, a member this presentation cannot spell is never run, and no class is
+    /// read for a member that is not presented.
+    ///
+    /// A preparation that fails — the reader's own strict structure read refusing bytes the tolerant
+    /// class read accepted — does not erase the class: the declaration, the fields and every member
+    /// declaration stay presented, and each member that declares a body states that failure as its
+    /// own refusal, under the reader's own code. That is the same answer such a member's own run gives
+    /// today (the run's read is the same strict read), stated once per member instead of once per run.
+    ///
+    /// **A member's failure is that member's.** A run that stops, is refused, or produces no
+    /// artifact leaves its own result in [`ClassSourceReport::methods`] and the members beside it are
+    /// still presented (A13), exactly as a class view keeps the bodies beside a stopped one. What it
+    /// cannot do is let the report claim to be `Complete`: every stop a member's run published is
+    /// merged into [`ClassSourceReport::execution`]. A stop that is the *request's* — a cancellation
+    /// or an exhausted dimension — ends it, and the members never reached are stated by the report's
+    /// planes (its coverage's skipped range, its execution and its diagnostics) rather than
+    /// presented.
+    ///
+    /// The text is a presentation and not a claim of compilability: [`ClassSourceReport::text`] is
+    /// deterministic for one request and one budget, carries no timestamp, and marks every member it
+    /// could not present in full (see [`crate::class_source`]).
+    pub fn class_source(
+        &self,
+        content: &[ArtifactSnapshot],
+        request: &ClassSourceRequest,
+        budget: &mut Budget,
+    ) -> Result<OperationOutcome<ClassSourceReport>> {
+        // The identity the caller gave is checked against the request's own physical view before the
+        // environment is built, exactly as `bind_method` checks it: a foreign identity is an input
+        // error of the request and must not be hidden behind a policy problem of a declaration the
+        // caller would then fix for nothing.
+        let snapshot_id = request.environment.snapshot.clone();
+        if let ClassRef::Definition { definition } = &request.class
+            && definition.snapshot() != &snapshot_id
+        {
+            return Err(Error::invalid_input(
+                "operation_target_snapshot_mismatch",
+                format!(
+                    "the definition names snapshot `{}` while this request reads `{}`; an identity \
+                     of another artifact is never replaced by a same-named definition of this one",
+                    definition.snapshot().0,
+                    snapshot_id.0
+                ),
+            ));
+        }
+        let environment = request.environment.build(content)?;
+        let Some(snapshot) = content
+            .iter()
+            .find(|candidate| candidate.id() == &snapshot_id)
+        else {
+            return Err(snapshot_not_provided(&snapshot_id));
+        };
+        let view = PhysicalView {
+            snapshot: snapshot_id.clone(),
+            scope: environment.runtime.physical.scope.clone(),
+        };
+        let stages = MethodOperation::Recovery.stages().to_vec();
+        let mut execution = ExecutionReport::Complete {
+            usage: budget.usage(),
+        };
+        let mut diagnostics = Vec::new();
+        let (read, search_coverage, class_item) = match bind_class(
+            snapshot,
+            &view.scope,
+            &request.class,
+            &mut execution,
+            &mut diagnostics,
+            budget,
+        )? {
+            ClassBinding::Bound(bound) => (bound.read, bound.search_coverage, bound.class_item),
+            ClassBinding::Ambiguous(candidates) => {
+                return Ok(OperationOutcome::Ambiguous(candidates));
+            }
+            ClassBinding::Incomplete(candidates) => {
+                return Ok(OperationOutcome::Incomplete(candidates));
+            }
+        };
+        let ClassContentItem::ClassDeclaration(item) = read.class.clone() else {
+            unreachable!("a class read publishes a class declaration item")
+        };
+        let definition = item.definition.clone();
+        let declaration = ClassSourceDeclaration::of(item);
+        // The class and member planes are complete on their own evidence, taken before any member is
+        // run, so that a member which stopped below cannot rewrite what the member table really was
+        // (A13/A14) — the same rule the class view applies to its bodies.
+        let structure_complete = matches!(execution, ExecutionReport::Complete { .. })
+            && read.facts.stopped_at.is_none();
+        if class_item.is_none() {
+            // The class confirmed its own item and could not publish it (a refused `result_items`
+            // charge): the report keeps the identity and the stop and presents nothing at all, which
+            // is what a report that could not pay for its own declaration may say.
+            return Ok(OperationOutcome::Performed(ClassSourceReport {
+                view,
+                class: definition,
+                declaration: None,
+                stages,
+                fields: Vec::new(),
+                methods: Vec::new(),
+                text: String::new(),
+                limits: budget.limits().clone(),
+                usage: budget.usage(),
+                coverage: class_view_coverage(search_coverage.as_ref(), &read.facts, false),
+                execution: with_usage(execution, budget.usage()),
+                diagnostics,
+            }));
+        }
+        let class_provenance = Some(definition_provenance(&definition));
+        // The fields of the same read, in declaration order, each charged as the item it is.
+        let mut fields = Vec::new();
+        let mut ended = false;
+        for (index, field) in read.facts.fields.iter().enumerate() {
+            if let Err(error) = charge_item(budget) {
+                merge_execution(&mut execution, stop_execution(&error, budget));
+                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                ended = true;
+                break;
+            }
+            let ClassContentItem::Field(item) = field_item(&definition, index, field)? else {
+                unreachable!("a field record publishes a field item")
+            };
+            fields.push(ClassSourceField::of(item));
+        }
+        // How many members this presentation could run a body for at all: one that declares a `Code`
+        // attribute and whose descriptor this presentation can read. A member outside that set is a
+        // declaration without a body — a declaration, never work left undone — or a member whose
+        // bytes are not a method descriptor at all (see [`ClassSourceReport::coverage`]).
+        let declared_bodies = to_u64(
+            read.facts
+                .methods
+                .iter()
+                .filter(|member| class_source_runs_body(member))
+                .count(),
+        )?;
+        // The one preparation every member body is decoded against (task 7.3): the class's
+        // declaration, constant pool, member table and locator read once, by the reader's own
+        // prepared-class lifecycle, over the definition the binding bound. It is charged as the one
+        // class-header read attempt it is, and it is made exactly when this presentation would run
+        // some member's body — a class whose members all declare no body is presented without one.
+        //
+        // A preparation that could not be made is not the request ending: the failure is kept and
+        // becomes the refusal of every member that declares a body, so the class, its fields and its
+        // member declarations are still presented beside a reader code that says why no body of it
+        // could be decoded.
+        let mut preparation: Option<Error> = None;
+        let prepared_read = if declared_bodies > 0 {
+            match read_prepared_definition(snapshot, &definition, budget) {
+                Ok(read) => Some(read),
+                Err(error) => {
+                    preparation = Some(error);
+                    None
+                }
+            }
+        } else {
+            None
+        };
+        let prepared = match &prepared_read {
+            Some(read) => match jarde_reader::prepared::PreparedClass::prepare(read, budget) {
+                Ok(prepared) => Some(prepared),
+                Err(error) => {
+                    preparation = Some(error);
+                    None
+                }
+            },
+            None => None,
+        };
+        let bodies = match (&prepared, preparation) {
+            (Some(prepared), _) => ClassBodies::Prepared(prepared),
+            (None, Some(error)) => {
+                let stop = stop_execution(&error, budget);
+                ClassBodies::Refused(Box::new(ClassBodyRefusal {
+                    ends: ends_the_request(&stop),
+                    diagnostic: stop_diagnostic(&error, class_provenance.clone()),
+                    stop,
+                }))
+            }
+            (None, None) => ClassBodies::NotNeeded,
+        };
+        let mut attempted = 0_u64;
+        let mut methods = Vec::new();
+        for (index, member) in read.facts.methods.iter().enumerate() {
+            if ended {
+                break;
+            }
+            let ClassContentItem::Method(item) = method_item(&definition, index, member)? else {
+                unreachable!("a method record publishes a method item")
+            };
+            let spelled = class_source::spell_method(&item, None, &declaration.name);
+            let (record, stops, ends) =
+                if !class_source::spellable_descriptor(&item.descriptor.raw().0) {
+                    // A member this presentation cannot spell: no run is performed for it, because the
+                    // artifact of such a run would have no declaration to be written under.
+                    (
+                        ClassSourceMethod::unspelled(item, spelled),
+                        Vec::new(),
+                        false,
+                    )
+                } else if !class_source_runs_body(member) {
+                    (
+                        ClassSourceMethod::no_body(
+                            item,
+                            no_body_kind(member.access_flags),
+                            spelled,
+                        ),
+                        Vec::new(),
+                        false,
+                    )
+                } else {
+                    let request = crate::ir::MethodAnalysisRequest {
+                        environment: environment.clone(),
+                        method: item.identity.clone(),
+                        stages: stages.clone(),
+                    };
+                    match &bodies {
+                        ClassBodies::Prepared(prepared) => {
+                            // One run entered: this is the coordinate this presentation's body plane
+                            // counts, so a member whose run was never entered — because the class could
+                            // not be prepared — stays in that plane's skipped range.
+                            attempted = attempted.saturating_add(1);
+                            match recover_prepared_member(content, &request, prepared, budget) {
+                                Ok(recovered) => {
+                                    let analysis = ClassSourceRunFacts {
+                                        execution: recovered.analysis().execution.clone(),
+                                        diagnostics: to_u64(
+                                            recovered.analysis().diagnostics.len(),
+                                        )?,
+                                    };
+                                    let spelled = class_source::spell_method(
+                                        &item,
+                                        Some(recovered.facts()),
+                                        &declaration.name,
+                                    );
+                                    let (_, report, _) = recovered.into_parts();
+                                    let stops =
+                                        vec![analysis.execution.clone(), report.execution.clone()];
+                                    let ends = stops.iter().any(ends_the_request);
+                                    let record = ClassSourceMethod::recovered(
+                                        item,
+                                        spelled,
+                                        Box::new(report),
+                                        analysis,
+                                    );
+                                    (record, stops, ends)
+                                }
+                                Err(error) => {
+                                    let stop = stop_execution(&error, budget);
+                                    let ends = ends_the_request(&stop);
+                                    let record = ClassSourceMethod::refused(
+                                        item,
+                                        spelled,
+                                        stop.clone(),
+                                        vec![stop_diagnostic(&error, class_provenance.clone())],
+                                    );
+                                    (record, vec![stop], ends)
+                                }
+                            }
+                        }
+                        // No body of this class can be decoded, and the one attempt to prepare it is why:
+                        // the member keeps that failure as its own refusal, and the members beside it are
+                        // presented exactly as usual.
+                        ClassBodies::Refused(refusal) => (
+                            ClassSourceMethod::refused(
+                                item,
+                                spelled,
+                                refusal.stop.clone(),
+                                vec![refusal.diagnostic.clone()],
+                            ),
+                            vec![refusal.stop.clone()],
+                            refusal.ends,
+                        ),
+                        // Unreachable by construction: `class_source_runs_body` is the one predicate that
+                        // counts the bodies a class has and the one that sends a member here, so a member
+                        // in this arm is a member of a class the preparation above was made for.
+                        ClassBodies::NotNeeded => unreachable!(
+                            "a member that runs a body belongs to a class the preparation counted"
+                        ),
+                    }
+                };
+            for stop in stops {
+                merge_execution(&mut execution, stop);
+            }
+            if let Err(error) = charge_item(budget) {
+                merge_execution(&mut execution, stop_execution(&error, budget));
+                diagnostics.push(stop_diagnostic(&error, class_provenance.clone()));
+                break;
+            }
+            methods.push(record);
+            if ends {
+                ended = true;
+            }
+        }
+        if let Some(stop) = &read.facts.stopped_at {
+            merge_execution(&mut execution, member_stop_execution(stop, budget));
+        }
+        let text = class_source::source_text(
+            &declaration,
+            &fields,
+            &methods,
+            read.facts.method_count,
+            read.facts.stopped_at.as_ref(),
+            &execution,
+        );
+        let coverage = class_source_coverage(
+            class_view_coverage(search_coverage.as_ref(), &read.facts, structure_complete),
+            attempted,
+            declared_bodies,
+            attempted == declared_bodies,
+        );
+        Ok(OperationOutcome::Performed(ClassSourceReport {
+            view,
+            class: definition,
+            declaration: Some(declaration),
+            stages,
+            fields,
+            methods,
+            text,
+            limits: budget.limits().clone(),
+            usage: budget.usage(),
+            coverage,
+            execution: with_usage(execution, budget.usage()),
+            diagnostics,
+        }))
+    }
+}
+
+/// Whether this presentation runs a body for one member record: it declares a `Code` attribute whose
+/// content can be decoded and its descriptor is one this presentation can read.
+///
+/// This is the one predicate behind two decisions of [`Engine::class_source`] — how many members the
+/// class has that need the preparation, and which members are sent to the prepared class for a run —
+/// so the count a report publishes for its body plane and the runs it really performs cannot drift
+/// apart.
+fn class_source_runs_body(member: &MemberHeader) -> bool {
+    code_shell(member).is_some() && class_source::spellable_descriptor(&member.descriptor.raw().0)
+}
+
+/// How one class-source request produces the bodies of the members that declare one (task 7.3).
+///
+/// Exactly one of these is decided per request, before the member loop: the class is prepared once
+/// and every body is decoded against that preparation, or the one attempt to read it failed and that
+/// failure is the refusal each of those members states.
+enum ClassBodies<'a> {
+    /// The class was prepared: [`recover_prepared_member`] runs each member body against it, and the
+    /// member's own identity decides which record of that class that is.
+    Prepared(&'a jarde_reader::prepared::PreparedClass<'a>),
+    /// The class could not be prepared, and this is why: the reader's own stop, the diagnostic that
+    /// names it, and whether it ends the request. Boxed because one request builds one of these and
+    /// an outcome of a prepared class is a borrow.
+    Refused(Box<ClassBodyRefusal>),
+    /// No member of this class declares a body this presentation would run, so nothing was prepared
+    /// and no member reaches a body run.
+    NotNeeded,
+}
+
+/// The refusal of one class's preparation, as the members that declare a body state it.
+struct ClassBodyRefusal {
+    /// The reader's own stop, in the vocabulary every report of this engine states a stop in.
+    stop: ExecutionReport,
+    /// The diagnostic that names the failure, published inside each member that states it.
+    diagnostic: Diagnostic,
+    /// Whether the failure ends the request: a cancellation or an exhausted shared dimension does,
+    /// and a class the reader's strict structure read refuses does not.
+    ends: bool,
+}
+
+/// The one trusted read of the class this presentation presents (task 7.3).
+///
+/// The definition is the one the binding bound, so its location, digest and length are the bytes this
+/// request already read; this asks the snapshot for the same class in the shape a class task
+/// consumes — one verified read whose bytes every member body is decoded against — and charges the
+/// one class-header read attempt it is, exactly as the single-method entry charges the driver read it
+/// performs itself. Which definition the read really is stays checked where it belongs: the analysis
+/// of each member refuses a prepared class that is not the definition its request names
+/// (`class_definition_mismatch`), so a read of some other class cannot be decoded as this one.
+fn read_prepared_definition(
+    snapshot: &ArtifactSnapshot,
+    definition: &PhysicalDefinitionId,
+    budget: &mut Budget,
+) -> Result<jarde_reader::prepared::PreparedClassRead> {
+    budget.charge(CountedBudgetDimension::ClassHeaders, 1)?;
+    match definition.location.entry() {
+        Some(entry) => snapshot.prepared_class(entry, budget),
+        None => snapshot.prepared_root_class(budget),
+    }
+}
+
+/// One member body recovered from the class this request prepared (task 7.3).
+///
+/// This is [`Engine::recover_method`] with its driver read supplied by the caller's preparation: the
+/// same one analysis run ([`jarde_jvm::analyze_prepared_method_ir`] is the prepared half of
+/// [`jarde_jvm::analyze_method_ir`]) and the same presentation ([`recovery_presented`] with the
+/// prepared class), over the same stages. What the preparation changes is what that run reads — the
+/// class's declaration, pool and member table were read once for the whole presentation, so this run
+/// charges its body attempt and its decode and no class read at all — and where its on-demand callee
+/// evidence comes from: [`jarde_jvm::callee::read_prepared_callees`], which reads no class either.
+/// A member recovered here and the same member recovered through [`Engine::recover_method`] cannot
+/// drift, because the two share everything but that read.
+fn recover_prepared_member(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    prepared: &jarde_reader::prepared::PreparedClass<'_>,
+    budget: &mut Budget,
+) -> Result<RecoveredMethod> {
+    let analyzed = jarde_jvm::analyze_prepared_method_ir(content, prepared, request, budget)?;
+    recovery_presented(content, request, analyzed, Some(prepared), budget)
+}
+
+/// The class view's own coverage plus this presentation's one plane: the members a body run was
+/// attempted for, in the method table's own coordinates.
+///
+/// The range counts the members this presentation can run a body for — one that declares a `Code`
+/// attribute and one whose descriptor it can read — scanned up to the runs it attempted and skipped
+/// from there to the end. A member that declares no body is outside it (the same rule the class view
+/// applies: a declaration is not a body attempt), and so is a member whose bytes are not a method
+/// descriptor: neither is work this presentation left undone.
+fn class_source_coverage(
+    base: Coverage,
+    attempted: u64,
+    declared: u64,
+    complete: bool,
+) -> Coverage {
+    let mut coverage = base;
+    if attempted > 0 {
+        coverage.artifact_structural.scanned.push(CoverageRange {
+            label: "class_source_bodies".to_owned(),
+            start: 0,
+            end: attempted,
+        });
+    }
+    if attempted < declared {
+        coverage.artifact_structural.skipped.push(CoverageRange {
+            label: "class_source_bodies".to_owned(),
+            start: attempted,
+            end: declared,
+        });
+    }
+    if !complete || coverage.artifact_structural.state != CoverageState::CompleteWithinSchema {
+        coverage.artifact_structural.state = CoverageState::Partial;
+    }
+    coverage
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -1904,7 +2375,7 @@ fn charge_item(budget: &mut Budget) -> Result<()> {
     budget.charge(CountedBudgetDimension::ResultItems, 1)
 }
 
-fn to_u64(value: usize) -> Result<u64> {
+pub(crate) fn to_u64(value: usize) -> Result<u64> {
     u64::try_from(value).map_err(|_| {
         Error::invalid_input("navigation_size_overflow", "an item count does not fit u64")
     })
@@ -1916,7 +2387,7 @@ fn to_u64(value: usize) -> Result<u64> {
 /// progress is one labeled range over the items it selected — scanned up to what it examined, and
 /// skipped from there to the end of what it selected. The dimension is `CompleteWithinSchema` only
 /// when the physical scan and the listing both ran to their end.
-fn listing_coverage(
+pub(crate) fn listing_coverage(
     physical: &Coverage,
     label: &str,
     examined: u64,
@@ -2037,7 +2508,7 @@ fn push_table_ranges(
 /// cancellation is `Cancelled`, an exhausted dimension `Partial` with that dimension named, an
 /// unsupported refusal `Partial` with its code, and a structure this read could not read `Failed` with
 /// the reader's own code.
-fn stop_execution(error: &Error, budget: &Budget) -> ExecutionReport {
+pub(crate) fn stop_execution(error: &Error, budget: &Budget) -> ExecutionReport {
     let usage = budget.usage();
     match error {
         Error::Cancelled { .. } => ExecutionReport::Cancelled { usage },
@@ -2079,7 +2550,7 @@ fn member_stop_execution(stop: &MemberTableStop, budget: &Budget) -> ExecutionRe
 /// failure, which outranks any other non-`Complete` state, which outranks `Complete`. A `Complete`
 /// state never overwrites a stop, so the earliest evidence of work that did not finish survives the
 /// steps that follow it.
-fn merge_execution(execution: &mut ExecutionReport, incoming: ExecutionReport) {
+pub(crate) fn merge_execution(execution: &mut ExecutionReport, incoming: ExecutionReport) {
     if stop_priority(&incoming) > stop_priority(execution) {
         *execution = incoming;
     }
@@ -2133,7 +2604,7 @@ fn ends_the_request(execution: &ExecutionReport) -> bool {
 /// reading, or the definition it was reading from. A stop diagnostic is control metadata: it explains
 /// why the report is not complete, so it is published whether or not the item budget that stopped it
 /// could pay for it.
-fn stop_diagnostic(error: &Error, provenance: Option<Provenance>) -> Diagnostic {
+pub(crate) fn stop_diagnostic(error: &Error, provenance: Option<Provenance>) -> Diagnostic {
     Diagnostic {
         code: error_code(error),
         severity: if matches!(
@@ -2224,7 +2695,7 @@ fn member_stop_diagnostic(definition: &PhysicalDefinitionId, stop: &MemberTableS
 ///
 /// The budget case keeps the engine's own convention (`budget_exceeded_<dimension>`), so a report's
 /// diagnostic and a request-level error name the same dimension the same way.
-fn error_code(error: &Error) -> String {
+pub(crate) fn error_code(error: &Error) -> String {
     match error {
         Error::InvalidInput { code, .. } | Error::Unsupported { code, .. } => code.clone(),
         Error::BudgetExceeded { dimension, .. } => {
@@ -2236,7 +2707,7 @@ fn error_code(error: &Error) -> String {
 }
 
 /// The physical origin of one entry, as the whole entry's bytes.
-fn entry_provenance(entry: &PhysicalEntryId, length: u64) -> Provenance {
+pub(crate) fn entry_provenance(entry: &PhysicalEntryId, length: u64) -> Provenance {
     Provenance {
         location: Location::Entry {
             id: entry.clone(),
@@ -2246,7 +2717,7 @@ fn entry_provenance(entry: &PhysicalEntryId, length: u64) -> Provenance {
 }
 
 /// The physical origin of one definition, as that class file from its first byte.
-fn definition_provenance(definition: &PhysicalDefinitionId) -> Provenance {
+pub(crate) fn definition_provenance(definition: &PhysicalDefinitionId) -> Provenance {
     Provenance {
         location: Location::ClassOffset {
             definition: definition.clone(),
@@ -2284,35 +2755,32 @@ fn item_provenance(item: &ClassListingItem, entries: &[PhysicalEntry]) -> Option
     Some(entry_provenance(&entry, length))
 }
 
-/// The class's own members the presented body's call sites named, read on demand (P3 3.2).
+/// The call sites of one presented body the `accessor@1` rule reads a verdict from, and the
+/// definition the class they may come from is (P3 3.2).
 ///
 /// The candidates are the presented body's **own decode**: the call sites the `accessor@1` rule
 /// would decide from, enumerated by that rule ([`jarde_java::accessor::candidates`]) so that what a
 /// run reads the class's members for is what the rule reads a verdict from, and never a second
-/// opinion about which calls matter. A body that names no such call site reads nothing here — no
-/// header, no member — and `None` is what this entry then hands on.
+/// opinion about which calls matter. `None` is the answer for a body that names no such call site —
+/// and for one whose run read no member header at all, which states no definition its members could
+/// come from (P3 3.1/3.2): neither reads a header or a member.
 ///
-/// The class they may come from is the definition the run read the presented body from, as the
-/// payload's own declaration states it: not a name a call site spells, and never a second class. A
-/// call site naming another class is refused by the read with that stated, so "a member of a class
-/// that happens to share this name" cannot be read as this call's callee.
-fn read_named_callees(
-    content: &[ArtifactSnapshot],
-    request: &crate::ir::MethodAnalysisRequest,
+/// The definition is the one the run read the presented body from, as the payload's own declaration
+/// states it: not a name a call site spells, and never a second class. A call site naming another
+/// class is refused by the read with that stated, so "a member of a class that happens to share this
+/// name" cannot be read as this call's callee.
+fn named_callee_candidates(
     ir: &jarde_jvm::method_ir::MethodIr,
-    budget: &mut Budget,
-) -> Result<Option<jarde_jvm::callee::CalleeReadReport>> {
+) -> Option<(
+    PhysicalDefinitionId,
+    Vec<jarde_jvm::callee::CalleeCandidate>,
+)> {
     let candidates = jarde_java::accessor::candidates(ir);
     if candidates.is_empty() {
-        return Ok(None);
+        return None;
     }
-    // A run that read no member header states no definition its members could come from: there is
-    // nothing to bind the evidence to, so no member is read and the rule states the table it is
-    // missing (P3 3.1/3.2).
-    let Some(declaration) = ir.declaration() else {
-        return Ok(None);
-    };
-    let candidates: Vec<jarde_jvm::callee::CalleeCandidate> = candidates
+    let declaration = ir.declaration()?;
+    let candidates = candidates
         .iter()
         .map(|candidate| {
             jarde_jvm::callee::CalleeCandidate::new(
@@ -2323,13 +2791,50 @@ fn read_named_callees(
             )
         })
         .collect();
+    Some((declaration.identity().owner.clone(), candidates))
+}
+
+/// The class's own members the presented body's call sites named, read on demand (P3 3.2).
+///
+/// This is the read for a caller that holds **no** prepared class: one header read by identity, then
+/// one `MethodBodies` attempt per distinct named member. A bulk worker, which holds the class its
+/// method belongs to, calls [`read_prepared_named_callees`] instead and pays no class read at all.
+fn read_named_callees(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    budget: &mut Budget,
+) -> Result<Option<jarde_jvm::callee::CalleeReadReport>> {
+    let Some((definition, candidates)) = named_callee_candidates(ir) else {
+        return Ok(None);
+    };
     let read = jarde_jvm::callee::read_callees(
         content,
-        &jarde_jvm::callee::CalleeReadRequest::new(
-            &request.environment,
-            &declaration.identity().owner,
-            &candidates,
-        ),
+        &jarde_jvm::callee::CalleeReadRequest::new(&request.environment, &definition, &candidates),
+        budget,
+    )?;
+    Ok(Some(read))
+}
+
+/// The same read, from the class a bulk worker already prepared (bulk tasks 2.3 and 3.2).
+///
+/// The candidates, their order and the read's refusals are [`named_callee_candidates`]'s, exactly as
+/// the direct read's are; what changes is where the member records and the bodies come from — the
+/// caller's prepared class, which charged one class read for all of its methods.
+fn read_prepared_named_callees(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    ir: &jarde_jvm::method_ir::MethodIr,
+    prepared: &jarde_reader::prepared::PreparedClass<'_>,
+    budget: &mut Budget,
+) -> Result<Option<jarde_jvm::callee::CalleeReadReport>> {
+    let Some((definition, candidates)) = named_callee_candidates(ir) else {
+        return Ok(None);
+    };
+    let read = jarde_jvm::callee::read_prepared_callees(
+        content,
+        prepared,
+        &jarde_jvm::callee::CalleeReadRequest::new(&request.environment, &definition, &candidates),
         budget,
     )?;
     Ok(Some(read))
@@ -2428,6 +2933,66 @@ impl RecoveredMethod {
     ) {
         (self.analysis, self.recovery, self.callees)
     }
+}
+
+/// One analysis run presented, from whichever read produced it (bulk task 3.2).
+///
+/// This is the whole of [`Engine::recover_method`]'s presentation: the facts the recovery layer
+/// needs, the on-demand callee read of the presented body's own call sites, and one
+/// [`jarde_java::recover`] call over the run's payload. It exists as one function because the bulk
+/// operation presents **the same run** for every method of a prepared class
+/// ([`jarde_jvm::analyze_prepared_method_ir`]) and a second presentation path would be a second
+/// spelling of the same contract — the two entries differ in one thing only:
+///
+/// * `prepared` is `None` for the single-method entry, whose [`jarde_jvm::analyze_method_ir`] read
+///   the class itself, and the callee evidence then comes from
+///   [`jarde_jvm::callee::read_callees`], which reads the class again for the members the call
+///   sites named;
+/// * `prepared` is the class a bulk worker holds for a whole class task, and the callee evidence
+///   then comes from [`jarde_jvm::callee::read_prepared_callees`], which reads no class at all.
+///
+/// Everything else — which candidates are read, in which order, with which refusals, and how the
+/// payload is presented — is this function's, so a method presented through the bulk path and the
+/// same method presented through [`Engine::recover_method`] cannot drift.
+pub(crate) fn recovery_presented(
+    content: &[ArtifactSnapshot],
+    request: &crate::ir::MethodAnalysisRequest,
+    analyzed: jarde_jvm::method_ir::MethodIrAnalysis,
+    prepared: Option<&jarde_reader::prepared::PreparedClass<'_>>,
+    budget: &mut Budget,
+) -> Result<RecoveredMethod> {
+    let facts = crate::facade::recovery_facts(
+        analyzed.ir().declaration(),
+        analyzed.ir().code(),
+        &request.method,
+    );
+    let profile = request.environment.runtime.profile.clone();
+    // The callee evidence one recovery run's own call sites justify, read on demand from the very
+    // definition the run read the presented body from (P3 3.2). It happens **between** the run and
+    // the presentation — not inside the recovery layer, which holds no artifact, no loader and no
+    // budget — and it is the only read this entry performs beyond the one run: a recovery request
+    // whose body names no such call site reads no member at all.
+    let callees = match prepared {
+        Some(prepared) => {
+            read_prepared_named_callees(content, request, analyzed.ir(), prepared, budget)?
+        }
+        None => read_named_callees(content, request, analyzed.ir(), budget)?,
+    };
+    let members = callees.as_ref().map(member_table);
+    let request = jarde_java::RecoveryRequest::new(analyzed.ir(), &facts, profile);
+    let recovery = jarde_java::recover(
+        &match &members {
+            Some(members) => request.with_members(members),
+            None => request,
+        },
+        budget,
+    );
+    Ok(RecoveredMethod {
+        analysis: analyzed.report().clone(),
+        recovery,
+        callees,
+        facts,
+    })
 }
 
 /// The facts of one member: what the run's own header read declared about it, or nothing but the
@@ -2637,54 +3202,106 @@ pub enum OperationOutcome<T> {
 }
 
 // ---------------------------------------------------------------------------------------------
-// The bounded default budget and its few overrides
+// The bounded default budget and its overrides
 // ---------------------------------------------------------------------------------------------
 
 /// The budget dimensions a task-oriented request may override, by their snake_case names.
 ///
-/// The set is deliberately short: it holds the counts a task-level caller tunes in practice —
-/// output size, wall clock and the two read attempts that dominate a view — and every other
-/// dimension keeps its bounded default. A name outside this list is an input error
+/// The set is every **counted** dimension of [`CountedBudgetDimension::ALL`], in that order, and
+/// then the wall clock ([`BudgetDimension::ElapsedMillis`]) last. One name here is one name
+/// [`BudgetOverride::new`] accepts, [`BudgetOverride::dimension_code`] states back and
+/// [`task_limits`] replaces one [`Limits`] field with. A name outside this list is an input error
 /// (`budget_override_dimension_unknown`), never a silently ignored field.
-pub const OVERRIDABLE_BUDGET_DIMENSIONS: [&str; 5] = [
-    "output_bytes",
-    "elapsed_millis",
+///
+/// The list is the whole counted set on purpose: a counted dimension is a quantity of work, so a
+/// caller that knows how much of it a request needs states the number instead of being refused it —
+/// a bulk request over a whole package needs orders of magnitude more derived items and worklist
+/// steps than a single view, and a default set that could not be raised to that scale would make
+/// every real package an unbudgetable request.
+///
+/// The two dimensions it deliberately leaves out are the high-water ones,
+/// [`BudgetDimension::NestedDepth`] and [`BudgetDimension::DependencyDepth`]. Neither is a count: a
+/// run stores the deepest value it accepted, it never accumulates one, and the limit is compared
+/// **before** the depth is walked. Raising a depth does not fund more of the work a request named —
+/// it decides **which containers and dependencies the request is allowed to walk at all**, which is
+/// what the physical scope and the environment declare. A default set that raised them to cover a
+/// whole package would silently read containers the request did not name; a caller that really means
+/// to walk deeper states that in its scope and its roots. They therefore keep the bounded defaults
+/// [`task_limits`] states, and no task override reaches them.
+pub const OVERRIDABLE_BUDGET_DIMENSIONS: [&str; 16] = [
+    "input_bytes",
+    "archive_entries",
+    "entry_bytes",
+    "read_bytes",
+    "class_bytes",
+    "attribute_bytes",
+    "code_bytes",
     "result_items",
+    "output_bytes",
     "class_headers",
     "method_bodies",
+    "ir_items",
+    "ir_edges",
+    "analysis_steps",
+    "normalization_clones",
+    "elapsed_millis",
 ];
 
 /// One explicit override of the bounded default budget ([`task_limits`]).
 ///
-/// An override replaces exactly one dimension and leaves the others at their defaults. A limit of
-/// zero is rejected (`budget_override_invalid`): a dimension that cannot fund one unit of work
-/// would make every operation stop before its first charge, which is a degenerate request rather
-/// than a tighter budget.
+/// An override replaces exactly one dimension and leaves the others at their defaults. Every variant
+/// is one name of [`OVERRIDABLE_BUDGET_DIMENSIONS`] — the fifteen counted dimensions and the wall
+/// clock — and nothing else: a limit of zero is rejected (`budget_override_invalid`), because a
+/// dimension that cannot fund one unit of work would make every operation stop before its first
+/// charge, which is a degenerate request rather than a tighter budget.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
 #[serde(tag = "dimension", rename_all = "snake_case", deny_unknown_fields)]
 pub enum BudgetOverride {
-    OutputBytes { limit: u64 },
-    ElapsedMillis { limit: u64 },
+    InputBytes { limit: u64 },
+    ArchiveEntries { limit: u64 },
+    EntryBytes { limit: u64 },
+    ReadBytes { limit: u64 },
+    ClassBytes { limit: u64 },
+    AttributeBytes { limit: u64 },
+    CodeBytes { limit: u64 },
     ResultItems { limit: u64 },
+    OutputBytes { limit: u64 },
     ClassHeaders { limit: u64 },
     MethodBodies { limit: u64 },
+    IrItems { limit: u64 },
+    IrEdges { limit: u64 },
+    AnalysisSteps { limit: u64 },
+    NormalizationClones { limit: u64 },
+    ElapsedMillis { limit: u64 },
 }
 
 impl BudgetOverride {
     /// One override named by its snake_case dimension, checked against the closed set.
     pub fn new(dimension: &str, limit: u64) -> Result<Self> {
         let value = match dimension {
-            "output_bytes" => Self::OutputBytes { limit },
-            "elapsed_millis" => Self::ElapsedMillis { limit },
+            "input_bytes" => Self::InputBytes { limit },
+            "archive_entries" => Self::ArchiveEntries { limit },
+            "entry_bytes" => Self::EntryBytes { limit },
+            "read_bytes" => Self::ReadBytes { limit },
+            "class_bytes" => Self::ClassBytes { limit },
+            "attribute_bytes" => Self::AttributeBytes { limit },
+            "code_bytes" => Self::CodeBytes { limit },
             "result_items" => Self::ResultItems { limit },
+            "output_bytes" => Self::OutputBytes { limit },
             "class_headers" => Self::ClassHeaders { limit },
             "method_bodies" => Self::MethodBodies { limit },
+            "ir_items" => Self::IrItems { limit },
+            "ir_edges" => Self::IrEdges { limit },
+            "analysis_steps" => Self::AnalysisSteps { limit },
+            "normalization_clones" => Self::NormalizationClones { limit },
+            "elapsed_millis" => Self::ElapsedMillis { limit },
             other => {
                 return Err(Error::invalid_input(
                     "budget_override_dimension_unknown",
                     format!(
                         "`{other}` is not one of the budget dimensions a task-oriented request may \
-                         override ({}); every other dimension keeps its bounded default",
+                         override ({}); the two high-water depths keep their bounded defaults and \
+                         are declared by the scope and the environment instead",
                         OVERRIDABLE_BUDGET_DIMENSIONS.join(", ")
                     ),
                 ));
@@ -2697,22 +3314,44 @@ impl BudgetOverride {
     /// The snake_case name of the dimension this override replaces.
     pub const fn dimension_code(self) -> &'static str {
         match self {
-            Self::OutputBytes { .. } => "output_bytes",
-            Self::ElapsedMillis { .. } => "elapsed_millis",
+            Self::InputBytes { .. } => "input_bytes",
+            Self::ArchiveEntries { .. } => "archive_entries",
+            Self::EntryBytes { .. } => "entry_bytes",
+            Self::ReadBytes { .. } => "read_bytes",
+            Self::ClassBytes { .. } => "class_bytes",
+            Self::AttributeBytes { .. } => "attribute_bytes",
+            Self::CodeBytes { .. } => "code_bytes",
             Self::ResultItems { .. } => "result_items",
+            Self::OutputBytes { .. } => "output_bytes",
             Self::ClassHeaders { .. } => "class_headers",
             Self::MethodBodies { .. } => "method_bodies",
+            Self::IrItems { .. } => "ir_items",
+            Self::IrEdges { .. } => "ir_edges",
+            Self::AnalysisSteps { .. } => "analysis_steps",
+            Self::NormalizationClones { .. } => "normalization_clones",
+            Self::ElapsedMillis { .. } => "elapsed_millis",
         }
     }
 
     /// The limit this override states.
     pub const fn limit(self) -> u64 {
         match self {
-            Self::OutputBytes { limit }
-            | Self::ElapsedMillis { limit }
+            Self::InputBytes { limit }
+            | Self::ArchiveEntries { limit }
+            | Self::EntryBytes { limit }
+            | Self::ReadBytes { limit }
+            | Self::ClassBytes { limit }
+            | Self::AttributeBytes { limit }
+            | Self::CodeBytes { limit }
             | Self::ResultItems { limit }
+            | Self::OutputBytes { limit }
             | Self::ClassHeaders { limit }
-            | Self::MethodBodies { limit } => limit,
+            | Self::MethodBodies { limit }
+            | Self::IrItems { limit }
+            | Self::IrEdges { limit }
+            | Self::AnalysisSteps { limit }
+            | Self::NormalizationClones { limit }
+            | Self::ElapsedMillis { limit } => limit,
         }
     }
 
@@ -2738,6 +3377,14 @@ impl BudgetOverride {
 /// under (see [`task_budget`]). Every dimension is bounded; no dimension is unbounded and no
 /// override may be unknown or zero — both are input errors, and neither falls back to a default
 /// silently.
+///
+/// The defaults are a *single request's* ceilings, and one entry point that is not a single request
+/// states its own instead of reading a bigger number out of this function: the bulk export of a
+/// whole package replaces every counted dimension with its own finite ceiling — the dimension
+/// numbers a real package measured are three orders of magnitude past the ones below — and the
+/// header of that stream publishes the result (`add-parallel-bulk-recovery` decision 1, task 1.2).
+/// The two high-water depths and the clock are the dimensions no default set raises on a caller's
+/// behalf; see [`OVERRIDABLE_BUDGET_DIMENSIONS`] for why.
 pub fn task_limits(overrides: &[BudgetOverride]) -> Result<Limits> {
     let mut limits = Limits {
         input_bytes: 1 << 26,
@@ -2762,11 +3409,22 @@ pub fn task_limits(overrides: &[BudgetOverride]) -> Result<Limits> {
     for over in overrides {
         over.check_limit()?;
         match over {
-            BudgetOverride::OutputBytes { limit } => limits.output_bytes = *limit,
-            BudgetOverride::ElapsedMillis { limit } => limits.elapsed_millis = *limit,
+            BudgetOverride::InputBytes { limit } => limits.input_bytes = *limit,
+            BudgetOverride::ArchiveEntries { limit } => limits.archive_entries = *limit,
+            BudgetOverride::EntryBytes { limit } => limits.entry_bytes = *limit,
+            BudgetOverride::ReadBytes { limit } => limits.read_bytes = *limit,
+            BudgetOverride::ClassBytes { limit } => limits.class_bytes = *limit,
+            BudgetOverride::AttributeBytes { limit } => limits.attribute_bytes = *limit,
+            BudgetOverride::CodeBytes { limit } => limits.code_bytes = *limit,
             BudgetOverride::ResultItems { limit } => limits.result_items = *limit,
+            BudgetOverride::OutputBytes { limit } => limits.output_bytes = *limit,
             BudgetOverride::ClassHeaders { limit } => limits.class_headers = *limit,
             BudgetOverride::MethodBodies { limit } => limits.method_bodies = *limit,
+            BudgetOverride::IrItems { limit } => limits.ir_items = *limit,
+            BudgetOverride::IrEdges { limit } => limits.ir_edges = *limit,
+            BudgetOverride::AnalysisSteps { limit } => limits.analysis_steps = *limit,
+            BudgetOverride::NormalizationClones { limit } => limits.normalization_clones = *limit,
+            BudgetOverride::ElapsedMillis { limit } => limits.elapsed_millis = *limit,
         }
     }
     Ok(limits)
@@ -4043,7 +4701,7 @@ fn self_find_targets(
     Engine::new().find_targets(snapshot, scope, query, budget)
 }
 
-fn snapshot_not_provided(snapshot: &SnapshotId) -> Error {
+pub(crate) fn snapshot_not_provided(snapshot: &SnapshotId) -> Error {
     Error::invalid_input(
         "resolution_snapshot_mismatch",
         format!(

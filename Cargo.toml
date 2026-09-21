@@ -17,6 +17,15 @@ rust-version = "1.88"
 license = "MIT OR Apache-2.0"
 description = "Bounded, provenance-preserving JVM artifact analysis contracts"
 
+[features]
+# The bulk operation's own seams (`src/bulk.rs`): the faults that stand in for an operating system
+# refusing a worker and for a worker that panics, the rendezvous that witnesses two class tasks
+# really overlapping, and the counter that states no worker outlived the call. They are compiled
+# out of a normal build for the same reason the reader crate's fixtures are: they exist so a test
+# can drive the real entry point into a failure it could not otherwise cause, and nothing in this
+# feature is a second code path the shipped operation uses.
+test-support = []
+
 [dependencies]
 # The recovery layer (P3 1.3) is the fourth, and the only one above the analysis half: the
 # facade's entry point runs the method analysis and hands its own payload to `jarde-java`, so
