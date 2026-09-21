@@ -124,6 +124,10 @@ pub(crate) struct Verdict {
 }
 
 /// Everything this layer read about one site, in the vocabulary a report reads back.
+///
+/// This is the *plan* side of the record: the walk keeps it in [`crate::build::LambdaSite`], and the
+/// owning record is materialized from it after the artifact is committed.
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct Evidence {
     /// The factory handle as `owner.name (kind)`, when the table states the entry and it resolves.
     pub(crate) bootstrap: Option<String>,

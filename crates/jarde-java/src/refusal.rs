@@ -104,11 +104,6 @@ impl Gap {
         }
     }
 
-    /// The driver position this gap is about, when it is about one.
-    pub(crate) fn position(&self) -> Option<u32> {
-        self.at
-    }
-
     /// The diagnostic code the gap is reported under.
     pub(crate) fn code(&self) -> &'static str {
         self.code

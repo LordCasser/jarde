@@ -13,7 +13,7 @@
 //! So nothing here is part of [`crate::RecoveryReport`], of any other report, of a stop record or of
 //! a fingerprint. The counters are compiled out of a normal build: every hook below is an empty
 //! function there, no counter exists to be read, and the call sites stay the same one-line calls they
-//! are in a test-support build. A build that has the port keeps exactly five `u64`s, whatever a run
+//! are in a test-support build. A build that has the port keeps exactly six `u64`s, whatever a run
 //! does — the port is *bounded* by construction, and no counter ever retains a record of the work it
 //! counted.
 //!
@@ -29,6 +29,7 @@
 //! | `body_decodes` | one method body decoded on a demand path | `crate::facade`'s `body_result`, `recover_bound_method`, `recover_own_read` and `recover_prepared_member` |
 //! | `recovery_runs` | one Java recovery presentation over one run's payload | `crate::facade`'s `recovery_presented` |
 //! | `owned_records` | one owning result record this layer's own publication built | `crate::facade`'s `body_result` and `recovery_presented` |
+//! | `read_detail_records` | one `ReadDetails` record materialized beside a report (a callee body kept, a header-read proof recorded) | `crate::facade`'s `recovery_from`, on the one branch that publishes the full read |
 //!
 //! D2 (tasks 3.1–3.3) moved two of those sites without changing what they mean: a preparation is
 //! now built over the read the binding performed — `read_prepared_definition`, which materialized
@@ -63,10 +64,11 @@ const CLASS_PREPARATIONS: usize = 1;
 const BODY_DECODES: usize = 2;
 const RECOVERY_RUNS: usize = 3;
 const OWNED_RECORDS: usize = 4;
+const READ_DETAIL_RECORDS: usize = 5;
 
 /// How many counters this port keeps.
 #[cfg(any(test, feature = "test-support"))]
-const COUNTERS: usize = 5;
+const COUNTERS: usize = 6;
 
 /// Every counter, in the order the indices above name them.
 #[cfg(any(test, feature = "test-support"))]
@@ -124,6 +126,16 @@ pub(crate) fn owned_records(built: u64) {
     bump_by(OWNED_RECORDS, built);
 }
 
+/// `records` read-detail records (`ReadDetails`) were materialized beside a recovery report.
+///
+/// One record is one callee body a read kept, or one header-read proof it recorded: the expansion the
+/// `ReadDetails` category publishes. A request that did not select the category materializes none of
+/// them, so the counter is zero for it — the read that *decided* the accessor shapes is the rule's
+/// own input and is counted by `body_decodes`, not here.
+pub(crate) fn read_detail_records(records: u64) {
+    bump_by(READ_DETAIL_RECORDS, records);
+}
+
 /// What a demand path counted, as plain numbers.
 ///
 /// A reading is a value, not a live view: a caller takes one before and one after the work it is
@@ -142,6 +154,8 @@ pub struct Counts {
     pub recovery_runs: u64,
     /// Owning result records built by this layer's own publications.
     pub owned_records: u64,
+    /// Read-detail records (`ReadDetails`) materialized beside a recovery report.
+    pub read_detail_records: u64,
 }
 
 #[cfg(any(test, feature = "test-support"))]
@@ -158,6 +172,7 @@ impl Counts {
             body_decodes: later.body_decodes - self.body_decodes,
             recovery_runs: later.recovery_runs - self.recovery_runs,
             owned_records: later.owned_records - self.owned_records,
+            read_detail_records: later.read_detail_records - self.read_detail_records,
         }
     }
 
@@ -173,6 +188,7 @@ impl Counts {
             + self.body_decodes
             + self.recovery_runs
             + self.owned_records
+            + self.read_detail_records
     }
 }
 
@@ -186,6 +202,7 @@ pub fn snapshot() -> Counts {
         body_decodes: read(BODY_DECODES),
         recovery_runs: read(RECOVERY_RUNS),
         owned_records: read(OWNED_RECORDS),
+        read_detail_records: read(READ_DETAIL_RECORDS),
     }
 }
 

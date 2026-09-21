@@ -17,7 +17,9 @@ use crate::ir::{AnalysisStage, NoBodyKind, Quality};
 use crate::resolver::{
     DeclarationRefItem, DeclarationRefReport, HeaderRead, ResolutionAnalysis, ResolvedMemberRef,
 };
-use jarde_java::{RecoveryContent, RecoveryEvidenceRequest, RecoveryReport, StopReason};
+use jarde_java::{
+    RecoveryContent, RecoveryEvidenceKind, RecoveryEvidenceRequest, RecoveryReport, StopReason,
+};
 use jarde_query::query::{
     ConsumerKind, ConsumerSchema, QueryAnalysis, QueryCoverage, QueryPage, QueryRelation,
     QueryReport, QueryRequest, XrefDerivation, XrefItem,
@@ -3284,13 +3286,36 @@ fn recovery_from(
     let members = callees.as_ref().map(member_table);
     let request = jarde_java::RecoveryRequest::new(analyzed.ir(), &facts, profile)
         .with_evidence(evidence.clone());
-    let recovery = jarde_java::recover(
+    let mut recovery = jarde_java::recover(
         &match &members {
             Some(members) => request.with_members(members),
             None => request,
         },
         budget,
     );
+    // What the read evidence publishes (change `add-demand-driven-core-results`, D3). The read above
+    // is the accessor rule's own input whatever the caller selected — the member table it decides
+    // from — so what the selection decides is the **record**: the callee facts and the header-read
+    // proofs are the `ReadDetails` expansion, published only when the request selected it and the
+    // presentation really produced an artifact. Every other case publishes the binding results alone:
+    // which member each candidate resolved to, which candidates this class does not answer, and what
+    // the read charged. Nothing is read a second time on either branch.
+    let publish_read_details =
+        evidence.requests(RecoveryEvidenceKind::ReadDetails) && recovery.produced();
+    let callees = match callees {
+        None => None,
+        Some(read) if publish_read_details => {
+            crate::d0_counts::read_detail_records(read.detail_records());
+            Some(read)
+        }
+        Some(read) => Some(read.without_read_details()),
+    };
+    if publish_read_details {
+        // The category is stated even when the body named no callee candidate at all: nothing was
+        // read, which is a legal *empty* delivery of the category, and not the `NotPerformed` a run
+        // that stopped before the read states.
+        recovery.read_details_materialized();
+    }
     // One recovery presentation over one analysis run (`crate::d0_counts`), and the owning records
     // the publication below builds: the cloned analysis report itself, its stage records, its read
     // records and its diagnostics. The recovery report's own optional tables are built in

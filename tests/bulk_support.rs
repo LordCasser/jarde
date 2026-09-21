@@ -357,6 +357,12 @@ pub type SinkHook = Box<dyn FnMut(&Recorded)>;
 /// It is deliberately a *subset* of the library's own weight model (no struct frames, no member
 /// identities, no declaration facts, no strings inside the record types the facade does not expose), so a
 /// case can state "the weight covers what a result owns" without restating the library's formula.
+///
+/// **The callee read is inside it since D3 of `add-demand-driven-core-results`**: the optional payload
+/// the evidence selection decides — the decoded bodies a selected `ReadDetails` keeps and the
+/// header-read proofs it records — is what a result of that selection really holds, so the subset
+/// that checks "the weight covers what it owns" has to read it. A selection that asks for nothing
+/// optional holds none of it, and the same subset then finds nothing to count.
 pub fn owned_bytes(recovered: &RecoveredMethod) -> u64 {
     fn buffer<T>(values: &Vec<T>) -> u64 {
         u64::try_from(values.capacity())
@@ -424,6 +430,29 @@ pub fn owned_bytes(recovered: &RecoveredMethod) -> u64 {
             .saturating_add(u64::try_from(lambda.sam_name.capacity()).unwrap_or(u64::MAX))
             .saturating_add(u64::try_from(lambda.sam_descriptor.capacity()).unwrap_or(u64::MAX))
             .saturating_add(buffer(&lambda.captures));
+    }
+    // The callee read: its own tables, and — for the half a selected `ReadDetails` publishes — the
+    // decoded body of every member it kept, exactly as the reader decoded it.
+    if let Some(read) = recovered.callees() {
+        bytes = bytes
+            .saturating_add(slice(read.members()))
+            .saturating_add(slice(read.refusals()))
+            .saturating_add(slice(read.reads()));
+        for member in read.members() {
+            if let Some(body) = member.body() {
+                let facts = body.facts();
+                bytes = bytes
+                    .saturating_add(
+                        u64::try_from(
+                            std::mem::size_of::<jarde_reader::classfile::MethodCodeFacts>(),
+                        )
+                        .unwrap_or(u64::MAX),
+                    )
+                    .saturating_add(buffer(&facts.instructions))
+                    .saturating_add(slice(facts.operands()))
+                    .saturating_add(buffer(&facts.exception_handlers));
+            }
+        }
     }
     bytes
 }

@@ -1,14 +1,20 @@
 //! ④ The emitter: text, segment table, escaping, comments and the output budget, produced by the
-//! same writes (P3 1.2 decisions 1–4).
+//! same formatter (P3 1.2 decisions 1–4).
 //!
-//! # Text and positions cannot disagree
+//! # Two passes of one formatter, and why the table is the second one
 //!
-//! Every node is written through [`Emitter::node`], which records the byte range it wrote and the
-//! anchors it wrote them for, in the same call that put the bytes in the buffer. There is no second
-//! pass over the finished text and no way for the two to drift: a segment exists only because a
-//! write happened, and a write to a node always records one. Nested nodes nest their spans, which is
-//! why [`crate::source_map::SourceMap::covering`] returns the outermost writer of a byte and
-//! [`crate::source_map::SourceMap::of_bci`] returns every writer of an anchor.
+//! Every node is written through [`Emitter::node`] and every byte through [`Emitter::put`]. The
+//! **committing** pass appends the artifact's text, counts the spans it anchored and stores no
+//! segment table at all: a run that delivers the necessary text pays nothing for a table it did not
+//! select. The **replay** ([`emit_source_map`]) walks the same AST through the same methods, writes
+//! no text, verifies every write against the artifact at the offset it states for it, and records
+//! the spans the selection holds. So a segment exists only because a write happened in the pass that
+//! wrote the artifact, and an offset the table states is an offset into bytes the artifact really
+//! holds — the gate is the comparison in [`Emitter::put`], made in the replay at every write.
+//!
+//! Nested nodes nest their spans, which is why [`crate::source_map::SourceMap::covering`] returns
+//! the outermost writer of a byte and [`crate::source_map::SourceMap::of_bci`] returns every writer
+//! of an anchor.
 //!
 //! # The budget is checked at every write entry, before the write
 //!
@@ -18,6 +24,10 @@
 //! cannot hand out a partial artifact that looks like a produced one, and the caller has no success
 //! state to mistake it for. That is also why a refusal inside a node is not an error at all but a
 //! stop: this emitter stops mid-node exactly like the probe that decided the route did.
+//!
+//! A replay charges no output: it writes none. Its own work is charged to the evidence phase, one
+//! `IrItems` per anchored span, and a phase that refuses there ends the replay with the spans it
+//! recorded ([`crate::evidence::Materialized`]) — never with a byte of the artifact removed.
 //!
 //! # Escaping and comments
 //!
@@ -45,17 +55,23 @@ use jarde_reader::model::PhysicalMethodId;
 
 use crate::ast::{BinaryOp, Expr, ExprKind, Stmt, StmtKind};
 use crate::declaration::Declaration;
-use crate::evidence::SegmentPublication;
+use crate::evidence::{EvidencePhase, Materialized, SegmentPublication};
 use crate::facts::RecoveryFacts;
 use crate::source_map::{OriginSet, Segment, SourceMap};
 use crate::stop::{StopReason, poll};
 
-/// One produced artifact: the text and the segment table of the same emission.
+/// One produced artifact: the text, and what the emission that wrote it did.
+///
+/// # The artifact holds no segment table (change `add-demand-driven-core-results`, D3)
+///
+/// The committing pass never owns a `Vec<Segment>`: the spans it anchored are **counted**, and the
+/// table of the ones the request selected is materialized afterwards from the same formatter and the
+/// same AST ([`emit_source_map`]). That is what makes the map an optional evidence category like the
+/// others — paid for out of the same remaining allowance, stoppable inside, and never the price of
+/// delivering the text.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub(crate) struct Emitted {
     pub(crate) text: String,
-    /// The segment table of [`Self::text`], when the request selected the source map.
-    pub(crate) source_map: SourceMap,
     /// How many spans this emission anchored, whether or not the request selected the table that
     /// holds them: the figure is the *emission's* own work, and the report states it in one summary
     /// whatever the selection was (change `add-demand-driven-core-results`, D1). A count is not a
@@ -87,26 +103,148 @@ pub(crate) fn emit(
     facts: &RecoveryFacts,
     declaration: Option<&Declaration>,
     member: Option<&PhysicalMethodId>,
-    segments: SegmentPublication,
     budget: &mut Budget,
 ) -> Result<Emitted, StopReason> {
-    let mut emitter = Emitter::new(budget, member, segments);
-    emitter.envelope(facts, declaration)?;
-    emitter.stmts(stmts, 1)?;
-    emitter.put("}\n", None)?;
-    Ok(emitter.finish())
+    let mut emitter = Emitter::commit(budget, member);
+    match emitter
+        .envelope(facts, declaration)
+        .and_then(|()| emitter.stmts(stmts, 1))
+        .and_then(|()| emitter.put("}\n", None))
+    {
+        Ok(()) => Ok(emitter.finish()),
+        // A committing pass has no phase to stop for and no artifact to disagree with: what it
+        // states is the run's own refusal.
+        Err(Halt::Stop(stop)) => Err(stop),
+        Err(Halt::PhaseStopped) => unreachable!("the committing pass runs no evidence phase"),
+        Err(Halt::Gate(_)) => unreachable!("the committing pass verifies against no artifact"),
+    }
 }
 
-/// The one writer of the artifact.
+/// The evidence phase's own pass over the decided AST: the *same formatter*, writing no text.
+///
+/// The source map is the one product that cannot be written while the text is: a run that delivered
+/// the text and stopped before this pass must keep the text and say so, and a run that did not
+/// select the map must own no table at all. So the committed artifact is replayed through the same
+/// emitter — the same AST, the same writes, the same order — into a sink that writes **nothing**:
+/// it counts the bytes it did not copy, verifies every one of them against the artifact at its own
+/// offset, and records the spans the selection holds.
+///
+/// # Cost, and why a replay is not a second recovery
+///
+/// No reader, no IR and no rule runs here: the AST is the one [`crate::build`] decided, and the
+/// formatter is the one that wrote the artifact. The replay's own work is charged to the phase, one
+/// `IrItems` per anchored span, so it competes with the other categories for the same allowance and
+/// stops with the prefix it recorded. Nothing is charged to `OutputBytes`: the text is not written
+/// a second time, and a replay that stops leaves every byte of the artifact as it was.
+///
+/// # The consistency gate
+///
+/// A span is only ever recorded against bytes the artifact really holds: every write is compared,
+/// byte for byte, with the artifact at the offset the replay states for it, and the whole replay has
+/// to cover exactly the artifact's own length. A disagreement is stated as a stop — never as a map
+/// of offsets into text that other writes produced — so a map that cannot be attached to the
+/// artifact is not handed out.
+pub(crate) fn emit_source_map(
+    stmts: &[Stmt],
+    facts: &RecoveryFacts,
+    declaration: Option<&Declaration>,
+    member: Option<&PhysicalMethodId>,
+    publication: SegmentPublication,
+    artifact: &Emitted,
+    phase: &mut EvidencePhase,
+    budget: &mut Budget,
+) -> Result<(SourceMap, Materialized), StopReason> {
+    let mut emitter = Emitter::replay(budget, member, &artifact.text, publication, phase);
+    let halt = emitter
+        .envelope(facts, declaration)
+        .and_then(|()| emitter.stmts(stmts, 1))
+        .and_then(|()| emitter.put("}\n", None))
+        .err();
+    let (map, covered) = emitter.finish_replay();
+    match halt {
+        // The replay covered the whole AST and the whole artifact: the map holds everything the
+        // selection selects.
+        None if covered => Ok((map, Materialized::Complete)),
+        // The replay ran to the end of the AST but its stream is not the artifact's length: the gate
+        // fails, and no map is handed out.
+        None => Err(gate_stop(artifact, &map)),
+        // The phase refused one more charge: the spans recorded so far are the prefix it delivers,
+        // and the artifact is untouched.
+        Some(Halt::PhaseStopped) => {
+            let reached = phase_prefix(&map);
+            Ok((map, reached))
+        }
+        Some(Halt::Gate(stop)) | Some(Halt::Stop(stop)) => Err(stop),
+    }
+}
+
+/// The stop one replay states when its stream did not cover the artifact it was verifying against.
+///
+/// The gate's own code: the two passes of one formatter disagree about what the artifact holds, so
+/// the map cannot be handed out and the run states the stop in the vocabulary it states every other
+/// stop in. The text the committing pass delivered is not touched by it.
+fn gate_stop(artifact: &Emitted, map: &SourceMap) -> StopReason {
+    debug_assert!(
+        false,
+        "the source-map replay did not cover the {} byte artifact ({} span(s) recorded)",
+        artifact.written,
+        map.len(),
+    );
+    StopReason::Interrupted {
+        code: crate::stop::SOURCE_MAP_MISMATCH_CODE,
+        at: None,
+    }
+}
+
+/// The state a source map the phase stopped inside reports: the prefix of spans it recorded, or
+/// nothing at all when it did not reach one whole node of the artifact.
+fn phase_prefix(map: &SourceMap) -> Materialized {
+    if map.is_empty() {
+        Materialized::None
+    } else {
+        Materialized::Partial {
+            delivered: u64::try_from(map.len()).unwrap_or(u64::MAX),
+        }
+    }
+}
+
+/// Why one write of one pass stopped.
+///
+/// The committing pass has exactly one reason to stop — the run refuses — and the replay has three:
+/// the phase that pays for it refuses, the run refuses, or the write disagrees with the artifact the
+/// committing pass produced. One enum because every write goes through [`Emitter::put`].
+#[derive(Debug)]
+enum Halt {
+    /// The run refuses: the budget, a cancellation. What a committing pass states as its stop.
+    Stop(StopReason),
+    /// The evidence phase refused one more charge. The artifact is untouched and the replay hands
+    /// back the prefix of spans it recorded.
+    PhaseStopped,
+    /// A replayed write is not what the committed artifact holds at that offset, or the replay did
+    /// not cover the artifact's own length.
+    Gate(StopReason),
+}
+
+impl From<StopReason> for Halt {
+    fn from(stop: StopReason) -> Self {
+        Self::Stop(stop)
+    }
+}
+
+/// The one writer of the artifact, in either of its two modes.
+///
+/// The committing mode appends text through [`Emitter::put`], checking the output bound before every
+/// write and discarding the buffer on a refusal; the replay mode writes nothing, verifies every write
+/// against the artifact at its own offset, and records the spans the selection holds — through the
+/// same node, statement and expression methods, so the two passes cannot spell text differently.
 struct Emitter<'a> {
     budget: &'a mut Budget,
+    /// The artifact's text. Empty in a replay: nothing is written a second time.
     text: String,
-    /// The spans this emission anchors, when the request selected the segment table at all.
-    segments: Vec<Segment>,
+    /// What a replay writes through, when this emitter is one.
+    replay: Option<Replay<'a>>,
     /// How many spans this emission anchored, selected or not.
     anchored: u64,
-    /// Which of them the segment table holds.
-    publication: SegmentPublication,
     written: u64,
     limit: u64,
     /// The member body every anchor of this emission belongs to, when the payload stated one.
@@ -116,19 +254,54 @@ struct Emitter<'a> {
     statements: usize,
 }
 
+/// What a source-map replay holds: the artifact it verifies against, the spans it records, and the
+/// phase that pays for the work of replaying.
+struct Replay<'a> {
+    /// The committed artifact: every replayed write is compared with the bytes at its own offset.
+    artifact: &'a str,
+    /// Which spans of the artifact the selection records.
+    publication: SegmentPublication,
+    /// The spans recorded so far, in the artifact's own completion order.
+    segments: Vec<Segment>,
+    /// The evidence phase this replay is charged to, one `IrItems` per anchored span.
+    phase: &'a mut EvidencePhase,
+}
+
 impl<'a> Emitter<'a> {
-    fn new(
+    /// The committing pass: text, checked at every write entry.
+    fn commit(budget: &'a mut Budget, member: Option<&'a PhysicalMethodId>) -> Self {
+        let limit = budget.limits().output_bytes;
+        Self {
+            budget,
+            text: String::new(),
+            replay: None,
+            anchored: 0,
+            written: 0,
+            limit,
+            member,
+            statements: 0,
+        }
+    }
+
+    /// The replay: no text, and the spans the selection holds.
+    fn replay(
         budget: &'a mut Budget,
         member: Option<&'a PhysicalMethodId>,
+        artifact: &'a str,
         publication: SegmentPublication,
+        phase: &'a mut EvidencePhase,
     ) -> Self {
         let limit = budget.limits().output_bytes;
         Self {
             budget,
             text: String::new(),
-            segments: Vec::new(),
+            replay: Some(Replay {
+                artifact,
+                publication,
+                segments: Vec::new(),
+                phase,
+            }),
             anchored: 0,
-            publication,
             written: 0,
             limit,
             member,
@@ -141,7 +314,7 @@ impl<'a> Emitter<'a> {
         &mut self,
         facts: &RecoveryFacts,
         declaration: Option<&Declaration>,
-    ) -> Result<(), StopReason> {
+    ) -> Result<(), Halt> {
         let method = facts.method();
         self.put(
             &format!(
@@ -187,31 +360,50 @@ impl<'a> Emitter<'a> {
     /// has one to name), and the member of the whole artifact is the one the payload's declaration
     /// states. Recording happens in the same call as the write, so a segment cannot exist without
     /// the member it belongs to.
+    ///
+    /// In a replay the same call *records* the span instead of writing it: the offsets are the
+    /// offsets the committing pass wrote ([`Emitter::written`] counts exactly the bytes that pass
+    /// appended), the anchors are the same anchors of the same AST node, and the span is recorded
+    /// only when the selection holds one of its positions — the driver range meets the source-map
+    /// gate in [`SegmentPublication::records`] and nowhere else.
     fn node(
         &mut self,
         origin: &OriginSet,
-        write: impl FnOnce(&mut Self) -> Result<(), StopReason>,
-    ) -> Result<(), StopReason> {
-        let start = self.text.len();
+        write: impl FnOnce(&mut Self) -> Result<(), Halt>,
+    ) -> Result<(), Halt> {
+        let start = self.written;
         write(self)?;
-        let end = self.text.len();
+        let end = self.written;
         if end > start {
             let origin = origin.in_body(self.member);
             self.anchored += 1;
-            // The record is built only when the request selected it — over the positions this very
-            // segment states for itself, which is the whole of its evidence.
-            if self.publication.records(origin.bcis()) {
+            let Some(replay) = self.replay.as_mut() else {
+                // The committing pass records no span: the table is the replay's product.
+                return Ok(());
+            };
+            // The replay's own work is charged to the phase that pays for this category: one
+            // `IrItems` per anchored span, charged *before* the span is recorded, so a refusal ends
+            // the replay with the prefix it already recorded and never with a record no charge paid
+            // for.
+            if !replay.phase.may_continue(self.budget) {
+                return Err(Halt::PhaseStopped);
+            }
+            if replay.publication.records(origin.bcis()) {
                 crate::demand_counts::record_built(
                     crate::evidence::RecoveryEvidenceKind::SourceMap,
                 );
-                self.segments.push(Segment::new(start, end, origin));
+                replay.segments.push(Segment::new(
+                    usize::try_from(start).unwrap_or(usize::MAX),
+                    usize::try_from(end).unwrap_or(usize::MAX),
+                    origin,
+                ));
             }
         }
         Ok(())
     }
 
     /// Appends the statements of one body at one indentation depth.
-    fn stmts(&mut self, stmts: &[Stmt], indent: usize) -> Result<(), StopReason> {
+    fn stmts(&mut self, stmts: &[Stmt], indent: usize) -> Result<(), Halt> {
         for stmt in stmts {
             self.node(&stmt.origin, |emitter| emitter.stmt(stmt, indent))?;
         }
@@ -219,7 +411,7 @@ impl<'a> Emitter<'a> {
     }
 
     /// Appends one statement.
-    fn stmt(&mut self, stmt: &Stmt, indent: usize) -> Result<(), StopReason> {
+    fn stmt(&mut self, stmt: &Stmt, indent: usize) -> Result<(), Halt> {
         let at = Some(stmt.origin.primary().bci());
         let pad = indent_text(indent);
         // What a statement is, stated where statements are written: a fallback writes the reason and
@@ -419,7 +611,7 @@ impl<'a> Emitter<'a> {
     }
 
     /// Appends one expression.
-    fn expr(&mut self, expr: &Expr) -> Result<(), StopReason> {
+    fn expr(&mut self, expr: &Expr) -> Result<(), Halt> {
         let at = Some(expr.origin.primary().bci());
         self.node(&expr.origin, |emitter| match &expr.kind {
             ExprKind::Local(name) => emitter.put(name, at),
@@ -569,7 +761,7 @@ impl<'a> Emitter<'a> {
     /// The parentheses are written around the operand's own node, which is where they belong: the
     /// segment table still records the operand's text against the operand's anchors, exactly as it
     /// records the operator's own spelling, and no node's anchors move.
-    fn operand(&mut self, operand: &Expr, least: u8) -> Result<(), StopReason> {
+    fn operand(&mut self, operand: &Expr, least: u8) -> Result<(), Halt> {
         let at = Some(operand.origin.primary().bci());
         let grouped = expression_binding(&operand.kind) < least;
         if grouped {
@@ -597,12 +789,7 @@ impl<'a> Emitter<'a> {
     ///
     /// This is the binary-operator position of [`Self::operand`]'s scale: the operand on the left
     /// needs the parent's own level, and the one on the right needs to bind strictly tighter.
-    fn binary_operand(
-        &mut self,
-        operand: &Expr,
-        parent: BinaryOp,
-        side: Side,
-    ) -> Result<(), StopReason> {
+    fn binary_operand(&mut self, operand: &Expr, parent: BinaryOp, side: Side) -> Result<(), Halt> {
         let parent = binary_binding(parent);
         let least = match side {
             Side::Left => parent,
@@ -611,17 +798,35 @@ impl<'a> Emitter<'a> {
         self.operand(operand, least)
     }
 
-    /// The only way text enters the buffer.
+    /// The only way text enters the buffer, in either mode.
     ///
     /// `at` is the node the write belongs to, or `None` for the envelope, which maps to no node. A
     /// refusal discards the buffer: text and segments both, so nothing partial survives it.
-    fn put(&mut self, text: &str, at: Option<u32>) -> Result<(), StopReason> {
+    ///
+    /// A replay writes nothing: it verifies that this write is the write the artifact really holds
+    /// at this offset, and counts the bytes it did not copy. The one gate between the two passes —
+    /// an offset the replay records is only ever an offset into bytes the artifact holds — is this
+    /// comparison, made at every write.
+    fn put(&mut self, text: &str, at: Option<u32>) -> Result<(), Halt> {
         if text.is_empty() {
+            return Ok(());
+        }
+        if let Some(replay) = self.replay.as_ref() {
+            let artifact = replay.artifact;
+            let start = usize::try_from(self.written).unwrap_or(usize::MAX);
+            let end = start.saturating_add(text.len());
+            if artifact.get(start..end) != Some(text) {
+                return Err(Halt::Gate(StopReason::Interrupted {
+                    code: crate::stop::SOURCE_MAP_MISMATCH_CODE,
+                    at,
+                }));
+            }
+            self.written = u64::try_from(end).unwrap_or(u64::MAX);
             return Ok(());
         }
         if let Err(stop) = poll(self.budget, at) {
             self.discard();
-            return Err(stop);
+            return Err(Halt::Stop(stop));
         }
         let bytes = u64::try_from(text.len()).unwrap_or(u64::MAX);
         let allowed = self
@@ -640,7 +845,7 @@ impl<'a> Emitter<'a> {
                 at,
             };
             self.discard();
-            return Err(stop);
+            return Err(Halt::Stop(stop));
         }
         self.written += bytes;
         self.text.push_str(text);
@@ -653,22 +858,39 @@ impl<'a> Emitter<'a> {
     /// a stopped run states how far it got, and only the text and the segments are discarded.
     fn discard(&mut self) {
         self.text.clear();
-        self.segments.clear();
     }
 
     /// The artifact, once every write succeeded.
     fn finish(self) -> Emitted {
-        let mut source_map = SourceMap::default();
-        for segment in self.segments {
-            source_map.record(segment);
-        }
         Emitted {
             text: self.text,
-            source_map,
             segments: self.anchored,
             written: self.written,
             statements: self.statements,
         }
+    }
+
+    /// What the replay recorded, and whether it covered the whole artifact.
+    ///
+    /// The second half of the gate: the replay's own byte count is the artifact's length, so a
+    /// stream that stopped short — even one whose every write matched — is not a map of this
+    /// artifact. Nothing here is handed out by the replay alone; [`emit_source_map`] states the
+    /// stop.
+    fn finish_replay(self) -> (SourceMap, bool) {
+        let Emitter {
+            written, replay, ..
+        } = self;
+        let Some(replay) = replay else {
+            unreachable!("only a replay finishes through the replay path");
+        };
+        let covered = u64::try_from(replay.artifact.len())
+            .map(|length| length == written)
+            .unwrap_or(false);
+        let mut map = SourceMap::default();
+        for segment in replay.segments {
+            map.record(segment);
+        }
+        (map, covered)
     }
 }
 
@@ -790,6 +1012,9 @@ mod tests {
     fn budget_with(output_bytes: u64) -> Budget {
         Budget::new(Limits {
             output_bytes,
+            // The second pass charges the evidence phase one `IrItems` per anchored span; the cases
+            // here are about the emitter, so the allowance is ample for both passes.
+            ir_items: 1 << 20,
             elapsed_millis: u64::MAX,
             ..Limits::default()
         })
@@ -846,7 +1071,7 @@ mod tests {
         // observed: the buffer itself holds nothing after a refusal, so no consumer that ever gets
         // hold of an emitter can read a half-written node out of it.
         let mut budget = budget_with(32);
-        let mut emitter = Emitter::new(&mut budget, None, SegmentPublication::Whole);
+        let mut emitter = Emitter::commit(&mut budget, None);
         emitter
             .put("// a first line\n", None)
             .expect("within the bound");
@@ -854,13 +1079,19 @@ mod tests {
         let stop = emitter
             .put("// a second line that will not fit\n", None)
             .expect_err("eleven bytes over the bound");
-        assert!(matches!(stop, StopReason::Budget { .. }), "{stop:?}");
+        assert!(
+            matches!(stop, Halt::Stop(StopReason::Budget { .. })),
+            "{stop:?}"
+        );
         assert!(
             emitter.text.is_empty(),
             "the buffer is discarded, not handed out half written: {:?}",
             emitter.text
         );
-        assert!(emitter.segments.is_empty(), "and so is the segment table");
+        assert!(
+            emitter.replay.is_none(),
+            "and the committing pass owns no segment table at all"
+        );
         assert!(emitter.written > 0, "the stop still states how far it got");
     }
 
@@ -870,27 +1101,13 @@ mod tests {
         let stmts = body();
         let exact = {
             let mut budget = budget_with(1 << 20);
-            emit(
-                &stmts,
-                &facts(),
-                None,
-                None,
-                SegmentPublication::Whole,
-                &mut budget,
-            )
-            .expect("an ample budget writes")
-            .written
+            emit(&stmts, &facts(), None, None, &mut budget)
+                .expect("an ample budget writes")
+                .written
         };
         let mut budget = budget_with(exact);
-        let emitted = emit(
-            &stmts,
-            &facts(),
-            None,
-            None,
-            SegmentPublication::Whole,
-            &mut budget,
-        )
-        .expect("the exact bound is allowed");
+        let emitted =
+            emit(&stmts, &facts(), None, None, &mut budget).expect("the exact bound is allowed");
         assert_eq!(emitted.written, exact);
         assert!(
             emitted.text.contains("run();"),
@@ -899,15 +1116,7 @@ mod tests {
         );
 
         let mut budget = budget_with(exact - 1);
-        let stop = emit(
-            &stmts,
-            &facts(),
-            None,
-            None,
-            SegmentPublication::Whole,
-            &mut budget,
-        )
-        .expect_err("one byte short");
+        let stop = emit(&stmts, &facts(), None, None, &mut budget).expect_err("one byte short");
         match stop {
             StopReason::Budget {
                 dimension,
@@ -941,16 +1150,9 @@ mod tests {
         )];
         let whole = {
             let mut budget = budget_with(1 << 20);
-            emit(
-                &stmts,
-                &facts(),
-                None,
-                None,
-                SegmentPublication::Whole,
-                &mut budget,
-            )
-            .expect("ample")
-            .written
+            emit(&stmts, &facts(), None, None, &mut budget)
+                .expect("ample")
+                .written
         };
         // Every bound below the artifact's own size refuses somewhere, and at least one of them
         // refuses while the assignment's *expression* is being written: the emitter stops inside a
@@ -959,14 +1161,7 @@ mod tests {
         let mut inside_a_node = 0usize;
         for bound in 1..whole {
             let mut budget = budget_with(bound);
-            match emit(
-                &stmts,
-                &facts(),
-                None,
-                None,
-                SegmentPublication::Whole,
-                &mut budget,
-            ) {
+            match emit(&stmts, &facts(), None, None, &mut budget) {
                 Ok(emitted) => panic!("a {bound}-byte bound produced {} bytes", emitted.written),
                 Err(StopReason::Budget { written, at, .. }) => {
                     assert!(
@@ -990,34 +1185,22 @@ mod tests {
     fn the_segment_table_covers_the_nodes_in_writing_order() {
         let stmts = body();
         let mut budget = budget_with(1 << 20);
-        let emitted = emit(
+        let (emitted, map) = artifact(
             &stmts,
             &facts(),
             None,
             None,
             SegmentPublication::Whole,
             &mut budget,
-        )
-        .expect("ample");
+        );
         // Two nodes, because a statement contains its expression, and the table is in completion
         // order: the expression's span is recorded when its own writes finish, the statement's when
         // the indentation and the terminator around it are written too.
+        assert_eq!(map.len(), 2, "{:#?}", map.segments());
+        assert_eq!(map.segments()[0].text(&emitted.text), "run()");
+        assert_eq!(map.segments()[1].text(&emitted.text), "    run();\n");
         assert_eq!(
-            emitted.source_map.len(),
-            2,
-            "{:#?}",
-            emitted.source_map.segments()
-        );
-        assert_eq!(
-            emitted.source_map.segments()[0].text(&emitted.text),
-            "run()"
-        );
-        assert_eq!(
-            emitted.source_map.segments()[1].text(&emitted.text),
-            "    run();\n"
-        );
-        assert_eq!(
-            emitted.source_map.text_of_bci(&emitted.text, 4),
+            map.text_of_bci(&emitted.text, 4),
             vec!["run()", "    run();\n"],
             "and the BCI reaches both, most specific first"
         );
@@ -1065,15 +1248,14 @@ mod tests {
             OriginSet::new(Origin::direct(8)),
         )];
         let mut budget = budget_with(1 << 20);
-        let emitted = emit(
+        let (emitted, map) = artifact(
             &stmts,
             &facts(),
             None,
             None,
             SegmentPublication::Whole,
             &mut budget,
-        )
-        .expect("ample");
+        );
         assert!(
             emitted
                 .text
@@ -1083,26 +1265,21 @@ mod tests {
         );
         // One segment per node, in completion order: the five nodes inside the subtraction, the
         // product, the assignment and its expression's outer product — the parentheses add none.
+        assert_eq!(map.len(), 8, "{:#?}", map.segments());
         assert_eq!(
-            emitted.source_map.len(),
-            8,
-            "{:#?}",
-            emitted.source_map.segments()
-        );
-        assert_eq!(
-            emitted.source_map.text_of_bci(&emitted.text, 7),
+            map.text_of_bci(&emitted.text, 7),
             vec!["2 - arg0 * local1", "local1 * (2 - arg0 * local1)"],
             "the operands' own texts, the inner one unparenthesised: the parentheses belong to the \
              product that needed them"
         );
         assert_eq!(
-            emitted.source_map.text_of_bci(&emitted.text, 3),
+            map.text_of_bci(&emitted.text, 3),
             vec!["2", "2 - arg0 * local1"],
             "the constant is its own node and the subtraction that read it presents that anchor as \
              derived, exactly as it did before the grouping"
         );
         assert_eq!(
-            emitted.source_map.text_of_bci(&emitted.text, 6),
+            map.text_of_bci(&emitted.text, 6),
             vec!["arg0 * local1"],
             "the inner product answers for the bytecode that produced it, with no parentheses in \
              its segment"
@@ -1150,14 +1327,49 @@ mod tests {
         )
     }
 
-    /// One expression as the body's only statement, so a printer shape is asserted without a run.
-    fn emitted_value(value: Expr) -> Emitted {
+    /// One artifact **and its segment table**, as the two passes of the emitter produce them: the
+    /// committing pass writes the text, and the replay of the same AST records the spans every node
+    /// anchored. The cases below read both, because the table is no longer a product of the write
+    /// that produced the text.
+    fn artifact(
+        stmts: &[Stmt],
+        facts: &RecoveryFacts,
+        declaration: Option<&Declaration>,
+        member: Option<&PhysicalMethodId>,
+        publication: SegmentPublication,
+        budget: &mut Budget,
+    ) -> (Emitted, SourceMap) {
+        let emitted =
+            emit(stmts, facts, declaration, member, budget).expect("an ample budget writes");
+        let mut phase = EvidencePhase::new();
+        let (map, reached) = emit_source_map(
+            stmts,
+            facts,
+            declaration,
+            member,
+            publication,
+            &emitted,
+            &mut phase,
+            budget,
+        )
+        .expect("the replay of the same AST agrees with the artifact it replayed");
+        assert_eq!(
+            reached,
+            Materialized::Complete,
+            "an ample budget materializes the whole table"
+        );
+        (emitted, map)
+    }
+
+    /// The same over the two fixture shapes the cases below build: one expression as the body's only
+    /// statement, and one statement with its own anchors.
+    fn emitted_value(value: Expr) -> (Emitted, SourceMap) {
         let stmts = vec![Stmt::new(
             StmtKind::Expr(value),
             OriginSet::new(Origin::direct(1)),
         )];
         let mut budget = budget_with(1 << 20);
-        emit(
+        artifact(
             &stmts,
             &facts(),
             None,
@@ -1165,18 +1377,17 @@ mod tests {
             SegmentPublication::Whole,
             &mut budget,
         )
-        .expect("an ample budget writes")
     }
 
     /// One statement, with its own anchors, as the body's whole text.
-    fn emitted_stmt(kind: StmtKind, anchors: &[u32]) -> Emitted {
+    fn emitted_stmt(kind: StmtKind, anchors: &[u32]) -> (Emitted, SourceMap) {
         let mut origin = OriginSet::new(Origin::direct(anchors[0]));
         for bci in &anchors[1..] {
             origin = origin.plus_derived(Origin::derived(*bci));
         }
         let stmts = vec![Stmt::new(kind, origin)];
         let mut budget = budget_with(1 << 20);
-        emit(
+        artifact(
             &stmts,
             &facts(),
             None,
@@ -1184,7 +1395,6 @@ mod tests {
             SegmentPublication::Whole,
             &mut budget,
         )
-        .expect("an ample budget writes")
     }
 
     /// Every position whose text is followed by something that binds tighter than a binary
@@ -1193,7 +1403,7 @@ mod tests {
     #[test]
     fn a_suffix_position_keeps_the_group_of_its_operand() {
         let receiver = sum_at(local_at("arg0", 2), local_at("arg1", 3), 4);
-        let emitted = emitted_value(Expr::new(
+        let (emitted, map) = emitted_value(Expr::new(
             ExprKind::Call {
                 receiver: Some(Box::new(receiver)),
                 name: "substring".to_string(),
@@ -1208,12 +1418,12 @@ mod tests {
             emitted.text
         );
         assert_eq!(
-            emitted.source_map.text_of_bci(&emitted.text, 4),
+            map.text_of_bci(&emitted.text, 4),
             vec!["arg0 + arg1", "(arg0 + arg1).substring(1)"],
             "the receiver's own segment is its own text; the parentheses belong to the call"
         );
 
-        let field = emitted_value(Expr::new(
+        let (field, _map) = emitted_value(Expr::new(
             ExprKind::Field {
                 receiver: Box::new(sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)),
                 name: "f".to_string(),
@@ -1226,7 +1436,7 @@ mod tests {
             field.text
         );
 
-        let index = emitted_value(Expr::new(
+        let (index, _map) = emitted_value(Expr::new(
             ExprKind::Index {
                 array: Box::new(sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)),
                 index: Box::new(integer_at(0, 7)),
@@ -1239,7 +1449,7 @@ mod tests {
             index.text
         );
 
-        let reference = emitted_value(Expr::new(
+        let (reference, _map) = emitted_value(Expr::new(
             ExprKind::MethodReference {
                 qualifier: Box::new(sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)),
                 name: "length".to_string(),
@@ -1258,7 +1468,7 @@ mod tests {
     /// reads as `!(a.f())`.
     #[test]
     fn a_prefix_position_and_a_not_receiver_keep_their_groups() {
-        let not = emitted_value(Expr::direct(
+        let (not, _map) = emitted_value(Expr::direct(
             ExprKind::Not {
                 value: Box::new(sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)),
             },
@@ -1270,7 +1480,7 @@ mod tests {
             not.text
         );
 
-        let not_receiver = emitted_value(call_at(
+        let (not_receiver, _map) = emitted_value(call_at(
             Some(Expr::direct(
                 ExprKind::Not {
                     value: Box::new(local_at("arg0", 2)),
@@ -1299,7 +1509,7 @@ mod tests {
 
         // Two parts that each need conversion, then a `String` part: the empty string starts the
         // text, so neither part is added to the other as a number.
-        let convertible = emitted_value(Expr::direct(
+        let (convertible, _map) = emitted_value(Expr::direct(
             ExprKind::Concat {
                 parts: vec![
                     part(Type::Int, local_at("arg0", 7)),
@@ -1317,7 +1527,7 @@ mod tests {
 
         // **One** part that is itself an addition: it keeps its own group, so the sum is evaluated
         // first and converted once — the other program of the same input.
-        let sum_part = emitted_value(Expr::direct(
+        let (sum_part, _map) = emitted_value(Expr::direct(
             ExprKind::Concat {
                 parts: vec![
                     part(
@@ -1337,7 +1547,7 @@ mod tests {
 
         // A chain that is already in a string context gains nothing — and an addition part after it
         // still keeps its group, or `"x" + arg0 + arg1` would be two parts rather than one sum.
-        let already = emitted_value(Expr::direct(
+        let (already, _map) = emitted_value(Expr::direct(
             ExprKind::Concat {
                 parts: vec![
                     part(string(), Expr::direct(ExprKind::Str("x".to_string()), 7)),
@@ -1356,7 +1566,7 @@ mod tests {
         );
 
         // The all-`String` control: every part is a primary, so the text is the parts and their `+`s.
-        let plain = emitted_value(Expr::direct(
+        let (plain, _map) = emitted_value(Expr::direct(
             ExprKind::Concat {
                 parts: vec![
                     part(string(), local_at("arg0", 7)),
@@ -1387,7 +1597,7 @@ mod tests {
             },
             2,
         );
-        let emitted = emitted_value(call_at(
+        let (emitted, _map) = emitted_value(call_at(
             Some(lambda),
             "applyAsInt",
             vec![local_at("arg0", 5)],
@@ -1408,7 +1618,7 @@ mod tests {
     /// parentheses, and neither does a binary operand whose own level already states the tree.
     #[test]
     fn a_delimited_or_already_grouped_position_gains_no_parentheses() {
-        let emitted = emitted_value(call_at(
+        let (emitted, _map) = emitted_value(call_at(
             None,
             "f",
             vec![sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)],
@@ -1420,7 +1630,7 @@ mod tests {
             emitted.text
         );
 
-        let index = emitted_value(Expr::new(
+        let (index, _map) = emitted_value(Expr::new(
             ExprKind::Index {
                 array: Box::new(local_at("arg0", 2)),
                 index: Box::new(sum_at(local_at("arg1", 3), local_at("arg2", 4), 5)),
@@ -1433,7 +1643,7 @@ mod tests {
             index.text
         );
 
-        let returned = emitted_stmt(
+        let (returned, _map) = emitted_stmt(
             StmtKind::Return {
                 value: Some(sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)),
             },
@@ -1445,7 +1655,7 @@ mod tests {
             returned.text
         );
 
-        let declared = emitted_stmt(
+        let (declared, _map) = emitted_stmt(
             StmtKind::Declare {
                 ty: crate::ast::Type::Int,
                 name: "local0".to_string(),
@@ -1459,7 +1669,7 @@ mod tests {
             declared.text
         );
 
-        let conditional = emitted_stmt(
+        let (conditional, _map) = emitted_stmt(
             StmtKind::If {
                 cond: sum_at(local_at("arg0", 2), local_at("arg1", 3), 4),
                 then_body: vec![Stmt::new(
@@ -1479,7 +1689,7 @@ mod tests {
             conditional.text
         );
 
-        let switch = emitted_stmt(
+        let (switch, _map) = emitted_stmt(
             StmtKind::Switch {
                 value: sum_at(local_at("arg0", 2), local_at("arg1", 3), 4),
                 arms: vec![crate::ast::SwitchArm {
@@ -1499,7 +1709,7 @@ mod tests {
             switch.text
         );
 
-        let lock = emitted_stmt(
+        let (lock, _map) = emitted_stmt(
             StmtKind::Synchronized {
                 lock: sum_at(local_at("arg0", 2), local_at("arg1", 3), 4),
                 body: vec![Stmt::new(
@@ -1515,7 +1725,7 @@ mod tests {
             lock.text
         );
 
-        let lambda_body = emitted_value(Expr::direct(
+        let (lambda_body, _map) = emitted_value(Expr::direct(
             ExprKind::Lambda {
                 params: vec![],
                 body: Box::new(sum_at(local_at("arg0", 2), local_at("arg1", 3), 4)),
@@ -1535,14 +1745,14 @@ mod tests {
     /// nothing (`!a == b` is `(!a) == b`).
     #[test]
     fn a_primary_operand_and_an_already_stated_group_gain_nothing() {
-        let plain = emitted_value(call_at(Some(local_at("arg0", 2)), "foo", vec![], 3));
+        let (plain, _map) = emitted_value(call_at(Some(local_at("arg0", 2)), "foo", vec![], 3));
         assert!(
             plain.text.contains("arg0.foo();"),
             "a name receiver is a primary:\n{}",
             plain.text
         );
 
-        let chained = emitted_value(call_at(
+        let (chained, _map) = emitted_value(call_at(
             Some(call_at(Some(local_at("arg0", 2)), "trim", vec![], 3)),
             "length",
             vec![],
@@ -1554,7 +1764,7 @@ mod tests {
             chained.text
         );
 
-        let tighter = emitted_value(sum_at(
+        let (tighter, _map) = emitted_value(sum_at(
             local_at("arg0", 2),
             Expr::direct(
                 ExprKind::Binary {
@@ -1572,7 +1782,7 @@ mod tests {
             tighter.text
         );
 
-        let left = emitted_value(sum_at(
+        let (left, _map) = emitted_value(sum_at(
             sum_at(local_at("arg0", 2), local_at("arg1", 3), 4),
             local_at("arg2", 5),
             6,
@@ -1584,7 +1794,7 @@ mod tests {
             left.text
         );
 
-        let not_operand = emitted_value(Expr::direct(
+        let (not_operand, _map) = emitted_value(Expr::direct(
             ExprKind::Binary {
                 op: BinaryOp::Equal,
                 left: Box::new(Expr::direct(

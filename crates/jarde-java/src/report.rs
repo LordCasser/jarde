@@ -56,10 +56,10 @@ use crate::build;
 use crate::concat::{self, ConcatRecord};
 use crate::declaration::{self, DeclarationRecord};
 use crate::decode::Operations;
-use crate::emit::{Emitted, emit};
+use crate::emit::{Emitted, emit, emit_source_map};
 use crate::enumswitch::{self, EnumSwitchRecord};
 use crate::evidence::{
-    EvidencePayload, EvidencePhase, EvidenceRefusal, Publication, RecoveryEvidence,
+    EvidencePayload, EvidencePhase, EvidenceRefusal, Materialized, Publication, RecoveryEvidence,
     RecoveryEvidenceKind, RecoveryEvidenceRequest, SegmentPublication,
 };
 use crate::facts::{ClassMembers, RecoveryFacts};
@@ -320,6 +320,23 @@ impl RecoveryReport {
     pub fn text_of_bci(&self, bci: u32) -> Vec<&str> {
         self.source_map.text_of_bci(&self.text, bci)
     }
+
+    /// States that the entry which performed this run's read materialized `ReadDetails` beside this
+    /// report (change `add-demand-driven-core-results`, D3).
+    ///
+    /// `ReadDetails` is the one category this layer does not build: the read evidence belongs to the
+    /// entry that performed the read and is published beside the report — `RecoveredMethod::callees`
+    /// for the facade — so the entry states what it published here, and the list stays the report's
+    /// own fixed-size statement about every category.
+    ///
+    /// The read is one step: an entry that published it published all of it, so the category is
+    /// [`EvidenceState::Complete`], and a read that named no member at all is a legal *empty*
+    /// complete result for the same reason an empty region table is. An entry that did not publish
+    /// it — the run stopped before the read was materialized, or the selection was refused — states
+    /// nothing here, and the category stays [`EvidenceState::NotPerformed`].
+    pub fn read_details_materialized(&mut self) {
+        self.evidence.delivered(RecoveryEvidenceKind::ReadDetails);
+    }
 }
 
 /// Recovers one method's body.
@@ -388,7 +405,6 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     if let Err(refusal) = selection.check(code) {
         return refused(method, profile.clone(), &selection, refusal, budget);
     }
-    let publication = Publication::of(&selection);
     let operations = Operations::of(code, request.ir.constant_pool());
     if canonical.blocks().is_empty() {
         return stopped(
@@ -442,25 +458,24 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
     // own tables: the concatenation chains the body builds (P3 2.2) and the bridge verdict for the
     // member itself, when its declaration or its body makes it one. Both are decisions about the
     // bytes, not about the text, which is why they are taken here and read by the builder.
-    let chains = concat::plan(ssa, &operations, publication);
-    let bridge = bridge::plan(request.facts.method(), ssa, &operations, publication);
+    // Every plan below decides for every evidence selection: the premises are checked, the candidates
+    // are verified or refused and the gaps are stated here, and none of these calls builds an owning
+    // record. The records the request selected are materialized from these plans *after* the artifact
+    // is committed (the evidence phase below), so a run that stops inside the evidence keeps its text.
+    let chains = concat::plan(ssa, &operations);
+    let bridge = bridge::plan(request.facts.method(), ssa, &operations);
     // The four shapes P3 2.3 reads — each decided before a statement is written, each from this run's
     // own tables. The construction sites reserve the concatenation chains' instructions, because one
     // instruction is never two shapes: the allocation a verified chain builds is written inside the
     // `+` expression and not a second time as a `new`.
-    let sites = init::sites(ssa, &operations, chains.owned(), publication);
-    let prologues = init::prologue(ssa, &operations, request.facts.method(), publication);
-    let fields = field::plan(
-        ssa,
-        &operations,
-        request.facts.method().declaring_class(),
-        publication,
-    );
-    let enums = enumswitch::plan(ssa, &operations, publication);
+    let sites = init::sites(ssa, &operations, chains.owned());
+    let prologues = init::prologue(ssa, &operations, request.facts.method());
+    let fields = field::plan(ssa, &operations, request.facts.method().declaring_class());
+    let enums = enumswitch::plan(ssa, &operations);
     // The declaration is read from the two facts the caller stated and decides the artifact's
     // envelope; it never decides a statement, and it is the only shape of this slice that is read
     // without an instruction to read it from.
-    let declaration = declaration::plan(request.facts.method(), publication);
+    let declaration = declaration::plan(request.facts.method());
     // The type each parameter slot holds, as the member's own **descriptor** states it (P3-R5): the
     // frames cannot tell a `boolean` parameter from an `int` one, and the descriptor can.
     let parameter_types = request.facts.method().parameter_types();
@@ -492,24 +507,23 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             enums: &enums,
         },
         &recovered.regions,
-        publication,
         budget,
     ) {
         Ok(program) => program,
         Err(stop) => return stopped(method, profile.clone(), &selection, stop, budget),
     };
+    // The identity of the body being presented, as the payload's own declaration states it: the
+    // member every anchor of this artifact belongs to (P3 3.2). A run that read no member header
+    // states none. Both emitter passes state it for the anchors that name no member of their own.
+    let member = request
+        .ir
+        .declaration()
+        .map(|declaration| declaration.identity());
     let emitted: Emitted = match emit(
         &program.stmts,
         request.facts,
         declaration.declaration(),
-        // The identity of the body being presented, as the payload's own declaration states it: the
-        // member every anchor of this artifact belongs to (P3 3.2). A run that read no member header
-        // states none.
-        request
-            .ir
-            .declaration()
-            .map(|declaration| declaration.identity()),
-        SegmentPublication::of(&selection),
+        member,
         budget,
     ) {
         Ok(emitted) => emitted,
@@ -570,127 +584,55 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             recovered.blocks
         ),
     ));
-    // ---------------------------------------------------------------------------------------
-    // The evidence phase: the artifact is committed, and what the request selected is materialized
-    // now, one owning record at a time and within the same budget.
-    //
-    // A refusal here stops the *materialization* and nothing else: the text, its planes and the
-    // gaps above stay exactly what this run produced, the category that was in flight reports the
-    // prefix it delivered, the categories the phase never reached stay `NotPerformed`, and the
-    // run's execution states the real stop. The categories whose records the run had to build to
-    // reach this point — the rule records, decided where the rules decide, and the segment table,
-    // written by the same writes that produce the text — are delivered in full exactly when the run
-    // reached this line.
-    // ---------------------------------------------------------------------------------------
-    let mut evidence = RecoveryEvidence::pending(&selection);
-    let mut phase = EvidencePhase::new();
-    let range = selection.driver_bci_range();
-    if selection.requests(RecoveryEvidenceKind::SourceMap) {
-        evidence.delivered(RecoveryEvidenceKind::SourceMap);
-    }
-    if selection.requests(RecoveryEvidenceKind::RuleDetails) {
-        evidence.delivered(RecoveryEvidenceKind::RuleDetails);
-    }
-
-    // The region records: the run holds every region either way, and the records are built here —
-    // one by one, each after the charge that pays for it — only for the regions the selected driver
-    // range intersects. A region is kept or dropped as a unit, with the origins it states for
-    // itself.
-    let mut regions: Vec<RegionRecord> = Vec::new();
-    if selection.requests(RecoveryEvidenceKind::RegionDetails) {
-        let mut delivered = 0usize;
-        // The phase may already have stopped in an earlier category, and a category it never entered
-        // is `NotPerformed` rather than an empty delivery: what the run did not examine is not a
-        // legal empty result.
-        let mut complete = !phase.stopped();
-        for region in &recovered.regions {
-            if !in_driver_range(region, range) {
-                continue;
-            }
-            if !phase.may_continue(budget) {
-                complete = false;
-                break;
-            }
-            regions.push(region_record(region));
-            delivered += 1;
-        }
-        match (complete, delivered) {
-            (true, _) => evidence.delivered(RecoveryEvidenceKind::RegionDetails),
-            (false, 0) => {}
-            (false, delivered) => {
-                evidence.stopped(RecoveryEvidenceKind::RegionDetails, count_of(delivered))
-            }
-        }
-    }
-
-    // The names the presentation had to replace: per local slot rather than per bytecode index, so a
-    // driver range neither selects nor drops one of them — a request that selects this category over
-    // a range gets it whole.
-    let mut aliased_names: Vec<String> = Vec::new();
-    if selection.requests(RecoveryEvidenceKind::NameDetails) {
-        let mut delivered = 0usize;
-        let mut complete = !phase.stopped();
-        for name in names.names().filter(|name| name.aliased().is_some()) {
-            if !phase.may_continue(budget) {
-                complete = false;
-                break;
-            }
-            aliased_names.push(aliased_name(name));
-            delivered += 1;
-        }
-        match (complete, delivered) {
-            (true, _) => evidence.delivered(RecoveryEvidenceKind::NameDetails),
-            (false, 0) => {}
-            (false, delivered) => {
-                evidence.stopped(RecoveryEvidenceKind::NameDetails, count_of(delivered))
-            }
-        }
-    }
-
-    let regions = regions;
+    // The rule index: every rule that decided something about this body, each once, in the order
+    // this layer reads them. It is rule evidence — a category the request selects or does not — and
+    // it is read from the *plans*, so the driver range never changes it: a range selects records,
+    // not the decisions they are written from, and the decisions are the same for every selection.
     let mut rules = if selection.requests(RecoveryEvidenceKind::RuleDetails) {
         recovered.rules()
     } else {
         Vec::new()
     };
-    // A dynamic site is a rule's answer too: the record names `lambda@1` whether it presented the
-    // site or refused it, so the report's rule list states both. A body with no site names no
-    // lambda rule, which is why the list is built from the records rather than from the table.
-    for lambda in &program.lambdas {
-        let rule = lambda.rule();
-        if !rules.contains(&rule) {
-            rules.push(rule);
+    if selection.requests(RecoveryEvidenceKind::RuleDetails) {
+        // A dynamic site is a rule's answer too: the decision names `lambda@1` whether it presented
+        // the site or refused it, so the report's rule list states both. A body with no site names no
+        // lambda rule, which is why the list is built from the plan rather than from a record table.
+        let mut answered: Vec<RuleVersion> = Vec::new();
+        if !program.lambdas.is_empty() {
+            answered.push(crate::lambda::RULE);
         }
-    }
-    // The three shapes of P3 2.2 are rules' answers in the same way, and each record says which
-    // rule: a body with none of them names none of the rules.
-    let concats = chains.records().to_vec();
-    let bridges: Vec<BridgeRecord> = bridge
-        .iter()
-        .filter_map(|plan| plan.record().cloned())
-        .collect();
-    for rule in concats
-        .iter()
-        .map(ConcatRecord::rule)
-        .chain(program.accessors.iter().map(AccessorRecord::rule))
-        .chain(bridges.iter().map(BridgeRecord::rule))
-        .chain(sites.records().iter().map(NewRecord::rule))
-        .chain(fields.records().iter().map(FieldRecord::rule))
-        .chain(enums.records().iter().map(EnumSwitchRecord::rule))
-        .chain(prologues.record().map(InitRecord::rule))
-        // The declaration rule is listed when it *wrote* something: its output is the envelope line,
-        // and a run that was not told the declaration facts wrote none. The refusal is not invisible
-        // for that — the gap and its diagnostic name the rule — but a rule that concluded nothing
-        // about these bytes is not a rule that produced this artifact.
-        .chain(
-            declaration
-                .record()
-                .filter(|record| record.presented())
-                .map(DeclarationRecord::rule),
-        )
-    {
-        if !rules.contains(&rule) {
-            rules.push(rule);
+        if chains.answered() {
+            answered.push(concat::RULE);
+        }
+        if !program.accessors.is_empty() {
+            answered.push(crate::accessor::RULE);
+        }
+        if bridge.is_some() {
+            answered.push(bridge::RULE);
+        }
+        if sites.answered() {
+            answered.push(init::NEW_RULE);
+        }
+        if fields.answered() {
+            answered.push(field::RULE);
+        }
+        if enums.answered() {
+            answered.push(enumswitch::RULE);
+        }
+        if prologues.answered() {
+            answered.push(init::INIT_RULE);
+        }
+        // The declaration rule is listed when it *read* a declaration: its output is the envelope
+        // line, and a run that was not told the declaration facts wrote none. The refusal is not
+        // invisible for that — the gap and its diagnostic name the rule — but a rule that concluded
+        // nothing about these bytes is not a rule that produced this artifact.
+        if declaration.declaration().is_some() {
+            answered.push(declaration::RULE);
+        }
+        for rule in answered {
+            if !rules.contains(&rule) {
+                rules.push(rule);
+            }
         }
     }
     // The refusals are diagnostics of their own: a site that was not presented says which link of
@@ -882,16 +824,131 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
             ),
         ));
     }
-    // The stop of the evidence phase, when it stopped: stated in the same vocabulary every other
-    // stop of this layer uses, and never as a claim about the artifact.
-    let execution = if phase.stopped() {
-        let reason = phase.reason(budget);
-        diagnostics.push(stop_diagnostic(&reason));
-        stop_execution(&reason, budget.usage())
+    // ---------------------------------------------------------------------------------------
+    // The evidence phase: the artifact is committed and every diagnostic of this run is stated, and
+    // what the request selected is materialized now — one owning record at a time, within the same
+    // budget, in the fixed order this layer states its categories in.
+    //
+    // Every category is materialized *after* this line, including the rule records and the segment
+    // table: the rules decided before the artifact was written, but their owning records are written
+    // from the plans here. A refusal in the phase therefore stops the *materialization* and nothing
+    // else — the text, its planes and the gaps above stay exactly what this run produced, the
+    // category in flight reports the prefix it delivered, the categories the phase never reached
+    // stay `NotPerformed`, and the run's execution states the real stop.
+    // ---------------------------------------------------------------------------------------
+    let publication = Publication::of(&selection);
+    let mut evidence = RecoveryEvidence::pending(&selection);
+    let mut phase = EvidencePhase::new();
+    let range = selection.driver_bci_range();
+
+    // The region records: the run holds every region either way, and the records are built here —
+    // one by one, each after the charge that pays for it — only for the regions the selected driver
+    // range intersects. A region is kept or dropped as a unit, with the origins it states for
+    // itself.
+    let (regions, reached) = if selection.requests(RecoveryEvidenceKind::RegionDetails) {
+        phase.materialize(
+            budget,
+            recovered
+                .regions
+                .iter()
+                .filter(|region| in_driver_range(region, range)),
+            region_record,
+        )
     } else {
-        ExecutionReport::Complete {
-            usage: budget.usage(),
+        (Vec::new(), Materialized::None)
+    };
+    evidence.materialized(RecoveryEvidenceKind::RegionDetails, reached);
+
+    // Every rule record of the run, in the order this layer reads the rules. One category, nine
+    // plans: the category is complete only when every one of its records was materialized, and the
+    // phase's own stop ends it wherever it lands.
+    let mut lambdas: Vec<LambdaRecord> = Vec::new();
+    let mut concats: Vec<ConcatRecord> = Vec::new();
+    let mut accessors: Vec<AccessorRecord> = Vec::new();
+    let mut bridges: Vec<BridgeRecord> = Vec::new();
+    let mut news: Vec<NewRecord> = Vec::new();
+    let mut field_records: Vec<FieldRecord> = Vec::new();
+    let mut enum_switches: Vec<EnumSwitchRecord> = Vec::new();
+    let mut init: Option<InitRecord> = None;
+    let mut declaration_record: Option<DeclarationRecord> = None;
+    if selection.requests(RecoveryEvidenceKind::RuleDetails) {
+        let mut delivery = Delivery::new(&phase);
+        lambdas = delivery.take(program.materialize_lambdas(publication, &mut phase, budget));
+        concats = delivery.take(chains.materialize(publication, &mut phase, budget));
+        accessors = delivery.take(program.materialize_accessors(publication, &mut phase, budget));
+        bridges = match bridge.as_ref() {
+            Some(plan) => delivery
+                .take_one(plan.materialize(publication, &mut phase, budget))
+                .into_iter()
+                .collect(),
+            None => Vec::new(),
+        };
+        news = delivery.take(sites.materialize(publication, &mut phase, budget));
+        field_records = delivery.take(fields.materialize(publication, &mut phase, budget));
+        enum_switches = delivery.take(enums.materialize(publication, &mut phase, budget));
+        init = prologues
+            .answered()
+            .then(|| delivery.take_one(prologues.materialize(publication, &mut phase, budget)))
+            .flatten();
+        declaration_record =
+            delivery.take_one(declaration.materialize(publication, &mut phase, budget));
+        evidence.materialized(RecoveryEvidenceKind::RuleDetails, delivery.reached());
+    }
+
+    // The names the presentation had to replace: per local slot rather than per bytecode index, so a
+    // driver range neither selects nor drops one of them — a request that selects this category over
+    // a range gets it whole.
+    let (aliased_names, reached) = if selection.requests(RecoveryEvidenceKind::NameDetails) {
+        phase.materialize(
+            budget,
+            names.names().filter(|name| name.aliased().is_some()),
+            aliased_name,
+        )
+    } else {
+        (Vec::new(), Materialized::None)
+    };
+    evidence.materialized(RecoveryEvidenceKind::NameDetails, reached);
+
+    // The source map: the last category, because it is the only one that replays the whole decided
+    // AST. The committing pass wrote the text and owns no table; this pass writes no text and
+    // verifies every byte it re-writes against the artifact the committing pass produced.
+    let mut gate_stop: Option<StopReason> = None;
+    let (source_map, reached) = if selection.requests(RecoveryEvidenceKind::SourceMap) {
+        match emit_source_map(
+            &program.stmts,
+            request.facts,
+            declaration.declaration(),
+            member,
+            SegmentPublication::of(&selection),
+            &emitted,
+            &mut phase,
+            budget,
+        ) {
+            Ok((map, reached)) => (map, reached),
+            Err(stop) => {
+                gate_stop = Some(stop);
+                (SourceMap::default(), Materialized::None)
+            }
         }
+    } else {
+        (SourceMap::default(), Materialized::None)
+    };
+    if gate_stop.is_none() {
+        evidence.materialized(RecoveryEvidenceKind::SourceMap, reached);
+    }
+
+    // The stop of the evidence phase, when it stopped — and the one the source-map gate states when
+    // the replayed writes disagreed with the committed artifact: both are stated in the same
+    // vocabulary every other stop of this layer uses, and neither is a claim about the artifact.
+    let stop = gate_stop.or_else(|| phase.stopped().then(|| phase.reason(budget)));
+    let execution = match &stop {
+        Some(reason) => {
+            diagnostics.push(stop_diagnostic(reason));
+            stop_execution(reason, budget.usage())
+        }
+        None => ExecutionReport::Complete {
+            usage: budget.usage(),
+        },
     };
     let report = RecoveryReport {
         profile: request.profile.clone(),
@@ -917,17 +974,17 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         outcome: RecoveryOutcome::Produced,
         content,
         text: emitted.text,
-        source_map: emitted.source_map,
+        source_map,
         regions,
-        lambdas: program.lambdas,
+        lambdas,
         concats,
-        accessors: program.accessors,
+        accessors,
         bridges,
-        news: sites.records().to_vec(),
-        fields: fields.records().to_vec(),
-        enum_switches: enums.records().to_vec(),
-        init: prologues.record().cloned(),
-        declaration: declaration.record().cloned(),
+        news,
+        fields: field_records,
+        enum_switches,
+        init,
+        declaration: declaration_record,
         fallbacks,
         aliased_names,
         diagnostics,
@@ -940,6 +997,60 @@ pub fn recover(request: &RecoveryRequest<'_>, budget: &mut Budget) -> RecoveryRe
         "the evidence status list disagrees with the payload it describes"
     );
     report
+}
+
+/// One category's materialization across the several plans that publish into it.
+///
+/// `RuleDetails` is one category and nine rules: the phase delivers their records in one order, and
+/// the category is `Complete` only when it reached the end of every one of them. The accumulator is
+/// where "reached the end" of several materializations becomes the one state the list states, and it
+/// never deletes a record an earlier plan delivered.
+struct Delivery {
+    /// Whether the phase reached the end of every plan seen so far.
+    complete: bool,
+    /// How many owning records the category holds so far.
+    records: u64,
+}
+
+impl Delivery {
+    /// A category nothing has been materialized for yet, in a phase that has not stopped.
+    fn new(phase: &EvidencePhase) -> Self {
+        Self {
+            complete: !phase.stopped(),
+            records: 0,
+        }
+    }
+
+    /// Takes one plan's materialization into the category's own account.
+    fn take<T>(&mut self, (records, reached): (Vec<T>, Materialized)) -> Vec<T> {
+        self.records = self
+            .records
+            .saturating_add(u64::try_from(records.len()).unwrap_or(u64::MAX));
+        if !matches!(reached, Materialized::Complete) {
+            self.complete = false;
+        }
+        records
+    }
+
+    /// The same, for a plan that publishes at most one record.
+    fn take_one<T>(&mut self, (record, reached): (Option<T>, Materialized)) -> Option<T> {
+        self.take((record.into_iter().collect::<Vec<T>>(), reached))
+            .into_iter()
+            .next()
+    }
+
+    /// What the category reached, as the list states it.
+    fn reached(&self) -> Materialized {
+        if self.complete {
+            Materialized::Complete
+        } else if self.records == 0 {
+            Materialized::None
+        } else {
+            Materialized::Partial {
+                delivered: self.records,
+            }
+        }
+    }
 }
 
 /// One replaced name, as a selected `NameDetails` category states it.
@@ -1196,6 +1307,9 @@ fn stop_diagnostic(reason: &StopReason) -> Diagnostic {
             crate::stop::BUDGET_INTERRUPTED_CODE => format!(
                 "the budget interrupted the run ({code}) at {}",
                 at.map_or("no node".to_string(), |bci| format!("BCI {bci}"))
+            ),
+            crate::stop::SOURCE_MAP_MISMATCH_CODE => format!(
+                "the source-map replay of this run did not agree with the artifact the committing                  pass wrote: the map cannot be attached to that text, so it is not delivered and the                  artifact is left exactly as it was ({code})"
             ),
             _ => format!(
                 "the run was interrupted ({code}) at {}",

@@ -580,10 +580,13 @@ fn the_type_decision_is_billed_and_a_stopped_run_commits_nothing() {
     // dropped silently.
     //
     // The evidence selection this file presents under is the full one (`RecoveredEvidenceRequest::all`,
-    // `recover` above), and this body's two region records are materialized by the evidence phase:
-    // two more `IrItems` charges (`add-demand-driven-core-results`, D1). The plan's three entries are
-    // still three of the run's own charges, which is what this assertion is about.
-    const RELAYED_IR_ITEMS: u64 = 383;
+    // `recover` above). Every category of it is charged to the same dimension, one `IrItems` per
+    // owning record (`add-demand-driven-core-results`, D1/D3): this body's evidence phase
+    // materializes its two region records, its one rule record (the declaration; the body has no
+    // other rule's record) and the sixteen spans of its source map, so the full run is 381 + 2 + 1 +
+    // 16 = 400. The plan's three entries are still three of the run's own charges and are inside
+    // that 381, which is what this assertion is about.
+    const RELAYED_IR_ITEMS: u64 = 400;
     const IR_ITEMS_BEFORE_THE_PLAN: u64 = 369;
     let engine = Engine::new();
     let fixture = fixture(&engine, SAMPLE);

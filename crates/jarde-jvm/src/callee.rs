@@ -267,6 +267,43 @@ impl CalleeReadReport {
     pub fn usage(&self) -> &UsageSnapshot {
         &self.usage
     }
+
+    /// The same read without the **read detail** the `ReadDetails` evidence category publishes:
+    /// every member keeps the identity and the flags the class declared, every refusal and the usage
+    /// stay, and the decoded bodies and the header-read proofs are dropped (change
+    /// `add-demand-driven-core-results`, D3).
+    ///
+    /// The two halves answer different questions. What stays is the *binding result*: which member
+    /// each candidate named resolved to, which candidates this class does not answer, and what the
+    /// read charged — the necessary result of a presentation that read a callee at all, and what the
+    /// accessor rule decided from. What goes is the *expansion*: the callee facts (the members'
+    /// decoded bodies, which the rule read and no longer needs) and the record of the header reads
+    /// that produced them.
+    ///
+    /// The entry that performed the read publishes this projection when the request did not select
+    /// `ReadDetails`; the read itself is unchanged, because the accessor rule's decision reads the
+    /// bodies either way.
+    pub fn without_read_details(mut self) -> Self {
+        for member in &mut self.members {
+            member.body = None;
+        }
+        self.reads.clear();
+        self
+    }
+
+    /// How many read-detail records this report holds: the decoded bodies it kept and the header-read
+    /// proofs it recorded.
+    ///
+    /// The count an entry states for the `ReadDetails` category — zero for a report this projection
+    /// produced, and zero for a read that named no member at all, which is a legal empty result.
+    pub fn detail_records(&self) -> u64 {
+        let bodies = self
+            .members
+            .iter()
+            .filter(|member| member.body.is_some())
+            .count();
+        u64::try_from(bodies.saturating_add(self.reads.len())).unwrap_or(u64::MAX)
+    }
 }
 
 /// Reads the members `request.candidates` name out of the one definition the request names.

@@ -82,13 +82,64 @@ pub(crate) struct Site {
 
 /// Every construction site of one body, the candidates that were not sites, and the gaps stated in
 /// every selection.
+///
+/// The plan holds the **decisions**: every verified site (which the builder writes) and every refused
+/// candidate with the link that failed. [`Self::materialize`] writes the owning [`NewRecord`]s from
+/// them after the artifact is committed, one record per charge and only when the request selected
+/// `RuleDetails`.
 pub(crate) struct Sites {
     sites: Vec<Site>,
     owned: BTreeSet<u32>,
-    /// Why a candidate was not a construction site, in BCI order.
-    refusals: Vec<Gap>,
-    /// The records, when this run published rule records.
-    records: Vec<NewRecord>,
+    /// Why a candidate was not a construction site, in BCI order: the internal decision every
+    /// selection reports as a gap beside the records only a selected run materializes.
+    refusals: Vec<Refused>,
+}
+
+/// One candidate construction this rule read and did not present.
+struct Refused {
+    /// The BCI of the allocation the refused candidate starts at.
+    head: u32,
+    /// The class the allocation named, in internal form.
+    class: String,
+    /// Which link of the verification failed.
+    refusal: Refusal,
+}
+
+/// One verdict of this rule's plan: the site it verified, or the candidate it refused.
+enum Decision<'a> {
+    Presented(&'a Site),
+    Refused(&'a Refused),
+}
+
+impl Decision<'_> {
+    fn head(&self) -> u32 {
+        match self {
+            Self::Presented(site) => site.head,
+            Self::Refused(refused) => refused.head,
+        }
+    }
+
+    /// Every driver BCI this decision states for itself: a site's allocation, its copy, its
+    /// constructor and every argument, and a refused candidate's own allocation.
+    fn positions(&self) -> Vec<u32> {
+        match self {
+            Self::Presented(site) => site_positions(site),
+            Self::Refused(refused) => vec![refused.head],
+        }
+    }
+
+    /// The owning record, built here and only here.
+    fn record(self) -> NewRecord {
+        crate::demand_counts::record_built(crate::evidence::RecoveryEvidenceKind::RuleDetails);
+        match self {
+            Self::Presented(site) => NewRecord::of_site(site),
+            Self::Refused(refused) => NewRecord::of_candidate(
+                refused.head,
+                &refused.class,
+                NewRefusal::of(&refused.refusal, refused.head),
+            ),
+        }
+    }
 }
 
 impl Sites {
@@ -98,7 +149,6 @@ impl Sites {
             sites: Vec::new(),
             owned: BTreeSet::new(),
             refusals: Vec::new(),
-            records: Vec::new(),
         }
     }
 
@@ -113,14 +163,16 @@ impl Sites {
     }
 
     /// Every candidate the rule refused, in BCI order.
-    pub(crate) fn refusals(&self) -> &[Gap] {
-        &self.refusals
+    pub(crate) fn refusals(&self) -> impl Iterator<Item = Gap> + '_ {
+        self.refusals.iter().map(|refused| {
+            let refusal = NewRefusal::of(&refused.refusal, refused.head);
+            Gap::at(refusal.code, refused.head, refusal.message)
+        })
     }
 
-    /// Every candidate and every refusal, in BCI order — the evidence a report reads back when this
-    /// run selected rule records.
-    pub(crate) fn records(&self) -> &[NewRecord] {
-        &self.records
+    /// Whether this rule decided anything about this body.
+    pub(crate) fn answered(&self) -> bool {
+        !self.sites.is_empty() || !self.refusals.is_empty()
     }
 
     /// How many candidates the rule read, and how many of them it presented as sites.
@@ -129,6 +181,30 @@ impl Sites {
         let refused = u64::try_from(self.refusals.len()).unwrap_or(u64::MAX);
         (presented + refused, presented)
     }
+
+    /// The owning records this plan publishes under `publication`, in BCI order, within the phase's
+    /// remaining allowance.
+    pub(crate) fn materialize(
+        &self,
+        publication: Publication,
+        phase: &mut crate::evidence::EvidencePhase,
+        budget: &mut jarde_reader::budget::Budget,
+    ) -> (Vec<NewRecord>, crate::evidence::Materialized) {
+        let mut decisions: Vec<Decision<'_>> = self
+            .sites
+            .iter()
+            .map(Decision::Presented)
+            .chain(self.refusals.iter().map(Decision::Refused))
+            .collect();
+        decisions.sort_by_key(Decision::head);
+        phase.materialize(
+            budget,
+            decisions
+                .into_iter()
+                .filter(|decision| publication.publishes(&decision.positions())),
+            Decision::record,
+        )
+    }
 }
 
 /// Reads every construction site of one body.
@@ -136,12 +212,7 @@ impl Sites {
 /// `reserved` is every BCI another rule of this run already owns — in practice the concatenation
 /// chains, whose own allocation and constructor call are written inside a `+` expression and must not
 /// be written a second time as a `new`. One instruction is never two shapes.
-pub(crate) fn sites(
-    ssa: &SsaTable,
-    operations: &Operations,
-    reserved: &BTreeSet<u32>,
-    publication: Publication,
-) -> Sites {
+pub(crate) fn sites(ssa: &SsaTable, operations: &Operations, reserved: &BTreeSet<u32>) -> Sites {
     let blocks: Vec<&[SsaInstruction]> = ssa
         .blocks()
         .iter()
@@ -162,37 +233,20 @@ pub(crate) fn sites(
             let ty = ty.clone();
             match verify(head, index, block, ty.clone(), ssa, operations, &all) {
                 Ok(site) => {
-                    if publication.publishes(&site_positions(&site)) {
-                        crate::demand_counts::record_built(
-                            crate::evidence::RecoveryEvidenceKind::RuleDetails,
-                        );
-                        plan.records.push(NewRecord::of_site(&site));
-                    }
                     for bci in &site.owned {
                         plan.owned.insert(*bci);
                     }
                     plan.sites.push(site);
                 }
-                Err(refusal) => {
-                    // The refusal *shape* is what every selection reports about this candidate;
-                    // the record that owns it is built only when this run publishes rule records
-                    // and the candidate's own BCI is inside the selected driver range.
-                    let refusal = NewRefusal::of(&refusal, head);
-                    plan.refusals
-                        .push(Gap::at(refusal.code, head, refusal.message.clone()));
-                    if publication.publishes(&[head]) {
-                        crate::demand_counts::record_built(
-                            crate::evidence::RecoveryEvidenceKind::RuleDetails,
-                        );
-                        plan.records
-                            .push(NewRecord::of_candidate(head, &ty, refusal));
-                    }
-                }
+                Err(refusal) => plan.refusals.push(Refused {
+                    head,
+                    class: ty,
+                    refusal,
+                }),
             }
         }
     }
-    plan.records.sort_by_key(|record| record.head);
-    plan.refusals.sort_by_key(|gap| gap.position());
+    plan.refusals.sort_by_key(|refused| refused.head);
     plan
 }
 
@@ -513,18 +567,37 @@ pub(crate) struct Prologue {
 }
 
 /// The prologue of one body, when it has one, and the record either way.
+///
+/// The plan holds the *decision* — the verified prologue, the call the rule refused to spell, and
+/// the verdict of the whole-body case — and [`Self::materialize`] writes the owning [`InitRecord`]
+/// from it after the artifact is committed, only when the request selected `RuleDetails`.
 pub(crate) struct Prologues {
     prologue: Option<Prologue>,
     /// The call the rule refused to spell, with the requirement it fell short of: the builder quotes
     /// exactly that instruction rather than writing it as whatever the generic arms would make of a
     /// constructor call on an uninitialized `this` (P3 2.3).
     refused: Option<(u32, Refusal)>,
-    /// The refusal as every selection states it — the call the rule would not spell, or the body
-    /// that has no prologue to read at all. `None` for a body this rule presented and for a body
-    /// that is not an instance initializer.
-    refusal: Option<Gap>,
-    /// The record, when this run published rule records.
-    record: Option<InitRecord>,
+    /// What this rule decided about this body: the plan side of the record, whatever the selection.
+    verdict: Verdict,
+}
+
+/// What `init@1` decided about one body's prologue.
+enum Verdict {
+    /// The body is not an instance initializer: this rule claims nothing and refuses nothing, and
+    /// materializes no record — it is not a verdict about these bytes.
+    NotThisRule,
+    /// An instance initializer whose body makes no constructor call on its own `this`. The refusal
+    /// is about the whole body, so a driver range neither selects nor drops it.
+    NoPrologue(Refusal),
+    /// A constructor call the run cannot decide `this`/`super` for, because no declaring class was
+    /// stated.
+    Undecided {
+        bci: u32,
+        class: String,
+        refusal: Refusal,
+    },
+    /// A decided prologue.
+    Decided { class: String, declared: String },
 }
 
 impl Prologues {
@@ -533,9 +606,14 @@ impl Prologues {
         Self {
             prologue: None,
             refused: None,
-            refusal: None,
-            record: None,
+            verdict: Verdict::NotThisRule,
         }
+    }
+
+    /// Whether this rule decided anything about this body: the rule index is built from this answer,
+    /// and it does not depend on the evidence selection or on a driver range.
+    pub(crate) fn answered(&self) -> bool {
+        !matches!(self.verdict, Verdict::NotThisRule)
     }
 
     /// The prologue the instruction at one BCI is, when it is the verified one.
@@ -559,24 +637,97 @@ impl Prologues {
     }
 
     /// Why the artifact writes no prologue, as the gap every selection carries.
-    pub(crate) fn refusal(&self) -> Option<&Gap> {
-        self.refusal.as_ref()
+    pub(crate) fn refusal(&self) -> Option<Gap> {
+        match &self.verdict {
+            Verdict::NotThisRule | Verdict::Decided { .. } => None,
+            Verdict::NoPrologue(refusal) => {
+                let shape = InitRefusal::of(refusal, None);
+                Some(Gap::whole(shape.code, shape.message))
+            }
+            Verdict::Undecided { bci, refusal, .. } => {
+                let shape = InitRefusal::of(refusal, Some(*bci));
+                Some(Gap::at(shape.code, *bci, shape.message))
+            }
+        }
     }
 
-    /// The record of this body's prologue, when this run published rule records and the body is an
-    /// instance initializer.
-    pub(crate) fn record(&self) -> Option<&InitRecord> {
-        self.record.as_ref()
+    /// The prologue's own record, when the request selected rule records and the phase can pay for
+    /// it: the one owning record of this rule, built after the artifact was committed.
+    pub(crate) fn materialize(
+        &self,
+        publication: Publication,
+        phase: &mut crate::evidence::EvidencePhase,
+        budget: &mut jarde_reader::budget::Budget,
+    ) -> (Option<InitRecord>, crate::evidence::Materialized) {
+        let positions: Vec<u32> = match &self.verdict {
+            Verdict::NotThisRule => Vec::new(),
+            Verdict::NoPrologue(_) => Vec::new(),
+            Verdict::Undecided { bci, .. } => vec![*bci],
+            Verdict::Decided { .. } => self
+                .prologue
+                .as_ref()
+                .map(|prologue| vec![prologue.bci])
+                .unwrap_or_default(),
+        };
+        let selected = self.answered().then_some(()).filter(|()| {
+            // The whole-body verdict states no position of its own and is delivered with its
+            // category whatever range the request states; a positioned one follows the range.
+            publication.publishes(&positions)
+        });
+        let (records, reached) = phase.materialize(budget, selected, |()| {
+            crate::demand_counts::record_built(crate::evidence::RecoveryEvidenceKind::RuleDetails);
+            self.record()
+        });
+        (records.into_iter().next(), reached)
+    }
+
+    /// The record one verdict publishes, built from the decision this plan holds.
+    fn record(&self) -> InitRecord {
+        match &self.verdict {
+            Verdict::NotThisRule => InitRecord {
+                bci: None,
+                target: None,
+                class: None,
+                declared: None,
+                presented: false,
+                refusal: None,
+            },
+            Verdict::NoPrologue(refusal) => {
+                InitRecord::of_refusal_shape(None, None, InitRefusal::of(refusal, None))
+            }
+            Verdict::Undecided {
+                bci,
+                class,
+                refusal,
+            } => InitRecord::of_refusal_shape(
+                Some(*bci),
+                Some(class.clone()),
+                InitRefusal::of(refusal, Some(*bci)),
+            ),
+            Verdict::Decided { class, declared } => {
+                let prologue = self
+                    .prologue
+                    .as_ref()
+                    .expect("a decided prologue is the prologue this plan holds");
+                InitRecord {
+                    bci: Some(prologue.bci),
+                    target: Some(prologue.target),
+                    class: Some(class.clone()),
+                    declared: Some(declared.clone()),
+                    presented: true,
+                    refusal: None,
+                }
+            }
+        }
     }
 }
 
 /// Reads the prologue of one body.
-pub(crate) fn prologue(
-    ssa: &SsaTable,
-    operations: &Operations,
-    method: &MethodFacts,
-    publication: Publication,
-) -> Prologues {
+///
+/// The decision — presented, refused, or not this rule's body at all — is taken for every selection;
+/// no owning record is built here. The verdict stays in [`Prologues`] and
+/// [`Prologues::materialize`] writes the record from it after the artifact is committed.
+pub(crate) fn prologue(ssa: &SsaTable, operations: &Operations, method: &MethodFacts) -> Prologues {
     if method.name() != "<init>" {
         // Not an instance initializer: nothing is claimed and nothing is refused.
         return Prologues::none();
@@ -603,17 +754,10 @@ pub(crate) fn prologue(
             "jre_init_no_prologue",
             "the body of an instance initializer makes no constructor call on its own uninitialized `this`, so no `super(…)` or `this(…)` can be read from it".to_string(),
         );
-        let shape = InitRefusal::of(&refusal, None);
         return Prologues {
             prologue: None,
             refused: None,
-            refusal: Some(Gap::whole(shape.code, shape.message.clone())),
-            record: publication.publishes(&[]).then(|| {
-                crate::demand_counts::record_built(
-                    crate::evidence::RecoveryEvidenceKind::RuleDetails,
-                );
-                InitRecord::of_refusal_shape(None, None, shape)
-            }),
+            verdict: Verdict::NoPrologue(refusal),
         };
     };
     let bci = instruction.bci();
@@ -630,17 +774,14 @@ pub(crate) fn prologue(
                 target.owner()
             ),
         );
-        let shape = InitRefusal::of(&refusal, Some(bci));
         return Prologues {
             prologue: None,
-            refused: Some((bci, refusal)),
-            refusal: Some(Gap::at(shape.code, bci, shape.message.clone())),
-            record: publication.publishes(&[bci]).then(|| {
-                crate::demand_counts::record_built(
-                    crate::evidence::RecoveryEvidenceKind::RuleDetails,
-                );
-                InitRecord::of_refusal_shape(Some(bci), Some(class), shape)
-            }),
+            refused: Some((bci, refusal.clone())),
+            verdict: Verdict::Undecided {
+                bci,
+                class,
+                refusal,
+            },
         };
     };
     // JVMS 4.9.2, which the frame pass already enforces on the very token this receiver is: an
@@ -661,18 +802,7 @@ pub(crate) fn prologue(
             declared: declared.clone(),
         }),
         refused: None,
-        refusal: None,
-        record: publication.publishes(&[bci]).then(|| {
-            crate::demand_counts::record_built(crate::evidence::RecoveryEvidenceKind::RuleDetails);
-            InitRecord {
-                bci: Some(bci),
-                target: Some(target_kind),
-                class: Some(class),
-                declared: Some(declared),
-                presented: true,
-                refusal: None,
-            }
-        }),
+        verdict: Verdict::Decided { class, declared },
     }
 }
 

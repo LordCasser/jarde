@@ -62,14 +62,44 @@ const DECLARING_CLASS: Precondition = Precondition::Metadata {
 
 /// Every field instruction of one body this rule read, the ones it claimed, and the gaps it states
 /// in every selection.
+///
+/// The plan holds the **decisions**: what each claimed instruction reads (which the builder writes)
+/// and every refusal with the evidence it refused. [`Self::materialize`] writes the owning
+/// [`FieldRecord`]s from them after the artifact is committed, one record per charge and only when
+/// the request selected `RuleDetails`.
 pub(crate) struct Plan {
     claimed: BTreeMap<u32, (Evidence, Shape)>,
-    /// Why a field instruction was not presented, in BCI order. A gap is not the optional evidence:
-    /// it is what every selection reports about an instruction this rule refused.
-    refusals: Vec<Gap>,
-    /// The records, when this run published rule records: the presented access of every claimed
-    /// instruction and the refusal of every other one, in BCI order.
-    records: Vec<FieldRecord>,
+    /// Why a field instruction was not presented, in BCI order — the internal decision, with the
+    /// evidence the record states. A gap is not the optional evidence: it is what every selection
+    /// reports about an instruction this rule refused.
+    refusals: Vec<(Evidence, Refusal)>,
+}
+
+/// One verdict of this rule's plan: the access it claimed, or the instruction it refused.
+enum Decision<'a> {
+    Claimed(&'a Evidence),
+    Refused(&'a Evidence, &'a Refusal),
+}
+
+impl Decision<'_> {
+    fn at(&self) -> u32 {
+        match self {
+            Self::Claimed(evidence) | Self::Refused(evidence, _) => evidence.bci,
+        }
+    }
+
+    /// The owning record, built here and only here.
+    fn record(self) -> FieldRecord {
+        crate::demand_counts::record_built(crate::evidence::RecoveryEvidenceKind::RuleDetails);
+        match self {
+            Self::Claimed(evidence) => FieldRecord::of_presented(evidence),
+            Self::Refused(evidence, refusal) => FieldRecord::of(
+                evidence,
+                false,
+                Some(FieldRefusal::of(refusal, evidence.bci)),
+            ),
+        }
+    }
 }
 
 impl Plan {
@@ -78,7 +108,6 @@ impl Plan {
         Self {
             claimed: BTreeMap::new(),
             refusals: Vec::new(),
-            records: Vec::new(),
         }
     }
 
@@ -100,14 +129,44 @@ impl Plan {
     }
 
     /// Every field instruction the rule read and did not present, in BCI order.
-    pub(crate) fn refusals(&self) -> &[Gap] {
-        &self.refusals
+    pub(crate) fn refusals(&self) -> impl Iterator<Item = Gap> + '_ {
+        self.refusals.iter().map(|(evidence, refusal)| {
+            let refusal = FieldRefusal::of(refusal, evidence.bci);
+            Gap::at(refusal.code, evidence.bci, refusal.message)
+        })
     }
 
-    /// Every field instruction read, presented or refused, in BCI order — the evidence a report
-    /// reads back when this run selected rule records.
-    pub(crate) fn records(&self) -> &[FieldRecord] {
-        &self.records
+    /// Whether this rule decided anything about this body.
+    pub(crate) fn answered(&self) -> bool {
+        !self.claimed.is_empty() || !self.refusals.is_empty()
+    }
+
+    /// The owning records this plan publishes under `publication`, in BCI order, within the phase's
+    /// remaining allowance.
+    pub(crate) fn materialize(
+        &self,
+        publication: Publication,
+        phase: &mut crate::evidence::EvidencePhase,
+        budget: &mut jarde_reader::budget::Budget,
+    ) -> (Vec<FieldRecord>, crate::evidence::Materialized) {
+        let mut decisions: Vec<Decision<'_>> = self
+            .claimed
+            .values()
+            .map(|(evidence, _)| Decision::Claimed(evidence))
+            .chain(
+                self.refusals
+                    .iter()
+                    .map(|(evidence, refusal)| Decision::Refused(evidence, refusal)),
+            )
+            .collect();
+        decisions.sort_by_key(Decision::at);
+        phase.materialize(
+            budget,
+            decisions
+                .into_iter()
+                .filter(|decision| publication.publishes(&[decision.at()])),
+            Decision::record,
+        )
     }
 
     /// How many field instructions the rule read, and how many of them it presented. The two counts
@@ -151,11 +210,14 @@ impl Shape {
 /// `declaring` is what the caller stated about the class that declares this body, and it is read for
 /// exactly one thing: the writes an instance initializer makes on its own `UninitializedThis` before
 /// its constructor call, which JVMS 4.10.1.9 allows only through a `Fieldref` that names that class.
+///
+/// Every instruction is read and decided for every selection; no owning record is built here. The
+/// verdicts stay in the [`Plan`] and [`Plan::materialize`] writes the records from them after the
+/// artifact is committed.
 pub(crate) fn plan(
     ssa: &SsaTable,
     operations: &Operations,
     declaring: Option<&DeclaringClass>,
-    publication: Publication,
 ) -> Plan {
     let mut plan = Plan::empty();
     for instruction in ssa.blocks().iter().flat_map(|block| block.instructions()) {
@@ -180,35 +242,12 @@ pub(crate) fn plan(
         };
         match verify(instruction, &evidence, ssa, declaring) {
             Ok(shape) => {
-                // The record is built only when the run publishes rule records *and* the
-                // instruction's own BCI is inside the selected driver range.
-                if publication.publishes(&[at]) {
-                    crate::demand_counts::record_built(
-                        crate::evidence::RecoveryEvidenceKind::RuleDetails,
-                    );
-                    plan.records.push(FieldRecord::of_presented(&evidence));
-                }
                 plan.claimed.insert(at, (evidence, shape));
             }
-            Err(refusal) => {
-                // The refusal *shape* is the gap every selection carries; the record that owns it
-                // is built only when this run publishes rule records and the instruction's BCI is
-                // inside the selected driver range.
-                let refusal = FieldRefusal::of(&refusal, evidence.bci);
-                plan.refusals
-                    .push(Gap::at(refusal.code, evidence.bci, refusal.message.clone()));
-                if publication.publishes(&[at]) {
-                    crate::demand_counts::record_built(
-                        crate::evidence::RecoveryEvidenceKind::RuleDetails,
-                    );
-                    plan.records
-                        .push(FieldRecord::of(&evidence, false, Some(refusal)));
-                }
-            }
+            Err(refusal) => plan.refusals.push((evidence, refusal)),
         }
     }
-    plan.records.sort_by_key(|record| record.bci);
-    plan.refusals.sort_by_key(|gap| gap.position());
+    plan.refusals.sort_by_key(|(evidence, _)| evidence.bci);
     plan
 }
 

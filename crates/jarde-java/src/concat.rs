@@ -95,14 +95,84 @@ pub(crate) struct Chain {
 }
 
 /// Every chain of one body, and the refusals of the ones that were not chains.
+///
+/// # The plan is not the record (change `add-demand-driven-core-results`, D3)
+///
+/// What this type holds is the *decision*: every chain the rule verified — with the instructions it
+/// owns, because the builder writes its text — and every candidate it refused, with the link that
+/// failed. [`Self::records`] is where the **owning records** are built, and it is called from the
+/// evidence phase *after* the artifact is committed, one record per charge, only for the positions
+/// the selection holds: a run that did not select `RuleDetails` builds no `ConcatRecord` at all,
+/// while every premise above is still checked for it.
 pub(crate) struct Plan {
     chains: BTreeMap<u32, Chain>,
     owned: BTreeSet<u32>,
-    /// Why a candidate chain was not presented, in BCI order: what every selection reports about
-    /// this rule's refusals, beside the records only a selected run materializes.
-    refusals: Vec<Gap>,
-    /// The records, when this run published rule records.
-    records: Vec<ConcatRecord>,
+    /// Why a candidate chain was not presented, in BCI order: the internal decision every selection
+    /// reports as a gap beside the records only a selected run materializes.
+    refused: Vec<Refused>,
+}
+
+/// One candidate chain this rule read and did not present.
+///
+/// The allocation it was claimed to start at, the class that allocation named and the refusal — the
+/// plan's own account of the candidate, from which both the gap every selection states and the
+/// owning record a selected run materializes are written.
+struct Refused {
+    /// The BCI of the allocation the refused candidate starts at.
+    head: u32,
+    /// The class the allocation named, in internal form.
+    class: String,
+    /// Which link of the verification failed.
+    refusal: Refusal,
+}
+
+impl Refused {
+    /// The refusal as the report's own record states it.
+    fn record(&self) -> ConcatRefusal {
+        ConcatRefusal::of(&self.refusal, self.head)
+    }
+
+    /// The same refusal as the gap every selection carries.
+    fn gap(&self) -> Gap {
+        let refusal = self.record();
+        Gap::at(refusal.code, self.head, refusal.message)
+    }
+}
+
+/// One verdict of this rule's plan: the chain it verified, or the candidate it refused.
+enum Decision<'a> {
+    Presented(&'a Chain),
+    Refused(&'a Refused),
+}
+
+impl Decision<'_> {
+    /// The allocation the decision is about: the chains and the refused candidates are both ordered
+    /// by it.
+    fn head(&self) -> u32 {
+        match self {
+            Self::Presented(chain) => chain.head,
+            Self::Refused(refused) => refused.head,
+        }
+    }
+
+    /// Every driver BCI this decision states for itself: a chain's head, `toString` and every
+    /// `append`, and a refused candidate's own allocation. These are the positions the driver range
+    /// selects on, and the record is kept or dropped as a unit with them.
+    fn positions(&self) -> Vec<u32> {
+        match self {
+            Self::Presented(chain) => chain_positions(chain),
+            Self::Refused(refused) => vec![refused.head],
+        }
+    }
+
+    /// The owning record, built here and only here.
+    fn record(self) -> ConcatRecord {
+        crate::demand_counts::record_built(crate::evidence::RecoveryEvidenceKind::RuleDetails);
+        match self {
+            Self::Presented(chain) => record_of(chain),
+            Self::Refused(refused) => refused_record(refused),
+        }
+    }
 }
 
 impl Plan {
@@ -111,8 +181,7 @@ impl Plan {
         Self {
             chains: BTreeMap::new(),
             owned: BTreeSet::new(),
-            refusals: Vec::new(),
-            records: Vec::new(),
+            refused: Vec::new(),
         }
     }
 
@@ -135,21 +204,50 @@ impl Plan {
     }
 
     /// Every candidate chain the rule refused, in BCI order.
-    pub(crate) fn refusals(&self) -> &[Gap] {
-        &self.refusals
+    pub(crate) fn refusals(&self) -> impl Iterator<Item = Gap> + '_ {
+        self.refused.iter().map(Refused::gap)
     }
 
-    /// Every chain and every refusal, in BCI order — the evidence a report reads back when this run
-    /// selected rule records.
-    pub(crate) fn records(&self) -> &[ConcatRecord] {
-        &self.records
+    /// Whether this rule decided anything about this body: it verified a chain or refused a
+    /// candidate. The question the rule index is built from, and it does not depend on the evidence
+    /// selection or on a driver range.
+    pub(crate) fn answered(&self) -> bool {
+        !self.chains.is_empty() || !self.refused.is_empty()
     }
 
     /// How many candidate chains the rule read, and how many of them it presented.
     pub(crate) fn counts(&self) -> (u64, u64) {
         let presented = u64::try_from(self.chains.len()).unwrap_or(u64::MAX);
-        let refused = u64::try_from(self.refusals.len()).unwrap_or(u64::MAX);
+        let refused = u64::try_from(self.refused.len()).unwrap_or(u64::MAX);
         (presented + refused, presented)
+    }
+
+    /// The owning records this plan publishes under `publication`, in BCI order, within the phase's
+    /// remaining allowance.
+    ///
+    /// The decision is taken for every candidate; what the selection decides is which records exist.
+    /// A record whose positions are outside the selected range is not built at all, and a record the
+    /// phase cannot pay for ends the category with the prefix it already built.
+    pub(crate) fn materialize(
+        &self,
+        publication: Publication,
+        phase: &mut crate::evidence::EvidencePhase,
+        budget: &mut jarde_reader::budget::Budget,
+    ) -> (Vec<ConcatRecord>, crate::evidence::Materialized) {
+        let mut decisions: Vec<Decision<'_>> = self
+            .chains
+            .values()
+            .map(Decision::Presented)
+            .chain(self.refused.iter().map(Decision::Refused))
+            .collect();
+        decisions.sort_by_key(Decision::head);
+        phase.materialize(
+            budget,
+            decisions
+                .into_iter()
+                .filter(|decision| publication.publishes(&decision.positions())),
+            Decision::record,
+        )
     }
 }
 
@@ -232,7 +330,12 @@ impl ConcatRefusal {
 /// The walk runs over the **SSA blocks**, because a chain is a contiguous run of instructions of
 /// one block: a chain a branch cuts in two is not this shape and is refused with the split stated
 /// rather than presented as an expression the bytecode never evaluated as one.
-pub(crate) fn plan(ssa: &SsaTable, operations: &Operations, publication: Publication) -> Plan {
+///
+/// Every premise and every refusal is decided here, for every evidence selection; what this function
+/// does **not** do is build the owning records. The verified chains and the refused candidates stay
+/// in the [`Plan`], and [`Plan::materialize`] writes the records from them after the artifact is
+/// committed.
+pub(crate) fn plan(ssa: &SsaTable, operations: &Operations) -> Plan {
     let blocks: Vec<Vec<&SsaInstruction>> = ssa
         .blocks()
         .iter()
@@ -262,52 +365,32 @@ pub(crate) fn plan(ssa: &SsaTable, operations: &Operations, publication: Publica
             ) {
                 Ok(chain) => {
                     if let Some(shared) = chain.owned.iter().find(|bci| plan.owned.contains(bci)) {
-                        let refusal = ConcatRefusal::of(
-                            &Refusal::shape(
+                        plan.refused.push(Refused {
+                            head,
+                            class: ty,
+                            refusal: Refusal::shape(
                                 "jre_concat_overlap",
                                 format!(
                                     "the instruction at BCI {shared} belongs to another chain this run already claimed, and one instruction is not two concatenations"
                                 ),
                             ),
-                            head,
-                        );
-                        plan.refusals
-                            .push(Gap::at(refusal.code, head, refusal.message.clone()));
-                        if publication.publishes(&[head]) {
-                            crate::demand_counts::record_built(
-                                crate::evidence::RecoveryEvidenceKind::RuleDetails,
-                            );
-                            plan.records.push(refused(head, &ty, &refusal));
-                        }
+                        });
                         continue;
                     }
                     for bci in &chain.owned {
                         plan.owned.insert(*bci);
                     }
-                    if publication.publishes(&chain_positions(&chain)) {
-                        crate::demand_counts::record_built(
-                            crate::evidence::RecoveryEvidenceKind::RuleDetails,
-                        );
-                        plan.records.push(record_of(&chain, true, None));
-                    }
                     plan.chains.insert(chain.tail, chain);
                 }
-                Err(refusal) => {
-                    let refusal = ConcatRefusal::of(&refusal, head);
-                    plan.refusals
-                        .push(Gap::at(refusal.code, head, refusal.message.clone()));
-                    if publication.publishes(&[head]) {
-                        crate::demand_counts::record_built(
-                            crate::evidence::RecoveryEvidenceKind::RuleDetails,
-                        );
-                        plan.records.push(refused(head, &ty, &refusal));
-                    }
-                }
+                Err(refusal) => plan.refused.push(Refused {
+                    head,
+                    class: ty,
+                    refusal,
+                }),
             }
         }
     }
-    plan.records.sort_by_key(|record| record.head);
-    plan.refusals.sort_by_key(|gap| gap.position());
+    plan.refused.sort_by_key(|refused| refused.head);
     plan
 }
 
@@ -319,7 +402,7 @@ fn chain_positions(chain: &Chain) -> Vec<u32> {
 }
 
 /// One record of a presented chain.
-fn record_of(chain: &Chain, presented: bool, refusal: Option<ConcatRefusal>) -> ConcatRecord {
+fn record_of(chain: &Chain) -> ConcatRecord {
     ConcatRecord {
         head: chain.head,
         tail: Some(chain.tail),
@@ -332,20 +415,25 @@ fn record_of(chain: &Chain, presented: bool, refusal: Option<ConcatRefusal>) -> 
                 parameter: parameter.spell().to_string(),
             })
             .collect(),
-        presented,
-        refusal,
+        presented: true,
+        refusal: None,
     }
 }
 
 /// One record of a refused candidate.
-fn refused(head: u32, ty: &str, refusal: &ConcatRefusal) -> ConcatRecord {
+///
+/// The construction is counted **here**, in the function that builds the record, rather than at the
+/// call site: a record built anywhere and then dropped is a record that was built, and the port
+/// (`crate::demand_counts`) exists to say so. The counter of the record itself is charged by
+/// [`Decision::record`].
+fn refused_record(refused: &Refused) -> ConcatRecord {
     ConcatRecord {
-        head,
+        head: refused.head,
         tail: None,
-        class: ty.to_string(),
+        class: refused.class.clone(),
         appends: Vec::new(),
         presented: false,
-        refusal: Some(refusal.clone()),
+        refusal: Some(refused.record()),
     }
 }
 
