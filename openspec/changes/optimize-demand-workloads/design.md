@@ -197,3 +197,11 @@ O1 已交付。`add-parallel-bulk-recovery` 继续拥有 O2 批量类准备、O4
 停止传播前置已完成；G0 重新核对后续恢复修正和仍开放反例，正式候选须通过其声明工作负载的正确性门禁，并保留其它未覆盖缺口。建立 harness 与八项调查登记，复用已归档 O1 的实现/计数证据，补齐本专项归因与原始样本。按 G1/G2 选择后续项，单独定义产品 delta、实施、验证和演练回退，每完成一项都重测并更新排名。启用策略仅依据已声明工作负载，不扩大成全局默认；独立调查不必等待无关恢复覆盖全部完成。
 
 本专项最终交付：可复现测量入口、每项调查决定与证据、所有已准入子项的实施/回退记录，以及剩余候选的明确处置。未准入方案无需实现，但必须有调查结果或明确的缺失工作负载/证据及重新进入条件；未完成的已准入项不能因任务多或预算不足被标为完成。当前只生成规划，执行这些步骤需后续 apply。
+
+## 附：add-parallel-bulk-recovery 在 2026-09-21 交付的性能归因（登记，不重复拥有实现）
+
+两条已定位并有前后对照的结论，实现与验收归 `add-parallel-bulk-recovery`，此处只登记结论与入口，供本专项后续的 O2/O5/O7 准入引用：
+
+1. **总账细粒度锁是并行的主要损失**：`Budget::charge` 每次调用进两次临界区（checkpoint + charge），一轮 bcprov/ s2-009 全量各 29.8M / 81.5M entry；entry 自身耗时随 worker 数 60 → 180 ns 且串行（bcprov 4 worker 临界区 2.91 s、s2-009 7.91 s）。改成按维度 cache-line 对齐的原子准入后 43 ns/entry，bcprov 4.17 → 3.12 s、s2-009 12.63 → 9.94 s（discard 模式、3 次中位数），**并行符号由慢于串行翻转为快于串行**。证据：`openspec/changes/add-parallel-bulk-recovery/evidence/cost-attribution.md`。
+2. **下一瓶颈是有序窗口，不是交付编码或写文件**：丢弃 sink 时 4 worker 曾慢于 1 worker（3.26 → 3.84 s），JSON 编码只占 0.3–1.5 s，写 357 MB / 2.37 GB 另占 ~1.5 s / 6 s；优化后最大可观测等待是协调器等最早类（`take_front` 等待≈墙钟 94%，采样中 condvar 70–75%），jobs=8 比 4 慢 5–7%。**要动它需要换窗口设计的架构决策**，未在本轮改；`add-parallel-bulk-recovery` 已把默认策略裁决的已裁定项与未裁定项分别记录在它的 verification §12。
+3. 与本专项 O2/O5 相关的落地：prepared 输入消除同类多方法的常量池深拷贝（`MethodIr` 持 `Arc<ClassFacts>`），活动容器事实随任务交接（三容器 fixture 的 `archive_entries` 恒为 8，去掉交接后按类数增长到 50）。

@@ -33,3 +33,15 @@ What the rows support:
 
 Not supported by these rows: any cross-tool claim (jadx numbers live elsewhere and measure a
 different product), any statement about other machines, or any conclusion from a single sample.
+
+## E 臂：退化形状（输出额度）
+
+`--budget output_bytes=1048576`（1 MiB）在同一 bcprov scope 上三次：exit 4、写出 1,009,614 / 1,009,607 / 1,009,607 字节（都不越过声明值）、**无 `final`**、流停在一条 `class_prepared` 记录上。这正是设计要求的退化形状：可读前缀 + 非完成 + 非零退出，且没有为写 `final` 绕过额度。
+
+其余退化形状由测试承担（不在本表重复计时）：零容量与 1 字节容量 store 的整包等价（`tests/bulk_recovery_retention.rs`）、超大类的前置拒绝（`tests/bulk_recovery_serial.rs` 与 `src/bulk.rs` 的 `prepared_class_within` 接线）、大类倾斜与慢 sink（`tests/bulk_recovery_backpressure.rs`）、取消四站点（`tests/bulk_recovery_cancel.rs`）、普通小单请求回归（`tests/p3_recovery_entry.rs`、`crates/jarde-cli/tests/task_cli.rs`）。
+
+## 6.1 的口径缺口（如实）
+
+- C/D 是 10 次交错、空载机器；A/B 是**单次样本且机器上有其它构建在跑**（作历史锚点，不作对照结论）；E 是 3 次（退化形状，非计时）。
+- OS page cache 初态未控制、未记录；机器负载未记录。因此本页与 `verification.md` §9 的所有数字只用于**形状与归因**，不用于吞吐结论或跨工具比较。
+- 尚未执行：同类倾斜的显式统计（最长类任务已由探针记录：bcprov 214 ms / s2-009 347 ms，非主导）、RSS/内存上界判据的事先声明与测量。
