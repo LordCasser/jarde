@@ -1697,8 +1697,19 @@ impl MeasuredBenefit {
 /// `the_cache_path_publishes_the_same_result_and_reports_what_it_saved`.
 const REFERENCE_CACHE: &str = "off: the facts cache exists and is disabled by default, so a \
                                reference row runs the direct path with no cache attached";
-const REFERENCE_CONCURRENCY: &str = "1: no parallel scheduler exists (P5 2.x owns one), so every \
-                                      row is one sequential scan";
+/// The concurrency half of the reference configuration — **one worker**, and nothing in these rows
+/// calls the engine's one scheduler.
+///
+/// It read "no parallel scheduler exists (P5 2.x owns one)" until `add-parallel-bulk-recovery`: that
+/// change owns the engine's one scheduler, the explicit bulk operation (`Engine::recover_all`; the
+/// CLI's `export` over it, decision 9), so the engine no longer has "no scheduler" as a fact — it has
+/// one, bounded to that operation, and entered by a caller who asked for it. Nothing about the rows
+/// here moves with it: no row starts a bulk operation, so every row is still one sequential scan, and
+/// whether the bulk path is faster is **unmeasured** (`CANDIDATES["fine-grained-parallel"]` carries
+/// `Benefit::Unmeasured`, and no reading here may be quoted as its benefit).
+const REFERENCE_CONCURRENCY: &str = "1: one worker — the engine's one scheduler is the explicit bulk \
+                                      operation (`Engine::recover_all`, add-parallel-bulk-recovery), \
+                                      which no row here runs, so every row is one sequential scan";
 
 /// The configuration the cache-on row really runs in: the label is this literal, and the test that
 /// compares the two paths asserts it equals the label the handle itself describes
@@ -1783,38 +1794,59 @@ static CANDIDATES: [Candidate; 3] = [
     Candidate {
         id: "fine-grained-parallel",
         default_state: DefaultState::Disabled,
-        what: "Splitting one request's scanning work across workers and merging their results in \
-               stable order (design decision 4), leaving coverage and partial semantics as they are.",
-        owner: "P5 2.1 owns the decision; no slice implements a scheduler.",
+        what: "Splitting **one request's** scanning work across workers and merging their results in \
+               stable order (design decision 4), leaving coverage and partial semantics as they are. \
+               Not the same thing as `add-parallel-bulk-recovery`, which schedules whole classes of an \
+               explicitly requested physical scope and splits no request: that change owns the \
+               engine's one scheduler, bounded to its own operation, and it leaves this candidate — a \
+               batch behind one ordinary request — disabled.",
+        owner: "P5 2.1 owns the decision; `add-parallel-bulk-recovery` owns the explicit bulk \
+                operation and its bounded workers (`Engine::recover_all`, design decision 9). No slice \
+                splits one request's scan across workers, which is what this candidate is, and none \
+                starts a batch from an ordinary entry (`Engine::open`/`query`/`recover_method` stay on \
+                demand, guarded by \
+                `no_ordinary_entry_reaches_the_bulk_module_or_recover_all`).",
         basis: "The reference path's work on this corpus is hundreds of bytes: the local row \
                 materializes exactly one body (303 charged read bytes, 29 analysis steps, 86 IR \
                 items) of the three bodies its class declares, and the two full-range rows charge no \
                 header and no body while materializing 555 and 909 class bytes. A worker's fixed \
                 cost — spawn, hand-off, ordered merge — is measured nowhere in this file, so 'work \
-                saved' has never been put next to 'scheduling paid'.",
+                saved' has never been put next to 'scheduling paid'. The bulk operation's own \
+                scheduling cost is not measured here either: no row of this matrix runs it, and its \
+                benefit is recorded as unmeasured below until tasks 6.1–6.3 measure it.",
         missing: "A corpus row whose work is large enough for a split to be the dominant term, a \
                   second path to split it, and the scheduler's own cost measured through the same \
                   harness rather than assumed. The corpus in this repository cannot decide it: the \
-                  largest subject is 659 bytes.",
+                  largest subject is 659 bytes. A bulk operation over a physical scope is not that \
+                  second path — it schedules classes, not one request's scan — and it brings no \
+                  measurement of this candidate with it.",
         trigger: "When the harness has a second path and a row whose resource report puts the \
                   per-unit share of the charge first: the candidate difference then has to clear the \
                   harness's own repeat spread on the machine measuring it (today ~10% between full \
                   measurements and up to ~12% between halves of one, so no smaller difference can be \
                   reported as a gain at all). No threshold for 'worth enabling' is fixed here \
                   (design decision 5).",
-        ceiling: "Single-threaded: no thread is spawned anywhere in the engine (guarded by \
-                  `the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler`), so one \
-                  request is one core; and the first run in a process reaches 13× the median, which \
-                  is larger than anything this corpus could show for a scheduling change.",
+        ceiling: "Single-threaded in every row of this matrix, and no row runs the engine's one \
+                  scheduler: a request is one core. That scheduler exists — the explicit bulk \
+                  operation's scoped workers (`Engine::recover_all`), guarded by \
+                  `the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler` as the only \
+                  place the engine may spawn, plus \
+                  `no_ordinary_entry_reaches_the_bulk_module_or_recover_all` for who may call it — and \
+                  nothing routes a single request through it: `Engine::query` and \
+                  `Engine::recover_method` still read one request on one thread. The first run in a \
+                  process reaches 13× the median, which is larger than anything this corpus could \
+                  show for a scheduling change.",
         upgrade: "A parallel scan has to publish byte-identical results and keep the origin order \
                   (`compare` requires order equality, not a stable permutation), and it has to hold \
                   `Cancellation under pressure` — which needs the pressure corpus of task 3.2: ZIP \
                   bomb, condy graph, irreducible CFG and missing-dependency rows, none of which are \
                   measured today.",
         benefit: Benefit::Unmeasured {
-            why: "Nothing is scheduled to compare against, and the work one request does over this \
-                  corpus is small enough that the harness cannot distinguish a change of the size a \
-                  scheduler could make from its own repeat spread.",
+            why: "Nothing this harness can run is scheduled to compare against: every row is one \
+                  sequential scan and no row starts the bulk operation, whose own benefit is likewise \
+                  unmeasured. And the work one request does over this corpus is small enough that the \
+                  harness cannot distinguish a change of the size a scheduler could make from its own \
+                  repeat spread. No speed-up of any kind is claimed here.",
         },
     },
     Candidate {
@@ -2060,10 +2092,11 @@ struct EngineSource {
 
 /// Every `.rs` file of the engine crates and the facade, in a deterministic order.
 ///
-/// The guards below check *absences* — no cache, no index, no scheduler — and no run can show that
-/// something does not exist, so they read the source. The scope is the engine the decisions are
-/// about: `crates/*/src` and the facade's `src/`. Test code, fixtures, fuzz targets and anything
-/// reached through a dependency are outside it; so is a cache hidden in a local variable.
+/// The guards below check *absences* — no cache in a default path, no index, and no machinery outside
+/// the one module an explicit bulk operation owns — and no run can show that something does not exist,
+/// so they read the source. The scope is the engine the decisions are about: `crates/*/src` and the
+/// facade's `src/`. Test code, fixtures, fuzz targets and anything reached through a dependency are
+/// outside it; so is a cache hidden in a local variable.
 fn engine_sources() -> Vec<EngineSource> {
     let root = repository_root();
     let crates = root.join("crates");
@@ -2113,21 +2146,28 @@ fn collect_sources(directory: &Path, into: &mut Vec<EngineSource>) {
     }
 }
 
-/// The machinery that has to stay **absent** from the engine: an index, a scheduler, a thread.
+/// The machinery the engine may hold in **one** file: an index, a spawn site, a worker pool.
 ///
-/// These five needles are task 2.1's and task 2.2's, unchanged, and their scope is unchanged too:
-/// they catch a module or a spawn site in `crates/*/src` and `src/`, and they do not catch an index
-/// under another name (`IndexTable`), one kept in a local variable, anything reached through a
-/// dependency, or any file outside those trees. `Index…` is deliberately not a name prefix: this
-/// repository already declares `pub struct IndexCall` in the recovery layer — a dispatch-table read,
-/// not an index — and a rule that refused that line would be a rule about spelling rather than about
-/// machinery.
+/// These five needles are task 2.1's and task 2.2's and they themselves are unchanged. What changed
+/// with `add-parallel-bulk-recovery` is the claim they back. 2.1/2.2 fixed them to hold that the
+/// engine had **no scheduler at all**; decision 9 of that change chooses std scoped threads for the
+/// explicit bulk operation, and task 4.2 builds that lifetime. The claim they hold from here on is
+/// therefore "the bulk module is the only place this engine schedules", not "nothing in this engine
+/// spawns": dropping the three scheduler needles would have retired the rule that keeps every other
+/// entry point sequential, which is the rule task 5.3 is about. [`BULK_MODULE`] is the whole
+/// exemption; every other file keeps the old scope — `crates/*/src` and `src/`, one spawn site at a
+/// time, the CLI's `src` included.
 ///
-/// What changed with task 2.3 is not this list but the claim beside it. 2.1/2.2 asserted that **no
-/// cache existed**; 2.3 built one, so the cache half of that claim is now made of three facts this
-/// test can hold — the store is declared in one module, **nothing in the engine constructs one**, and
-/// the budget every existing entry point builds carries none — while the index and the scheduler are
-/// still asserted absent exactly as before.
+/// Like every source guard in this repository they are coarse, and their blind spots are stated
+/// rather than discovered later: they do not catch an index under another name (`IndexTable`), one
+/// kept in a local variable, anything reached through a dependency, or any file outside those trees.
+/// `Index…` is deliberately not a name prefix: this repository already declares `pub struct
+/// IndexCall` in the recovery layer — a dispatch-table read, not an index — and a rule that refused
+/// that line would be a rule about spelling rather than about machinery.
+///
+/// The cache half of the claim beside them is unchanged since task 2.3: the store is declared in one
+/// module, **nothing in the engine constructs one**, and the budget every existing entry point builds
+/// carries none.
 const MACHINERY: [&str; 5] = [
     "mod index",
     "thread::spawn",
@@ -2136,12 +2176,89 @@ const MACHINERY: [&str; 5] = [
     "spawn_blocking",
 ];
 
+/// The **one** engine source file that may hold that machinery: the explicit bulk recovery module.
+///
+/// `add-parallel-bulk-recovery` decision 9 chooses std scoped threads for the bulk operation —
+/// `thread::scope` with `Builder::spawn_scoped`, which returns a creation error instead of a panic
+/// and cannot fix a process-global pool — and task 4.2 owns that lifetime's runtime properties
+/// (every worker joined before the call returns, nothing left running, no global pool). Task 5.3
+/// makes the source-level half of that decision checkable: this file may name the needles above and
+/// no other file may, so an implicit batch started by `Engine::open`/`query`/`recover_method`, or by
+/// a CLI command that is not `export`, is exactly what the exemption may not buy.
+///
+/// It is one exact path compared as a string, never a name, a directory or a pattern: a second
+/// scheduler in `crates/jarde-cli/src/bulk.rs`, in `src/bulk/mod.rs`, or in a file whose name merely
+/// contains the word is scanned like any other file, and the self-check inside
+/// [`the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler`] pins that. The path is where
+/// the change puts the module; if the implementation lands it somewhere else, this constant moves with
+/// that decision rather than the rule being widened to "somewhere under `src/`".
+///
+/// The exemption is declared even while the file does not exist. The guard then still holds the old,
+/// total absence, and it prints which needles the exempt file really names once there is one — so
+/// "one module is allowed to schedule" and "a scheduler is built" stay two separate facts a reader
+/// can tell apart.
+const BULK_MODULE: &str = "src/bulk.rs";
+
+/// How a file reaches the bulk module, in the spellings a caller would write: the module's own name,
+/// the absolute path from the crate root, and the declaration itself.
+///
+/// They are the needles of [`no_ordinary_entry_reaches_the_bulk_module_or_recover_all`], which names
+/// both the files that may hold them and the one entry that may call the operation, so "the bulk path
+/// is entered explicitly" is checked against code rather than against a prose claim.
+const BULK_REFERENCES: [&str; 3] = ["bulk::", "crate::bulk", "mod bulk"];
+
+/// The bulk operation's own entry point, as the change's tasks name it (`recover_all`).
+///
+/// No ordinary entry may call it. `Engine::open`/`enumerate`/`query`/`inspect_*`/`recover_method`/
+/// `recover_target`/`class_view`/`class_source`/`list_*` stay on demand: a single-method entry that
+/// quietly routed through the bulk operation would turn one requested method into a batch, which is
+/// the shape the `bulk-recovery` spec refuses in "Reuse does not start a bulk operation implicitly"
+/// and the reason the boundary is asserted rather than left to the reader's memory.
+const BULK_ENTRY: &str = "recover_all";
+
+/// The engine files that may name the bulk module at all: the module, the crate root that declares
+/// it, and the facade whose [`BULK_ENTRY`] delegates to it.
+///
+/// Nothing below the facade may name it — the reader, query, JVM and Java crates cannot depend on this
+/// crate in the first place (CI's layered-dependency gate), and the CLI reaches the operation through
+/// the facade's entry like any other caller — so a file outside this set that names the module is the
+/// bulk path leaking out of the facade, whether or not it also holds a spawn site.
+///
+/// That the facade is in the set is what forces the finer check beside it: a file-level rule cannot
+/// say *which* entry of a file delegates to the operation, and the facade holds all of them.
+const BULK_NAMING_FILES: [&str; 3] = [BULK_MODULE, "src/lib.rs", "src/facade.rs"];
+
+/// The entries this guard is about, named so that it fails when it stops looking at them.
+///
+/// The rule below is applied to **every** entry `impl Engine` declares, so a later entry cannot escape
+/// it by not being listed here; this list is the non-vacuity half: the guard is about these entries
+/// existing and staying on demand, and a facade restructured until they are gone has moved the claim
+/// rather than satisfied it.
+const ORDINARY_ENTRIES: [&str; 13] = [
+    "open",
+    "enumerate",
+    "enumerate_artifact_tree",
+    "query",
+    "inspect_header",
+    "inspect_method_bytecode",
+    "recover_method",
+    "recover_target",
+    "class_view",
+    "class_source",
+    "list_class_candidates",
+    "list_class_declarations",
+    "list_members",
+];
+
 /// The tokens that would mean the engine itself switches the facts cache on.
 ///
 /// A cache a caller attaches is the disabled-by-default state; a cache the engine constructs is a
 /// cache in the default path, whatever the switch is called. The needles name the three ways one is
-/// built, so a later slice that wires one into the CLI, the facade or a default budget fails here
-/// and has to move the record with it — the same shape as 2.1/2.2's rule for a second path.
+/// built, so a later slice that wires one into the facade or a default budget fails here and has to
+/// move the record with it — the same shape as 2.1/2.2's rule for a second path. The one exception is
+/// [`BULK_ADAPTER`], and it is the exception the task that added the store stated: the *explicit*
+/// bulk adapter's own operation is exactly the caller that needs retention, and it is not an ordinary
+/// entry.
 const CACHE_CONSTRUCTIONS: [&str; 3] = [
     "FactsCache::new(",
     "FactsCache::current(",
@@ -2159,6 +2276,156 @@ fn machinery_hits(text: &str, needles: &[&str]) -> Vec<String> {
         }
     }
     hits
+}
+
+/// Whether a source path may hold the machinery: the bulk module, and nothing else.
+///
+/// A function rather than a comparison written into the loop, so the rule "one exact path" is itself
+/// checkable: the guard's self-check passes the exempt path and refuses the near misses that a wider
+/// rule — a file name, a directory, a name prefix — would have let through.
+fn may_schedule(path: &str) -> bool {
+    path == BULK_MODULE
+}
+
+/// The **one** other file that may switch the facts store on: the explicit bulk adapter.
+///
+/// `crates/jarde-cli/src/export.rs` is the command that *is* one bulk operation over one scope, and
+/// task 5.4 stated the reason it attaches a store of its own: a whole-scope sweep walks a container's
+/// directory once per class it holds, so a real jar's 2,569-record directory was parsed again for
+/// every class and the default `archive_entries`/`result_items` totals (65,536 each) were spent
+/// before the run reached a few dozen classes. The store it attaches is bounded, its capacity is
+/// published in the stream's own `header` (`limits.facts_capacity`), and the library states no
+/// capacity of its own.
+///
+/// This is the whole of the exception, and it is deliberately not a name: the adapter constructs one
+/// store for the one operation it was asked to run, and every ordinary entry — `open`, `query`,
+/// `inspect_*`, `recover_method`, `recover_target`, `class_view`, `class_source`, `list_*` — still
+/// constructs none and is passed none, which [`Budget::new`]'s own assertion below holds as a
+/// behavioural fact beside this source-level one. The CLI's other commands go through the same
+/// constructor with no capacity at all.
+const BULK_ADAPTER: &str = "crates/jarde-cli/src/export.rs";
+
+/// Whether a source path may construct a facts store: the explicit bulk adapter, and nothing else.
+///
+/// The same shape as [`may_schedule`], and for the same reason: one exact path that the guard's own
+/// self-check exercises, so widening the rule to a file name, a directory or a prefix is a change this
+/// test refuses rather than one it silently accepts.
+fn may_retain(path: &str) -> bool {
+    path == BULK_ADAPTER
+}
+
+/// Whether a line is documentation rather than code.
+///
+/// Documentation is prose: a facade whose own module docs link to the bulk module says nothing about
+/// which entry reaches it, and a rule that refused that sentence would be a rule about vocabulary.
+/// Code — including ordinary `//` comments inside a body — is not filtered.
+fn is_documentation(line: &str) -> bool {
+    let trimmed = line.trim_start();
+    trimmed.starts_with("///") || trimmed.starts_with("//!")
+}
+
+/// The name of the entry a line of `impl Engine` starts, in the spellings that block uses.
+///
+/// Only items indented exactly once (`    pub fn name(`, `    pub const fn name(`, `    fn name(`) are
+/// entries; anything indented deeper is a nested item inside a body.
+fn entry_signature(line: &str) -> Option<String> {
+    let rest = line.strip_prefix("    ")?;
+    if rest.starts_with(' ') || rest.starts_with('\t') {
+        return None;
+    }
+    let rest = rest.strip_prefix("pub ").unwrap_or(rest);
+    let rest = rest.strip_prefix("const ").unwrap_or(rest);
+    let rest = rest.strip_prefix("fn ")?;
+    let (name, _) = rest.split_once('(')?;
+    (!name.is_empty()).then(|| name.to_string())
+}
+
+/// One entry of the facade's `impl Engine`, as the text that entry owns.
+struct EntryRegion {
+    name: String,
+    text: String,
+}
+
+/// The facade split the way the isolation guard needs it: one region per entry of `impl Engine`, and
+/// the rest of the file.
+struct FacadeEntries {
+    entries: Vec<EntryRegion>,
+    outside: String,
+}
+
+/// Split `src/facade.rs` into the text each entry of `impl Engine` owns, plus everything else.
+///
+/// The regions are what makes "which entry reaches the bulk module" a question about the file rather
+/// than about a file name: a region runs from an entry's own signature to the next entry's, so a
+/// mention inside a body — code or the comments beside it — belongs to the entry that wrote it. The
+/// trailing documentation of the *next* entry is excluded from the region, because those lines
+/// document the next entry rather than this one, and the facade's own documentation is filtered out of
+/// `outside` for the same reason ([`is_documentation`]).
+///
+/// `outside` is the rest of the file — every line no entry covers: the block's braces, a free
+/// function, a second `impl` block — so wiring that never goes through an entry of this block still
+/// cannot reach the module out of the regions' sight.
+///
+/// The split is textual on purpose: it reads the shape the file is written in, and the self-check in
+/// [`no_ordinary_entry_reaches_the_bulk_module_or_recover_all`] feeds it a sample with a caller and a
+/// bystander, so a broken split fails there instead of quietly reporting a clean file.
+fn facade_entries(text: &str) -> FacadeEntries {
+    let lines: Vec<&str> = text.lines().collect();
+    let start = lines
+        .iter()
+        .position(|line| *line == "impl Engine {")
+        .unwrap_or_else(|| {
+            panic!(
+                "`src/facade.rs` no longer declares `impl Engine` on a line of its own: the isolation \
+                 guard has nothing to read, and an empty split would pass vacuously"
+            )
+        });
+    let end = lines[start + 1..]
+        .iter()
+        .position(|line| *line == "}")
+        .map(|offset| start + 1 + offset)
+        .unwrap_or_else(|| {
+            panic!("the `impl Engine` block of `src/facade.rs` does not close on a line of its own")
+        });
+    assert!(
+        lines[end + 1..].iter().all(|line| *line != "impl Engine {"),
+        "`src/facade.rs` declares `impl Engine` more than once: this guard reads one block, and the \
+         second one would be read as ordinary file text"
+    );
+
+    let signatures: Vec<(usize, String)> = (start + 1..end)
+        .filter_map(|index| entry_signature(lines[index]).map(|name| (index, name)))
+        .collect();
+    assert!(
+        !signatures.is_empty(),
+        "`impl Engine` declares no entry the split can see: the guard would pass by looking at nothing"
+    );
+
+    let mut covered = vec![false; lines.len()];
+    let mut entries = Vec::new();
+    for (position, (index, name)) in signatures.iter().enumerate() {
+        let mut stop = signatures.get(position + 1).map_or(end, |(next, _)| *next);
+        while stop > index + 1
+            && (is_documentation(lines[stop - 1]) || lines[stop - 1].trim_start().starts_with("#["))
+        {
+            stop -= 1;
+        }
+        covered[*index..stop].fill(true);
+        entries.push(EntryRegion {
+            name: name.clone(),
+            text: lines[*index..stop].join("\n"),
+        });
+    }
+
+    let outside = lines
+        .iter()
+        .zip(&covered)
+        .filter(|(_, covered)| !**covered)
+        .map(|(line, _)| *line)
+        .filter(|line| !is_documentation(line))
+        .collect::<Vec<_>>()
+        .join("\n");
+    FacadeEntries { entries, outside }
 }
 
 /// The rule a candidate's claim has to satisfy, as a function of the configurations the matrix can
@@ -3032,28 +3299,38 @@ fn a_cancelled_direct_run_is_never_published_as_complete() {
     println!("cancelled diagnostics {}", cancelled.diagnostics);
 }
 
-/// The premise both decisions rest on, machine-checked: the engine has **one** facts cache — the
-/// CP/Header layer task 2.3 built — and nothing enables it, and there is still no index and no
-/// scheduler.
+/// The premise the decisions rest on, machine-checked: the engine has **one** facts cache — the
+/// CP/Header layer task 2.3 built — nothing enables it, and the only machinery it may hold is the
+/// explicit bulk operation's own module.
 ///
 /// This test used to assert that no cache existed at all. That claim is false now, and replacing it
-/// with a weaker one would be worse than deleting it, so it is replaced by three claims that are
-/// together stronger than the old absence:
+/// with a weaker one would be worse than deleting it, so it holds three claims that are together
+/// stronger than the old absence:
 ///
-/// * the index and the scheduler are still absent, in exactly the needles 2.1/2.2 fixed;
+/// * the index and the scheduler needles are absent from **every** engine source outside
+///   [`BULK_MODULE`], in exactly the spellings 2.1/2.2 fixed. Task 5.3 narrows the *scope* of that
+///   claim instead of deleting it: an explicit bulk operation is the one place this engine may
+///   schedule, and an ordinary entry that started a batch of its own would have to put a spawn site
+///   outside that module to do it. The sibling claim — *who* calls it — is
+///   [`no_ordinary_entry_reaches_the_bulk_module_or_recover_all`], which a file-level scan cannot make;
 /// * the cache is declared in **one** module, and the only other engine files that name it are the
-///   crate root that declares the module and the budget that carries a handle — so a second cache
-///   cannot appear quietly;
-/// * **nothing in the engine constructs one** ([`CACHE_CONSTRUCTIONS`]), which is what
-///   disabled-by-default means as a structural fact, and [`Budget::new`] — the constructor every
-///   existing entry point already uses — carries none.
+///   crate root that declares the module, the budget that carries a handle and the one adapter that
+///   attaches a bounded store to its own operation ([`BULK_ADAPTER`]) — so a second cache cannot
+///   appear quietly;
+/// * **nothing in the engine constructs one but that adapter** ([`CACHE_CONSTRUCTIONS`]), which is
+///   what disabled-by-default means as a structural fact, and [`Budget::new`] — the constructor every
+///   existing entry point already uses — carries none. Task 5.4 narrowed this claim rather than
+///   dropping it: the *explicit* bulk adapter may attach a bounded store to the one sweep it was asked
+///   to run, and every ordinary entry — `open`, `query`, `inspect_*`, `recover_method`,
+///   `recover_target`, `class_view`, `class_source`, `list_*` — still constructs none, because the
+///   shared pipeline they open through is passed no capacity at all.
 ///
 /// The guard is deliberately coarse and its blind spots are stated rather than discovered later: it
 /// finds a cache or index *module or type*, a construction site and a spawned thread, and it does not
-/// find a memo table kept in a local variable, anything reached through a dependency, or any file
-/// outside `crates/*/src` and `src/`. That is the same kind of boundary P2's A17 guard states for the
-/// modules outside its guarded set: a guard is a supplement, and the sentence it backs says which
-/// half it covers.
+/// find a memo table kept in a local variable, anything reached through a dependency, anything inside
+/// the exempt module, or any file outside `crates/*/src` and `src/`. That is the same kind of boundary
+/// P2's A17 guard states for the modules outside its guarded set: a guard is a supplement, and the
+/// sentence it backs says which half it covers.
 #[test]
 fn the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler() {
     let sources = engine_sources();
@@ -3064,26 +3341,59 @@ fn the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler() {
         sources.len()
     );
 
-    // (1) The index and the scheduler, in the spellings 2.1 and 2.2 fixed: still nothing.
-    let mut absent = Vec::new();
+    // (1) The index and the scheduler, in the spellings 2.1 and 2.2 fixed: nothing outside the one
+    //     file an explicit bulk operation owns. The exempt file's own hits are collected separately
+    //     and printed rather than tolerated: the claim is "this is the only place that may schedule",
+    //     and which of the needles it really uses is a fact a reader of this run should see.
+    let mut outside_the_bulk_module = Vec::new();
+    let mut inside_the_bulk_module = Vec::new();
     for source in &sources {
         assert!(
             !source.text.trim().is_empty(),
             "{} is empty, so it proves nothing",
             source.path
         );
-        for hit in machinery_hits(&source.text, &MACHINERY) {
-            absent.push(format!("{}:{hit}", source.path));
+        let hits = machinery_hits(&source.text, &MACHINERY);
+        if hits.is_empty() {
+            continue;
+        }
+        let hits = hits
+            .into_iter()
+            .map(|hit| format!("{}:{hit}", source.path))
+            .collect::<Vec<_>>();
+        if may_schedule(&source.path) {
+            inside_the_bulk_module.extend(hits);
+        } else {
+            outside_the_bulk_module.extend(hits);
         }
     }
     assert!(
-        absent.is_empty(),
-        "the engine now declares machinery that P5 tasks 2.1 and 2.2 decided not to build: \
-         {absent:?}\nEvery decision in this file is recorded against its absence — an index to \
-         extend, a scheduler to split one request with. If the machinery is real, measure it through \
-         this harness and move the decision with it: a candidate whose second path runs has to carry \
-         a measured comparison before it may stay enabled. If it is not, the record is out of date."
+        outside_the_bulk_module.is_empty(),
+        "the engine schedules outside `{BULK_MODULE}`: {outside_the_bulk_module:?}\nAn explicit bulk \
+         operation is the only place this engine may schedule, it is one module with one entry \
+         (`{BULK_ENTRY}`), and the entry is entered by the caller and by nothing else: ordinary \
+         entries (`Engine::open`/`enumerate`/`query`/`inspect_*`/`recover_method`/`recover_target`/\
+         `class_view`/`class_source`/`list_*`) must stay on demand, so a batch they started would be \
+         an implicit one — the shape the `bulk-recovery` spec refuses — and no entry may reach for a \
+         process-global pool. If the machinery is real, it belongs in `{BULK_MODULE}` and the calling \
+         entry is `Engine::{BULK_ENTRY}`; if it is not, the record is out of date."
     );
+    println!(
+        "engine machinery outside `{BULK_MODULE}`: none — the five needles of 2.1/2.2 are absent from \
+         {} file(s) under `crates/*/src` and `src/`",
+        sources.len()
+    );
+    if sources.iter().any(|source| may_schedule(&source.path)) {
+        println!(
+            "`{BULK_MODULE}` is the one exempt file, and the machinery it names is: \
+             {inside_the_bulk_module:?}"
+        );
+    } else {
+        println!(
+            "`{BULK_MODULE}` is not in the scan yet, so the exemption is declared and unused: the \
+             absence above is still the total one 2.1/2.2 asserted"
+        );
+    }
 
     // (2) One cache, one module: the store is declared once and the files that may name it are the
     // module itself, the crate root that declares it and the budget that carries a handle.
@@ -3107,6 +3417,7 @@ fn the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler() {
     assert_eq!(
         naming,
         [
+            BULK_ADAPTER,
             "crates/jarde-reader/src/artifact.rs",
             "crates/jarde-reader/src/budget.rs",
             "crates/jarde-reader/src/classfile.rs",
@@ -3115,26 +3426,53 @@ fn the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler() {
         ],
         "the cache is named in {naming:?}, which is not the budget that carries a handle, the read \
          entries that consult it (the class-file facts and the directed container access), the \
-         module declaration and the facade's re-export: a file outside that set has grown a second \
-         path into the cache. (The module that declares it names no module path, which is why it is \
-         not in this list: the declaration is checked above.)"
+         module declaration, the facade's re-export and the one adapter that attaches a store \
+         ([`BULK_ADAPTER`]): a file outside that set has grown a second path into the cache. (The \
+         module that declares it names no module path, which is why it is not in this list: the \
+         declaration is checked above.)"
     );
 
-    // (3) Nothing in the engine switches it on.
+    // (3) Nothing in the engine switches it on, except the one explicit bulk adapter's own operation.
     let mut constructions = Vec::new();
+    let mut adapter_constructions = Vec::new();
     for source in &sources {
-        for hit in machinery_hits(&source.text, &CACHE_CONSTRUCTIONS) {
-            constructions.push(format!("{}:{hit}", source.path));
+        let hits = machinery_hits(&source.text, &CACHE_CONSTRUCTIONS);
+        if hits.is_empty() {
+            continue;
+        }
+        let hits = hits
+            .into_iter()
+            .map(|hit| format!("{}:{hit}", source.path))
+            .collect::<Vec<_>>();
+        if may_retain(&source.path) {
+            adapter_constructions.extend(hits);
+        } else {
+            constructions.extend(hits);
         }
     }
     assert!(
         constructions.is_empty(),
-        "an engine source constructs a facts cache: {constructions:?}\nP5 2.3 keeps the cache \
-         disabled by default: a caller may attach one to a budget, and the engine may not build one \
-         for anybody. If a slice really wants one in a default path, that is a decision this harness \
-         measures — a cache-on configuration has to be a row with a measured comparison beside it, \
-         and `CANDIDATES` has to carry it."
+        "an engine source constructs a facts cache: {constructions:?}\nP5 2.3 keeps the cache off \
+         every default path and task 5.4 keeps it off every ordinary entry: a caller may attach one \
+         to a budget, the engine may not build one for anybody, and the one file that may is \
+         `{BULK_ADAPTER}` — the explicit bulk adapter, which attaches a bounded store to the one \
+         sweep it was asked to run and publishes its capacity in that stream's header. If a slice \
+         really wants one in another default path, that is a decision this harness measures — a \
+         cache-on configuration has to be a row with a measured comparison beside it, and \
+         `CANDIDATES` has to carry it."
     );
+    if adapter_constructions.is_empty() {
+        println!(
+            "`{BULK_ADAPTER}` is the one file that may construct a facts store, and it constructs \
+             none: the exemption is declared and unused, and the absence above is still the total \
+             one 2.3 asserted"
+        );
+    } else {
+        println!(
+            "fails cache constructions outside `{BULK_ADAPTER}`: none — the exempt adapter's own \
+             is {adapter_constructions:?}"
+        );
+    }
 
     // (4) And the constructor every existing entry point uses carries none: the behavioural half of
     //     "disabled by default", which no source scan can state.
@@ -3181,16 +3519,260 @@ fn the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler() {
         "a construction site is exactly what this needle has to catch, in the spelling a caller would \
          use"
     );
+
+    // The exemption is one exact path, and it is not a name: a second scheduler under `crates/`, a
+    // module tree under `src/bulk/`, or a file whose name merely starts with the words is scanned like
+    // every other file. Without this, `may_schedule` could be widened to a pattern in one edit and the
+    // whole scan above would keep reporting the same clean result.
+    assert!(
+        may_schedule(BULK_MODULE),
+        "the exempt path is not exempt, so the scan above refused it by accident"
+    );
+    for path in [
+        "crates/jarde-cli/src/bulk.rs",
+        "src/bulk/mod.rs",
+        "src/bulk",
+        "src/bulk.rs.bak",
+        "src/bulk_scheduler.rs",
+    ] {
+        assert!(
+            !may_schedule(path),
+            "`{path}` may schedule, so the exemption is a name rather than one path: only \
+             `{BULK_MODULE}` may hold the machinery, and a second file that looks like it is exactly \
+             what a widened rule would hide"
+        );
+    }
+
+    // The store's exemption is the same kind of one exact path, and it is not the bulk *module*: the
+    // adapter that may attach a store is a CLI file, and the library module that may schedule is a
+    // facade file. A rule that read either as a pattern would let the other half through.
+    assert!(
+        may_retain(BULK_ADAPTER),
+        "the exempt adapter is not exempt, so the constructions scan refused it by accident"
+    );
+    for path in [
+        "export.rs",
+        "src/export.rs",
+        "crates/jarde-cli/src/export_cli.rs",
+        "crates/jarde-cli/src/export/mod.rs",
+        "crates/jarde-cli/src",
+        "crates/jarde-cli/src/task.rs",
+    ] {
+        assert!(
+            !may_retain(path),
+            "`{path}` may construct a facts store, so the exemption is a name rather than one path: \
+             only `{BULK_ADAPTER}` may, and the file beside it — the shared pipeline every ordinary \
+             command opens through — is exactly what a widened rule would hide"
+        );
+    }
+
     println!(
         "engine sources scanned: {} files under `crates/*/src` and `src/` — one facts cache declared \
-         in `crates/jarde-reader/src/facts_cache.rs`, constructed nowhere in the engine, `Budget::new` \
-         carrying none; no index module and no thread spawn",
+         in `crates/jarde-reader/src/facts_cache.rs`, constructed nowhere but by the explicit bulk \
+         adapter `{BULK_ADAPTER}`, `Budget::new` carrying none; no index, and no spawn site outside \
+         the one exempt path `{BULK_MODULE}`",
         sources.len()
     );
 }
 
-/// Tasks 2.1 and 2.2, as a rule rather than a paragraph: everything the matrix can run has to be
-/// measured, and a benefit claim has to be a comparison this harness could repeat.
+/// The bulk path is entered explicitly or not at all: no ordinary entry reaches it.
+///
+/// `add-parallel-bulk-recovery` adds **one** explicitly scoped bulk operation (`Engine::recover_all`,
+/// and the CLI's `export` over it) and every other entry keeps the on-demand boundary the
+/// `bulk-recovery` spec states in "Reuse does not start a bulk operation implicitly": opening an
+/// artifact, listing members, querying a symbol or recovering one method must not start a batch of its
+/// own, must not read a body nobody asked for, and must not take a worker. The sibling guard
+/// ([`the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler`]) holds the **machinery** half
+/// of that sentence — the spellings are absent outside [`BULK_MODULE`] — and this test holds the
+/// **wiring** half, which no file-level scan can state: a spawn site moved into the bulk module says
+/// nothing about who calls it, and the wiring that would break the boundary is a call from an ordinary
+/// entry into a module that is itself perfectly well placed.
+///
+/// Two claims, both about code rather than about vocabulary:
+///
+/// * **which files may name the bulk module at all** ([`BULK_NAMING_FILES`]): the module, the crate
+///   root that declares it, and the facade. A reader, query, JVM, Java or CLI file that names it — or a
+///   second facade file — is the bulk path leaking out of the facade, whether or not it also holds
+///   machinery;
+/// * **which facade entry may reach it**: [`facade_entries`] splits `src/facade.rs` into the text each
+///   entry of `impl Engine` owns, and every entry except [`BULK_ENTRY`] must hold neither a reference
+///   to the module nor a call to the operation. The rule is applied to *every* entry the block
+///   declares, so a new entry does not escape it by not being in a list, while [`ORDINARY_ENTRIES`]
+///   names the entries the guard is about — a guard whose subject was renamed away would otherwise
+///   report a clean file for having nothing left to read.
+///
+/// What this test is not, said where it could be mistaken for more than it is: it is a source guard,
+/// so it reports a **written** reference and not a call chain — `Engine::recover_method` calling a
+/// helper elsewhere that calls the operation would be caught only where the name is written — and it
+/// says nothing about the CLI's command dispatch beyond the file-level rule above (`export` is the
+/// command that owns the operation, and `crates/jarde-cli/tests` covers which command runs what). The
+/// **runtime** half of the same boundary is not re-derived here because the existing suites already
+/// pin it, entry by entry: `tests/p3_isolation.rs` runs a query that charges zero class headers and
+/// zero method bodies beside a recovery that charges both, `tests/p3_accessor_edges.rs` and
+/// `tests/class_source.rs` assert the per-entry `class_headers`/`method_bodies` counts of
+/// `recover_method` and the class views, `tests/task_operations.rs` repeats those entries over one
+/// snapshot, and this file's own rows hold the reference path to one materialized body — a batch
+/// behind any of them would move those counts, and each of those assertions fails on its own.
+#[test]
+fn no_ordinary_entry_reaches_the_bulk_module_or_recover_all() {
+    let sources = engine_sources();
+    assert!(
+        sources.len() > 10,
+        "the guard read {} engine source file(s), which is too few to be the engine: the walk or the \
+         working directory is wrong, and a short scan would make the assertions below vacuous",
+        sources.len()
+    );
+
+    // (1) Which files may name the module at all.
+    let mut leaked = Vec::new();
+    for source in &sources {
+        let hits = machinery_hits(&source.text, &BULK_REFERENCES);
+        if hits.is_empty() || BULK_NAMING_FILES.contains(&source.path.as_str()) {
+            continue;
+        }
+        leaked.push(format!("{}: {hits:?}", source.path));
+    }
+    assert!(
+        leaked.is_empty(),
+        "the bulk module is named outside {BULK_NAMING_FILES:?}: {leaked:?}\nThe bulk operation is a \
+         facade entry, not a capability the layers or the CLI reach around it: the layers below cannot \
+         depend on this crate at all, and the CLI goes through `Engine::{BULK_ENTRY}` like any other \
+         caller. A file that names the module is a second entrance to it, and the entrance is what \
+         keeps the operation explicit."
+    );
+    let naming = sources
+        .iter()
+        .filter(|source| BULK_NAMING_FILES.contains(&source.path.as_str()))
+        .map(|source| {
+            format!(
+                "{}: {:?}",
+                source.path,
+                machinery_hits(&source.text, &BULK_REFERENCES)
+            )
+        })
+        .collect::<Vec<_>>()
+        .join(", ");
+    println!("files that may name `{BULK_MODULE}` — {naming}");
+
+    // (2) And inside the facade, which entry may reach it.
+    let facade = sources
+        .iter()
+        .find(|source| source.path == "src/facade.rs")
+        .unwrap_or_else(|| {
+            panic!(
+                "`src/facade.rs` is not in the scan, so the entry half of this guard would pass by \
+                 reading nothing"
+            )
+        });
+    let split = facade_entries(&facade.text);
+    for name in ORDINARY_ENTRIES {
+        assert!(
+            split.entries.iter().any(|entry| entry.name == name),
+            "`impl Engine` no longer declares `{name}`, which this guard is about: the boundary it \
+             holds is stated for that entry, and a facade that no longer has it has moved the claim \
+             rather than kept it"
+        );
+    }
+    let reaching: Vec<String> = split
+        .entries
+        .iter()
+        .filter(|entry| entry.name != BULK_ENTRY)
+        .filter_map(|entry| {
+            let mut hits = machinery_hits(&entry.text, &BULK_REFERENCES);
+            if entry.text.contains(BULK_ENTRY) {
+                hits.push(format!("a call to `{BULK_ENTRY}`"));
+            }
+            (!hits.is_empty()).then(|| format!("Engine::{} — {}", entry.name, hits.join(", ")))
+        })
+        .collect();
+    assert!(
+        reaching.is_empty(),
+        "an entry of `impl Engine` other than `Engine::{BULK_ENTRY}` reaches the bulk operation: \
+         {reaching:?}\n`{BULK_ENTRY}` is the explicit way in; every other entry is on demand, and one \
+         that routed through the operation would turn a single requested method (or a listing, or a \
+         query) into a batch over a physical scope. If an entry really needs the operation's work, it \
+         is the operation's own entry and it belongs beside `Engine::{BULK_ENTRY}`; if it needs the \
+         module's *help*, that help belongs inside `{BULK_MODULE}` behind that entry."
+    );
+    let outside_hits = machinery_hits(&split.outside, &BULK_REFERENCES);
+    assert!(
+        outside_hits.is_empty(),
+        "`src/facade.rs` names the bulk module outside every entry of `impl Engine`: {outside_hits:?}\n\
+         A free function or a second `impl` block that reaches the module is a second entrance to it \
+         even when no entry in this list does: the module's own work belongs in `{BULK_MODULE}`, and \
+         the facade reaches it from `Engine::{BULK_ENTRY}` alone."
+    );
+    println!(
+        "`impl Engine` entries read: {} ({} named as on demand), none of them reaching \
+         `{BULK_MODULE}`; the module is named by {} file(s) at most: the module itself, its \
+         declaration and the facade's `{BULK_ENTRY}`",
+        split.entries.len(),
+        ORDINARY_ENTRIES.len(),
+        BULK_NAMING_FILES.len()
+    );
+
+    // The split is not vacuous, and it is not a name check: a sample facade with one entry that reaches
+    // the module, one that does not, and a free function outside the block is read the way the real
+    // file is. The sample also documents the module in prose, in the file's own documentation and in a
+    // neighbour's — the split has to leave both with their writer rather than charge them to the entry
+    // beside them.
+    let sample = concat!(
+        "//! The facade's module documentation: one sentence that names `bulk::recover_all`.\n",
+        "impl Engine {\n",
+        "    /// Opens one artifact and starts nothing else.\n",
+        "    pub fn open(&self) {\n",
+        "        // one artifact, one read: no worker, no batch\n",
+        "        snapshot.open()\n",
+        "    }\n",
+        "\n",
+        "    /// Runs the physical scope, by delegating to `bulk::recover_all`.\n",
+        "    pub fn recover_all(&self) {\n",
+        "        crate::bulk::recover_all(&[], 1)\n",
+        "    }\n",
+        "}\n",
+        "\n",
+        "fn helper() {\n",
+        "    crate::bulk::recover_all(&[], 1);\n",
+        "}\n",
+    );
+    let sample = facade_entries(sample);
+    let region = |name: &str| {
+        sample
+            .entries
+            .iter()
+            .find(|entry| entry.name == name)
+            .unwrap_or_else(|| panic!("the sample declares `{name}`"))
+            .text
+            .clone()
+    };
+    assert_eq!(
+        machinery_hits(&region("open"), &BULK_REFERENCES),
+        Vec::<String>::new(),
+        "the region of a bystander entry carried its neighbour's documentation, so a mention in prose \
+         would be read as that entry reaching for the module:\n{}",
+        region("open")
+    );
+    assert!(
+        !machinery_hits(&region(BULK_ENTRY), &BULK_REFERENCES).is_empty(),
+        "the sample's bulk entry reaches the module and the split has to see it, or the whole scan \
+         passes for a reason that has nothing to do with the sources"
+    );
+    assert!(
+        sample
+            .outside
+            .lines()
+            .any(|line| line.trim_start().starts_with("crate::bulk::recover_all")),
+        "a free function outside the block is a second entrance, and the split has to hand its line to \
+         the same needle scan: a guard that only read `impl Engine` would call this file clean:\n{}",
+        sample.outside
+    );
+    assert!(
+        !sample.outside.contains("module documentation"),
+        "the file's documentation is prose and is filtered out of the outside text; a rule that read \
+         it would refuse the facade for describing the module it delegates to:\n{}",
+        sample.outside
+    );
+}
 ///
 /// Today the matrix has one configuration, so every candidate is unmeasured and stays out of the
 /// default path (design decision 1). The rule is what makes that a decision instead of a habit: the
@@ -3698,8 +4280,9 @@ fn p5_repeated_direct_baseline() {
     let class = verified(&corpus, &SUBJECTS[1]);
     let premise = locate_member(&class.content);
     println!(
-        "P5 baseline: the direct path and the cache-on path (P5 2.3), no parallel scheduler, one \
-         machine, RUST_TEST_THREADS=1, single-threaded build, {REPEATS} repeats per row"
+        "P5 baseline: the direct path and the cache-on path (P5 2.3), no row through the engine's one \
+         scheduler (the explicit bulk operation of add-parallel-bulk-recovery), one machine, \
+         RUST_TEST_THREADS=1, single-threaded build, {REPEATS} repeats per row"
     );
     println!(
         "corpus fingerprint {} : {} files, {} — the manifest is read and every subject's digest is \
@@ -3863,23 +4446,30 @@ fn plane_comparison(plane: &str, comparison: &Comparison) -> PlaneComparison {
 ///
 /// Listed rather than implied: each is something the requirement asks to be compared, and a reader of
 /// the gate's output has to see the absence instead of reading a table of green rows as "everything
-/// was compared". None of these is a plane this file skipped — they are paths and instruments that do
-/// not exist yet.
+/// was compared". None of these is a plane this file skipped: each entry is a path this matrix has no
+/// second value for — because the path does not exist, or because it exists and no row here runs it.
 const NO_SECOND_PATH_TODAY: [(&str, &str); 5] = [
     (
         "the index path",
         "no index exists — `the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler` holds \
-         that by source scan — so `Optimized versus direct path` has one path to run for it",
+         that by source scan, whose one exemption is the bulk module's own scheduler — so `Optimized \
+         versus direct path` has one path to run for it",
     ),
     (
         "the parallel path",
-        "no scheduler and no worker exist, so `Reordered parallel results` has no worker order to \
-         hold against the stable publication order",
+        "the engine has exactly one scheduler, the explicit bulk operation of \
+         `add-parallel-bulk-recovery` (`Engine::recover_all`, entered by the caller and by no ordinary \
+         entry — `no_ordinary_entry_reaches_the_bulk_module_or_recover_all`), and this matrix has no \
+         row for it: no row starts a bulk operation, and the operation's benefit is **unmeasured**, so \
+         `Reordered parallel results` still has no worker order to hold against the stable \
+         publication order",
     ),
     (
         "the merged query path (single-flight)",
         "one request at a time: no two requests share work, so `Cancelled shared query` has no \
-         subscriber who keeps waiting and no mixed result to refuse",
+         subscriber who keeps waiting and no mixed result to refuse — and the bulk operation of \
+         `add-parallel-bulk-recovery` is not this: it schedules the classes of an explicitly requested \
+         scope, each class in its own request, and shares no scan between two of them",
     ),
     (
         "the modern (P4) facts plane",

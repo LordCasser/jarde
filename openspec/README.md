@@ -6,7 +6,7 @@ P0–P5 与分层已按各阶段范围归档：P2 29/29、分层 7/7、P3 12/12�
 - [当前路线](roadmap.md)：已完成范围、正确性收尾和后续覆盖边界。
 - [依赖选型](dependencies.md)：复用决策与准入要求。
 - [验收映射](acceptance.md)：A01–A18 的适用范围与证据。
-- [当前完成复核](completion-review.md)：`bafdcec` 上 R1/P1、R2/P2 仍开放；常规门禁通过，任务链尚不能确认收尾完成。
+- [当前完成复核](completion-review.md)：T1–T4 按约定四项判据关闭，三项归档及 CI 已核对；新发现 P1/T5 为 `append(int)` 消费 char 时丢转换，独立登记，不宣称 concat 全面完成。
 
 | 阶段 | 记录 | 当前状态 |
 | --- | --- | --- |
@@ -22,11 +22,21 @@ P0–P5 与分层已按各阶段范围归档：P2 29/29、分层 7/7、P3 12/12�
 | Benchmark 批次 2/4 | [carry-declaring-class-evidence](changes/archive/2026-09-20-carry-declaring-class-evidence/proposal.md) | 4/4，`618de49` 归档；driver class name/flags 同源交接 |
 | Benchmark 批次 3/4 | [bound-container-lookup](changes/archive/2026-09-20-bound-container-lookup/proposal.md) | 8/8，`b22ea04` 归档；定向 container 访问与有界复用 |
 | Benchmark 批次 4/4 | [bind-prefixed-load-roots](changes/archive/2026-09-20-bind-prefixed-load-roots/proposal.md) | 6/6，`fbcf06b` 归档；container+prefix root 与 CLI 树枚举 |
-| 性能专项 | [optimize-demand-workloads](changes/optimize-demand-workloads/proposal.md) | 0/22；O1 子交付已归档，专项测量/归因/调查处置未完成，先关闭停止语义缺口再冻结候选 |
+| 性能专项 | [optimize-demand-workloads](changes/optimize-demand-workloads/proposal.md) | 0/22；O1 子交付已归档，专项测量/归因/调查处置未完成；新候选须声明本次恢复缺口与修正范围 |
+| 并行全量导出 | [add-parallel-bulk-recovery](changes/add-parallel-bulk-recovery/proposal.md) | 规划齐全，实现 0/22；类准备复用、有界多 worker、共享总预算和流式 JSONL，承接 O2/O4/O7；未声称已达到 jadx 性能 |
 | 易用性 1/3 | [add-artifact-navigation](changes/archive/2026-09-20-add-artifact-navigation/proposal.md) | 8/8，`e0c83b6` 归档；候选/确认两级列举与身份交接 |
 | 易用性 2/3 | [add-task-oriented-operations](changes/archive/2026-09-20-add-task-oriented-operations/proposal.md) | 11/11，`2428752` 归档；目标选择、阶段调度、预算与环境策略 |
 | 易用性 3/3 | [add-task-oriented-cli](changes/archive/2026-09-20-add-task-oriented-cli/proposal.md) | 9/9，`85828c4` 归档；五个薄子命令、text/JSON 同源、四态退出状态 |
-| 当前正确性收尾 | [preserve-task-operation-stops](changes/archive/2026-09-20-preserve-task-operation-stops/proposal.md) | 0/5，规划齐全；名称搜索停止传播与类视图顶层汇总待实施 |
+| 停止传播 | [preserve-task-operation-stops](changes/archive/2026-09-20-preserve-task-operation-stops/proposal.md) | 5/5，`8586356`；R1/R2 已关闭 |
+| 递归停止 | [bound-recovery-recursion](changes/archive/2026-09-20-bound-recovery-recursion/proposal.md) | 已归档，`4f62e26`；用户指定三个方法不再 abort，返回停止报告 |
+| 二元分组 | [fix-nested-arithmetic-value](changes/archive/2026-09-20-fix-nested-arithmetic-value/proposal.md) | 已归档，`445a277`；`inverse32` 原反例关闭 |
+| Receiver 分组 | [group-call-receivers](changes/archive/2026-09-20-group-call-receivers/proposal.md) | 已归档，`fa6dc6e`；substring 原反例通过 |
+| Boolean 上下文 | [type-boolean-contexts](changes/archive/2026-09-20-type-boolean-contexts/proposal.md) | 已归档，`5a8c36a`；原反例通过；其后 T2/T3 已由下列独立修正关闭 |
+| 整数比较 T2 | [decide-comparison-contexts](changes/archive/2026-09-20-decide-comparison-contexts/proposal.md) | 17/17，`f4d1044`；原判据关闭 |
+| 局部类型 T3 | [unify-local-type-decisions](changes/archive/2026-09-21-unify-local-type-decisions/proposal.md) | 21/21，`2895bc4`；原判据关闭，类型忠实度与通用赋值边界保留 |
+| concat / 深链 T4/T1 | [re-express-string-concatenation](changes/archive/2026-09-21-re-express-string-concatenation/proposal.md) | 22/22，`5c35cbf`；原判据关闭；新 T5 参数转换及 CLI 文档预算债务单列 |
+| 数组类型 | [spell-array-types](changes/archive/2026-09-20-spell-array-types/proposal.md) | 已归档，`66bd2d0`；原反例通过 |
+| 报告读法 | [clarify-structural-output-planes](changes/archive/2026-09-20-clarify-structural-output-planes/proposal.md) | 11/11 已归档；Produced/content、平面证据与计数口径明确 |
 
 本仓库使用 OpenSpec 1.11.0 的 `spec-driven` schema。`specs/` 包含 P0–P5 的 18 份主规格；收尾 change 的两份 delta 已随归档并入 `java8-recovery` 与 `recovery-validation`（各保留原有 scenario，并各补两条反例/验收 scenario）。`isPlanningComplete`（旧字段 `isComplete`）只表示规划工件齐全，实施以 tasks、代码和验证为准。
 
@@ -36,4 +46,4 @@ openspec validate --all --strict --no-interactive
 openspec validate --archived --strict --no-interactive
 ```
 
-A15/A18 的历史已验收路径保留；不存在的 index/parallel/merged 为不适用，不因此重做 P5。R8/R9 已关闭；新 R1/R2 阻塞当前任务链完成确认，按上述独立 change 修正。MethodParameters/InnerClasses 恢复消费、handler 根策略、现代源码输出与规模测量仍分别处理；driver 类名/flags 与缓存字节容量已经交付。当前不发布 crate。
+A15/A18 的历史已验收路径保留；不存在的 index/parallel/merged 为不适用，不因此重做 P5。R8/R9、R1/R2 及 T1–T4 的原判据均已关闭；T5 和其它边界按[路线](roadmap.md) 独立处理，不把原反例关闭外推为所有形状通过。MethodParameters/InnerClasses 恢复消费、handler 根策略、现代源码输出与规模测量仍分别处理；driver 类名/flags 与缓存字节容量已经交付。当前不发布 crate。

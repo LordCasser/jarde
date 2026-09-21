@@ -4,7 +4,7 @@
 
 ## 冻结基线
 
-- **`85828c4` 改记为历史比较臂**：它是本次 review 的行为基线，仍存在 [R1/R2 停止语义缺口](completion-review.md)，不能称为“最终已验收引擎”。修正后的当前候选 SHA 为 **`8586356`**（`preserve-task-operation-stops` 的固定提交：名称选择的停止传播与类视图顶层汇总），其本机门禁与反例对照见该 change 的归档验证记录。
+- **`85828c4` 与 `8586356` 分别保留为历史比较臂**：前者存在 R1/R2 停止传播缺口，后者已修正。后续修正按各自提交登记；[第四轮复核](completion-review.md) 在包含 `f4d1044`、`2895bc4`、`5c35cbf` 的构建确认 T1–T4 原判据关闭，同时新增 T5（append 的 int 参数消费 char 时丢转换）。新正式候选须固定 SHA、构建配置、目标集合与 T5/CLI 文档预算等边界，不删失败项来获得收益；debug/release 栈深结果分别保留，不能用结构性平面替代正确性验收。
 - 正式测量在每个声明 SHA 的独立 worktree 构建，给它独立的 `CARGO_TARGET_DIR`，记录构建参数与二进制摘要。历史臂可用 `git worktree add /tmp/jarde-bench-base 85828c4`；当前候选必须使用实际验收 SHA。两侧行为差异单列，不能归因成性能收益。
 - **每份记录同时登记该引擎版本的诊断 code 词汇**：诊断码 SHALL 标识「该引擎版本在本次运行中记录了哪个事实」，MUST NOT 被读作跨版本可比的量。同一个码在不同版本的含义变化（例如声明事实交接前 `jre_declaration_class_not_in_run` 在单个 artifact 上出现 10,720 次、交接后语料全局 0 次，而 `jre_declaration` 出现在每个 artifact 上）MUST 被登记为词汇/事实来源的变化；消费方、比较报告与文档 MUST NOT 把某个码的出现次数下降直接读作质量或覆盖改善，比较 MUST 同时声明两个引擎版本与各自的 code 词汇。
 - 每个 change 的实现提交与其 CI 结果：
@@ -52,11 +52,17 @@
   - jadx 1.5.6 启动期会拉起 `localhost:8085` 的 MCP server：**计时期间任何时刻只允许一个 jadx 进程**。
 - jarde：冻结 worktree，`--release` 构建。
 
-## jarde 测量形状（三档）
+## jarde 测量形状
 
 1. **按需单请求**（进程级）：记录 `jarde-cli` 对单方法/entry 的 wall time，以及 jadx `--single-class` 的类级 wall time。两者交付单位不同，必须分列，不直接宣称同口径加速；要作同口径对照，须另行固定相同类/方法集合与输出工作。
-2. **逐 artifact sweep**（主表）：**每个 artifact 一个 snapshot**，**每个请求一个新 `Budget`**；容器声明见下。
-3. **可选全量**：只在 directed access 使 WAR 全量变得可行时做，作为**同一次 campaign 内的第二个覆盖臂**（旧抽样规则作可比锚点 + 全量作新信息），不做两次独立运行。
+2. **逐 artifact sweep**（旧调用方式的比较臂）：**每个 artifact 一个 snapshot**，**每个方法请求一个新 `Budget`**；容器声明见下，保留抽样规则作为历史比较锚点。
+3. **全量批量导出**（2026-09-21 新规划）：以 [add-parallel-bulk-recovery](changes/add-parallel-bulk-recovery/design.md) 为实现和验收依据，一次进程/操作共享总预算，以固定物理范围全部声明为分母，记录无 Body、失败、仅解释及未知后缀。该能力尚未实施，不把以下比较臂写成已经跑出的数据。
+
+新全量 campaign 固定 A–E：A 为旧逐方法无 store，B 为同形状共享 store 且从空开始，C 为 prepared class 的串行 bulk，D 为 C 的 2/4/6 worker，E 为零/超容量、慢 sink 和大类倾斜。先以各路径支持的同一方法集合及行为基线核对语义，再测性能；B 的 warm 请求 p50 不能替代 B 的冷总耗时。C/D 使用同一 JSONL schema 和输出范围，普通单请求默认 cache 策略不随 bulk 改动。
+
+主指标从冷进程开始到全部输出 flush/close；输入打开、发现清单、准备、恢复、编码和写出均计入。每配置至少 10 次独立交错重复，同时保存 CPU/RSS、首次结果、完整产出分类和原始计数；OS page cache 与应用 cache 初态分开声明。jadx 的 1/N 线程、版本/JVM、resources/nested 范围和构造器/内联差异必须记录；整类源码与方法产物流分列产品场景，不能直接当作等价交付。
+
+旧数据中 40.2 s / 14,495 约为 2.773 ms/体，296.5 s / 53,516 约为 5.540 ms/体，均不同于请求 p50 的 2.65/5.10 ms。0.19/0.10 ms 的 store-on p50 只支持请求延迟观察，不证明全量总时间已经追平 jadx；`analysis_steps` 相同也不能证明分析耗时相同。正式数值由完整 campaign 填写。
 
 ## 环境声明是承重件（必须记录并哈希）
 

@@ -19,7 +19,7 @@ run time, so the sample is committed as bytes.
 | bytes | 647 |
 | SHA-256 | `8b535ab811d969249640de82c40d5884b79a712734b883fd868f45ea53583ff6` |
 | debug attributes | none (`-g:none`), so every slot is named by its ordinal |
-| read by | `tests/p3_boolean_contexts.rs` (exact text, the recorded boundary and the predecessor change's controls) and `tests/p3_execution_comparison.rs` (nine members compiled under a declaration derived from the run's own facts and executed against the original, constants on the left and on the right, equality and ordering) |
+| read by | `tests/p3_boolean_contexts.rs` (exact text, the predecessor change's controls and the mixed pair comparison this sample's own boundary became a decision about) and `tests/p3_execution_comparison.rs` (nine members compiled under a declaration derived from the run's own facts and executed against the original, constants on the left and on the right, equality and ordering) |
 
 ## What the defect is, and what each member is for
 
@@ -164,19 +164,19 @@ known); post-fix texts are the committed behaviour.
 | `count(Z)I` | `if (arg0) { return 1; } else { return 0; }` | unchanged |
 | `throughLocal(Z)Z` | `boolean local1 = arg0; return local1;` | unchanged |
 
-## The boundary this fixture records and does not close
+## The boundary this fixture records, and how it was decided
 
 A `Test::Pair` comparison that mixes a proven boolean with an `int` literal — `invokestatic flag()Z;
 iconst_1; if_icmpne`, the shape a compiler folds away, so it is hand-built in
-`tests/p3_boolean_contexts.rs` as the class `Boundary` rather than committed here — is written
-`if (flag() == 1) { return 1; } else { return 0; }`. Wrapping that body in the member's own
+`tests/p3_boolean_contexts.rs` as the class `Boundary` rather than committed here — used to be
+written `if (flag() == 1) { return 1; } else { return 0; }`. Wrapping that body in the member's own
 declaration and compiling it with
 
 ```text
 javac --release 8 -g:none -J-Duser.language=en -J-Duser.country=US Boundary.java
 ```
 
-is refused:
+was refused:
 
 ```text
 Boundary.java:3: error: incomparable types: boolean and int
@@ -185,10 +185,18 @@ Boundary.java:3: error: incomparable types: boolean and int
 1 error
 ```
 
-That was already the text before this fix and it stays the text after it: the rule "each operand of a
-pair comparison keeps its own evidence" does not close this shape, this change does not claim it
-closed, and no general proof is invented for it. If a later change makes it worse (for example by
-producing new refused text), that is a regression of *this* rule.
+The rule that fixed the operands' spelling (each operand of a pair comparison keeps its own
+evidence) recorded this shape as a boundary and stated that its disposition — refuse it or keep it —
+belonged to the next change's conflicting-types rule. `unify-local-type-decisions` took that
+decision and **refuses** it: one operand the layer proves boolean beside one it does not is a
+comparison with no Java spelling at all, and publishing `flag() == 1` while claiming
+`Java`/`Structured` was publishing a text the compiler rejects. The structure now terminates with its
+bytecode quoted (`Mixed`/`Fallback`, the quote naming the `if_icmpne` at BCI 4 and the reason stating
+javac's own verdict), so this fixture's row in `tests/fixtures/README.md` and the test in
+`tests/p3_boolean_contexts.rs` state the decision instead of the boundary. The operands' spelling
+rule is unchanged: the literal is still not re-spelled as a boolean, and the integer comparisons this
+fixture commits keep their text (`if (1 == arg0)`, `if (0 < arg0)`, `if (arg0 > 0)`, …) because a
+`0`/`1` literal is not a boolean proof.
 
 ## The baseline driver
 

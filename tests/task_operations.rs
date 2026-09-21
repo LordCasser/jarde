@@ -11,8 +11,10 @@
 //! * **operations pick their stages.** A task operation schedules a fixed table, publishes the set
 //!   it used, and the same list passed explicitly to `Engine::analyze_method` reproduces the same
 //!   schedule; the explicit entry point keeps its own validation and stop semantics (1.2, A16).
-//! * **bounded default budgets with a few overrides.** The effective `Limits` and the
-//!   `UsageSnapshot` are published; a tight override really stops the work with the terminating
+//! * **bounded default budgets, overridable by name.** Every counted dimension and the clock may be
+//!   stated by name — a whole-package bulk caller states its own numbers instead of inheriting a
+//!   view's — while the two high-water depths stay out of the set, and the effective `Limits` and
+//!   the `UsageSnapshot` are published; a tight override really stops the work with the terminating
 //!   dimension, an unknown dimension or a zero limit is an input error (1.3, A14).
 //! * **three explicit environment policies.** Single class, plain JAR and explicit classpath build
 //!   the declarations a caller would write by hand, and a Manifest `Class-Path`, a WAR/Boot layout
@@ -1081,7 +1083,28 @@ fn the_default_budget_is_bounded_and_overrides_replace_one_dimension() {
         "the wall clock is bounded too: {defaults:?}"
     );
 
-    assert_eq!(OVERRIDABLE_BUDGET_DIMENSIONS.len(), 5);
+    // Every counted dimension may be stated by name, and the clock with them: the set is the
+    // reader's own counted set in its own order plus `elapsed_millis` last. The two high-water
+    // depths are deliberately outside it — raising a depth decides which containers and
+    // dependencies a request may walk at all, which its scope and its roots declare, not how much
+    // work it may do.
+    assert_eq!(
+        OVERRIDABLE_BUDGET_DIMENSIONS.len(),
+        CountedBudgetDimension::ALL.len() + 1
+    );
+    for (index, dimension) in CountedBudgetDimension::ALL.iter().enumerate() {
+        assert_eq!(
+            OVERRIDABLE_BUDGET_DIMENSIONS[index],
+            budget_dimension_code((*dimension).into()),
+            "the list holds every counted dimension, in the reader's own order"
+        );
+    }
+    assert_eq!(
+        OVERRIDABLE_BUDGET_DIMENSIONS[CountedBudgetDimension::ALL.len()],
+        budget_dimension_code(BudgetDimension::ElapsedMillis),
+        "the clock is the one non-counted dimension a request may state"
+    );
+
     let overrides = [
         BudgetOverride::new("class_headers", 3).expect("a named dimension"),
         BudgetOverride::new("output_bytes", 1 << 12).expect("a named dimension"),
@@ -1134,17 +1157,27 @@ fn the_default_budget_is_bounded_and_overrides_replace_one_dimension() {
 /// An unknown dimension or a zero limit is an input error — never a silent default.
 #[test]
 fn an_unknown_or_zero_override_is_an_input_error() {
+    // `input_bytes` is a counted dimension like every other one, so naming it is legal: what the fix
+    // keeps is that a name *outside* the countable set is refused rather than ignored.
     assert_eq!(
-        code_of(
-            &BudgetOverride::new("input_bytes", 10)
-                .expect_err("a real limit is not an overridable task dimension")
-        ),
-        "budget_override_dimension_unknown"
+        BudgetOverride::new("input_bytes", 10)
+            .expect("a counted dimension a task request may state")
+            .dimension_code(),
+        "input_bytes"
     );
     assert_eq!(
         code_of(&BudgetOverride::new("nonsense", 10).expect_err("not a dimension at all")),
         "budget_override_dimension_unknown"
     );
+    // Neither depth is a count: a request that wants to walk deeper says so in its scope and in its
+    // roots, and a limit named like a budget is refused rather than silently widening the walk.
+    for depth in ["nested_depth", "dependency_depth"] {
+        assert_eq!(
+            code_of(&BudgetOverride::new(depth, 8).expect_err("a depth is not a count")),
+            "budget_override_dimension_unknown",
+            "`{depth}` is not a budget a task request tunes"
+        );
+    }
     assert_eq!(
         code_of(&BudgetOverride::new("output_bytes", 0).expect_err("zero funds nothing")),
         "budget_override_invalid"
@@ -1157,6 +1190,65 @@ fn an_unknown_or_zero_override_is_an_input_error() {
         "budget_override_invalid"
     );
     assert!(task_budget(&[BudgetOverride::new("result_items", 5).expect("named")]).is_ok());
+}
+
+/// Every counted dimension and the clock can be stated by name, and each one replaces exactly the
+/// field it names — the shape a whole-package bulk caller builds its own default set out of.
+#[test]
+fn every_counted_dimension_and_the_clock_can_be_overridden_by_name() {
+    let defaults = limits();
+    for dimension in CountedBudgetDimension::ALL {
+        let name = budget_dimension_code(dimension.into());
+        let over = BudgetOverride::new(name, 7)
+            .unwrap_or_else(|error| panic!("`{name}` is a dimension a request may state: {error}"));
+        assert_eq!(over.dimension_code(), name, "`{name}` names itself back");
+        assert_eq!(over.limit(), 7);
+        let effective = task_limits(&[over]).expect("one legal override");
+        assert_eq!(
+            effective.counted_limit(dimension),
+            7,
+            "`{name}` replaces its own field"
+        );
+        for other in CountedBudgetDimension::ALL {
+            if other == dimension {
+                continue;
+            }
+            assert_eq!(
+                effective.counted_limit(other),
+                defaults.counted_limit(other),
+                "`{name}` leaves {other:?} at its bounded default"
+            );
+        }
+        assert_eq!(effective.elapsed_millis, defaults.elapsed_millis);
+        assert_eq!(effective.nested_depth, defaults.nested_depth);
+        assert_eq!(effective.dependency_depth, defaults.dependency_depth);
+    }
+
+    // The clock is the one non-counted dimension in the set: it replaces its own field and no
+    // counted one.
+    let effective = task_limits(&[BudgetOverride::new("elapsed_millis", 7).expect("the clock")])
+        .expect("one legal override");
+    assert_eq!(effective.elapsed_millis, 7);
+    for dimension in CountedBudgetDimension::ALL {
+        assert_eq!(
+            effective.counted_limit(dimension),
+            defaults.counted_limit(dimension),
+            "the clock leaves {dimension:?} at its bounded default"
+        );
+    }
+
+    // And zero is refused for every name of the set, through the very constructor the CLI's
+    // `--budget` parameter uses: no name of the set is a way to reach a degenerate budget.
+    for name in OVERRIDABLE_BUDGET_DIMENSIONS {
+        assert_eq!(
+            code_of(
+                &BudgetOverride::new(name, 0)
+                    .expect_err("a dimension that funds nothing is refused")
+            ),
+            "budget_override_invalid",
+            "`{name}=0`"
+        );
+    }
 }
 
 /// A tight override really truncates the work and the report states the dimension that stopped it.
