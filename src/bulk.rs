@@ -45,6 +45,23 @@
 //! with the weight and the limit it exceeded in its record: its Java text is discarded rather than
 //! truncated, no success is claimed, and no worker waits for capacity that can never fit it.
 //!
+//! # The container a class task reads
+//!
+//! A candidate comes from the container the walk was inside when it yielded it, and that container
+//! travels with the candidate: the slot keeps the walk's own active handle
+//! ([`ContainerFactsHandle`]) from the dispatch until the worker takes the task, and the worker
+//! holds it until that class's task ends. It is what makes the window a handover rather than a
+//! gap — the walk opens one container at a time and leaves it behind as soon as its entries are
+//! dispatched, so with more than one worker the ordinary case is a class task that reads its class
+//! *after* the walk has moved on. Every read of that container — the class entry's own verified
+//! read and each member's loader binding query — is then answered from the product the discovery
+//! already paid for, whatever the caller's facts store retains ([`crate::FactsCache`]).
+//!
+//! Holding one is not retaining one: the handle is released with the class task that ends, and the
+//! decision about a container nothing is using any more is the store's own, exactly as before. A
+//! container whose classes are still dispatched is never "nothing is using it" — that is the one
+//! case this handover decides.
+//!
 //! # One total, many workers
 //!
 //! Discovery, preparation, each method's execution and each delivery bill to **one**
@@ -85,7 +102,7 @@ use crate::{
     PhysicalClassLocation, PhysicalDefinitionId, PhysicalMethodId, PhysicalView, Provenance,
     RecoveredMethod, Result, SnapshotId, TerminationReason, UsageSnapshot,
 };
-use jarde_reader::artifact::ArtifactSnapshot;
+use jarde_reader::artifact::{ArtifactSnapshot, ContainerFactsHandle};
 use jarde_reader::budget::{Budget, CountedBudgetDimension};
 use jarde_reader::ledger::{BulkStop, BulkStopKind, OperationLedger, UsageOwner};
 use jarde_reader::model::{JvmBytes, PhysicalVariant, physical_variant_for_path};
@@ -850,6 +867,13 @@ pub struct BulkFaults {
     pub fail_worker_at: Option<usize>,
     /// Panic inside the class task with this delivery ordinal, before it prepares anything.
     pub panic_at_class_ordinal: Option<u64>,
+    /// Hold every class task for this long before it reads its class.
+    ///
+    /// The hold sits inside the task, on the worker that runs it, so the traversal keeps going while
+    /// the reads wait: it is how a test states what a read sees when the walk has already left the
+    /// container the candidate came from. It changes nothing else — no dispatch, window, delivery or
+    /// cancellation semantics depend on it.
+    pub class_delay: Option<Duration>,
     /// A rendezvous each class task passes through before it prepares. It records how many class
     /// tasks were inside it at once, which is the difference between "two classes were dispatched"
     /// and "two class tasks really ran at the same time".
@@ -1061,6 +1085,17 @@ struct Slot {
     /// The class candidate this task is about, so the worker that takes it reads what the traversal
     /// yielded rather than a name derived from a path.
     class: ScopeClass,
+    /// The container the walk was inside when it yielded this candidate, kept as that walk's own
+    /// active handle ([`ContainerFactsHandle`]) until the worker takes the task.
+    ///
+    /// The walk holds the container it is inside and no other, and it leaves that container as soon
+    /// as its entries are dispatched. Without this field a class task that runs after the walk moved
+    /// on would find nothing holding the container it reads out of, and would parse the directory
+    /// again per class — the container would be rebuilt while consumers of it were still waiting to
+    /// read it, and the number of parses would grow with the class count instead of with the
+    /// containers the scope holds. `None` is the one case that has no container to hand over: a
+    /// standalone `CLASS` snapshot's root candidate.
+    container: Option<ContainerFactsHandle>,
     /// The control record waiting for the coordinator, at most one (`ClassPrepared`).
     control: Option<ClassPreparedEvent>,
     /// The method record waiting for the coordinator, at most one.
@@ -1070,9 +1105,10 @@ struct Slot {
 }
 
 impl Slot {
-    fn new(class: ScopeClass) -> Self {
+    fn new(class: ScopeClass, container: Option<ContainerFactsHandle>) -> Self {
         Self {
             class,
+            container,
             control: None,
             method: None,
             ending: None,
@@ -1267,10 +1303,14 @@ impl Registry {
     }
 
     /// Dispatches one class task into the window and answers the ordinal it delivers under.
-    fn dispatch_class(&self, class: ScopeClass) -> u64 {
+    ///
+    /// The container the walk handed over with this candidate enters the window with it: the walk may
+    /// leave that container before any worker reaches this class, and the handle is what keeps the
+    /// verified product — not merely its origin — alive for the task that will read it.
+    fn dispatch_class(&self, class: ScopeClass, container: Option<ContainerFactsHandle>) -> u64 {
         let mut state = self.lock();
         let ordinal = state.dispatched;
-        state.slots.push_back(Slot::new(class));
+        state.slots.push_back(Slot::new(class, container));
         state.dispatched = state.dispatched.saturating_add(1);
         state.slot_count_high_water = state
             .slot_count_high_water
@@ -1295,13 +1335,18 @@ impl Registry {
         ordinal
     }
 
-    /// Takes the next class task a worker may run, or `None` when this operation has no more work
-    /// for it.
+    /// Takes the next class task a worker may run, with the container the walk handed over for it,
+    /// or `None` when this operation has no more work for it.
+    ///
+    /// The handle *leaves* the slot here instead of being cloned out of it: from this point the task
+    /// holds its own container for as long as it runs, and the window keeps nothing of it — which is
+    /// what makes the release a property of the task's lifetime rather than of the coordinator's
+    /// delivery order.
     ///
     /// `None` is answered for a closed operation, and for one whose traversal ended with every
     /// dispatched task already taken. Anything else waits — bounded, and observing the close signal —
     /// for the coordinator to dispatch more.
-    fn take_task(&self) -> Option<(u64, ScopeClass)> {
+    fn take_task(&self) -> Option<(u64, ScopeClass, Option<ContainerFactsHandle>)> {
         self.observation.window_call(WindowSite::TakeTask);
         let mut state = self.lock();
         loop {
@@ -1312,8 +1357,10 @@ impl Registry {
                 let index = state.next_unstarted;
                 state.next_unstarted = state.next_unstarted.saturating_add(1);
                 let position = usize::try_from(index.checked_sub(state.front)?).ok()?;
-                let class = state.slots.get(position)?.class.clone();
-                return Some((index, class));
+                let slot = state.slots.get_mut(position)?;
+                let class = slot.class.clone();
+                let container = slot.container.take();
+                return Some((index, class, container));
             }
             if state.traversal_done {
                 return None;
@@ -1505,6 +1552,8 @@ struct Faults {
     #[cfg(feature = "test-support")]
     panic_at_class_ordinal: Option<u64>,
     #[cfg(feature = "test-support")]
+    class_delay: Option<Duration>,
+    #[cfg(feature = "test-support")]
     class_gate: Option<std::sync::Arc<ClassGate>>,
     #[cfg(feature = "test-support")]
     worker_watch: Option<std::sync::Arc<WorkerWatch>>,
@@ -1517,6 +1566,7 @@ impl Faults {
         Self {
             fail_worker_at: request.faults.fail_worker_at,
             panic_at_class_ordinal: request.faults.panic_at_class_ordinal,
+            class_delay: request.faults.class_delay,
             class_gate: request.faults.class_gate.clone(),
             worker_watch: request.faults.worker_watch.clone(),
         }
@@ -1561,6 +1611,19 @@ impl Faults {
         #[cfg(feature = "test-support")]
         if let Some(gate) = self.class_gate.as_ref() {
             gate.arrive();
+        }
+    }
+
+    /// Holds this class task, when a test asked for a delay, before it reads its class.
+    ///
+    /// The hold is at the head of the task and nowhere else: the traversal, the window and the
+    /// delivery keep running, so what the read below meets is the state a delayed worker really
+    /// meets — the walk may have left the container this candidate came from. A build that cannot ask
+    /// for a delay keeps the same call site and returns at once.
+    fn delay_before_prepare(&self) {
+        #[cfg(feature = "test-support")]
+        if let Some(delay) = self.class_delay {
+            std::thread::sleep(delay);
         }
     }
 
@@ -1619,6 +1682,7 @@ fn run_class_task(
         panic!("bulk test fault: the class task for ordinal {class_ordinal} panics");
     }
     operation.faults.arrive_at_gate();
+    operation.faults.delay_before_prepare();
     let _entered = operation.registry.enter();
     let mut methods = 0_u64;
     let mut class_execution: Option<ExecutionReport> = None;
@@ -2614,7 +2678,12 @@ fn coordinate(
                         &mut diagnostics_published,
                     ) {
                         Next::Class(class) => {
-                            operation.registry.dispatch_class(*class);
+                            // The walk's own container travels with the candidate it just yielded.
+                            // The walk is inside this container now and will have left it by the
+                            // time the task reads the class; the handle is what keeps the product
+                            // that read needs alive until then.
+                            let container = cursor.container_facts();
+                            operation.registry.dispatch_class(*class, container);
                         }
                         Next::Done => {
                             traversal_done = true;
@@ -2842,7 +2911,14 @@ fn worker_loop(operation: &Operation<'_>) {
     let _alive = operation.faults.register_worker();
     let lived = operation.observation.worker_started();
     let mut busy = Duration::ZERO;
-    while let Some((index, class)) = operation.registry.take_task() {
+    while let Some((index, class, container)) = operation.registry.take_task() {
+        // The container the walk handed over with this class, held for exactly as long as this class
+        // task runs: the read below and every member's binding query are answered from that verified
+        // product instead of parsing the directory again, however far the walk has moved on in the
+        // meantime and whatever the caller's facts store decided to keep. Dropping it when the task
+        // returns is the release, so the decision about a container no class task is reading any
+        // more belongs to the store alone.
+        let _container = container;
         let guard = TaskGuard { operation, index };
         let mut budget =
             operation.budget_for(operation.discovery_limits.clone(), UsageOwner::Discovery);
