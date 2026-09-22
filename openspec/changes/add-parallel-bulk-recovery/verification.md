@@ -350,4 +350,8 @@ w8 与 w1 的 min–max 不重叠；并行收益单调到 8 worker（此前 jobs
 
 **仍未测（不得读作已测）**：page cache 初态未控制（只逐配置预热）；A/B 逐方法形状未重跑（属 `8807fa5`）；零容量 store 与超大类倾斜未通过 CLI 跑（CLI 不暴露 store 配置）；导出流的证据选择未作单独对照臂。
 
-**未与协议数字对齐的开放项**：G0 的进程内归因基线（bcprov request 段稳态 discard 3.80 / encode 4.07 / write 4.47 s）比协议驱动的同三档各快 7–8%；两份文件的 harness、构建目录与负载记录都不同，不取平均、不择优，差异保留为待消解项（消解方式：同一 revision、同一 `CARGO_TARGET_DIR`、同一驱动重跑一档）。
+**两套 harness 的结构性差异（已定位，独立复核实测）**：同一 revision、同一单元格（bcprov / discard / w1 / roomy，store 容量逐位相同）、同机交错 10 轮，G0 进程内 harness 中位 3.841 s 对协议驱动 3.414 s，配对差 +0.429 s（1.125×，10/10 同向）；仪器开销已排除（on/off 差 <0.2%），差值定位在 G0 自己的独立 `prepare` 相（~0.26 s）与其 `request` 相额外开销，两边的交付计数逐项相同。**G0 数字用于归因，不与协议行并列比较，也不取平均**；逐轮表见 `openspec/evidence/benchmark-ba2076a/harness-diff.md`。
+
+**诊断码读法（复核更正）**：`resolution_definition_unbound` 在 `delivery.analysis` 平面，出现它的 298 个方法记录是 `state=recovered`（已交付），只有 28 个 `class_end` 把码写进自己的 execution 平面；语义是"该物理定义被同名定义遮蔽、不是声明的 loader 会选中的那一个"，不是"引擎拒绝选"；触发条件是本轮 s2-009 声明了 53 个显式 container root 把两份拷贝都纳入。MUST NOT 读作恢复失败。
+
+**环境声明（承重件，须逐条记录）**：bcprov = `snapshot_all` + `PlainJar`；s2-009 = `artifact_tree root` + 53 个显式 container root（含 `WEB-INF/classes/` 前缀）。
