@@ -324,3 +324,30 @@ review 的 R1–R8 全部有落点，逐条给出**修复位置与验证**；未
 **默认裁决的三条硬要求**：`--jobs auto` 的取值在两个语料上都必须落在"≥2 worker 且快于 jobs=1"的区间；退化形状（1 MiB 输出额度、零容量 store、超大类）在默认配置下必须是"可读前缀 + 非完成 + 非零退出"；`final` 缺失一律不当作完成。
 
 **明确不做的**：不把本项目的任何数字写成与 jadx 的吞吐比较——那需要同工作集、同质量口径与同一台机器上的协议化对照，属 `optimize-demand-workloads` 的 O7，不在此处顺手宣布。
+
+## 15. 6.3 默认裁决与协议化测量（在 `ba2076a` 上完成）
+
+**候选**：`ba2076a`（正式候选已在 `openspec/benchmark-protocol.md` 固定；其后提交只动 tests 与文档，`git diff --name-only ba2076a HEAD -- src crates Cargo.toml Cargo.lock` 为空）。构建 `--release --locked`、独立 worktree 与独立 `CARGO_TARGET_DIR`，`jarde-cli` 二进制 sha256[:16] `7728e9766c88cc19`；语料 12/12 逐字节一致。原始样本与报告见 `openspec/evidence/benchmark-ba2076a/`。
+
+**C/D 臂（每格 10 次交错 + 逐配置预热，240/240 `exit=0`，交付计数逐项一致）**
+
+| 语料 | sink | w1 | w2 | w4 | w8 | w8/w1 |
+| --- | --- | --- | --- | --- | --- | --- |
+| bcprov | discard | 3.44 s | 2.58 s | 2.23 s | 1.86 s | 1.85× |
+| bcprov | encode | 3.78 s | 2.64 s | 2.29 s | 1.94 s | 1.95× |
+| bcprov | write | 4.13 s | 2.69 s | 2.38 s | 2.02 s | 2.05× |
+| s2-009 | discard | 11.62 s | 8.92 s | 7.48 s | 6.51 s | 1.79× |
+| s2-009 | encode | 14.12 s | 9.35 s | 8.06 s | 7.41 s | 1.90× |
+| s2-009 | write | 15.89 s | 10.13 s | 8.90 s | 8.50 s | 1.87× |
+
+w8 与 w1 的 min–max 不重叠；并行收益单调到 8 worker（此前 jobs=8 比 4 慢 5–7% 的记录属窗口二级额度之前）。
+
+**默认配置裁决（6.3）**：`--jobs auto` 在两语料上都落在"≥2 worker 且快于 jobs=1"的区间（CLI `export`：auto 2.19/9.04 s、jobs=1 3.99/16.16 s）；退化形状在默认配置下是"可读前缀 + 非完成 + 非零退出"（1 MiB 额度 → `exit=4`、71/25 行可读前缀）；`final` 缺失不当作完成。**三项已裁定为默认**：二级窗口（§13）、`auto`、CLI 附带的有界 store。
+
+**功能门禁（与上表同一候选，计数与语义而非时间）**：零容量/1 字节 store 的整包等价（`bulk_recovery_retention`）、大类倾斜与慢 sink 的顺序与上界（`bulk_recovery_backpressure`）、取消四站点（`bulk_recovery_cancel`）、活动容器交接（`bulk_recovery_handover`）、普通小单请求回归（`task_cli`、`recover` 单方法 11.22 ms/14.2 MB）。
+
+**同一轮的正确性记录（独立复核，600 抽样 → 424 可比）**：一致 421（99.3%），其余 3 例已定位为**探针自身的缺陷**（把两个 `int` 参数槽接反的 `comparePriorities`，三个 war 各一次），引擎文本与字节码一致，**本臂无引擎侧真实语义错误**。`does_not_compile` 11/600（上一轮 103/1,157，样本来源不同，不作趋势结论）。T5 在本候选上被独立复现验证已关闭。
+
+**仍未测（不得读作已测）**：page cache 初态未控制（只逐配置预热）；A/B 逐方法形状未重跑（属 `8807fa5`）；零容量 store 与超大类倾斜未通过 CLI 跑（CLI 不暴露 store 配置）；导出流的证据选择未作单独对照臂。
+
+**未与协议数字对齐的开放项**：G0 的进程内归因基线（bcprov request 段稳态 discard 3.80 / encode 4.07 / write 4.47 s）比协议驱动的同三档各快 7–8%；两份文件的 harness、构建目录与负载记录都不同，不取平均、不择优，差异保留为待消解项（消解方式：同一 revision、同一 `CARGO_TARGET_DIR`、同一驱动重跑一档）。

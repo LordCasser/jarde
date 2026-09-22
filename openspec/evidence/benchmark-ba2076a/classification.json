@@ -1,0 +1,354 @@
+{
+ "bcprov": {
+  "exit": 4,
+  "bytes": 390822561,
+  "records": {
+   "header": 1,
+   "class_prepared": 2430,
+   "method": 15003,
+   "class_end": 2430,
+   "final": 1
+  },
+  "header": {
+   "kind": "header",
+   "view": {
+    "snapshot": "97ed7d931aac376535fe7ddc199cc8bc3f0bd31a8ca709ba987891fb934c97fe",
+    "scope": {
+     "kind": "snapshot_all"
+    }
+   },
+   "limits": {
+    "workers_requested": 4,
+    "workers_effective": 4,
+    "total": {
+     "input_bytes": 1099511627776,
+     "archive_entries": 1099511627776,
+     "entry_bytes": 1099511627776,
+     "read_bytes": 1099511627776,
+     "class_bytes": 1099511627776,
+     "attribute_bytes": 1099511627776,
+     "code_bytes": 1099511627776,
+     "result_items": 1099511627776,
+     "output_bytes": 1099511627776,
+     "class_headers": 1099511627776,
+     "method_bodies": 1099511627776,
+     "ir_items": 1099511627776,
+     "ir_edges": 1099511627776,
+     "analysis_steps": 1099511627776,
+     "normalization_clones": 1099511627776,
+     "nested_depth": 4,
+     "dependency_depth": 8,
+     "elapsed_millis": 7200000
+    },
+    "method": {
+     "input_bytes": 67108864,
+     "archive_entries": 65536,
+     "entry_bytes": 67108864,
+     "read_bytes": 67108864,
+     "class_bytes": 67108864,
+     "attribute_bytes": 67108864,
+     "code_bytes": 16777216,
+     "result_items": 65536,
+     "output_bytes": 16777216,
+     "class_headers": 4096,
+     "method_bodies": 4096,
+     "ir_items": 4194304,
+     "ir_edges": 4194304,
+     "analysis_steps": 4194304,
+     "normalization_clones": 1048576,
+     "nested_depth": 4,
+     "dependency_depth": 8,
+     "elapsed_millis": 30000
+    },
+    "max_class_bytes": 16777216,
+    "max_result_weight": 2097152,
+    "max_buffered_result_weight": 33554432,
+    "shared_result_pool_weight": 25165824,
+    "facts_capacity": {
+     "entries": 16384,
+     "retained_bytes": 134217728
+    }
+   }
+  },
+  "final": {
+   "view": {
+    "snapshot": "97ed7d931aac376535fe7ddc199cc8bc3f0bd31a8ca709ba987891fb934c97fe",
+    "scope": {
+     "kind": "snapshot_all"
+    }
+   },
+   "limits": {
+    "workers_requested": 4,
+    "workers_effective": 4,
+    "total": {
+     "input_bytes": 1099511627776,
+     "archive_entries": 1099511627776,
+     "entry_bytes": 1099511627776,
+     "read_bytes": 1099511627776,
+     "class_bytes": 1099511627776,
+     "attribute_bytes": 1099511627776,
+     "code_bytes": 1099511627776,
+     "result_items": 1099511627776,
+     "output_bytes": 1099511627776,
+     "class_headers": 1099511627776,
+     "method_bodies": 1099511627776,
+     "ir_items": 1099511627776,
+     "ir_edges": 1099511627776,
+     "analysis_steps": 1099511627776,
+     "normalization_clones": 1099511627776,
+     "nested_depth": 4,
+     "dependency_depth": 8,
+     "elapsed_millis": 7200000
+    },
+    "method": {
+     "input_bytes": 67108864,
+     "archive_entries": 65536,
+     "entry_bytes": 67108864,
+     "read_bytes": 67108864,
+     "class_bytes": 67108864,
+     "attribute_bytes": 67108864,
+     "code_bytes": 16777216,
+     "result_items": 65536,
+     "output_bytes": 16777216,
+     "class_headers": 4096,
+     "method_bodies": 4096,
+     "ir_items": 4194304,
+     "ir_edges": 4194304,
+     "analysis_steps": 4194304,
+     "normalization_clones": 1048576,
+     "nested_depth": 4,
+     "dependency_depth": 8,
+     "elapsed_millis": 30000
+    },
+    "max_class_bytes": 16777216,
+    "max_result_weight": 2097152,
+    "max_buffered_result_weight": 33554432,
+    "shared_result_pool_weight": 25165824,
+    "facts_capacity": {
+     "entries": 16384,
+     "retained_bytes": 134217728
+    }
+   },
+   "classes_seen": 2430,
+   "classes_prepared": 2430,
+   "classes_refused": 0,
+   "methods_declared": 15003,
+   "methods_executed": 15003,
+   "methods_delivered": 15003,
+   "methods_not_executed": 0,
+   "outcomes": {
+    "produced": 12045,
+    "explanation_only": 2447,
+    "not_produced": 3,
+    "refused": 0,
+    "no_body": 508,
+    "oversized": 0
+   },
+   "traversal_complete": true,
+   "execution": {
+    "status": "partial",
+    "reason": {
+     "kind": "error",
+     "code": "ir_frame_inconsistent"
+    },
+    "usage": {
+     "input_bytes": 2903072,
+     "archive_entries": 2569,
+     "entry_bytes": 5004475,
+     "read_bytes": 2203840,
+     "class_bytes": 5004475,
+     "attribute_bytes": 2616224,
+     "code_bytes": 1007175,
+     "result_items": 22433,
+     "output_bytes": 408982847,
+     "class_headers": 0,
+     "method_bodies": 14495,
+     "ir_items": 11349736,
+     "ir_edges": 1030050,
+     "analysis_steps": 3156885,
+     "normalization_clones": 0,
+     "nested_depth": 0,
+     "dependency_depth": 0,
+     "elapsed_millis": 2443
+    }
+   }
+  }
+ },
+ "s2-009": {
+  "exit": 4,
+  "bytes": 3609550346,
+  "records": {
+   "header": 1,
+   "class_prepared": 7200,
+   "method": 57180,
+   "class_end": 7200,
+   "final": 1
+  },
+  "header": {
+   "kind": "header",
+   "view": {
+    "snapshot": "5cdd5c712821670b99c3bcc407fb40fd34e62d1a46c8294c683a9c90fc67372c",
+    "scope": {
+     "kind": "artifact_tree",
+     "root_container": "root"
+    }
+   },
+   "limits": {
+    "workers_requested": 4,
+    "workers_effective": 4,
+    "total": {
+     "input_bytes": 1099511627776,
+     "archive_entries": 1099511627776,
+     "entry_bytes": 1099511627776,
+     "read_bytes": 1099511627776,
+     "class_bytes": 1099511627776,
+     "attribute_bytes": 1099511627776,
+     "code_bytes": 1099511627776,
+     "result_items": 1099511627776,
+     "output_bytes": 1099511627776,
+     "class_headers": 1099511627776,
+     "method_bodies": 1099511627776,
+     "ir_items": 1099511627776,
+     "ir_edges": 1099511627776,
+     "analysis_steps": 1099511627776,
+     "normalization_clones": 1099511627776,
+     "nested_depth": 4,
+     "dependency_depth": 8,
+     "elapsed_millis": 7200000
+    },
+    "method": {
+     "input_bytes": 67108864,
+     "archive_entries": 65536,
+     "entry_bytes": 67108864,
+     "read_bytes": 67108864,
+     "class_bytes": 67108864,
+     "attribute_bytes": 67108864,
+     "code_bytes": 16777216,
+     "result_items": 65536,
+     "output_bytes": 16777216,
+     "class_headers": 4096,
+     "method_bodies": 4096,
+     "ir_items": 4194304,
+     "ir_edges": 4194304,
+     "analysis_steps": 4194304,
+     "normalization_clones": 1048576,
+     "nested_depth": 4,
+     "dependency_depth": 8,
+     "elapsed_millis": 30000
+    },
+    "max_class_bytes": 16777216,
+    "max_result_weight": 2097152,
+    "max_buffered_result_weight": 33554432,
+    "shared_result_pool_weight": 25165824,
+    "facts_capacity": {
+     "entries": 16384,
+     "retained_bytes": 134217728
+    }
+   }
+  },
+  "final": {
+   "view": {
+    "snapshot": "5cdd5c712821670b99c3bcc407fb40fd34e62d1a46c8294c683a9c90fc67372c",
+    "scope": {
+     "kind": "artifact_tree",
+     "root_container": "root"
+    }
+   },
+   "limits": {
+    "workers_requested": 4,
+    "workers_effective": 4,
+    "total": {
+     "input_bytes": 1099511627776,
+     "archive_entries": 1099511627776,
+     "entry_bytes": 1099511627776,
+     "read_bytes": 1099511627776,
+     "class_bytes": 1099511627776,
+     "attribute_bytes": 1099511627776,
+     "code_bytes": 1099511627776,
+     "result_items": 1099511627776,
+     "output_bytes": 1099511627776,
+     "class_headers": 1099511627776,
+     "method_bodies": 1099511627776,
+     "ir_items": 1099511627776,
+     "ir_edges": 1099511627776,
+     "analysis_steps": 1099511627776,
+     "normalization_clones": 1099511627776,
+     "nested_depth": 4,
+     "dependency_depth": 8,
+     "elapsed_millis": 7200000
+    },
+    "method": {
+     "input_bytes": 67108864,
+     "archive_entries": 65536,
+     "entry_bytes": 67108864,
+     "read_bytes": 67108864,
+     "class_bytes": 67108864,
+     "attribute_bytes": 67108864,
+     "code_bytes": 16777216,
+     "result_items": 65536,
+     "output_bytes": 16777216,
+     "class_headers": 4096,
+     "method_bodies": 4096,
+     "ir_items": 4194304,
+     "ir_edges": 4194304,
+     "analysis_steps": 4194304,
+     "normalization_clones": 1048576,
+     "nested_depth": 4,
+     "dependency_depth": 8,
+     "elapsed_millis": 30000
+    },
+    "max_class_bytes": 16777216,
+    "max_result_weight": 2097152,
+    "max_buffered_result_weight": 33554432,
+    "shared_result_pool_weight": 25165824,
+    "facts_capacity": {
+     "entries": 16384,
+     "retained_bytes": 134217728
+    }
+   },
+   "classes_seen": 7200,
+   "classes_prepared": 7200,
+   "classes_refused": 0,
+   "methods_declared": 57180,
+   "methods_executed": 57180,
+   "methods_delivered": 57180,
+   "methods_not_executed": 0,
+   "outcomes": {
+    "produced": 44502,
+    "explanation_only": 8725,
+    "not_produced": 318,
+    "refused": 0,
+    "no_body": 3635,
+    "oversized": 0
+   },
+   "traversal_complete": true,
+   "execution": {
+    "status": "partial",
+    "reason": {
+     "kind": "error",
+     "code": "resolution_definition_unbound"
+    },
+    "usage": {
+     "input_bytes": 12272179,
+     "archive_entries": 10358,
+     "entry_bytes": 35353828,
+     "read_bytes": 21424206,
+     "class_bytes": 20362551,
+     "attribute_bytes": 13613771,
+     "code_bytes": 2431537,
+     "result_items": 81939,
+     "output_bytes": 3641683225,
+     "class_headers": 298,
+     "method_bodies": 53247,
+     "ir_items": 33738769,
+     "ir_edges": 3413463,
+     "analysis_steps": 8646330,
+     "normalization_clones": 228,
+     "nested_depth": 1,
+     "dependency_depth": 0,
+     "elapsed_millis": 9096
+    }
+   }
+  }
+ }
+}
