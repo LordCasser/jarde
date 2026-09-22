@@ -109,6 +109,14 @@ pub struct PreparedClassRead {
     /// The verified facts of the container this class was read out of, held as an active strong
     /// reference; `None` for a standalone root, which has no container directory at all.
     container_facts: Option<ContainerFactsHandle>,
+    /// Whether this read was answered from the request's store's retention instead of being performed
+    /// by the request that holds it (change `reuse-selected-class-read`).
+    ///
+    /// A retained read is a read that **happened**: its bytes are the ones a verified read produced,
+    /// and `class_bytes` is the identity that read established. What this states is only *who paid
+    /// for it* — a request that was answered from retention read no entry of its own, and a counter
+    /// of the reads a request performed must not claim it did.
+    retained: bool,
 }
 
 impl PreparedClassRead {
@@ -150,6 +158,27 @@ impl PreparedClassRead {
         self.container_facts.clone()
     }
 
+    /// Whether this read was answered from the request's store's retention rather than performed by
+    /// the request that holds it (change `reuse-selected-class-read`).
+    ///
+    /// A retained read is a read that **happened** — the same bytes, the same verified identity, the
+    /// same `class_bytes` a fresh read would have published — so every consumer of it reads exactly
+    /// what a direct read would have handed it. The flag states only that *this* request read no
+    /// entry of its own, which is what a counter of the reads a request performed has to know.
+    pub fn retained(&self) -> bool {
+        self.retained
+    }
+
+    /// States that this read was answered from the request's store's retention.
+    ///
+    /// It is the caller that knows: the read was built from bytes the store handed out instead of
+    /// bytes the request read, and a caller that did not get them from a store must never claim it
+    /// did. Nothing about the read changes — the bytes and the identity are the ones a verified read
+    /// established either way.
+    pub fn mark_retained(&mut self) {
+        self.retained = true;
+    }
+
     /// Builds one read out of the parts a snapshot path verified, together with the container facts
     /// it was read through.
     #[allow(clippy::too_many_arguments)]
@@ -172,6 +201,7 @@ impl PreparedClassRead {
             span,
             backing_digest,
             container_facts,
+            retained: false,
         }
     }
 }

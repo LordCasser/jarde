@@ -103,11 +103,12 @@ pub use jarde_reader::ledger::{BulkStop, BulkStopKind, OperationLedger, UsageOwn
 pub use class_source::*;
 pub use facade::*;
 pub use inspect::{ClassSource, ClassTarget, EngineBytecodeReport, EngineHeaderReport};
-// The facts cache (P5 2.3) crosses as the three names a caller needs to switch it on and read what
-// it did: the handle a budget is given, the identity a store is read under, and the report that says
-// how many lookups were answered, discarded or refused. It is disabled by default and nothing in the
-// engine constructs one — `crates/jarde-reader/src/facts_cache.rs` owns the whole mechanism, and the
-// guard in `tests/p5_benchmark.rs` holds that split.
+// The facts cache (P5 2.3) crosses as the names a caller needs to switch it on and read what it
+// did: the handle a budget is given, the identity a store is read under, the schemas its entry layers
+// key their products by, and the report that says how many lookups were answered, discarded or
+// refused. It is disabled by default and nothing in the engine constructs one —
+// `crates/jarde-reader/src/facts_cache.rs` owns the whole mechanism, and the guard in
+// `tests/p5_benchmark.rs` holds that split.
 pub use ir::*;
 pub use jarde_query::query::{
     BootstrapVia, ConsumerKind, ConsumerSchema, LiteralValue, QUERY_ENGINE_SCHEMA, QueryAnalysis,
@@ -116,7 +117,8 @@ pub use jarde_query::query::{
     XrefEvidence, XrefItem, XrefOperation, XrefTarget,
 };
 pub use jarde_reader::facts_cache::{
-    CONTAINER_FACTS_SCHEMA, FACTS_FORMAT, FactsCache, FactsCapacity, FactsIdentity, FactsReport,
+    CONTAINER_FACTS_SCHEMA, DEFINITION_READ_SCHEMA, FACTS_FORMAT, FactsCache, FactsCapacity,
+    FactsIdentity, FactsReport,
 };
 
 /// The opt-in facts store one operation reads through, as the budget that opened the operation

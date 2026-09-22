@@ -2001,6 +2001,19 @@ pub(crate) fn read_definition_content(
 /// An operation whose class has many consumers (a class-source presentation, whose every member
 /// runs such a query) reaches the container once for the whole operation instead
 /// ([`ArtifactSnapshot::prepared_read_of`] with [`ContainerHandover::Keep`]).
+///
+/// # The read the request's store may answer
+///
+/// The entry read is the one read of a definition this request selected, and the request's store
+/// answers it when an earlier request of the same snapshot already performed exactly it (change
+/// `reuse-selected-class-read`). A hit changes nothing about the read: the bytes and the identity
+/// that travels with them are the ones that earlier read established, the entry is still located in
+/// the container's verified directory, the definition's own declared identity is still checked
+/// against them, and the read is marked ([`PreparedClassRead::retained`]) so a caller that counts the
+/// reads *this* request performed does not count it. What a hit removes is the entry access itself —
+/// the locating scan, the byte read, the CRC/size verification and the digest computation — and
+/// nothing else. A definition of another snapshot, another origin, another ordinal, another digest,
+/// another length or another variant misses and is read here, exactly as it is with no store at all.
 pub(crate) fn read_definition_class(
     content: &[ArtifactSnapshot],
     definition: &PhysicalDefinitionId,
@@ -2017,13 +2030,35 @@ pub(crate) fn read_definition_class(
         ));
     };
     charge_header_attempt(budget)?;
+    let mut retained = false;
     let (bytes, digest) = match &definition.location {
         PhysicalClassLocation::ArchiveEntry { entry } => {
             let listed = listed_entry(snapshot, entry, &label, budget)?;
-            let materialized = snapshot
-                .read_entry_for_analysis(&listed, budget)
-                .map_err(|error| at_origin(error, &label))?;
-            (materialized.bytes, materialized.content_digest)
+            // The read of the definition this request selected: the request's store answers it when
+            // an earlier request of the same snapshot already performed exactly this read (change
+            // `reuse-selected-class-read`). A hit hands back the bytes and the identity that read
+            // established, so the checks below still run against them.
+            match snapshot
+                .retained_definition_read(definition, budget)
+                .map_err(|error| at_origin(error, &label))?
+            {
+                Some((bytes, class_bytes)) => {
+                    retained = true;
+                    ((*bytes).clone(), class_bytes.digest)
+                }
+                None => {
+                    let materialized = snapshot
+                        .read_entry_for_analysis(&listed, budget)
+                        .map_err(|error| at_origin(error, &label))?;
+                    snapshot.remember_definition_read(
+                        definition,
+                        &materialized.bytes,
+                        &materialized.content_digest,
+                        budget,
+                    );
+                    (materialized.bytes, materialized.content_digest)
+                }
+            }
         }
         PhysicalClassLocation::StandaloneRoot { .. } => {
             let bytes = snapshot
@@ -2038,7 +2073,7 @@ pub(crate) fn read_definition_class(
     })?;
     require_definition_bytes(definition, &digest, length, &label)?;
     let class_bytes = ClassBytesId { digest, length };
-    snapshot
+    let mut read = snapshot
         .prepared_read_of(
             definition.location.clone(),
             class_bytes,
@@ -2046,7 +2081,11 @@ pub(crate) fn read_definition_class(
             jarde_reader::prepared::ContainerHandover::NotNeeded,
             budget,
         )
-        .map_err(|error| at_origin(error, &label))
+        .map_err(|error| at_origin(error, &label))?;
+    if retained {
+        read.mark_retained();
+    }
+    Ok(read)
 }
 
 /// The trusted read and the header facts of one class definition, read by identity.

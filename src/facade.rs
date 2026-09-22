@@ -450,10 +450,11 @@ impl Engine {
         if analyzed.ir().code().is_some() {
             crate::d0_counts::body_decoded();
         }
-        if read.is_some() {
+        if read.as_ref().is_some_and(|read| !read.retained()) {
             // One class materialization for this operation's own selected definition
             // (`crate::d0_counts`): the run above performed it, and the presentation below consumes
-            // it rather than reading the definition again.
+            // it rather than reading the definition again. A read the request's store answered from
+            // retention is not a materialization this request performed.
             crate::d0_counts::class_materialized();
         }
         recovery_read(content, request, analyzed, read, evidence, budget)
@@ -696,7 +697,7 @@ impl Engine {
         // engine: the dimension counts what it is asked to count, and a refused charge means the read
         // never happened, which is an `Err` here rather than a prefix.
         budget.charge(CountedBudgetDimension::ClassHeaders, 1)?;
-        let (bytes, source) = materialize_definition(snapshot, definition, budget)?;
+        let (bytes, source, _retained) = materialize_definition(snapshot, definition, budget)?;
         let facts = class_member_facts(&bytes, budget)?;
         let provenance = Some(definition_provenance(definition));
         let mut items = Vec::new();
@@ -4921,12 +4922,16 @@ fn bind_class(
         ClassRef::Definition { definition } => {
             require_definition_snapshot(snapshot, definition)?;
             budget.charge(CountedBudgetDimension::ClassHeaders, 1)?;
-            let read = read_definition(snapshot, definition, budget)?;
+            let (read, retained) = read_definition(snapshot, definition, budget)?;
             // One class materialization for this operation's own selected definition
             // (`crate::d0_counts`), counted at the read that really happened: a request whose
-            // charge, cancellation or read was refused above materialized nothing, and a name-based
-            // request's *search* reads are the search's own cost and are not counted here.
-            crate::d0_counts::class_materialized();
+            // charge, cancellation or read was refused above materialized nothing, a name-based
+            // request's *search* reads are the search's own cost and are not counted here, and a
+            // read the request's store answered from retention is not a materialization this request
+            // performed.
+            if !retained {
+                crate::d0_counts::class_materialized();
+            }
             let provenance = Some(definition_provenance(definition));
             let class_item = match charge_item(budget) {
                 Ok(()) => {
@@ -5203,12 +5208,17 @@ fn require_definition_snapshot(
 /// The bytes are verified against the definition's own digest, length and variant before anything
 /// is parsed — a definition that does not match the bytes at its location is the reader's own
 /// input error — so the identity this returns is the identity the caller gave.
+///
+/// The second element says whether **this** request performed that read or the request's store
+/// answered it from a read an earlier request of the same snapshot already performed (change
+/// `reuse-selected-class-read`): the class content, the facts and the diagnostics are the same either
+/// way, and only a caller that counts this request's own reads has anything to do with it.
 fn read_definition(
     snapshot: &ArtifactSnapshot,
     definition: &PhysicalDefinitionId,
     budget: &mut Budget,
-) -> Result<ConfirmedRead> {
-    let (bytes, source) = materialize_definition(snapshot, definition, budget)?;
+) -> Result<(ConfirmedRead, bool)> {
+    let (bytes, source, retained) = materialize_definition(snapshot, definition, budget)?;
     let facts = class_member_facts(&bytes, budget)?;
     let resolved = definition_of(&source);
     let binding = class_name_binding(&source, &facts.this_class);
@@ -5228,13 +5238,16 @@ fn read_definition(
         binding,
         member_table: facts.stopped_at.clone(),
     });
-    Ok(ConfirmedRead {
-        class,
-        facts,
-        diagnostics,
-        bytes,
-        source,
-    })
+    Ok((
+        ConfirmedRead {
+            class,
+            facts,
+            diagnostics,
+            bytes,
+            source,
+        },
+        retained,
+    ))
 }
 
 // ---------------------------------------------------------------------------------------------

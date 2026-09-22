@@ -1967,7 +1967,7 @@ fn the_four_paths_agree_on_the_semantic_fingerprint() {
     let target = origin_named(&snapshot, b"WEB-INF/lib/Target.jar");
     let owner = definition_at(&snapshot, &target);
     let environment = request_at(target.clone(), HISTORICAL_NAME).environment;
-    let request = method_request(environment, owner, b"add", b"(II)I");
+    let request = method_request(environment, owner.clone(), b"add", b"(II)I");
 
     let (off, off_budget) = recover_with(&snapshot, &request, None, limits());
     assert_eq!(
@@ -2016,12 +2016,29 @@ fn the_four_paths_agree_on_the_semantic_fingerprint() {
         0,
         "the warm recovery still scanned a directory"
     );
-    assert!(
+    // The warm run's own read: the definition it selected is answered from the read the cold run
+    // performed (`reuse-selected-class-read`), so the entry access is gone — and what it publishes
+    // is still the very definition the request named, checked against the bytes that read handed
+    // over. The store's own counters are what say the answering happened: a warm run that charged no
+    // read and consulted no store would be a run that never verified the class at all.
+    assert_eq!(
         warm_budget
             .usage()
-            .counted_usage(CountedBudgetDimension::ReadBytes)
-            > 0,
-        "the warm recovery read nothing, so it cannot have verified a class"
+            .counted_usage(CountedBudgetDimension::ReadBytes),
+        0,
+        "the warm recovery read the definition's entry itself: {:?}",
+        warm_budget.usage()
+    );
+    assert_eq!(
+        warm.analysis().reads.last().map(|read| &read.definition),
+        Some(&owner),
+        "the warm run published a definition other than the one it was asked for"
+    );
+    assert_eq!(
+        store.report().definition_read_hits,
+        1,
+        "the warm run paid for no read and the store answered none: {:?}",
+        store.report()
     );
     println!(
         "off/cold/warm/starved all complete with one semantic fingerprint; archive_entries off {} \

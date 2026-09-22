@@ -696,9 +696,18 @@ impl Billing {
     /// Arm B — the same requests, each carrying the one store that started empty. Pinned for the same
     /// reason; the difference between this row and [`Billing::DIRECT_ARM`] is what retention moved in
     /// the *reads*, and the dimensions the two rows agree on are the ones the work itself charged.
+    ///
+    /// **Re-pinned by `reuse-selected-class-read`**: this row used to bill `archive_entries: 411`,
+    /// `entry_bytes: 330368` (and `read_bytes: 330368`). The store's definition-read layer now answers
+    /// a request for a definition an earlier request of the same snapshot already read — the 187
+    /// requests ask about 19 definitions, so every request after the first for the same definition
+    /// performs no entry read at all (`19 definition reads retained`, `definition_read_hits` 168 of
+    /// them). The read dimensions are exactly where this row moves; `class_bytes`, `class_headers`,
+    /// `method_bodies`, the IR counts, `result_items` and `output_bytes` are unmoved, which is what
+    /// this file's claim means: retention moves reads, never work.
     const SHARED_ARM: Self = Self {
-        archive_entries: 411,
-        entry_bytes: 330368,
+        archive_entries: 57,
+        entry_bytes: 18680,
         class_bytes: 10817,
         class_headers: 191,
         method_bodies: 181,
@@ -1514,12 +1523,14 @@ fn the_old_per_method_arms_keep_their_ledger_and_the_same_text() {
         "--- the two old arms' ledgers over the whole corpus (counts, not timings) ---\n\
          direct  requests={} {}\n\
          shared  requests={} {}\n\
-         store   {}",
+         store   {}\n\
+         reuse   {}",
         direct.requests,
         direct.line(),
         shared.requests,
         shared.line(),
         facts.residency(),
+        facts.reuse(),
     );
     // The arms' own pinned account, over the whole corpus at the same shape the case table pins.
     assert_eq!(

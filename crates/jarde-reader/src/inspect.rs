@@ -218,17 +218,31 @@ pub fn materialize_root(
 /// What it does **not** do: it does not parse the bytes, does not verify the entry is a class file
 /// at all, and does not resolve, load or analyse anything. The digest is a check that the bytes are
 /// the ones the *identity* was derived from, never a claim that those bytes are legal.
+///
+/// # The read the request's store may answer
+///
+/// An entry location's bytes are read out of the snapshot's own directed container access, and that
+/// read is the one the request's store may answer when an earlier request of the same snapshot
+/// already performed exactly it (change `reuse-selected-class-read`). The third element of the
+/// answer says which of the two happened: `true` means the store handed back the bytes and the
+/// identity a previous read established, so **this** request performed no entry read — a caller that
+/// counts the reads a request performed must not count this one — and `false` means the read above
+/// ran. Everything else is the same on both paths: the location, the variant and the declared class
+/// bytes are still checked here, against the very identity the answer carries.
+///
+/// A standalone root is never answered from retention: its bytes are the snapshot's own, already
+/// resident, and the read of them is a copy this request needs anyway.
 pub fn materialize_definition(
     snapshot: &ArtifactSnapshot,
     definition: &PhysicalDefinitionId,
     budget: &mut Budget,
-) -> Result<(Vec<u8>, ClassSource)> {
+) -> Result<(Vec<u8>, ClassSource, bool)> {
     match &definition.location {
         PhysicalClassLocation::StandaloneRoot { snapshot: named } => {
             require_snapshot(snapshot, named)?;
             let (bytes, source) = materialize_root(snapshot, budget)?;
             require_class_bytes(definition, &source.class_bytes)?;
-            Ok((bytes, source))
+            Ok((bytes, source, false))
         }
         PhysicalClassLocation::ArchiveEntry { entry } => {
             require_snapshot(snapshot, entry.snapshot())?;
@@ -249,19 +263,37 @@ pub fn materialize_definition(
                     "the definition's physical variant is not the one its entry's raw name derives",
                 ));
             }
-            let materialized = snapshot.read_entry_for_analysis(&record, budget)?;
-            let class_bytes = ClassBytesId {
-                digest: materialized.content_digest,
-                length: u64::try_from(materialized.bytes.len())
-                    .map_err(|_| class_size_overflow())?,
-            };
+            // The read of the definition this caller selected: the request's store answers it when
+            // an earlier request of the same snapshot already performed exactly this read. A hit
+            // hands back the bytes and the identity *that* read established, so the checks below run
+            // against them exactly as they run against a fresh read's answer.
+            let (bytes, class_bytes, retained) =
+                match snapshot.retained_definition_read(definition, budget)? {
+                    Some((bytes, class_bytes)) => ((*bytes).clone(), class_bytes, true),
+                    None => {
+                        let materialized = snapshot.read_entry_for_analysis(&record, budget)?;
+                        snapshot.remember_definition_read(
+                            definition,
+                            &materialized.bytes,
+                            &materialized.content_digest,
+                            budget,
+                        );
+                        let class_bytes = ClassBytesId {
+                            digest: materialized.content_digest,
+                            length: u64::try_from(materialized.bytes.len())
+                                .map_err(|_| class_size_overflow())?,
+                        };
+                        (materialized.bytes, class_bytes, false)
+                    }
+                };
             require_class_bytes(definition, &class_bytes)?;
             Ok((
-                materialized.bytes,
+                bytes,
                 ClassSource {
                     location: definition.location.clone(),
                     class_bytes,
                 },
+                retained,
             ))
         }
     }

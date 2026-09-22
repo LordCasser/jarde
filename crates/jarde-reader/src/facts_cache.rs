@@ -6,18 +6,24 @@
 //! attaches one**, and **no concurrency**: the engine is one sequential scan and nothing here
 //! spawns work.
 //!
-//! It holds two layers, keyed and verified separately because they answer different questions:
+//! It holds three layers, keyed and verified separately because they answer different questions:
 //!
 //! * the **CP/Header layer** — a class's parsed structure, keyed by the class bytes' content and
 //!   the parse policy;
 //! * the **container layer** (bound-container-lookup) — a container's **verified facts**: the
 //!   immutable backing its entries live in, its complete central directory, and the multi-value
-//!   raw-name locator over that directory.
+//!   raw-name locator over that directory;
+//! * the **definition-read layer** (reuse-selected-class-read) — the **bytes one verified read of
+//!   one selected physical definition produced**, keyed by that definition's own identity (the
+//!   snapshot, the complete physical location, the content digest, the declared length and the
+//!   variant) and by [`DEFINITION_READ_SCHEMA`]. It holds no parse, no `PreparedClass` and no
+//!   method-level product: what a hit hands back is the bytes and the identity the read that
+//!   produced them established.
 //!
-//! Both are immutable once written, both are written only by a read that ran to the end, and both
-//! are refused rather than evicted when they do not fit. Nothing here is a session, a global, or a
-//! second injection path: a [`FactsCache`] is an explicit handle on [`Budget`], and the engine
-//! constructs none.
+//! All three are immutable once written, all three are written only by a read that ran to the end,
+//! all three are bounded by the same two limits, and all three are refused rather than evicted when
+//! they do not fit. Nothing here is a session, a global, or a second injection path: a
+//! [`FactsCache`] is an explicit handle on [`Budget`], and the engine constructs none.
 //!
 //! ## What the CP/Header layer holds, and what it deliberately does not
 //!
@@ -61,6 +67,39 @@
 //! * A retained locator is only ever used against the backing it was built from, and the selected
 //!   entry's own local header, CRC and sizes are re-verified on every read, so a hit changes what
 //!   the request pays for and never what it proves.
+//!
+//! ## What the definition-read layer holds, and why its key is the definition
+//!
+//! A definition read is the read one identity-addressed request performs for the definition it
+//! **selected**: the snapshot's entry at the definition's own coordinates, read through the
+//! verifying reader (CRC and size re-established from the bytes) and digested. This layer keeps the
+//! two things that read produced — its bytes and their content digest — under
+//! [`DefinitionReadKey`], whose dimensions are the definition's own:
+//!
+//! | key dimension | carrier |
+//! | --- | --- |
+//! | immutable snapshot | the snapshot id inside the physical location (a snapshot derives it from
+//!   its own bytes), so two snapshots that hold the same class bytes at the same coordinates are
+//!   two keys |
+//! | complete physical location | the container chain, the entry's ordinal and its raw name |
+//! | content digest and declared length | the [`ClassBytesId`] the definition states — and the
+//!   identity the read that produced the bytes really established |
+//! | variant (multi-release selection result) | the [`crate::model::PhysicalVariant`] the location's
+//!   raw name derives |
+//! | read schema | [`DEFINITION_READ_SCHEMA`] |
+//!
+//! Any one of them differing is **another key**, never a near miss: "the same name in another
+//! snapshot", "the same bytes at another origin", "another entry of the same content" and "another
+//! variant of the same coordinates" all answer nothing and fall back to the direct read. Nothing
+//! about *which request* asked is part of the key — a definition read is a property of one physical
+//! definition of one snapshot, which is what an identity-addressed request selects.
+//!
+//! A retained read is a read that **happened**: only a read that ran to the end, whose bytes were
+//! checked against the entry and digested, is offered here, and
+//! [`FactsCache::remember_definition_read`] refuses to keep bytes that are not the identity the
+//! definition declares. A read the budget stopped, a cancelled one and a damaged one are therefore
+//! all *absent*, never a partial answer: nothing negative, incomplete or refused can be published,
+//! exactly as at the two layers above.
 //!
 //! ## What a hit is, and what it can never be
 //!
@@ -164,6 +203,16 @@ pub const FACTS_FORMAT: u16 = 1;
 /// this build's declaration, not a compatibility promise.
 pub const CONTAINER_FACTS_SCHEMA: u16 = 1;
 
+/// The schema this build keys a retained **definition read** under.
+///
+/// A retained definition read is the bytes one verified read of one *selected* physical definition
+/// produced, together with the content identity that read established, keyed by that definition's
+/// own identity — see [`DefinitionReadKey`]. A build that changes what such a read holds, or how it
+/// is verified, cannot serve an old one as the answer: the schema is part of the key and a changed
+/// schema simply misses. Like [`FACTS_FORMAT`] and [`CONTAINER_FACTS_SCHEMA`] this is this build's
+/// declaration, not a compatibility promise.
+pub const DEFINITION_READ_SCHEMA: u16 = 1;
+
 /// How much one store may retain, in two independent bounds.
 ///
 /// The store refuses an insertion that would cross either bound; nothing here evicts, so an
@@ -178,9 +227,9 @@ pub const CONTAINER_FACTS_SCHEMA: u16 = 1;
 /// and no copy an upper layer made of a fact it read here.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct FactsCapacity {
-    /// Retained answers (CP/Header entries plus container products).
+    /// Retained answers: CP/Header entries, container products and definition reads.
     pub entries: usize,
-    /// Retained weight, in bytes, across every entry and container product.
+    /// Retained weight, in bytes, across every entry, container product and definition read.
     pub retained_bytes: u64,
 }
 
@@ -368,6 +417,44 @@ struct ContainerEntry {
     weight: u64,
 }
 
+/// What one definition read is retained under: the definition's own identity, once and complete.
+///
+/// Every dimension of the definition is a dimension of this key: the snapshot id (which a snapshot
+/// derives from its own bytes), the complete physical location (the container chain, the entry's
+/// ordinal and its raw name), the content digest and the declared length, and the variant the
+/// location's raw name derives. A lookup that differs in **any** one of them is another key rather
+/// than a near miss, so no definition can be answered with another one's bytes — not by name, not by
+/// coordinate, not by "the content looks the same".
+///
+/// Nothing about *which request* asked is a dimension: a definition read is a property of one
+/// physical definition of one snapshot, which is exactly what an identity-addressed request selects.
+/// The map over these keys is a `HashMap` because nothing ever iterates it — keys are looked up,
+/// rewritten, discarded and counted, and no order is ever read out of it.
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+pub(crate) struct DefinitionReadKey {
+    pub(crate) definition: crate::model::PhysicalDefinitionId,
+    pub(crate) schema: u16,
+}
+
+/// One retained definition read: the bytes a verified read produced, and the identity they answer
+/// under.
+///
+/// The bytes are immutable once written and shared as one handle, so a hit copies no allocation of
+/// its own before the caller asks for owned bytes. `class_bytes` is the identity **the read
+/// established** — the digest computed over exactly these bytes, and their length — and it is the
+/// same value the key was built from: [`FactsCache::remember_definition_read`] keeps a read only
+/// when it is the definition's own, so an entry can never answer under an identity its bytes did not
+/// establish.
+#[derive(Clone, Debug)]
+struct DefinitionRead {
+    identity: FactsIdentity,
+    class_bytes: ClassBytesId,
+    bytes: Arc<Vec<u8>>,
+    /// The weight this read contributes to the store's retained bytes: the length of the bytes it
+    /// holds, stored beside them so a rewrite can subtract exactly what it added.
+    weight: u64,
+}
+
 /// One cached answer, held as the shared handle its consumers read.
 ///
 /// The payload is an `Arc` because an answer is **immutable once written** and several consumers may
@@ -432,6 +519,12 @@ struct Counters {
     /// Nested containers materialized by a request holding this handle, and the bytes produced.
     nested_materializations: u64,
     nested_materialized_bytes: u64,
+    /// Definition reads looked up in retention, answered from it, and not found.
+    definition_read_consultations: u64,
+    definition_read_hits: u64,
+    definition_read_misses: u64,
+    /// Definition reads this store accepted: the reads whose bytes it now keeps.
+    definition_read_stored: u64,
 }
 
 /// The entries and their counters, shared by every handle that reads them.
@@ -442,7 +535,9 @@ struct Shared {
     entries: BTreeMap<FactsKey, Entry>,
     /// Container products, keyed by snapshot, physical origin and schema.
     containers: BTreeMap<ContainerKey, ContainerEntry>,
-    /// The weight every retained entry and container product contributes, summed.
+    /// Definition reads, keyed by the definition's own identity and this build's schema.
+    definition_reads: std::collections::HashMap<DefinitionReadKey, DefinitionRead>,
+    /// The weight every retained entry, container product and definition read contributes, summed.
     retained_bytes: u64,
     counters: Counters,
 }
@@ -465,6 +560,12 @@ pub struct FactsReport {
     /// The weight of everything the store holds now, in the units [`FactsCapacity`] bounds. A
     /// **residency proxy**, not RSS: see that type's documentation.
     pub retained_bytes: u64,
+    /// How many definition reads this store holds now.
+    pub definition_reads: usize,
+    /// The weight those reads contribute to [`FactsReport::retained_bytes`], as the sum of the
+    /// lengths of the bytes they hold. Reported beside the total so a measurement can say what the
+    /// definition-read layer costs on its own instead of reading it out of a difference.
+    pub definition_read_bytes: u64,
     /// Lookups asked of the store. `hits + misses`; a discarded entry counts as a miss.
     pub consultations: u64,
     pub hits: u64,
@@ -498,12 +599,25 @@ pub struct FactsReport {
     /// materializes one, for the same reason.
     pub nested_materializations: u64,
     pub nested_materialized_bytes: u64,
+    /// Definition reads looked up in retention, answered from it, and not found. One lookup is one
+    /// definition read a request asked for by the definition's own identity.
+    pub definition_read_consultations: u64,
+    pub definition_read_hits: u64,
+    pub definition_read_misses: u64,
+    /// Definition reads this store accepted: a read that ran to the end and whose bytes are the
+    /// identity they were offered under. A read a budget stopped, a cancelled one and a damaged one
+    /// never reach a store, so no counter here can say an incomplete read was retained.
+    pub definition_read_stored: u64,
 }
 
 impl FactsReport {
     /// Whether the store answered nothing it was asked.
+    ///
+    /// The definition-read layer counts here as the CP/Header layer does: a store that answered one
+    /// of those reads answered something, and a caller that reads the container counters beside this
+    /// one sees the layer whose hits are not counted here.
     pub fn answered_nothing(&self) -> bool {
-        self.hits == 0
+        self.hits == 0 && self.definition_read_hits == 0
     }
 
     /// The discards, as a one-line reading.
@@ -514,26 +628,37 @@ impl FactsReport {
         )
     }
 
-    /// The reuse evidence, as a one-line reading: how many container lookups were answered from
-    /// retention, and how much work the requests did anyway.
+    /// The reuse evidence, as a one-line reading: how many container lookups and how many definition
+    /// reads were answered from retention, and how much work the requests did anyway.
     pub fn reuse(&self) -> String {
         format!(
-            "container {}/{} hits, directories parsed {}, nested materialized {} ({} bytes)",
+            "container {}/{} hits, directories parsed {}, nested materialized {} ({} bytes); \
+             definition reads {}/{} hits ({} stored)",
             self.container_hits,
             self.container_consultations,
             self.directory_parses,
             self.nested_materializations,
-            self.nested_materialized_bytes
+            self.nested_materialized_bytes,
+            self.definition_read_hits,
+            self.definition_read_consultations,
+            self.definition_read_stored
         )
     }
 
     /// The residency figure and the refusals, as a one-line reading.
+    ///
+    /// The three layers are stated beside each other because they share the two limits: `entries`
+    /// count CP/Header entries, `containers` container products and `definition_reads` retained
+    /// definition reads, and `definition_read_bytes` is the part of `retained_bytes` the last of
+    /// them contributes. This is the weight model's own unit, never RSS.
     pub fn residency(&self) -> String {
         format!(
-            "{} entries / {} containers, {} retained bytes of {} allowed; refused {} by entry limit, \
-             {} by byte limit",
+            "{} entries / {} containers / {} definition reads ({} bytes), {} retained bytes of {} \
+             allowed; refused {} by entry limit, {} by byte limit",
             self.entries,
             self.containers,
+            self.definition_reads,
+            self.definition_read_bytes,
             self.retained_bytes,
             self.capacity.describe(),
             self.refused_capacity,
@@ -568,6 +693,7 @@ impl FactsCache {
                 capacity,
                 entries: BTreeMap::new(),
                 containers: BTreeMap::new(),
+                definition_reads: std::collections::HashMap::new(),
                 retained_bytes: 0,
                 counters: Counters::default(),
             })),
@@ -620,6 +746,7 @@ impl FactsCache {
         let shared = &mut *guard;
         shared.entries.clear();
         shared.containers.clear();
+        shared.definition_reads.clear();
         shared.retained_bytes = 0;
     }
 
@@ -633,6 +760,11 @@ impl FactsCache {
             entries: shared.entries.len(),
             containers: shared.containers.len(),
             retained_bytes: shared.retained_bytes,
+            definition_reads: shared.definition_reads.len(),
+            definition_read_bytes: shared
+                .definition_reads
+                .values()
+                .fold(0_u64, |bytes, read| bytes.saturating_add(read.weight)),
             consultations: counters.consultations,
             hits: counters.hits,
             misses: counters.misses,
@@ -649,6 +781,10 @@ impl FactsCache {
             directory_parses: counters.directory_parses,
             nested_materializations: counters.nested_materializations,
             nested_materialized_bytes: counters.nested_materialized_bytes,
+            definition_read_consultations: counters.definition_read_consultations,
+            definition_read_hits: counters.definition_read_hits,
+            definition_read_misses: counters.definition_read_misses,
+            definition_read_stored: counters.definition_read_stored,
         }
     }
 
@@ -905,6 +1041,134 @@ impl FactsCache {
         self.shared
             .lock()
             .unwrap_or_else(|poisoned| poisoned.into_inner())
+    }
+
+    /// One definition read this store holds, as the bytes the read produced and the identity it
+    /// established.
+    ///
+    /// `None` is "this store has no read of *this* definition": the lookup charges nothing, reads
+    /// nothing and is counted as one consultation. A hit hands out the bytes' own handle and copies
+    /// nothing at all — a caller that needs owned bytes copies them where it asks for them — and the
+    /// identity that travels with them is the one their read established, never the caller's claim.
+    ///
+    /// The current request decides first: the budget is polled, so a cancelled, expired or already
+    /// stopped request is refused before anything is served and this layer is not a way around
+    /// either. Nothing here resets, borrows or re-creates budget state: a hit is memory the request
+    /// may use, not a new allowance, and the caller still owes every check it performs on the answer
+    /// — the location, the variant and the identity it declared.
+    pub fn definition_read(
+        &self,
+        definition: &crate::model::PhysicalDefinitionId,
+        budget: &mut Budget,
+    ) -> Result<Option<(Arc<Vec<u8>>, ClassBytesId)>> {
+        budget.poll()?;
+        let key = DefinitionReadKey {
+            definition: definition.clone(),
+            schema: DEFINITION_READ_SCHEMA,
+        };
+        let mut guard = self.shared();
+        let shared = &mut *guard;
+        shared.counters.definition_read_consultations += 1;
+        let Some(read) = shared.definition_reads.get(&key) else {
+            shared.counters.definition_read_misses += 1;
+            return Ok(None);
+        };
+        if read.identity != self.identity {
+            // Written by another build's parser or entry format: discarded rather than converted,
+            // exactly like a CP/Header entry of another declaration.
+            let format_mismatch = read.identity.format != self.identity.format;
+            let weight = read.weight;
+            shared.definition_reads.remove(&key);
+            shared.retained_bytes = shared.retained_bytes.saturating_sub(weight);
+            shared.counters.definition_read_misses += 1;
+            if format_mismatch {
+                shared.counters.discarded_format += 1;
+            } else {
+                shared.counters.discarded_registry += 1;
+            }
+            return Ok(None);
+        }
+        let bytes = Arc::clone(&read.bytes);
+        let class_bytes = read.class_bytes.clone();
+        shared.counters.definition_read_hits += 1;
+        Ok(Some((bytes, class_bytes)))
+    }
+
+    /// Offers one definition's verified read for retention.
+    ///
+    /// The read was performed completely by the request that calls this, and that request keeps
+    /// using its own bytes whether or not the store accepts them: a refusal is a retention decision,
+    /// never a reason to read the definition again.
+    ///
+    /// Only a read whose bytes **are** the definition's own is kept. `content_digest` is the digest
+    /// the read computed over exactly `bytes`, and a digest or a length that disagrees with the
+    /// definition's declaration is refused here and counted nowhere: the caller's own identity check
+    /// is what refuses such a read, so the state this store declines to hold is one no lookup could
+    /// ever be answered from. That rule is what makes "the bytes are the identity they are keyed
+    /// under" a property of the store rather than a promise of its callers.
+    ///
+    /// A read that does not fit in the entry limit or in the retained-byte limit is refused and
+    /// counted; nothing is evicted to make room.
+    pub(crate) fn remember_definition_read(
+        &self,
+        definition: &crate::model::PhysicalDefinitionId,
+        bytes: &[u8],
+        content_digest: &Digest,
+    ) {
+        let Ok(length) = u64::try_from(bytes.len()) else {
+            return;
+        };
+        if definition.class_bytes.digest != *content_digest
+            || definition.class_bytes.length != length
+        {
+            return;
+        }
+        let key = DefinitionReadKey {
+            definition: definition.clone(),
+            schema: DEFINITION_READ_SCHEMA,
+        };
+        let read = DefinitionRead {
+            identity: self.identity,
+            class_bytes: ClassBytesId {
+                digest: content_digest.clone(),
+                length,
+            },
+            bytes: Arc::new(bytes.to_vec()),
+            weight: length,
+        };
+        let mut guard = self.shared();
+        let shared = &mut *guard;
+        let occupied_weight = shared
+            .definition_reads
+            .get(&key)
+            .map(|existing| existing.weight);
+        match occupied_weight {
+            Some(previous) => {
+                // A key the store already holds may always be rewritten — the read that reached
+                // here ran to the end — so only a *new* key can be refused.
+                shared.retained_bytes = shared.retained_bytes.saturating_sub(previous);
+                shared.retained_bytes = shared.retained_bytes.saturating_add(length);
+                shared.definition_reads.insert(key, read);
+                shared.counters.definition_read_stored += 1;
+            }
+            None => {
+                let items =
+                    shared.entries.len() + shared.containers.len() + shared.definition_reads.len();
+                if items >= shared.capacity.entries {
+                    shared.counters.refused_capacity += 1;
+                    return;
+                }
+                if length > shared.capacity.retained_bytes
+                    || shared.retained_bytes.saturating_add(length) > shared.capacity.retained_bytes
+                {
+                    shared.counters.refused_capacity_bytes += 1;
+                    return;
+                }
+                shared.retained_bytes += length;
+                shared.definition_reads.insert(key, read);
+                shared.counters.definition_read_stored += 1;
+            }
+        }
     }
 
     /// The entry under `key`, when it is answerable under this handle's declaration.

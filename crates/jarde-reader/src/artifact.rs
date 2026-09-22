@@ -49,8 +49,8 @@ use crate::error::{Error, Result};
 use crate::model::{
     ArchiveNameBytes, ByteSpan, ClassBytesId, ContainerId, ContainerOrigin, ContainerOriginStep,
     Coverage, CoverageDimension, CoverageRange, CoverageState, Diagnostic, DiagnosticSeverity,
-    Digest, ExecutionReport, Location, PhysicalClassLocation, PhysicalEntryId, Provenance,
-    SnapshotId, TerminationReason,
+    Digest, ExecutionReport, Location, PhysicalClassLocation, PhysicalDefinitionId,
+    PhysicalEntryId, Provenance, SnapshotId, TerminationReason,
 };
 use crate::view::{PhysicalScope, PhysicalView};
 use rawzip::{ZipArchive, ZipArchiveEntryWayfinder};
@@ -678,6 +678,86 @@ impl ArtifactSnapshot {
         } else {
             self.read_nested_entry(entry, budget)
         }
+    }
+
+    // -------------------------------------------------------------------------------------------
+    // The retained definition read (change `reuse-selected-class-read`)
+    // -------------------------------------------------------------------------------------------
+
+    /// One **selected definition's** verified read, from the request's store when it holds one.
+    ///
+    /// This answers the read an identity-addressed request performs for the definition it selected
+    /// — the read [`Self::read_entry_for_analysis`] performs, addressed by the definition's own
+    /// identity instead of by a located record — and it answers from the request's store when an
+    /// earlier request of the same snapshot already performed exactly that read. A hit is not
+    /// another opinion about the class: it hands back the bytes that read produced **and** the
+    /// identity that read established (the digest computed over exactly those bytes, and their
+    /// length), so every check a caller makes against the definition it asked for still runs, and
+    /// runs against the read's own answer. What a hit replaces is only the entry access: the
+    /// locating scan, the byte read, the CRC/size verification and the digest computation.
+    ///
+    /// `None` reads nothing, charges nothing and touches no entry: it is what a request with no
+    /// store attached, a store with room for nothing, and a store that holds no read of *this*
+    /// definition all answer. A miss is never a near miss — the key is every dimension of the
+    /// definition (the snapshot, the complete physical location, the digest, the length and the
+    /// variant, under this build's definition-read schema), so a definition of another snapshot,
+    /// another origin chain, another ordinal, another raw name, another digest, another length or
+    /// another variant finds nothing and falls back to the ordinary read.
+    ///
+    /// The budget is polled before anything is answered, so a cancelled, expired or already stopped
+    /// request terminates through this access exactly as it does without a store: a hit is memory the
+    /// request may use, never a new allowance.
+    ///
+    /// A definition that does not name this snapshot is an input error, exactly as it is for the read
+    /// that would have produced the bytes: a store holds reads of the snapshot they were performed
+    /// on, and no other snapshot can be addressed here.
+    pub fn retained_definition_read(
+        &self,
+        definition: &PhysicalDefinitionId,
+        budget: &mut Budget,
+    ) -> Result<Option<(Arc<Vec<u8>>, ClassBytesId)>> {
+        if definition.snapshot() != &self.id {
+            return Err(Error::invalid_input(
+                "definition_snapshot_mismatch",
+                "the definition belongs to another snapshot",
+            ));
+        }
+        let Some(cache) = budget.facts_cache().cloned() else {
+            return Ok(None);
+        };
+        cache.definition_read(definition, budget)
+    }
+
+    /// Offers one definition's verified read for retention.
+    ///
+    /// The read the caller is holding is complete: `bytes` are the bytes a verified read produced at
+    /// the definition's own location — checked against the entry's record, CRC and uncompressed size
+    /// — and `content_digest` is the digest that read computed over exactly those bytes. The store
+    /// keeps the read under the definition's identity and refuses it when that identity is not the
+    /// definition's own declaration, so an offer can never make the store hold bytes under an
+    /// identity they did not establish.
+    ///
+    /// Nothing is retained when the request carries no store, when the offer is not the definition's
+    /// own, or when the store is full: a store refuses rather than evicts, and a refusal is a
+    /// retention decision that leaves the request's own read exactly as it is — a refused retention
+    /// never makes a caller read a definition again.
+    pub fn remember_definition_read(
+        &self,
+        definition: &PhysicalDefinitionId,
+        bytes: &[u8],
+        content_digest: &Digest,
+        budget: &Budget,
+    ) {
+        if definition.snapshot() != &self.id {
+            // A definition of another snapshot names an entry this snapshot does not hold: there is
+            // no read of it to offer, and the caller that produced these bytes validated the
+            // definition against them before calling here.
+            return;
+        }
+        let Some(cache) = budget.facts_cache() else {
+            return;
+        };
+        cache.remember_definition_read(definition, bytes, content_digest);
     }
 
     #[cfg(test)]
