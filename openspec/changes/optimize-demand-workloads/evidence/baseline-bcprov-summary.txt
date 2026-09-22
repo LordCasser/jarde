@@ -1,0 +1,561 @@
+binary: /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a0c66c-5082-75f3-aee4-1edc3d2b9a49/target/release/deps/p5_optimize_workloads-4e425b0298ea85ea
+out:    /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a0c66c-5082-75f3-aee4-1edc3d2b9a49/openspec/changes/optimize-demand-workloads/evidence/baseline-bcprov-raw.jsonl
+load:   {'load_average': [3.69140625, 4.07373046875, 4.52294921875], 'platform': 'macOS-26.6.2-arm64-arm-64bit', 'machine': 'arm64', 'python': '3.9.6'}
+rep  0 w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.57s rss     25.6MiB samples 3 exit 0
+rep  0 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     19.5MiB samples 1 exit 0
+rep  0 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off wall     0.29s rss     19.5MiB samples 1 exit 0
+rep  0 w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     21.2MiB samples 3 exit 0
+rep  0 w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     1.38s rss     66.0MiB samples 4 exit 0
+rep  0 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy:sink=discard:workers=2 wall     3.45s rss    126.5MiB samples 2 exit 0
+rep  0 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny:sink=discard:workers=2 wall     3.54s rss    121.0MiB samples 2 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=1 wall     4.40s rss    115.4MiB samples 1 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=2 wall     3.20s rss    127.1MiB samples 1 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=4 wall     2.78s rss    128.5MiB samples 1 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=6 wall     2.49s rss    156.6MiB samples 1 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off:sink=discard:workers=4 wall     2.63s rss    132.5MiB samples 1 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=1 wall     4.45s rss    117.7MiB samples 1 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=2 wall     3.26s rss    123.8MiB samples 1 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=4 wall     2.90s rss    127.8MiB samples 1 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=6 wall     2.59s rss    157.2MiB samples 1 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=1 wall     4.71s rss    125.0MiB samples 1 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=4 wall     2.93s rss    131.3MiB samples 1 exit 0
+rep  1 w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.58s rss     25.2MiB samples 3 exit 0
+rep  1 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     19.4MiB samples 1 exit 0
+rep  1 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off wall     0.29s rss     19.3MiB samples 1 exit 0
+rep  1 w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     21.6MiB samples 3 exit 0
+rep  1 w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     1.39s rss     65.8MiB samples 4 exit 0
+rep  1 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy:sink=discard:workers=2 wall     3.21s rss    122.7MiB samples 2 exit 0
+rep  1 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny:sink=discard:workers=2 wall     3.25s rss    121.2MiB samples 2 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=1 wall     4.14s rss    121.5MiB samples 1 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=2 wall     3.17s rss    120.5MiB samples 1 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=4 wall     2.78s rss    131.6MiB samples 1 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=6 wall     2.48s rss    159.6MiB samples 1 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off:sink=discard:workers=4 wall     2.63s rss    124.2MiB samples 1 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=1 wall     4.44s rss    132.6MiB samples 1 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=2 wall     3.24s rss    117.8MiB samples 1 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=4 wall     2.86s rss    130.0MiB samples 1 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=6 wall     2.60s rss    159.5MiB samples 1 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=1 wall     5.24s rss    126.2MiB samples 1 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=4 wall     2.91s rss    129.7MiB samples 1 exit 0
+rep  2 w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.58s rss     25.6MiB samples 3 exit 0
+rep  2 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     19.6MiB samples 1 exit 0
+rep  2 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off wall     0.29s rss     19.2MiB samples 1 exit 0
+rep  2 w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     21.3MiB samples 3 exit 0
+rep  2 w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     1.37s rss     66.3MiB samples 4 exit 0
+rep  2 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy:sink=discard:workers=2 wall     3.29s rss    119.5MiB samples 2 exit 0
+rep  2 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny:sink=discard:workers=2 wall     3.26s rss    123.9MiB samples 2 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=1 wall     4.29s rss    126.6MiB samples 1 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=2 wall     3.33s rss    117.4MiB samples 1 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=4 wall     2.82s rss    128.5MiB samples 1 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=6 wall     2.49s rss    154.0MiB samples 1 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off:sink=discard:workers=4 wall     2.63s rss    130.5MiB samples 1 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=1 wall     4.45s rss    116.0MiB samples 1 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=2 wall     3.26s rss    124.8MiB samples 1 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=4 wall     2.86s rss    125.4MiB samples 1 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=6 wall     2.56s rss    160.8MiB samples 1 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=1 wall     4.62s rss    116.8MiB samples 1 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=4 wall     3.24s rss    129.2MiB samples 1 exit 0
+rep  3 w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.58s rss     26.3MiB samples 3 exit 0
+rep  3 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     19.2MiB samples 1 exit 0
+rep  3 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off wall     0.30s rss     19.8MiB samples 1 exit 0
+rep  3 w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     21.2MiB samples 3 exit 0
+rep  3 w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     1.38s rss     65.8MiB samples 4 exit 0
+rep  3 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy:sink=discard:workers=2 wall     3.13s rss    123.2MiB samples 2 exit 0
+rep  3 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny:sink=discard:workers=2 wall     3.16s rss    122.7MiB samples 2 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=1 wall     4.08s rss    114.7MiB samples 1 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=2 wall     3.10s rss    122.5MiB samples 1 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=4 wall     2.72s rss    129.6MiB samples 1 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=6 wall     2.48s rss    160.2MiB samples 1 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off:sink=discard:workers=4 wall     2.59s rss    127.9MiB samples 1 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=1 wall     4.39s rss    122.0MiB samples 1 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=2 wall     3.18s rss    119.6MiB samples 1 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=4 wall     2.88s rss    136.5MiB samples 1 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=6 wall     2.66s rss    163.0MiB samples 1 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=1 wall     4.81s rss    126.9MiB samples 1 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=4 wall     2.95s rss    129.0MiB samples 1 exit 0
+rep  4 w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.58s rss     24.5MiB samples 3 exit 0
+rep  4 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     19.8MiB samples 1 exit 0
+rep  4 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off wall     0.29s rss     19.4MiB samples 1 exit 0
+rep  4 w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     21.3MiB samples 3 exit 0
+rep  4 w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     1.39s rss     65.9MiB samples 4 exit 0
+rep  4 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy:sink=discard:workers=2 wall     3.22s rss    127.9MiB samples 2 exit 0
+rep  4 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny:sink=discard:workers=2 wall     3.26s rss    129.7MiB samples 2 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=1 wall     4.13s rss    122.7MiB samples 1 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=2 wall     3.18s rss    117.0MiB samples 1 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=4 wall     2.78s rss    126.3MiB samples 1 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=6 wall     2.49s rss    147.8MiB samples 1 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off:sink=discard:workers=4 wall     2.65s rss    127.4MiB samples 1 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=1 wall     4.41s rss    125.2MiB samples 1 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=2 wall     3.20s rss    122.5MiB samples 1 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=4 wall     2.91s rss    128.1MiB samples 1 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=6 wall     2.62s rss    155.5MiB samples 1 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=1 wall     4.90s rss    126.1MiB samples 1 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=4 wall     2.97s rss    129.7MiB samples 1 exit 0
+rep  5 w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.58s rss     24.8MiB samples 3 exit 0
+rep  5 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     19.8MiB samples 1 exit 0
+rep  5 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off wall     0.29s rss     19.4MiB samples 1 exit 0
+rep  5 w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     21.2MiB samples 3 exit 0
+rep  5 w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     1.39s rss     65.9MiB samples 4 exit 0
+rep  5 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy:sink=discard:workers=2 wall     3.22s rss    124.3MiB samples 2 exit 0
+rep  5 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny:sink=discard:workers=2 wall     3.25s rss    121.3MiB samples 2 exit 0
+rep  5 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=1 wall     4.15s rss    123.5MiB samples 1 exit 0
+rep  5 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=2 wall     3.19s rss    129.4MiB samples 1 exit 0
+rep  5 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=4 wall     2.78s rss    128.7MiB samples 1 exit 0
+rep  5 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=6 wall     2.47s rss    154.0MiB samples 1 exit 0
+rep  5 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off:sink=discard:workers=4 wall     2.65s rss    123.5MiB samples 1 exit 0
+rep  5 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=1 wall     4.42s rss    125.2MiB samples 1 exit 0
+rep  5 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=2 wall     3.19s rss    125.0MiB samples 1 exit 0
+rep  5 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=4 wall     2.92s rss    130.1MiB samples 1 exit 0
+rep  5 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=6 wall     2.63s rss    157.4MiB samples 1 exit 0
+rep  5 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=1 wall     4.85s rss    127.6MiB samples 1 exit 0
+rep  5 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=4 wall     3.23s rss    125.5MiB samples 1 exit 0
+rep  6 w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.58s rss     25.1MiB samples 3 exit 0
+rep  6 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     19.3MiB samples 1 exit 0
+rep  6 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off wall     0.29s rss     19.1MiB samples 1 exit 0
+rep  6 w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     21.0MiB samples 3 exit 0
+rep  6 w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     1.38s rss     65.8MiB samples 4 exit 0
+rep  6 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy:sink=discard:workers=2 wall     3.16s rss    124.5MiB samples 2 exit 0
+rep  6 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny:sink=discard:workers=2 wall     3.17s rss    126.6MiB samples 2 exit 0
+rep  6 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=1 wall     4.20s rss    118.7MiB samples 1 exit 0
+rep  6 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=2 wall     3.12s rss    119.9MiB samples 1 exit 0
+rep  6 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=4 wall     2.77s rss    132.4MiB samples 1 exit 0
+rep  6 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=6 wall     2.53s rss    160.1MiB samples 1 exit 0
+rep  6 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off:sink=discard:workers=4 wall     2.64s rss    127.3MiB samples 1 exit 0
+rep  6 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=1 wall     4.42s rss    123.4MiB samples 1 exit 0
+rep  6 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=2 wall     3.17s rss    121.2MiB samples 1 exit 0
+rep  6 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=4 wall     2.85s rss    127.3MiB samples 1 exit 0
+rep  6 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=6 wall     2.57s rss    157.7MiB samples 1 exit 0
+rep  6 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=1 wall     4.77s rss    123.3MiB samples 1 exit 0
+rep  6 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=4 wall     2.95s rss    131.1MiB samples 1 exit 0
+rep  7 w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.59s rss     25.6MiB samples 3 exit 0
+rep  7 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     19.2MiB samples 1 exit 0
+rep  7 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off wall     0.30s rss     20.1MiB samples 1 exit 0
+rep  7 w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.30s rss     20.9MiB samples 3 exit 0
+rep  7 w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     1.41s rss     66.3MiB samples 4 exit 0
+rep  7 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy:sink=discard:workers=2 wall     3.13s rss    117.0MiB samples 2 exit 0
+rep  7 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny:sink=discard:workers=2 wall     3.30s rss    120.7MiB samples 2 exit 0
+rep  7 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=1 wall     4.19s rss    123.3MiB samples 1 exit 0
+rep  7 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=2 wall     3.26s rss    122.2MiB samples 1 exit 0
+rep  7 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=4 wall     2.82s rss    125.9MiB samples 1 exit 0
+rep  7 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=6 wall     2.50s rss    157.0MiB samples 1 exit 0
+rep  7 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off:sink=discard:workers=4 wall     2.63s rss    128.6MiB samples 1 exit 0
+rep  7 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=1 wall     4.54s rss    121.8MiB samples 1 exit 0
+rep  7 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=2 wall     3.29s rss    119.1MiB samples 1 exit 0
+rep  7 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=4 wall     2.82s rss    129.9MiB samples 1 exit 0
+rep  7 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=6 wall     2.56s rss    159.5MiB samples 1 exit 0
+rep  7 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=1 wall     4.97s rss    125.3MiB samples 1 exit 0
+rep  7 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=4 wall     3.30s rss    125.8MiB samples 1 exit 0
+rep  8 w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.57s rss     24.5MiB samples 3 exit 0
+rep  8 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     19.4MiB samples 1 exit 0
+rep  8 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off wall     0.29s rss     19.4MiB samples 1 exit 0
+rep  8 w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     21.0MiB samples 3 exit 0
+rep  8 w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     1.37s rss     65.4MiB samples 4 exit 0
+rep  8 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy:sink=discard:workers=2 wall     3.15s rss    127.4MiB samples 2 exit 0
+rep  8 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny:sink=discard:workers=2 wall     3.14s rss    124.3MiB samples 2 exit 0
+rep  8 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=1 wall     4.12s rss    121.3MiB samples 1 exit 0
+rep  8 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=2 wall     3.10s rss    122.8MiB samples 1 exit 0
+rep  8 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=4 wall     2.73s rss    124.8MiB samples 1 exit 0
+rep  8 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=6 wall     2.47s rss    157.1MiB samples 1 exit 0
+rep  8 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off:sink=discard:workers=4 wall     2.58s rss    128.6MiB samples 1 exit 0
+rep  8 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=1 wall     4.38s rss    125.4MiB samples 1 exit 0
+rep  8 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=2 wall     3.17s rss    123.0MiB samples 1 exit 0
+rep  8 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=4 wall     2.79s rss    131.8MiB samples 1 exit 0
+rep  8 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=6 wall     2.55s rss    157.2MiB samples 1 exit 0
+rep  8 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=1 wall     4.53s rss    121.8MiB samples 1 exit 0
+rep  8 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=4 wall     2.86s rss    127.6MiB samples 1 exit 0
+rep  9 w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.57s rss     24.5MiB samples 3 exit 0
+rep  9 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     19.3MiB samples 1 exit 0
+rep  9 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off wall     0.29s rss     19.4MiB samples 1 exit 0
+rep  9 w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     21.1MiB samples 3 exit 0
+rep  9 w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     1.38s rss     65.6MiB samples 4 exit 0
+rep  9 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy:sink=discard:workers=2 wall     3.20s rss    124.3MiB samples 2 exit 0
+rep  9 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny:sink=discard:workers=2 wall     3.14s rss    124.2MiB samples 2 exit 0
+rep  9 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=1 wall     4.13s rss    120.2MiB samples 1 exit 0
+rep  9 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=2 wall     3.14s rss    116.6MiB samples 1 exit 0
+rep  9 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=4 wall     2.72s rss    126.8MiB samples 1 exit 0
+rep  9 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=6 wall     2.47s rss    158.5MiB samples 1 exit 0
+rep  9 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off:sink=discard:workers=4 wall     2.56s rss    126.0MiB samples 1 exit 0
+rep  9 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=1 wall     4.39s rss    125.4MiB samples 1 exit 0
+rep  9 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=2 wall     3.23s rss    123.9MiB samples 1 exit 0
+rep  9 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=4 wall     2.82s rss    132.6MiB samples 1 exit 0
+rep  9 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=6 wall     2.55s rss    156.9MiB samples 1 exit 0
+rep  9 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=1 wall     5.01s rss    125.1MiB samples 1 exit 0
+rep  9 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=4 wall     2.88s rss    127.6MiB samples 1 exit 0
+
+=== summary (medians with extremes; `n` is what the file really holds) ===
+w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w1-cold-method               n=10 window ms median/min/max    285.62 /    283.45 /    293.08
+                                                                          first_result_micros          median       1378.5 min         1359 max         1454
+                                                                          open_usage_class_headers     median          0.0 min            0 max            0
+                                                                          prepare_usage_class_headers  median       2430.0 min         2430 max         2430
+                                                                          result_equals_second_snapshot median          1.0 min            1 max            1
+                                                                          text_bytes                   median        198.0 min          198 max          198
+w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w1-second-request            n=10 window ms median/min/max      0.12 /      0.12 /      0.12
+                                                                          first_result_micros          median         67.0 min           65 max           73
+                                                                          text_bytes                   median        198.0 min          198 max          198
+w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w1-second-snapshot           n=10 window ms median/min/max    283.89 /    282.06 /    289.51
+                                                                          first_result_micros          median       1323.5 min         1294 max         1409
+                                                                          text_bytes                   median        198.0 min          198 max          198
+w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w2-navigation-sequence       n=10 window ms median/min/max    286.17 /    283.82 /    288.66
+                                                                          class_headers_total          median          8.0 min            8 max            8
+                                                                          classes                      median          8.0 min            8 max            8
+                                                                          control_repeat_micros        median         19.0 min           18 max           20
+                                                                          method_bodies_declared       median         36.0 min           36 max           36
+                                                                          method_bodies_total          median          0.0 min            0 max            0
+                                                                          returned_bytes               median      88589.0 min        88589 max        88589
+                                                                          sequence_micros              median       1336.5 min         1322 max         1373
+w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off w2-navigation-sequence       n=10 window ms median/min/max    286.10 /    282.96 /    290.75
+                                                                          class_headers_total          median          8.0 min            8 max            8
+                                                                          classes                      median          8.0 min            8 max            8
+                                                                          control_repeat_micros        median         19.0 min           19 max           21
+                                                                          method_bodies_declared       median         36.0 min           36 max           36
+                                                                          method_bodies_total          median          0.0 min            0 max            0
+                                                                          returned_bytes               median      88589.0 min        88589 max        88589
+                                                                          sequence_micros              median       1331.0 min         1323 max         1395
+w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w3-all-bodies-one-request    n=10 window ms median/min/max    285.57 /    283.41 /    292.51
+                                                                          class_headers                median          1.0 min            1 max            1
+                                                                          class_methods                median          3.0 min            3 max            3
+                                                                          classes                      median          8.0 min            8 max            8
+                                                                          method_bodies                median          3.0 min            3 max            3
+                                                                          output_bytes                 median          0.0 min            0 max            0
+                                                                          request_micros               median          1.0 min            1 max            1
+                                                                          returned_bytes               median      23714.0 min        23714 max        23714
+w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w3-fixed-set-across-classes  n=10 window ms median/min/max      0.97 /      0.95 /      1.03
+                                                                          class_headers_total          median          4.0 min            4 max            4
+                                                                          classes                      median          8.0 min            8 max            8
+                                                                          method_bodies_total          median          4.0 min            4 max            4
+                                                                          returned_bytes               median      43934.0 min        43934 max        43934
+                                                                          sequence_micros              median        742.0 min          732 max          769
+w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w3-per-method-requests       n=10 window ms median/min/max      0.91 /      0.89 /      1.02
+                                                                          archive_entries_total        median         21.0 min           21 max           21
+                                                                          class_headers_total          median          3.0 min            3 max            3
+                                                                          class_methods                median          3.0 min            3 max            3
+                                                                          method_bodies_total          median          3.0 min            3 max            3
+                                                                          returned_bytes               median      29360.0 min        29360 max        29360
+                                                                          sequence_micros              median        716.0 min          696 max          814
+w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w4-abandon-after-one-page    n=10 window ms median/min/max      0.05 /      0.05 /      0.06
+                                                                          has_more                     median          1.0 min            1 max            1
+                                                                          items                        median          2.0 min            2 max            2
+                                                                          max_items                    median          2.0 min            2 max            2
+                                                                          pages                        median          1.0 min            1 max            1
+                                                                          returned_bytes               median       3873.0 min         3873 max         3873
+                                                                          scanned_items                median          2.0 min            2 max            2
+w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w4-large-page                n=10 window ms median/min/max    271.13 /    267.97 /    274.30
+                                                                          has_more                     median          0.0 min            0 max            0
+                                                                          items                        median       1094.0 min         1094 max         1094
+                                                                          max_items                    median         64.0 min           64 max           64
+                                                                          pages                        median         18.0 min           18 max           18
+                                                                          returned_bytes               median    1140191.0 min      1140191 max      1140191
+                                                                          scanned_items                median          6.0 min            6 max            6
+w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w4-multi-consumer            n=10 window ms median/min/max    271.32 /    267.63 /    275.09
+                                                                          consumers                    median          4.0 min            4 max            4
+                                                                          has_more                     median          0.0 min            0 max            0
+                                                                          items                        median       1094.0 min         1094 max         1094
+                                                                          items_equal_single_consumer  median          1.0 min            1 max            1
+                                                                          max_items                    median         64.0 min           64 max           64
+                                                                          pages                        median         18.0 min           18 max           18
+                                                                          returned_bytes               median    1141887.0 min      1141886 max      1141887
+                                                                          scanned_items                median          6.0 min            6 max            6
+w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w4-small-page                n=10 window ms median/min/max    824.07 /    817.09 /    846.59
+                                                                          has_more                     median          0.0 min            0 max            0
+                                                                          items                        median       1094.0 min         1094 max         1094
+                                                                          max_items                    median          2.0 min            2 max            2
+                                                                          pages                        median        548.0 min          548 max          548
+                                                                          returned_bytes               median    2180762.0 min      2180760 max      2180768
+                                                                          scanned_items                median          0.0 min            0 max            0
+w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy:sink=discard:workers=2 w5-round-trip                n=10 window ms median/min/max     17.41 /     17.14 /     20.86
+                                                                          archive_entries_total        median         70.0 min           70 max           70
+                                                                          class_headers_total          median         10.0 min           10 max           10
+                                                                          returned_bytes               median      91176.0 min        91176 max        91176
+                                                                          round_trips                  median         10.0 min           10 max           10
+                                                                          sequence_micros              median        532.5 min          495 max          995
+w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy:sink=discard:workers=2 w5-sweep                     n=10 window ms median/min/max   3110.42 /   3035.14 /   3347.22
+                                                                          classes_prepared             median       2430.0 min         2430 max         2430
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median       2430.0 min         2430 max         2430
+                                                                          delivered                    median      15003.0 min        15003 max        15003
+                                                                          encoded_bytes                median          0.0 min            0 max            0
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median       2566.0 min         2521 max         2665
+                                                                          methods                      median      15003.0 min        15003 max        15003
+                                                                          methods_declared             median      15003.0 min        15003 max        15003
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median       2447.0 min         2447 max         2447
+                                                                          outcome_no_body              median        508.0 min          508 max          508
+                                                                          outcome_not_produced         median          3.0 min            3 max            3
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median      12045.0 min        12045 max        12045
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median      19865.0 min        19865 max        19865
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          written_bytes                median          0.0 min            0 max            0
+w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny:sink=discard:workers=2 w5-round-trip                n=10 window ms median/min/max     43.38 /     42.35 /     44.26
+                                                                          archive_entries_total        median      51450.0 min        51450 max        51450
+                                                                          class_headers_total          median         10.0 min           10 max           10
+                                                                          returned_bytes               median      91416.0 min        91416 max        91416
+                                                                          round_trips                  median         10.0 min           10 max           10
+                                                                          sequence_micros              median      26263.0 min        25436 max        27028
+w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny:sink=discard:workers=2 w5-sweep                     n=10 window ms median/min/max   3132.01 /   3021.93 /   3415.60
+                                                                          classes_prepared             median       2430.0 min         2430 max         2430
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median       2430.0 min         2430 max         2430
+                                                                          delivered                    median      15003.0 min        15003 max        15003
+                                                                          encoded_bytes                median          0.0 min            0 max            0
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median       2514.0 min         2479 max         2685
+                                                                          methods                      median      15003.0 min        15003 max        15003
+                                                                          methods_declared             median      15003.0 min        15003 max        15003
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median       2447.0 min         2447 max         2447
+                                                                          outcome_no_body              median        508.0 min          508 max          508
+                                                                          outcome_not_produced         median          3.0 min            3 max            3
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median      12045.0 min        12045 max        12045
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median      19865.0 min        19865 max        19865
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:instrument=off:sink=discard:workers=4 w6a-export                   n=10 window ms median/min/max   2553.96 /   2490.76 /   2577.57
+                                                                          classes_prepared             median       2430.0 min         2430 max         2430
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median       2430.0 min         2430 max         2430
+                                                                          delivered                    median      15003.0 min        15003 max        15003
+                                                                          encoded_bytes                median          0.0 min            0 max            0
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median       2297.5 min         2217 max         2524
+                                                                          methods                      median      15003.0 min        15003 max        15003
+                                                                          methods_declared             median      15003.0 min        15003 max        15003
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median       2447.0 min         2447 max         2447
+                                                                          outcome_no_body              median        508.0 min          508 max          508
+                                                                          outcome_not_produced         median          3.0 min            3 max            3
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median      12045.0 min        12045 max        12045
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median      19865.0 min        19865 max        19865
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          4.0 min            4 max            4
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=1 w6a-export                   n=10 window ms median/min/max   4065.49 /   4003.17 /   4325.78
+                                                                          classes_prepared             median       2430.0 min         2430 max         2430
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median       2430.0 min         2430 max         2430
+                                                                          delivered                    median      15003.0 min        15003 max        15003
+                                                                          encoded_bytes                median          0.0 min            0 max            0
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median       2487.5 min         2439 max         2569
+                                                                          methods                      median      15003.0 min        15003 max        15003
+                                                                          methods_declared             median      15003.0 min        15003 max        15003
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median       2447.0 min         2447 max         2447
+                                                                          outcome_no_body              median        508.0 min          508 max          508
+                                                                          outcome_not_produced         median          3.0 min            3 max            3
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median      12045.0 min        12045 max        12045
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median      19865.0 min        19865 max        19865
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          1.0 min            1 max            1
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=2 w6a-export                   n=10 window ms median/min/max   3102.59 /   3022.88 /   3248.74
+                                                                          classes_prepared             median       2430.0 min         2430 max         2430
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median       2430.0 min         2430 max         2430
+                                                                          delivered                    median      15003.0 min        15003 max        15003
+                                                                          encoded_bytes                median          0.0 min            0 max            0
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median       2557.0 min         2500 max         2669
+                                                                          methods                      median      15003.0 min        15003 max        15003
+                                                                          methods_declared             median      15003.0 min        15003 max        15003
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median       2447.0 min         2447 max         2447
+                                                                          outcome_no_body              median        508.0 min          508 max          508
+                                                                          outcome_not_produced         median          3.0 min            3 max            3
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median      12045.0 min        12045 max        12045
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median      19865.0 min        19865 max        19865
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          2.0 min            2 max            2
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=4 w6a-export                   n=10 window ms median/min/max   2701.33 /   2645.18 /   2746.33
+                                                                          classes_prepared             median       2430.0 min         2430 max         2430
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median       2430.0 min         2430 max         2430
+                                                                          delivered                    median      15003.0 min        15003 max        15003
+                                                                          encoded_bytes                median          0.0 min            0 max            0
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median       2654.0 min         2561 max         2747
+                                                                          methods                      median      15003.0 min        15003 max        15003
+                                                                          methods_declared             median      15003.0 min        15003 max        15003
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median       2447.0 min         2447 max         2447
+                                                                          outcome_no_body              median        508.0 min          508 max          508
+                                                                          outcome_not_produced         median          3.0 min            3 max            3
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median      12045.0 min        12045 max        12045
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median      19865.0 min        19865 max        19865
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          4.0 min            4 max            4
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=discard:workers=6 w6a-export                   n=10 window ms median/min/max   2404.36 /   2392.82 /   2458.45
+                                                                          classes_prepared             median       2430.0 min         2430 max         2430
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median       2430.0 min         2430 max         2430
+                                                                          delivered                    median      15003.0 min        15003 max        15003
+                                                                          encoded_bytes                median          0.0 min            0 max            0
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median       2642.5 min         2597 max         2956
+                                                                          methods                      median      15003.0 min        15003 max        15003
+                                                                          methods_declared             median      15003.0 min        15003 max        15003
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median       2447.0 min         2447 max         2447
+                                                                          outcome_no_body              median        508.0 min          508 max          508
+                                                                          outcome_not_produced         median          3.0 min            3 max            3
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median      12045.0 min        12045 max        12045
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median      19865.0 min        19865 max        19865
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          6.0 min            6 max            6
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=1 w6a-export                   n=10 window ms median/min/max   4341.15 /   4302.45 /   4458.51
+                                                                          classes_prepared             median       2430.0 min         2430 max         2430
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median       2430.0 min         2430 max         2430
+                                                                          delivered                    median      15003.0 min        15003 max        15003
+                                                                          encoded_bytes                median  391181162.5 min    391181160 max    391181166
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median       2484.0 min         2458 max         2609
+                                                                          methods                      median      15003.0 min        15003 max        15003
+                                                                          methods_declared             median      15003.0 min        15003 max        15003
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median       2447.0 min         2447 max         2447
+                                                                          outcome_no_body              median        508.0 min          508 max          508
+                                                                          outcome_not_produced         median          3.0 min            3 max            3
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median      12045.0 min        12045 max        12045
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median      19865.0 min        19865 max        19865
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          1.0 min            1 max            1
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=2 w6a-export                   n=10 window ms median/min/max   3143.65 /   3098.93 /   3213.70
+                                                                          classes_prepared             median       2430.0 min         2430 max         2430
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median       2430.0 min         2430 max         2430
+                                                                          delivered                    median      15003.0 min        15003 max        15003
+                                                                          encoded_bytes                median  391181079.0 min    391181077 max    391181090
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median       2542.5 min         2489 max         2665
+                                                                          methods                      median      15003.0 min        15003 max        15003
+                                                                          methods_declared             median      15003.0 min        15003 max        15003
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median       2447.0 min         2447 max         2447
+                                                                          outcome_no_body              median        508.0 min          508 max          508
+                                                                          outcome_not_produced         median          3.0 min            3 max            3
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median      12045.0 min        12045 max        12045
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median      19865.0 min        19865 max        19865
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          2.0 min            2 max            2
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=4 w6a-export                   n=10 window ms median/min/max   2783.66 /   2720.33 /   2845.35
+                                                                          classes_prepared             median       2430.0 min         2430 max         2430
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median       2430.0 min         2430 max         2430
+                                                                          delivered                    median      15003.0 min        15003 max        15003
+                                                                          encoded_bytes                median  391181005.5 min    391180967 max    391181036
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median       2602.0 min         2553 max         2687
+                                                                          methods                      median      15003.0 min        15003 max        15003
+                                                                          methods_declared             median      15003.0 min        15003 max        15003
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median       2447.0 min         2447 max         2447
+                                                                          outcome_no_body              median        508.0 min          508 max          508
+                                                                          outcome_not_produced         median          3.0 min            3 max            3
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median      12045.0 min        12045 max        12045
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median      19865.0 min        19865 max        19865
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          4.0 min            4 max            4
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=encode:workers=6 w6a-export                   n=10 window ms median/min/max   2500.98 /   2474.65 /   2580.05
+                                                                          classes_prepared             median       2430.0 min         2430 max         2430
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median       2430.0 min         2430 max         2430
+                                                                          delivered                    median      15003.0 min        15003 max        15003
+                                                                          encoded_bytes                median  391180741.0 min    391180691 max    391180807
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median       2689.5 min         2564 max         2981
+                                                                          methods                      median      15003.0 min        15003 max        15003
+                                                                          methods_declared             median      15003.0 min        15003 max        15003
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median       2447.0 min         2447 max         2447
+                                                                          outcome_no_body              median        508.0 min          508 max          508
+                                                                          outcome_not_produced         median          3.0 min            3 max            3
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median      12045.0 min        12045 max        12045
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median      19865.0 min        19865 max        19865
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          6.0 min            6 max            6
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=1 w6a-export                   n=10 window ms median/min/max   4740.53 /   4451.92 /   5156.38
+                                                                          classes_prepared             median       2430.0 min         2430 max         2430
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median       2430.0 min         2430 max         2430
+                                                                          delivered                    median      15003.0 min        15003 max        15003
+                                                                          encoded_bytes                median  391181181.5 min    391181169 max    391181416
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median       2660.0 min         2564 max         2787
+                                                                          methods                      median      15003.0 min        15003 max        15003
+                                                                          methods_declared             median      15003.0 min        15003 max        15003
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median       2447.0 min         2447 max         2447
+                                                                          outcome_no_body              median        508.0 min          508 max          508
+                                                                          outcome_not_produced         median          3.0 min            3 max            3
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median      12045.0 min        12045 max        12045
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median      19865.0 min        19865 max        19865
+                                                                          scratch_file_bytes           median  391201046.5 min    391201034 max    391201281
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          1.0 min            1 max            1
+                                                                          written_bytes                median  391201046.5 min    391201034 max    391201281
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:sink=write:workers=4 w6a-export                   n=10 window ms median/min/max   2871.31 /   2777.61 /   3225.75
+                                                                          classes_prepared             median       2430.0 min         2430 max         2430
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median       2430.0 min         2430 max         2430
+                                                                          delivered                    median      15003.0 min        15003 max        15003
+                                                                          encoded_bytes                median  391181034.5 min    391181001 max    391181205
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median       2732.5 min         2661 max         3069
+                                                                          methods                      median      15003.0 min        15003 max        15003
+                                                                          methods_declared             median      15003.0 min        15003 max        15003
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median       2447.0 min         2447 max         2447
+                                                                          outcome_no_body              median        508.0 min          508 max          508
+                                                                          outcome_not_produced         median          3.0 min            3 max            3
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median      12045.0 min        12045 max        12045
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median      19865.0 min        19865 max        19865
+                                                                          scratch_file_bytes           median  391200899.5 min    391200866 max    391201070
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          4.0 min            4 max            4
+                                                                          written_bytes                median  391200899.5 min    391200866 max    391201070
+failures: 0
