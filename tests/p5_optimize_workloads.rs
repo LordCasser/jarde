@@ -295,6 +295,18 @@ impl Stages {
             .map(|stage| stage.micros)
     }
 
+    /// What one top-level phase took, or zero when this run did not record it.
+    ///
+    /// W1 records `open`/`prepare`/`request`/`output` off the same clock; a sample that did not open
+    /// a subject of its own records only the phases it really ran, and this answers zero for the
+    /// others rather than a figure nobody measured.
+    fn micros_of(&self, name: &str) -> u64 {
+        self.top
+            .iter()
+            .find(|stage| stage.name == name)
+            .map_or(0, |stage| stage.micros)
+    }
+
     /// The nested stages of one parent, summed.
     fn nested_micros(&self, parent: &str) -> u64 {
         self.nested
@@ -523,38 +535,60 @@ impl Mode {
 /// The declared facts-store capacity a W5/W6a sample runs with.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum Capacity {
+    /// No capacity at all (`FactsCapacity::none()`): every consultation is a miss and nothing is
+    /// retained, so this arm is the direct path with the store attached and answering nothing.
+    None,
     /// One entry and 4 KiB: smaller than any fixture, so the store answers almost nothing.
     Tiny,
     /// The host's own default declaration (`1<<14` entries, `1<<27` bytes).
     Roomy,
+    /// An entry bound of `entries` with a byte bound far above the fixture's own weight: the
+    /// reuse-distance arm. The store refuses past the bound instead of evicting, so this is the
+    /// "how far back does a retained answer reach" knob of the O5 investigation.
+    Retained { entries: usize },
 }
 
 impl Capacity {
     fn parse(text: &str) -> Self {
         match text {
+            "none" => Self::None,
             "tiny" => Self::Tiny,
-            _ => Self::Roomy,
+            "roomy" => Self::Roomy,
+            other => match other.strip_prefix('e').and_then(|count| count.parse().ok()) {
+                Some(entries) => Self::Retained { entries },
+                None => panic!(
+                    "`{other}` is not a capacity: `none`, `tiny`, `roomy` or `e<entries>` \
+                     (`e4` is at most four retained facts) are the ones this harness declares"
+                ),
+            },
         }
     }
 
-    fn name(self) -> &'static str {
+    fn name(self) -> String {
         match self {
-            Self::Tiny => "tiny",
-            Self::Roomy => "roomy",
+            Self::None => "none".to_owned(),
+            Self::Tiny => "tiny".to_owned(),
+            Self::Roomy => "roomy".to_owned(),
+            Self::Retained { entries } => format!("e{entries}"),
         }
     }
 
     fn capacity(self) -> FactsCapacity {
         match self {
+            Self::None => FactsCapacity::none(),
             Self::Tiny => FactsCapacity::new(1, 4096),
             Self::Roomy => FactsCapacity::new(1 << 14, 1 << 27),
+            // The byte bound is deliberately far above the fixture's own weight: this arm measures
+            // the entry bound, so a byte refusal would be a second cause in the same reading.
+            Self::Retained { entries } => FactsCapacity::new(entries, 1 << 27),
         }
     }
 }
 
 /// The variables the campaign sets:
 /// `JARDE_OPTIMIZE_ARTIFACT`, `JARDE_OPTIMIZE_WORKLOAD`, `JARDE_OPTIMIZE_WORKERS`,
-/// `JARDE_OPTIMIZE_SINK`, `JARDE_OPTIMIZE_CAPACITY`, `JARDE_OPTIMIZE_INSTRUMENT`.
+/// `JARDE_OPTIMIZE_SINK`, `JARDE_OPTIMIZE_CAPACITY`, `JARDE_OPTIMIZE_INSTRUMENT`,
+/// `JARDE_OPTIMIZE_STOP`.
 struct Config {
     workload: String,
     artifact: Option<PathBuf>,
@@ -562,6 +596,10 @@ struct Config {
     mode: Mode,
     capacity: Capacity,
     instrumented: bool,
+    /// W6a only: answer [`SinkControl::Stop`] once this many method records were delivered. `None`
+    /// is the ordinary run that takes the whole stream, so a cancellation sample is one variable
+    /// of one configuration rather than a second harness.
+    stop_after: Option<u64>,
 }
 
 impl Config {
@@ -580,6 +618,7 @@ impl Config {
                 .map(|text| Capacity::parse(&text))
                 .unwrap_or(Capacity::Roomy),
             instrumented: variable("JARDE_OPTIMIZE_INSTRUMENT").as_deref() != Some("off"),
+            stop_after: variable("JARDE_OPTIMIZE_STOP").and_then(|text| text.parse().ok()),
         }
     }
 
@@ -637,6 +676,9 @@ struct Measuring {
     mode: Mode,
     destination: Option<(PathBuf, std::fs::File)>,
     records: u64,
+    methods_seen: u64,
+    stopped: bool,
+    stop_after: Option<u64>,
     encoded_bytes: u64,
     written_bytes: u64,
     visit_nanos: u64,
@@ -650,7 +692,7 @@ struct Measuring {
 static SCRATCH_FILES: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
 
 impl Measuring {
-    fn new(mode: Mode) -> Self {
+    fn new(mode: Mode, stop_after: Option<u64>) -> Self {
         let destination = (mode == Mode::Write).then(|| {
             let ordinal = SCRATCH_FILES.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
             let path = std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join(format!(
@@ -666,6 +708,9 @@ impl Measuring {
             mode,
             destination,
             records: 0,
+            methods_seen: 0,
+            stopped: false,
+            stop_after,
             encoded_bytes: 0,
             written_bytes: 0,
             visit_nanos: 0,
@@ -718,6 +763,25 @@ impl Measuring {
         size
     }
 
+    /// The sink's answer, with this run's own stop folded in.
+    ///
+    /// A configuration that declared `stop=<n>` really answers [`SinkControl::Stop`] once `n` method
+    /// records were delivered, which is what makes a cancellation sample a reading of the operation
+    /// rather than of the harness's bookkeeping: the callback is the only place a consumer can stop
+    /// the stream, and the record the callback refused is not counted as delivered.
+    fn with_stop(&mut self, answer: Result<SinkControl>) -> Result<SinkControl> {
+        let answer = answer?;
+        if self
+            .stop_after
+            .is_some_and(|limit| self.methods_seen >= limit)
+        {
+            self.stopped = true;
+            Ok(SinkControl::Stop)
+        } else {
+            Ok(answer)
+        }
+    }
+
     /// Where the path a `write` sink used lives — stated, not assumed, by the verifier.
     fn scratch_root() -> &'static str {
         env!("CARGO_TARGET_TMPDIR")
@@ -734,13 +798,13 @@ impl RecoverySink for Measuring {
         // qualification is what keeps the two apart.
         let answer = RecoverySink::header(&mut self.recorder, event, delivery);
         self.account(event)?;
-        answer
+        self.with_stop(answer)
     }
 
     fn class_prepared(&mut self, event: &ClassPreparedEvent) -> Result<SinkControl> {
         let answer = self.recorder.class_prepared(event);
         self.account(event)?;
-        answer
+        self.with_stop(answer)
     }
 
     fn method(&mut self, event: &MethodResultEvent) -> Result<SinkControl> {
@@ -749,25 +813,26 @@ impl RecoverySink for Measuring {
         }
         let answer = self.recorder.method(event);
         self.account(event)?;
-        answer
+        self.methods_seen = self.methods_seen.saturating_add(1);
+        self.with_stop(answer)
     }
 
     fn class_end(&mut self, event: &ClassEndEvent) -> Result<SinkControl> {
         let answer = self.recorder.class_end(event);
         self.account(event)?;
-        answer
+        self.with_stop(answer)
     }
 
     fn diagnostic(&mut self, event: &BulkDiagnosticEvent) -> Result<SinkControl> {
         let answer = self.recorder.diagnostic(event);
         self.account(event)?;
-        answer
+        self.with_stop(answer)
     }
 
     fn final_event(&mut self, event: &BulkFinalEvent) -> Result<SinkControl> {
         let answer = RecoverySink::final_event(&mut self.recorder, event);
         self.account(event)?;
-        answer
+        self.with_stop(answer)
     }
 }
 
@@ -942,6 +1007,25 @@ struct Opened {
 /// the class-declaration listing, and nothing else. It is deliberately *outside* the request phase:
 /// a whole-scope request's total must not absorb the target discovery that preceded it.
 fn open_subject(config: &Config, sample: &mut Sample, capacity: Capacity) -> Opened {
+    let (input, _bytes) = config.input();
+    open_input(config, sample, capacity, input)
+}
+
+/// The same, over bytes the workload built itself rather than over the configuration's input.
+///
+/// The damaged-suffix samples of W4 need an archive that is *almost* the fixture: same entries, same
+/// order, one entry's data byte flipped. Building it here keeps every other reading of the fixture
+/// the one the pin fixes, and states the difference as the sample's own subject.
+fn open_bytes(config: &Config, sample: &mut Sample, capacity: Capacity, bytes: Vec<u8>) -> Opened {
+    open_input(config, sample, capacity, ArtifactInput::bytes(bytes))
+}
+
+fn open_input(
+    config: &Config,
+    sample: &mut Sample,
+    capacity: Capacity,
+    input: ArtifactInput,
+) -> Opened {
     let store = FactsCache::current(capacity.capacity());
     let prefixes: Vec<&[u8]> = if config.artifact.is_none() {
         vec![b"", NESTED_PREFIX]
@@ -952,7 +1036,6 @@ fn open_subject(config: &Config, sample: &mut Sample, capacity: Capacity) -> Ope
         vec![b""]
     };
     let engine = Engine::new();
-    let (input, _bytes) = config.input();
     let mut open_budget = Budget::new(limits_for(config)).with_facts_cache(store.clone());
     let snapshot = sample.stages.phase("open", || {
         engine
@@ -1065,6 +1148,30 @@ fn counts_after(_before: Counts) -> Option<Value> {
     None
 }
 
+/// The counted readings as plain numbers too.
+///
+/// The `counts` document is the whole reading, and the campaign's summary prints `numbers`; mirroring
+/// the six counters here is what puts "how much of the path was preparation, and how much was
+/// decode" beside the durations in a campaign table instead of leaving it inside a nested document.
+/// A build without the port has no document and mirrors nothing.
+fn count_numbers(sample: &mut Sample) {
+    let Some(document) = sample.counts.clone() else {
+        return;
+    };
+    for (field, name) in [
+        ("class_materializations", "count_class_materializations"),
+        ("class_preparations", "count_class_preparations"),
+        ("body_decodes", "count_body_decodes"),
+        ("recovery_runs", "count_recovery_runs"),
+        ("owned_records", "count_owned_records"),
+        ("read_detail_records", "count_read_detail_records"),
+    ] {
+        if let Some(value) = document.get(field).and_then(Value::as_u64) {
+            sample.numbers.insert(name, value);
+        }
+    }
+}
+
 /// A performed outcome, with the harness's own statement that an identity cannot be ambiguous.
 fn performed<T>(outcome: OperationOutcome<T>, what: &str) -> T {
     match outcome {
@@ -1143,12 +1250,26 @@ fn w1(config: &Config) -> Vec<Sample> {
     let (_, member) = first_member(config, &opened);
     let subject_environment =
         environment(&opened.snapshot, opened.scope.clone(), opened.roots.clone());
-    cold = recover_one(config, cold, &opened, &member, &subject_environment, None);
+    cold = recover_one(
+        config,
+        cold,
+        &opened,
+        &member,
+        &subject_environment,
+        Some(counts_before()),
+    );
     let cold_domain = cold.domain.clone();
 
     // The control: the same member again, on the same snapshot and through the same store.
     let mut second = Sample::new(config, "W1", "w1-second-request");
-    second = recover_one(config, second, &opened, &member, &subject_environment, None);
+    second = recover_one(
+        config,
+        second,
+        &opened,
+        &member,
+        &subject_environment,
+        Some(counts_before()),
+    );
 
     // The library-level control: a second snapshot of the same input, in the same process.
     let mut third = Sample::new(config, "W1", "w1-second-snapshot");
@@ -1165,9 +1286,60 @@ fn w1(config: &Config) -> Vec<Sample> {
         &reopened,
         &member,
         &reopened_environment,
-        None,
+        Some(counts_before()),
     );
 
+    // The class-level presentation of the same class: one `class_source` request over the first
+    // class the scope declares, which is the entry the design's own §15 names as the one that had a
+    // bind + prepare double read. It runs here, not in a workload of its own, because the reading is
+    // about the same class the three single-method samples above ask about.
+    let mut source = Sample::new(config, "W1", "w1-class-source");
+    let class = opened
+        .classes
+        .first()
+        .expect("the fixture declares a class")
+        .clone();
+    let mut source_budget = request_budget(config, &opened.store);
+    let source_request = ClassSourceRequest {
+        class: ClassRef::Name {
+            class: ClassNameQuery::internal(String::from_utf8_lossy(&class.0).into_owned()),
+        },
+        environment: subject_environment.clone(),
+    };
+    let before = counts_before();
+    let (text_bytes, methods, declaration_present) = source.stages.phase("request", || {
+        let report = performed(
+            opened
+                .engine
+                .class_source(
+                    std::slice::from_ref(&opened.snapshot),
+                    &source_request,
+                    &mut source_budget,
+                )
+                .expect("a declared class has source"),
+            "a class declaration",
+        );
+        (
+            report.text.len() as u64,
+            report.methods.len() as u64,
+            u64::from(report.declaration.is_some()),
+        )
+    });
+    source.counts = counts_after(before);
+    count_numbers(&mut source);
+    let source = source
+        .number("class", 1)
+        .number("methods", methods)
+        .number("text_bytes", text_bytes)
+        .number("declaration_present", declaration_present)
+        .usage(&source_budget.usage())
+        .cache(&opened.store.report());
+
+    let (cold_open_micros, cold_prepare_micros, cold_output_micros) = (
+        cold.stages.micros_of("open"),
+        cold.stages.micros_of("prepare"),
+        cold.stages.micros_of("output"),
+    );
     vec![
         cold.number(
             "result_equals_second_snapshot",
@@ -1177,9 +1349,13 @@ fn w1(config: &Config) -> Vec<Sample> {
         .number(
             "prepare_usage_class_headers",
             opened.prepare_usage.class_headers,
-        ),
+        )
+        .number("open_micros", cold_open_micros)
+        .number("prepare_micros", cold_prepare_micros)
+        .number("output_micros", cold_output_micros),
         second,
         third,
+        source,
     ]
 }
 
@@ -1228,6 +1404,7 @@ fn recover_one(
         .domain(domain);
     if let Some(before) = counts_before {
         sample.counts = counts_after(before);
+        count_numbers(&mut sample);
     }
     sample
 }
@@ -1245,6 +1422,10 @@ fn w2(config: &Config) -> Vec<Sample> {
     let mut body_decodes = Vec::new();
     let mut views = Vec::new();
     let sequence_started = Instant::now();
+    // The counted baseline is taken **before** the sequence: a baseline taken after it would make
+    // every counter read as zero, and W2's own question is what eight successive navigations did to
+    // the classes they asked about.
+    let before = counts_before();
     let mut control = 0_u64;
     let mut control_views = Vec::new();
     sample.stages.phase("request", || {
@@ -1301,8 +1482,8 @@ fn w2(config: &Config) -> Vec<Sample> {
         }
         (bytes, lines_domain(&lines))
     });
-    let before = counts_before();
     sample.counts = counts_after(before);
+    count_numbers(&mut sample);
     vec![
         sample
             .number("classes", targets.len() as u64)
@@ -1366,6 +1547,7 @@ fn w3(config: &Config) -> Vec<Sample> {
         )
     });
     sample.counts = counts_after(before);
+    count_numbers(&mut sample);
     samples.push(
         sample
             .number("class_methods", first.methods.len() as u64)
@@ -1431,6 +1613,7 @@ fn w3(config: &Config) -> Vec<Sample> {
         (bytes, lines_domain(&lines))
     });
     sample.counts = counts_after(before);
+    count_numbers(&mut sample);
     samples.push(
         sample
             .number("class_methods", first.methods.len() as u64)
@@ -1518,7 +1701,151 @@ fn w3(config: &Config) -> Vec<Sample> {
             .text("sequence_domain", sequence_domain)
             .cache(&opened.store.report()),
     );
+
+    // (d) and (e): every body of the same eight classes, in the two delivery shapes O4 compares.
+    // Both arms ask the same `class_view` question about the same members and differ only in how the
+    // work is grouped: class-major asks one request per class with every body selected, method-major
+    // asks one request per member. The arms are run one after the other on one store, and each arm's
+    // own reading is what it cost.
+    samples.push(w3_all_bodies_arm(config, &opened, &targets, true));
+    samples.push(w3_all_bodies_arm(config, &opened, &targets, false));
     samples
+}
+
+/// One decoded member body, as the line the two delivery shapes are compared through.
+///
+/// The projection is the decode's own facts — the member identity, the frame the code declares, the
+/// span it occupies, the instruction stream's own digest and the handler count — because that is what
+/// the `class_view` of both shapes publishes. The document *around* those facts (a view's items, its
+/// coverage, the charges it states) is a reading of how the run was grouped, not of what it decoded,
+/// and is deliberately not part of the comparison.
+fn body_line(body: &ClassViewBody) -> Option<String> {
+    match body {
+        ClassViewBody::Read {
+            method,
+            max_stack,
+            max_locals,
+            code_span,
+            instructions,
+            exception_handlers,
+            ..
+        } => Some(format!(
+            "{method:?}|stack={max_stack}|locals={max_locals}|span={code_span:?}|\
+             handlers={}|code=blake3:{}",
+            exception_handlers.len(),
+            blake3::hash(format!("{instructions:?}").as_bytes()).to_hex()
+        )),
+        ClassViewBody::NotDeclared { .. } | ClassViewBody::Refused { .. } => None,
+    }
+}
+
+/// Every body of every class in `targets`, in one of the two delivery shapes.
+///
+/// `class_major` asks one `class_view` per class, selecting every body that class declares: one
+/// preparation serves that class's members, and the members are delivered together. Otherwise the
+/// same bodies are asked one request at a time, which is the shape every other W3 sample uses and the
+/// one the bulk operation replaces. Both arms publish the same per-member decode facts
+/// ([`body_line`]), so their `arm_domain` figures are comparable and
+/// [`the_two_delivery_shapes_answer_the_same_bodies`] asserts that they are equal.
+fn w3_all_bodies_arm(
+    config: &Config,
+    opened: &Opened,
+    targets: &[Target],
+    class_major: bool,
+) -> Sample {
+    let name = if class_major {
+        "w3-batch-per-class-across-classes"
+    } else {
+        "w3-per-method-across-classes"
+    };
+    let mut sample = Sample::new(config, "W3", name);
+    let mut per_request = Vec::new();
+    let mut usages = Vec::new();
+    let mut lines = Vec::new();
+    let mut bodies = 0_u64;
+    let before = counts_before();
+    let started = Instant::now();
+    sample.stages.phase("request", || {
+        for target in targets {
+            let mut budget = request_budget(config, &opened.store);
+            let selected: Vec<Vec<BodyRef>> = if class_major {
+                vec![
+                    target
+                        .methods
+                        .iter()
+                        .map(|method| BodyRef::Method {
+                            method: method.clone(),
+                        })
+                        .collect(),
+                ]
+            } else {
+                target
+                    .methods
+                    .iter()
+                    .map(|method| {
+                        vec![BodyRef::Method {
+                            method: method.clone(),
+                        }]
+                    })
+                    .collect()
+            };
+            for selection in &selected {
+                let request = ClassViewRequest {
+                    class: ClassRef::Definition {
+                        definition: target.definition.clone(),
+                    },
+                    bodies: selection.clone(),
+                };
+                let started = Instant::now();
+                let view = performed(
+                    opened
+                        .engine
+                        .class_view(&opened.snapshot, &opened.scope, &request, &mut budget)
+                        .expect("a declared class is viewable with its bodies"),
+                    "a class declaration",
+                );
+                per_request.push(micros(started.elapsed()));
+                for body in &view.bodies {
+                    if let Some(line) = body_line(body) {
+                        lines.push(line);
+                        bodies = bodies.saturating_add(1);
+                    }
+                }
+            }
+            usages.push(budget.usage());
+        }
+    });
+    let sequence = micros(started.elapsed());
+    lines.sort();
+    let (returned_bytes, arm_domain) = sample
+        .stages
+        .phase("output", || (0_u64, lines_domain(&lines)));
+    sample.counts = counts_after(before);
+    count_numbers(&mut sample);
+    sample
+        .number("classes", targets.len() as u64)
+        .number("bodies", bodies)
+        .number("sequence_micros", sequence)
+        .number(
+            "method_bodies_total",
+            usages.iter().map(|u| u.method_bodies).sum(),
+        )
+        .number(
+            "class_headers_total",
+            usages.iter().map(|u| u.class_headers).sum(),
+        )
+        .number("returned_bytes", returned_bytes)
+        .series("per_request_micros", per_request)
+        .text("arm_domain", arm_domain)
+        .text(
+            "shape",
+            if class_major {
+                "class-major"
+            } else {
+                "method-major"
+            },
+        )
+        .cache(&opened.store.report())
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -1529,8 +1856,13 @@ fn w3(config: &Config) -> Vec<Sample> {
 struct Pages {
     reports: Vec<QueryReport>,
     page_micros: Vec<u64>,
+    /// What each page's own coverage stated it had scanned *by the end of that page*: the sequence of
+    /// this figure is how a continuation's rescan shows up in a count instead of only in a duration.
+    scanned_series: Vec<u64>,
     scanned_items: u64,
     has_more: bool,
+    /// The whole sequence's one budget, as the usage the sequence was charged.
+    usage: UsageSnapshot,
 }
 
 impl Pages {
@@ -1557,6 +1889,7 @@ fn w4_pages(
     let mut cursor: Option<QueryCursor> = None;
     let mut reports = Vec::new();
     let mut page_micros = Vec::new();
+    let mut scanned_series = Vec::new();
     let mut scanned = 0_u64;
     let mut has_more = false;
     let mut budget = request_budget(config, &opened.store);
@@ -1583,6 +1916,7 @@ fn w4_pages(
             .expect("the fixture is queryable");
         page_micros.push(micros(started.elapsed()));
         scanned = report.coverage.scanned_items;
+        scanned_series.push(scanned);
         has_more = report.page.has_more;
         cursor = report.page.cursor.clone();
         reports.push(report);
@@ -1590,11 +1924,14 @@ fn w4_pages(
             break;
         }
     }
+    let usage = budget.usage();
     Pages {
         reports,
         page_micros,
+        scanned_series,
         scanned_items: scanned,
         has_more,
+        usage,
     }
 }
 
@@ -1614,6 +1951,25 @@ fn rendered_pages(sample: &mut Sample, pages: &Pages) -> (u64, String) {
     })
 }
 
+/// The work figures of one W4 page sequence: what its own budget was charged, and the coverage series
+/// a continuation states.
+///
+/// The pages of a sequence share **one** request budget (a page is one request of one search, not one
+/// request per page), so the sequence's usage is the reading of "what continuing cost" — and the
+/// per-page coverage series is where a boundary rescan shows up as a count rather than only as a
+/// duration.
+fn pages_work(sample: Sample, pages: &Pages) -> Sample {
+    let usage = &pages.usage;
+    sample
+        .number("archive_entries_total", usage.archive_entries)
+        .number("entry_bytes_total", usage.entry_bytes)
+        .number("read_bytes_total", usage.read_bytes)
+        .number("class_bytes_total", usage.class_bytes)
+        .number("result_items", usage.result_items)
+        .series("scanned_series", pages.scanned_series.clone())
+        .usage(usage)
+}
+
 /// The declared bound on a page sequence: a continuation that never ends is a defect, and a
 /// workload that stopped at a bound says so through its own `pages`/`has_more` readings.
 const PAGE_CAP: usize = 4096;
@@ -1630,7 +1986,8 @@ fn w4(config: &Config) -> Vec<Sample> {
     });
     let (small_bytes, small_domain) = rendered_pages(&mut small, &small_pages);
     small.counts = counts_after(before);
-    samples.push(
+    count_numbers(&mut small);
+    samples.push(pages_work(
         small
             .number("max_items", 2)
             .number("items", small_pages.items())
@@ -1641,14 +1998,15 @@ fn w4(config: &Config) -> Vec<Sample> {
             .series("page_micros", small_pages.page_micros.clone())
             .text("items_domain", small_domain.clone())
             .cache(&opened.store.report()),
-    );
+        &small_pages,
+    ));
 
     let mut large = Sample::new(config, "W4", "w4-large-page");
     let large_pages = large.stages.phase("request", || {
         w4_pages(config, &opened, 64, PAGE_CAP, consumers.clone())
     });
     let (large_bytes, large_domain) = rendered_pages(&mut large, &large_pages);
-    samples.push(
+    samples.push(pages_work(
         large
             .number("max_items", 64)
             .number("items", large_pages.items())
@@ -1663,7 +2021,8 @@ fn w4(config: &Config) -> Vec<Sample> {
                 u64::from(large_domain == small_domain).to_string(),
             )
             .cache(&opened.store.report()),
-    );
+        &large_pages,
+    ));
 
     let mut multi = Sample::new(config, "W4", "w4-multi-consumer");
     let multi_pages = multi.stages.phase("request", || {
@@ -1681,7 +2040,7 @@ fn w4(config: &Config) -> Vec<Sample> {
         )
     });
     let (multi_bytes, _) = rendered_pages(&mut multi, &multi_pages);
-    samples.push(
+    samples.push(pages_work(
         multi
             .number("max_items", 64)
             .number("consumers", 4)
@@ -1704,14 +2063,15 @@ fn w4(config: &Config) -> Vec<Sample> {
             )
             .series("page_micros", multi_pages.page_micros.clone())
             .cache(&opened.store.report()),
-    );
+        &multi_pages,
+    ));
 
     let mut abandon = Sample::new(config, "W4", "w4-abandon-after-one-page");
     let one_page = abandon.stages.phase("request", || {
         w4_pages(config, &opened, 2, 1, consumers.clone())
     });
     let (abandon_bytes, _) = rendered_pages(&mut abandon, &one_page);
-    samples.push(
+    samples.push(pages_work(
         abandon
             .number("max_items", 2)
             .number("items", one_page.items())
@@ -1721,8 +2081,136 @@ fn w4(config: &Config) -> Vec<Sample> {
             .number("returned_bytes", abandon_bytes)
             .series("page_micros", one_page.page_micros.clone())
             .cache(&opened.store.report()),
-    );
+        &one_page,
+    ));
+
+    // The damaged suffix: the same archive with its last root entry — `lib/more.jar`, the nested
+    // container the scope's own walk descends into last — damaged in one data byte. A page that stops
+    // before it never reads it; a scan that reaches it states the damage. The three arms are the same
+    // query at three stopping points, which is what makes the comparison a reading of the stop rather
+    // than of a second fixture.
+    let damaged = damaged_fixture();
+    let mut first_page = Sample::new(config, "W4", "w4-damaged-first-page");
+    let damaged_subject = open_bytes(config, &mut first_page, Capacity::Roomy, damaged.clone());
+    let one = first_page.stages.phase("request", || {
+        w4_pages(config, &damaged_subject, 2, 1, consumers.clone())
+    });
+    let (first_bytes, first_domain) = rendered_pages(&mut first_page, &one);
+    samples.push(pages_work(
+        first_page
+            .number("max_items", 2)
+            .number("items", one.items())
+            .number("pages", one.pages())
+            .number("scanned_items", one.scanned_items)
+            .number("has_more", u64::from(one.has_more))
+            .number("returned_bytes", first_bytes)
+            .number("diagnostics", diagnostic_count(&one))
+            .series("page_micros", one.page_micros.clone())
+            .text("items_domain", first_domain)
+            .text("diagnostic_codes", diagnostic_codes(&one))
+            .cache(&damaged_subject.store.report()),
+        &one,
+    ));
+
+    let mut full = Sample::new(config, "W4", "w4-damaged-full-page");
+    let full_subject = open_bytes(config, &mut full, Capacity::Roomy, damaged.clone());
+    let whole = full.stages.phase("request", || {
+        w4_pages(config, &full_subject, 64, 1, consumers.clone())
+    });
+    let (full_bytes, full_domain) = rendered_pages(&mut full, &whole);
+    samples.push(pages_work(
+        full.number("max_items", 64)
+            .number("items", whole.items())
+            .number("pages", whole.pages())
+            .number("scanned_items", whole.scanned_items)
+            .number("has_more", u64::from(whole.has_more))
+            .number("returned_bytes", full_bytes)
+            .number("diagnostics", diagnostic_count(&whole))
+            .series("page_micros", whole.page_micros.clone())
+            .text("items_domain", full_domain.clone())
+            .text("diagnostic_codes", diagnostic_codes(&whole))
+            .cache(&full_subject.store.report()),
+        &whole,
+    ));
+
+    let mut exhausted = Sample::new(config, "W4", "w4-damaged-continued-to-exhaustion");
+    let exhausted_subject = open_bytes(config, &mut exhausted, Capacity::Roomy, damaged);
+    let all = exhausted.stages.phase("request", || {
+        w4_pages(config, &exhausted_subject, 2, PAGE_CAP, consumers.clone())
+    });
+    let (exhausted_bytes, exhausted_domain) = rendered_pages(&mut exhausted, &all);
+    samples.push(pages_work(
+        exhausted
+            .number("max_items", 2)
+            .number("items", all.items())
+            .number("pages", all.pages())
+            .number("scanned_items", all.scanned_items)
+            .number("has_more", u64::from(all.has_more))
+            .number("returned_bytes", exhausted_bytes)
+            .number("diagnostics", diagnostic_count(&all))
+            .number(
+                "items_equal_full_page",
+                u64::from(exhausted_domain == full_domain),
+            )
+            .series("page_micros", all.page_micros.clone())
+            .text("items_domain", exhausted_domain)
+            .text("diagnostic_codes", diagnostic_codes(&all))
+            .cache(&exhausted_subject.store.report()),
+        &all,
+    ));
     samples
+}
+
+/// The fixture with one data byte of one class entry flipped.
+///
+/// The damaged entry is `HistoricalControlFlow.class`: the last *class* of the root container, whose
+/// own walk order puts the nested container `lib/more.jar` and its nineteen classes behind it. The
+/// nested container itself is left intact on purpose — it is the container the scope's own roots are
+/// declared in, so damaging it would break the fixture's environment declaration rather than put a
+/// damaged byte behind a page boundary. Every other byte of the archive is the pinned fixture.
+fn damaged_fixture() -> Vec<u8> {
+    const DAMAGED: &[u8] = b"HistoricalControlFlow.class";
+    let mut bytes = fixture();
+    let (snapshot, _usage) = open(bytes.clone());
+    let mut budget = Budget::new(limits());
+    let listing = snapshot
+        .enumerate_artifact_tree(&mut budget)
+        .expect("the fixture is a readable archive tree");
+    let offset = listing
+        .containers
+        .iter()
+        .flat_map(|container| container.entries.iter())
+        .find(|entry| entry.id.raw_name.0 == DAMAGED)
+        .map(|entry| entry.layout.compressed_data.start)
+        .expect("the fixture holds the entry to damage");
+    assert!(
+        offset > 0 && (offset as usize) < bytes.len(),
+        "the damaged entry's data lies inside the archive"
+    );
+    bytes[offset as usize] ^= 0xff;
+    bytes
+}
+
+/// How many diagnostics a page sequence stated.
+fn diagnostic_count(pages: &Pages) -> u64 {
+    pages
+        .reports
+        .iter()
+        .map(|report| report.diagnostics.len() as u64)
+        .sum()
+}
+
+/// Every diagnostic code a page sequence stated, sorted and deduplicated.
+fn diagnostic_codes(pages: &Pages) -> String {
+    let mut codes = pages
+        .reports
+        .iter()
+        .flat_map(|report| report.diagnostics.iter())
+        .map(|diagnostic| diagnostic.code.clone())
+        .collect::<Vec<_>>();
+    codes.sort();
+    codes.dedup();
+    codes.join(",")
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -1733,6 +2221,10 @@ fn w4(config: &Config) -> Vec<Sample> {
 struct Sweep {
     records: u64,
     methods: u64,
+    /// The method records the sink itself confirmed before it answered `Stop` (a run that took the
+    /// whole stream confirms every one of them).
+    methods_seen: u64,
+    stopped_by_sink: bool,
     encoded_bytes: u64,
     written_bytes: u64,
     status: String,
@@ -1771,7 +2263,7 @@ fn sweep(
 ) -> Sweep {
     let environment = environment(&opened.snapshot, opened.scope.clone(), opened.roots.clone());
     let request_started = Instant::now();
-    let mut sink = Measuring::new(mode);
+    let mut sink = Measuring::new(mode, config.stop_after);
     #[cfg(feature = "test-support")]
     let probe = config
         .instrumented
@@ -1819,6 +2311,8 @@ fn sweep(
     Sweep {
         records: sink.records,
         methods,
+        methods_seen: sink.methods_seen,
+        stopped_by_sink: sink.stopped,
         encoded_bytes: sink.encoded_bytes,
         written_bytes: sink.written_bytes,
         status: report.summary.status().to_owned(),
@@ -1983,6 +2477,7 @@ fn w5(config: &Config) -> Vec<Sample> {
         (bytes, lines_domain(&lines))
     });
     sample.counts = counts_after(before);
+    count_numbers(&mut sample);
     samples.push(
         sample
             .number("round_trips", 10)
@@ -2006,7 +2501,19 @@ fn w5(config: &Config) -> Vec<Sample> {
 }
 
 fn w6a(config: &Config) -> Vec<Sample> {
-    let mut sample = Sample::new(config, "W6a", "w6a-export");
+    // The cancellation arm is one variable of this workload, not a second workload: a configuration
+    // that declared `stop=<n>` runs the same export and answers `Stop` after `n` method records, so
+    // the sample's own name says which reading it is.
+    let cancelled = config.stop_after.is_some();
+    let mut sample = Sample::new(
+        config,
+        "W6a",
+        if cancelled {
+            "w6a-export-cancelled"
+        } else {
+            "w6a-export"
+        },
+    );
     let opened = open_subject(config, &mut sample, config.capacity);
     let before = counts_before();
     let swept = sweep(config, &opened, &mut sample, config.workers, config.mode);
@@ -2014,6 +2521,9 @@ fn w6a(config: &Config) -> Vec<Sample> {
         .number("workers", config.workers as u64)
         .number("records", swept.records)
         .number("methods", swept.methods)
+        .number("methods_confirmed", swept.methods_seen)
+        .number("stopped_by_sink", u64::from(swept.stopped_by_sink))
+        .number("stop_after", config.stop_after.unwrap_or(0))
         .number("classes_seen", swept.classes)
         .number("methods_declared", swept.declared)
         .number("first_result_micros", swept.first_result_micros)
@@ -2029,6 +2539,7 @@ fn w6a(config: &Config) -> Vec<Sample> {
     sample.probe = swept.probe.clone();
     sample.bulk = Some(bulk_accounts(&swept));
     sample.counts = counts_after(before);
+    count_numbers(&mut sample);
     vec![outcome_numbers(sample, &swept)]
 }
 
@@ -2095,6 +2606,7 @@ fn the_workload_vocabulary_is_the_one_task_1_2_fixes() {
             mode: Mode::Discard,
             capacity: Capacity::Roomy,
             instrumented: false,
+            stop_after: None,
         };
         run_workload(&config)
     }));
@@ -2179,6 +2691,7 @@ fn the_fixture_is_the_pinned_bytes() {
         mode: Mode::Discard,
         capacity: Capacity::Roomy,
         instrumented: false,
+        stop_after: None,
     };
     let sample = run_workload(&config).pop().expect("w6a prints a sample");
     assert_eq!(
@@ -2273,6 +2786,7 @@ fn the_three_sink_modes_publish_the_same_result() {
                 mode,
                 capacity: Capacity::Roomy,
                 instrumented: false,
+                stop_after: None,
             };
             let sample = run_workload(&config).pop().expect("w6a prints a sample");
             (mode, sample)
@@ -2386,6 +2900,7 @@ fn the_instrumentation_changes_no_domain_report() {
             mode: Mode::Discard,
             capacity: Capacity::Roomy,
             instrumented,
+            stop_after: None,
         };
         run_workload(&config)
     };
@@ -2398,12 +2913,35 @@ fn the_instrumentation_changes_no_domain_report() {
             "{}: attaching the observation port changed the published result",
             left.name
         );
-        assert_eq!(
-            counted(left),
-            counted(right),
-            "{}: the counted work differs between the two instrumentations",
-            left.name
-        );
+        // Every counted reading must be identical, with one named exception: the *length* of a
+        // returned document embeds that run's own `elapsed_millis`, so a run whose clock crosses a
+        // digit boundary returns a few bytes more (the same rule the corpus gates state for
+        // `encoded_bytes`/`written_bytes`, and the reason G0 says lengths are not a fingerprint).
+        // The allowance is bounded and stated instead of the field being dropped: the counted *work*
+        // still has to match exactly.
+        const LENGTH_ALLOWANCE: u64 = 64;
+        let quiet_counts = counted(left);
+        let watched_counts = counted(right);
+        for (name, value) in &quiet_counts {
+            let other = *watched_counts
+                .get(name)
+                .unwrap_or_else(|| panic!("{}: the two runs counted different fields", left.name));
+            if *name == "returned_bytes" {
+                assert!(
+                    value.abs_diff(other) <= LENGTH_ALLOWANCE,
+                    "{}: the returned length moved by {} bytes between the two instrumentations, \
+                     which is more than the elapsed-digit allowance",
+                    left.name,
+                    value.abs_diff(other)
+                );
+            } else {
+                assert_eq!(
+                    *value, other,
+                    "{}: the counted work differs between the two instrumentations",
+                    left.name
+                );
+            }
+        }
         for (name, document) in [
             ("usage", right.usage.as_ref()),
             ("counts", right.counts.as_ref()),
@@ -2430,6 +2968,7 @@ fn the_instrumentation_changes_no_domain_report() {
             mode: Mode::Encode,
             capacity: Capacity::Roomy,
             instrumented,
+            stop_after: None,
         };
         run_workload(&config).pop().expect("w6a prints a sample")
     };
@@ -2480,6 +3019,7 @@ fn the_probe_counts_every_delivered_record_and_window_call() {
         mode: Mode::Discard,
         capacity: Capacity::Roomy,
         instrumented: true,
+        stop_after: None,
     };
     let sample = run_workload(&config).pop().expect("w6a prints a sample");
     let probe = sample.probe.as_ref().expect("the port was attached");
@@ -2543,6 +3083,7 @@ fn the_pages_cover_the_scan_and_the_page_size_changes_no_item() {
         mode: Mode::Discard,
         capacity: Capacity::Roomy,
         instrumented: false,
+        stop_after: None,
     };
     let samples = run_workload(&config);
     let small = samples
@@ -2615,6 +3156,7 @@ fn the_capacity_refusal_changes_retention_and_not_the_result() {
             mode: Mode::Discard,
             capacity,
             instrumented: false,
+            stop_after: None,
         };
         run_workload(&config)
     };
@@ -2687,6 +3229,7 @@ fn the_worker_sequence_publishes_one_result() {
             mode: Mode::Discard,
             capacity: Capacity::Roomy,
             instrumented: false,
+            stop_after: None,
         };
         run_workload(&config).pop().expect("w6a prints a sample")
     };
@@ -2713,8 +3256,291 @@ fn the_worker_sequence_publishes_one_result() {
     }
 }
 
-/// The phase ledger's own names are this harness's, and the engine's sources do not carry them.
+/// The two delivery shapes answer the same bodies: grouping is not a result.
 ///
+/// O4's question is whether asking one class at a time (one preparation serving its members) is the
+/// same answer as asking one member at a time, and whether it is the same *work*. This gate holds the
+/// first half: the per-member decode facts the two arms publish are one set. The work half is a
+/// reading, not an assertion — the campaign measures both arms and the evidence compares them.
+#[test]
+fn the_two_delivery_shapes_answer_the_same_bodies() {
+    let config = Config {
+        workload: "w3".to_owned(),
+        artifact: None,
+        workers: 1,
+        mode: Mode::Discard,
+        capacity: Capacity::Roomy,
+        instrumented: false,
+        stop_after: None,
+    };
+    let samples = run_workload(&config);
+    let class_major = sample_named(&samples, "w3-batch-per-class-across-classes");
+    let method_major = sample_named(&samples, "w3-per-method-across-classes");
+    assert!(
+        class_major.number_or_zero("bodies") > 0,
+        "neither shape decoded a body, so the comparison is vacuous"
+    );
+    assert_eq!(
+        class_major.number_or_zero("bodies"),
+        method_major.number_or_zero("bodies"),
+        "the two shapes answered a different number of bodies"
+    );
+    assert_eq!(
+        class_major.texts["arm_domain"], method_major.texts["arm_domain"],
+        "asking one class at a time changed a decoded body: the two shapes' member decodes differ"
+    );
+    assert!(
+        class_major.number_or_zero("sequence_micros") > 0
+            && method_major.number_or_zero("sequence_micros") > 0,
+        "an arm published no duration, so the arms were not both measured"
+    );
+}
+
+/// A page that stops before a damaged suffix states what it covered, and one that reaches it states
+/// the damage.
+///
+/// The three arms are one query over one damaged archive, stopped at three points: one small page,
+/// one full page, and the small-page sequence continued to exhaustion. The contract the task fixes is
+/// that an unread suffix is *honest* — not covered, not claimed complete — and that continuing reaches
+/// the same result the full walk reaches.
+#[test]
+fn a_page_that_stops_before_a_damaged_suffix_states_what_it_covered() {
+    let config = Config {
+        workload: "w4".to_owned(),
+        artifact: None,
+        workers: 1,
+        mode: Mode::Discard,
+        capacity: Capacity::Roomy,
+        instrumented: false,
+        stop_after: None,
+    };
+    let samples = run_workload(&config);
+    let intact = sample_named(&samples, "w4-large-page");
+    let first = sample_named(&samples, "w4-damaged-first-page");
+    let full = sample_named(&samples, "w4-damaged-full-page");
+    let exhausted = sample_named(&samples, "w4-damaged-continued-to-exhaustion");
+
+    assert!(
+        intact.number_or_zero("diagnostics") == 0,
+        "the intact fixture stated a diagnostics and cannot serve as the control: {:?}",
+        intact.texts.get("diagnostic_codes")
+    );
+    assert!(
+        intact.number_or_zero("items") > full.number_or_zero("items"),
+        "damaging the nested container changed no item, so the damage is not observable at all: \
+         intact {} items, damaged {} items",
+        intact.number_or_zero("items"),
+        full.number_or_zero("items")
+    );
+    assert!(
+        full.number_or_zero("diagnostics") > 0,
+        "the full walk reached the damaged container and stated nothing"
+    );
+    assert!(
+        !full.texts["diagnostic_codes"].is_empty(),
+        "the full walk's diagnostics carry no code"
+    );
+
+    // The early stop really stopped: it covered less than the walk and says there is more.
+    assert_eq!(
+        first.number_or_zero("pages"),
+        1,
+        "the early arm read more than the one page it asked for"
+    );
+    assert_eq!(
+        first.number_or_zero("has_more"),
+        1,
+        "the early stop claimed the search was over"
+    );
+    assert!(
+        first.number_or_zero("scanned_items") < full.number_or_zero("scanned_items"),
+        "the early stop scanned as much as the full walk"
+    );
+    assert_eq!(
+        first.number_or_zero("diagnostics"),
+        0,
+        "a page that stopped before the damaged byte stated a diagnostic about it"
+    );
+
+    // Continuing from the small page reaches the full walk's own answer, damage and all. The
+    // damaged entry ends the walk, so the continued sequence still states `has_more`: the honest
+    // reading of "the search did not reach the end of the range" rather than a complete-looking set
+    // of items (the boundary documents itself that way — `has_more` is `stopped_early || issue`).
+    assert!(
+        exhausted.number_or_zero("pages") > 1,
+        "the continued arm needed no second page, so continuing was not exercised"
+    );
+    assert_eq!(
+        exhausted.number_or_zero("items_equal_full_page"),
+        1,
+        "continuing the small pages did not reach the same items the full page did"
+    );
+    assert_eq!(
+        exhausted.texts["items_domain"], full.texts["items_domain"],
+        "the continued small-page sequence and the full page disagreed on the items"
+    );
+    assert_eq!(
+        exhausted.texts["diagnostic_codes"], full.texts["diagnostic_codes"],
+        "the continued small-page sequence and the full page disagreed on the diagnostics"
+    );
+    assert_eq!(
+        exhausted.number_or_zero("has_more"),
+        1,
+        "the walk stopped at a damaged entry and still claimed it reached the end of the range"
+    );
+    let intact_small = sample_named(&samples, "w4-small-page");
+    assert_eq!(
+        intact_small.number_or_zero("has_more"),
+        0,
+        "the intact fixture's own small-page sequence did not reach the end of the range"
+    );
+}
+
+/// A stopped export delivers its confirmed prefix and nothing else.
+///
+/// This is O7's cancellation reading as a gate: the sink confirms `n` method records and answers
+/// `Stop`, and the run really stops there — no terminal event, no record the callback refused, and the
+/// same configuration without the stop takes the whole stream.
+#[test]
+fn the_stopped_export_delivers_its_confirmed_prefix_and_stops() {
+    let run = |stop_after: Option<u64>| {
+        let config = Config {
+            workload: "w6a".to_owned(),
+            artifact: None,
+            workers: 2,
+            mode: Mode::Discard,
+            capacity: Capacity::Roomy,
+            instrumented: false,
+            stop_after,
+        };
+        run_workload(&config).pop().expect("w6a prints a sample")
+    };
+    let whole = run(None);
+    let stopped = run(Some(2));
+    assert_eq!(
+        whole.number_or_zero("methods"),
+        PINNED_METHODS,
+        "the uninterrupted run did not take the whole stream"
+    );
+    assert_eq!(
+        whole.number_or_zero("final_delivered"),
+        1,
+        "the uninterrupted run published no terminal event"
+    );
+    assert_eq!(
+        stopped.number_or_zero("stopped_by_sink"),
+        1,
+        "the sink asked to stop and the sample does not state that it did"
+    );
+    assert_eq!(
+        stopped.number_or_zero("methods"),
+        2,
+        "the stopped run delivered more than the prefix its sink confirmed"
+    );
+    assert_eq!(
+        stopped.number_or_zero("methods_confirmed"),
+        2,
+        "the sink confirmed a different number of methods than the run delivered"
+    );
+    assert_eq!(
+        stopped.number_or_zero("final_delivered"),
+        0,
+        "a stopped stream published the terminal event of a stream that reached its end"
+    );
+    // The operation's own account of the same stop: the record whose callback answered
+    // `SinkControl::Stop` was handed over and is not counted as a `Continue` confirmation, so the
+    // run states an unfinished account rather than a complete one (`delivered` counts confirmations
+    // that let the operation go on; `src/bulk.rs::publish`). What matters as contract is that the
+    // stopped run does not claim to have taken the stream:
+    assert!(
+        stopped.number_or_zero("delivered") < stopped.number_or_zero("methods"),
+        "the stopped run counted every handed-over record as a confirmed delivery"
+    );
+    assert!(
+        stopped.number_or_zero("delivered") + stopped.number_or_zero("not_executed")
+            < stopped.number_or_zero("methods_declared"),
+        "the stopped run's own account adds up to everything it declared"
+    );
+    assert_eq!(
+        stopped.number_or_zero("traversal_complete"),
+        0,
+        "a stopped run claims it walked its whole declared range"
+    );
+    assert!(
+        !stopped.texts["status"].is_empty(),
+        "the stopped run stated no status"
+    );
+}
+
+/// The zero-capacity store retains nothing and changes no result.
+///
+/// The floor of the capacity ablation: a store declared to hold nothing answers every consultation
+/// with a miss, so every request pays the direct path, and the results are the ones the direct path
+/// produces.
+#[test]
+fn the_zero_capacity_store_retains_nothing_and_changes_no_result() {
+    let run = |capacity: Capacity| {
+        let config = Config {
+            workload: "w5".to_owned(),
+            artifact: None,
+            workers: 2,
+            mode: Mode::Discard,
+            capacity,
+            instrumented: false,
+            stop_after: None,
+        };
+        run_workload(&config)
+    };
+    let none = run(Capacity::None);
+    let roomy = run(Capacity::Roomy);
+    let none_sweep = sample_named(&none, "w5-sweep");
+    let roomy_sweep = sample_named(&roomy, "w5-sweep");
+    assert_eq!(
+        none_sweep.domain, roomy_sweep.domain,
+        "a store that holds nothing changed the sweep's own result"
+    );
+    let none_round = sample_named(&none, "w5-round-trip");
+    let roomy_round = sample_named(&roomy, "w5-round-trip");
+    assert_eq!(
+        none_round.texts["round_trip_domain"], roomy_round.texts["round_trip_domain"],
+        "the two stores recovered different results on the round trip"
+    );
+    let reading = |sample: &Sample, name: &str| {
+        sample.cache.as_ref().expect("the store's report")[name]
+            .as_u64()
+            .unwrap_or(0)
+    };
+    assert_eq!(
+        reading(none_round, "containers"),
+        0,
+        "a store declared to hold no entry retained a container"
+    );
+    assert_eq!(
+        reading(none_round, "retained_bytes"),
+        0,
+        "a store declared to hold no byte retained bytes"
+    );
+    assert_eq!(
+        reading(none_round, "container_hits"),
+        0,
+        "a store that holds nothing answered a container lookup"
+    );
+    assert!(
+        reading(none_round, "refused_capacity") + reading(none_round, "refused_capacity_bytes") > 0,
+        "the zero-capacity store refused no insertion, so nothing was attempted: {:?}",
+        none_round.cache
+    );
+    assert!(
+        reading(roomy_round, "container_hits") > 0,
+        "the roomy store answered no container lookup, so the contrast is not the capacity"
+    );
+    assert!(
+        reading(none_round, "container_consultations") > 0,
+        "the zero-capacity store was never consulted, so its own cost was not measured"
+    );
+}
+
+/// The phase ledger's own names are this harness's, and the engine's sources do not carry them.
 /// The guard is the "phase time does not enter the domain report" half of task 1.3 that a run
 /// cannot show: no reading of a published document can prove that a *later* report will not carry a
 /// timing, so this reads the sources the reports are built in. It is a source guard of the same
