@@ -1,0 +1,902 @@
+binary: /Users/lordcasser/workspace/projects/jarde/target/release/deps/p5_optimize_workloads-4e425b0298ea85ea
+out:    /tmp/post-fixture-raw.jsonl
+load:   {'load_average': [5.96533203125, 6.64697265625, 4.82763671875], 'platform': 'macOS-26.6.2-arm64-arm-64bit', 'machine': 'arm64', 'python': '3.9.6'}
+rep  0 w1:                                          wall     0.01s rss      6.6MiB samples 4 exit 0
+rep  0 w2:                                          wall     0.01s rss      5.1MiB samples 1 exit 0
+rep  0 w3:                                          wall     0.01s rss      7.5MiB samples 5 exit 0
+rep  0 w4:                                          wall     0.01s rss      5.5MiB samples 7 exit 0
+rep  0 w5:capacity=tiny:sink=discard:workers=2      wall     0.02s rss      7.8MiB samples 2 exit 0
+rep  0 w5:capacity=roomy:sink=discard:workers=2     wall     0.02s rss      7.7MiB samples 2 exit 0
+rep  0 w6a:sink=discard:workers=1                   wall     0.02s rss      7.3MiB samples 1 exit 0
+rep  0 w6a:sink=discard:workers=2                   wall     0.02s rss      7.5MiB samples 1 exit 0
+rep  0 w6a:sink=discard:workers=4                   wall     0.02s rss      8.1MiB samples 1 exit 0
+rep  0 w6a:sink=discard:workers=6                   wall     0.02s rss      8.7MiB samples 1 exit 0
+rep  0 w6a:sink=encode:workers=1                    wall     0.02s rss      7.4MiB samples 1 exit 0
+rep  0 w6a:sink=encode:workers=2                    wall     0.02s rss      7.6MiB samples 1 exit 0
+rep  0 w6a:sink=encode:workers=4                    wall     0.02s rss      8.1MiB samples 1 exit 0
+rep  0 w6a:sink=encode:workers=6                    wall     0.02s rss      8.7MiB samples 1 exit 0
+rep  0 w6a:sink=write:workers=1                     wall     0.03s rss      7.4MiB samples 1 exit 0
+rep  0 w6a:sink=write:workers=2                     wall     0.02s rss      7.7MiB samples 1 exit 0
+rep  0 w6a:sink=write:workers=4                     wall     0.02s rss      8.2MiB samples 1 exit 0
+rep  0 w6a:sink=write:workers=6                     wall     0.02s rss      8.7MiB samples 1 exit 0
+rep  0 w2:instrument=off                            wall     0.01s rss      5.1MiB samples 1 exit 0
+rep  0 w6a:instrument=off:sink=discard:workers=4    wall     0.02s rss      8.1MiB samples 1 exit 0
+rep  1 w1:                                          wall     0.01s rss      6.5MiB samples 4 exit 0
+rep  1 w2:                                          wall     0.01s rss      5.2MiB samples 1 exit 0
+rep  1 w3:                                          wall     0.01s rss      7.5MiB samples 5 exit 0
+rep  1 w4:                                          wall     0.01s rss      5.4MiB samples 7 exit 0
+rep  1 w5:capacity=tiny:sink=discard:workers=2      wall     0.02s rss      7.8MiB samples 2 exit 0
+rep  1 w5:capacity=roomy:sink=discard:workers=2     wall     0.02s rss      7.8MiB samples 2 exit 0
+rep  1 w6a:sink=discard:workers=1                   wall     0.02s rss      7.2MiB samples 1 exit 0
+rep  1 w6a:sink=discard:workers=2                   wall     0.02s rss      7.5MiB samples 1 exit 0
+rep  1 w6a:sink=discard:workers=4                   wall     0.02s rss      8.0MiB samples 1 exit 0
+rep  1 w6a:sink=discard:workers=6                   wall     0.02s rss      8.5MiB samples 1 exit 0
+rep  1 w6a:sink=encode:workers=1                    wall     0.02s rss      7.4MiB samples 1 exit 0
+rep  1 w6a:sink=encode:workers=2                    wall     0.02s rss      7.7MiB samples 1 exit 0
+rep  1 w6a:sink=encode:workers=4                    wall     0.02s rss      8.3MiB samples 1 exit 0
+rep  1 w6a:sink=encode:workers=6                    wall     0.02s rss      8.8MiB samples 1 exit 0
+rep  1 w6a:sink=write:workers=1                     wall     0.02s rss      7.4MiB samples 1 exit 0
+rep  1 w6a:sink=write:workers=2                     wall     0.02s rss      7.8MiB samples 1 exit 0
+rep  1 w6a:sink=write:workers=4                     wall     0.02s rss      8.2MiB samples 1 exit 0
+rep  1 w6a:sink=write:workers=6                     wall     0.02s rss      8.7MiB samples 1 exit 0
+rep  1 w2:instrument=off                            wall     0.01s rss      5.2MiB samples 1 exit 0
+rep  1 w6a:instrument=off:sink=discard:workers=4    wall     0.02s rss      8.2MiB samples 1 exit 0
+rep  2 w1:                                          wall     0.01s rss      6.5MiB samples 4 exit 0
+rep  2 w2:                                          wall     0.01s rss      5.1MiB samples 1 exit 0
+rep  2 w3:                                          wall     0.01s rss      7.4MiB samples 5 exit 0
+rep  2 w4:                                          wall     0.01s rss      5.5MiB samples 7 exit 0
+rep  2 w5:capacity=tiny:sink=discard:workers=2      wall     0.02s rss      7.8MiB samples 2 exit 0
+rep  2 w5:capacity=roomy:sink=discard:workers=2     wall     0.02s rss      7.7MiB samples 2 exit 0
+rep  2 w6a:sink=discard:workers=1                   wall     0.02s rss      7.2MiB samples 1 exit 0
+rep  2 w6a:sink=discard:workers=2                   wall     0.02s rss      7.5MiB samples 1 exit 0
+rep  2 w6a:sink=discard:workers=4                   wall     0.02s rss      8.1MiB samples 1 exit 0
+rep  2 w6a:sink=discard:workers=6                   wall     0.02s rss      8.6MiB samples 1 exit 0
+rep  2 w6a:sink=encode:workers=1                    wall     0.02s rss      7.4MiB samples 1 exit 0
+rep  2 w6a:sink=encode:workers=2                    wall     0.02s rss      7.6MiB samples 1 exit 0
+rep  2 w6a:sink=encode:workers=4                    wall     0.02s rss      8.2MiB samples 1 exit 0
+rep  2 w6a:sink=encode:workers=6                    wall     0.02s rss      8.7MiB samples 1 exit 0
+rep  2 w6a:sink=write:workers=1                     wall     0.03s rss      7.4MiB samples 1 exit 0
+rep  2 w6a:sink=write:workers=2                     wall     0.02s rss      7.6MiB samples 1 exit 0
+rep  2 w6a:sink=write:workers=4                     wall     0.02s rss      8.3MiB samples 1 exit 0
+rep  2 w6a:sink=write:workers=6                     wall     0.02s rss      8.7MiB samples 1 exit 0
+rep  2 w2:instrument=off                            wall     0.01s rss      5.1MiB samples 1 exit 0
+rep  2 w6a:instrument=off:sink=discard:workers=4    wall     0.02s rss      8.1MiB samples 1 exit 0
+rep  3 w1:                                          wall     0.01s rss      6.6MiB samples 4 exit 0
+rep  3 w2:                                          wall     0.01s rss      5.1MiB samples 1 exit 0
+rep  3 w3:                                          wall     0.01s rss      7.4MiB samples 5 exit 0
+rep  3 w4:                                          wall     0.01s rss      5.3MiB samples 7 exit 0
+rep  3 w5:capacity=tiny:sink=discard:workers=2      wall     0.02s rss      7.8MiB samples 2 exit 0
+rep  3 w5:capacity=roomy:sink=discard:workers=2     wall     0.02s rss      7.8MiB samples 2 exit 0
+rep  3 w6a:sink=discard:workers=1                   wall     0.02s rss      7.2MiB samples 1 exit 0
+rep  3 w6a:sink=discard:workers=2                   wall     0.02s rss      7.5MiB samples 1 exit 0
+rep  3 w6a:sink=discard:workers=4                   wall     0.02s rss      8.0MiB samples 1 exit 0
+rep  3 w6a:sink=discard:workers=6                   wall     0.02s rss      8.6MiB samples 1 exit 0
+rep  3 w6a:sink=encode:workers=1                    wall     0.02s rss      7.4MiB samples 1 exit 0
+rep  3 w6a:sink=encode:workers=2                    wall     0.02s rss      7.6MiB samples 1 exit 0
+rep  3 w6a:sink=encode:workers=4                    wall     0.02s rss      8.2MiB samples 1 exit 0
+rep  3 w6a:sink=encode:workers=6                    wall     0.02s rss      8.8MiB samples 1 exit 0
+rep  3 w6a:sink=write:workers=1                     wall     0.03s rss      7.4MiB samples 1 exit 0
+rep  3 w6a:sink=write:workers=2                     wall     0.02s rss      7.7MiB samples 1 exit 0
+rep  3 w6a:sink=write:workers=4                     wall     0.02s rss      8.3MiB samples 1 exit 0
+rep  3 w6a:sink=write:workers=6                     wall     0.02s rss      8.7MiB samples 1 exit 0
+rep  3 w2:instrument=off                            wall     0.01s rss      5.2MiB samples 1 exit 0
+rep  3 w6a:instrument=off:sink=discard:workers=4    wall     0.02s rss      8.0MiB samples 1 exit 0
+rep  4 w1:                                          wall     0.01s rss      6.5MiB samples 4 exit 0
+rep  4 w2:                                          wall     0.01s rss      5.2MiB samples 1 exit 0
+rep  4 w3:                                          wall     0.01s rss      7.5MiB samples 5 exit 0
+rep  4 w4:                                          wall     0.01s rss      5.4MiB samples 7 exit 0
+rep  4 w5:capacity=tiny:sink=discard:workers=2      wall     0.02s rss      7.7MiB samples 2 exit 0
+rep  4 w5:capacity=roomy:sink=discard:workers=2     wall     0.02s rss      7.8MiB samples 2 exit 0
+rep  4 w6a:sink=discard:workers=1                   wall     0.02s rss      7.2MiB samples 1 exit 0
+rep  4 w6a:sink=discard:workers=2                   wall     0.02s rss      7.6MiB samples 1 exit 0
+rep  4 w6a:sink=discard:workers=4                   wall     0.02s rss      8.0MiB samples 1 exit 0
+rep  4 w6a:sink=discard:workers=6                   wall     0.02s rss      8.6MiB samples 1 exit 0
+rep  4 w6a:sink=encode:workers=1                    wall     0.02s rss      7.4MiB samples 1 exit 0
+rep  4 w6a:sink=encode:workers=2                    wall     0.02s rss      7.6MiB samples 1 exit 0
+rep  4 w6a:sink=encode:workers=4                    wall     0.02s rss      8.2MiB samples 1 exit 0
+rep  4 w6a:sink=encode:workers=6                    wall     0.02s rss      8.6MiB samples 1 exit 0
+rep  4 w6a:sink=write:workers=1                     wall     0.03s rss      7.4MiB samples 1 exit 0
+rep  4 w6a:sink=write:workers=2                     wall     0.02s rss      7.6MiB samples 1 exit 0
+rep  4 w6a:sink=write:workers=4                     wall     0.02s rss      8.2MiB samples 1 exit 0
+rep  4 w6a:sink=write:workers=6                     wall     0.02s rss      8.6MiB samples 1 exit 0
+rep  4 w2:instrument=off                            wall     0.01s rss      5.1MiB samples 1 exit 0
+rep  4 w6a:instrument=off:sink=discard:workers=4    wall     0.02s rss      8.1MiB samples 1 exit 0
+rep  5 w1:                                          wall     0.01s rss      6.5MiB samples 4 exit 0
+rep  5 w2:                                          wall     0.01s rss      5.2MiB samples 1 exit 0
+rep  5 w3:                                          wall     0.01s rss      7.5MiB samples 5 exit 0
+rep  5 w4:                                          wall     0.01s rss      5.4MiB samples 7 exit 0
+rep  5 w5:capacity=tiny:sink=discard:workers=2      wall     0.02s rss      7.7MiB samples 2 exit 0
+rep  5 w5:capacity=roomy:sink=discard:workers=2     wall     0.02s rss      7.7MiB samples 2 exit 0
+rep  5 w6a:sink=discard:workers=1                   wall     0.02s rss      7.3MiB samples 1 exit 0
+rep  5 w6a:sink=discard:workers=2                   wall     0.02s rss      7.7MiB samples 1 exit 0
+rep  5 w6a:sink=discard:workers=4                   wall     0.02s rss      8.0MiB samples 1 exit 0
+rep  5 w6a:sink=discard:workers=6                   wall     0.02s rss      8.6MiB samples 1 exit 0
+rep  5 w6a:sink=encode:workers=1                    wall     0.02s rss      7.5MiB samples 1 exit 0
+rep  5 w6a:sink=encode:workers=2                    wall     0.02s rss      7.7MiB samples 1 exit 0
+rep  5 w6a:sink=encode:workers=4                    wall     0.02s rss      8.2MiB samples 1 exit 0
+rep  5 w6a:sink=encode:workers=6                    wall     0.02s rss      8.7MiB samples 1 exit 0
+rep  5 w6a:sink=write:workers=1                     wall     0.02s rss      7.4MiB samples 1 exit 0
+rep  5 w6a:sink=write:workers=2                     wall     0.02s rss      7.7MiB samples 1 exit 0
+rep  5 w6a:sink=write:workers=4                     wall     0.02s rss      8.2MiB samples 1 exit 0
+rep  5 w6a:sink=write:workers=6                     wall     0.02s rss      8.8MiB samples 1 exit 0
+rep  5 w2:instrument=off                            wall     0.01s rss      5.2MiB samples 1 exit 0
+rep  5 w6a:instrument=off:sink=discard:workers=4    wall     0.02s rss      8.0MiB samples 1 exit 0
+rep  6 w1:                                          wall     0.01s rss      6.6MiB samples 4 exit 0
+rep  6 w2:                                          wall     0.01s rss      5.1MiB samples 1 exit 0
+rep  6 w3:                                          wall     0.01s rss      7.5MiB samples 5 exit 0
+rep  6 w4:                                          wall     0.01s rss      5.4MiB samples 7 exit 0
+rep  6 w5:capacity=tiny:sink=discard:workers=2      wall     0.02s rss      7.7MiB samples 2 exit 0
+rep  6 w5:capacity=roomy:sink=discard:workers=2     wall     0.02s rss      7.7MiB samples 2 exit 0
+rep  6 w6a:sink=discard:workers=1                   wall     0.02s rss      7.3MiB samples 1 exit 0
+rep  6 w6a:sink=discard:workers=2                   wall     0.02s rss      7.6MiB samples 1 exit 0
+rep  6 w6a:sink=discard:workers=4                   wall     0.02s rss      8.0MiB samples 1 exit 0
+rep  6 w6a:sink=discard:workers=6                   wall     0.02s rss      8.6MiB samples 1 exit 0
+rep  6 w6a:sink=encode:workers=1                    wall     0.02s rss      7.3MiB samples 1 exit 0
+rep  6 w6a:sink=encode:workers=2                    wall     0.02s rss      7.6MiB samples 1 exit 0
+rep  6 w6a:sink=encode:workers=4                    wall     0.02s rss      8.2MiB samples 1 exit 0
+rep  6 w6a:sink=encode:workers=6                    wall     0.02s rss      8.7MiB samples 1 exit 0
+rep  6 w6a:sink=write:workers=1                     wall     0.03s rss      7.4MiB samples 1 exit 0
+rep  6 w6a:sink=write:workers=2                     wall     0.02s rss      7.6MiB samples 1 exit 0
+rep  6 w6a:sink=write:workers=4                     wall     0.02s rss      8.1MiB samples 1 exit 0
+rep  6 w6a:sink=write:workers=6                     wall     0.02s rss      8.8MiB samples 1 exit 0
+rep  6 w2:instrument=off                            wall     0.01s rss      5.1MiB samples 1 exit 0
+rep  6 w6a:instrument=off:sink=discard:workers=4    wall     0.01s rss      8.1MiB samples 1 exit 0
+rep  7 w1:                                          wall     0.01s rss      6.5MiB samples 4 exit 0
+rep  7 w2:                                          wall     0.01s rss      5.1MiB samples 1 exit 0
+rep  7 w3:                                          wall     0.01s rss      7.5MiB samples 5 exit 0
+rep  7 w4:                                          wall     0.01s rss      5.7MiB samples 7 exit 0
+rep  7 w5:capacity=tiny:sink=discard:workers=2      wall     0.02s rss      7.8MiB samples 2 exit 0
+rep  7 w5:capacity=roomy:sink=discard:workers=2     wall     0.02s rss      7.8MiB samples 2 exit 0
+rep  7 w6a:sink=discard:workers=1                   wall     0.02s rss      7.2MiB samples 1 exit 0
+rep  7 w6a:sink=discard:workers=2                   wall     0.02s rss      7.4MiB samples 1 exit 0
+rep  7 w6a:sink=discard:workers=4                   wall     0.02s rss      8.0MiB samples 1 exit 0
+rep  7 w6a:sink=discard:workers=6                   wall     0.02s rss      8.5MiB samples 1 exit 0
+rep  7 w6a:sink=encode:workers=1                    wall     0.02s rss      7.4MiB samples 1 exit 0
+rep  7 w6a:sink=encode:workers=2                    wall     0.02s rss      7.6MiB samples 1 exit 0
+rep  7 w6a:sink=encode:workers=4                    wall     0.02s rss      8.2MiB samples 1 exit 0
+rep  7 w6a:sink=encode:workers=6                    wall     0.02s rss      8.8MiB samples 1 exit 0
+rep  7 w6a:sink=write:workers=1                     wall     0.02s rss      7.4MiB samples 1 exit 0
+rep  7 w6a:sink=write:workers=2                     wall     0.02s rss      7.6MiB samples 1 exit 0
+rep  7 w6a:sink=write:workers=4                     wall     0.02s rss      8.2MiB samples 1 exit 0
+rep  7 w6a:sink=write:workers=6                     wall     0.02s rss      8.7MiB samples 1 exit 0
+rep  7 w2:instrument=off                            wall     0.01s rss      5.1MiB samples 1 exit 0
+rep  7 w6a:instrument=off:sink=discard:workers=4    wall     0.02s rss      8.0MiB samples 1 exit 0
+rep  8 w1:                                          wall     0.01s rss      6.6MiB samples 4 exit 0
+rep  8 w2:                                          wall     0.01s rss      5.2MiB samples 1 exit 0
+rep  8 w3:                                          wall     0.01s rss      7.5MiB samples 5 exit 0
+rep  8 w4:                                          wall     0.01s rss      5.4MiB samples 7 exit 0
+rep  8 w5:capacity=tiny:sink=discard:workers=2      wall     0.02s rss      7.8MiB samples 2 exit 0
+rep  8 w5:capacity=roomy:sink=discard:workers=2     wall     0.02s rss      7.7MiB samples 2 exit 0
+rep  8 w6a:sink=discard:workers=1                   wall     0.02s rss      7.3MiB samples 1 exit 0
+rep  8 w6a:sink=discard:workers=2                   wall     0.02s rss      7.5MiB samples 1 exit 0
+rep  8 w6a:sink=discard:workers=4                   wall     0.02s rss      8.1MiB samples 1 exit 0
+rep  8 w6a:sink=discard:workers=6                   wall     0.02s rss      8.6MiB samples 1 exit 0
+rep  8 w6a:sink=encode:workers=1                    wall     0.02s rss      7.3MiB samples 1 exit 0
+rep  8 w6a:sink=encode:workers=2                    wall     0.02s rss      7.7MiB samples 1 exit 0
+rep  8 w6a:sink=encode:workers=4                    wall     0.02s rss      8.1MiB samples 1 exit 0
+rep  8 w6a:sink=encode:workers=6                    wall     0.02s rss      8.8MiB samples 1 exit 0
+rep  8 w6a:sink=write:workers=1                     wall     0.03s rss      7.5MiB samples 1 exit 0
+rep  8 w6a:sink=write:workers=2                     wall     0.02s rss      7.6MiB samples 1 exit 0
+rep  8 w6a:sink=write:workers=4                     wall     0.02s rss      8.2MiB samples 1 exit 0
+rep  8 w6a:sink=write:workers=6                     wall     0.02s rss      8.8MiB samples 1 exit 0
+rep  8 w2:instrument=off                            wall     0.01s rss      5.1MiB samples 1 exit 0
+rep  8 w6a:instrument=off:sink=discard:workers=4    wall     0.02s rss      8.1MiB samples 1 exit 0
+rep  9 w1:                                          wall     0.01s rss      6.7MiB samples 4 exit 0
+rep  9 w2:                                          wall     0.01s rss      5.2MiB samples 1 exit 0
+rep  9 w3:                                          wall     0.01s rss      7.5MiB samples 5 exit 0
+rep  9 w4:                                          wall     0.01s rss      5.5MiB samples 7 exit 0
+rep  9 w5:capacity=tiny:sink=discard:workers=2      wall     0.02s rss      7.8MiB samples 2 exit 0
+rep  9 w5:capacity=roomy:sink=discard:workers=2     wall     0.02s rss      7.7MiB samples 2 exit 0
+rep  9 w6a:sink=discard:workers=1                   wall     0.02s rss      7.2MiB samples 1 exit 0
+rep  9 w6a:sink=discard:workers=2                   wall     0.02s rss      7.5MiB samples 1 exit 0
+rep  9 w6a:sink=discard:workers=4                   wall     0.01s rss      8.1MiB samples 1 exit 0
+rep  9 w6a:sink=discard:workers=6                   wall     0.02s rss      8.7MiB samples 1 exit 0
+rep  9 w6a:sink=encode:workers=1                    wall     0.02s rss      7.4MiB samples 1 exit 0
+rep  9 w6a:sink=encode:workers=2                    wall     0.02s rss      7.6MiB samples 1 exit 0
+rep  9 w6a:sink=encode:workers=4                    wall     0.02s rss      8.2MiB samples 1 exit 0
+rep  9 w6a:sink=encode:workers=6                    wall     0.02s rss      8.7MiB samples 1 exit 0
+rep  9 w6a:sink=write:workers=1                     wall     0.03s rss      7.4MiB samples 1 exit 0
+rep  9 w6a:sink=write:workers=2                     wall     0.02s rss      7.6MiB samples 1 exit 0
+rep  9 w6a:sink=write:workers=4                     wall     0.02s rss      8.2MiB samples 1 exit 0
+rep  9 w6a:sink=write:workers=6                     wall     0.02s rss      8.7MiB samples 1 exit 0
+rep  9 w2:instrument=off                            wall     0.01s rss      5.2MiB samples 1 exit 0
+rep  9 w6a:instrument=off:sink=discard:workers=4    wall     0.02s rss      8.2MiB samples 1 exit 0
+
+=== summary (medians with extremes; `n` is what the file really holds) ===
+w1:                                          w1-class-source              n=10 window ms median/min/max      0.55 /      0.53 /      0.69
+                                                                          class                        median          1.0 min            1 max            1
+                                                                          count_body_decodes           median          8.0 min            8 max            8
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          1.0 min            1 max            1
+                                                                          count_owned_records          median         64.0 min           64 max           64
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median          8.0 min            8 max            8
+                                                                          declaration_present          median          1.0 min            1 max            1
+                                                                          methods                      median          8.0 min            8 max            8
+                                                                          text_bytes                   median       2876.0 min         2876 max         2876
+w1:                                          w1-cold-method               n=10 window ms median/min/max      2.02 /      1.97 /      3.03
+                                                                          count_body_decodes           median          1.0 min            1 max            1
+                                                                          count_class_materializations median          1.0 min            1 max            1
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median          8.0 min            8 max            8
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median          1.0 min            1 max            1
+                                                                          first_result_micros          median        154.5 min          136 max          648
+                                                                          open_micros                  median         17.5 min           16 max           91
+                                                                          open_usage_class_headers     median          0.0 min            0 max            0
+                                                                          output_micros                median         89.0 min           83 max          203
+                                                                          prepare_micros               median        817.0 min          796 max         1045
+                                                                          prepare_usage_class_headers  median         24.0 min           24 max           24
+                                                                          result_equals_second_snapshot median          1.0 min            1 max            1
+                                                                          text_bytes                   median        179.0 min          179 max          179
+w1:                                          w1-second-request            n=10 window ms median/min/max      0.10 /      0.09 /      0.11
+                                                                          count_body_decodes           median          1.0 min            1 max            1
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median          8.0 min            8 max            8
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median          1.0 min            1 max            1
+                                                                          first_result_micros          median         50.0 min           42 max           55
+                                                                          text_bytes                   median        179.0 min          179 max          179
+w1:                                          w1-second-snapshot           n=10 window ms median/min/max      1.70 /      1.62 /      1.83
+                                                                          count_body_decodes           median          1.0 min            1 max            1
+                                                                          count_class_materializations median          1.0 min            1 max            1
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median          8.0 min            8 max            8
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median          1.0 min            1 max            1
+                                                                          first_result_micros          median         61.0 min           52 max           83
+                                                                          text_bytes                   median        179.0 min          179 max          179
+w2:                                          w2-navigation-sequence       n=10 window ms median/min/max      2.66 /      2.59 /      2.78
+                                                                          class_headers_total          median          8.0 min            8 max            8
+                                                                          classes                      median          8.0 min            8 max            8
+                                                                          control_repeat_micros        median          8.0 min            7 max            8
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          8.0 min            8 max            8
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median          0.0 min            0 max            0
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median          0.0 min            0 max            0
+                                                                          method_bodies_declared       median         77.0 min           77 max           77
+                                                                          method_bodies_total          median          0.0 min            0 max            0
+                                                                          returned_bytes               median     112317.0 min       112317 max       112317
+                                                                          sequence_micros              median        202.5 min          196 max          219
+w2:instrument=off                            w2-navigation-sequence       n=10 window ms median/min/max      2.73 /      2.65 /      2.82
+                                                                          class_headers_total          median          8.0 min            8 max            8
+                                                                          classes                      median          8.0 min            8 max            8
+                                                                          control_repeat_micros        median          8.0 min            8 max           11
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          8.0 min            8 max            8
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median          0.0 min            0 max            0
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median          0.0 min            0 max            0
+                                                                          method_bodies_declared       median         77.0 min           77 max           77
+                                                                          method_bodies_total          median          0.0 min            0 max            0
+                                                                          returned_bytes               median     112317.0 min       112317 max       112317
+                                                                          sequence_micros              median        208.5 min          192 max          229
+w3:                                          w3-all-bodies-one-request    n=10 window ms median/min/max      2.06 /      1.94 /      2.10
+                                                                          class_headers                median          1.0 min            1 max            1
+                                                                          class_methods                median          8.0 min            8 max            8
+                                                                          classes                      median          8.0 min            8 max            8
+                                                                          count_body_decodes           median          8.0 min            8 max            8
+                                                                          count_class_materializations median          1.0 min            1 max            1
+                                                                          count_class_preparations     median          1.0 min            1 max            1
+                                                                          count_owned_records          median         82.0 min           82 max           82
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median          0.0 min            0 max            0
+                                                                          method_bodies                median          8.0 min            8 max            8
+                                                                          output_bytes                 median          0.0 min            0 max            0
+                                                                          request_micros               median          0.0 min            0 max            0
+                                                                          returned_bytes               median      28909.0 min        28909 max        28909
+w3:                                          w3-batch-per-class-across-classes n=10 window ms median/min/max      0.93 /      0.89 /      0.95
+                                                                          bodies                       median         77.0 min           77 max           77
+                                                                          class_headers_total          median          8.0 min            8 max            8
+                                                                          classes                      median          8.0 min            8 max            8
+                                                                          count_body_decodes           median         77.0 min           77 max           77
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          8.0 min            8 max            8
+                                                                          count_owned_records          median       1058.0 min         1058 max         1058
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median          0.0 min            0 max            0
+                                                                          method_bodies_total          median         77.0 min           77 max           77
+                                                                          returned_bytes               median          0.0 min            0 max            0
+                                                                          sequence_micros              median        854.0 min          821 max          876
+w3:                                          w3-fixed-set-across-classes  n=10 window ms median/min/max      0.91 /      0.88 /      0.99
+                                                                          class_headers_total          median          8.0 min            8 max            8
+                                                                          classes                      median          8.0 min            8 max            8
+                                                                          method_bodies_total          median          8.0 min            8 max            8
+                                                                          returned_bytes               median      77990.0 min        77990 max        77990
+                                                                          sequence_micros              median        501.5 min          486 max          580
+w3:                                          w3-per-method-across-classes n=10 window ms median/min/max      3.71 /      3.64 /      3.88
+                                                                          bodies                       median         77.0 min           77 max           77
+                                                                          class_headers_total          median         77.0 min           77 max           77
+                                                                          classes                      median          8.0 min            8 max            8
+                                                                          count_body_decodes           median         77.0 min           77 max           77
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median         77.0 min           77 max           77
+                                                                          count_owned_records          median       1058.0 min         1058 max         1058
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median          0.0 min            0 max            0
+                                                                          method_bodies_total          median         77.0 min           77 max           77
+                                                                          returned_bytes               median          0.0 min            0 max            0
+                                                                          sequence_micros              median       3642.0 min         3566 max         3804
+w3:                                          w3-per-method-requests       n=10 window ms median/min/max      1.01 /      0.96 /      1.08
+                                                                          archive_entries_total        median          0.0 min            0 max            0
+                                                                          class_headers_total          median          8.0 min            8 max            8
+                                                                          class_methods                median          8.0 min            8 max            8
+                                                                          count_body_decodes           median          8.0 min            8 max            8
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median         64.0 min           64 max           64
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median          8.0 min            8 max            8
+                                                                          method_bodies_total          median          8.0 min            8 max            8
+                                                                          returned_bytes               median      73681.0 min        73681 max        73681
+                                                                          sequence_micros              median        591.0 min          568 max          641
+w4:                                          w4-abandon-after-one-page    n=10 window ms median/min/max      0.02 /      0.02 /      0.03
+                                                                          archive_entries_total        median          3.0 min            3 max            3
+                                                                          class_bytes_total            median          0.0 min            0 max            0
+                                                                          entry_bytes_total            median        723.0 min          723 max          723
+                                                                          has_more                     median          1.0 min            1 max            1
+                                                                          items                        median          2.0 min            2 max            2
+                                                                          max_items                    median          2.0 min            2 max            2
+                                                                          pages                        median          1.0 min            1 max            1
+                                                                          read_bytes_total             median        543.0 min          543 max          543
+                                                                          result_items                 median          2.0 min            2 max            2
+                                                                          returned_bytes               median       3632.0 min         3632 max         3632
+                                                                          scanned_items                median          2.0 min            2 max            2
+w4:                                          w4-damaged-continued-to-exhaustion n=10 window ms median/min/max      0.23 /      0.21 /      0.24
+                                                                          archive_entries_total        median         26.0 min           26 max           26
+                                                                          class_bytes_total            median       1813.0 min         1813 max         1813
+                                                                          diagnostics                  median          2.0 min            2 max            2
+                                                                          entry_bytes_total            median       2565.0 min         2565 max         2565
+                                                                          has_more                     median          1.0 min            1 max            1
+                                                                          items                        median          4.0 min            4 max            4
+                                                                          items_equal_full_page        median          1.0 min            1 max            1
+                                                                          max_items                    median          2.0 min            2 max            2
+                                                                          pages                        median          4.0 min            4 max            4
+                                                                          read_bytes_total             median       1718.0 min         1718 max         1718
+                                                                          result_items                 median         10.0 min           10 max           10
+                                                                          returned_bytes               median      11482.0 min        11482 max        11482
+                                                                          scanned_items                median          0.0 min            0 max            0
+w4:                                          w4-damaged-first-page        n=10 window ms median/min/max      0.17 /      0.16 /      0.18
+                                                                          archive_entries_total        median          9.0 min            9 max            9
+                                                                          class_bytes_total            median        723.0 min          723 max          723
+                                                                          diagnostics                  median          0.0 min            0 max            0
+                                                                          entry_bytes_total            median        723.0 min          723 max          723
+                                                                          has_more                     median          1.0 min            1 max            1
+                                                                          items                        median          2.0 min            2 max            2
+                                                                          max_items                    median          2.0 min            2 max            2
+                                                                          pages                        median          1.0 min            1 max            1
+                                                                          read_bytes_total             median        543.0 min          543 max          543
+                                                                          result_items                 median          8.0 min            8 max            8
+                                                                          returned_bytes               median       3636.0 min         3636 max         3636
+                                                                          scanned_items                median          2.0 min            2 max            2
+w4:                                          w4-damaged-full-page         n=10 window ms median/min/max      0.21 /      0.19 /      0.22
+                                                                          archive_entries_total        median         21.0 min           21 max           21
+                                                                          class_bytes_total            median       1813.0 min         1813 max         1813
+                                                                          diagnostics                  median          1.0 min            1 max            1
+                                                                          entry_bytes_total            median       2189.0 min         2189 max         2189
+                                                                          has_more                     median          1.0 min            1 max            1
+                                                                          items                        median          4.0 min            4 max            4
+                                                                          max_items                    median         64.0 min           64 max           64
+                                                                          pages                        median          1.0 min            1 max            1
+                                                                          read_bytes_total             median       1500.0 min         1500 max         1500
+                                                                          result_items                 median         10.0 min           10 max           10
+                                                                          returned_bytes               median       5874.0 min         5874 max         5874
+                                                                          scanned_items                median          4.0 min            4 max            4
+w4:                                          w4-large-page                n=10 window ms median/min/max      0.39 /      0.37 /      0.41
+                                                                          archive_entries_total        median         34.0 min           34 max           34
+                                                                          class_bytes_total            median          0.0 min            0 max            0
+                                                                          entry_bytes_total            median      32241.0 min        32241 max        32241
+                                                                          has_more                     median          0.0 min            0 max            0
+                                                                          items                        median         24.0 min           24 max           24
+                                                                          max_items                    median         64.0 min           64 max           64
+                                                                          pages                        median          1.0 min            1 max            1
+                                                                          read_bytes_total             median      26138.0 min        26138 max        26138
+                                                                          result_items                 median         43.0 min           43 max           43
+                                                                          returned_bytes               median      25577.0 min        25577 max        25577
+                                                                          scanned_items                median         24.0 min           24 max           24
+w4:                                          w4-multi-consumer            n=10 window ms median/min/max      0.37 /      0.35 /      0.39
+                                                                          archive_entries_total        median         34.0 min           34 max           34
+                                                                          class_bytes_total            median          0.0 min            0 max            0
+                                                                          consumers                    median          4.0 min            4 max            4
+                                                                          entry_bytes_total            median      32241.0 min        32241 max        32241
+                                                                          has_more                     median          0.0 min            0 max            0
+                                                                          items                        median         24.0 min           24 max           24
+                                                                          items_equal_single_consumer  median          1.0 min            1 max            1
+                                                                          max_items                    median         64.0 min           64 max           64
+                                                                          pages                        median          1.0 min            1 max            1
+                                                                          read_bytes_total             median      26138.0 min        26138 max        26138
+                                                                          result_items                 median         43.0 min           43 max           43
+                                                                          returned_bytes               median      25641.0 min        25641 max        25641
+                                                                          scanned_items                median         24.0 min           24 max           24
+w4:                                          w4-small-page                n=10 window ms median/min/max      2.26 /      2.21 /      2.39
+                                                                          archive_entries_total        median        230.0 min          230 max          230
+                                                                          class_bytes_total            median      18673.0 min        18673 max        18673
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median          0.0 min            0 max            0
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median          0.0 min            0 max            0
+                                                                          entry_bytes_total            median     167921.0 min       167921 max       167921
+                                                                          has_more                     median          0.0 min            0 max            0
+                                                                          items                        median         24.0 min           24 max           24
+                                                                          max_items                    median          2.0 min            2 max            2
+                                                                          pages                        median         13.0 min           13 max           13
+                                                                          read_bytes_total             median     161818.0 min       161818 max       161818
+                                                                          result_items                 median        239.0 min          239 max          239
+                                                                          returned_bytes               median      51777.0 min        51777 max        51777
+                                                                          scanned_items                median          0.0 min            0 max            0
+w5:capacity=roomy:sink=discard:workers=2     w5-round-trip                n=10 window ms median/min/max      1.36 /      1.32 /      1.41
+                                                                          archive_entries_total        median          1.0 min            1 max            1
+                                                                          class_headers_total          median         10.0 min           10 max           10
+                                                                          count_body_decodes           median         10.0 min           10 max           10
+                                                                          count_class_materializations median          1.0 min            1 max            1
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median         80.0 min           80 max           80
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median         10.0 min           10 max           10
+                                                                          returned_bytes               median      93678.0 min        93678 max        93678
+                                                                          round_trips                  median         10.0 min           10 max           10
+                                                                          sequence_micros              median        328.0 min          289 max          347
+w5:capacity=roomy:sink=discard:workers=2     w5-sweep                     n=10 window ms median/min/max     12.41 /     12.03 /     13.46
+                                                                          classes_prepared             median         24.0 min           24 max           24
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median         24.0 min           24 max           24
+                                                                          delivered                    median        183.0 min          183 max          183
+                                                                          encoded_bytes                median          0.0 min            0 max            0
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median        236.5 min          216 max          278
+                                                                          methods                      median        183.0 min          183 max          183
+                                                                          methods_declared             median        183.0 min          183 max          183
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median         13.0 min           13 max           13
+                                                                          outcome_no_body              median          1.0 min            1 max            1
+                                                                          outcome_not_produced         median          0.0 min            0 max            0
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median        169.0 min          169 max          169
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median        233.0 min          233 max          233
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          written_bytes                median          0.0 min            0 max            0
+w5:capacity=tiny:sink=discard:workers=2      w5-round-trip                n=10 window ms median/min/max      1.48 /      1.45 /      1.67
+                                                                          archive_entries_total        median        121.0 min          121 max          121
+                                                                          class_headers_total          median         10.0 min           10 max           10
+                                                                          count_body_decodes           median         10.0 min           10 max           10
+                                                                          count_class_materializations median          1.0 min            1 max            1
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median         80.0 min           80 max           80
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median         10.0 min           10 max           10
+                                                                          returned_bytes               median      93758.0 min        93758 max        93758
+                                                                          round_trips                  median         10.0 min           10 max           10
+                                                                          sequence_micros              median        386.5 min          377 max          409
+w5:capacity=tiny:sink=discard:workers=2      w5-sweep                     n=10 window ms median/min/max     12.49 /     12.29 /     13.82
+                                                                          classes_prepared             median         24.0 min           24 max           24
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median         24.0 min           24 max           24
+                                                                          delivered                    median        183.0 min          183 max          183
+                                                                          encoded_bytes                median          0.0 min            0 max            0
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median        270.0 min          250 max          324
+                                                                          methods                      median        183.0 min          183 max          183
+                                                                          methods_declared             median        183.0 min          183 max          183
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median         13.0 min           13 max           13
+                                                                          outcome_no_body              median          1.0 min            1 max            1
+                                                                          outcome_not_produced         median          0.0 min            0 max            0
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median        169.0 min          169 max          169
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median        233.0 min          233 max          233
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:instrument=off:sink=discard:workers=4    w6a-export                   n=10 window ms median/min/max     11.22 /     10.58 /     11.90
+                                                                          classes_prepared             median         24.0 min           24 max           24
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median         24.0 min           24 max           24
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median       1456.0 min         1456 max         1456
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median        182.0 min          182 max          182
+                                                                          delivered                    median        183.0 min          183 max          183
+                                                                          encoded_bytes                median          0.0 min            0 max            0
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median        325.0 min          268 max          436
+                                                                          methods                      median        183.0 min          183 max          183
+                                                                          methods_confirmed            median        183.0 min          183 max          183
+                                                                          methods_declared             median        183.0 min          183 max          183
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median         13.0 min           13 max           13
+                                                                          outcome_no_body              median          1.0 min            1 max            1
+                                                                          outcome_not_produced         median          0.0 min            0 max            0
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median        169.0 min          169 max          169
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median        233.0 min          233 max          233
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          stop_after                   median          0.0 min            0 max            0
+                                                                          stopped_by_sink              median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          4.0 min            4 max            4
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:sink=discard:workers=1                   w6a-export                   n=10 window ms median/min/max     15.60 /     15.47 /     16.04
+                                                                          classes_prepared             median         24.0 min           24 max           24
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median         24.0 min           24 max           24
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median       1456.0 min         1456 max         1456
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median        182.0 min          182 max          182
+                                                                          delivered                    median        183.0 min          183 max          183
+                                                                          encoded_bytes                median          0.0 min            0 max            0
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median        170.5 min          151 max          196
+                                                                          methods                      median        183.0 min          183 max          183
+                                                                          methods_confirmed            median        183.0 min          183 max          183
+                                                                          methods_declared             median        183.0 min          183 max          183
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median         13.0 min           13 max           13
+                                                                          outcome_no_body              median          1.0 min            1 max            1
+                                                                          outcome_not_produced         median          0.0 min            0 max            0
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median        169.0 min          169 max          169
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median        233.0 min          233 max          233
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          stop_after                   median          0.0 min            0 max            0
+                                                                          stopped_by_sink              median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          1.0 min            1 max            1
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:sink=discard:workers=2                   w6a-export                   n=10 window ms median/min/max     12.60 /     12.12 /     14.09
+                                                                          classes_prepared             median         24.0 min           24 max           24
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median         24.0 min           24 max           24
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median       1456.0 min         1456 max         1456
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median        182.0 min          182 max          182
+                                                                          delivered                    median        183.0 min          183 max          183
+                                                                          encoded_bytes                median          0.0 min            0 max            0
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median        234.0 min          228 max          314
+                                                                          methods                      median        183.0 min          183 max          183
+                                                                          methods_confirmed            median        183.0 min          183 max          183
+                                                                          methods_declared             median        183.0 min          183 max          183
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median         13.0 min           13 max           13
+                                                                          outcome_no_body              median          1.0 min            1 max            1
+                                                                          outcome_not_produced         median          0.0 min            0 max            0
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median        169.0 min          169 max          169
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median        233.0 min          233 max          233
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          stop_after                   median          0.0 min            0 max            0
+                                                                          stopped_by_sink              median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          2.0 min            2 max            2
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:sink=discard:workers=4                   w6a-export                   n=10 window ms median/min/max     11.63 /     10.32 /     12.45
+                                                                          classes_prepared             median         24.0 min           24 max           24
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median         24.0 min           24 max           24
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median       1456.0 min         1456 max         1456
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median        182.0 min          182 max          182
+                                                                          delivered                    median        183.0 min          183 max          183
+                                                                          encoded_bytes                median          0.0 min            0 max            0
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median        323.5 min          291 max          408
+                                                                          methods                      median        183.0 min          183 max          183
+                                                                          methods_confirmed            median        183.0 min          183 max          183
+                                                                          methods_declared             median        183.0 min          183 max          183
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median         13.0 min           13 max           13
+                                                                          outcome_no_body              median          1.0 min            1 max            1
+                                                                          outcome_not_produced         median          0.0 min            0 max            0
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median        169.0 min          169 max          169
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median        233.0 min          233 max          233
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          stop_after                   median          0.0 min            0 max            0
+                                                                          stopped_by_sink              median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          4.0 min            4 max            4
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:sink=discard:workers=6                   w6a-export                   n=10 window ms median/min/max     12.30 /     11.83 /     12.80
+                                                                          classes_prepared             median         24.0 min           24 max           24
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median         24.0 min           24 max           24
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median       1456.0 min         1456 max         1456
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median        182.0 min          182 max          182
+                                                                          delivered                    median        183.0 min          183 max          183
+                                                                          encoded_bytes                median          0.0 min            0 max            0
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median        495.0 min          391 max          581
+                                                                          methods                      median        183.0 min          183 max          183
+                                                                          methods_confirmed            median        183.0 min          183 max          183
+                                                                          methods_declared             median        183.0 min          183 max          183
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median         13.0 min           13 max           13
+                                                                          outcome_no_body              median          1.0 min            1 max            1
+                                                                          outcome_not_produced         median          0.0 min            0 max            0
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median        169.0 min          169 max          169
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median        233.0 min          233 max          233
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          stop_after                   median          0.0 min            0 max            0
+                                                                          stopped_by_sink              median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          6.0 min            6 max            6
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:sink=encode:workers=1                    w6a-export                   n=10 window ms median/min/max     18.05 /     17.89 /     18.58
+                                                                          classes_prepared             median         24.0 min           24 max           24
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median         24.0 min           24 max           24
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median       1456.0 min         1456 max         1456
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median        182.0 min          182 max          182
+                                                                          delivered                    median        183.0 min          183 max          183
+                                                                          encoded_bytes                median    2836715.0 min      2836714 max      2836715
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median        181.5 min          169 max          201
+                                                                          methods                      median        183.0 min          183 max          183
+                                                                          methods_confirmed            median        183.0 min          183 max          183
+                                                                          methods_declared             median        183.0 min          183 max          183
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median         13.0 min           13 max           13
+                                                                          outcome_no_body              median          1.0 min            1 max            1
+                                                                          outcome_not_produced         median          0.0 min            0 max            0
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median        169.0 min          169 max          169
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median        233.0 min          233 max          233
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          stop_after                   median          0.0 min            0 max            0
+                                                                          stopped_by_sink              median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          1.0 min            1 max            1
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:sink=encode:workers=2                    w6a-export                   n=10 window ms median/min/max     12.78 /     12.31 /     14.99
+                                                                          classes_prepared             median         24.0 min           24 max           24
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median         24.0 min           24 max           24
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median       1456.0 min         1456 max         1456
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median        182.0 min          182 max          182
+                                                                          delivered                    median        183.0 min          183 max          183
+                                                                          encoded_bytes                median    2836710.0 min      2836708 max      2836713
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median        255.5 min          238 max          354
+                                                                          methods                      median        183.0 min          183 max          183
+                                                                          methods_confirmed            median        183.0 min          183 max          183
+                                                                          methods_declared             median        183.0 min          183 max          183
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median         13.0 min           13 max           13
+                                                                          outcome_no_body              median          1.0 min            1 max            1
+                                                                          outcome_not_produced         median          0.0 min            0 max            0
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median        169.0 min          169 max          169
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median        233.0 min          233 max          233
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          stop_after                   median          0.0 min            0 max            0
+                                                                          stopped_by_sink              median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          2.0 min            2 max            2
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:sink=encode:workers=4                    w6a-export                   n=10 window ms median/min/max     12.59 /     11.93 /     13.20
+                                                                          classes_prepared             median         24.0 min           24 max           24
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median         24.0 min           24 max           24
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median       1456.0 min         1456 max         1456
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median        182.0 min          182 max          182
+                                                                          delivered                    median        183.0 min          183 max          183
+                                                                          encoded_bytes                median    2836710.5 min      2836707 max      2836712
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median        348.5 min          304 max          491
+                                                                          methods                      median        183.0 min          183 max          183
+                                                                          methods_confirmed            median        183.0 min          183 max          183
+                                                                          methods_declared             median        183.0 min          183 max          183
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median         13.0 min           13 max           13
+                                                                          outcome_no_body              median          1.0 min            1 max            1
+                                                                          outcome_not_produced         median          0.0 min            0 max            0
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median        169.0 min          169 max          169
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median        233.0 min          233 max          233
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          stop_after                   median          0.0 min            0 max            0
+                                                                          stopped_by_sink              median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          4.0 min            4 max            4
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:sink=encode:workers=6                    w6a-export                   n=10 window ms median/min/max     13.27 /     12.95 /     13.85
+                                                                          classes_prepared             median         24.0 min           24 max           24
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median         24.0 min           24 max           24
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median       1456.0 min         1456 max         1456
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median        182.0 min          182 max          182
+                                                                          delivered                    median        183.0 min          183 max          183
+                                                                          encoded_bytes                median    2836712.0 min      2836711 max      2836713
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median        515.0 min          431 max          574
+                                                                          methods                      median        183.0 min          183 max          183
+                                                                          methods_confirmed            median        183.0 min          183 max          183
+                                                                          methods_declared             median        183.0 min          183 max          183
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median         13.0 min           13 max           13
+                                                                          outcome_no_body              median          1.0 min            1 max            1
+                                                                          outcome_not_produced         median          0.0 min            0 max            0
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median        169.0 min          169 max          169
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median        233.0 min          233 max          233
+                                                                          scratch_file_bytes           median          0.0 min            0 max            0
+                                                                          stop_after                   median          0.0 min            0 max            0
+                                                                          stopped_by_sink              median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          6.0 min            6 max            6
+                                                                          written_bytes                median          0.0 min            0 max            0
+w6a:sink=write:workers=1                     w6a-export                   n=10 window ms median/min/max     19.84 /     19.31 /     20.23
+                                                                          classes_prepared             median         24.0 min           24 max           24
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median         24.0 min           24 max           24
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median       1456.0 min         1456 max         1456
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median        182.0 min          182 max          182
+                                                                          delivered                    median        183.0 min          183 max          183
+                                                                          encoded_bytes                median    2836716.0 min      2836716 max      2836716
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median        279.0 min          258 max          336
+                                                                          methods                      median        183.0 min          183 max          183
+                                                                          methods_confirmed            median        183.0 min          183 max          183
+                                                                          methods_declared             median        183.0 min          183 max          183
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median         13.0 min           13 max           13
+                                                                          outcome_no_body              median          1.0 min            1 max            1
+                                                                          outcome_not_produced         median          0.0 min            0 max            0
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median        169.0 min          169 max          169
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median        233.0 min          233 max          233
+                                                                          scratch_file_bytes           median    2836949.0 min      2836949 max      2836949
+                                                                          stop_after                   median          0.0 min            0 max            0
+                                                                          stopped_by_sink              median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          1.0 min            1 max            1
+                                                                          written_bytes                median    2836949.0 min      2836949 max      2836949
+w6a:sink=write:workers=2                     w6a-export                   n=10 window ms median/min/max     13.32 /     12.70 /     15.09
+                                                                          classes_prepared             median         24.0 min           24 max           24
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median         24.0 min           24 max           24
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median       1456.0 min         1456 max         1456
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median        182.0 min          182 max          182
+                                                                          delivered                    median        183.0 min          183 max          183
+                                                                          encoded_bytes                median    2836710.0 min      2836708 max      2836714
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median        330.0 min          303 max          386
+                                                                          methods                      median        183.0 min          183 max          183
+                                                                          methods_confirmed            median        183.0 min          183 max          183
+                                                                          methods_declared             median        183.0 min          183 max          183
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median         13.0 min           13 max           13
+                                                                          outcome_no_body              median          1.0 min            1 max            1
+                                                                          outcome_not_produced         median          0.0 min            0 max            0
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median        169.0 min          169 max          169
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median        233.0 min          233 max          233
+                                                                          scratch_file_bytes           median    2836943.0 min      2836941 max      2836947
+                                                                          stop_after                   median          0.0 min            0 max            0
+                                                                          stopped_by_sink              median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          2.0 min            2 max            2
+                                                                          written_bytes                median    2836943.0 min      2836941 max      2836947
+w6a:sink=write:workers=4                     w6a-export                   n=10 window ms median/min/max     13.12 /     12.38 /     13.80
+                                                                          classes_prepared             median         24.0 min           24 max           24
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median         24.0 min           24 max           24
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median       1456.0 min         1456 max         1456
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median        182.0 min          182 max          182
+                                                                          delivered                    median        183.0 min          183 max          183
+                                                                          encoded_bytes                median    2836711.0 min      2836708 max      2836712
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median        426.0 min          367 max          495
+                                                                          methods                      median        183.0 min          183 max          183
+                                                                          methods_confirmed            median        183.0 min          183 max          183
+                                                                          methods_declared             median        183.0 min          183 max          183
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median         13.0 min           13 max           13
+                                                                          outcome_no_body              median          1.0 min            1 max            1
+                                                                          outcome_not_produced         median          0.0 min            0 max            0
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median        169.0 min          169 max          169
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median        233.0 min          233 max          233
+                                                                          scratch_file_bytes           median    2836944.0 min      2836941 max      2836945
+                                                                          stop_after                   median          0.0 min            0 max            0
+                                                                          stopped_by_sink              median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          4.0 min            4 max            4
+                                                                          written_bytes                median    2836944.0 min      2836941 max      2836945
+w6a:sink=write:workers=6                     w6a-export                   n=10 window ms median/min/max     14.49 /     14.03 /     15.03
+                                                                          classes_prepared             median         24.0 min           24 max           24
+                                                                          classes_refused              median          0.0 min            0 max            0
+                                                                          classes_seen                 median         24.0 min           24 max           24
+                                                                          count_body_decodes           median          0.0 min            0 max            0
+                                                                          count_class_materializations median          0.0 min            0 max            0
+                                                                          count_class_preparations     median          0.0 min            0 max            0
+                                                                          count_owned_records          median       1456.0 min         1456 max         1456
+                                                                          count_read_detail_records    median          0.0 min            0 max            0
+                                                                          count_recovery_runs          median        182.0 min          182 max          182
+                                                                          delivered                    median        183.0 min          183 max          183
+                                                                          encoded_bytes                median    2836713.0 min      2836712 max      2836714
+                                                                          final_delivered              median          1.0 min            1 max            1
+                                                                          first_result_micros          median        512.5 min          461 max          622
+                                                                          methods                      median        183.0 min          183 max          183
+                                                                          methods_confirmed            median        183.0 min          183 max          183
+                                                                          methods_declared             median        183.0 min          183 max          183
+                                                                          not_executed                 median          0.0 min            0 max            0
+                                                                          outcome_explanation_only     median         13.0 min           13 max           13
+                                                                          outcome_no_body              median          1.0 min            1 max            1
+                                                                          outcome_not_produced         median          0.0 min            0 max            0
+                                                                          outcome_oversized            median          0.0 min            0 max            0
+                                                                          outcome_produced             median        169.0 min          169 max          169
+                                                                          outcome_refused              median          0.0 min            0 max            0
+                                                                          records                      median        233.0 min          233 max          233
+                                                                          scratch_file_bytes           median    2836946.0 min      2836945 max      2836947
+                                                                          stop_after                   median          0.0 min            0 max            0
+                                                                          stopped_by_sink              median          0.0 min            0 max            0
+                                                                          traversal_complete           median          1.0 min            1 max            1
+                                                                          workers                      median          6.0 min            6 max            6
+                                                                          written_bytes                median    2836946.0 min      2836945 max      2836947
+failures: 0

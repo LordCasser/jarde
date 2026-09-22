@@ -1,0 +1,38 @@
+measurements (configuration, sample): baseline 27, after 33
+  w1-cold-method                     w1:artifact=/Users/lordcasser/workspace/vuln  reads same  work same
+  w1-second-request                  w1:artifact=/Users/lordcasser/workspace/vuln  reads ['archive_entries', 'read_bytes', 'entry_bytes']  work same
+  w1-second-snapshot                 w1:artifact=/Users/lordcasser/workspace/vuln  reads same  work same
+  w2-navigation-sequence             w2:artifact=/Users/lordcasser/workspace/vuln  reads same  work same
+  w2-navigation-sequence             w2:artifact=/Users/lordcasser/workspace/vuln  reads same  work same
+  w3-all-bodies-one-request          w3:artifact=/Users/lordcasser/workspace/vuln  reads same  work same
+  w3-fixed-set-across-classes        w3:artifact=/Users/lordcasser/workspace/vuln  reads same  work same
+  w3-per-method-requests             w3:artifact=/Users/lordcasser/workspace/vuln  reads same  work same
+  w4-abandon-after-one-page          w4:artifact=/Users/lordcasser/workspace/vuln  reads same  work same
+  w4-large-page                      w4:artifact=/Users/lordcasser/workspace/vuln  reads same  work same
+  w4-multi-consumer                  w4:artifact=/Users/lordcasser/workspace/vuln  reads same  work same
+  w4-small-page                      w4:artifact=/Users/lordcasser/workspace/vuln  reads same  work same
+  w5-round-trip                      w5:artifact=/Users/lordcasser/workspace/vuln  reads same  work same
+  w5-sweep                           w5:artifact=/Users/lordcasser/workspace/vuln  reads same  work same
+  w5-round-trip                      w5:artifact=/Users/lordcasser/workspace/vuln  reads same  work same
+  w5-sweep                           w5:artifact=/Users/lordcasser/workspace/vuln  reads same  work same
+  w6a-export                         w6a:artifact=/Users/lordcasser/workspace/vul  reads same  work same
+  w6a-export                         w6a:artifact=/Users/lordcasser/workspace/vul  reads same  work same
+  w6a-export                         w6a:artifact=/Users/lordcasser/workspace/vul  reads same  work same
+  w6a-export                         w6a:artifact=/Users/lordcasser/workspace/vul  reads same  work same
+  w6a-export                         w6a:artifact=/Users/lordcasser/workspace/vul  reads same  work same
+  w6a-export                         w6a:artifact=/Users/lordcasser/workspace/vul  reads same  work same
+  w6a-export                         w6a:artifact=/Users/lordcasser/workspace/vul  reads same  work same
+  w6a-export                         w6a:artifact=/Users/lordcasser/workspace/vul  reads same  work same
+  w6a-export                         w6a:artifact=/Users/lordcasser/workspace/vul  reads same  work same
+  w6a-export                         w6a:artifact=/Users/lordcasser/workspace/vul  reads same  work same
+  w6a-export                         w6a:artifact=/Users/lordcasser/workspace/vul  reads same  work same
+
+measurements whose reads moved: 1
+measurements whose WORK moved: 0
+measurements present on only one side (harness grew): 6
+  -- w1-class-source / w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub
+  -- w3-batch-per-class-across-classes / w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub
+  -- w3-per-method-across-classes / w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub
+  -- w4-damaged-continued-to-exhaustion / w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub
+  -- w4-damaged-first-page / w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub
+  -- w4-damaged-full-page / w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub

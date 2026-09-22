@@ -1,0 +1,40 @@
+measurements (configuration, sample): baseline 29, after 35
+  w1-cold-method                     w1:                                           reads same  work same
+  w1-second-request                  w1:                                           reads ['archive_entries', 'read_bytes', 'entry_bytes']  work same
+  w1-second-snapshot                 w1:                                           reads same  work same
+  w2-navigation-sequence             w2:                                           reads same  work same
+  w2-navigation-sequence             w2:instrument=off                             reads same  work same
+  w3-all-bodies-one-request          w3:                                           reads same  work same
+  w3-fixed-set-across-classes        w3:                                           reads same  work same
+  w3-per-method-requests             w3:                                           reads same  work same
+  w4-abandon-after-one-page          w4:                                           reads same  work same
+  w4-large-page                      w4:                                           reads same  work same
+  w4-multi-consumer                  w4:                                           reads same  work same
+  w4-small-page                      w4:                                           reads same  work same
+  w5-round-trip                      w5:capacity=roomy:sink=discard:workers=2      reads same  work same
+  w5-sweep                           w5:capacity=roomy:sink=discard:workers=2      reads same  work same
+  w5-round-trip                      w5:capacity=tiny:sink=discard:workers=2       reads same  work same
+  w5-sweep                           w5:capacity=tiny:sink=discard:workers=2       reads same  work same
+  w6a-export                         w6a:instrument=off:sink=discard:workers=4     reads same  work same
+  w6a-export                         w6a:sink=discard:workers=1                    reads same  work same
+  w6a-export                         w6a:sink=discard:workers=2                    reads same  work same
+  w6a-export                         w6a:sink=discard:workers=4                    reads same  work same
+  w6a-export                         w6a:sink=discard:workers=6                    reads same  work same
+  w6a-export                         w6a:sink=encode:workers=1                     reads same  work same
+  w6a-export                         w6a:sink=encode:workers=2                     reads same  work same
+  w6a-export                         w6a:sink=encode:workers=4                     reads same  work same
+  w6a-export                         w6a:sink=encode:workers=6                     reads same  work same
+  w6a-export                         w6a:sink=write:workers=1                      reads same  work same
+  w6a-export                         w6a:sink=write:workers=2                      reads same  work same
+  w6a-export                         w6a:sink=write:workers=4                      reads same  work same
+  w6a-export                         w6a:sink=write:workers=6                      reads same  work same
+
+measurements whose reads moved: 1
+measurements whose WORK moved: 0
+measurements present on only one side (harness grew): 6
+  -- w1-class-source / w1:
+  -- w3-batch-per-class-across-classes / w3:
+  -- w3-per-method-across-classes / w3:
+  -- w4-damaged-continued-to-exhaustion / w4:
+  -- w4-damaged-first-page / w4:
+  -- w4-damaged-full-page / w4:
