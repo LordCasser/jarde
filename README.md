@@ -252,7 +252,30 @@ cargo run -q -p jarde-cli -- recover --input $J --method @method.json --policy p
 
 `class-view` 是另一条“打开代码”的路径：`--body 'foo()V'` 只为被请求的那个方法计一次 `method_bodies`，同一个类的其他方法不会被读取（`native`/`abstract` 这类无 Body 的成员不计尝试，返回 `not_declared`）；`--body-method` 接受方法身份。
 
-**发现面**：导航命令只用库的列举与显式 `enumerate_artifact_tree`；普通枚举仍不递归（嵌套库只是一个普通 entry），`--scope {"kind":"artifact_tree","root_container":…}` 才进入嵌套 container 的 entries。CLI 不自行解包、不按路径推断 container、不生成 root：加载位置只能由 `--root`（`LoadRoot` 文档）或 `--policy` 显式声明。**不包含**：批处理/整 artifact 恢复、GUI/MCP、交互式 TUI、自动 classpath 推断、配置持久化、颜色/分页、性能承诺；不新增 crate 或依赖。验收见 [`task_cli.rs`](crates/jarde-cli/tests/task_cli.rs)。
+**发现面**：导航命令只用库的列举与显式 `enumerate_artifact_tree`；普通枚举仍不递归（嵌套库只是一个普通 entry），`--scope {"kind":"artifact_tree","root_container":…}` 才进入嵌套 container 的 entries。CLI 不自行解包、不按路径推断 container、不生成 root：加载位置只能由 `--root`（`LoadRoot` 文档）或 `--policy` 显式声明。**不包含**：GUI/MCP、交互式 TUI、自动 classpath 推断、配置持久化、颜色/分页、性能承诺（整 artifact 批量导出已由 `export` 提供，见 [Benchmark](#benchmark)）；不新增 crate 或依赖。验收见 [`task_cli.rs`](crates/jarde-cli/tests/task_cli.rs)。
+
+## Benchmark
+
+jarde 交付的单位是**方法体 + 它的四个平面**（content/quality/representation/诊断），不是整类源码。
+在 vulhub 语料上（10 次交错重复的中位、逐配置预热；原语料 12 个 artifact）：
+
+| 场景 | jarde | jadx 1.5.6（对照） |
+| --- | --- | --- |
+| 整包导出，bcprov-jdk15on-152.jar（2,430 类 / 14,495 方法体） | **2.02 s**（8 worker） | 2.70 s（默认 6 线程） |
+| 整包导出，S2-009.war（7,200 类 / 53,247 方法体） | 8.63 s（8 worker） | 5.67 s |
+| 单点请求：一个方法体（进程级，10 次） | **10.5 ms / 14 MB RSS** | 857 ms / 456 MB（`--single-class`，一个类） |
+| 峰值 RSS，整包 | **73–132 MiB** | 1,811 / 3,795 MiB |
+
+交付物不同（jadx 写整类源码，bcprov 2,419 个文件；jarde 写逐方法记录，bcprov 19,865 条 / 390.8 MB，
+含四平面与诊断），上表是**同一轮同机对照**，不作吞吐胜负结论。行为门禁（把产物贴回类里编译执行、
+与原类逐输入比对，600 个抽样方法）**421/424 可比方法与原类一致（99.3%）**；11/600 自报结构化但
+过不了 javac。每条诊断码只描述该版本在本次运行记录的事实，`resolution_definition_unbound`
+是"被遮蔽的定义不建立运行时语义"的如实上报，MUST NOT 读作恢复失败。
+
+![benchmark](docs/benchmark_all.png)
+
+口径与限制（语料校验、形状、负载、未测项）见 [benchmark 说明](docs/benchmark.md) 与
+[benchmark 协议](openspec/benchmark-protocol.md)。
 
 ## 规格与验证
 

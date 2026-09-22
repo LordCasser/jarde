@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="720" viewBox="0 0 1180 720" font-family="ui-sans-serif,-apple-system,system-ui,sans-serif">
+<rect width="1180" height="720" fill="#ffffff"/>
+<text x="60" y="40" font-size="20" font-weight="700" fill="#111827">jarde vs jadx — 整包交付与单点请求</text>
+<text x="60" y="62" font-size="12" fill="#6b7280">jarde d16419c（批量导出，write sink，10 次交错重复的中位与 min–max）· jadx 1.5.6（默认 6 线程）· 同一台机器 · 负载随样本发布（out6/load.log）</text>
+<text x="100" y="110" font-size="15" font-weight="600" fill="#111827">A · 整包导出（秒）</text>
+<text x="100" y="128" font-size="11" fill="#6b7280">jadx 写整类源码 · jarde 写逐方法记录（含四平面）</text>
+<line x1="100" y1="320.0" x2="540" y2="320.0" stroke="#e5e7eb"/>
+<text x="94" y="324.0" font-size="10" fill="#6b7280" text-anchor="end">0</text>
+<line x1="100" y1="275.0" x2="540" y2="275.0" stroke="#e5e7eb"/>
+<text x="94" y="279.0" font-size="10" fill="#6b7280" text-anchor="end">5</text>
+<line x1="100" y1="230.0" x2="540" y2="230.0" stroke="#e5e7eb"/>
+<text x="94" y="234.0" font-size="10" fill="#6b7280" text-anchor="end">10</text>
+<line x1="100" y1="185.0" x2="540" y2="185.0" stroke="#e5e7eb"/>
+<text x="94" y="189.0" font-size="10" fill="#6b7280" text-anchor="end">15</text>
+<line x1="100" y1="140.0" x2="540" y2="140.0" stroke="#e5e7eb"/>
+<text x="94" y="144.0" font-size="10" fill="#6b7280" text-anchor="end">20</text>
+<text x="56" y="230" font-size="10" fill="#6b7280" text-anchor="middle" transform="rotate(-90 56 230)">秒</text>
+<rect x="168.0" y="295.7" width="26.0" height="24.3" fill="#c2410c" rx="2"/>
+<text x="181.0" y="291.7" font-size="10" fill="#111827" text-anchor="middle">2.7</text>
+<rect x="197.0" y="283.6" width="26.0" height="36.4" fill="#93c5fd" rx="2"/>
+<text x="210.0" y="266.6" font-size="10" fill="#111827" text-anchor="middle">4.04</text>
+<line x1="210.0" y1="283.8" x2="210.0" y2="283.3" stroke="#111827" stroke-width="1.2"/>
+<rect x="226.0" y="301.8" width="26.0" height="18.2" fill="#1d4ed8" rx="2"/>
+<text x="239.0" y="297.8" font-size="10" fill="#111827" text-anchor="middle">2.02</text>
+<line x1="239.0" y1="301.9" x2="239.0" y2="298.2" stroke="#111827" stroke-width="1.2"/>
+<text x="210.0" y="335" font-size="11" fill="#111827" text-anchor="middle">bcprov</text>
+<rect x="388.0" y="269.0" width="26.0" height="51.0" fill="#c2410c" rx="2"/>
+<text x="401.0" y="265.0" font-size="10" fill="#111827" text-anchor="middle">5.67</text>
+<rect x="417.0" y="177.5" width="26.0" height="142.5" fill="#93c5fd" rx="2"/>
+<text x="430.0" y="160.5" font-size="10" fill="#111827" text-anchor="middle">15.83</text>
+<line x1="430.0" y1="184.2" x2="430.0" y2="135.8" stroke="#111827" stroke-width="1.2"/>
+<rect x="446.0" y="242.3" width="26.0" height="77.7" fill="#1d4ed8" rx="2"/>
+<text x="459.0" y="238.3" font-size="10" fill="#111827" text-anchor="middle">8.63</text>
+<line x1="459.0" y1="246.1" x2="459.0" y2="230.1" stroke="#111827" stroke-width="1.2"/>
+<text x="430.0" y="335" font-size="11" fill="#111827" text-anchor="middle">S2-009.war</text>
+<text x="620" y="110" font-size="15" font-weight="600" fill="#111827">B · jarde 的 worker 标度（秒）</text>
+<text x="620" y="128" font-size="11" fill="#6b7280">同一单元格，1/2/4/8 worker；两语料左四右四</text>
+<line x1="620" y1="320.0" x2="1080" y2="320.0" stroke="#e5e7eb"/>
+<text x="614" y="324.0" font-size="10" fill="#6b7280" text-anchor="end">0</text>
+<line x1="620" y1="275.0" x2="1080" y2="275.0" stroke="#e5e7eb"/>
+<text x="614" y="279.0" font-size="10" fill="#6b7280" text-anchor="end">5</text>
+<line x1="620" y1="230.0" x2="1080" y2="230.0" stroke="#e5e7eb"/>
+<text x="614" y="234.0" font-size="10" fill="#6b7280" text-anchor="end">10</text>
+<line x1="620" y1="185.0" x2="1080" y2="185.0" stroke="#e5e7eb"/>
+<text x="614" y="189.0" font-size="10" fill="#6b7280" text-anchor="end">15</text>
+<line x1="620" y1="140.0" x2="1080" y2="140.0" stroke="#e5e7eb"/>
+<text x="614" y="144.0" font-size="10" fill="#6b7280" text-anchor="end">20</text>
+<text x="576" y="230" font-size="10" fill="#6b7280" text-anchor="middle" transform="rotate(-90 576 230)">秒</text>
+<rect x="635.8" y="283.6" width="26.0" height="36.4" fill="#1d4ed8" rx="2"/>
+<text x="648.8" y="279.6" font-size="10" fill="#111827" text-anchor="middle">4.04</text>
+<line x1="648.8" y1="283.8" x2="648.8" y2="283.3" stroke="#111827" stroke-width="1.2"/>
+<text x="648.8" y="335" font-size="11" fill="#111827" text-anchor="middle">bcprov</text>
+<text x="648.8" y="347" font-size="11" fill="#111827" text-anchor="middle">w1</text>
+<rect x="693.2" y="295.3" width="26.0" height="24.7" fill="#1d4ed8" rx="2"/>
+<text x="706.2" y="291.3" font-size="10" fill="#111827" text-anchor="middle">2.74</text>
+<line x1="706.2" y1="295.9" x2="706.2" y2="293.5" stroke="#111827" stroke-width="1.2"/>
+<text x="706.2" y="335" font-size="11" fill="#111827" text-anchor="middle">w2</text>
+<rect x="750.8" y="298.2" width="26.0" height="21.8" fill="#1d4ed8" rx="2"/>
+<text x="763.8" y="294.2" font-size="10" fill="#111827" text-anchor="middle">2.42</text>
+<line x1="763.8" y1="298.8" x2="763.8" y2="295.3" stroke="#111827" stroke-width="1.2"/>
+<text x="763.8" y="335" font-size="11" fill="#111827" text-anchor="middle">w4</text>
+<rect x="808.2" y="301.8" width="26.0" height="18.2" fill="#1d4ed8" rx="2"/>
+<text x="821.2" y="297.8" font-size="10" fill="#111827" text-anchor="middle">2.02</text>
+<line x1="821.2" y1="301.9" x2="821.2" y2="298.2" stroke="#111827" stroke-width="1.2"/>
+<text x="821.2" y="335" font-size="11" fill="#111827" text-anchor="middle">w8</text>
+<rect x="865.8" y="177.5" width="26.0" height="142.5" fill="#1d4ed8" rx="2"/>
+<text x="878.8" y="173.5" font-size="10" fill="#111827" text-anchor="middle">15.83</text>
+<line x1="878.8" y1="184.2" x2="878.8" y2="135.8" stroke="#111827" stroke-width="1.2"/>
+<text x="878.8" y="335" font-size="11" fill="#111827" text-anchor="middle">S2-009</text>
+<text x="878.8" y="347" font-size="11" fill="#111827" text-anchor="middle">w1</text>
+<rect x="923.2" y="223.5" width="26.0" height="96.5" fill="#1d4ed8" rx="2"/>
+<text x="936.2" y="219.5" font-size="10" fill="#111827" text-anchor="middle">10.72</text>
+<line x1="936.2" y1="229.9" x2="936.2" y2="212.5" stroke="#111827" stroke-width="1.2"/>
+<text x="936.2" y="335" font-size="11" fill="#111827" text-anchor="middle">w2</text>
+<rect x="980.8" y="237.0" width="26.0" height="83.0" fill="#1d4ed8" rx="2"/>
+<text x="993.8" y="233.0" font-size="10" fill="#111827" text-anchor="middle">9.22</text>
+<line x1="993.8" y1="241.9" x2="993.8" y2="228.6" stroke="#111827" stroke-width="1.2"/>
+<text x="993.8" y="335" font-size="11" fill="#111827" text-anchor="middle">w4</text>
+<rect x="1038.2" y="242.3" width="26.0" height="77.7" fill="#1d4ed8" rx="2"/>
+<text x="1051.2" y="238.3" font-size="10" fill="#111827" text-anchor="middle">8.63</text>
+<line x1="1051.2" y1="246.1" x2="1051.2" y2="230.1" stroke="#111827" stroke-width="1.2"/>
+<text x="1051.2" y="335" font-size="11" fill="#111827" text-anchor="middle">w8</text>
+<text x="100" y="390" font-size="15" font-weight="600" fill="#111827">C · 峰值 RSS（MiB）</text>
+<text x="100" y="408" font-size="11" fill="#6b7280">同 A 的两次运行</text>
+<line x1="100" y1="600.0" x2="540" y2="600.0" stroke="#e5e7eb"/>
+<text x="94" y="604.0" font-size="10" fill="#6b7280" text-anchor="end">0</text>
+<line x1="100" y1="564.0" x2="540" y2="564.0" stroke="#e5e7eb"/>
+<text x="94" y="568.0" font-size="10" fill="#6b7280" text-anchor="end">1000</text>
+<line x1="100" y1="528.0" x2="540" y2="528.0" stroke="#e5e7eb"/>
+<text x="94" y="532.0" font-size="10" fill="#6b7280" text-anchor="end">2000</text>
+<line x1="100" y1="492.0" x2="540" y2="492.0" stroke="#e5e7eb"/>
+<text x="94" y="496.0" font-size="10" fill="#6b7280" text-anchor="end">3000</text>
+<line x1="100" y1="456.0" x2="540" y2="456.0" stroke="#e5e7eb"/>
+<text x="94" y="460.0" font-size="10" fill="#6b7280" text-anchor="end">4000</text>
+<line x1="100" y1="420.0" x2="540" y2="420.0" stroke="#e5e7eb"/>
+<text x="94" y="424.0" font-size="10" fill="#6b7280" text-anchor="end">5000</text>
+<text x="56" y="510" font-size="10" fill="#6b7280" text-anchor="middle" transform="rotate(-90 56 510)">MiB</text>
+<rect x="182.5" y="534.8" width="26.0" height="65.2" fill="#c2410c" rx="2"/>
+<text x="195.5" y="530.8" font-size="10" fill="#111827" text-anchor="middle">1811</text>
+<rect x="211.5" y="595.2" width="26.0" height="4.8" fill="#1d4ed8" rx="2"/>
+<text x="224.5" y="578.2" font-size="10" fill="#111827" text-anchor="middle">132</text>
+<text x="210.0" y="615" font-size="11" fill="#111827" text-anchor="middle">bcprov</text>
+<rect x="402.5" y="463.4" width="26.0" height="136.6" fill="#c2410c" rx="2"/>
+<text x="415.5" y="459.4" font-size="10" fill="#111827" text-anchor="middle">3795</text>
+<rect x="431.5" y="596.2" width="26.0" height="3.8" fill="#1d4ed8" rx="2"/>
+<text x="444.5" y="579.2" font-size="10" fill="#111827" text-anchor="middle">106</text>
+<text x="430.0" y="615" font-size="11" fill="#111827" text-anchor="middle">S2-009.war</text>
+<text x="620" y="390" font-size="15" font-weight="600" fill="#111827">D · 进程级单次请求（毫秒）</text>
+<text x="620" y="408" font-size="11" fill="#6b7280">jarde 恢复一个方法体 · jadx --single-class 一个类</text>
+<line x1="620" y1="600.0" x2="1080" y2="600.0" stroke="#e5e7eb"/>
+<text x="614" y="604.0" font-size="10" fill="#6b7280" text-anchor="end">0</text>
+<line x1="620" y1="564.0" x2="1080" y2="564.0" stroke="#e5e7eb"/>
+<text x="614" y="568.0" font-size="10" fill="#6b7280" text-anchor="end">200</text>
+<line x1="620" y1="528.0" x2="1080" y2="528.0" stroke="#e5e7eb"/>
+<text x="614" y="532.0" font-size="10" fill="#6b7280" text-anchor="end">400</text>
+<line x1="620" y1="492.0" x2="1080" y2="492.0" stroke="#e5e7eb"/>
+<text x="614" y="496.0" font-size="10" fill="#6b7280" text-anchor="end">600</text>
+<line x1="620" y1="456.0" x2="1080" y2="456.0" stroke="#e5e7eb"/>
+<text x="614" y="460.0" font-size="10" fill="#6b7280" text-anchor="end">800</text>
+<line x1="620" y1="420.0" x2="1080" y2="420.0" stroke="#e5e7eb"/>
+<text x="614" y="424.0" font-size="10" fill="#6b7280" text-anchor="end">1000</text>
+<text x="576" y="510" font-size="10" fill="#6b7280" text-anchor="middle" transform="rotate(-90 576 510)">毫秒</text>
+<rect x="707.5" y="598.2" width="26.0" height="1.8" fill="#1d4ed8" rx="2"/>
+<text x="720.5" y="594.2" font-size="10" fill="#111827" text-anchor="middle">10</text>
+<text x="735.0" y="615" font-size="11" fill="#111827" text-anchor="middle">jarde</text>
+<rect x="966.5" y="445.7" width="26.0" height="154.3" fill="#c2410c" rx="2"/>
+<text x="979.5" y="428.7" font-size="10" fill="#111827" text-anchor="middle">857</text>
+<text x="965.0" y="615" font-size="11" fill="#111827" text-anchor="middle">jadx</text>
+<text x="620" y="634" font-size="10" fill="#6b7280">jarde 10.49ms / 14.2MB · jadx 856.67ms / 455.7MB（同一 bcprov，各 10 次）</text>
+<rect x="100" y="683" width="12" height="12" fill="#1d4ed8" rx="2"/>
+<text x="118" y="694" font-size="12" fill="#111827">jarde</text>
+<rect x="180" y="683" width="12" height="12" fill="#c2410c" rx="2"/>
+<text x="198" y="694" font-size="12" fill="#111827">jadx 1.5.6</text>
+</svg>
