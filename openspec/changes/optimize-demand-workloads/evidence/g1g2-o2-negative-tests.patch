@@ -1,0 +1,259 @@
+diff --git a/tests/g1g2_o2_retention.rs b/tests/g1g2_o2_retention.rs
+new file mode 100644
+index 0000000..f1b558d
+--- /dev/null
++++ b/tests/g1g2_o2_retention.rs
+@@ -0,0 +1,253 @@
++//! The O2 minimal experiment's identity negatives (task 3.3; the prototype and this file are both
++//! reverted — see `openspec/changes/optimize-demand-workloads/evidence/g1g2-o2-*.patch`).
++//!
++//! What it checks that the workload campaign cannot: a retained **read** must be answerable only for
++//! the definition it was read from. Two archives that hold the *same* class bytes at the *same*
++//! coordinates and differ only in an unrelated entry share that class's digest but are two
++//! snapshots, so a key that bound the coordinates and the digest but not the snapshot would answer
++//! the second from the first one's read; the definition identity (the snapshot, the physical
++//! location, the digest, the length and the variant) must not. The same run also states that a store
++//! with room for nothing changes no result.
++//!
++//! ```text
++//! verify:  JARDE_OPTIMIZE_READ_REUSE=on cargo test --test g1g2_o2_retention --locked \
++//!              --features "test-support jarde-reader/test-support" -- --nocapture
++//! ```
++//!
++//! The assertions hold in **both** arms: with the switch unset nothing is consulted, so every
++//! counter is zero and every negative is satisfied trivially; with the switch on the counters say
++//! what the treatment did, and the negatives are the ones that could fail.
++
++mod bulk_support;
++
++use bulk_support::{SHAPE, STORE, flat_fixture, limits, tree_scope, zip};
++use jarde::*;
++use serde_json::Value;
++
++/// Opens one snapshot over `bytes`, with `store` attached to every budget it uses.
++fn open_with(bytes: Vec<u8>, store: &FactsCache) -> (Engine, ArtifactSnapshot) {
++    let engine = Engine::new();
++    let mut budget = Budget::new(limits()).with_facts_cache(store.clone());
++    let snapshot = engine
++        .open(ArtifactInput::bytes(bytes), &mut budget)
++        .expect("the flat fixture opens");
++    (engine, snapshot)
++}
++
++/// The first class the scope declares, as the declaration listing states it.
++fn first_class(
++    engine: &Engine,
++    snapshot: &ArtifactSnapshot,
++    scope: &PhysicalScope,
++    store: &FactsCache,
++) -> PhysicalDefinitionId {
++    let mut budget = Budget::new(limits()).with_facts_cache(store.clone());
++    let listing = engine
++        .list_class_declarations(snapshot, scope, &mut budget)
++        .expect("the fixture's declarations are listable");
++    listing
++        .items
++        .first()
++        .expect("the fixture declares a class")
++        .definition
++        .clone()
++}
++
++/// One `class_view` by identity on one snapshot, as `(definition, document)`.
++fn view_by_identity(
++    engine: &Engine,
++    snapshot: &ArtifactSnapshot,
++    scope: &PhysicalScope,
++    store: &FactsCache,
++    definition: &PhysicalDefinitionId,
++) -> (PhysicalDefinitionId, Value) {
++    let mut budget = Budget::new(limits()).with_facts_cache(store.clone());
++    let request = ClassViewRequest {
++        class: ClassRef::Definition {
++            definition: definition.clone(),
++        },
++        bodies: Vec::new(),
++    };
++    let view = match engine
++        .class_view(snapshot, scope, &request, &mut budget)
++        .expect("a listed class is viewable")
++    {
++        OperationOutcome::Performed(view) => view,
++        other => panic!("a class identity is never ambiguous or incomplete: {other:?}"),
++    };
++    (
++        view.class.clone(),
++        serde_json::to_value(&view).expect("a view renders"),
++    )
++}
++
++/// One document with every `usage` object and `elapsed_millis` removed — the charges and the clock
++/// are readings of a run, not of what it presented — and with the *name* of the snapshot each
++/// physical identity was read from set aside, so two snapshots' answers about one class can be
++/// compared as answers.
++fn normalized(mut value: Value) -> String {
++    fn walk(value: &mut Value) -> usize {
++        let mut removed = 0;
++        match value {
++            Value::Object(map) => {
++                removed += usize::from(map.remove("usage").is_some());
++                removed += usize::from(map.remove("elapsed_millis").is_some());
++                for (key, child) in map.iter_mut() {
++                    if key == "snapshot" {
++                        *child = Value::String("(one snapshot)".to_owned());
++                    } else {
++                        removed += walk(child);
++                    }
++                }
++            }
++            Value::Array(entries) => {
++                for child in entries.iter_mut() {
++                    removed += walk(child);
++                }
++            }
++            _ => {}
++        }
++        removed
++    }
++    let removed = walk(&mut value);
++    assert!(removed > 0, "the document carries nothing to strip: {value}");
++    serde_json::to_string(&value).expect("a JSON value renders")
++}
++
++/// Whether any counter moved at all, as the reading the campaign's table prints.
++
++
++fn counters(store: &FactsCache) -> (u64, u64, u64, u64, u64, u64) {
++    let report = store.report();
++    (
++        report.definition_read_consultations,
++        report.definition_read_hits,
++        report.definition_read_stored,
++        report.refused_capacity,
++        report.retained_bytes,
++        report.entries as u64,
++    )
++}
++
++#[test]
++fn a_read_is_answered_only_for_the_snapshot_it_was_read_from() {
++    // Two archives that hold the *same* class bytes at the *same* coordinates and differ only in an
++    // unrelated entry: the class's digest is identical in both, the snapshots are not. A key that
++    // bound the coordinates and the digest but not the snapshot would answer the second archive from
++    // the first one's read; the definition identity must not.
++    let class = SHAPE;
++    let first = zip(&[(b"Shape.class", class, STORE), (b"notes.txt", b"one", STORE)]);
++    let second = zip(&[(b"Shape.class", class, STORE), (b"notes.txt", b"two", STORE)]);
++    let store = FactsCache::current(FactsCapacity::new(1 << 8, 1 << 24));
++    let (engine_one, snapshot_one) = open_with(first, &store);
++    let (engine_two, snapshot_two) = open_with(second, &store);
++    let scope = tree_scope();
++
++    let definition_one = first_class(&engine_one, &snapshot_one, &scope, &store);
++    let (_, document_one) =
++        view_by_identity(&engine_one, &snapshot_one, &scope, &store, &definition_one);
++    let after_first = counters(&store);
++    let definition_two = first_class(&engine_two, &snapshot_two, &scope, &store);
++    let (_, document_two) =
++        view_by_identity(&engine_two, &snapshot_two, &scope, &store, &definition_two);
++    let after_second = counters(&store);
++    let (_, document_one_again) =
++        view_by_identity(&engine_one, &snapshot_one, &scope, &store, &definition_one);
++    let after_again = counters(&store);
++
++    assert_ne!(
++        snapshot_one.id(),
++        snapshot_two.id(),
++        "the two archives must be different snapshots for this comparison to mean anything"
++    );
++    assert_eq!(
++        definition_one.class_bytes, definition_two.class_bytes,
++        "the class is the same bytes at the same coordinates, so a snapshot-blind key could hit"
++    );
++    // The two views of the same class bytes: the same definition content, the same members, the
++    // same coverage and the same diagnostics, once each document's own *snapshot name* is set aside
++    // (every physical identity in the document names the snapshot it was read from, which is a
++    // difference by construction and is not part of "the same class").
++    assert_eq!(
++        document_one["class"]["class_bytes"],
++        document_two["class"]["class_bytes"]
++    );
++    assert_eq!(
++        normalized(document_one.clone()),
++        normalized(document_two.clone())
++    );
++    // The two definitions differ in exactly one dimension — the snapshot they were read from — which
++    // is what the negative below is about: a key that dropped it could answer the second archive
++    // from the first one's read.
++    let mut blind_one = document_one["class"]["location"].clone();
++    let mut blind_two = document_two["class"]["location"].clone();
++    for location in [&mut blind_one, &mut blind_two] {
++        location["entry"]["origin"]["snapshot"] = serde_json::json!("(one snapshot)");
++    }
++    assert_eq!(
++        blind_one, blind_two,
++        "the two definitions are the same class at the same coordinates but for their snapshot"
++    );
++    // The same snapshot asked twice: the whole document, charges aside, is one answer.
++    assert_eq!(
++        normalized(document_one.clone()),
++        normalized(document_one_again)
++    );
++
++    // The negative: the second snapshot's own read may not be answered by the first snapshot's
++    // retention. (With the switch unset every figure below is zero and this holds trivially.)
++    assert_eq!(
++        after_second.1, after_first.1,
++        "a definition read of another snapshot was answered from retention: \
++         {after_first:?} -> {after_second:?}"
++    );
++    // The third view is of the *first* snapshot's own definition again: it may hit (armed) or read
++    // again (unarmed), and the result is the same either way.
++    println!(
++        "same class bytes, two snapshots, one store: after first {after_first:?}, after second \
++         {after_second:?}, after first again {after_again:?}; \
++         consult/hits/stores/refusals/retained/entries"
++    );
++}
++
++#[test]
++fn a_store_with_room_for_nothing_changes_no_result() {
++    let bytes = flat_fixture();
++    let roomy = FactsCache::current(FactsCapacity::new(1 << 8, 1 << 24));
++    let none = FactsCache::current(FactsCapacity::none());
++    let (engine_roomy, snapshot_roomy) = open_with(bytes.clone(), &roomy);
++    let (engine_none, snapshot_none) = open_with(bytes, &none);
++    let scope = tree_scope();
++    let definition = first_class(&engine_none, &snapshot_none, &scope, &none);
++
++    let (_, roomy_document) =
++        view_by_identity(&engine_roomy, &snapshot_roomy, &scope, &roomy, &definition);
++    let (_, none_document) =
++        view_by_identity(&engine_none, &snapshot_none, &scope, &none, &definition);
++    let (_, none_document_again) =
++        view_by_identity(&engine_none, &snapshot_none, &scope, &none, &definition);
++
++    assert_eq!(normalized(roomy_document.clone()), normalized(none_document.clone()));
++    assert_eq!(normalized(none_document), normalized(none_document_again));
++    assert_eq!(none.report().retained_bytes, 0);
++    assert_eq!(none.report().entries, 0);
++    assert_eq!(none.report().definition_read_hits, 0);
++    println!(
++        "roomy {roomy:?}",
++        roomy = (
++            roomy.report().definition_read_hits,
++            roomy.report().definition_read_consultations,
++            roomy.report().refused_capacity,
++            roomy.report().retained_bytes,
++        )
++    );
++    println!(
++        "none {none:?}",
++        none = (
++            none.report().definition_read_hits,
++            none.report().definition_read_consultations,
++            none.report().refused_capacity,
++            none.report().retained_bytes,
++        )
++    );
++}

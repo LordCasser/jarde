@@ -1,0 +1,621 @@
+diff --git a/crates/jarde-jvm/src/providers.rs b/crates/jarde-jvm/src/providers.rs
+index 710b978..6f861ae 100644
+--- a/crates/jarde-jvm/src/providers.rs
++++ b/crates/jarde-jvm/src/providers.rs
+@@ -2017,13 +2017,36 @@ pub(crate) fn read_definition_class(
+         ));
+     };
+     charge_header_attempt(budget)?;
++    let mut retained = false;
+     let (bytes, digest) = match &definition.location {
+         PhysicalClassLocation::ArchiveEntry { entry } => {
+             let listed = listed_entry(snapshot, entry, &label, budget)?;
+-            let materialized = snapshot
+-                .read_entry_for_analysis(&listed, budget)
+-                .map_err(|error| at_origin(error, &label))?;
+-            (materialized.bytes, materialized.content_digest)
++            // The read of the definition this request selected: the store answers it when an
++            // earlier request of the same snapshot already performed exactly this read (the
++            // `optimize-demand-workloads` 3.3 experiment). A hit hands back the bytes and the
++            // identity that read established, so every check below still runs against them.
++            let reused = if jarde_reader::artifact::definition_read_reuse_enabled() {
++                snapshot
++                    .retained_definition_read(definition, budget)
++                    .map_err(|error| at_origin(error, &label))?
++            } else {
++                None
++            };
++            match reused {
++                Some(bytes) => {
++                    retained = true;
++                    ((*bytes).clone(), definition.class_bytes.digest.clone())
++                }
++                None => {
++                    let materialized = snapshot
++                        .read_entry_for_analysis(&listed, budget)
++                        .map_err(|error| at_origin(error, &label))?;
++                    if jarde_reader::artifact::definition_read_reuse_enabled() {
++                        snapshot.remember_definition_read(definition, &materialized.bytes, budget);
++                    }
++                    (materialized.bytes, materialized.content_digest)
++                }
++            }
+         }
+         PhysicalClassLocation::StandaloneRoot { .. } => {
+             let bytes = snapshot
+@@ -2038,7 +2061,7 @@ pub(crate) fn read_definition_class(
+     })?;
+     require_definition_bytes(definition, &digest, length, &label)?;
+     let class_bytes = ClassBytesId { digest, length };
+-    snapshot
++    let mut read = snapshot
+         .prepared_read_of(
+             definition.location.clone(),
+             class_bytes,
+@@ -2046,7 +2069,11 @@ pub(crate) fn read_definition_class(
+             jarde_reader::prepared::ContainerHandover::NotNeeded,
+             budget,
+         )
+-        .map_err(|error| at_origin(error, &label))
++        .map_err(|error| at_origin(error, &label))?;
++    if retained {
++        read.mark_retained();
++    }
++    Ok(read)
+ }
+ 
+ /// The trusted read and the header facts of one class definition, read by identity.
+diff --git a/crates/jarde-reader/src/artifact.rs b/crates/jarde-reader/src/artifact.rs
+index 46c81b2..6df83bd 100644
+--- a/crates/jarde-reader/src/artifact.rs
++++ b/crates/jarde-reader/src/artifact.rs
+@@ -224,6 +224,39 @@ pub struct MaterializedEntry {
+     pub bytes: Vec<u8>,
+     pub content_digest: crate::model::Digest,
+     pub usage: UsageSnapshot,
++    /// Whether this read was answered from the request's store instead of performed by it.
++    ///
++    /// A retained read is a read that **did happen** — the bytes, the CRC/length check and the
++    /// content digest are the ones the read that produced them established — so everything a caller
++    /// verifies against this value still holds. What the flag states is only *who* paid for it: a
++    /// request that asked for an entry some earlier read of the same snapshot already materialized
++    /// reads no bytes of its own, and a counter of materializations must not claim it did.
++    pub retained: bool,
++}
++
++/// Whether one selected definition read may be answered from the request's store's retention.
++///
++/// This is the **experiment's arm switch** of `openspec/changes/optimize-demand-workloads` tasks
++/// 3.3/3.4 and nothing else: it exists so one build can run both arms of the O2 minimal experiment
++/// (a request that re-reads the definition it selected against a request that reuses a read already
++/// performed on the same snapshot) with every other factor — the container layer, the CP/Header
++/// layer, the corpus, the workload — held fixed.
++///
++/// It defaults to **off in every build**, including one with `test-support` (which only makes the
++/// switch readable): nothing is looked up and nothing is retained unless
++/// `JARDE_OPTIMIZE_READ_REUSE=on` is set, so no default path of this engine can reach a retained
++/// definition read and this prototype can never become a default strategy. A build without the
++/// observation feature has no switch at all and answers `false`.
++pub fn definition_read_reuse_enabled() -> bool {
++    #[cfg(feature = "test-support")]
++    {
++        static ENABLED: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
++        *ENABLED.get_or_init(|| std::env::var("JARDE_OPTIMIZE_READ_REUSE").as_deref() == Ok("on"))
++    }
++    #[cfg(not(feature = "test-support"))]
++    {
++        false
++    }
+ }
+ 
+ #[derive(Clone, Debug)]
+@@ -1272,6 +1305,42 @@ impl ArtifactSnapshot {
+         ))
+     }
+ 
++    /// One definition's verified read, from the request's store when it holds one.
++    ///
++    /// A `None` reads nothing, charges nothing and performs no entry access: it is what a request
++    /// with no store attached, a store with room for nothing and a store holding no read of *this*
++    /// definition all answer. The bytes it answers with were read and verified for exactly this
++    /// definition — its location, its own digest and length, its variant — so a caller that checks
++    /// them against the identity it asked for arrives at the same answer a fresh read would give it.
++    pub fn retained_definition_read(
++        &self,
++        definition: &crate::model::PhysicalDefinitionId,
++        budget: &mut Budget,
++    ) -> Result<Option<Arc<Vec<u8>>>> {
++        let Some(cache) = budget.facts_cache().cloned() else {
++            return Ok(None);
++        };
++        cache.definition_read(definition, budget)
++    }
++
++    /// Offers one definition's verified read for retention.
++    ///
++    /// The read the caller is holding is complete: its bytes were checked against the entry the
++    /// definition names and the identity it carries is a digest computed over exactly those bytes.
++    /// Nothing is retained when the request carries no store, and a store that is full refuses
++    /// rather than evicts.
++    pub fn remember_definition_read(
++        &self,
++        definition: &crate::model::PhysicalDefinitionId,
++        bytes: &[u8],
++        budget: &Budget,
++    ) {
++        let Some(cache) = budget.facts_cache() else {
++            return;
++        };
++        cache.remember_definition_read(definition, bytes);
++    }
++
+     /// The verified facts of one container, from the facts some live handle already holds, from
+     /// retention when a store answers, and from this request's own read otherwise.
+     ///
+@@ -2607,6 +2676,7 @@ where
+         bytes: output,
+         content_digest,
+         usage: budget.usage(),
++        retained: false,
+     })
+ }
+ 
+diff --git a/crates/jarde-reader/src/facts_cache.rs b/crates/jarde-reader/src/facts_cache.rs
+index 4a92ea5..a51fbc0 100644
+--- a/crates/jarde-reader/src/facts_cache.rs
++++ b/crates/jarde-reader/src/facts_cache.rs
+@@ -164,6 +164,44 @@ pub const FACTS_FORMAT: u16 = 1;
+ /// this build's declaration, not a compatibility promise.
+ pub const CONTAINER_FACTS_SCHEMA: u16 = 1;
+ 
++/// The schema this build keys a retained **definition read** under (experiment prototype).
++///
++/// A retained definition read is the bytes one verified read of one *selected* physical definition
++/// produced, keyed by that definition's own identity — its location, the digest and length its read
++/// established, and its syntactic variant — and by this schema, so a build that changes what such a
++/// read holds cannot serve an old one as the answer.
++pub const DEFINITION_READ_SCHEMA: u16 = 1;
++
++/// What one definition read is cached under: the definition's own identity and this build's
++/// definition-read schema.
++///
++/// The identity names the snapshot, the container chain and the entry's ordinal, the digest and
++/// length the read established, and the syntactic variant the location's raw name derives, so a
++/// lookup for another definition cannot find this one and a definition whose content changed is
++/// another key rather than a hit. Nothing about *which request* asked for the bytes is part of the
++/// key: a definition read is a property of one physical definition of one snapshot, which is
++/// exactly what an identity-addressed request selects.
++#[derive(Clone, Debug, Eq, PartialEq, Hash)]
++pub(crate) struct DefinitionReadKey {
++    pub(crate) definition: crate::model::PhysicalDefinitionId,
++    pub(crate) schema: u16,
++}
++
++/// One retained definition read: the bytes a verified read produced.
++///
++/// The bytes are immutable once written and shared as one handle, so a hit copies no allocation of
++/// its own before the caller asks for owned bytes. The identity of what they are is the key they
++/// were written under — a digest and a length that the read that produced them computed over
++/// exactly these bytes — so a hit can never answer with an identity the bytes did not establish.
++#[derive(Clone, Debug)]
++struct DefinitionRead {
++    identity: FactsIdentity,
++    bytes: Arc<Vec<u8>>,
++    /// The weight this read contributes to the store's retained bytes: the length of the bytes it
++    /// holds, stored beside them so a rewrite can subtract exactly what it added.
++    weight: u64,
++}
++
+ /// How much one store may retain, in two independent bounds.
+ ///
+ /// The store refuses an insertion that would cross either bound; nothing here evicts, so an
+@@ -432,6 +470,12 @@ struct Counters {
+     /// Nested containers materialized by a request holding this handle, and the bytes produced.
+     nested_materializations: u64,
+     nested_materialized_bytes: u64,
++    /// Definition reads looked up in retention, answered from it, and not found (prototype).
++    definition_read_consultations: u64,
++    definition_read_hits: u64,
++    definition_read_misses: u64,
++    /// Definition reads this store accepted (prototype).
++    definition_read_stored: u64,
+ }
+ 
+ /// The entries and their counters, shared by every handle that reads them.
+@@ -442,6 +486,8 @@ struct Shared {
+     entries: BTreeMap<FactsKey, Entry>,
+     /// Container products, keyed by snapshot, physical origin and schema.
+     containers: BTreeMap<ContainerKey, ContainerEntry>,
++    /// Definition reads, keyed by the definition's own identity and this build's schema (prototype).
++    definition_reads: std::collections::HashMap<DefinitionReadKey, DefinitionRead>,
+     /// The weight every retained entry and container product contributes, summed.
+     retained_bytes: u64,
+     counters: Counters,
+@@ -498,6 +544,15 @@ pub struct FactsReport {
+     /// materializes one, for the same reason.
+     pub nested_materializations: u64,
+     pub nested_materialized_bytes: u64,
++    /// How many definition reads this store holds now (prototype).
++    pub definition_reads: usize,
++    /// Definition reads looked up in retention, answered from it, and not found (prototype). One
++    /// lookup is one definition read a request asked for by the definition's own identity.
++    pub definition_read_consultations: u64,
++    pub definition_read_hits: u64,
++    pub definition_read_misses: u64,
++    /// Definition reads this store accepted — the reads whose bytes it now keeps (prototype).
++    pub definition_read_stored: u64,
+ }
+ 
+ impl FactsReport {
+@@ -568,6 +623,7 @@ impl FactsCache {
+                 capacity,
+                 entries: BTreeMap::new(),
+                 containers: BTreeMap::new(),
++                definition_reads: std::collections::HashMap::new(),
+                 retained_bytes: 0,
+                 counters: Counters::default(),
+             })),
+@@ -620,6 +676,7 @@ impl FactsCache {
+         let shared = &mut *guard;
+         shared.entries.clear();
+         shared.containers.clear();
++        shared.definition_reads.clear();
+         shared.retained_bytes = 0;
+     }
+ 
+@@ -649,6 +706,11 @@ impl FactsCache {
+             directory_parses: counters.directory_parses,
+             nested_materializations: counters.nested_materializations,
+             nested_materialized_bytes: counters.nested_materialized_bytes,
++            definition_reads: shared.definition_reads.len(),
++            definition_read_consultations: counters.definition_read_consultations,
++            definition_read_hits: counters.definition_read_hits,
++            definition_read_misses: counters.definition_read_misses,
++            definition_read_stored: counters.definition_read_stored,
+         }
+     }
+ 
+@@ -876,6 +938,108 @@ impl FactsCache {
+         }
+     }
+ 
++    /// One definition read this store holds, as the shared bytes the read produced.
++    ///
++    /// `None` is "this store has no such read": the lookup charges nothing, reads nothing and is
++    /// counted as one consultation. A hit hands out the bytes' own handle and copies nothing at all
++    /// — a caller that needs owned bytes copies them where it asks for them — and the identity the
++    /// bytes are answerable under is the key they were found beneath, which is a digest a verified
++    /// read computed over exactly these bytes.
++    pub fn definition_read(
++        &self,
++        definition: &crate::model::PhysicalDefinitionId,
++        budget: &mut Budget,
++    ) -> Result<Option<Arc<Vec<u8>>>> {
++        budget.poll()?;
++        let key = DefinitionReadKey {
++            definition: definition.clone(),
++            schema: DEFINITION_READ_SCHEMA,
++        };
++        let mut guard = self.shared();
++        let shared = &mut *guard;
++        shared.counters.definition_read_consultations += 1;
++        let Some(read) = shared.definition_reads.get(&key) else {
++            shared.counters.definition_read_misses += 1;
++            return Ok(None);
++        };
++        if read.identity != self.identity {
++            // Written by another build's parser or entry format: discarded rather than converted,
++            // exactly like a CP/Header entry of another declaration.
++            let format_mismatch = read.identity.format != self.identity.format;
++            if let Some(read) = shared.definition_reads.remove(&key) {
++                let weight = read.weight;
++                shared.retained_bytes = shared.retained_bytes.saturating_sub(weight);
++            }
++            shared.counters.definition_read_misses += 1;
++            if format_mismatch {
++                shared.counters.discarded_format += 1;
++            } else {
++                shared.counters.discarded_registry += 1;
++            }
++            return Ok(None);
++        }
++        let bytes = Arc::clone(&read.bytes);
++        shared.counters.definition_read_hits += 1;
++        Ok(Some(bytes))
++    }
++
++    /// Offers one definition's verified read for retention.
++    ///
++    /// The read was performed completely by the request that calls this, and that request keeps
++    /// using its own bytes whether or not the store accepts them: a refusal is a retention decision,
++    /// never a reason to read the definition again. A read that does not fit in the entry limit or
++    /// in the retained-byte limit is refused and counted; nothing is evicted to make room.
++    pub(crate) fn remember_definition_read(
++        &self,
++        definition: &crate::model::PhysicalDefinitionId,
++        bytes: &[u8],
++    ) {
++        let key = DefinitionReadKey {
++            definition: definition.clone(),
++            schema: DEFINITION_READ_SCHEMA,
++        };
++        let weight = bytes.len() as u64;
++        let read = DefinitionRead {
++            identity: self.identity,
++            bytes: Arc::new(bytes.to_vec()),
++            weight,
++        };
++        let mut guard = self.shared();
++        let shared = &mut *guard;
++        let occupied_weight = shared
++            .definition_reads
++            .get(&key)
++            .map(|existing| existing.weight);
++        match occupied_weight {
++            Some(previous) => {
++                shared.retained_bytes = shared.retained_bytes.saturating_sub(previous);
++                shared.retained_bytes = shared.retained_bytes.saturating_add(weight);
++                shared.definition_reads.insert(key, read);
++                shared.counters.definition_read_stored += 1;
++            }
++            None => {
++                let items =
++                    shared.entries.len() + shared.containers.len() + shared.definition_reads.len();
++                if items >= shared.capacity.entries {
++                    shared.counters.refused_capacity += 1;
++                    return;
++                }
++                if weight > shared.capacity.retained_bytes
++                    || shared
++                        .retained_bytes
++                        .saturating_add(weight)
++                        .gt(&shared.capacity.retained_bytes)
++                {
++                    shared.counters.refused_capacity_bytes += 1;
++                    return;
++                }
++                shared.retained_bytes += weight;
++                shared.definition_reads.insert(key, read);
++                shared.counters.definition_read_stored += 1;
++            }
++        }
++    }
++
+     /// Records that the request holding this handle parsed one container's directory.
+     ///
+     /// Called by the reader while it builds a container's facts, so the count includes a build
+diff --git a/crates/jarde-reader/src/inspect.rs b/crates/jarde-reader/src/inspect.rs
+index 395914a..4077621 100644
+--- a/crates/jarde-reader/src/inspect.rs
++++ b/crates/jarde-reader/src/inspect.rs
+@@ -9,7 +9,9 @@
+ //! This is the reader's inspection entry, not the facade's: it takes a snapshot and a budget and
+ //! returns the report of one read. Nothing above the reader decides what a target is.
+ 
+-use crate::artifact::{ArtifactKind, ArtifactSnapshot, PhysicalEntry};
++use crate::artifact::{
++    ArtifactKind, ArtifactSnapshot, PhysicalEntry, definition_read_reuse_enabled,
++};
+ use crate::budget::Budget;
+ use crate::classfile::{BytecodeInspection, HeaderInspection, InspectionMode, MethodSelector};
+ use crate::error::{Error, Result};
+@@ -218,17 +220,24 @@ pub fn materialize_root(
+ /// What it does **not** do: it does not parse the bytes, does not verify the entry is a class file
+ /// at all, and does not resolve, load or analyse anything. The digest is a check that the bytes are
+ /// the ones the *identity* was derived from, never a claim that those bytes are legal.
++///
++/// The third element of the answer says whether the entry read was answered from the request's
++/// store's retention instead of being performed here (the `optimize-demand-workloads` 3.3
++/// experiment): the bytes and the digest are a previous read's own either way, and only the caller's
++/// accounting differs.
+ pub fn materialize_definition(
+     snapshot: &ArtifactSnapshot,
+     definition: &PhysicalDefinitionId,
+     budget: &mut Budget,
+-) -> Result<(Vec<u8>, ClassSource)> {
++) -> Result<(Vec<u8>, ClassSource, bool)> {
+     match &definition.location {
+         PhysicalClassLocation::StandaloneRoot { snapshot: named } => {
+             require_snapshot(snapshot, named)?;
+             let (bytes, source) = materialize_root(snapshot, budget)?;
+             require_class_bytes(definition, &source.class_bytes)?;
+-            Ok((bytes, source))
++            // A standalone root's bytes are the snapshot's own: this read is always performed,
++            // never answered from retention.
++            Ok((bytes, source, false))
+         }
+         PhysicalClassLocation::ArchiveEntry { entry } => {
+             require_snapshot(snapshot, entry.snapshot())?;
+@@ -249,19 +258,42 @@ pub fn materialize_definition(
+                     "the definition's physical variant is not the one its entry's raw name derives",
+                 ));
+             }
+-            let materialized = snapshot.read_entry_for_analysis(&record, budget)?;
++            // The read of the definition this caller selected: the store answers it when an
++            // earlier request of the same snapshot already performed exactly this read (the
++            // `optimize-demand-workloads` 3.3 experiment). A hit hands back the bytes and the
++            // identity that read established, so the checks below still run against them.
++            let retained_read = if definition_read_reuse_enabled() {
++                snapshot.retained_definition_read(definition, budget)?
++            } else {
++                None
++            };
++            let (bytes, content_digest, retained) = match retained_read {
++                Some(bytes) => ((*bytes).clone(), definition.class_bytes.digest.clone(), true),
++                None => {
++                    let materialized = snapshot.read_entry_for_analysis(&record, budget)?;
++                    if definition_read_reuse_enabled() {
++                        snapshot.remember_definition_read(definition, &materialized.bytes, budget);
++                    }
++                    (
++                        materialized.bytes,
++                        materialized.content_digest,
++                        materialized.retained,
++                    )
++                }
++            };
++            let length = u64::try_from(bytes.len()).map_err(|_| class_size_overflow())?;
+             let class_bytes = ClassBytesId {
+-                digest: materialized.content_digest,
+-                length: u64::try_from(materialized.bytes.len())
+-                    .map_err(|_| class_size_overflow())?,
++                digest: content_digest,
++                length,
+             };
+             require_class_bytes(definition, &class_bytes)?;
+             Ok((
+-                materialized.bytes,
++                bytes,
+                 ClassSource {
+                     location: definition.location.clone(),
+                     class_bytes,
+                 },
++                retained,
+             ))
+         }
+     }
+diff --git a/crates/jarde-reader/src/prepared.rs b/crates/jarde-reader/src/prepared.rs
+index 6497e7b..cc3b84f 100644
+--- a/crates/jarde-reader/src/prepared.rs
++++ b/crates/jarde-reader/src/prepared.rs
+@@ -109,6 +109,9 @@ pub struct PreparedClassRead {
+     /// The verified facts of the container this class was read out of, held as an active strong
+     /// reference; `None` for a standalone root, which has no container directory at all.
+     container_facts: Option<ContainerFactsHandle>,
++    /// Whether this read was answered from a store's retention instead of performed by the request
++    /// that holds it (the `optimize-demand-workloads` 3.3 experiment).
++    retained: bool,
+ }
+ 
+ impl PreparedClassRead {
+@@ -172,8 +175,23 @@ impl PreparedClassRead {
+             span,
+             backing_digest,
+             container_facts,
++            retained: false,
+         }
+     }
++
++    /// Whether this read was answered from a store's retention rather than performed here.
++    ///
++    /// A retained read is a read that really happened — the same bytes, the same verified identity —
++    /// so every consumer of it is served exactly what a fresh read would have handed it; the flag
++    /// states only that *this* request read no bytes of its own.
++    pub fn retained(&self) -> bool {
++        self.retained
++    }
++
++    /// Records that this read was answered from retention (the 3.3 experiment's mark).
++    pub fn mark_retained(&mut self) {
++        self.retained = true;
++    }
+ }
+ 
+ /// The parse policy a prepared class's structural facts were read under.
+diff --git a/src/facade.rs b/src/facade.rs
+index 2df7cee..8e9cbdc 100644
+--- a/src/facade.rs
++++ b/src/facade.rs
+@@ -450,10 +450,11 @@ impl Engine {
+         if analyzed.ir().code().is_some() {
+             crate::d0_counts::body_decoded();
+         }
+-        if read.is_some() {
++        if read.is_some() && !read.as_ref().is_some_and(|read| read.retained()) {
+             // One class materialization for this operation's own selected definition
+             // (`crate::d0_counts`): the run above performed it, and the presentation below consumes
+-            // it rather than reading the definition again.
++            // it rather than reading the definition again. A read the store answered from retention
++            // is not a materialization this request performed.
+             crate::d0_counts::class_materialized();
+         }
+         recovery_read(content, request, analyzed, read, evidence, budget)
+@@ -696,7 +697,7 @@ impl Engine {
+         // engine: the dimension counts what it is asked to count, and a refused charge means the read
+         // never happened, which is an `Err` here rather than a prefix.
+         budget.charge(CountedBudgetDimension::ClassHeaders, 1)?;
+-        let (bytes, source) = materialize_definition(snapshot, definition, budget)?;
++        let (bytes, source, _retained) = materialize_definition(snapshot, definition, budget)?;
+         let facts = class_member_facts(&bytes, budget)?;
+         let provenance = Some(definition_provenance(definition));
+         let mut items = Vec::new();
+@@ -2426,7 +2427,7 @@ fn read_class_declaration(
+     candidate: &ClassCandidate<'_>,
+     budget: &mut Budget,
+ ) -> Result<ConfirmedRead> {
+-    let (bytes, source) = match candidate.record {
++    let (bytes, source, _retained) = match candidate.record {
+         Some(record) => {
+             let materialized = snapshot.read_entry_for_analysis(record, budget)?;
+             let class_bytes = ClassBytesId {
+@@ -2441,9 +2442,13 @@ fn read_class_declaration(
+                     },
+                     class_bytes,
+                 },
++                materialized.retained,
+             )
+         }
+-        None => materialize_root(snapshot, budget)?,
++        None => {
++            let (bytes, source) = materialize_root(snapshot, budget)?;
++            (bytes, source, false)
++        }
+     };
+     let facts = class_member_facts(&bytes, budget)?;
+     let definition = definition_of(&source);
+@@ -4921,12 +4926,16 @@ fn bind_class(
+         ClassRef::Definition { definition } => {
+             require_definition_snapshot(snapshot, definition)?;
+             budget.charge(CountedBudgetDimension::ClassHeaders, 1)?;
+-            let read = read_definition(snapshot, definition, budget)?;
++            let (read, retained) = read_definition(snapshot, definition, budget)?;
+             // One class materialization for this operation's own selected definition
+             // (`crate::d0_counts`), counted at the read that really happened: a request whose
+-            // charge, cancellation or read was refused above materialized nothing, and a name-based
+-            // request's *search* reads are the search's own cost and are not counted here.
+-            crate::d0_counts::class_materialized();
++            // charge, cancellation or read was refused above materialized nothing, a name-based
++            // request's *search* reads are the search's own cost and are not counted here, and a
++            // read the request's store answered from retention is not a materialization this
++            // request performed.
++            if !retained {
++                crate::d0_counts::class_materialized();
++            }
+             let provenance = Some(definition_provenance(definition));
+             let class_item = match charge_item(budget) {
+                 Ok(()) => {
+@@ -5207,8 +5216,8 @@ fn read_definition(
+     snapshot: &ArtifactSnapshot,
+     definition: &PhysicalDefinitionId,
+     budget: &mut Budget,
+-) -> Result<ConfirmedRead> {
+-    let (bytes, source) = materialize_definition(snapshot, definition, budget)?;
++) -> Result<(ConfirmedRead, bool)> {
++    let (bytes, source, retained) = materialize_definition(snapshot, definition, budget)?;
+     let facts = class_member_facts(&bytes, budget)?;
+     let resolved = definition_of(&source);
+     let binding = class_name_binding(&source, &facts.this_class);
+@@ -5228,13 +5237,16 @@ fn read_definition(
+         binding,
+         member_table: facts.stopped_at.clone(),
+     });
+-    Ok(ConfirmedRead {
+-        class,
+-        facts,
+-        diagnostics,
+-        bytes,
+-        source,
+-    })
++    Ok((
++        ConfirmedRead {
++            class,
++            facts,
++            diagnostics,
++            bytes,
++            source,
++        },
++        retained,
++    ))
+ }
+ 
+ // ---------------------------------------------------------------------------------------------

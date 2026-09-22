@@ -1,0 +1,315 @@
+binary: target/release/deps/p5_optimize_workloads-94e8953be8f8be8a
+platform: macOS-26.6.2-arm64-arm-64bit arm64; python 3.9.6
+cells: 11; repeats: 10; load at start: [2.73388671875, 3.39404296875, 4.19873046875]
+rep  0 w1:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     6.5MiB samples 4 exit 0
+rep  0 w1:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     6.6MiB samples 4 exit 0
+rep  0 w2:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     5.1MiB samples 1 exit 0
+rep  0 w2:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     5.2MiB samples 1 exit 0
+rep  0 w3:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  0 w3:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  0 w5:tests/fixtures (in-process fixture):capacity=roomy:off        wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  0 w5:tests/fixtures (in-process fixture):capacity=roomy:on         wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  0 w5:tests/fixtures (in-process fixture):capacity=tiny:off         wall    0.02s rss     7.7MiB samples 2 exit 0
+rep  0 w5:tests/fixtures (in-process fixture):capacity=tiny:on          wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  0 w5:tests/fixtures (in-process fixture):capacity=none:off         wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  0 w5:tests/fixtures (in-process fixture):capacity=none:on          wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  1 w1:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     6.6MiB samples 4 exit 0
+rep  1 w1:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     6.7MiB samples 4 exit 0
+rep  1 w2:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     5.2MiB samples 1 exit 0
+rep  1 w2:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     5.1MiB samples 1 exit 0
+rep  1 w3:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     7.4MiB samples 5 exit 0
+rep  1 w3:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  1 w5:tests/fixtures (in-process fixture):capacity=roomy:off        wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  1 w5:tests/fixtures (in-process fixture):capacity=roomy:on         wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  1 w5:tests/fixtures (in-process fixture):capacity=tiny:off         wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  1 w5:tests/fixtures (in-process fixture):capacity=tiny:on          wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  1 w5:tests/fixtures (in-process fixture):capacity=none:off         wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  1 w5:tests/fixtures (in-process fixture):capacity=none:on          wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  2 w1:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     6.9MiB samples 4 exit 0
+rep  2 w1:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     6.6MiB samples 4 exit 0
+rep  2 w2:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     5.2MiB samples 1 exit 0
+rep  2 w2:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     5.1MiB samples 1 exit 0
+rep  2 w3:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  2 w3:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  2 w5:tests/fixtures (in-process fixture):capacity=roomy:off        wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  2 w5:tests/fixtures (in-process fixture):capacity=roomy:on         wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  2 w5:tests/fixtures (in-process fixture):capacity=tiny:off         wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  2 w5:tests/fixtures (in-process fixture):capacity=tiny:on          wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  2 w5:tests/fixtures (in-process fixture):capacity=none:off         wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  2 w5:tests/fixtures (in-process fixture):capacity=none:on          wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  3 w1:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     6.6MiB samples 4 exit 0
+rep  3 w1:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     6.6MiB samples 4 exit 0
+rep  3 w2:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     5.1MiB samples 1 exit 0
+rep  3 w2:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     5.1MiB samples 1 exit 0
+rep  3 w3:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     7.4MiB samples 5 exit 0
+rep  3 w3:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  3 w5:tests/fixtures (in-process fixture):capacity=roomy:off        wall    0.02s rss     7.7MiB samples 2 exit 0
+rep  3 w5:tests/fixtures (in-process fixture):capacity=roomy:on         wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  3 w5:tests/fixtures (in-process fixture):capacity=tiny:off         wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  3 w5:tests/fixtures (in-process fixture):capacity=tiny:on          wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  3 w5:tests/fixtures (in-process fixture):capacity=none:off         wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  3 w5:tests/fixtures (in-process fixture):capacity=none:on          wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  4 w1:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     6.6MiB samples 4 exit 0
+rep  4 w1:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     6.6MiB samples 4 exit 0
+rep  4 w2:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     5.1MiB samples 1 exit 0
+rep  4 w2:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     5.1MiB samples 1 exit 0
+rep  4 w3:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  4 w3:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  4 w5:tests/fixtures (in-process fixture):capacity=roomy:off        wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  4 w5:tests/fixtures (in-process fixture):capacity=roomy:on         wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  4 w5:tests/fixtures (in-process fixture):capacity=tiny:off         wall    0.02s rss     7.4MiB samples 2 exit 0
+rep  4 w5:tests/fixtures (in-process fixture):capacity=tiny:on          wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  4 w5:tests/fixtures (in-process fixture):capacity=none:off         wall    0.02s rss     7.7MiB samples 2 exit 0
+rep  4 w5:tests/fixtures (in-process fixture):capacity=none:on          wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  5 w1:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     6.6MiB samples 4 exit 0
+rep  5 w1:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     6.6MiB samples 4 exit 0
+rep  5 w2:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     5.2MiB samples 1 exit 0
+rep  5 w2:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     5.2MiB samples 1 exit 0
+rep  5 w3:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  5 w3:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  5 w5:tests/fixtures (in-process fixture):capacity=roomy:off        wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  5 w5:tests/fixtures (in-process fixture):capacity=roomy:on         wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  5 w5:tests/fixtures (in-process fixture):capacity=tiny:off         wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  5 w5:tests/fixtures (in-process fixture):capacity=tiny:on          wall    0.02s rss     7.4MiB samples 2 exit 0
+rep  5 w5:tests/fixtures (in-process fixture):capacity=none:off         wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  5 w5:tests/fixtures (in-process fixture):capacity=none:on          wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  6 w1:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     6.7MiB samples 4 exit 0
+rep  6 w1:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     6.6MiB samples 4 exit 0
+rep  6 w2:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     5.2MiB samples 1 exit 0
+rep  6 w2:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     5.1MiB samples 1 exit 0
+rep  6 w3:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  6 w3:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     7.6MiB samples 5 exit 0
+rep  6 w5:tests/fixtures (in-process fixture):capacity=roomy:off        wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  6 w5:tests/fixtures (in-process fixture):capacity=roomy:on         wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  6 w5:tests/fixtures (in-process fixture):capacity=tiny:off         wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  6 w5:tests/fixtures (in-process fixture):capacity=tiny:on          wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  6 w5:tests/fixtures (in-process fixture):capacity=none:off         wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  6 w5:tests/fixtures (in-process fixture):capacity=none:on          wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  7 w1:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     6.6MiB samples 4 exit 0
+rep  7 w1:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     6.6MiB samples 4 exit 0
+rep  7 w2:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     5.1MiB samples 1 exit 0
+rep  7 w2:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     5.2MiB samples 1 exit 0
+rep  7 w3:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  7 w3:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  7 w5:tests/fixtures (in-process fixture):capacity=roomy:off        wall    0.02s rss     7.4MiB samples 2 exit 0
+rep  7 w5:tests/fixtures (in-process fixture):capacity=roomy:on         wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  7 w5:tests/fixtures (in-process fixture):capacity=tiny:off         wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  7 w5:tests/fixtures (in-process fixture):capacity=tiny:on          wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  7 w5:tests/fixtures (in-process fixture):capacity=none:off         wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  7 w5:tests/fixtures (in-process fixture):capacity=none:on          wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  8 w1:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     6.6MiB samples 4 exit 0
+rep  8 w1:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     6.6MiB samples 4 exit 0
+rep  8 w2:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     5.1MiB samples 1 exit 0
+rep  8 w2:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     5.2MiB samples 1 exit 0
+rep  8 w3:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  8 w3:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     7.6MiB samples 5 exit 0
+rep  8 w5:tests/fixtures (in-process fixture):capacity=roomy:off        wall    0.02s rss     7.8MiB samples 2 exit 0
+rep  8 w5:tests/fixtures (in-process fixture):capacity=roomy:on         wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  8 w5:tests/fixtures (in-process fixture):capacity=tiny:off         wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  8 w5:tests/fixtures (in-process fixture):capacity=tiny:on          wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  8 w5:tests/fixtures (in-process fixture):capacity=none:off         wall    0.02s rss     7.7MiB samples 2 exit 0
+rep  8 w5:tests/fixtures (in-process fixture):capacity=none:on          wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  9 w1:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     6.6MiB samples 4 exit 0
+rep  9 w1:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     6.7MiB samples 4 exit 0
+rep  9 w2:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     5.1MiB samples 1 exit 0
+rep  9 w2:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     5.1MiB samples 1 exit 0
+rep  9 w3:tests/fixtures (in-process fixture)::off                      wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  9 w3:tests/fixtures (in-process fixture)::on                       wall    0.01s rss     7.5MiB samples 5 exit 0
+rep  9 w5:tests/fixtures (in-process fixture):capacity=roomy:off        wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  9 w5:tests/fixtures (in-process fixture):capacity=roomy:on         wall    0.02s rss     7.5MiB samples 2 exit 0
+rep  9 w5:tests/fixtures (in-process fixture):capacity=tiny:off         wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  9 w5:tests/fixtures (in-process fixture):capacity=tiny:on          wall    0.02s rss     7.6MiB samples 2 exit 0
+rep  9 w5:tests/fixtures (in-process fixture):capacity=none:off         wall    0.02s rss     7.4MiB samples 2 exit 0
+rep  9 w5:tests/fixtures (in-process fixture):capacity=none:on          wall    0.02s rss     7.8MiB samples 2 exit 0
+rep  0 w1:bcprov-jdk15on-152.jar::off                                   wall    0.55s rss    26.0MiB samples 4 exit 0
+rep  0 w1:bcprov-jdk15on-152.jar::on                                    wall    0.55s rss    26.6MiB samples 4 exit 0
+rep  0 w2:bcprov-jdk15on-152.jar::off                                   wall    0.28s rss    19.6MiB samples 1 exit 0
+rep  0 w2:bcprov-jdk15on-152.jar::on                                    wall    0.28s rss    19.4MiB samples 1 exit 0
+rep  0 w3:bcprov-jdk15on-152.jar::off                                   wall    0.28s rss    21.9MiB samples 5 exit 0
+rep  0 w3:bcprov-jdk15on-152.jar::on                                    wall    0.28s rss    22.0MiB samples 5 exit 0
+rep  0 w5:bcprov-jdk15on-152.jar:capacity=roomy:off                     wall    4.02s rss   126.6MiB samples 2 exit 0
+rep  0 w5:bcprov-jdk15on-152.jar:capacity=roomy:on                      wall    3.99s rss   124.0MiB samples 2 exit 0
+rep  0 w5:bcprov-jdk15on-152.jar:capacity=tiny:off                      wall    4.01s rss   119.7MiB samples 2 exit 0
+rep  0 w5:bcprov-jdk15on-152.jar:capacity=tiny:on                       wall    4.02s rss   122.6MiB samples 2 exit 0
+rep  1 w1:bcprov-jdk15on-152.jar::off                                   wall    0.55s rss    25.9MiB samples 4 exit 0
+rep  1 w1:bcprov-jdk15on-152.jar::on                                    wall    0.55s rss    25.7MiB samples 4 exit 0
+rep  1 w2:bcprov-jdk15on-152.jar::off                                   wall    0.28s rss    19.5MiB samples 1 exit 0
+rep  1 w2:bcprov-jdk15on-152.jar::on                                    wall    0.28s rss    19.4MiB samples 1 exit 0
+rep  1 w3:bcprov-jdk15on-152.jar::off                                   wall    0.28s rss    21.7MiB samples 5 exit 0
+rep  1 w3:bcprov-jdk15on-152.jar::on                                    wall    0.28s rss    21.6MiB samples 5 exit 0
+rep  1 w5:bcprov-jdk15on-152.jar:capacity=roomy:off                     wall    4.01s rss   123.3MiB samples 2 exit 0
+rep  1 w5:bcprov-jdk15on-152.jar:capacity=roomy:on                      wall    4.04s rss   125.5MiB samples 2 exit 0
+rep  1 w5:bcprov-jdk15on-152.jar:capacity=tiny:off                      wall    4.11s rss   120.8MiB samples 2 exit 0
+rep  1 w5:bcprov-jdk15on-152.jar:capacity=tiny:on                       wall    4.10s rss   122.2MiB samples 2 exit 0
+rep  2 w1:bcprov-jdk15on-152.jar::off                                   wall    0.55s rss    27.1MiB samples 4 exit 0
+rep  2 w1:bcprov-jdk15on-152.jar::on                                    wall    0.56s rss    25.9MiB samples 4 exit 0
+rep  2 w2:bcprov-jdk15on-152.jar::off                                   wall    0.28s rss    19.7MiB samples 1 exit 0
+rep  2 w2:bcprov-jdk15on-152.jar::on                                    wall    0.28s rss    19.8MiB samples 1 exit 0
+rep  2 w3:bcprov-jdk15on-152.jar::off                                   wall    0.29s rss    22.0MiB samples 5 exit 0
+rep  2 w3:bcprov-jdk15on-152.jar::on                                    wall    0.29s rss    21.9MiB samples 5 exit 0
+rep  2 w5:bcprov-jdk15on-152.jar:capacity=roomy:off                     wall    4.09s rss   117.8MiB samples 2 exit 0
+rep  2 w5:bcprov-jdk15on-152.jar:capacity=roomy:on                      wall    4.07s rss   126.1MiB samples 2 exit 0
+rep  2 w5:bcprov-jdk15on-152.jar:capacity=tiny:off                      wall    4.14s rss   118.0MiB samples 2 exit 0
+rep  2 w5:bcprov-jdk15on-152.jar:capacity=tiny:on                       wall    4.16s rss   127.0MiB samples 2 exit 0
+rep  3 w1:bcprov-jdk15on-152.jar::off                                   wall    0.56s rss    26.0MiB samples 4 exit 0
+rep  3 w1:bcprov-jdk15on-152.jar::on                                    wall    0.56s rss    26.2MiB samples 4 exit 0
+rep  3 w2:bcprov-jdk15on-152.jar::off                                   wall    0.29s rss    19.8MiB samples 1 exit 0
+rep  3 w2:bcprov-jdk15on-152.jar::on                                    wall    0.29s rss    19.8MiB samples 1 exit 0
+rep  3 w3:bcprov-jdk15on-152.jar::off                                   wall    0.28s rss    21.8MiB samples 5 exit 0
+rep  3 w3:bcprov-jdk15on-152.jar::on                                    wall    0.29s rss    21.7MiB samples 5 exit 0
+rep  3 w5:bcprov-jdk15on-152.jar:capacity=roomy:off                     wall    4.08s rss   113.4MiB samples 2 exit 0
+rep  3 w5:bcprov-jdk15on-152.jar:capacity=roomy:on                      wall    4.05s rss   123.4MiB samples 2 exit 0
+rep  3 w5:bcprov-jdk15on-152.jar:capacity=tiny:off                      wall    4.10s rss   126.8MiB samples 2 exit 0
+rep  3 w5:bcprov-jdk15on-152.jar:capacity=tiny:on                       wall    4.14s rss   125.6MiB samples 2 exit 0
+rep  4 w1:bcprov-jdk15on-152.jar::off                                   wall    0.56s rss    26.1MiB samples 4 exit 0
+rep  4 w1:bcprov-jdk15on-152.jar::on                                    wall    0.55s rss    25.8MiB samples 4 exit 0
+rep  4 w2:bcprov-jdk15on-152.jar::off                                   wall    0.28s rss    19.8MiB samples 1 exit 0
+rep  4 w2:bcprov-jdk15on-152.jar::on                                    wall    0.28s rss    19.5MiB samples 1 exit 0
+rep  4 w3:bcprov-jdk15on-152.jar::off                                   wall    0.29s rss    22.0MiB samples 5 exit 0
+rep  4 w3:bcprov-jdk15on-152.jar::on                                    wall    0.29s rss    21.1MiB samples 5 exit 0
+rep  4 w5:bcprov-jdk15on-152.jar:capacity=roomy:off                     wall    4.09s rss   121.8MiB samples 2 exit 0
+rep  4 w5:bcprov-jdk15on-152.jar:capacity=roomy:on                      wall    4.03s rss   122.5MiB samples 2 exit 0
+rep  4 w5:bcprov-jdk15on-152.jar:capacity=tiny:off                      wall    4.11s rss   124.3MiB samples 2 exit 0
+rep  4 w5:bcprov-jdk15on-152.jar:capacity=tiny:on                       wall    4.10s rss   126.9MiB samples 2 exit 0
+rep  5 w1:bcprov-jdk15on-152.jar::off                                   wall    0.55s rss    26.2MiB samples 4 exit 0
+rep  5 w1:bcprov-jdk15on-152.jar::on                                    wall    0.56s rss    27.2MiB samples 4 exit 0
+rep  5 w2:bcprov-jdk15on-152.jar::off                                   wall    0.28s rss    19.5MiB samples 1 exit 0
+rep  5 w2:bcprov-jdk15on-152.jar::on                                    wall    0.28s rss    19.7MiB samples 1 exit 0
+rep  5 w3:bcprov-jdk15on-152.jar::off                                   wall    0.28s rss    21.9MiB samples 5 exit 0
+rep  5 w3:bcprov-jdk15on-152.jar::on                                    wall    0.29s rss    21.6MiB samples 5 exit 0
+rep  5 w5:bcprov-jdk15on-152.jar:capacity=roomy:off                     wall    4.06s rss   128.9MiB samples 2 exit 0
+rep  5 w5:bcprov-jdk15on-152.jar:capacity=roomy:on                      wall    4.17s rss   119.0MiB samples 2 exit 0
+rep  5 w5:bcprov-jdk15on-152.jar:capacity=tiny:off                      wall    4.13s rss   117.5MiB samples 2 exit 0
+rep  5 w5:bcprov-jdk15on-152.jar:capacity=tiny:on                       wall    4.13s rss   125.9MiB samples 2 exit 0
+rep  6 w1:bcprov-jdk15on-152.jar::off                                   wall    0.56s rss    26.8MiB samples 4 exit 0
+rep  6 w1:bcprov-jdk15on-152.jar::on                                    wall    0.56s rss    25.8MiB samples 4 exit 0
+rep  6 w2:bcprov-jdk15on-152.jar::off                                   wall    0.28s rss    19.8MiB samples 1 exit 0
+rep  6 w2:bcprov-jdk15on-152.jar::on                                    wall    0.28s rss    19.7MiB samples 1 exit 0
+rep  6 w3:bcprov-jdk15on-152.jar::off                                   wall    0.29s rss    21.9MiB samples 5 exit 0
+rep  6 w3:bcprov-jdk15on-152.jar::on                                    wall    0.29s rss    23.3MiB samples 5 exit 0
+rep  6 w5:bcprov-jdk15on-152.jar:capacity=roomy:off                     wall    4.10s rss   129.6MiB samples 2 exit 0
+rep  6 w5:bcprov-jdk15on-152.jar:capacity=roomy:on                      wall    4.08s rss   127.0MiB samples 2 exit 0
+rep  6 w5:bcprov-jdk15on-152.jar:capacity=tiny:off                      wall    4.11s rss   126.3MiB samples 2 exit 0
+rep  6 w5:bcprov-jdk15on-152.jar:capacity=tiny:on                       wall    4.13s rss   115.5MiB samples 2 exit 0
+rep  7 w1:bcprov-jdk15on-152.jar::off                                   wall    0.56s rss    25.5MiB samples 4 exit 0
+rep  7 w1:bcprov-jdk15on-152.jar::on                                    wall    0.56s rss    25.8MiB samples 4 exit 0
+rep  7 w2:bcprov-jdk15on-152.jar::off                                   wall    0.28s rss    19.5MiB samples 1 exit 0
+rep  7 w2:bcprov-jdk15on-152.jar::on                                    wall    0.28s rss    19.5MiB samples 1 exit 0
+rep  7 w3:bcprov-jdk15on-152.jar::off                                   wall    0.29s rss    22.0MiB samples 5 exit 0
+rep  7 w3:bcprov-jdk15on-152.jar::on                                    wall    0.29s rss    21.6MiB samples 5 exit 0
+rep  7 w5:bcprov-jdk15on-152.jar:capacity=roomy:off                     wall    4.03s rss   126.6MiB samples 2 exit 0
+rep  7 w5:bcprov-jdk15on-152.jar:capacity=roomy:on                      wall    4.05s rss   114.9MiB samples 2 exit 0
+rep  7 w5:bcprov-jdk15on-152.jar:capacity=tiny:off                      wall    4.07s rss   126.9MiB samples 2 exit 0
+rep  7 w5:bcprov-jdk15on-152.jar:capacity=tiny:on                       wall    4.07s rss   117.2MiB samples 2 exit 0
+rep  8 w1:bcprov-jdk15on-152.jar::off                                   wall    0.57s rss    25.9MiB samples 4 exit 0
+rep  8 w1:bcprov-jdk15on-152.jar::on                                    wall    0.56s rss    27.0MiB samples 4 exit 0
+rep  8 w2:bcprov-jdk15on-152.jar::off                                   wall    0.28s rss    19.4MiB samples 1 exit 0
+rep  8 w2:bcprov-jdk15on-152.jar::on                                    wall    0.28s rss    19.5MiB samples 1 exit 0
+rep  8 w3:bcprov-jdk15on-152.jar::off                                   wall    0.29s rss    21.8MiB samples 5 exit 0
+rep  8 w3:bcprov-jdk15on-152.jar::on                                    wall    0.29s rss    21.6MiB samples 5 exit 0
+rep  8 w5:bcprov-jdk15on-152.jar:capacity=roomy:off                     wall    4.03s rss   127.0MiB samples 2 exit 0
+rep  8 w5:bcprov-jdk15on-152.jar:capacity=roomy:on                      wall    4.04s rss   115.7MiB samples 2 exit 0
+rep  8 w5:bcprov-jdk15on-152.jar:capacity=tiny:off                      wall    4.11s rss   120.5MiB samples 2 exit 0
+rep  8 w5:bcprov-jdk15on-152.jar:capacity=tiny:on                       wall    4.06s rss   123.4MiB samples 2 exit 0
+rep  9 w1:bcprov-jdk15on-152.jar::off                                   wall    0.56s rss    26.2MiB samples 4 exit 0
+rep  9 w1:bcprov-jdk15on-152.jar::on                                    wall    0.56s rss    25.5MiB samples 4 exit 0
+rep  9 w2:bcprov-jdk15on-152.jar::off                                   wall    0.28s rss    19.4MiB samples 1 exit 0
+rep  9 w2:bcprov-jdk15on-152.jar::on                                    wall    0.28s rss    19.4MiB samples 1 exit 0
+rep  9 w3:bcprov-jdk15on-152.jar::off                                   wall    0.29s rss    21.9MiB samples 5 exit 0
+rep  9 w3:bcprov-jdk15on-152.jar::on                                    wall    0.29s rss    22.4MiB samples 5 exit 0
+rep  9 w5:bcprov-jdk15on-152.jar:capacity=roomy:off                     wall    4.07s rss   121.1MiB samples 2 exit 0
+rep  9 w5:bcprov-jdk15on-152.jar:capacity=roomy:on                      wall    4.11s rss   121.9MiB samples 2 exit 0
+rep  9 w5:bcprov-jdk15on-152.jar:capacity=tiny:off                      wall    4.14s rss   117.1MiB samples 2 exit 0
+rep  9 w5:bcprov-jdk15on-152.jar:capacity=tiny:on                       wall    4.14s rss   123.0MiB samples 2 exit 0
+
+=== medians per (cell, sample, arm); n is what the file really holds ===
+workload corpus                   factors          sample                           arm  n request_us sequence_us window_us  mat prep entry_bytes class_bytes  def h/c/s  retained refused
+w1       bcprov-jdk15on-152.jar                    w1-class-source                  off 10       2578           –      2588    0    1        2056        4112      0/0/0   3685071       0
+w1       bcprov-jdk15on-152.jar                    w1-class-source                  on  10       2600           –      2608    0    1        2056        4112      1/1/0   3687127       0
+w1       bcprov-jdk15on-152.jar                    w1-cold-method                   off 10       1364           –    275427    1    0        2056        2056      0/0/0   3685071       0
+w1       bcprov-jdk15on-152.jar                    w1-cold-method                   on  10       1366           –    275186    1    0        2056        2056      0/1/1   3687127       0
+w1       bcprov-jdk15on-152.jar                    w1-second-request                off 10         66           –       109    1    0        2056           0      0/0/0   3685071       0
+w1       bcprov-jdk15on-152.jar                    w1-second-request                on  10         50           –        93    0    0           0           0      1/1/0   3687127       0
+w1       bcprov-jdk15on-152.jar                    w1-second-snapshot               off 10       1290           –    274286    1    0        2056        2056      0/0/0   3685071       0
+w1       bcprov-jdk15on-152.jar                    w1-second-snapshot               on  10       1264           –    274664    1    0        2056        2056    -1/-1/0   3687127       0
+w1       tests/fixtures (in-proc                   w1-class-source                  off 10        508           –       510    0    1       14100        1064      0/0/0     17935       0
+w1       tests/fixtures (in-proc                   w1-class-source                  on  10        524           –       526    0    1       14100        1064      1/1/0     18467       0
+w1       tests/fixtures (in-proc                   w1-cold-method                   off 10        156           –      1992    1    0         532         532      0/0/0     17935       0
+w1       tests/fixtures (in-proc                   w1-cold-method                   on  10        148           –      1944    1    0         532         532      0/1/1     18467       0
+w1       tests/fixtures (in-proc                   w1-second-request                off 10         54           –        99    1    0         532           0      0/0/0     17935       0
+w1       tests/fixtures (in-proc                   w1-second-request                on  10         61           –       114    0    0           0           0      1/1/0     18467       0
+w1       tests/fixtures (in-proc                   w1-second-snapshot               off 10         56           –      1654    1    0         532         532      0/0/0     17935       0
+w1       tests/fixtures (in-proc                   w1-second-snapshot               on  10         58           –      1663    1    0         532         532    -1/-1/0     18467       0
+w2       bcprov-jdk15on-152.jar                    w2-navigation-sequence           off 10       1346        1346    276428    9    0           –           –      0/0/0   3683015       0
+w2       bcprov-jdk15on-152.jar                    w2-navigation-sequence           on  10       1339        1340    276362    8    0           –           –      1/9/8   3691931       0
+w2       tests/fixtures (in-proc                   w2-navigation-sequence           off 10        202         202      3108    9    0           –           –      0/0/0     36047       0
+w2       tests/fixtures (in-proc                   w2-navigation-sequence           on  10        193         193      3019    8    0           –           –      1/9/8     44507       0
+w3       bcprov-jdk15on-152.jar                    w3-all-bodies-one-request        off 10       1322           –    275622    1    1        2056        4112      0/0/0   3683015       0
+w3       bcprov-jdk15on-152.jar                    w3-all-bodies-one-request        on  10       1336           –    276385    1    1        2056        4112      0/1/1   3685071       0
+w3       bcprov-jdk15on-152.jar                    w3-batch-per-class-across-class  off 10        598         598       631    8    4           –           –      0/0/0   3691187       0
+w3       bcprov-jdk15on-152.jar                    w3-batch-per-class-across-class  on  10        564         564       598    4    4           –           –      4/8/4   3700103       0
+w3       bcprov-jdk15on-152.jar                    w3-fixed-set-across-classes      off 10        705         705      1079    –    –           –           –      0/0/0   3691187       0
+w3       bcprov-jdk15on-152.jar                    w3-fixed-set-across-classes      on  10        704         704      1080    –    –           –           –      1/4/3   3699359       0
+w3       bcprov-jdk15on-152.jar                    w3-per-method-across-classes     off 10       2178        2178      2211   36   36           –           –      0/0/0   3691187       0
+w3       bcprov-jdk15on-152.jar                    w3-per-method-across-classes     on  10       1764        1764      1798    0   36           –           –    36/36/0   3700103       0
+w3       bcprov-jdk15on-152.jar                    w3-per-method-requests           off 10        686         686       972    3    0           –           –      0/0/0   3685071       0
+w3       bcprov-jdk15on-152.jar                    w3-per-method-requests           on  10        656         656       952    0    0           –           –      3/3/0   3687127       0
+w3       tests/fixtures (in-proc                   w3-all-bodies-one-request        off 10         56           –      2008    1    1         532        1064      0/0/0     17403       0
+w3       tests/fixtures (in-proc                   w3-all-bodies-one-request        on  10         53           –      1966    1    1         532        1064      0/1/1     17935       0
+w3       tests/fixtures (in-proc                   w3-batch-per-class-across-class  off 10        868         869       937    8    8           –           –      0/0/0     44507       0
+w3       tests/fixtures (in-proc                   w3-batch-per-class-across-class  on  10        796         796       864    0    8           –           –      8/8/0     52967       0
+w3       tests/fixtures (in-proc                   w3-fixed-set-across-classes      off 10        466         466      1153    –    –           –           –      0/0/0     44507       0
+w3       tests/fixtures (in-proc                   w3-fixed-set-across-classes      on  10        485         485      1187    –    –           –           –      1/8/7     52967       0
+w3       tests/fixtures (in-proc                   w3-per-method-across-classes     off 10       4186        4186      4258   77   77           –           –      0/0/0     44507       0
+w3       tests/fixtures (in-proc                   w3-per-method-across-classes     on  10       3468        3468      3541    0   77           –           –    77/77/0     52967       0
+w3       tests/fixtures (in-proc                   w3-per-method-requests           off 10        653         653      1352    8    0           –           –      0/0/0     17935       0
+w3       tests/fixtures (in-proc                   w3-per-method-requests           on  10        574         574      1288    0    0           –           –      8/8/0     18467       0
+w5       bcprov-jdk15on-152.jar   capacity=roomy   w5-round-trip                    off 10        498         498     16566   10    0           –           –      0/0/0   3685071       0
+w5       bcprov-jdk15on-152.jar   capacity=roomy   w5-round-trip                    on  10        416         416     16532    1    0           –           –     9/10/1   3687127       0
+w5       bcprov-jdk15on-152.jar   capacity=roomy   w5-sweep                         off 10    3716990           –   3976040    –    –     5004475     5004475      0/0/0   3683015       0
+w5       bcprov-jdk15on-152.jar   capacity=roomy   w5-sweep                         on  10    3701157           –   3961237    –    –     5004475     5004475      0/0/0   3683015       0
+w5       bcprov-jdk15on-152.jar   capacity=tiny    w5-round-trip                    off 10      24928       24928     40975   10    0           –           –      0/0/0      2056      19
+w5       bcprov-jdk15on-152.jar   capacity=tiny    w5-round-trip                    on  10      24826       24826     40906    1    0           –           –     9/10/1      2056       0
+w5       bcprov-jdk15on-152.jar   capacity=tiny    w5-sweep                         off 10    3733518           –   3993309    –    –     5004475     5004475      0/0/0         0       0
+w5       bcprov-jdk15on-152.jar   capacity=tiny    w5-sweep                         on  10    3732206           –   3995089    –    –     5004475     5004475      0/0/0         0       0
+w5       tests/fixtures (in-proc  capacity=none    w5-round-trip                    off 10        466         466      1520   10    0           –           –      0/0/0         0      30
+w5       tests/fixtures (in-proc  capacity=none    w5-round-trip                    on  10        470         470      1550   10    0           –           –     0/10/0         0      40
+w5       tests/fixtures (in-proc  capacity=none    w5-sweep                         off 10      14290           –     15530    –    –       32241       18673      0/0/0         0       2
+w5       tests/fixtures (in-proc  capacity=none    w5-sweep                         on  10      14124           –     15279    –    –       32241       18673      0/0/0         0       2
+w5       tests/fixtures (in-proc  capacity=roomy   w5-round-trip                    off 10        367         367      1384   10    0           –           –      0/0/0     36579       0
+w5       tests/fixtures (in-proc  capacity=roomy   w5-round-trip                    on  10        290         290      1304    1    0           –           –     9/10/1     37111       0
+w5       tests/fixtures (in-proc  capacity=roomy   w5-sweep                         off 10      14124           –     15299    –    –       32241       18673      0/0/0     36047       0
+w5       tests/fixtures (in-proc  capacity=roomy   w5-sweep                         on  10      14214           –     15448    –    –       32241       18673      0/0/0     36047       0
+w5       tests/fixtures (in-proc  capacity=tiny    w5-round-trip                    off 10        424         424      1472   10    0           –           –      0/0/0       532      19
+w5       tests/fixtures (in-proc  capacity=tiny    w5-round-trip                    on  10        356         356      1415    1    0           –           –     9/10/1      1064      19
+w5       tests/fixtures (in-proc  capacity=tiny    w5-sweep                         off 10      14234           –     15417    –    –       32241       18673      0/0/0         0       0
+w5       tests/fixtures (in-proc  capacity=tiny    w5-sweep                         on  10      14125           –     15272    –    –       32241       18673      0/0/0         0       0
+
+=== result identity across arms (a difference is a defect, never a reading) ===
+w1   bcprov-jdk15on-152.jar   w1-class-source                  identical=True off=['""'] on=['""']
+w1   bcprov-jdk15on-152.jar   w1-cold-method                   identical=True off=['"blake3:3a5f32b793f26d4e908704b086f927bb89c4681b811c66d50d243d8cbb11f9b5"'] on=['"blake3:3a5f32b793f26d4e908704b086f927bb89c4681b811c66d50d243d8cbb11f9b5"']
+w1   bcprov-jdk15on-152.jar   w1-second-request                identical=True off=['"blake3:3a5f32b793f26d4e908704b086f927bb89c4681b811c66d50d243d8cbb11f9b5"'] on=['"blake3:3a5f32b793f26d4e908704b086f927bb89c4681b811c66d50d243d8cbb11f9b5"']
+w1   bcprov-jdk15on-152.jar   w1-second-snapshot               identical=True off=['"blake3:3a5f32b793f26d4e908704b086f927bb89c4681b811c66d50d243d8cbb11f9b5"'] on=['"blake3:3a5f32b793f26d4e908704b086f927bb89c4681b811c66d50d243d8cbb11f9b5"']
+w1   tests/fixtures (in-process fixture) w1-class-source                  identical=True off=['""'] on=['""']
+w1   tests/fixtures (in-process fixture) w1-cold-method                   identical=True off=['"blake3:64a6cd6e068e36130f40e71998591641ba520b7a7c7aa1c66a37b563323cd59f"'] on=['"blake3:64a6cd6e068e36130f40e71998591641ba520b7a7c7aa1c66a37b563323cd59f"']
+w1   tests/fixtures (in-process fixture) w1-second-request                identical=True off=['"blake3:64a6cd6e068e36130f40e71998591641ba520b7a7c7aa1c66a37b563323cd59f"'] on=['"blake3:64a6cd6e068e36130f40e71998591641ba520b7a7c7aa1c66a37b563323cd59f"']
+w1   tests/fixtures (in-process fixture) w1-second-snapshot               identical=True off=['"blake3:64a6cd6e068e36130f40e71998591641ba520b7a7c7aa1c66a37b563323cd59f"'] on=['"blake3:64a6cd6e068e36130f40e71998591641ba520b7a7c7aa1c66a37b563323cd59f"']
+w2   bcprov-jdk15on-152.jar   w2-navigation-sequence           identical=True off=['"blake3:a434084ab0feeba93625c5266e1e5308496f4f0c1b7da5dde79eb8d65a999b96"'] on=['"blake3:a434084ab0feeba93625c5266e1e5308496f4f0c1b7da5dde79eb8d65a999b96"']
+w2   tests/fixtures (in-process fixture) w2-navigation-sequence           identical=True off=['"blake3:244a724a8a83237933d31f7b104bc7d399473dc4c1aab89936ea990393bf019c"'] on=['"blake3:244a724a8a83237933d31f7b104bc7d399473dc4c1aab89936ea990393bf019c"']
+w3   bcprov-jdk15on-152.jar   w3-all-bodies-one-request        identical=True off=['"blake3:25478af33c35e2d96b50aba2a999ab946e6bd8471f75f6ceb4fec940e33de8ac"'] on=['"blake3:25478af33c35e2d96b50aba2a999ab946e6bd8471f75f6ceb4fec940e33de8ac"']
+w3   bcprov-jdk15on-152.jar   w3-batch-per-class-across-classes identical=True off=['"blake3:feba4ccf945161b15771074640d41398993674cdbde80b44aff181beeb6b65b6"'] on=['"blake3:feba4ccf945161b15771074640d41398993674cdbde80b44aff181beeb6b65b6"']
+w3   bcprov-jdk15on-152.jar   w3-fixed-set-across-classes      identical=True off=['"blake3:adb4a0cb8afc4af7ebf9cbcc6bb2b63a01398753d6897641fe248b7e543c8b51"'] on=['"blake3:adb4a0cb8afc4af7ebf9cbcc6bb2b63a01398753d6897641fe248b7e543c8b51"']
+w3   bcprov-jdk15on-152.jar   w3-per-method-across-classes     identical=True off=['"blake3:feba4ccf945161b15771074640d41398993674cdbde80b44aff181beeb6b65b6"'] on=['"blake3:feba4ccf945161b15771074640d41398993674cdbde80b44aff181beeb6b65b6"']
+w3   bcprov-jdk15on-152.jar   w3-per-method-requests           identical=True off=['"blake3:6009f8f63ec2d95678d3f452eb25ffeb359d22d50c8d6a4458b6599f1a095808"'] on=['"blake3:6009f8f63ec2d95678d3f452eb25ffeb359d22d50c8d6a4458b6599f1a095808"']
+w3   tests/fixtures (in-process fixture) w3-all-bodies-one-request        identical=True off=['"blake3:175b03bc8f605352d43846cc3ead271b0e5ad3c77a770aad75bfe83d9874de31"'] on=['"blake3:175b03bc8f605352d43846cc3ead271b0e5ad3c77a770aad75bfe83d9874de31"']
+w3   tests/fixtures (in-process fixture) w3-batch-per-class-across-classes identical=True off=['"blake3:38ab8b987eb6d987cd0f3d9c8fdd2abd3e378e21d8e9ffc26469433ae619b12b"'] on=['"blake3:38ab8b987eb6d987cd0f3d9c8fdd2abd3e378e21d8e9ffc26469433ae619b12b"']
+w3   tests/fixtures (in-process fixture) w3-fixed-set-across-classes      identical=True off=['"blake3:a47b4fb4ac1984f713a6cfe5bd4eafa3b4afe1fea46976cc14752b7c1f6ffa7a"'] on=['"blake3:a47b4fb4ac1984f713a6cfe5bd4eafa3b4afe1fea46976cc14752b7c1f6ffa7a"']
+w3   tests/fixtures (in-process fixture) w3-per-method-across-classes     identical=True off=['"blake3:38ab8b987eb6d987cd0f3d9c8fdd2abd3e378e21d8e9ffc26469433ae619b12b"'] on=['"blake3:38ab8b987eb6d987cd0f3d9c8fdd2abd3e378e21d8e9ffc26469433ae619b12b"']
+w3   tests/fixtures (in-process fixture) w3-per-method-requests           identical=True off=['"blake3:21907381a19fa353fe4283c0882c460c74d9b7b499d246e50d43b0ee9d39fee4"'] on=['"blake3:21907381a19fa353fe4283c0882c460c74d9b7b499d246e50d43b0ee9d39fee4"']
+w5   bcprov-jdk15on-152.jar   w5-round-trip                    identical=True off=['"blake3:ee175d60b18767df730c3bff73f4f8b549ca64947897565478d3305711d178e8"'] on=['"blake3:ee175d60b18767df730c3bff73f4f8b549ca64947897565478d3305711d178e8"']
+w5   bcprov-jdk15on-152.jar   w5-sweep                         identical=True off=['"blake3:9438e521bca8d3702a1cfba464a1379571d8607287ae186d3287862fc855550a"'] on=['"blake3:9438e521bca8d3702a1cfba464a1379571d8607287ae186d3287862fc855550a"']
+w5   tests/fixtures (in-process fixture) w5-round-trip                    identical=True off=['"blake3:497afa001d1646e63ddab122eb1834b617b2204a62a25aec4fbf4cd71df3b50d"'] on=['"blake3:497afa001d1646e63ddab122eb1834b617b2204a62a25aec4fbf4cd71df3b50d"']
+w5   tests/fixtures (in-process fixture) w5-sweep                         identical=True off=['"blake3:dbb2061db5d1f22d34d9250a22a6261a5ee9e1663dd189fbbe3b2efaf2d666bb"'] on=['"blake3:dbb2061db5d1f22d34d9250a22a6261a5ee9e1663dd189fbbe3b2efaf2d666bb"']
+
+failures: 0
+load at end: [2.611328125, 3.05859375, 3.89404296875]

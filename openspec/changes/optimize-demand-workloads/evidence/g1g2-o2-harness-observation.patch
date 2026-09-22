@@ -1,0 +1,125 @@
+diff --git a/tests/p5_optimize_workloads.rs b/tests/p5_optimize_workloads.rs
+index a29d4d4..d0ea9ab 100644
+--- a/tests/p5_optimize_workloads.rs
++++ b/tests/p5_optimize_workloads.rs
+@@ -438,6 +438,13 @@ impl Sample {
+             "directory_parses": report.directory_parses,
+             "nested_materializations": report.nested_materializations,
+             "nested_materialized_bytes": report.nested_materialized_bytes,
++            // The 3.3 experiment's own product (reverted with the prototype): what the
++            // definition-read retention answered, kept and refused.
++            "definition_reads": report.definition_reads,
++            "definition_read_consultations": report.definition_read_consultations,
++            "definition_read_hits": report.definition_read_hits,
++            "definition_read_misses": report.definition_read_misses,
++            "definition_read_stored": report.definition_read_stored,
+         }));
+         self
+     }
+@@ -1393,6 +1400,10 @@ fn recover_one(
+     let first_result = micros(request_started.elapsed());
+     let usage = budget.usage();
+     let domain = sample.stages.phase("output", || domain_of(&recovered));
++    // The same result with the request's own **charges** removed (the 3.3 experiment's comparison:
++    // one arm answers a read from retention and charges fewer bytes for it, which is a resource
++    // reading and not a difference in what was presented).
++    let stripped = result_domain_of(&recovered);
+     sample = sample
+         .number("first_result_micros", first_result)
+         .number(
+@@ -1401,6 +1412,7 @@ fn recover_one(
+         )
+         .usage(&usage)
+         .cache(&opened.store.report())
++        .text("result_domain", stripped)
+         .domain(domain);
+     if let Some(before) = counts_before {
+         sample.counts = counts_after(before);
+@@ -1472,15 +1484,19 @@ fn w2(config: &Config) -> Vec<Sample> {
+         .sum::<u64>();
+     // The output phase is the caller's own rendering of what came back: the views are serialized
+     // there, so their encoding is not charged to the request that produced them.
+-    let (returned_bytes, sequence_domain) = sample.stages.phase("output", || {
++    let (returned_bytes, sequence_domain, stripped_domain) = sample.stages.phase("output", || {
+         let mut bytes = 0_u64;
+         let mut lines = Vec::new();
++        let mut stripped = Vec::new();
+         for view in views.iter().chain(control_views.iter()) {
+             bytes = bytes
+                 .saturating_add(serde_json::to_vec(view).map_or(0, |encoded| encoded.len() as u64));
+             lines.push(domain_of(view));
++            // The same views with the requests' own charges removed: the 3.3 experiment's
++            // cross-arm comparison, where a reused read legitimately charges fewer bytes.
++            stripped.push(result_domain_of(view));
+         }
+-        (bytes, lines_domain(&lines))
++        (bytes, lines_domain(&lines), lines_domain(&stripped))
+     });
+     sample.counts = counts_after(before);
+     count_numbers(&mut sample);
+@@ -1497,6 +1513,7 @@ fn w2(config: &Config) -> Vec<Sample> {
+             .series("per_request_class_headers", class_headers)
+             .series("per_request_method_bodies", body_decodes)
+             .text("sequence_domain", sequence_domain)
++            .text("result_sequence_domain", stripped_domain)
+             .cache(&opened.store.report()),
+     ]
+ }
+@@ -1601,16 +1618,18 @@ fn w3(config: &Config) -> Vec<Sample> {
+         }
+     });
+     let sequence = micros(started.elapsed());
+-    let (returned_bytes, sequence_domain) = sample.stages.phase("output", || {
++    let (returned_bytes, sequence_domain, stripped_domain) = sample.stages.phase("output", || {
+         let mut bytes = 0_u64;
+         let mut lines = Vec::new();
++        let mut stripped = Vec::new();
+         for report in &reports {
+             bytes = bytes.saturating_add(
+                 serde_json::to_vec(report).map_or(0, |encoded| encoded.len() as u64),
+             );
+             lines.push(domain_of(report));
++            stripped.push(result_domain_of(report));
+         }
+-        (bytes, lines_domain(&lines))
++        (bytes, lines_domain(&lines), lines_domain(&stripped))
+     });
+     sample.counts = counts_after(before);
+     count_numbers(&mut sample);
+@@ -1633,6 +1652,7 @@ fn w3(config: &Config) -> Vec<Sample> {
+             .number("returned_bytes", returned_bytes)
+             .series("per_request_micros", per_request)
+             .text("sequence_domain", sequence_domain)
++            .text("result_sequence_domain", stripped_domain)
+             .cache(&opened.store.report()),
+     );
+ 
+@@ -1673,16 +1693,18 @@ fn w3(config: &Config) -> Vec<Sample> {
+         }
+     });
+     let sequence = micros(started.elapsed());
+-    let (returned_bytes, sequence_domain) = sample.stages.phase("output", || {
++    let (returned_bytes, sequence_domain, stripped_domain) = sample.stages.phase("output", || {
+         let mut bytes = 0_u64;
+         let mut lines = Vec::new();
++        let mut stripped = Vec::new();
+         for report in &reports {
+             bytes = bytes.saturating_add(
+                 serde_json::to_vec(report).map_or(0, |encoded| encoded.len() as u64),
+             );
+             lines.push(domain_of(report));
++            stripped.push(result_domain_of(report));
+         }
+-        (bytes, lines_domain(&lines))
++        (bytes, lines_domain(&lines), lines_domain(&stripped))
+     });
+     samples.push(
+         sample
+@@ -1699,6 +1721,7 @@ fn w3(config: &Config) -> Vec<Sample> {
+             .number("returned_bytes", returned_bytes)
+             .series("per_request_micros", per_request)
+             .text("sequence_domain", sequence_domain)
++            .text("result_sequence_domain", stripped_domain)
+             .cache(&opened.store.report()),
+     );
+ 
