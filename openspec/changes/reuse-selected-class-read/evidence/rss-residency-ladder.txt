@@ -1,0 +1,28 @@
+# The capacity ladder out of process: one process per tier, one case per process
+#
+#     JARDE_REUSE_TIER=<tier> <binary> one_process_reads_one_tier_of_the_capacity_ladder --exact --nocapture
+# under /usr/bin/time -l (macOS): the process's maximum RSS beside the store's own residency.
+# The variable is the *test's* parameter: the library reads no environment and has no switch,
+# and the same code runs at every tier.
+#
+# binary: target/debug/deps/p5_definition_read_reuse-2865f3474a3b90ee
+# machine: Darwin arm64, Apple M4 Pro
+
+off run1 max_rss_bytes=5373952 | 8 request(s) over 4 definition(s); no store attached (the direct path)
+off run2 max_rss_bytes=5292032 | 8 request(s) over 4 definition(s); no store attached (the direct path)
+off run3 max_rss_bytes=5406720 | 8 request(s) over 4 definition(s); no store attached (the direct path)
+none run1 max_rss_bytes=5390336 | 8 request(s) over 4 definition(s); 0 entries / 0 containers / 0 definition reads (0 bytes), 0 retained bytes of 0 entries / 0 retained bytes allowed; refused 16 by entry limit, 0 by byte limit
+none run2 max_rss_bytes=5701632 | 8 request(s) over 4 definition(s); 0 entries / 0 containers / 0 definition reads (0 bytes), 0 retained bytes of 0 entries / 0 retained bytes allowed; refused 16 by entry limit, 0 by byte limit
+none run3 max_rss_bytes=5701632 | 8 request(s) over 4 definition(s); 0 entries / 0 containers / 0 definition reads (0 bytes), 0 retained bytes of 0 entries / 0 retained bytes allowed; refused 16 by entry limit, 0 by byte limit
+e1 run1 max_rss_bytes=5308416 | 8 request(s) over 4 definition(s); 0 entries / 1 containers / 0 definition reads (0 bytes), 2694 retained bytes of 1 entries / 1048576 retained bytes allowed; refused 8 by entry limit, 0 by byte limit
+e1 run2 max_rss_bytes=5292032 | 8 request(s) over 4 definition(s); 0 entries / 1 containers / 0 definition reads (0 bytes), 2694 retained bytes of 1 entries / 1048576 retained bytes allowed; refused 8 by entry limit, 0 by byte limit
+e1 run3 max_rss_bytes=5406720 | 8 request(s) over 4 definition(s); 0 entries / 1 containers / 0 definition reads (0 bytes), 2694 retained bytes of 1 entries / 1048576 retained bytes allowed; refused 8 by entry limit, 0 by byte limit
+tiny run1 max_rss_bytes=5357568 | 8 request(s) over 4 definition(s); 0 entries / 0 containers / 2 definition reads (723 bytes), 723 retained bytes of 8 entries / 1024 retained bytes allowed; refused 0 by entry limit, 12 by byte limit
+tiny run2 max_rss_bytes=5357568 | 8 request(s) over 4 definition(s); 0 entries / 0 containers / 2 definition reads (723 bytes), 723 retained bytes of 8 entries / 1024 retained bytes allowed; refused 0 by entry limit, 12 by byte limit
+tiny run3 max_rss_bytes=5357568 | 8 request(s) over 4 definition(s); 0 entries / 0 containers / 2 definition reads (723 bytes), 723 retained bytes of 8 entries / 1024 retained bytes allowed; refused 0 by entry limit, 12 by byte limit
+medium run1 max_rss_bytes=5308416 | 8 request(s) over 4 definition(s); 0 entries / 1 containers / 4 definition reads (1813 bytes), 4507 retained bytes of 8 entries / 1048576 retained bytes allowed; refused 0 by entry limit, 0 by byte limit
+medium run2 max_rss_bytes=5292032 | 8 request(s) over 4 definition(s); 0 entries / 1 containers / 4 definition reads (1813 bytes), 4507 retained bytes of 8 entries / 1048576 retained bytes allowed; refused 0 by entry limit, 0 by byte limit
+medium run3 max_rss_bytes=5324800 | 8 request(s) over 4 definition(s); 0 entries / 1 containers / 4 definition reads (1813 bytes), 4507 retained bytes of 8 entries / 1048576 retained bytes allowed; refused 0 by entry limit, 0 by byte limit
+roomy run1 max_rss_bytes=5292032 | 8 request(s) over 4 definition(s); 0 entries / 1 containers / 4 definition reads (1813 bytes), 4507 retained bytes of 16384 entries / 134217728 retained bytes allowed; refused 0 by entry limit, 0 by byte limit
+roomy run2 max_rss_bytes=5341184 | 8 request(s) over 4 definition(s); 0 entries / 1 containers / 4 definition reads (1813 bytes), 4507 retained bytes of 16384 entries / 134217728 retained bytes allowed; refused 0 by entry limit, 0 by byte limit
+roomy run3 max_rss_bytes=5341184 | 8 request(s) over 4 definition(s); 0 entries / 1 containers / 4 definition reads (1813 bytes), 4507 retained bytes of 16384 entries / 134217728 retained bytes allowed; refused 0 by entry limit, 0 by byte limit

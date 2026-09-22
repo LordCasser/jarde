@@ -1,0 +1,63 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/p5_definition_read_reuse.rs (target/debug/deps/p5_definition_read_reuse-2865f3474a3b90ee)
+
+running 11 tests
+stopped reads retained: cancelled 0, limit 0, partial 0, unverified 0; complete read: 1 definition(s), 191 byte(s)
+test a_read_that_stopped_is_never_retained_and_a_read_that_finished_is ... ok
+one read, one hit, 7 identity miss(es) (the same raw name at another ordinal, the same bytes under another raw name, the same coordinates in another container, another digest, another declared length, another variant), and the read itself weighed 191 byte(s)
+test a_retained_read_answers_for_its_own_definition_and_for_no_other ... ok
+tier roomy: 8 request(s) over 4 definition(s); 0 entries / 1 containers / 4 definition reads (1813 bytes), 4507 retained bytes of 16384 entries / 134217728 retained bytes allowed; refused 0 by entry limit, 0 by byte limit
+test one_process_reads_one_tier_of_the_capacity_ladder ... ok
+cold stop `EntryBytes` (entry_bytes 190 of 191); warm completion with the entry read waived [ArchiveEntries=0 ReadBytes=0 EntryBytes=0]
+a hit under a spent item allowance: 0 item(s) published, stop `Partial { reason: BudgetExceeded { dimension: ResultItems }, usage: UsageSnapshot { input_bytes: 0, archive_entries: 0, entry_bytes: 0, read_bytes: 0, class_bytes: 191, attribute_bytes: 49, code_bytes: 0, result_items: 5, output_bytes: 0, class_headers: 1, method_bodies: 0, ir_items: 0, ir_edges: 0, analysis_steps: 0, normalization_clones: 0, nested_depth: 0, dependency_depth: 0, elapsed_millis: 0 } }`
+test a_tight_budget_stops_truthfully_with_and_without_a_hit ... ok
+fallbacks: no store (ArchiveEntries=3 ReadBytes=191 EntryBytes=191 charged), refused 2/0, foreign snapshot 0 hit(s), cancelled, foreign declaration discarded 2/0
+test every_fallback_reads_the_definition_itself ... ok
+one store: 6 definition(s) of two snapshots, 6 read(s) kept, 1 hit(s), 6 miss(es)
+test one_store_answers_across_entry_points_and_not_across_snapshots ... ok
+none: 8 request(s) over 4 definition(s) twice -> 0 kept (0 of 0 retained bytes), hits 0, misses 8, refused 16/0
+e1: 8 request(s) over 4 definition(s) twice -> 0 kept (0 of 2694 retained bytes), hits 0, misses 8, refused 8/0
+tiny: 8 request(s) over 4 definition(s) twice -> 2 kept (723 of 723 retained bytes), hits 2, misses 6, refused 0/12
+medium: 8 request(s) over 4 definition(s) twice -> 4 kept (1813 of 4507 retained bytes), hits 4, misses 4, refused 0/0
+roomy: 8 request(s) over 4 definition(s) twice -> 4 kept (1813 of 4507 retained bytes), hits 4, misses 4, refused 0/0
+test the_capacity_ladder_keeps_the_answer_and_states_what_it_refused ... ok
+  direct all [InputBytes=0 ArchiveEntries=5 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=29 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+  reuse  all [InputBytes=0 ArchiveEntries=5 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=29 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+step 0 (class_view #1) direct [ArchiveEntries=5 ReadBytes=352 EntryBytes=532] reuse [ArchiveEntries=5 ReadBytes=352 EntryBytes=532] materializations 1 vs 1
+  direct all [InputBytes=0 ArchiveEntries=5 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=29 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+  reuse  all [InputBytes=0 ArchiveEntries=5 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=29 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+  direct all [InputBytes=0 ArchiveEntries=5 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=29 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+  reuse  all [InputBytes=0 ArchiveEntries=4 EntryBytes=0 ReadBytes=0 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=29 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+step 1 (class_view #2) direct [ArchiveEntries=5 ReadBytes=352 EntryBytes=532] reuse [ArchiveEntries=4 ReadBytes=0 EntryBytes=0] materializations 1 vs 0
+  direct all [InputBytes=0 ArchiveEntries=5 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=29 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+  reuse  all [InputBytes=0 ArchiveEntries=4 EntryBytes=0 ReadBytes=0 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=29 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+  direct all [InputBytes=0 ArchiveEntries=9 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=278 CodeBytes=5 ResultItems=8 OutputBytes=179 ClassHeaders=1 MethodBodies=1 IrItems=51 IrEdges=2 AnalysisSteps=26 NormalizationClones=0]
+  reuse  all [InputBytes=0 ArchiveEntries=8 EntryBytes=0 ReadBytes=0 ClassBytes=532 AttributeBytes=278 CodeBytes=5 ResultItems=8 OutputBytes=179 ClassHeaders=1 MethodBodies=1 IrItems=51 IrEdges=2 AnalysisSteps=26 NormalizationClones=0]
+step 2 (recover_method #1) direct [ArchiveEntries=9 ReadBytes=352 EntryBytes=532] reuse [ArchiveEntries=8 ReadBytes=0 EntryBytes=0] materializations 1 vs 0
+  direct all [InputBytes=0 ArchiveEntries=9 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=278 CodeBytes=5 ResultItems=8 OutputBytes=179 ClassHeaders=1 MethodBodies=1 IrItems=51 IrEdges=2 AnalysisSteps=26 NormalizationClones=0]
+  reuse  all [InputBytes=0 ArchiveEntries=8 EntryBytes=0 ReadBytes=0 ClassBytes=532 AttributeBytes=278 CodeBytes=5 ResultItems=8 OutputBytes=179 ClassHeaders=1 MethodBodies=1 IrItems=51 IrEdges=2 AnalysisSteps=26 NormalizationClones=0]
+  direct all [InputBytes=0 ArchiveEntries=9 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=278 CodeBytes=5 ResultItems=8 OutputBytes=179 ClassHeaders=1 MethodBodies=1 IrItems=51 IrEdges=2 AnalysisSteps=26 NormalizationClones=0]
+  reuse  all [InputBytes=0 ArchiveEntries=8 EntryBytes=0 ReadBytes=0 ClassBytes=532 AttributeBytes=278 CodeBytes=5 ResultItems=8 OutputBytes=179 ClassHeaders=1 MethodBodies=1 IrItems=51 IrEdges=2 AnalysisSteps=26 NormalizationClones=0]
+step 3 (recover_method #2) direct [ArchiveEntries=9 ReadBytes=352 EntryBytes=532] reuse [ArchiveEntries=8 ReadBytes=0 EntryBytes=0] materializations 1 vs 0
+  direct all [InputBytes=0 ArchiveEntries=9 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=278 CodeBytes=5 ResultItems=8 OutputBytes=179 ClassHeaders=1 MethodBodies=1 IrItems=51 IrEdges=2 AnalysisSteps=26 NormalizationClones=0]
+  reuse  all [InputBytes=0 ArchiveEntries=8 EntryBytes=0 ReadBytes=0 ClassBytes=532 AttributeBytes=278 CodeBytes=5 ResultItems=8 OutputBytes=179 ClassHeaders=1 MethodBodies=1 IrItems=51 IrEdges=2 AnalysisSteps=26 NormalizationClones=0]
+  direct all [InputBytes=0 ArchiveEntries=5 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=29 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+  reuse  all [InputBytes=0 ArchiveEntries=4 EntryBytes=0 ReadBytes=0 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=29 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+step 4 (list_members) direct [ArchiveEntries=5 ReadBytes=352 EntryBytes=532] reuse [ArchiveEntries=4 ReadBytes=0 EntryBytes=0] materializations 0 vs 0
+  direct all [InputBytes=0 ArchiveEntries=5 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=29 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+  reuse  all [InputBytes=0 ArchiveEntries=4 EntryBytes=0 ReadBytes=0 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=29 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+  direct all [InputBytes=0 ArchiveEntries=5 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=30 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+  reuse  all [InputBytes=0 ArchiveEntries=5 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=30 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+step 5 (class_view by name) direct [ArchiveEntries=5 ReadBytes=352 EntryBytes=532] reuse [ArchiveEntries=5 ReadBytes=352 EntryBytes=532] materializations 0 vs 0
+  direct all [InputBytes=0 ArchiveEntries=5 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=30 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+  reuse  all [InputBytes=0 ArchiveEntries=5 EntryBytes=532 ReadBytes=352 ClassBytes=532 AttributeBytes=255 CodeBytes=0 ResultItems=30 OutputBytes=0 ClassHeaders=1 MethodBodies=0 IrItems=0 IrEdges=0 AnalysisSteps=0 NormalizationClones=0]
+the same documents and the same work on both paths; class materializations 4 -> 1 over 4 answered step(s)
+test the_direct_path_and_the_reuse_path_publish_one_answer_and_one_workload ... ok
+name path: 0 consultations over two search rounds; identity path: 1 hit(s) of 2 consultation(s)
+test the_name_search_reads_its_candidates_itself ... ok
+test the_offered_bytes_are_the_entrys_own_bytes ... ok
+one class, two snapshots, one store: hits 0 -> 0 -> 1, reads kept 2, consultations 3
+test two_snapshots_of_one_class_do_not_answer_for_each_other ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
