@@ -1,0 +1,8 @@
+=== fmt ===
+fmt clean
+=== clippy ===
+    Checking jarde v0.1.0 (/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a0c6a3-af75-76a1-9d06-492ebea783a8)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.38s
+=== test (workspace, all targets, all features) ===
+test exit=0
+110

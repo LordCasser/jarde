@@ -1,0 +1,571 @@
+binary: /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a0c6a3-af75-76a1-9d06-492ebea783a8/target/release/deps/p5_optimize_workloads-4e425b0298ea85ea
+out:    /Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a0c6a3-af75-76a1-9d06-492ebea783a8/openspec/changes/optimize-demand-workloads/evidence/investigation-bcprov-raw.jsonl
+load:   {'load_average': [1.79052734375, 3.90185546875, 4.76025390625], 'platform': 'macOS-26.6.2-arm64-arm-64bit', 'machine': 'arm64', 'python': '3.9.6'}
+rep  0 w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.55s rss     26.2MiB samples 4 exit 0
+rep  0 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.27s rss     20.0MiB samples 1 exit 0
+rep  0 w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.28s rss     21.7MiB samples 5 exit 0
+rep  0 w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     1.31s rss     66.4MiB samples 7 exit 0
+rep  0 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=none wall     3.98s rss    125.7MiB samples 2 exit 0
+rep  0 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny wall     3.98s rss    127.1MiB samples 2 exit 0
+rep  0 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=e4 wall     3.97s rss    120.5MiB samples 2 exit 0
+rep  0 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy wall     3.94s rss    124.0MiB samples 2 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=1 wall     3.93s rss    128.1MiB samples 1 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=2 wall     3.05s rss    119.1MiB samples 1 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=4 wall     2.62s rss    137.5MiB samples 1 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=6 wall     2.40s rss    162.3MiB samples 1 exit 0
+rep  0 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:stop=2:workers=2 wall     0.27s rss     20.1MiB samples 1 exit 0
+rep  1 w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.56s rss     26.2MiB samples 4 exit 0
+rep  1 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.28s rss     19.6MiB samples 1 exit 0
+rep  1 w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.28s rss     21.9MiB samples 5 exit 0
+rep  1 w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     1.33s rss     66.6MiB samples 7 exit 0
+rep  1 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=none wall     4.04s rss    113.9MiB samples 2 exit 0
+rep  1 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny wall     4.01s rss    122.7MiB samples 2 exit 0
+rep  1 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=e4 wall     4.00s rss    120.7MiB samples 2 exit 0
+rep  1 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy wall     4.02s rss    113.2MiB samples 2 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=1 wall     4.04s rss    121.1MiB samples 1 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=2 wall     3.09s rss    124.8MiB samples 1 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=4 wall     2.68s rss    132.6MiB samples 1 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=6 wall     2.45s rss    159.2MiB samples 1 exit 0
+rep  1 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:stop=2:workers=2 wall     0.27s rss     20.1MiB samples 1 exit 0
+rep  2 w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.56s rss     27.5MiB samples 4 exit 0
+rep  2 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.28s rss     20.2MiB samples 1 exit 0
+rep  2 w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     21.9MiB samples 5 exit 0
+rep  2 w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     1.34s rss     67.0MiB samples 7 exit 0
+rep  2 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=none wall     4.07s rss    128.2MiB samples 2 exit 0
+rep  2 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny wall     4.11s rss    129.2MiB samples 2 exit 0
+rep  2 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=e4 wall     4.07s rss    124.0MiB samples 2 exit 0
+rep  2 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy wall     4.10s rss    114.2MiB samples 2 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=1 wall     4.04s rss    124.6MiB samples 1 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=2 wall     3.14s rss    133.2MiB samples 1 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=4 wall     2.69s rss    133.0MiB samples 1 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=6 wall     2.45s rss    163.0MiB samples 1 exit 0
+rep  2 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:stop=2:workers=2 wall     0.27s rss     20.3MiB samples 1 exit 0
+rep  3 w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.57s rss     26.4MiB samples 4 exit 0
+rep  3 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     19.8MiB samples 1 exit 0
+rep  3 w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     21.9MiB samples 5 exit 0
+rep  3 w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     1.35s rss     66.4MiB samples 7 exit 0
+rep  3 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=none wall     4.15s rss    116.7MiB samples 2 exit 0
+rep  3 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny wall     4.11s rss    128.5MiB samples 2 exit 0
+rep  3 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=e4 wall     4.10s rss    117.9MiB samples 2 exit 0
+rep  3 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy wall     4.07s rss    122.8MiB samples 2 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=1 wall     4.07s rss    125.3MiB samples 1 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=2 wall     3.13s rss    128.8MiB samples 1 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=4 wall     2.71s rss    129.8MiB samples 1 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=6 wall     2.46s rss    162.8MiB samples 1 exit 0
+rep  3 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:stop=2:workers=2 wall     0.27s rss     20.4MiB samples 1 exit 0
+rep  4 w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.57s rss     26.1MiB samples 4 exit 0
+rep  4 w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     20.0MiB samples 1 exit 0
+rep  4 w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     0.29s rss     22.0MiB samples 5 exit 0
+rep  4 w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar wall     1.36s rss     66.7MiB samples 7 exit 0
+rep  4 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=none wall     4.16s rss    126.4MiB samples 2 exit 0
+rep  4 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny wall     4.11s rss    118.5MiB samples 2 exit 0
+rep  4 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=e4 wall     4.07s rss    125.2MiB samples 2 exit 0
+rep  4 w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy wall     4.10s rss    123.5MiB samples 2 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=1 wall     4.06s rss    123.8MiB samples 1 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=2 wall     3.11s rss    123.6MiB samples 1 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=4 wall     2.72s rss    137.2MiB samples 1 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=6 wall     2.47s rss    158.8MiB samples 1 exit 0
+rep  4 w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:stop=2:workers=2 wall     0.27s rss     20.3MiB samples 1 exit 0
+
+=== summary (medians with extremes; `n` is what the file really holds) ===
+w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w1-class-source              n= 5 window ms median/min/max      2.60 /      2.52 /      2.65
+                                                                          class                        median            1 min            1 max            1
+                                                                          count_body_decodes           median            3 min            3 max            3
+                                                                          count_class_materializations median            0 min            0 max            0
+                                                                          count_class_preparations     median            1 min            1 max            1
+                                                                          count_owned_records          median           24 min           24 max           24
+                                                                          count_read_detail_records    median            0 min            0 max            0
+                                                                          count_recovery_runs          median            3 min            3 max            3
+                                                                          declaration_present          median            1 min            1 max            1
+                                                                          methods                      median            3 min            3 max            3
+                                                                          text_bytes                   median         3017 min         3017 max         3017
+w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w1-cold-method               n= 5 window ms median/min/max    276.66 /    270.96 /    280.46
+                                                                          count_body_decodes           median            1 min            1 max            1
+                                                                          count_class_materializations median            1 min            1 max            1
+                                                                          count_class_preparations     median            0 min            0 max            0
+                                                                          count_owned_records          median            8 min            8 max            8
+                                                                          count_read_detail_records    median            0 min            0 max            0
+                                                                          count_recovery_runs          median            1 min            1 max            1
+                                                                          first_result_micros          median         1415 min         1370 max         1442
+                                                                          open_micros                  median         2681 min         2593 max         2711
+                                                                          open_usage_class_headers     median            0 min            0 max            0
+                                                                          output_micros                median           97 min           86 max          103
+                                                                          prepare_micros               median       256334 min       250130 max       259470
+                                                                          prepare_usage_class_headers  median         2430 min         2430 max         2430
+                                                                          result_equals_second_snapshot median            1 min            1 max            1
+                                                                          text_bytes                   median          198 min          198 max          198
+w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w1-second-request            n= 5 window ms median/min/max      0.11 /      0.11 /      0.14
+                                                                          count_body_decodes           median            1 min            1 max            1
+                                                                          count_class_materializations median            1 min            1 max            1
+                                                                          count_class_preparations     median            0 min            0 max            0
+                                                                          count_owned_records          median            8 min            8 max            8
+                                                                          count_read_detail_records    median            0 min            0 max            0
+                                                                          count_recovery_runs          median            1 min            1 max            1
+                                                                          first_result_micros          median           63 min           59 max           83
+                                                                          text_bytes                   median          198 min          198 max          198
+w1:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w1-second-snapshot           n= 5 window ms median/min/max    274.94 /    267.54 /    278.33
+                                                                          count_body_decodes           median            1 min            1 max            1
+                                                                          count_class_materializations median            1 min            1 max            1
+                                                                          count_class_preparations     median            0 min            0 max            0
+                                                                          count_owned_records          median            8 min            8 max            8
+                                                                          count_read_detail_records    median            0 min            0 max            0
+                                                                          count_recovery_runs          median            1 min            1 max            1
+                                                                          first_result_micros          median         1329 min         1299 max         1406
+                                                                          text_bytes                   median          198 min          198 max          198
+w2:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w2-navigation-sequence       n= 5 window ms median/min/max    277.44 /    268.88 /    281.77
+                                                                          class_headers_total          median            8 min            8 max            8
+                                                                          classes                      median            8 min            8 max            8
+                                                                          control_repeat_micros        median           19 min           18 max           19
+                                                                          count_body_decodes           median            0 min            0 max            0
+                                                                          count_class_materializations median            9 min            9 max            9
+                                                                          count_class_preparations     median            0 min            0 max            0
+                                                                          count_owned_records          median            0 min            0 max            0
+                                                                          count_read_detail_records    median            0 min            0 max            0
+                                                                          count_recovery_runs          median            0 min            0 max            0
+                                                                          method_bodies_declared       median           36 min           36 max           36
+                                                                          method_bodies_total          median            0 min            0 max            0
+                                                                          returned_bytes               median        88589 min        88589 max        88589
+                                                                          sequence_micros              median         1359 min         1303 max         1380
+w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w3-all-bodies-one-request    n= 5 window ms median/min/max    276.01 /    270.59 /    279.63
+                                                                          class_headers                median            1 min            1 max            1
+                                                                          class_methods                median            3 min            3 max            3
+                                                                          classes                      median            8 min            8 max            8
+                                                                          count_body_decodes           median            3 min            3 max            3
+                                                                          count_class_materializations median            1 min            1 max            1
+                                                                          count_class_preparations     median            1 min            1 max            1
+                                                                          count_owned_records          median           98 min           98 max           98
+                                                                          count_read_detail_records    median            0 min            0 max            0
+                                                                          count_recovery_runs          median            0 min            0 max            0
+                                                                          method_bodies                median            3 min            3 max            3
+                                                                          output_bytes                 median            0 min            0 max            0
+                                                                          request_micros               median            1 min            1 max            1
+                                                                          returned_bytes               median        23714 min        23714 max        23714
+w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w3-batch-per-class-across-classes n= 5 window ms median/min/max      0.64 /      0.58 /      0.66
+                                                                          bodies                       median           36 min           36 max           36
+                                                                          class_headers_total          median            8 min            8 max            8
+                                                                          classes                      median            8 min            8 max            8
+                                                                          count_body_decodes           median           36 min           36 max           36
+                                                                          count_class_materializations median            8 min            8 max            8
+                                                                          count_class_preparations     median            4 min            4 max            4
+                                                                          count_owned_records          median          644 min          644 max          644
+                                                                          count_read_detail_records    median            0 min            0 max            0
+                                                                          count_recovery_runs          median            0 min            0 max            0
+                                                                          method_bodies_total          median           36 min           36 max           36
+                                                                          returned_bytes               median            0 min            0 max            0
+                                                                          sequence_micros              median          600 min          544 max          628
+w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w3-fixed-set-across-classes  n= 5 window ms median/min/max      0.92 /      0.84 /      0.93
+                                                                          class_headers_total          median            4 min            4 max            4
+                                                                          classes                      median            8 min            8 max            8
+                                                                          method_bodies_total          median            4 min            4 max            4
+                                                                          returned_bytes               median        43934 min        43934 max        43934
+                                                                          sequence_micros              median          710 min          648 max          718
+w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w3-per-method-across-classes n= 5 window ms median/min/max      2.24 /      2.08 /      2.27
+                                                                          bodies                       median           36 min           36 max           36
+                                                                          class_headers_total          median           36 min           36 max           36
+                                                                          classes                      median            8 min            8 max            8
+                                                                          count_body_decodes           median           36 min           36 max           36
+                                                                          count_class_materializations median           36 min           36 max           36
+                                                                          count_class_preparations     median           36 min           36 max           36
+                                                                          count_owned_records          median          644 min          644 max          644
+                                                                          count_read_detail_records    median            0 min            0 max            0
+                                                                          count_recovery_runs          median            0 min            0 max            0
+                                                                          method_bodies_total          median           36 min           36 max           36
+                                                                          returned_bytes               median            0 min            0 max            0
+                                                                          sequence_micros              median         2206 min         2043 max         2238
+w3:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w3-per-method-requests       n= 5 window ms median/min/max      0.90 /      0.80 /      0.91
+                                                                          archive_entries_total        median           21 min           21 max           21
+                                                                          class_headers_total          median            3 min            3 max            3
+                                                                          class_methods                median            3 min            3 max            3
+                                                                          count_body_decodes           median            3 min            3 max            3
+                                                                          count_class_materializations median            3 min            3 max            3
+                                                                          count_class_preparations     median            0 min            0 max            0
+                                                                          count_owned_records          median           24 min           24 max           24
+                                                                          count_read_detail_records    median            0 min            0 max            0
+                                                                          count_recovery_runs          median            3 min            3 max            3
+                                                                          method_bodies_total          median            3 min            3 max            3
+                                                                          returned_bytes               median        29360 min        29360 max        29360
+                                                                          sequence_micros              median          710 min          631 max          732
+w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w4-abandon-after-one-page    n= 5 window ms median/min/max      0.05 /      0.04 /      0.05
+                                                                          archive_entries_total        median           16 min           16 max           16
+                                                                          class_bytes_total            median            0 min            0 max            0
+                                                                          entry_bytes_total            median         2364 min         2364 max         2364
+                                                                          has_more                     median            1 min            1 max            1
+                                                                          items                        median            2 min            2 max            2
+                                                                          max_items                    median            2 min            2 max            2
+                                                                          pages                        median            1 min            1 max            1
+                                                                          read_bytes_total             median         1368 min         1368 max         1368
+                                                                          result_items                 median            2 min            2 max            2
+                                                                          returned_bytes               median         3873 min         3873 max         3873
+                                                                          scanned_items                median            2 min            2 max            2
+w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w4-damaged-continued-to-exhaustion n= 5 window ms median/min/max      0.21 /      0.20 /      0.21
+                                                                          archive_entries_total        median           26 min           26 max           26
+                                                                          class_bytes_total            median         1813 min         1813 max         1813
+                                                                          diagnostics                  median            2 min            2 max            2
+                                                                          entry_bytes_total            median         2565 min         2565 max         2565
+                                                                          has_more                     median            1 min            1 max            1
+                                                                          items                        median            4 min            4 max            4
+                                                                          items_equal_full_page        median            1 min            1 max            1
+                                                                          max_items                    median            2 min            2 max            2
+                                                                          pages                        median            4 min            4 max            4
+                                                                          read_bytes_total             median         1718 min         1718 max         1718
+                                                                          result_items                 median           10 min           10 max           10
+                                                                          returned_bytes               median        11482 min        11482 max        11482
+                                                                          scanned_items                median            0 min            0 max            0
+w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w4-damaged-first-page        n= 5 window ms median/min/max      0.19 /      0.17 /      0.19
+                                                                          archive_entries_total        median            9 min            9 max            9
+                                                                          class_bytes_total            median          723 min          723 max          723
+                                                                          diagnostics                  median            0 min            0 max            0
+                                                                          entry_bytes_total            median          723 min          723 max          723
+                                                                          has_more                     median            1 min            1 max            1
+                                                                          items                        median            2 min            2 max            2
+                                                                          max_items                    median            2 min            2 max            2
+                                                                          pages                        median            1 min            1 max            1
+                                                                          read_bytes_total             median          543 min          543 max          543
+                                                                          result_items                 median            8 min            8 max            8
+                                                                          returned_bytes               median         3636 min         3636 max         3636
+                                                                          scanned_items                median            2 min            2 max            2
+w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w4-damaged-full-page         n= 5 window ms median/min/max      0.20 /      0.20 /      0.22
+                                                                          archive_entries_total        median           21 min           21 max           21
+                                                                          class_bytes_total            median         1813 min         1813 max         1813
+                                                                          diagnostics                  median            1 min            1 max            1
+                                                                          entry_bytes_total            median         2189 min         2189 max         2189
+                                                                          has_more                     median            1 min            1 max            1
+                                                                          items                        median            4 min            4 max            4
+                                                                          max_items                    median           64 min           64 max           64
+                                                                          pages                        median            1 min            1 max            1
+                                                                          read_bytes_total             median         1500 min         1500 max         1500
+                                                                          result_items                 median           10 min           10 max           10
+                                                                          returned_bytes               median         5874 min         5874 max         5874
+                                                                          scanned_items                median            4 min            4 max            4
+w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w4-large-page                n= 5 window ms median/min/max    262.00 /    255.74 /    265.50
+                                                                          archive_entries_total        median      3128966 min      3128966 max      3128966
+                                                                          class_bytes_total            median            0 min            0 max            0
+                                                                          entry_bytes_total            median      5004475 min      5004475 max      5004475
+                                                                          has_more                     median            0 min            0 max            0
+                                                                          items                        median         1094 min         1094 max         1094
+                                                                          max_items                    median           64 min           64 max           64
+                                                                          pages                        median           18 min           18 max           18
+                                                                          read_bytes_total             median      2203840 min      2203840 max      2203840
+                                                                          result_items                 median         1094 min         1094 max         1094
+                                                                          returned_bytes               median      1140190 min      1140190 max      1140190
+                                                                          scanned_items                median            6 min            6 max            6
+w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w4-multi-consumer            n= 5 window ms median/min/max    259.88 /    254.12 /    265.71
+                                                                          archive_entries_total        median      3128966 min      3128966 max      3128966
+                                                                          class_bytes_total            median            0 min            0 max            0
+                                                                          consumers                    median            4 min            4 max            4
+                                                                          entry_bytes_total            median      5004475 min      5004475 max      5004475
+                                                                          has_more                     median            0 min            0 max            0
+                                                                          items                        median         1094 min         1094 max         1094
+                                                                          items_equal_single_consumer  median            1 min            1 max            1
+                                                                          max_items                    median           64 min           64 max           64
+                                                                          pages                        median           18 min           18 max           18
+                                                                          read_bytes_total             median      2203840 min      2203840 max      2203840
+                                                                          result_items                 median         1094 min         1094 max         1094
+                                                                          returned_bytes               median      1141886 min      1141886 max      1141887
+                                                                          scanned_items                median            6 min            6 max            6
+w4:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar w4-small-page                n= 5 window ms median/min/max    798.72 /    786.30 /    811.57
+                                                                          archive_entries_total        median      3131535 min      3131535 max      3131535
+                                                                          class_bytes_total            median      5004475 min      5004475 max      5004475
+                                                                          count_body_decodes           median            0 min            0 max            0
+                                                                          count_class_materializations median            0 min            0 max            0
+                                                                          count_class_preparations     median            0 min            0 max            0
+                                                                          count_owned_records          median            0 min            0 max            0
+                                                                          count_read_detail_records    median            0 min            0 max            0
+                                                                          count_recovery_runs          median            0 min            0 max            0
+                                                                          entry_bytes_total            median      5004475 min      5004475 max      5004475
+                                                                          has_more                     median            0 min            0 max            0
+                                                                          items                        median         1094 min         1094 max         1094
+                                                                          max_items                    median            2 min            2 max            2
+                                                                          pages                        median          548 min          548 max          548
+                                                                          read_bytes_total             median      2203840 min      2203840 max      2203840
+                                                                          result_items                 median         3663 min         3663 max         3663
+                                                                          returned_bytes               median      2180755 min      2180752 max      2180763
+                                                                          scanned_items                median            0 min            0 max            0
+w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=e4 w5-round-trip                n= 5 window ms median/min/max     16.47 /     16.31 /     16.77
+                                                                          archive_entries_total        median           70 min           70 max           70
+                                                                          class_headers_total          median           10 min           10 max           10
+                                                                          count_body_decodes           median           10 min           10 max           10
+                                                                          count_class_materializations median           10 min           10 max           10
+                                                                          count_class_preparations     median            0 min            0 max            0
+                                                                          count_owned_records          median           80 min           80 max           80
+                                                                          count_read_detail_records    median            0 min            0 max            0
+                                                                          count_recovery_runs          median           10 min           10 max           10
+                                                                          returned_bytes               median        91176 min        91176 max        91176
+                                                                          round_trips                  median           10 min           10 max           10
+                                                                          sequence_micros              median          525 min          475 max          597
+w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=e4 w5-sweep                     n= 5 window ms median/min/max   3977.76 /   3883.65 /   4012.66
+                                                                          classes_prepared             median         2430 min         2430 max         2430
+                                                                          classes_refused              median            0 min            0 max            0
+                                                                          classes_seen                 median         2430 min         2430 max         2430
+                                                                          delivered                    median        15003 min        15003 max        15003
+                                                                          encoded_bytes                median            0 min            0 max            0
+                                                                          final_delivered              median            1 min            1 max            1
+                                                                          first_result_micros          median         2436 min         2367 max         2603
+                                                                          methods                      median        15003 min        15003 max        15003
+                                                                          methods_declared             median        15003 min        15003 max        15003
+                                                                          not_executed                 median            0 min            0 max            0
+                                                                          outcome_explanation_only     median         2447 min         2447 max         2447
+                                                                          outcome_no_body              median          508 min          508 max          508
+                                                                          outcome_not_produced         median            3 min            3 max            3
+                                                                          outcome_oversized            median            0 min            0 max            0
+                                                                          outcome_produced             median        12045 min        12045 max        12045
+                                                                          outcome_refused              median            0 min            0 max            0
+                                                                          records                      median        19865 min        19865 max        19865
+                                                                          scratch_file_bytes           median            0 min            0 max            0
+                                                                          traversal_complete           median            1 min            1 max            1
+                                                                          written_bytes                median            0 min            0 max            0
+w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=none w5-round-trip                n= 5 window ms median/min/max     41.20 /     40.90 /     43.24
+                                                                          archive_entries_total        median        51450 min        51450 max        51450
+                                                                          class_headers_total          median           10 min           10 max           10
+                                                                          count_body_decodes           median           10 min           10 max           10
+                                                                          count_class_materializations median           10 min           10 max           10
+                                                                          count_class_preparations     median            0 min            0 max            0
+                                                                          count_owned_records          median           80 min           80 max           80
+                                                                          count_read_detail_records    median            0 min            0 max            0
+                                                                          count_recovery_runs          median           10 min           10 max           10
+                                                                          returned_bytes               median        91560 min        91560 max        91560
+                                                                          round_trips                  median           10 min           10 max           10
+                                                                          sequence_micros              median        25268 min        24843 max        26800
+w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=none w5-sweep                     n= 5 window ms median/min/max   3952.44 /   3867.04 /   4037.29
+                                                                          classes_prepared             median         2430 min         2430 max         2430
+                                                                          classes_refused              median            0 min            0 max            0
+                                                                          classes_seen                 median         2430 min         2430 max         2430
+                                                                          delivered                    median        15003 min        15003 max        15003
+                                                                          encoded_bytes                median            0 min            0 max            0
+                                                                          final_delivered              median            1 min            1 max            1
+                                                                          first_result_micros          median         2416 min         2345 max         2548
+                                                                          methods                      median        15003 min        15003 max        15003
+                                                                          methods_declared             median        15003 min        15003 max        15003
+                                                                          not_executed                 median            0 min            0 max            0
+                                                                          outcome_explanation_only     median         2447 min         2447 max         2447
+                                                                          outcome_no_body              median          508 min          508 max          508
+                                                                          outcome_not_produced         median            3 min            3 max            3
+                                                                          outcome_oversized            median            0 min            0 max            0
+                                                                          outcome_produced             median        12045 min        12045 max        12045
+                                                                          outcome_refused              median            0 min            0 max            0
+                                                                          records                      median        19865 min        19865 max        19865
+                                                                          scratch_file_bytes           median            0 min            0 max            0
+                                                                          traversal_complete           median            1 min            1 max            1
+                                                                          written_bytes                median            0 min            0 max            0
+w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy w5-round-trip                n= 5 window ms median/min/max     16.56 /     16.26 /     16.84
+                                                                          archive_entries_total        median           70 min           70 max           70
+                                                                          class_headers_total          median           10 min           10 max           10
+                                                                          count_body_decodes           median           10 min           10 max           10
+                                                                          count_class_materializations median           10 min           10 max           10
+                                                                          count_class_preparations     median            0 min            0 max            0
+                                                                          count_owned_records          median           80 min           80 max           80
+                                                                          count_read_detail_records    median            0 min            0 max            0
+                                                                          count_recovery_runs          median           10 min           10 max           10
+                                                                          returned_bytes               median        91176 min        91176 max        91176
+                                                                          round_trips                  median           10 min           10 max           10
+                                                                          sequence_micros              median          469 min          465 max          557
+w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=roomy w5-sweep                     n= 5 window ms median/min/max   3979.42 /   3853.47 /   4009.41
+                                                                          classes_prepared             median         2430 min         2430 max         2430
+                                                                          classes_refused              median            0 min            0 max            0
+                                                                          classes_seen                 median         2430 min         2430 max         2430
+                                                                          delivered                    median        15003 min        15003 max        15003
+                                                                          encoded_bytes                median            0 min            0 max            0
+                                                                          final_delivered              median            1 min            1 max            1
+                                                                          first_result_micros          median         2421 min         2388 max         2558
+                                                                          methods                      median        15003 min        15003 max        15003
+                                                                          methods_declared             median        15003 min        15003 max        15003
+                                                                          not_executed                 median            0 min            0 max            0
+                                                                          outcome_explanation_only     median         2447 min         2447 max         2447
+                                                                          outcome_no_body              median          508 min          508 max          508
+                                                                          outcome_not_produced         median            3 min            3 max            3
+                                                                          outcome_oversized            median            0 min            0 max            0
+                                                                          outcome_produced             median        12045 min        12045 max        12045
+                                                                          outcome_refused              median            0 min            0 max            0
+                                                                          records                      median        19865 min        19865 max        19865
+                                                                          scratch_file_bytes           median            0 min            0 max            0
+                                                                          traversal_complete           median            1 min            1 max            1
+                                                                          written_bytes                median            0 min            0 max            0
+w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny w5-round-trip                n= 5 window ms median/min/max     40.98 /     39.94 /     43.36
+                                                                          archive_entries_total        median        51450 min        51450 max        51450
+                                                                          class_headers_total          median           10 min           10 max           10
+                                                                          count_body_decodes           median           10 min           10 max           10
+                                                                          count_class_materializations median           10 min           10 max           10
+                                                                          count_class_preparations     median            0 min            0 max            0
+                                                                          count_owned_records          median           80 min           80 max           80
+                                                                          count_read_detail_records    median            0 min            0 max            0
+                                                                          count_recovery_runs          median           10 min           10 max           10
+                                                                          returned_bytes               median        91416 min        91416 max        91416
+                                                                          round_trips                  median           10 min           10 max           10
+                                                                          sequence_micros              median        24971 min        24170 max        26476
+w5:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:capacity=tiny w5-sweep                     n= 5 window ms median/min/max   3985.04 /   3864.00 /   3994.72
+                                                                          classes_prepared             median         2430 min         2430 max         2430
+                                                                          classes_refused              median            0 min            0 max            0
+                                                                          classes_seen                 median         2430 min         2430 max         2430
+                                                                          delivered                    median        15003 min        15003 max        15003
+                                                                          encoded_bytes                median            0 min            0 max            0
+                                                                          final_delivered              median            1 min            1 max            1
+                                                                          first_result_micros          median         2497 min         2408 max         2639
+                                                                          methods                      median        15003 min        15003 max        15003
+                                                                          methods_declared             median        15003 min        15003 max        15003
+                                                                          not_executed                 median            0 min            0 max            0
+                                                                          outcome_explanation_only     median         2447 min         2447 max         2447
+                                                                          outcome_no_body              median          508 min          508 max          508
+                                                                          outcome_not_produced         median            3 min            3 max            3
+                                                                          outcome_oversized            median            0 min            0 max            0
+                                                                          outcome_produced             median        12045 min        12045 max        12045
+                                                                          outcome_refused              median            0 min            0 max            0
+                                                                          records                      median        19865 min        19865 max        19865
+                                                                          scratch_file_bytes           median            0 min            0 max            0
+                                                                          traversal_complete           median            1 min            1 max            1
+                                                                          written_bytes                median            0 min            0 max            0
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:stop=2:workers=2 w6a-export-cancelled         n= 5 window ms median/min/max    263.57 /    260.48 /    264.81
+                                                                          classes_prepared             median            2 min            2 max            2
+                                                                          classes_refused              median            0 min            0 max            0
+                                                                          classes_seen                 median            2 min            2 max            2
+                                                                          count_body_decodes           median            0 min            0 max            0
+                                                                          count_class_materializations median            0 min            0 max            0
+                                                                          count_class_preparations     median            0 min            0 max            0
+                                                                          count_owned_records          median           25 min           25 max           25
+                                                                          count_read_detail_records    median            0 min            0 max            0
+                                                                          count_recovery_runs          median            3 min            3 max            3
+                                                                          delivered                    median            1 min            1 max            1
+                                                                          encoded_bytes                median            0 min            0 max            0
+                                                                          final_delivered              median            0 min            0 max            0
+                                                                          first_result_micros          median         2565 min         2513 max         2633
+                                                                          methods                      median            2 min            2 max            2
+                                                                          methods_confirmed            median            2 min            2 max            2
+                                                                          methods_declared             median            4 min            4 max            4
+                                                                          not_executed                 median            0 min            0 max            0
+                                                                          outcome_explanation_only     median            0 min            0 max            0
+                                                                          outcome_no_body              median            1 min            1 max            1
+                                                                          outcome_not_produced         median            1 min            1 max            1
+                                                                          outcome_oversized            median            0 min            0 max            0
+                                                                          outcome_produced             median            2 min            2 max            2
+                                                                          outcome_refused              median            0 min            0 max            0
+                                                                          records                      median            4 min            4 max            4
+                                                                          scratch_file_bytes           median            0 min            0 max            0
+                                                                          stop_after                   median            2 min            2 max            2
+                                                                          stopped_by_sink              median            1 min            1 max            1
+                                                                          traversal_complete           median            0 min            0 max            0
+                                                                          workers                      median            2 min            2 max            2
+                                                                          written_bytes                median            0 min            0 max            0
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=1 w6a-export                   n= 5 window ms median/min/max   3964.10 /   3855.29 /   3992.27
+                                                                          classes_prepared             median         2430 min         2430 max         2430
+                                                                          classes_refused              median            0 min            0 max            0
+                                                                          classes_seen                 median         2430 min         2430 max         2430
+                                                                          count_body_decodes           median            0 min            0 max            0
+                                                                          count_class_materializations median            0 min            0 max            0
+                                                                          count_class_preparations     median            0 min            0 max            0
+                                                                          count_owned_records          median       115962 min       115962 max       115962
+                                                                          count_read_detail_records    median           85 min           85 max           85
+                                                                          count_recovery_runs          median        14495 min        14495 max        14495
+                                                                          delivered                    median        15003 min        15003 max        15003
+                                                                          encoded_bytes                median            0 min            0 max            0
+                                                                          final_delivered              median            1 min            1 max            1
+                                                                          first_result_micros          median         2462 min         2237 max         2555
+                                                                          methods                      median        15003 min        15003 max        15003
+                                                                          methods_confirmed            median        15003 min        15003 max        15003
+                                                                          methods_declared             median        15003 min        15003 max        15003
+                                                                          not_executed                 median            0 min            0 max            0
+                                                                          outcome_explanation_only     median         2447 min         2447 max         2447
+                                                                          outcome_no_body              median          508 min          508 max          508
+                                                                          outcome_not_produced         median            3 min            3 max            3
+                                                                          outcome_oversized            median            0 min            0 max            0
+                                                                          outcome_produced             median        12045 min        12045 max        12045
+                                                                          outcome_refused              median            0 min            0 max            0
+                                                                          records                      median        19865 min        19865 max        19865
+                                                                          scratch_file_bytes           median            0 min            0 max            0
+                                                                          stop_after                   median            0 min            0 max            0
+                                                                          stopped_by_sink              median            0 min            0 max            0
+                                                                          traversal_complete           median            1 min            1 max            1
+                                                                          workers                      median            1 min            1 max            1
+                                                                          written_bytes                median            0 min            0 max            0
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=2 w6a-export                   n= 5 window ms median/min/max   3034.96 /   2977.70 /   3061.27
+                                                                          classes_prepared             median         2430 min         2430 max         2430
+                                                                          classes_refused              median            0 min            0 max            0
+                                                                          classes_seen                 median         2430 min         2430 max         2430
+                                                                          count_body_decodes           median            0 min            0 max            0
+                                                                          count_class_materializations median            0 min            0 max            0
+                                                                          count_class_preparations     median            0 min            0 max            0
+                                                                          count_owned_records          median       115962 min       115962 max       115962
+                                                                          count_read_detail_records    median           85 min           85 max           85
+                                                                          count_recovery_runs          median        14495 min        14495 max        14495
+                                                                          delivered                    median        15003 min        15003 max        15003
+                                                                          encoded_bytes                median            0 min            0 max            0
+                                                                          final_delivered              median            1 min            1 max            1
+                                                                          first_result_micros          median         2525 min         2414 max         2570
+                                                                          methods                      median        15003 min        15003 max        15003
+                                                                          methods_confirmed            median        15003 min        15003 max        15003
+                                                                          methods_declared             median        15003 min        15003 max        15003
+                                                                          not_executed                 median            0 min            0 max            0
+                                                                          outcome_explanation_only     median         2447 min         2447 max         2447
+                                                                          outcome_no_body              median          508 min          508 max          508
+                                                                          outcome_not_produced         median            3 min            3 max            3
+                                                                          outcome_oversized            median            0 min            0 max            0
+                                                                          outcome_produced             median        12045 min        12045 max        12045
+                                                                          outcome_refused              median            0 min            0 max            0
+                                                                          records                      median        19865 min        19865 max        19865
+                                                                          scratch_file_bytes           median            0 min            0 max            0
+                                                                          stop_after                   median            0 min            0 max            0
+                                                                          stopped_by_sink              median            0 min            0 max            0
+                                                                          traversal_complete           median            1 min            1 max            1
+                                                                          workers                      median            2 min            2 max            2
+                                                                          written_bytes                median            0 min            0 max            0
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=4 w6a-export                   n= 5 window ms median/min/max   2616.72 /   2549.14 /   2651.18
+                                                                          classes_prepared             median         2430 min         2430 max         2430
+                                                                          classes_refused              median            0 min            0 max            0
+                                                                          classes_seen                 median         2430 min         2430 max         2430
+                                                                          count_body_decodes           median            0 min            0 max            0
+                                                                          count_class_materializations median            0 min            0 max            0
+                                                                          count_class_preparations     median            0 min            0 max            0
+                                                                          count_owned_records          median       115962 min       115962 max       115962
+                                                                          count_read_detail_records    median           85 min           85 max           85
+                                                                          count_recovery_runs          median        14495 min        14495 max        14495
+                                                                          delivered                    median        15003 min        15003 max        15003
+                                                                          encoded_bytes                median            0 min            0 max            0
+                                                                          final_delivered              median            1 min            1 max            1
+                                                                          first_result_micros          median         2537 min         2445 max         2684
+                                                                          methods                      median        15003 min        15003 max        15003
+                                                                          methods_confirmed            median        15003 min        15003 max        15003
+                                                                          methods_declared             median        15003 min        15003 max        15003
+                                                                          not_executed                 median            0 min            0 max            0
+                                                                          outcome_explanation_only     median         2447 min         2447 max         2447
+                                                                          outcome_no_body              median          508 min          508 max          508
+                                                                          outcome_not_produced         median            3 min            3 max            3
+                                                                          outcome_oversized            median            0 min            0 max            0
+                                                                          outcome_produced             median        12045 min        12045 max        12045
+                                                                          outcome_refused              median            0 min            0 max            0
+                                                                          records                      median        19865 min        19865 max        19865
+                                                                          scratch_file_bytes           median            0 min            0 max            0
+                                                                          stop_after                   median            0 min            0 max            0
+                                                                          stopped_by_sink              median            0 min            0 max            0
+                                                                          traversal_complete           median            1 min            1 max            1
+                                                                          workers                      median            4 min            4 max            4
+                                                                          written_bytes                median            0 min            0 max            0
+w6a:artifact=/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar:workers=6 w6a-export                   n= 5 window ms median/min/max   2379.23 /   2328.81 /   2397.73
+                                                                          classes_prepared             median         2430 min         2430 max         2430
+                                                                          classes_refused              median            0 min            0 max            0
+                                                                          classes_seen                 median         2430 min         2430 max         2430
+                                                                          count_body_decodes           median            0 min            0 max            0
+                                                                          count_class_materializations median            0 min            0 max            0
+                                                                          count_class_preparations     median            0 min            0 max            0
+                                                                          count_owned_records          median       115962 min       115962 max       115962
+                                                                          count_read_detail_records    median           85 min           85 max           85
+                                                                          count_recovery_runs          median        14495 min        14495 max        14495
+                                                                          delivered                    median        15003 min        15003 max        15003
+                                                                          encoded_bytes                median            0 min            0 max            0
+                                                                          final_delivered              median            1 min            1 max            1
+                                                                          first_result_micros          median         2623 min         2520 max         2785
+                                                                          methods                      median        15003 min        15003 max        15003
+                                                                          methods_confirmed            median        15003 min        15003 max        15003
+                                                                          methods_declared             median        15003 min        15003 max        15003
+                                                                          not_executed                 median            0 min            0 max            0
+                                                                          outcome_explanation_only     median         2447 min         2447 max         2447
+                                                                          outcome_no_body              median          508 min          508 max          508
+                                                                          outcome_not_produced         median            3 min            3 max            3
+                                                                          outcome_oversized            median            0 min            0 max            0
+                                                                          outcome_produced             median        12045 min        12045 max        12045
+                                                                          outcome_refused              median            0 min            0 max            0
+                                                                          records                      median        19865 min        19865 max        19865
+                                                                          scratch_file_bytes           median            0 min            0 max            0
+                                                                          stop_after                   median            0 min            0 max            0
+                                                                          stopped_by_sink              median            0 min            0 max            0
+                                                                          traversal_complete           median            1 min            1 max            1
+                                                                          workers                      median            6 min            6 max            6
+                                                                          written_bytes                median            0 min            0 max            0
+failures: 0

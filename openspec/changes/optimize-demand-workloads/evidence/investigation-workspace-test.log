@@ -1,0 +1,2272 @@
+   Compiling jarde v0.1.0 (/Users/lordcasser/.grow/worktrees/projects-jarde/subagent-01a0c6a3-af75-76a1-9d06-492ebea783a8)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.76s
+     Running unittests src/lib.rs (target/debug/deps/jarde-5a86f8b526c11973)
+
+running 16 tests
+test class_source::tests::bytes_that_are_not_a_field_descriptor_are_refused_rather_than_guessed ... ok
+test class_source::tests::one_internal_name_is_spelled_dotted_and_nothing_else_about_it_changes ... ok
+test class_source::tests::a_name_java_cannot_spell_becomes_the_deterministic_alias ... ok
+test bulk::observation::tests::a_threads_tallies_are_flushed_once ... ok
+test class_source::tests::an_arrays_element_width_does_not_move_the_parameters_after_it ... ok
+test class_source::tests::a_text_that_is_not_that_shape_is_not_placed ... ok
+test class_source::tests::one_member_block_puts_the_envelope_and_the_statements_at_the_same_depth ... ok
+test class_source::tests::one_artifact_is_split_at_its_own_block ... ok
+test bulk::observation::tests::the_site_names_and_indexes_are_the_declared_order ... ok
+test class_source::tests::bytes_that_are_not_a_method_descriptor_are_refused_rather_than_guessed ... ok
+test class_source::tests::one_field_descriptor_is_spelled_as_java_spells_it ... ok
+test class_source::tests::one_member_whose_artifact_cannot_be_placed_quotes_it_line_by_line ... ok
+test bulk::observation::tests::the_reading_carries_its_site_names ... ok
+test class_source::tests::one_member_without_an_artifact_keeps_its_marker_inside_the_block ... ok
+test class_source::tests::one_stop_code_is_the_engines_own_spelling_of_its_reason ... ok
+test class_source::tests::one_method_descriptor_is_spelled_with_its_slots_and_its_return_type ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/bulk_recovery_backpressure.rs (target/debug/deps/bulk_recovery_backpressure-a7d5048228891ac0)
+
+running 7 tests
+test a_result_weighs_what_it_owns_and_not_the_length_it_writes ... ok
+test one_result_larger_than_the_ceiling_stops_that_method_only ... ok
+test the_shared_pool_is_the_declared_window_outside_the_reservations ... ok
+test a_slow_first_class_does_not_starve_the_later_ones_or_the_order ... ok
+test a_window_that_only_funds_the_reservations_is_one_result_per_class ... ok
+test a_shared_pool_lets_the_classes_behind_the_front_work_ahead ... ok
+test a_pool_of_one_result_still_cannot_starve_the_earliest_class ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s
+
+     Running tests/bulk_recovery_cancel.rs (target/debug/deps/bulk_recovery_cancel-6561992790f42b83)
+
+running 7 tests
+test a_cancelled_request_publishes_nothing_and_dispatches_nothing ... ok
+test a_cancellation_between_classes_ends_the_traversal_and_the_class_in_flight ... ok
+test a_consumer_that_stops_the_stream_keeps_its_prefix ... ok
+test a_cancellation_mid_run_keeps_the_prefix_and_bills_the_holes ... ok
+test a_consumer_that_fails_is_infrastructure ... ok
+test a_cancellation_while_the_window_is_full_wakes_every_waiter ... ok
+test a_cancellation_wakes_a_producer_waiting_for_room_in_the_shared_pool ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+     Running tests/bulk_recovery_delivery.rs (target/debug/deps/bulk_recovery_delivery-e7938027d5c8d6f5)
+
+running 3 tests
+test a_refused_permit_stops_the_stream_at_the_one_total_and_names_the_delivery_owner ... ok
+test the_terminal_record_pays_for_itself_before_the_call_returns ... ok
+test one_declaration_bounds_the_librarys_own_presentation_too ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/bulk_recovery_handover.rs (target/debug/deps/bulk_recovery_handover-c74adc84c5ae30d8)
+
+running 2 tests
+test a_run_holds_a_container_only_until_the_class_task_reading_it_ends ... ok
+test a_container_a_class_task_is_still_using_is_never_parsed_again ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.51s
+
+     Running tests/bulk_recovery_lifecycle.rs (target/debug/deps/bulk_recovery_lifecycle-8347e0d88c54ed61)
+
+running 4 tests
+test a_worker_the_system_refuses_to_create_fails_the_operation_before_dispatching ... ok
+test a_worker_that_panics_fails_the_operation_and_leaves_no_thread_behind ... ok
+test a_run_without_faults_still_reports_its_own_lifecycle ... ok
+test at_most_the_window_of_class_tasks_runs_at_once_and_two_of_them_overlap ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/bulk_recovery_retention.rs (target/debug/deps/bulk_recovery_retention-88cf69cf34630a32)
+
+running 2 tests
+test zero_and_tiny_retention_publish_the_same_scope_as_retention_with_room ... ok
+test a_consumed_result_is_handed_over_once_and_the_report_keeps_no_result ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running tests/bulk_recovery_serial.rs (target/debug/deps/bulk_recovery_serial-4f351e50f7e8ff62)
+
+running 7 tests
+test a_class_over_the_preparation_ceiling_is_refused_before_it_is_read_into_memory ... ok
+test an_explanation_only_result_is_an_outcome_and_not_a_stop ... ok
+test the_store_the_caller_attached_is_the_store_the_operation_reads_through ... ok
+test the_whole_scope_is_recovered_class_by_class_in_physical_order ... ok
+test a_class_that_cannot_be_prepared_is_refused_and_its_method_count_stays_unknown ... ok
+test the_same_methods_read_one_at_a_time_cost_one_class_read_each ... ok
+test the_serial_configuration_finishes_inside_a_deadline_and_holds_no_window_slot ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/bulk_recovery_workers.rs (target/debug/deps/bulk_recovery_workers-57340029ad7fde95)
+
+running 6 tests
+test the_request_is_checked_before_anything_is_dispatched ... ok
+test the_observation_port_sees_the_coordination_that_really_happened ... ok
+test the_window_reduces_the_workers_and_publishes_both_numbers ... ok
+test the_operations_total_and_a_methods_local_limit_are_two_declarations ... ok
+test one_worker_and_four_publish_the_same_stream ... ok
+test a_class_task_overlaps_another_while_the_first_one_is_still_working ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running tests/bulk_support.rs (target/debug/deps/bulk_support-0db37b25063b20c2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/class_source.rs (target/debug/deps/class_source-f6fef4ca569abb90)
+
+running 16 tests
+test a_member_table_that_stops_is_stated_and_not_padded ... ok
+test a_class_that_cannot_be_prepared_keeps_its_presentation ... ok
+test a_method_table_that_stops_keeps_its_prefix_and_claims_no_more ... ok
+test a_member_whose_descriptor_cannot_be_read_is_stated_and_not_run ... ok
+test a_request_that_stops_mid_class_states_the_shortfall ... ok
+test an_identity_of_another_snapshot_is_an_input_error ... ok
+test a_name_two_definitions_answer_to_presents_nothing ... ok
+test a_stopped_member_is_marked_and_does_not_stop_the_class ... ok
+test a_member_without_a_body_is_a_declaration_and_never_an_empty_body ... ok
+test one_real_class_is_presented_with_its_declaration_and_its_bodies ... ok
+test a_class_in_a_container_is_prepared_from_the_entry_it_lives_in ... ok
+test an_explanation_only_member_is_marked_and_its_text_is_kept ... ok
+test the_report_serializes_with_the_text_it_publishes ... ok
+test a_request_that_cannot_pay_for_its_declaration_publishes_no_text ... ok
+test the_same_request_twice_is_the_same_text ... ok
+test one_preparation_serves_every_member_body ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/d0_demand_counts.rs (target/debug/deps/d0_demand_counts-5403b6d3ad5e9909)
+
+running 5 tests
+test a_page_limited_query_publishes_one_item_and_decodes_the_whole_first_unit ... ok
+test one_requested_body_decodes_one_body_and_runs_no_recovery ... ok
+test a_member_only_read_decodes_no_body_and_builds_no_record ... ok
+test a_class_source_request_materializes_its_class_once_and_prepares_it_once ... ok
+test a_consumer_release_drops_the_prepared_facts_handle_back_to_its_baseline ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/d1_evidence_selection.rs (target/debug/deps/d1_evidence_selection-64fc07b7312134ec)
+
+running 8 tests
+test a_range_over_a_body_with_no_code_is_refused_as_a_missing_table ... ok
+test a_selection_this_entry_cannot_answer_is_refused_with_its_own_code ... ok
+test a_legal_empty_range_is_a_complete_empty_selection ... ok
+test the_driver_range_selects_the_records_it_intersects ... ok
+test the_ordinary_entry_and_the_stated_essential_selection_answer_the_same_report ... ok
+test the_same_request_under_either_selection_presents_the_same_body ... ok
+test a_selected_category_that_stopped_states_its_prefix ... ok
+test closing_the_rule_records_keeps_the_refusals_and_the_explanation ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/d2_prepared_handoff.rs (target/debug/deps/d2_prepared_handoff-f2b4ad48356222d3)
+
+running 9 tests
+test a_store_never_makes_the_next_storeless_request_cheaper ... ok
+test the_four_store_states_do_the_same_work_and_no_request_is_free ... ok
+test a_view_decodes_every_requested_body_against_one_preparation ... ok
+test a_request_with_a_missing_dependency_reads_no_class ... ok
+test a_view_that_decodes_no_body_prepares_nothing ... ok
+test a_recovery_run_without_same_class_callees_reads_once_and_prepares_nothing ... ok
+test both_binding_paths_prepare_the_read_they_selected_once ... ok
+test a_cancelled_request_leaves_nothing_retained ... ok
+test an_ambiguous_name_prepares_nothing_and_keeps_every_candidate ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/d3_artifact_binding.rs (target/debug/deps/d3_artifact_binding-64ec56b2f5bc7433)
+
+running 13 tests
+test the_sequence_keeps_the_artifact_and_bounds_every_residency ... ok
+test a_changed_rule_set_is_a_mismatch ... ok
+test a_binding_states_the_member_record_the_read_established ... ok
+test a_run_without_an_artifact_compares_nothing ... ok
+test a_duplicated_member_record_binds_nothing ... ok
+test the_binding_holds_no_payload_of_the_run ... ok
+test a_text_that_is_not_this_artifact_is_a_mismatch_and_never_a_missing_answer ... ok
+test one_class_stored_twice_is_two_artifacts ... ok
+test an_expectation_without_a_selection_is_refused ... ok
+test a_tight_budget_stops_the_rebuild_where_it_really_stops ... ok
+test a_binding_of_another_schema_is_a_mismatch ... ok
+test the_evidence_is_rebuilt_after_every_temporary_of_the_first_request_is_dropped ... ok
+test two_definitions_of_one_name_are_two_artifacts ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/d5_acceptance_ledger.rs (target/debug/deps/d5_acceptance_ledger-203d83d0a1b6b00e)
+
+running 1 test
+test the_ledger_names_only_records_this_repository_has ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/d5_process_release.rs (target/debug/deps/d5_process_release-8a8f4ad34517cd66)
+
+running 5 tests
+test child_a_stop_at_every_stage_releases_what_it_held ... ignored, the process gate: run with `-- --ignored` in both the debug and the release profile
+test child_deep_expressions_terminate_normally ... ignored, the process gate: run with `-- --ignored` in both the debug and the release profile
+test child_the_abandon_sequence_leaves_no_work_behind ... ignored, the process gate: run with `-- --ignored` in both the debug and the release profile
+test child_the_cache_and_a_slow_consumer_stay_bounded ... ignored, the process gate: run with `-- --ignored` in both the debug and the release profile
+test every_gate_runs_to_a_normal_exit_in_its_own_process ... ignored, the process gate: run with `-- --ignored` in both the debug and the release profile
+
+test result: ok. 0 passed; 0 failed; 5 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/d5_semantic_comparison.rs (target/debug/deps/d5_semantic_comparison-ff5bcdb323bb90c0)
+
+running 5 tests
+test the_essential_and_the_full_selection_compile_the_same_program ... ignored, needs a JDK on PATH: it compiles the recovered text with `javac --release 8` and runs it with `java`. `cargo test` therefore stays green without a compiler; run it with `-- --ignored` on a machine that has one
+test every_fixture_names_the_record_it_came_from ... ok
+test the_local_delivery_is_the_full_one_projected_onto_its_range ... ok
+test every_selection_presents_the_same_answer ... ok
+test a_repeated_request_states_the_same_report ... ok
+
+test result: ok. 4 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running tests/engine.rs (target/debug/deps/engine-74ab54d5bf6bbe37)
+
+running 9 tests
+test public_engine_entrypoints_honor_precancelled_requests_at_their_stage_boundary ... ok
+test materialization_failure_is_err_and_body_partial_is_preserved ... ok
+test handler_budget_partial_has_precise_coverage ... ok
+test one_budget_accumulates_open_and_header_and_preserves_atomic_stage_failure ... ok
+test zip_duplicate_origins_and_validation_are_preserved ... ok
+test method_request_decodes_and_charges_only_the_selected_body ... ok
+test target_and_header_body_boundaries_are_preserved ... ok
+test empty_zip_enumeration_reports_the_open_snapshot ... ok
+test standalone_engine_reports_owned_source_and_usage ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/historical_classfile_corpus.rs (target/debug/deps/historical_classfile_corpus-fc23bf8515507746)
+
+running 1 test
+test historical_ecj_headers_and_finally_bytecode_are_stable ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/jvm_bytecode_oracle.rs (target/debug/deps/jvm_bytecode_oracle-9d7d376207cf3e28)
+
+running 1 test
+test jdk25_instruction_boundaries_match_public_bytecode_inspection ... ignored, requires JDK 25 Class-File API oracle
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/navigation.rs (target/debug/deps/navigation-9707726f33786d4d)
+
+running 20 tests
+test a_tree_root_that_is_not_this_snapshot_is_refused ... ok
+test a_standalone_class_lists_its_own_root_and_refuses_a_tree_scope ... ok
+test an_identity_that_does_not_match_its_bytes_is_refused ... ok
+test a_damaged_candidate_ends_the_confirmed_scan_with_a_reliable_prefix ... ok
+test a_candidate_listing_reads_no_header_and_keeps_containment ... ok
+test an_abstract_or_native_member_carries_no_fabricated_body ... ok
+test a_budget_stop_keeps_the_confirmed_prefix ... ok
+test a_cancelled_listing_publishes_the_prefix_it_read ... ok
+test a_damaged_member_does_not_erase_the_class ... ok
+test navigation_reads_headers_only ... ok
+test a_path_that_disagrees_with_the_declared_name_keeps_both ... ok
+test no_match_is_an_empty_answer_and_not_a_failure ... ok
+test duplicate_definitions_are_all_returned_and_a_chosen_identity_is_unique ... ok
+test a_chosen_identity_does_not_depend_on_traversal_order ... ok
+test overloads_are_answered_with_every_candidate_until_a_descriptor_is_given ... ok
+test two_spellings_of_one_name_bind_the_same_definition ... ok
+test the_same_class_at_two_origins_stays_two_items ... ok
+test a_listed_member_in_an_archive_reads_the_same_physical_definition ... ok
+test navigation_reports_round_trip_through_their_json_shape ... ok
+test a_listed_method_is_directly_usable_as_a_request_target ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p1_active_facts.rs (target/debug/deps/p1_active_facts-2e65b5255899f3c0)
+
+running 7 tests
+test the_jvm_consumers_share_the_prepared_bundle_instead_of_copying_it ... ok
+test a_directory_record_that_understates_its_class_stops_the_read_at_the_ceiling ... ok
+test a_class_crossing_its_ceiling_is_refused_before_it_is_materialized ... ok
+test a_container_is_read_again_only_after_its_last_consumer_let_go ... ok
+test one_preparation_produces_one_pool_for_every_method_of_its_class ... ok
+test a_scope_walk_reads_the_container_once_whatever_its_store_is_doing ... ok
+test the_bulk_operation_bills_the_container_once_in_every_store_configuration ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/p1_artifact_tree.rs (target/debug/deps/p1_artifact_tree-38159f047fff4508)
+
+running 14 tests
+test prefix_result_item_exhaustion_skips_all_remaining_root_candidates ... ok
+test depth_limit_skips_each_candidate_at_its_parent_ordinal ... ok
+test budget_and_precancellation_return_non_complete_reliable_prefixes ... ok
+test local_error_then_entry_bytes_budget_reports_the_actual_terminal_budget ... ok
+test duplicate_nested_entries_derive_distinct_child_and_inner_identities ... ok
+test child_enumeration_failure_keeps_failed_report_parent_provenance_and_valid_sibling ... ok
+test boot_tree_is_explicit_and_nested_entry_is_replayable_without_intermediate_output ... ok
+test malformed_and_unsupported_children_do_not_erase_valid_siblings ... ok
+test forged_nested_origins_and_metadata_are_rejected ... ok
+test nested_replay_preserves_depth_entry_count_and_cancellation_errors_without_result_items ... ok
+test result_item_exhaustion_before_second_child_report_keeps_pending_coverage_and_provenance ... ok
+test nested_depth_is_a_high_water_mark_and_preserves_siblings ... ok
+test boot_and_war_library_names_require_exact_prefix_case_direct_path_and_lowercase_jar ... ok
+test war_and_ordinary_nested_layout_are_physical_evidence_only ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p1_budget_ledger.rs (target/debug/deps/p1_budget_ledger-0a37d0b679a6f732)
+
+running 17 tests
+test a_budget_without_a_ledger_keeps_the_direct_path ... ok
+test an_overflowing_request_is_refused_rather_than_wrapped ... ok
+test depth_marks_take_the_deepest_value_per_owner ... ok
+test a_worker_can_state_which_part_of_the_operation_its_next_work_is ... ok
+test a_permit_taken_before_a_cancellation_is_still_billed ... ok
+test a_refused_entry_is_reported_with_the_quota_it_needed ... ok
+test one_ledger_is_one_total_for_every_worker ... ok
+test a_local_limit_stops_that_work_and_leaves_the_operation_alone ... ok
+test a_later_operation_on_one_request_folds_the_first_ones_total ... ok
+test a_quota_refusal_is_the_operations_stop ... ok
+test the_entry_depths_are_part_of_the_operation_and_its_own_work_can_exceed_them ... ok
+test the_entry_usage_counts_against_the_operation_and_is_never_reset ... ok
+test the_first_stop_is_published_and_later_observations_do_not_replace_it ... ok
+test the_total_reports_every_entry_and_the_observation_moves_no_number ... ok
+test two_workers_race_for_the_last_quota_and_the_refused_one_is_not_billed ... ok
+test a_hammered_dimension_admits_exactly_its_limit_and_never_one_more ... ok
+test the_elapsed_clock_is_the_operations_and_not_the_sum_of_worker_time ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+     Running tests/p1_multi_release.rs (target/debug/deps/p1_multi_release-74824d04ce9ab601)
+
+running 29 tests
+test cancellation_stops_before_any_faked_selection ... ok
+test empty_container_completes_without_entries_or_manifest ... ok
+test empty_manifest_is_malformed_and_never_activates_multi_release ... ok
+test container_reservation_failure_declares_every_known_ordinal_skipped ... ok
+test a06_without_v17_falls_back_to_v11_and_without_manifest_to_base ... ok
+test disabled_policy_and_low_target_inactivate_versioned_entries ... ok
+test container_without_enumerated_ordinals_produces_no_manifest_claim ... ok
+test interrupted_predecessor_probe_keeps_base_not_applicable ... ok
+test budget_exhaustion_is_partial_and_never_fakes_completion ... ok
+test invalid_view_inputs_are_rejected_with_stable_codes ... ok
+test interrupted_item_budget_outranks_the_custom_policy_verdict ... ok
+test artifact_tree_keeps_reports_for_children_the_physical_aggregate_already_stopped ... ok
+test item_exhaustion_refuses_later_domain_diagnostics_and_evidence ... ok
+test items_exhausted_during_root_processing_declare_the_child_ordinals_skipped ... ok
+test selection_item_exhaustion_keeps_the_proven_prefix_and_stops ... ok
+test missing_base_reports_the_closed_no_selection_reason ... ok
+test duplicate_candidates_are_ambiguous_and_never_first_wins ... ok
+test a06_selects_root_11_and_17_and_marks_the_other_variants ... ok
+test truncated_physical_enumeration_after_the_manifest_keeps_its_decision_evidence ... ok
+test unsupported_policies_preserve_candidates_without_a_selected_fact ... ok
+test selections_follow_the_group_minimum_ordinal_not_path_bytes ... ok
+test physical_evidence_is_the_single_provider_result_it_reports ... ok
+test invalid_version_paths_keep_physical_evidence_and_one_diagnostic_each ... ok
+test physical_scope_controls_nested_multi_release_inspection ... ok
+test release_nine_is_a_legal_version_directory_and_selects_at_target_nine ... ok
+test class_compliance_diagnostics_do_not_rewrite_path_selection ... ok
+test typed_diagnostic_rejects_unknown_fields_codes_and_severity_mismatch ... ok
+test manifest_evidence_states_and_path_diagnostics ... ok
+test report_json_round_trips_and_mr_owned_types_are_closed ... ok
+
+test result: ok. 29 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p1_prepared_class.rs (target/debug/deps/p1_prepared_class-e576091d0d9adac5)
+
+running 12 tests
+test a_damaged_class_declaration_is_an_error ... ok
+test a_damaged_member_table_publishes_the_stop_and_no_body_verdict ... ok
+test a_prepared_class_publishes_the_reads_identity ... ok
+test one_class_read_is_enough_for_every_method_of_the_class ... ok
+test absent_duplicate_and_single_code_entries_keep_the_codes_of_the_single_method_path ... ok
+test the_locator_keeps_every_duplicate_declaration_and_decodes_none_of_them ... ok
+test a_prepared_read_survives_a_cleared_or_zero_capacity_cache ... ok
+test a_real_fixture_class_decodes_every_method_like_the_single_method_path ... ok
+test a_content_that_disagrees_with_its_record_is_refused_before_any_byte ... ok
+test container_backing_hands_out_the_container_that_was_read ... ok
+test a_nested_class_is_read_through_its_own_container_chain ... ok
+test stored_and_deflated_entries_both_decode_like_the_single_method_path ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p1_query_api.rs (target/debug/deps/p1_query_api-ec9824c0cca7b865)
+
+running 23 tests
+test request_validation_uses_stable_codes ... ok
+test cursor_for_another_target_is_rejected_before_the_scan ... ok
+test cancellation_is_never_reported_as_complete ... ok
+test standalone_class_snapshot_uses_class_offset_coverage ... ok
+test manifest_line_endings_are_handled_without_losing_the_continuation_rule ... ok
+test budget_interruption_resumes_at_the_published_boundary ... ok
+test result_item_budget_keeps_the_reliable_prefix ... ok
+test unsupported_relation_keeps_candidates_for_a_standalone_class ... ok
+test resource_consumer_reports_manifest_and_service_facts ... ok
+test pagination_continuation_reproduces_one_full_scan ... ok
+test unsupported_categories_do_not_change_scanned_evidence ... ok
+test unsupported_relation_candidates_use_the_ordinary_item_budget ... ok
+test resource_scan_respects_relation_and_consumer_schema ... ok
+test a18_open_snapshot_stays_stable_and_a_reopened_one_rejects_old_cursors ... ok
+test unsupported_relations_do_not_expand_a_pool_owner ... ok
+test unsupported_relations_report_the_analysis_state_without_resolving ... ok
+test unsupported_relations_report_candidates_even_when_a_call_consumes_one ... ok
+test cursor_rejects_every_target_change ... ok
+test unsupported_relation_candidates_page_without_repeats_or_gaps ... ok
+test unsupported_relations_keep_raw_constant_pool_candidates ... ok
+test cursor_mismatches_bind_snapshot_view_relation_and_schema ... ok
+test page_size_does_not_change_query_identity ... ok
+test reports_round_trip_as_tagged_json_without_unknown_fields ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p1_query_bounds.rs (target/debug/deps/p1_query_bounds-af76ff0ccfc21455)
+
+running 5 tests
+test the_within_bound_rejects_every_dimension_over_its_limit ... ok
+test cancellation_at_the_high_fanout_unit_boundary_publishes_nothing ... ok
+test the_per_unit_accumulation_is_bounded_by_the_input_dimensions ... ok
+test result_budget_publishes_the_reliable_prefix_of_a_high_fanout_entry ... ok
+test high_fanout_pages_splice_back_to_the_whole_scan ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/p1_query_demand.rs (target/debug/deps/p1_query_demand-6072ed263983ac3c)
+
+running 6 tests
+test a_small_resource_page_stops_before_the_containers_behind_it ... ok
+test a_replayed_prefix_is_never_published_twice ... ok
+test a_page_that_ends_at_a_member_boundary_does_not_decode_it_again ... ok
+test the_whole_resource_traversal_pays_for_every_container_it_reaches ... ok
+test a_small_page_stops_before_the_work_behind_it ... ok
+test the_continuation_splices_back_to_the_unpaged_scan ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p1_query_model.rs (target/debug/deps/p1_query_model-673d81f1d50dbbf1)
+
+running 6 tests
+test physical_variants_coexist_while_runtime_views_only_declare_requests ... ok
+test unknown_runtime_modes_round_trip_without_degrading_to_known_values ... ok
+test consumer_schema_is_canonical_and_all_query_relations_round_trip ... ok
+test directed_nested_origins_preserve_edges_and_distinguish_duplicate_parents ... ok
+test load_domain_keeps_policy_root_order_and_uncertainty_in_identity ... ok
+test standalone_and_archive_locations_round_trip_without_synthetic_entries ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p1_query_planes.rs (target/debug/deps/p1_query_planes-485171443da336d2)
+
+running 5 tests
+test a_root_directory_that_does_not_parse_is_refused_as_a_whole ... ok
+test a_full_page_a_cancellation_and_a_budget_stop_are_three_states ... ok
+test a_cursor_is_refused_unless_it_describes_the_binding_that_issued_it ... ok
+test a_damaged_class_candidate_is_reported_when_the_page_reads_it ... ok
+test a_container_the_page_never_reaches_is_unknown_and_not_empty ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p1_query_positions.rs (target/debug/deps/p1_query_positions-b0f8930eab72014f)
+
+running 5 tests
+test unimplemented_categories_are_stated_without_changing_the_scanned_facts ... ok
+test a_page_inside_the_resource_step_names_it_over_a_tree_scope ... ok
+test a_page_inside_the_metadata_step_names_it_and_replays_only_its_prefix ... ok
+test a_page_inside_the_bootstrap_step_names_it_and_replays_only_its_prefix ... ok
+test mixed_consumers_share_one_cursor_and_one_item_order ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p1_reader_facts.rs (target/debug/deps/p1_reader_facts-764cd1142ee5ec77)
+
+running 3 tests
+test public_entry_points_report_budget_hits_and_cancellation_as_errors ... ok
+test public_bytecode_path_keeps_its_result_and_charge_shape ... ok
+test public_header_path_keeps_its_result_and_charge_shape ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p1_scope_cursor.rs (target/debug/deps/p1_scope_cursor-a28745d0f53d9b83)
+
+running 12 tests
+test a_standalone_snapshot_reports_its_scope_complete_only_behind_its_one_root ... ok
+test a_standalone_snapshot_yields_its_root_and_refuses_a_tree_scope ... ok
+test a_root_container_that_cannot_be_read_is_an_error ... ok
+test a_cancelled_request_yields_nothing_at_all_not_even_the_first_candidate ... ok
+test an_artifact_tree_scope_of_another_root_container_is_refused ... ok
+test a_cancelled_request_stops_the_cursor_at_the_next_entry ... ok
+test a_cancellation_after_a_candidate_keeps_the_prefix_it_confirmed ... ok
+test a_whole_snapshot_scope_is_the_root_containers_own_entries ... ok
+test a_nested_depth_limit_is_reported_the_way_the_tree_walk_reports_it ... ok
+test a_container_the_walk_cannot_read_leaves_its_subtree_unknown ... ok
+test a_walk_that_has_not_reached_the_end_reports_a_prefix_not_a_denominator ... ok
+test the_cursor_yields_the_tree_walks_candidates_in_the_same_order ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p1_xref_bootstrap.rs (target/debug/deps/p1_xref_bootstrap-3fb811608a5e1661)
+
+running 28 tests
+test a_member_with_broken_code_does_not_hide_another_member_site ... ok
+test a_condy_chain_within_the_derived_bound_completes ... ok
+test a_real_metafactory_site_is_linkable_and_traces_the_implementation_handle ... ok
+test a_missing_duplicated_or_broken_table_is_a_structured_stop ... ok
+test a_cycle_is_reported_instead_of_followed ... ok
+test a_class_without_a_dynamic_use_site_never_reads_the_table ... ok
+test a_truncated_class_candidate_fails_with_its_entry_origin ... ok
+test a_custom_bootstrap_claims_no_final_target ... ok
+test a_page_continuation_replays_the_bootstrap_items_without_repetition ... ok
+test every_use_site_keeps_its_own_path_to_a_shared_deeper_node ... ok
+test a_real_metafactory_site_keeps_every_static_argument_in_its_own_position ... ok
+test an_entry_only_an_unused_table_entry_reaches_produces_no_fact ... ok
+test nested_condy_reports_both_levels_and_one_fact_per_shared_subgraph ... ok
+test bootstrap_table_entries_no_use_site_reaches_produce_nothing ... ok
+test a_condy_chain_past_the_derived_bound_stops_with_a_diagnostic ... ok
+test the_structural_sample_is_not_a_linkable_bootstrap ... ok
+test a_type_only_request_reaches_a_type_a_bootstrap_descriptor_names ... ok
+test an_implementation_handle_is_never_reported_as_a_call ... ok
+test result_items_and_code_bytes_stops_keep_the_reliable_prefix ... ok
+test the_whole_ldc_family_opens_a_deferred_graph ... ok
+test the_raw_pool_probe_never_produces_a_bootstrap_edge ... ok
+test bootstrap_descriptors_report_their_types_with_the_edge_that_reached_them ... ok
+test the_sample_site_traces_its_declared_implementation_argument ... ok
+test the_same_request_twice_reports_the_same_items_and_paths ... ok
+test every_declared_static_argument_of_the_sample_keeps_its_position_and_value ... ok
+test the_class_candidate_rule_is_case_sensitive_and_shared ... ok
+test the_bootstrap_table_is_read_only_when_its_category_is_requested ... ok
+test unused_bootstrap_entries_and_type_only_requests_keep_the_table_deferred ... ok
+
+test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p1_xref_code.rs (target/debug/deps/p1_xref_code-8d03913e55b00400)
+
+running 28 tests
+test an_undecodable_member_is_reported_without_hiding_the_other_members ... ok
+test a_class_candidate_outside_the_requested_categories_is_not_scanned ... ok
+test a_truncated_class_candidate_fails_with_its_entry_origin ... ok
+test a_malformed_descriptor_of_a_used_entry_is_a_structured_stop ... ok
+test a_linear_scan_reads_trailing_dead_bytes_without_reachability_analysis ... ok
+test a_code_bytes_stop_keeps_the_prefix_it_already_billed ... ok
+test a_value_relation_reports_consumers_and_never_pool_candidates ... ok
+test a_class_candidate_names_the_bytes_that_make_it_damaged ... ok
+test invocation_item_keeps_the_complete_symbol_and_its_byte_coordinates ... ok
+test exception_handlers_keep_their_ordinal_protected_range_and_handler_bci ... ok
+test one_class_read_and_no_result_items_per_instruction ... ok
+test field_accesses_keep_read_write_and_static_instance_distinct ... ok
+test a_used_method_type_descriptor_reports_its_types ... ok
+test references_in_unreachable_code_are_still_reported ... ok
+test a_nested_truncated_candidate_bounds_pages_budgets_and_cancellation ... ok
+test raw_probe_matches_the_bytes_and_values_the_pool_really_stores ... ok
+test page_continuation_replays_the_code_items_in_position_order ... ok
+test result_items_and_cancellation_stop_without_unbilled_items ... ok
+test descriptor_types_of_handles_sites_and_condy_come_from_the_use_site ... ok
+test the_class_candidate_rule_is_case_sensitive_and_shared ... ok
+test type_operations_keep_the_operation_that_consumed_the_type ... ok
+test raw_probe_distinguishes_values_and_bit_patterns ... ok
+test symbol_matching_stays_exact_and_does_not_expand_the_owner ... ok
+test invocation_kinds_and_dynamic_sites_keep_operation_and_position ... ok
+test unused_constant_pool_entries_are_candidates_but_never_calls ... ok
+test loads_report_the_value_and_the_symbol_they_consume ... ok
+test zip_scan_reads_the_class_entry_and_never_other_entries ... ok
+test unrequested_categories_produce_no_items ... ok
+
+test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p1_xref_golden.rs (target/debug/deps/p1_xref_golden-4f2e3bc9b9c21794)
+
+running 5 tests
+test nested_golden_replays_stored_and_deflated_origins ... ok
+test code_golden_replays_the_unused_pool_contrast_and_the_call_coordinates ... ok
+test metadata_golden_replays_single_and_combined_categories ... ok
+test bootstrap_golden_replays_the_compiled_lambda ... ok
+test multi_release_golden_replays_three_views_and_one_physical_query ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p1_xref_metadata.rs (target/debug/deps/p1_xref_metadata-ef9d32c26178cb94)
+
+running 33 tests
+test a_compiled_record_component_annotation_is_found_at_its_own_position ... ok
+test a_flat_annotation_prefix_keeps_its_class_offset ... ok
+test a_compiled_code_type_annotation_is_found_without_decoding_the_body ... ok
+test a_class_signature_needs_a_class_type_signature ... ok
+test a_truncated_class_candidate_fails_with_its_entry_origin ... ok
+test a_compiled_type_variable_result_is_not_a_class_reference ... ok
+test code_nested_structure_is_read_only_when_the_position_is_requested ... ok
+test a_compiled_generic_return_signature_is_read ... ok
+test a_compiled_throws_signature_reports_only_its_class_type ... ok
+test malformed_metadata_content_is_a_structured_stop ... ok
+test a_nested_structure_that_fails_publishes_none_of_its_facts ... ok
+test a_compiled_throws_type_variable_is_read_without_an_item ... ok
+test each_parser_reports_its_own_malformed_content ... ok
+test archive_entries_are_scanned_only_when_they_are_class_files ... ok
+test a_method_signature_grammar_still_rejects_malformed_content ... ok
+test ambiguous_pool_bytes_degrade_the_evidence_honestly ... ok
+test constant_values_are_reported_as_values_only ... ok
+test module_uses_and_provides_are_class_nodes_on_module_info_only ... ok
+test record_component_declaration_must_agree_with_its_content ... ok
+test record_component_annotations_are_read_without_a_signature_request ... ok
+test the_class_candidate_rule_is_case_sensitive_and_shared ... ok
+test scans_are_deterministic_and_paginate_without_gaps ... ok
+test inner_nest_relations_keep_their_kind ... ok
+test code_type_annotations_are_read_without_decoding_the_body ... ok
+test record_component_signatures_survive_their_declared_length ... ok
+test tight_budgets_and_cancellation_keep_the_reliable_prefix ... ok
+test unrequested_categories_are_not_read_and_unknown_attributes_stay_invisible ... ok
+test requested_verification_and_debug_never_claim_a_complete_schema ... ok
+test this_class_is_not_a_self_use_but_super_and_interfaces_are ... ok
+test annotation_attributes_cover_visible_invisible_type_parameter_and_default ... ok
+test member_descriptors_report_each_object_type_once ... ok
+test metadata_only_types_hit_only_their_requested_category ... ok
+test generic_signatures_follow_their_own_grammar ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p1_xref_properties.rs (target/debug/deps/p1_xref_properties-eaa3f032e9db763e)
+
+running 4 tests
+test paged_continuations_splice_to_the_full_run ... ok
+test identical_bytes_keep_distinct_origins ... ok
+test combined_categories_equal_the_single_category_union ... ok
+test unused_constant_pool_insertion_keeps_mentions_unchanged ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/p2_canonical.rs (target/debug/deps/p2_canonical-b2867a5d22e71cff)
+
+running 8 tests
+test a_cancelled_request_claims_no_canonical_artifact ... ok
+test the_modern_dialect_has_no_clone_to_bill ... ok
+test a_jump_into_a_protected_region_canonicalizes ... ok
+test an_exhausted_step_budget_falls_back_with_the_normalization_code ... ok
+test the_p1_query_coordinates_are_unchanged_by_a_canonical_run ... ok
+test an_exact_clone_budget_completes_and_one_less_falls_back ... ok
+test the_historical_finally_normalizes_with_one_clone_per_call_site ... ok
+test a_jsr_on_an_exception_path_and_nested_calls_normalize ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p2_cfg.rs (target/debug/deps/p2_cfg-8dd23f804f322773)
+
+running 12 tests
+test a_class_whose_header_cannot_be_read_fabricates_no_method_result ... ok
+test a_foreign_method_identity_fails_the_body_pass_under_its_own_code ... ok
+test a_truncated_body_whose_targets_cannot_be_validated_is_not_read_as_corrupt ... ok
+test an_ir_budget_stop_keeps_the_completed_prefix ... ok
+test a_truncated_body_analyzes_its_reliable_prefix ... ok
+test a_driver_definition_the_declared_loader_does_not_bind_stops_the_body_pass ... ok
+test a_complete_body_completes_the_two_implemented_phases ... ok
+test a_member_that_declares_no_body_is_a_fact_and_not_a_failed_pass ... ok
+test a_jsr_subroutine_body_still_has_raw_transfers ... ok
+test the_p1_query_coordinates_are_unchanged_by_a_raw_cfg_run ... ok
+test the_same_request_publishes_the_same_report ... ok
+test two_members_of_one_class_are_answered_about_themselves ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p2_closure.rs (target/debug/deps/p2_closure-8a8ae4fae35c69cd)
+
+running 10 tests
+test a_pre_cancelled_request_reports_cancelled_and_reads_nothing ... ok
+test a_request_for_a_class_that_has_a_body_reads_no_code_byte ... ok
+test a_budget_stop_keeps_every_record_inside_the_charged_attempts ... ok
+test a_damaged_candidate_is_charged_and_never_recorded ... ok
+test every_indistinguishable_candidate_of_one_position_is_recorded ... ok
+test a_read_is_recorded_for_the_definition_whose_bytes_were_read ... ok
+test byte_equal_definitions_under_two_loaders_stay_two_records ... ok
+test a_member_symbol_is_searchable_and_reads_only_the_classes_it_needs ... ok
+test the_other_two_reports_also_publish_their_reads ... ok
+test a_class_lookup_records_the_header_it_read ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p2_contracts.rs (target/debug/deps/p2_contracts-a8d6ab72ec029bd5)
+
+running 30 tests
+test closed_sets_serialize_as_snake_case_strings ... ok
+test all_lists_are_complete_and_align_with_the_serde_names ... ok
+test body_state_and_subject_shapes_are_pinned ... ok
+test declaration_reference_query_reports_its_stop_instead_of_an_empty_answer ... ok
+test analysis_request_must_name_at_least_one_stage ... ok
+test entries_charge_nothing_and_read_no_bytes ... ok
+test external_roots_are_unreadable_declarations_not_missing_content ... ok
+test caller_domain_must_be_equal_to_the_domain_declared_under_the_same_loader ... ok
+test engine_query_keeps_its_p1_identity_coordinates_and_billing ... ok
+test missing_parent_domain_is_reported_and_resolves_nothing ... ok
+test loader_uniqueness_covers_repeated_and_undeclared_caller_domains ... ok
+test an_unread_body_is_not_inspected_never_a_body_fact ... ok
+test environment_problems_of_different_codes_keep_their_declaration_order ... ok
+test caller_context_must_name_the_loader_of_its_own_domain ... ok
+test parent_cycle_is_reported_for_every_domain_in_the_cycle ... ok
+test every_analysis_stage_is_requestable_and_schedules_its_own_prefix ... ok
+test reference_use_must_describe_the_same_member_kind_as_the_target ... ok
+test request_snapshot_must_be_one_of_the_provided_snapshots ... ok
+test provider_roots_must_be_listed_by_a_participating_domain ... ok
+test resolution_stops_a_member_request_at_its_first_budgeted_step ... ok
+test roots_without_provided_content_are_reported_by_index ... ok
+test valid_environment_reports_no_problem_and_keeps_the_declaration_order ... ok
+test unsupported_module_modes_and_delegations_are_policy_problems ... ok
+test payload_enums_use_the_kind_tag_and_round_trip ... ok
+test requests_and_identity_reject_unknown_fields_and_round_trip ... ok
+test result_planes_are_reported_side_by_side_and_never_inferred ... ok
+test method_analysis_normalizes_the_request_and_schedules_the_prerequisites ... ok
+test physical_entry_modules_do_not_reference_the_p2_modules ... ok
+test the_a17_guard_detects_rewritten_references_and_added_files ... ok
+test physical_entry_modules_do_not_reference_the_recovery_layer ... ok
+
+test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+     Running tests/p2_declaration_refs.rs (target/debug/deps/p2_declaration_refs-a5f79101a2739dc7)
+
+running 34 tests
+test a_class_symbol_declaration_keeps_the_unavailable_state ... ok
+test a_cancelled_request_scans_nothing_and_never_claims_an_answer ... ok
+test a_metadata_fact_whos_member_kind_is_unstated_stays_undecided ... ok
+test a_bootstrap_member_argument_stays_undecided ... ok
+test a_missing_owner_is_unresolved_and_keeps_its_use_site ... ok
+test a_damaged_class_candidate_is_a_scan_level_stop ... ok
+test a_method_handle_load_stays_undecided ... ok
+test a_duplicate_declaration_is_unresolved ... ok
+test a_kind_mismatch_is_unresolved ... ok
+test a_candidate_that_resolves_to_another_declaration_is_not_an_item ... ok
+test a_default_conflict_is_unresolved_and_keeps_its_use_site ... ok
+test a_rejected_environment_never_reaches_the_candidates ... ok
+test a_published_diagnostic_costs_a_result_item ... ok
+test a_refused_header_read_that_stops_the_resolution_keeps_the_reliable_prefix ... ok
+test a_refused_diagnostic_charge_stops_the_report_at_the_prefix ... ok
+test a_sibling_name_on_the_same_owner_is_not_a_candidate ... ok
+test a_static_instruction_on_an_instance_field_is_reported_without_the_kind_rule ... ok
+test a_search_diagnostic_enters_the_report_and_is_charged ... ok
+test a_signature_polymorphic_invoke_exact_call_site_is_a_candidate_too ... ok
+test a_result_item_budget_that_cannot_fund_the_scan_stops_without_claiming_an_answer ... ok
+test a_resolution_stop_outranks_an_assembly_stop ... ok
+test an_ordinary_declaration_matches_by_name_and_descriptor_not_by_name ... ok
+test an_array_owner_is_unresolved ... ok
+test an_ambiguous_owner_is_unresolved_and_keeps_its_use_site ... ok
+test an_artifact_tree_scope_validates_its_root_container ... ok
+test an_unconsumed_pool_entry_is_not_a_candidate ... ok
+test a_stop_that_hits_the_same_candidate_twice_is_reported_once ... ok
+test max_items_truncates_the_items_without_turning_the_execution_partial ... ok
+test a_signature_polymorphic_call_site_is_a_candidate_at_its_own_descriptor ... ok
+test field_accesses_resolve_through_the_declaring_class ... ok
+test a_sub_call_site_resolves_to_the_base_declaration ... ok
+test publishing_the_report_stops_at_the_budget_and_keeps_its_prefix ... ok
+test the_loader_of_a_declaration_is_part_of_its_identity ... ok
+test the_same_names_under_two_loaders_resolve_under_the_requested_environment ... ok
+
+test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p2_dispatch.rs (target/debug/deps/p2_dispatch-3e2744862bbad506)
+
+running 33 tests
+test a_range_over_a_foreign_tree_root_is_refused_as_an_input_mismatch ... ok
+test a_pre_cancelled_request_never_starts_the_range ... ok
+test a_range_whose_listing_cannot_be_paid_for_is_a_truncated_range ... ok
+test a_declaration_of_another_kind_is_not_a_candidate ... ok
+test a_range_position_no_position_provides_is_undecided ... ok
+test a_field_declaration_enumerates_the_classes_that_declare_the_same_field ... ok
+test a_closure_diagnostic_is_charged_like_every_other_resolution_result ... ok
+test a_declared_loader_outside_the_chain_is_an_unknown_loader_fact ... ok
+test a_cyclic_hierarchy_in_the_range_leaves_the_plane_open ... ok
+test a_missing_supertype_branch_is_the_candidates_own_dependency_fact ... ok
+test a_dependency_depth_stop_keeps_the_prefix_and_the_positions_it_declared ... ok
+test a_refused_closure_diagnostic_keeps_the_entries_before_it ... ok
+test a_rule_diagnostic_costs_one_result_item_before_the_range_runs ... ok
+test a_request_without_a_range_publishes_no_dispatch_at_all ... ok
+test a_tree_range_over_a_class_snapshot_is_a_failed_range_not_an_empty_one ... ok
+test a_range_position_that_resolves_outside_the_range_is_undecided ... ok
+test a_standalone_class_root_can_be_the_whole_range ... ok
+test an_external_root_is_refused_before_the_range_is_enumerated ... ok
+test a_class_header_stop_keeps_the_candidates_already_found ... ok
+test a_truncated_listing_keeps_the_positions_it_declared_but_never_examined ... ok
+test a_result_items_stop_keeps_the_candidates_already_published ... ok
+test an_ambiguous_range_position_is_undecided_not_excluded ... ok
+test a_single_known_candidate_is_never_published_as_a_unique_target ... ok
+test a_result_items_stop_publishes_no_skipped_range ... ok
+test an_artifact_tree_range_covers_the_containers_its_positions_reach ... ok
+test every_rule_diagnostic_of_one_request_is_charged_and_published ... ok
+test every_implementation_in_the_range_is_one_known_candidate ... ok
+test the_range_enumerates_each_name_once ... ok
+test the_range_reads_headers_only_and_never_a_method_body ... ok
+test a_runtime_transformation_moves_only_the_open_world_flag ... ok
+test the_candidate_rule_is_structural_and_screens_no_member_flag ... ok
+test an_ordered_root_is_evidence_only_past_the_first_position ... ok
+test the_subtype_test_compares_ancestor_nodes_not_owner_names ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p2_entry_counts.rs (target/debug/deps/p2_entry_counts-b2d75964547ac2b9)
+
+running 5 tests
+test the_x0_pool_probe_constructs_no_ir_and_decodes_no_body ... ok
+test the_x1_consumer_scan_constructs_no_ir ... ok
+test every_published_sequence_is_in_its_own_order ... ok
+test one_method_analysis_attempts_one_body_however_many_the_class_declares ... ok
+test the_same_method_analysis_repeats_field_by_field ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p2_frame.rs (target/debug/deps/p2_frame-cfa6557d4fdb9600)
+
+running 16 tests
+test a_cancelled_request_publishes_no_frame_table ... ok
+test an_uninitialized_value_used_as_a_reference_stays_the_boundary_of_this_build ... ok
+test a_pre_initialization_putfield_of_the_own_name_is_accepted_without_any_declared_field ... ok
+test a_constructor_completes_because_its_constructor_call_converts_the_this ... ok
+test an_exception_input_into_an_already_processed_block_settles_with_it ... ok
+test a_range_starting_inside_a_block_still_hands_its_handler_an_input ... ok
+test a_range_containing_the_block_start_is_still_analyzed ... ok
+test the_frame_phase_completes_a_body_without_any_debug_table ... ok
+test an_exception_input_follows_the_state_its_throw_site_settles_on ... ok
+test two_records_naming_one_handler_still_hand_it_both_inputs ... ok
+test two_throw_sites_of_one_block_still_merge_their_own_states ... ok
+test the_two_records_of_one_handler_are_read_in_the_order_that_shows_a_fold ... ok
+test an_exhausted_item_budget_publishes_no_frame_table ... ok
+test an_uncovered_throw_site_is_not_retained ... ok
+test an_exhausted_item_budget_inside_the_names_phase_publishes_no_names ... ok
+test a_covered_throw_site_product_is_billed_with_its_size ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/p2_golden.rs (target/debug/deps/p2_golden-f20c20572be22c30)
+
+running 9 tests
+test every_category_of_the_fixed_list_is_carried_by_a_named_entry ... ok
+test the_input_side_premises_of_the_entries_hold ... ok
+test the_legacy_clone_entry_bills_two_call_sites ... ok
+test the_wide_and_switch_entry_completes ... ok
+test every_stopped_entry_across_the_goldens_explains_itself ... ok
+test the_stopped_inputs_stay_published_and_explained ... ok
+test the_exception_entries_complete_with_the_handler_inputs_settled ... ok
+test the_historical_corpus_replays_from_45_to_52 ... ok
+test the_resource_boundary_entries_stop_where_their_budget_says ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/p2_members.rs (target/debug/deps/p2_members-8bde4b67ca4c715a)
+
+running 53 tests
+test a_delegated_root_that_declares_itself_as_its_supertype_is_a_cycle ... ok
+test a_caller_definition_of_another_snapshot_passes_when_its_loader_selects_it ... ok
+test a_duplicate_declaration_in_one_class_is_ambiguous ... ok
+test a_declaration_of_the_owner_itself_costs_no_dependency_depth ... ok
+test a_class_reference_needs_a_class_owner ... ok
+test a_member_of_the_owner_resolves_to_its_own_declaration ... ok
+test a_class_inherits_a_default_method_through_its_superclass_interfaces ... ok
+test a_field_reference_is_not_held_to_the_static_rules ... ok
+test a_class_inherits_a_default_method_through_the_interface_step ... ok
+test a_cyclic_superclass_chain_stops_with_a_warning ... ok
+test a_member_search_stops_at_its_header_budget ... ok
+test a_root_name_reached_again_under_another_loader_is_another_node ... ok
+test a_caller_definition_the_declared_loader_does_not_bind_is_a_stop ... ok
+test a_member_resolution_reads_no_code_byte_of_a_class_that_has_a_body ... ok
+test a_pre_cancelled_member_request_reports_cancelled_and_reads_nothing ... ok
+test a_missing_supertype_leaves_its_branch_unread ... ok
+test a_missing_member_keeps_the_reference_and_fabricates_nothing ... ok
+test a_constructor_resolves_through_invoke_special_only ... ok
+test a_named_static_interface_declaration_still_resolves_and_still_breaks_the_kind_rule ... ok
+test a_member_search_stops_at_its_dependency_depth ... ok
+test a_supertype_that_cannot_be_told_apart_leaves_its_branch_unread ... ok
+test a_single_default_method_resolves_through_the_interface_step ... ok
+test an_ambiguous_owner_class_publishes_its_candidates ... ok
+test a_static_method_resolves_for_a_static_reference ... ok
+test a_static_method_with_an_instance_reference_is_an_incompatible_change ... ok
+test a_signature_polymorphic_method_resolves_by_name_only ... ok
+test an_entry_that_declares_another_name_is_refused_at_its_own_candidate ... ok
+test a_static_interface_declaration_is_ignored_by_the_superinterface_step ... ok
+test a_search_that_takes_both_kinds_of_edge_publishes_both_reasons ... ok
+test an_instance_method_with_a_static_reference_is_an_incompatible_change ... ok
+test a_subinterface_default_overrides_its_parent ... ok
+test an_abstract_method_resolves_and_warns ... ok
+test an_inconsistent_caller_definition_is_a_stop_and_never_a_wrong_check ... ok
+test an_abstract_only_interface_resolves_with_a_warning ... ok
+test an_array_owner_is_unsupported ... ok
+test an_inherited_member_resolves_to_the_declaring_class ... ok
+test review_parent_defined_owner_resolves_its_base_from_the_parent_loader ... ok
+test an_invokedynamic_reference_is_not_held_to_the_invocation_kind_rules ... ok
+test a_private_interface_declaration_is_ignored_by_the_superinterface_step ... ok
+test one_request_searches_one_name_in_two_loaders_and_keeps_them_apart ... ok
+test an_interface_field_is_found_before_a_superclass_field ... ok
+test an_interface_super_call_resolves_through_invoke_special ... ok
+test an_unknown_caller_class_leaves_the_access_rules_unchecked ... ok
+test an_interface_reference_needs_an_interface_owner ... ok
+test an_unreadable_caller_hierarchy_leaves_the_access_rules_unchecked ... ok
+test the_owner_state_is_inherited_when_the_owner_does_not_resolve ... ok
+test the_default_package_is_a_run_time_package_of_its_own ... ok
+test two_declarations_in_one_interface_are_ambiguous ... ok
+test the_first_declared_direct_superinterface_wins ... ok
+test the_same_package_in_another_loader_is_a_different_runtime_package ... ok
+test two_default_methods_are_a_default_conflict ... ok
+test the_access_matrix_follows_jvms_5_4_4 ... ok
+test every_fixture_class_resolves_as_a_class_symbol ... ok
+
+test result: ok. 53 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/p2_passes.rs (target/debug/deps/p2_passes-528793f0f14d9a46)
+
+running 4 tests
+test the_request_shape_checks_keep_their_precedence_over_the_pass_table ... ok
+test an_empty_stage_set_is_rejected_and_publishes_nothing ... ok
+test the_schedule_is_the_phase_prefix_whatever_order_the_request_names ... ok
+test every_stage_set_is_accepted_and_answered_with_the_state_of_its_passes ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p2_prefixed_roots.rs (target/debug/deps/p2_prefixed_roots-67ce076b952dfa27)
+
+running 17 tests
+test an_incomplete_directory_is_a_refusal_not_a_missing_verdict ... ok
+test a_root_that_names_the_other_physical_shape_is_refused_where_it_is_read ... ok
+test a_damaged_candidate_stops_the_search_at_its_own_position ... ok
+test a_prefix_binds_a_war_class_without_a_directory_entry ... ok
+test an_empty_prefix_and_a_layout_node_alone_bind_nothing ... ok
+test a_candidate_that_declares_another_name_is_refused_at_its_own_origin ... ok
+test an_illegal_prefix_is_an_environment_problem_and_never_guessed_around ... ok
+test declaration_order_decides_between_two_prefixed_positions ... ok
+test duplicate_entries_at_one_position_stay_ambiguous_with_their_own_origins ... ok
+test a_changed_prefix_is_a_new_environment_that_reuses_no_verdict ... ok
+test delegation_policy_moves_the_prefixed_positions_it_declares ... ok
+test a_prefixed_position_binds_the_driver_method_through_the_same_root ... ok
+test the_root_model_round_trips_and_refuses_the_old_and_unknown_spellings ... ok
+test a_nested_library_and_the_application_directory_are_two_positions ... ok
+test the_same_bytes_at_two_origins_are_two_definitions ... ok
+test raw_non_utf8_and_multibyte_bytes_are_not_transcoded ... ok
+test raw_name_bytes_are_matched_exactly_and_not_normalized ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p2_properties.rs (target/debug/deps/p2_properties-4860be429438785a)
+
+running 3 tests
+test the_generated_illegal_shapes_stop_where_the_prefix_says ... ok
+test the_generated_bodies_answer_deterministically ... ok
+test the_generated_corpus_keeps_the_stage_invariants_in_both_directions ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/p2_resolution.rs (target/debug/deps/p2_resolution-d5374b5256f0280a)
+
+running 16 tests
+test a_listing_that_stops_early_never_reads_as_missing ... ok
+test a_cancelled_lookup_is_cancelled_and_names_no_state ... ok
+test a_damaged_candidate_fails_at_its_origin_without_falling_back ... ok
+test a_class_header_budget_stop_stays_a_budget_stop ... ok
+test a_failed_read_attempt_is_charged_and_has_no_fallback ... ok
+test a_dispatch_request_over_a_class_symbol_names_the_missing_member_declaration ... ok
+test an_artifact_tree_root_searches_its_own_container_only ... ok
+test parent_first_selects_the_ancestor_and_child_first_the_caller ... ok
+test a_byte_equal_duplicate_is_ambiguous_not_ordinal ... ok
+test a_standalone_class_root_is_matched_through_its_own_name ... ok
+test a_rejected_environment_never_selects_a_definition ... ok
+test the_first_declared_root_that_holds_the_name_wins ... ok
+test several_candidates_at_one_position_are_ambiguous ... ok
+test unreadable_and_unprovided_roots_are_problems_not_positions ... ok
+test the_same_bytes_at_two_origins_are_not_merged ... ok
+test reading_failures_and_cancellations_never_occupy_a_semantic_state ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p2_return_address.rs (target/debug/deps/p2_return_address-d9656ea946af6acd)
+
+running 11 tests
+test a_legacy_opcode_in_the_modern_dialect_is_a_violation_not_a_limitation ... ok
+test a_version_the_format_does_not_allow_is_refused_where_the_dialect_is_decided ... ok
+test the_call_context_walk_stops_on_its_own_step_budget ... ok
+test a_live_call_site_behind_a_mid_block_jsr_is_still_refused ... ok
+test a_body_whose_decode_stopped_keeps_its_call_graph_unresolved ... ok
+test a_return_address_the_bytes_do_not_prove_stops_the_stage_before_it_completes ... ok
+test the_modern_dialect_pays_nothing_for_its_empty_context_set ... ok
+test the_p1_query_coordinates_are_unchanged_by_a_call_context_run ... ok
+test a_version_the_format_allows_still_analyzes_however_old_it_is ... ok
+test the_same_call_context_request_publishes_the_same_report ... ok
+test the_historical_jsr_finally_completes_the_call_context_pass ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p2_ssa.rs (target/debug/deps/p2_ssa-24038eaf816aac0b)
+
+running 5 tests
+test a_cancelled_request_publishes_no_names ... ok
+test a_step_budget_that_ends_the_ssa_phase_keeps_the_last_valid_phase ... ok
+test the_ssa_phase_names_a_real_body_and_completes_the_pipeline ... ok
+test a_phi_that_takes_its_own_value_as_an_operand_is_still_legal ... ok
+test the_names_of_a_body_are_billed_and_charged_deterministically ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_accessor_edges.rs (target/debug/deps/p3_accessor_edges-50659510fa5b983b)
+
+running 5 tests
+test the_two_original_edges_survive_a_recovery_run_field_by_field ... ok
+test the_driver_and_its_same_class_callees_share_one_read_and_one_preparation ... ok
+test the_anchors_name_the_member_each_field_access_is_in_and_only_named_bodies_are_read ... ok
+test a_bytecode_index_a_clone_repeats_still_names_the_member_it_is_in ... ok
+test a_call_to_another_classs_same_named_member_is_not_read_from_this_class ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_array_types.rs (target/debug/deps/p3_array_types-c982339f4ae5f2e6)
+
+running 9 tests
+test a_reference_array_declaration_spells_its_element_like_any_other_class ... ok
+test a_primitive_array_declaration_is_a_java_byte_array ... ok
+test an_object_type_and_a_primitive_keep_the_spelling_they_had ... ok
+test a_multi_dimensional_array_declaration_states_every_dimension ... ok
+test a_class_position_an_array_type_cannot_occupy_is_recorded_as_a_boundary ... ok
+test an_owner_or_construction_class_with_no_java_spelling_is_refused ... ok
+test a_descriptor_that_states_no_java_type_is_refused_at_its_bci ... ok
+test no_type_position_publishes_a_descriptor ... ok
+test every_declared_member_is_covered_by_this_file ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_boolean_contexts.rs (target/debug/deps/p3_boolean_contexts-3337d08bea4abd5d)
+
+running 13 tests
+test a_boolean_call_result_is_a_truth_test_not_an_int_comparison ... ok
+test a_literal_operand_is_a_truth_test ... ok
+test a_proven_boolean_operand_beside_an_int_literal_is_refused ... ok
+test a_boolean_return_is_written_as_a_boolean ... ok
+test a_value_without_boolean_evidence_is_refused_in_a_z_return ... ok
+test a_store_without_boolean_evidence_into_a_boolean_variable_is_refused ... ok
+test the_boolean_contexts_of_the_comparison_sample_keep_their_presentation ... ok
+test an_int_context_keeps_its_int_shape ... ok
+test the_evidence_the_layer_states_keeps_its_presentation ... ok
+test a_local_filled_from_proven_boolean_evidence_is_declared_boolean ... ok
+test an_integer_comparison_keeps_its_integer_literals_on_either_side ... ok
+test every_declared_member_of_the_comparison_sample_is_covered ... ok
+test every_declared_member_is_covered_by_this_file ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_concat_conversion.rs (target/debug/deps/p3_concat_conversion-73e665f4e28528e8)
+
+running 10 tests
+test the_generated_chain_is_deterministic_and_its_shape_is_the_one_recorded ... ok
+test a_boolean_part_whose_value_is_not_a_boolean_is_refused ... ok
+test each_part_carries_its_append_and_the_string_context_carries_the_chain ... ok
+test null_and_object_parts_keep_their_conversion ... ok
+test the_two_controls_gain_nothing ... ok
+test a_boolean_part_is_spelled_by_its_append_descriptor ... ok
+test a_part_that_is_itself_an_addition_keeps_its_own_group ... ok
+test a_chain_that_starts_with_parts_needing_conversion_starts_in_a_string_context ... ok
+test a_deep_chain_under_a_short_output_bound_stops_without_an_artifact ... ok
+test a_deep_chain_is_presented_instead_of_aborting ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.75s
+
+     Running tests/p3_content.rs (target/debug/deps/p3_content-ef8d760793ce6e07)
+
+running 4 tests
+test a_stopped_run_reports_not_produced ... ok
+test explanation_only_means_no_emitted_statement ... ok
+test a_committed_statement_makes_the_artifact_contain_statements ... ok
+test the_hand_built_shapes_classify_from_their_structure ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_declaration_handoff.rs (target/debug/deps/p3_declaration_handoff-c8caec45c450367a)
+
+running 10 tests
+test the_class_facts_are_taken_from_the_read_that_was_already_there ... ok
+test the_prepared_callee_read_needs_no_second_class_read ... ok
+test the_prepared_driver_read_consumes_the_class_the_caller_already_read ... ok
+test the_payload_states_the_declaring_class_facts_the_same_header_read_holds ... ok
+test a_stopped_run_publishes_no_declaration_and_no_class_facts ... ok
+test a_body_that_still_has_fallbacks_keeps_its_quality ... ok
+test an_ordinary_member_charges_the_same_reads_and_bytes_as_before_the_handoff ... ok
+test a_mangled_class_name_is_displayed_and_moves_nothing_but_the_display ... ok
+test two_definitions_of_the_same_internal_name_keep_their_own_class_facts ... ok
+test the_public_entry_decides_every_member_form_from_the_runs_own_class_facts ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_eval_context.rs (target/debug/deps/p3_eval_context-e8cf9e8b74be1722)
+
+running 10 tests
+test a_recursion_that_re_enters_its_own_loop_stops_instead_of_aborting ... ok
+test a_call_argument_is_checked_where_the_consuming_expression_is_evaluated ... ok
+test a_refused_static_read_keeps_the_class_initialization_it_can_run ... ok
+test a_refused_instance_read_keeps_the_null_pointer_it_can_throw ... ok
+test a_read_behind_another_read_is_named_too ... ok
+test a_nested_arithmetic_is_checked_where_its_text_is_evaluated ... ok
+test a_nested_expression_that_crosses_no_write_is_still_written ... ok
+test the_printed_text_keeps_the_arithmetic_tree ... ok
+test every_presented_field_read_is_accounted_for_by_its_artifact ... ok
+test the_printed_text_keeps_the_grouping_of_every_position ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_execution_comparison.rs (target/debug/deps/p3_execution_comparison-2a939fd107965c73)
+
+running 3 tests
+test the_bulk_entrys_bodies_are_the_same_text_and_the_same_behaviour ... ignored, needs a JDK on PATH: it compiles the wrappers it generates with `javac --release 8` and runs them (see tests/fixtures/p3-corpus/README.md)
+test the_corpus_is_read_the_same_way_by_every_legal_flag_set ... ignored, needs a JDK on PATH: it compiles the wrappers it generates with `javac --release 8` and runs them (see tests/fixtures/p3-corpus/README.md)
+test the_p3_findings_are_replayed_by_compiling_and_executing_the_bodies ... ignored, needs a JDK on PATH: it compiles the wrappers it generates with `javac --release 8` and runs them. `cargo test` therefore stays green without a compiler; CI's JDK job runs it with `-- --ignored` (see tests/fixtures/p3-corpus/README.md)
+
+test result: ok. 0 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p3_guard.rs (target/debug/deps/p3_guard-f270bf475573fc51)
+
+running 13 tests
+test a_monitor_whose_exception_path_does_not_exit_is_refused ... ok
+test a_try_with_a_catch_beside_it_is_refused_rather_than_partially_presented ... ok
+test a_suppression_that_is_the_other_way_round_is_refused ... ok
+test a_profile_that_does_not_admit_the_header_refuses_it ... ok
+test a_close_the_exception_path_lacks_is_refused ... ok
+test a_handler_range_that_swallows_the_initialisation_is_refused ... ok
+test a_guarded_body_that_branches_is_refused ... ok
+test a_second_entry_into_a_monitor_region_is_refused ... ok
+test a_single_resource_is_declared_in_the_header_and_closed_by_the_compiler ... ok
+test a_resource_initialised_after_an_earlier_one_is_inside_the_region_that_closes_it ... ok
+test a_finally_copy_is_refused_and_the_refusal_says_which_code_it_copies ... ok
+test a_synchronized_block_is_written_only_where_every_path_leaves_the_monitor ... ok
+test three_resources_are_declared_in_the_order_whose_closes_run_backwards ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/p3_hoisted_boolean.rs (target/debug/deps/p3_hoisted_boolean-dc36fd2cd666248b)
+
+running 9 tests
+test a_hoisted_local_copied_from_a_boolean_local_is_declared_boolean ... ok
+test a_write_that_cannot_be_spelled_as_the_decided_type_terminates_its_structure ... ok
+test a_value_the_evidence_cannot_type_is_refused_where_a_boolean_is_required ... ok
+test a_copy_chain_through_another_boolean_local_stays_boolean ... ok
+test the_literal_only_local_keeps_the_type_the_frames_state ... ok
+test the_controls_the_evidence_types_keep_their_text ... ok
+test the_type_decision_is_billed_and_a_stopped_run_commits_nothing ... ok
+test the_conclusion_does_not_depend_on_the_order_the_arms_come_in ... ok
+test every_declared_member_is_covered_by_this_file ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_instance_receiver.rs (target/debug/deps/p3_instance_receiver-cb25090767ded53c)
+
+running 4 tests
+test a_constructors_own_receiver_is_this_and_its_writes_keep_their_place ... ok
+test an_instance_members_receiver_is_written_as_this_where_the_body_reads_it ... ok
+test a_static_members_slot_zero_is_still_its_ordinal_parameter ... ok
+test a_receiver_the_body_never_reads_is_not_written_and_is_no_longer_an_alias ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_isolation.rs (target/debug/deps/p3_isolation-7dbcff79c0618252)
+
+running 1 test
+test a_physical_query_constructs_none_of_the_recovery_layer_and_the_recovery_run_constructs_it ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_local_rewrite.rs (target/debug/deps/p3_local_rewrite-5adf53f8fa93e987)
+
+running 7 tests
+test a_mixed_artifacts_quotes_are_mapped_whole_and_its_scan_stays_complete ... ok
+test a_branch_on_a_superseded_load_is_refused_with_the_read_named ... ok
+test the_producer_behind_a_cast_that_this_slice_cannot_present_stays_in_the_answer ... ok
+test a_store_of_a_superseded_load_is_refused_with_the_read_named ... ok
+test a_value_the_slot_no_longer_holds_is_not_returned_through_the_slot_name ... ok
+test a_value_loaded_before_a_loop_is_still_named_after_the_body_rewrote_the_slot ... ok
+test a_slot_written_and_read_again_is_still_written_with_the_slot_name ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_method_ir.rs (target/debug/deps/p3_method_ir-8759439ac7fb62c0)
+
+running 4 tests
+test a_cancelled_request_hands_over_no_table_and_keeps_its_cancellation ... ok
+test a_request_that_publishes_only_the_graph_hands_over_only_that_table ... ok
+test the_payload_carries_the_tables_of_one_real_run ... ok
+test the_handoff_seam_exposes_no_mutable_or_publicly_stored_table ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_parameter_slots.rs (target/debug/deps/p3_parameter_slots-9df5355fe6b96a1b)
+
+running 3 tests
+test the_presented_class_answers_what_the_committed_class_does ... ignored, needs a JDK on PATH: it compiles the presentation's own text with `javac --release 8` and runs it beside the committed class, so it is run explicitly (`cargo test --test p3_parameter_slots --locked -- --ignored`)
+test the_declaration_and_the_body_name_one_slot_one_way ... ok
+test every_declared_member_is_covered_by_this_file ... ok
+
+test result: ok. 2 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/p3_prepared_input.rs (target/debug/deps/p3_prepared_input-6188c406b37939de)
+
+running 6 tests
+test the_prepared_path_refuses_a_class_whose_member_table_stopped ... ok
+test the_prepared_callee_read_answers_what_the_direct_one_answers ... ok
+test an_archived_class_reads_the_same_on_both_paths ... ok
+test the_class_read_is_paid_once_for_the_whole_class ... ok
+test the_prepared_payload_prints_the_text_the_direct_run_prints ... ok
+test every_member_of_one_class_is_the_same_report_from_a_prepared_class ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_product_vocabulary.rs (target/debug/deps/p3_product_vocabulary-da97b554899a7aea)
+
+running 2 tests
+test the_recovery_content_classification_is_the_closed_published_set ... ok
+test the_six_report_planes_declare_the_values_the_p3_sentences_write ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p3_recovery_entry.rs (target/debug/deps/p3_recovery_entry-344eeaa10a6fb905)
+
+running 2 tests
+test a_recovery_request_that_asks_for_no_ssa_stops_inside_a_successful_answer ... ok
+test one_recovery_request_reads_one_body_and_presents_that_member ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_required_conversions.rs (target/debug/deps/p3_required_conversions-806ebc1b3ac88ef9)
+
+running 8 tests
+test the_conversion_costs_no_ir_item_and_no_normalization_clone ... ok
+test a_part_that_already_meets_its_parameter_gains_nothing ... ok
+test a_conversion_no_evidence_states_is_refused ... ok
+test a_return_states_the_members_own_type ... ok
+test a_converted_part_states_the_appends_own_type ... ok
+test an_argument_states_the_callees_parameter_type ... ok
+test a_write_states_the_written_types_own_type ... ok
+test every_declared_member_of_the_sample_is_covered ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_scope.rs (target/debug/deps/p3_scope-01147e2f5929d677)
+
+running 9 tests
+test a_slot_filled_and_read_in_one_region_keeps_its_initial_value ... ok
+test a_name_the_table_states_is_used_where_it_exists ... ok
+test the_debug_table_is_read_by_the_same_run_that_decoded_the_body ... ok
+test a_slot_written_in_both_arms_is_declared_where_both_can_see_it ... ok
+test without_debug_evidence_a_reused_slot_stays_one_variable ... ok
+test a_slot_the_table_names_over_two_ranges_carries_two_variables ... ok
+test an_arms_own_local_is_still_declared_inside_that_arm ... ok
+test a_category_two_parameter_leaves_its_second_slot_to_the_signature ... ok
+test a_boolean_parameter_is_typed_by_the_members_own_descriptor ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p4_feature_registry.rs (target/debug/deps/p4_feature_registry-ee4d0383c3c12089)
+
+running 4 tests
+test every_registered_release_is_readable_and_the_ceiling_is_where_it_claims_to_be ... ok
+test attribute_rules_are_bound_to_a_release_and_a_location ... ok
+test a_preview_marker_is_reported_without_becoming_dialect_support ... ok
+test preview_and_unregistered_releases_keep_a_readable_structure_and_claim_nothing ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p4_golden.rs (target/debug/deps/p4_golden-15a78d428a5c33c9)
+
+running 6 tests
+test a_flag_is_answered_by_name_and_never_inferred_from_a_bit ... ok
+test a_refused_placement_is_a_row_and_not_a_fact ... ok
+test the_legal_controls_state_no_violation ... ok
+test the_fixed_replay_list_is_each_goldens_own_list ... ok
+test an_illegal_class_file_is_read_and_its_planes_stay_separate ... ok
+test every_entry_replays_its_fixture_digest_and_planes ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p4_modern_facts.rs (target/debug/deps/p4_modern_facts-eecab0b5fe222182)
+
+running 18 tests
+test a_real_sealed_class_reports_its_permitted_subclasses ... ok
+test a_dynamic_entry_naming_an_undeclared_bootstrap_entry_is_diagnosed ... ok
+test an_indy_site_whose_handle_is_not_a_member_gets_no_concat_fact ... ok
+test a_java8_class_has_no_output_level_conflict ... ok
+test a_real_concat_site_is_a_reader_fact_and_joins_to_the_bci_of_its_instruction ... ok
+test a_bootstrap_handle_that_names_nothing_is_never_resolved ... ok
+test a_cycle_is_recorded_as_facts_instead_of_being_followed ... ok
+test the_header_plane_still_evaluates_no_output_level_and_applies_no_attribute_rule ... ok
+test a_construct_no_pass_judges_gets_no_output_level_verdict ... ok
+test the_depth_budget_stops_the_walk_at_the_level_it_names ... ok
+test the_edge_budget_stops_the_walk_and_the_read_still_reports_its_prefix ... ok
+test a_record_attribute_below_its_release_is_diagnosed_and_its_content_is_not_read ... ok
+test a_shared_subgraph_is_expanded_once_and_each_entry_point_keeps_its_own_path ... ok
+test a_real_record_class_reports_components_with_their_origins ... ok
+test java8_conflicts_with_record_sealed_and_concat_and_keeps_their_origins ... ok
+test the_node_and_step_budgets_stop_the_walk_at_the_dimension_they_name ... ok
+test a_class_whose_invokedynamic_sites_are_not_concat_reports_no_concat_fact ... ok
+test the_placement_of_every_registered_attribute_names_its_release ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p4_plugins.rs (target/debug/deps/p4_plugins-af09cd64ca5f3453)
+
+running 5 tests
+test an_unregistered_configuration_is_unsupported_and_never_an_empty_answer ... ok
+test a_budget_refusal_is_a_stop_with_the_range_it_read ... ok
+test a_framework_resource_rule_answers_with_its_rule_version_source_range_and_coverage ... ok
+test nothing_is_executed_and_a_claim_that_names_an_absent_class_is_only_a_name ... ok
+test the_plugin_plane_leaves_the_structural_planes_own_answer_untouched ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p4_runtime_matrix.rs (target/debug/deps/p4_runtime_matrix-a8a2e2aae2f98070)
+
+running 13 tests
+test the_request_rejects_what_it_cannot_answer_honestly ... ok
+test a_nonconformant_selection_is_an_error_and_keeps_the_predecessor_diagnostic ... ok
+test a_matrix_that_reports_an_error_never_claims_verification ... ok
+test a_manifest_condition_that_hides_versioned_entries_is_diagnosed ... ok
+test an_unsupplied_parent_makes_the_order_unknown ... ok
+test a_module_path_domain_reports_the_policy_verdict_and_claims_no_order ... ok
+test agreement_without_a_proven_interval_is_never_merged ... ok
+test the_matrix_never_claims_verification ... ok
+test three_profiles_select_different_entries_and_keep_every_physical_entry ... ok
+test profiles_inside_one_stable_interval_merge_with_the_proof_they_share ... ok
+test one_scan_serves_three_profiles_and_costs_a_third_of_the_scans ... ok
+test a_name_in_two_war_roots_reports_both_origins_and_the_order_the_declaration_gives ... ok
+test a_tree_scope_shares_the_re_reads_of_nested_containers_too ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p4_x2_states.rs (target/debug/deps/p4_x2_states-062ef00da2b72b92)
+
+running 8 tests
+test an_open_world_range_publishes_its_candidates_and_the_class_it_could_not_read ... ok
+test a_missing_dependency_is_stated_by_name_and_never_as_the_negative_answer ... ok
+test two_unrelated_defaults_are_incompatible_class_change ... ok
+test a_range_position_resolved_outside_the_range_is_unsearched_not_excluded ... ok
+test a_loader_outside_the_chain_keeps_the_range_open_world ... ok
+test a_default_that_overrides_another_is_not_a_conflict ... ok
+test a_symbolic_owner_resolves_to_the_declaration_and_a_range_extends_it_to_its_candidates ... ok
+test the_states_of_one_request_belong_to_the_one_view_it_names ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/p4_x3_patterns.rs (target/debug/deps/p4_x3_patterns-619b7875c7e7a87d)
+
+running 10 tests
+test the_declared_patterns_cross_the_facade ... ok
+test an_item_limit_makes_the_answer_a_prefix ... ok
+test a_budget_stop_is_reported_and_never_guessed ... ok
+test a_service_interface_outside_the_snapshot_is_still_an_inference ... ok
+test a_dynamic_input_is_unknown_and_never_a_guess ... ok
+test the_overload_decides_the_conclusion ... ok
+test a_stored_constant_propagates_within_one_body ... ok
+test a_constant_target_is_inferred_with_all_five_elements ... ok
+test the_member_and_service_patterns_name_what_the_site_asks_for ... ok
+test a_target_outside_the_snapshot_is_inferred_and_named ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p5_benchmark.rs (target/debug/deps/p5_benchmark-6ea89f99f8e71946)
+
+running 20 tests
+test p5_repeated_direct_baseline ... ignored, repeated benchmark: run with `cargo test --test p5_benchmark --locked -- --ignored --nocapture p5_repeated_direct_baseline`
+test the_built_layer_carries_the_dimensions_the_record_binds_to_it ... ok
+test the_benchmark_subjects_are_the_bytes_the_corpus_fingerprint_fixes ... ok
+test the_enablement_rule_refuses_a_candidate_whose_paths_differ ... ok
+test a_cancelled_direct_run_is_never_published_as_complete ... ok
+test a_cancelled_request_does_not_reach_a_later_one_over_the_same_bytes ... ok
+test repeated_direct_runs_publish_the_same_result_fingerprint ... ok
+test the_recorded_key_dimensions_are_the_ones_the_decision_names ... ok
+test the_result_fingerprint_ignores_the_wall_clock_and_nothing_else ... ok
+test every_benefit_claim_needs_a_second_runnable_path ... ok
+test the_reference_path_publishes_no_pool_candidate_as_an_item ... ok
+test the_benefit_rule_refuses_a_claim_the_matrix_cannot_back ... ok
+test the_local_and_the_full_range_runs_are_compared_field_by_field ... ok
+test the_direct_row_fingerprints_are_printed_for_a_cross_process_comparison ... ok
+test the_cache_path_publishes_the_same_result_and_reports_what_it_saved ... ok
+test no_ordinary_entry_reaches_the_bulk_module_or_recover_all ... ok
+test every_boundary_corpus_publishes_the_same_result_with_and_without_the_cache ... ok
+test a_candidate_may_be_enabled_only_while_its_differential_is_equivalent ... ok
+test the_published_order_is_a_function_of_the_input_alone ... ok
+test the_engine_has_one_disabled_facts_cache_and_no_index_or_scheduler ... ok
+
+test result: ok. 19 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+     Running tests/p5_bulk_corpus.rs (target/debug/deps/p5_bulk_corpus-54a7d5ff96d22324)
+
+running 6 tests
+test record_the_billing_table ... ignored, regenerates the pinned table; run with --ignored --nocapture after an intended shape change
+test the_corpus_is_rebuilt_from_the_committed_bytes_every_time ... ok
+test every_case_holds_the_shape_it_is_named_for ... ok
+test the_fixed_shape_bills_the_counts_the_corpus_pins ... ok
+test a_slow_consumer_changes_the_readings_and_not_the_shape ... ok
+test the_old_per_method_arms_keep_their_ledger_and_the_same_text ... ok
+
+test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.80s
+
+     Running tests/p5_container_lookup.rs (target/debug/deps/p5_container_lookup-5cbf474e372cb0c9)
+
+running 30 tests
+test a_forged_container_origin_is_refused ... ok
+test a_local_lookup_reads_only_its_container_and_its_ancestors ... ok
+test a_capacity_refusal_does_not_rescan_the_request ... ok
+test a_precancelled_warm_request_is_still_cancelled ... ok
+test a_second_request_reuses_the_container_it_does_not_rebuild ... ok
+test a_two_level_chain_reaches_every_ancestor_once ... ok
+test a_damaged_sibling_does_not_stop_a_local_result_and_the_tree_still_reports_it ... ok
+test a_cancelled_or_damaged_container_is_not_published ... ok
+test a_warm_container_obeys_the_current_depth_limit ... ok
+test a_changed_content_chain_or_declaration_misses ... ok
+test a_large_flat_jar_does_not_add_sibling_materializations ... ok
+test a_verified_deflated_backing_saves_work_without_granting_a_budget ... ok
+test a_warm_read_obeys_the_current_output_limit ... ok
+test a_warm_selected_entry_read_neither_scan_again_nor_replays_a_charge ... ok
+test an_already_terminated_budget_is_not_restarted ... ok
+test container_lookup_timings ... ignored
+test explicit_tree_enumeration_still_reports_every_container ... ok
+test duplicate_physical_entries_keep_their_ordinals_direct_and_warm ... ok
+test only_a_complete_container_is_published ... ok
+test an_incomplete_directory_is_never_a_missing_verdict ... ok
+test an_expired_warm_request_stays_expired ... ok
+test clearing_the_store_releases_the_products ... ok
+test the_entry_and_byte_bounds_are_both_enforced ... ok
+test identically_warmed_resolutions_publish_the_same_full_report ... ok
+test the_whole_tree_reference_and_the_local_lookup_differ_by_the_siblings ... ok
+test the_fixture_shapes_are_pinned_by_digest ... ok
+test two_methods_of_one_snapshot_reuse_one_container ... ok
+test the_capacity_starved_row_answers_the_same_question ... ok
+test identically_warmed_repeats_publish_the_same_full_report ... ok
+test the_four_paths_agree_on_the_semantic_fingerprint ... ok
+
+test result: ok. 29 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.30s
+
+     Running tests/p5_corpus_fingerprint.rs (target/debug/deps/p5_corpus_fingerprint-7d5ea63061bd30dd)
+
+running 6 tests
+test regenerate_corpus_fingerprint ... ignored, writes tests/fixtures/corpus-fingerprint.json; run explicitly for an intended corpus change
+test the_indexed_rows_are_the_rows_the_acceptance_table_names ... ok
+test every_dimension_is_carried_by_existing_corpus ... ok
+test every_acceptance_row_is_indexed_against_existing_corpus ... ok
+test the_manifest_matches_its_rendered_classification ... ok
+test corpus_files_match_the_recorded_fingerprint ... ok
+
+test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.36s
+
+     Running tests/p5_facts_cache.rs (target/debug/deps/p5_facts_cache-cbbd2206bbc2329a)
+
+running 13 tests
+test the_capacity_is_a_bound_and_a_refusal_is_not_a_hit ... ok
+test a_hit_still_bills_what_it_publishes ... ok
+test a_strict_request_is_never_answered_with_a_forensic_read ... ok
+test content_is_shared_and_two_origins_are_never_merged ... ok
+test a_stopped_read_stores_nothing_and_a_cancelled_request_is_never_answered ... ok
+test the_default_path_consults_no_cache ... ok
+test the_cached_facts_are_the_facts_the_direct_path_produces ... ok
+test a_discarded_entry_falls_back_under_the_same_budget ... ok
+test the_cache_removes_repeated_parses_and_changes_nothing_else ... ok
+test the_key_binds_content_policy_and_declaration ... ok
+test one_store_serves_two_snapshots_without_answering_either_with_the_other ... ok
+test a_provider_added_later_is_answered_by_a_fresh_search ... ok
+test a_raw_layer_entry_survives_the_profile_and_the_recovery_above_it ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/p5_optimize_workloads.rs (target/debug/deps/p5_optimize_workloads-6a30e895b5d2e9fb)
+
+running 15 tests
+test measure_workload ... ignored, measurement: build it, then run this binary with --exact measure_workload --ignored --nocapture
+test the_stage_ledger_keeps_phases_disjoint_and_nested_stages_out_of_the_total ... ok
+test the_workload_vocabulary_is_the_one_task_1_2_fixes ... ok
+test a_page_that_stops_before_a_damaged_suffix_states_what_it_covered ... ok
+test the_pages_cover_the_scan_and_the_page_size_changes_no_item ... ok
+test the_domain_reports_carry_no_phase_timing ... ok
+test the_probe_counts_every_delivered_record_and_window_call ... ok
+test the_fixture_is_the_pinned_bytes ... ok
+test the_two_delivery_shapes_answer_the_same_bodies ... ok
+test the_stopped_export_delivers_its_confirmed_prefix_and_stops ... ok
+test the_capacity_refusal_changes_retention_and_not_the_result ... ok
+test the_zero_capacity_store_retains_nothing_and_changes_no_result ... ok
+test the_worker_sequence_publishes_one_result ... ok
+test the_instrumentation_changes_no_domain_report ... ok
+test the_three_sink_modes_publish_the_same_result ... ok
+
+test result: ok. 14 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 1.04s
+
+     Running tests/p5_shared_payload.rs (target/debug/deps/p5_shared_payload-666ffa0254a4e856)
+
+running 6 tests
+test the_store_hands_out_the_one_allocation_it_holds ... ok
+test a_store_with_room_for_nothing_retains_nothing_and_answers_no_wrong_value ... ok
+test a_live_handle_survives_a_clear ... ok
+test a_trusted_digest_answers_the_entry_the_bytes_wrote ... ok
+test a_full_store_refuses_without_invalidating_a_live_payload ... ok
+test a_key_written_again_holds_another_payload_and_a_held_handle_keeps_its_content ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/task_operations.rs (target/debug/deps/task_operations-00ec732ca6b8df7b)
+
+running 33 tests
+test a_friendly_name_binds_the_identity_the_direct_request_uses ... ok
+test an_ambiguous_body_name_returns_candidates_and_reads_no_body ... ok
+test a_body_reference_outside_this_class_is_an_input_error ... ok
+test a_damaged_member_record_isolates_to_its_own_member ... ok
+test a_constant_pool_candidate_stays_a_candidate ... ok
+test an_ambiguous_class_name_returns_candidates_and_runs_nothing ... ok
+test an_identity_of_another_snapshot_is_an_input_error ... ok
+test a_name_that_matches_nothing_is_an_input_error ... ok
+test an_identity_that_does_not_match_its_bytes_is_refused ... ok
+test an_unknown_or_zero_override_is_an_input_error ... ok
+test every_counted_dimension_and_the_clock_can_be_overridden_by_name ... ok
+test a_view_with_one_stopped_body_is_not_complete_and_keeps_the_other_body ... ok
+test one_report_groups_body_class_level_and_resource_hits_by_owner ... ok
+test a_policy_the_validator_rejects_keeps_the_unavailable_state ... ok
+test a_tight_override_stops_with_the_terminating_dimension ... ok
+test opening_a_snapshot_reads_no_class_and_builds_nothing ... ok
+test the_default_budget_is_bounded_and_overrides_replace_one_dimension ... ok
+test the_class_view_reads_one_header_one_listing_and_only_the_requested_bodies ... ok
+test the_explicit_classpath_order_decides ... ok
+test the_plain_jar_policy_activates_no_nested_library ... ok
+test a_layout_manifest_or_nested_library_is_not_a_load_policy ... ok
+test a_sub_call_becomes_a_resolved_declaration_only_under_an_environment ... ok
+test the_single_class_policy_declares_its_own_root ... ok
+test grouping_does_not_complete_an_unresolved_candidate ... ok
+test a_stopped_selection_publishes_zero_or_more_candidates_and_runs_nothing ... ok
+test an_ambiguous_member_name_returns_candidates_and_runs_nothing ... ok
+test an_explicit_short_stage_list_keeps_its_own_schedule ... ok
+test a_statement_bearing_result_leads_with_content ... ok
+test an_explanation_only_result_and_a_stop_are_presented_in_order ... ok
+test the_operation_publishes_its_stages_and_explicit_stages_reproduce_the_schedule ... ok
+test an_unfinished_name_search_is_neither_a_unique_nor_a_missing_target ... ok
+test repeated_operations_over_one_snapshot_are_identical ... ok
+test the_presentation_does_not_re_read_the_text ... ok
+
+test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.58s
+
+     Running unittests examples/bulk_scope_sweep.rs (target/debug/examples/bulk_scope_sweep-2f3dffab26188fe8)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/demand_workloads.rs (target/debug/examples/demand_workloads-e3f0ad5572db6b2f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/inspect_class_header.rs (target/debug/examples/inspect_class_header-eb77fcb761de4f16)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests examples/navigate_artifact.rs (target/debug/examples/navigate_artifact-863f7db24f1913a6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/resolve_and_analyze.rs (target/debug/examples/resolve_and_analyze-a3c7dd082e2276e6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/task_operations.rs (target/debug/examples/task_operations-589f18556a4636ae)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/jarde_cli-ec49efe98b6eb03b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/artifact_tree_cli.rs (target/debug/deps/artifact_tree_cli-35d73818b47052e7)
+
+running 6 tests
+test the_tree_operation_returns_the_library_report_unchanged ... ok
+test ordinary_enumeration_still_does_not_recurse_and_the_tree_operation_does ... ok
+test the_operation_declares_no_roots_and_echoes_the_opened_snapshot ... ok
+test a_partial_tree_is_the_libraries_own_prefix ... ok
+test cli_enumeration_then_recovery_binds_a_war_class_and_names_its_physical_path ... ok
+test the_same_mechanism_binds_a_boot_inf_classes_sample ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/class_source_cli.rs (target/debug/deps/class_source_cli-7f51d7a318679894)
+
+running 16 tests
+test an_unknown_evidence_category_is_a_usage_error ... ok
+test a_class_parameter_that_is_not_a_definition_is_a_usage_error ... ok
+test a_missing_class_parameter_is_a_usage_error ... ok
+test a_policy_that_does_not_fit_the_input_is_a_usage_error ... ok
+test an_invocation_that_states_no_evidence_asks_for_none ... ok
+test a_member_without_a_body_and_a_stopped_member_are_marked_in_the_text ... ok
+test the_command_reads_no_standard_input ... ok
+test a_budget_override_this_command_cannot_read_is_a_usage_error ... ok
+test a_member_that_cannot_be_spelled_is_stated_in_the_text ... ok
+test a_definition_of_another_artifact_is_a_usage_error ... ok
+test the_same_command_twice_writes_the_same_bytes ... ok
+test a_name_two_definitions_answer_to_exits_three ... ok
+test the_output_file_receives_the_same_document_as_standard_output ... ok
+test the_text_mode_writes_the_librarys_own_source ... ok
+test every_category_of_the_vocabulary_is_a_selection_this_entry_answers ... ok
+test the_json_mode_is_the_librarys_own_document ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/export_cli.rs (target/debug/deps/export_cli-52cdfc27e34c967f)
+
+running 11 tests
+test an_existing_output_is_refused_and_left_exactly_as_it_was ... ok
+test an_incomplete_traversal_reaches_a_final_and_exits_four ... ok
+test zero_and_nonnumeric_jobs_are_usage_errors_that_create_no_file ... ok
+test every_record_of_the_stream_is_the_library_value_of_the_same_run ... ok
+test a_small_allowance_keeps_a_readable_prefix_and_never_confirms_completeness ... ok
+test a_zero_or_unknown_dimension_is_refused_before_anything_is_read ... ok
+test auto_and_one_worker_finish_in_one_process_and_the_header_reports_the_configuration ... ok
+test one_account_bounds_the_library_and_the_stream_at_every_job_setting ... ok
+test a_roots_document_declares_the_same_roots_as_repeated_root_arguments ... ok
+test a_whole_package_reaches_its_final_under_the_commands_own_defaults ... ok
+test a_counted_dimension_override_is_accepted_and_stops_the_run_at_that_dimension ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.11s
+
+     Running tests/json_cli.rs (target/debug/deps/json_cli-0d19317c3bd72497)
+
+running 16 tests
+test handler_budget_stop_serializes_ordinal_and_record_offset ... ok
+test empty_zip_enumeration_uses_the_open_snapshot ... ok
+test header_matches_direct_engine_without_java_runtime ... ok
+test invalid_bytecode_remains_an_ok_partial_core_report ... ok
+test malformed_and_unknown_request_json_are_protocol_errors ... ok
+test a_method_analysis_stop_is_the_payload_of_a_successful_response ... ok
+test entry_target_rejects_ordinal_shortcuts_and_incomplete_metadata ... ok
+test request_larger_than_one_mib_is_rejected_before_json_parsing ... ok
+test method_analysis_matches_direct_engine_field_by_field ... ok
+test a_recovery_request_that_asks_for_no_ssa_stops_inside_a_successful_response ... ok
+test output_budget_exact_boundary_and_failure_are_atomic ... ok
+test a_presented_accessor_and_the_members_it_reads_cross_the_wire ... ok
+test method_protocol_errors_are_transport_errors ... ok
+test recovery_matches_the_library_entry_field_by_field ... ok
+test the_nested_eval_sample_crosses_the_wire_field_by_field ... ok
+test the_refused_cast_sample_crosses_the_wire_field_by_field ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/query_cli.rs (target/debug/deps/query_cli-b6ad44d665b839c7)
+
+running 11 tests
+test cancellation_is_library_state_because_the_cli_request_has_no_token ... ok
+test result_item_budget_keeps_the_reliable_prefix_and_names_the_dimension ... ok
+test unimplemented_consumer_categories_stay_visible_in_the_cli_report ... ok
+test stdout_contract_and_output_budget ... ok
+test physical_scope_declares_snapshot_all_or_the_artifact_tree ... ok
+test unsupported_relation_is_an_analysis_state_not_an_error_or_a_no_match ... ok
+test pagination_continuation_reproduces_one_full_scan ... ok
+test cursor_for_another_target_is_rejected_by_the_cli ... ok
+test cursor_mismatch_uses_the_stable_error_code ... ok
+test query_report_matches_the_library_field_by_field ... ok
+test protocol_errors_use_the_existing_error_contract ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/task_cli.rs (target/debug/deps/task_cli-6d4dac0b6fc1f0e2)
+
+running 16 tests
+test the_deep_chain_answers_in_the_optimized_build ... ignored, explicit gate: build the optimized CLI with `cargo build --release -p jarde-cli --locked`
+test the_deep_chain_reaches_a_bulk_worker_in_the_optimized_build ... ignored, explicit gate: build the optimized CLI with `cargo build --release -p jarde-cli --locked`
+test a_recovery_that_used_to_abort_the_process_exits_with_a_report ... ok
+test the_legacy_operations_remain_their_own_surface ... ok
+test a_stopped_body_is_an_incomplete_view_from_the_librarys_own_plane ... ok
+test diagnostics_stay_out_of_the_recovered_body ... ok
+test the_class_view_charges_one_body_per_requested_body ... ok
+test every_task_document_is_the_librarys_own ... ok
+test exit_statuses_are_explicit_and_a_stopped_run_is_never_success ... ok
+test an_unfinished_name_selection_exits_four_and_is_the_librarys_own_document ... ok
+test navigation_uses_the_library_listings_and_the_caller_declared_scope ... ok
+test the_output_file_carries_exactly_what_standard_output_would ... ok
+test the_task_chain_runs_over_the_identities_the_listings_printed ... ok
+test text_and_json_are_one_report ... ok
+test a_deep_concatenation_chain_answers_in_a_subprocess ... ok
+test a_deep_concatenation_chain_is_presented_by_a_bulk_worker ... ok
+
+test result: ok. 14 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.55s
+
+     Running unittests src/lib.rs (target/debug/deps/jarde_java-9de2ac7474637aed)
+
+running 81 tests
+test ast::tests::the_subset_spells_the_operators_and_types_it_claims ... ok
+test bridge::tests::only_a_declared_bridge_is_this_rules_business ... ok
+test concat::tests::an_append_whose_conversion_plus_would_not_reproduce_is_refused ... ok
+test concat::tests::the_two_concatenation_classes_are_the_only_ones_this_rule_reads ... ok
+test accessor::tests::the_marker_decides_whether_a_call_is_worth_a_verdict_and_nothing_else ... ok
+test build::tests::a_name_that_states_no_java_type_is_refused_rather_than_written ... ok
+test build::tests::a_position_converts_what_a_widening_conversion_states_and_nothing_else ... ok
+test build::tests::a_value_meets_a_position_by_a_cast_a_constant_or_a_refusal ... ok
+test declaration::tests::an_interface_method_without_either_flag_is_abstract_and_a_static_one_is_static ... ok
+test declaration::tests::an_interfaces_non_abstract_method_is_a_default_method_and_a_classs_is_not ... ok
+test build::tests::a_descriptor_that_states_a_type_is_spelled_as_java_source ... ok
+test emit::tests::a_comment_cannot_carry_an_escape_or_end_its_own_line ... ok
+test artifact::tests::the_configuration_states_the_rule_table_this_build_registers ... ok
+test decode::tests::the_pool_entries_the_body_names_are_the_ones_it_reads ... ok
+test artifact::tests::the_text_identity_is_a_digest_and_not_a_length ... ok
+test declaration::tests::a_missing_declaration_fact_is_refused_with_its_own_requirement_named ... ok
+test emit::tests::a_refused_write_empties_the_buffer_it_had_already_filled ... ok
+test artifact::tests::every_contract_dimension_is_compared ... ok
+test emit::tests::a_string_literal_escapes_by_utf16_unit ... ok
+test emit::tests::a_lambda_in_a_receiver_position_keeps_its_own_group ... ok
+test emit::tests::a_prefix_position_and_a_not_receiver_keep_their_groups ... ok
+test emit::tests::a_primary_operand_and_an_already_stated_group_gain_nothing ... ok
+test emit::tests::a_concatenation_starts_in_a_string_context_and_keeps_its_parts_groups ... ok
+test emit::tests::a_stop_inside_a_node_leaves_nothing_behind ... ok
+test emit::tests::a_delimited_or_already_grouped_position_gains_no_parentheses ... ok
+test emit::tests::the_budget_is_checked_before_every_write_and_a_refusal_discards_the_buffer ... ok
+test emit::tests::the_segment_table_covers_the_nodes_in_writing_order ... ok
+test enumswitch::tests::the_rule_states_the_tables_it_reads_and_claims_no_mapping ... ok
+test decode::tests::an_invocation_names_its_target_out_of_the_classs_own_pool ... ok
+test decode::tests::an_opcode_this_subset_does_not_model_is_stated_as_other ... ok
+test facts::tests::the_arithmetic_and_comparison_vocabulary_is_stated_once ... ok
+test ast::tests::a_node_carries_its_own_anchors ... ok
+test decode::tests::a_switch_states_its_keys_and_the_bci_each_key_transfers_to ... ok
+test emit::tests::grouping_writes_parentheses_into_the_parents_span_and_moves_no_anchor ... ok
+test facts::tests::the_caller_states_identity_and_debug_names_and_nothing_about_the_body ... ok
+test decode::tests::the_polarity_of_a_branch_and_the_target_it_jumps_to_come_from_the_decode ... ok
+test facts::tests::the_receiver_is_decided_by_the_members_own_static_flag_and_by_nothing_else ... ok
+test field::tests::the_rule_states_the_ir_it_reads_and_the_one_declaration_fact_it_needs ... ok
+test emit::tests::a_suffix_position_keeps_the_group_of_its_operand ... ok
+test facts::tests::parameter_types_places_an_arrays_successor_one_slot_past_the_array ... ok
+test init::tests::the_two_construction_rules_state_what_they_read ... ok
+test lambda::tests::a_descriptor_this_layer_does_not_read_is_refused_rather_than_split ... ok
+test lambda::tests::a_method_descriptor_is_read_into_parameters_and_a_return_type ... ok
+test lambda::tests::the_declaration_spelling_reuses_this_parser_and_the_two_agree ... ok
+test lambda::tests::the_generated_body_marker_is_the_only_thing_that_decides_the_lambda_writing ... ok
+test lambda::tests::the_int_shaped_primitives_are_one_shape_and_a_reference_is_not_a_primitive ... ok
+test names::tests::a_collision_resolves_by_slot_order_and_is_an_alias ... ok
+test names::tests::a_keyword_becomes_a_deterministic_alias_and_never_an_error ... ok
+test names::tests::a_static_members_slot_zero_is_a_parameter_and_keeps_its_own_naming ... ok
+test names::tests::a_table_that_states_no_split_still_states_one_variable ... ok
+test names::tests::no_debug_evidence_still_names_every_slot_deterministically ... ok
+test names::tests::evidence_wins_where_it_exists_and_aliases_where_it_cannot_be_written ... ok
+test names::tests::one_slot_can_hold_two_variables_and_each_takes_its_own_name ... ok
+test normal_flow::tests::the_view_states_exactly_which_edge_kinds_it_keeps ... ok
+test names::tests::the_receiver_is_spelled_by_its_identity_and_not_by_the_name_the_table_states ... ok
+test oracle::tests::the_oracle_names_no_helper_of_the_layers_it_checks ... ok
+test evidence::tests::the_request_type_defaults_to_the_essential_selection ... ok
+test oracle::tests::the_oracle_states_the_priority_of_a_crossing_table_and_the_report_carries_it ... ok
+test evidence::tests::the_evidence_of_one_text_is_never_attached_to_another ... ok
+test evidence::tests::the_essential_selection_builds_only_what_it_asked_for ... ok
+test oracle::tests::the_oracle_and_the_presentation_agree_on_a_lambdas_captures ... ok
+test pass::tests::a_requirement_says_what_it_asks_for_and_a_rule_version_says_who_asked ... ok
+test pass::tests::the_profile_is_the_fact_layers_own_type_and_the_gate_reads_its_release ... ok
+test oracle::tests::the_oracle_rejects_a_flipped_condition ... ok
+test pass::tests::the_registered_table_states_each_rule_and_its_preconditions ... ok
+test oracle::tests::the_oracle_rejects_a_wrong_return ... ok
+test refusal::tests::a_refusal_under_a_requirement_carries_the_rules_own_code ... ok
+test region::tests::a_fallback_names_the_code_and_the_place_it_could_not_prove ... ok
+test source_map::tests::a_node_keeps_its_own_anchor_apart_from_the_one_it_presents ... ok
+test source_map::tests::an_anchor_says_which_member_body_its_bytecode_index_is_in ... ok
+test source_map::tests::cp_is_optional_and_survives_the_set ... ok
+test source_map::tests::the_table_answers_by_bci_and_by_byte ... ok
+test stop::tests::a_cancellation_outranks_a_bound_and_says_so ... ok
+test stop::tests::a_refused_charge_names_the_bound_it_refused_on ... ok
+test evidence::tests::the_status_list_distinguishes_not_requested_complete_partial_and_not_performed ... ok
+test oracle::tests::the_oracle_rejects_a_loop_effect_moved_out_of_the_loop ... ok
+test oracle::tests::the_oracle_rejects_a_reordered_or_shortened_capture_list ... ok
+test refusal::tests::a_requirement_a_rule_never_declared_cannot_be_refused_under - should panic ... ok
+test oracle::tests::the_oracle_and_the_presentation_agree_on_a_do_whiles_effects ... ok
+test oracle::tests::the_oracle_and_the_presentation_agree_on_a_loops_effects ... ok
+test oracle::tests::the_oracle_and_the_presentation_agree_on_polarity ... ok
+
+test result: ok. 81 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/p3_java_recovery.rs (target/debug/deps/p3_java_recovery-356f602ca103fc55)
+
+running 32 tests
+test a_cancelled_run_produces_nothing_and_says_it_was_cancelled ... ok
+test a_graph_that_is_not_reducible_is_quoted_whole_with_its_own_reason ... ok
+test a_handlers_instructions_a_dead_node_holds_are_accounted_for ... ok
+test a_body_the_subset_cannot_prove_is_quoted_rather_than_emptied ... ok
+test a_committed_straight_line_body_is_presented_from_its_own_decode ... ok
+test a_captured_lambda_is_written_with_its_capture_in_order_before_the_sam_parameters ... ok
+test a_capture_the_shape_may_not_replay_is_refused_under_the_declared_precondition ... ok
+test a_budget_that_refuses_the_emission_of_a_lambda_body_hands_out_nothing ... ok
+test a_body_without_debug_metadata_gets_deterministic_names ... ok
+test a_do_while_loop_runs_its_body_before_the_test ... ok
+test a_keyword_name_takes_a_deterministic_alias_and_the_syntax_plane_says_so ... ok
+test a_body_without_debug_names_is_named_deterministically_and_invents_no_source_scope ... ok
+test a_payload_without_the_tables_the_recovery_needs_states_that_instead_of_an_empty_body ... ok
+test a_loop_whose_header_writes_state_is_quoted_rather_than_hoisted ... ok
+test a_profile_that_does_not_present_java_8_is_refused_the_lambda_rule ... ok
+test a_straight_line_body_with_a_call_reaches_text_and_a_segment_table ... ok
+test a_verified_site_is_recorded_with_its_bootstrap_use_site_and_captures ... ok
+test a_sam_that_the_implementation_does_not_line_up_with_is_refused ... ok
+test a_lambda_body_without_debug_metadata_is_named_deterministically ... ok
+test a_tableswitch_becomes_one_arm_per_target_with_its_keys_and_default ... ok
+test an_arbitrary_bootstrap_is_never_presented_as_a_lambda ... ok
+test a_bound_receiver_becomes_a_method_reference_and_a_static_member_a_type_reference ... ok
+test a_slot_the_records_cannot_place_is_one_variable_with_the_ordinal_name ... ok
+test crossing_exception_records_are_quoted_with_the_priority_the_table_states ... ok
+test the_output_bound_is_checked_at_the_write_and_a_stop_produces_nothing ... ok
+test a_while_loop_keeps_its_test_inside_the_statement_and_its_body_in_order ... ok
+test two_captures_are_written_in_the_order_the_site_reads_them ... ok
+test an_if_else_is_written_with_the_arm_the_branch_really_picks ... ok
+test an_instruction_no_block_covers_refuses_the_body_it_belongs_to ... ok
+test execution_quality_and_representation_each_state_their_own_thing ... ok
+test an_alt_metafactory_flag_word_and_an_unread_instance_are_both_refused ... ok
+test a_member_that_cannot_be_presented_leaves_the_member_that_can_alone ... ok
+
+test result: ok. 32 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/p3_patterns.rs (target/debug/deps/p3_patterns-769daac9ee9c9fae)
+
+running 43 tests
+test a_bridge_without_a_cast_is_presented_without_any_erasure ... ok
+test a_declared_bridge_is_presented_as_the_forward_it_is_with_the_cast_it_erases ... ok
+test a_chain_a_branch_cuts_is_refused_rather_than_written_as_one_expression ... ok
+test a_bridge_that_does_something_besides_forward_is_refused_and_its_body_kept ... ok
+test a_constructors_field_initializers_are_written_after_its_constructor_call_and_in_order ... ok
+test a_cast_a_bridge_applies_to_a_parameter_is_not_an_erasure ... ok
+test a_body_that_builds_a_concatenation_out_of_an_accessor_is_presented_as_both ... ok
+test a_debug_table_that_names_slot_zero_this_is_not_a_keyword_to_alias ... ok
+test a_budget_that_refuses_the_emission_of_a_new_shape_hands_out_nothing ... ok
+test a_chain_whose_instance_is_stored_in_a_local_is_refused ... ok
+test a_construction_only_quoted_instructions_read_is_refused_and_quoted_whole ... ok
+test a_run_that_states_no_access_flags_cannot_decide_a_bridge ... ok
+test a_member_the_class_does_not_declare_a_bridge_keeps_its_cast_quoted ... ok
+test a_static_initializer_is_written_as_the_writes_it_performs_and_declared_as_one ... ok
+test a_member_the_class_declares_without_a_body_is_refused_as_itself ... ok
+test a_run_that_was_not_told_the_declaring_class_states_no_declaration ... ok
+test a_run_that_was_not_told_the_class_refuses_the_pre_call_write_and_the_prologue ... ok
+test a_run_with_no_member_table_states_the_table_it_is_missing ... ok
+test a_member_the_class_did_not_declare_synthetic_is_not_an_accessor ... ok
+test a_single_append_is_not_a_concatenation ... ok
+test a_synthetic_accessors_call_site_is_presented_as_the_field_access_it_forwards ... ok
+test a_verified_chain_is_written_once_with_its_operands_in_the_order_it_read_them ... ok
+test an_anonymous_classs_use_is_presented_with_the_enclosing_instance_it_really_read ... ok
+test a_write_made_before_the_constructor_call_stays_where_the_bytecode_made_it ... ok
+test a_body_without_debug_metadata_is_still_presented_with_deterministic_names ... ok
+test an_interfaces_non_abstract_method_is_stated_as_a_default_method ... ok
+test an_append_overload_that_plus_would_not_reproduce_is_refused ... ok
+test a_table_read_indexed_by_a_local_is_refused_and_the_whole_switch_stays_quoted ... ok
+test a_write_accessor_becomes_the_assignment_it_performs ... ok
+test an_accessor_whose_body_does_more_than_forward_is_refused ... ok
+test an_invocation_a_quoted_reader_cannot_write_is_named_by_the_quote ... ok
+test an_invocation_whose_only_reader_is_quoted_is_written_rather_than_lost ... ok
+test an_enum_switch_is_presented_as_the_table_read_the_bytecode_performs ... ok
+test the_models_section_is_independent_of_the_presentation ... ok
+test the_oracle_rejects_a_constructor_call_written_after_its_field_initializers ... ok
+test the_oracle_rejects_a_concatenation_that_calls_an_operand_twice ... ok
+test the_oracle_agrees_with_the_run_on_a_constructor_and_on_a_construction ... ok
+test the_anchor_of_a_presented_field_access_states_the_member_its_bci_is_in ... ok
+test the_same_member_in_a_class_is_an_ordinary_method_and_a_static_one_is_stated_as_such ... ok
+test the_oracle_rejects_a_constructor_whose_field_writes_are_in_another_order ... ok
+test the_oracle_agrees_with_the_run_on_a_concatenation_and_on_a_field_access ... ok
+test the_oracle_rejects_a_concatenation_whose_calls_are_written_in_another_order ... ok
+test the_same_shape_on_a_string_buffer_is_presented_with_its_call_in_the_middle ... ok
+
+test result: ok. 43 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running unittests src/lib.rs (target/debug/deps/jarde_jvm-5b86e61bdc5037a6)
+
+running 233 tests
+test call_context::tests::a_modern_class_file_with_a_legacy_opcode_is_forbidden ... ok
+test call_context::tests::a_modern_method_of_real_bytes_with_only_wide_local_accesses_has_no_context ... ok
+test call_context::tests::a_modern_body_classifies_its_wide_forms_by_the_opcode_they_wrap ... ok
+test call_context::tests::a_body_whose_prefix_holds_a_legacy_opcode_needs_the_graph_to_place_it ... ok
+test call_context::tests::a_call_site_whose_body_owns_no_ret_is_unresolved ... ok
+test call_context::tests::a_discarded_return_address_is_not_restored_by_a_later_store ... ok
+test call_context::tests::a_dead_call_site_does_not_block_the_live_ones ... ok
+test call_context::tests::a_ret_no_call_context_owns_is_unresolved ... ok
+test call_context::tests::a_null_in_the_slot_the_ret_reads_is_unresolved ... ok
+test call_context::tests::a_cycle_the_raw_graph_can_enter_is_refused_by_the_cycle_search ... ok
+test call_context::tests::a_ret_whose_slot_never_held_the_return_address_is_unresolved ... ok
+test call_context::tests::a_dead_call_site_without_a_decoded_return_point_does_not_block_the_live_one ... ok
+test call_context::tests::a_nesting_cycle_in_dead_code_does_not_refuse_the_body ... ok
+test call_context::tests::a_dead_return_point_does_not_block_a_live_call_site ... ok
+test call_context::tests::a_nested_call_that_stores_its_own_slot_keeps_both_proofs ... ok
+test call_context::tests::a_nested_call_returns_to_its_own_continuation ... ok
+test call_context::tests::a_handler_that_writes_locals_before_the_ret_contributes_them ... ok
+test call_context::tests::a_cancellation_during_the_assembly_stops_the_pass_without_publishing ... ok
+test call_context::tests::a_handler_entry_is_no_successor_and_its_range_is_recorded ... ok
+test call_context::tests::a_shared_entry_keeps_one_context_per_call_site ... ok
+test call_context::tests::a_return_address_carried_through_aload_is_unresolved ... ok
+test call_context::tests::a_slot_written_by_another_value_kind_is_unresolved ... ok
+test call_context::tests::a_shared_subroutine_with_a_handler_keeps_one_context_per_call_site ... ok
+test call_context::tests::a_truncated_body_whose_ret_was_not_decoded_is_unresolved ... ok
+test call_context::tests::a_stored_return_address_proves_the_return_point ... ok
+test call_context::tests::a_wide_local_access_is_classified_by_the_opcode_it_wraps ... ok
+test call_context::tests::an_exhausted_step_budget_stops_the_walk ... ok
+test call_context::tests::an_address_overwritten_by_an_ordinary_value_is_unresolved ... ok
+test call_context::tests::a_zero_item_budget_stops_the_pass_without_publishing_a_context_set ... ok
+test call_context::tests::an_inner_call_that_writes_the_outer_slot_is_unresolved ... ok
+test call_context::tests::call_sites_that_nest_through_each_other_are_unresolved ... ok
+test call_context::tests::the_diagnostic_names_the_call_site_not_the_context_index ... ok
+test call_context::tests::an_address_stored_on_only_one_path_is_unresolved ... ok
+test call_context::tests::the_declared_dimensions_of_the_pass_are_ir_items_ir_edges_and_steps ... ok
+test call_context::tests::the_assembly_publishes_the_whole_payload_when_it_is_allowed_to_finish ... ok
+test call_context::tests::every_phase_of_the_pass_stops_a_cancelled_run ... ok
+test call_context::tests::a_wide_ret_of_real_bytes_is_the_dialect_violation_of_its_version ... ok
+test call_context::tests::the_store_that_consumes_the_token_is_the_only_one_that_carries_it ... ok
+test call_context::tests::the_modern_dialect_of_the_same_source_has_no_call_context ... ok
+test call_context::tests::the_item_bill_of_the_fixture_matches_its_published_composition ... ok
+test call_context::tests::the_item_bill_charges_the_elements_of_a_context_set_and_not_the_outer_vector ... ok
+test call_context::tests::the_historical_finally_path_keeps_both_call_sites_of_its_shared_subroutine ... ok
+test call_context::tests::the_item_bill_grows_with_the_visited_product_and_not_with_the_outer_vector ... ok
+test call_context::tests::one_item_short_of_the_items_stops_the_pass_and_exactly_enough_completes_it ... ok
+test canonical::tests::a_ret_the_payload_proves_no_return_point_for_stops_the_normalization ... ok
+test canonical::tests::a_context_the_walk_never_entered_inside_a_reachable_block_is_refused ... ok
+test canonical::tests::a_jsr_in_a_handler_is_cloned_with_the_context_of_the_exception_path ... ok
+test canonical::tests::an_exception_edge_no_row_states_is_refused_before_the_graph_is_published ... ok
+test canonical::tests::a_clone_of_a_multi_block_region_keeps_every_original_bci ... ok
+test canonical::tests::a_loop_header_is_not_absorbed_by_the_body_that_jumps_back_to_it ... ok
+test canonical::tests::a_jump_into_a_protected_region_keeps_the_identity_the_fusion_moved ... ok
+test canonical::tests::a_row_states_the_sites_its_record_covers_not_the_blocks_its_range_contains ... ok
+test canonical::tests::a_cancelled_run_publishes_no_graph_at_any_phase ... ok
+test canonical::tests::an_exhausted_step_budget_stops_the_walk_without_a_graph ... ok
+test canonical::tests::a_subroutine_shared_by_two_call_sites_clones_its_nested_call_per_path ... ok
+test canonical::tests::an_exact_clone_budget_completes_and_one_less_stops ... ok
+test canonical::tests::a_truncated_body_normalizes_its_reliable_prefix_and_says_so ... ok
+test canonical::tests::nested_calls_keep_their_call_path ... ok
+test cfg::tests::a_branch_to_its_own_fall_through_is_one_successor ... ok
+test cfg::tests::a_conditional_branch_keeps_both_successors_and_partitions_the_body ... ok
+test cfg::tests::a_jsr_inside_a_block_keeps_its_continuation_reachable ... ok
+test cfg::tests::a_switch_emits_one_edge_per_distinct_target ... ok
+test canonical::tests::the_pass_charges_the_dimensions_it_declares ... ok
+test cfg::tests::a_truncated_body_marks_the_graph_truncated ... ok
+test cfg::tests::an_unreachable_tail_is_listed_and_kept_as_blocks ... ok
+test cfg::tests::effects_classify_locals_throw_sites_and_stack_deltas ... ok
+test cfg::tests::category_two_wide_local_accesses_match_their_short_forms ... ok
+test cfg::tests::jsr_returns_stay_unresolved_and_their_continuation_stays_reachable ... ok
+test cfg::tests::overlapping_handlers_keep_declaration_order_and_parallel_edges ... ok
+test cfg::tests::repeated_throw_sites_of_one_block_share_one_edge_per_record ... ok
+test cfg::tests::self_loops_are_expressed_and_do_not_break_reachability ... ok
+test cfg::tests::the_stack_table_follows_the_readers_opcode_numbering ... ok
+test cfg::tests::the_pass_bills_exactly_its_declared_dimensions ... ok
+test cfg::tests::throw_semantics_cover_the_throwing_categories ... ok
+test dispatch::tests::a_domain_outside_the_chain_is_the_other_loader_fact ... ok
+test cfg::tests::two_runs_publish_the_same_facts_and_order ... ok
+test dispatch::tests::candidate_evidence_names_the_strongest_applicable_fact ... ok
+test dispatch::tests::covered_by_scope_follows_the_p1_range_vocabulary ... ok
+test cfg::tests::wide_forms_are_classified_exactly_like_the_short_forms_of_the_same_opcode ... ok
+test dispatch::tests::declared_evidence_defaults_to_no_fact ... ok
+test dispatch::tests::external_and_unprovided_roots_are_external_content ... ok
+test dispatch::tests::runtime_uncertainty_is_read_from_the_participating_domains ... ok
+test cfg::tests::the_historical_finally_paths_keep_the_subroutine_return_reachable ... ok
+test frame::tests::a_record_list_that_folded_two_edges_into_one_group_is_refused ... ok
+test frame::tests::a_category_two_value_marks_its_second_slot ... ok
+test frame::tests::a_body_without_any_debug_attribute_still_gets_frames ... ok
+test frame::tests::a_long_shift_takes_its_distance_on_top_of_the_value ... ok
+test frame::tests::a_constructor_call_leaves_its_exception_input_unconverted ... ok
+test frame::tests::a_constructor_may_store_its_own_field_through_the_uninitialized_this ... ok
+test frame::tests::a_constructor_call_that_is_not_applicable_stops_the_body ... ok
+test frame::tests::a_constructor_call_initializes_every_alias_of_one_new_site ... ok
+test frame::tests::a_truncated_body_gets_the_frames_of_its_prefix ... ok
+test frame::tests::an_exception_edge_is_entered_with_the_state_of_its_throw_site ... ok
+test canonical::tests::the_historical_finally_clones_its_shared_subroutine_per_call_site ... ok
+test frame::tests::a_constructor_call_reaches_the_own_class_or_the_superclass ... ok
+test frame::tests::a_throw_site_contributes_the_state_before_its_instruction_takes_effect ... ok
+test frame::tests::a_cancelled_request_publishes_no_frames ... ok
+test frame::tests::an_init_named_invocation_that_is_not_an_invokespecial_stops_the_body ... ok
+test frame::tests::an_exhausted_item_budget_stops_before_a_state_is_stored ... ok
+test frame::tests::the_array_store_family_names_its_operand_classes_per_opcode ... ok
+test frame::tests::a_reference_comparison_pops_references_and_an_integer_one_does_not ... ok
+test frame::tests::the_array_load_family_names_its_operand_classes_per_opcode ... ok
+test frame::tests::covering_either_slot_of_a_pair_invalidates_the_other ... ok
+test frame::tests::the_comparison_and_branch_family_names_its_operand_classes_per_opcode ... ok
+test frame::tests::covering_the_upper_slot_of_a_pair_invalidates_the_lower_one ... ok
+test frame::tests::an_invocation_takes_its_shape_from_the_descriptor ... ok
+test frame::tests::the_conversion_family_names_its_operand_classes_per_opcode ... ok
+test frame::tests::reading_the_merged_local_is_what_fails ... ok
+test frame::tests::the_conversion_reaches_every_alias_and_no_other_value ... ok
+test frame::tests::consuming_an_uninitialized_value_stops_the_body ... ok
+test frame::tests::the_dense_table_covers_the_opcode_space_and_agrees_with_the_raw_pass ... ok
+test frame::tests::an_invocation_names_the_constant_pool_kind_its_opcode_takes ... ok
+test frame::tests::every_block_records_the_logical_inputs_it_was_merged_from ... ok
+test frame::tests::the_entry_frame_follows_the_declaration ... ok
+test frame::tests::the_form_family_names_its_form_per_opcode ... ok
+test frame::tests::the_local_access_family_names_the_class_of_its_local_per_opcode ... ok
+test frame::tests::the_exception_input_of_a_constructor_call_is_the_state_at_the_call ... ok
+test frame::tests::multianewarray_pops_one_length_per_dimension ... ok
+test frame::tests::the_return_family_names_the_class_it_returns_per_opcode ... ok
+test frame::tests::the_shift_family_names_its_operand_classes_per_opcode ... ok
+test frame::tests::the_pass_bills_exactly_its_declared_dimensions ... ok
+test frame::tests::the_moves_carry_a_token_without_converting_it ... ok
+test frame::tests::two_disagreeing_writes_to_one_dead_local_merge_and_still_analyze ... ok
+test frame::tests::two_clones_of_one_subroutine_get_two_new_sites ... ok
+test frame::tests::two_paths_into_one_block_must_agree_on_the_stack_depth ... ok
+test frame::tests::two_paths_into_one_block_must_agree_on_the_slot_classes ... ok
+test frame::tests::the_dup_family_pairs_its_categories ... ok
+test frame::tests::two_new_sites_are_two_tokens_one_call_does_not_convert ... ok
+test frame_oracle::tests::a_body_outside_the_subset_abstains_with_the_instruction_that_is_outside_it ... ok
+test frame::tests::two_new_sites_of_two_paths_do_not_merge_into_one_token ... ok
+test frame_oracle::tests::a_range_starting_inside_a_block_agrees_on_the_handler_entry ... ok
+test frame_oracle::tests::an_exception_back_edge_agrees_on_the_state_it_settles_on ... ok
+test frame_oracle::tests::flaw_four_trusting_the_published_table_is_caught_by_a_tampered_table ... ok
+test frame::tests::two_throw_sites_of_one_block_enter_the_handler_with_their_own_locals ... ok
+test frame_oracle::tests::the_category_two_body_agrees_and_states_both_of_its_slots ... ok
+test frame_oracle::tests::the_declaration_parser_reads_the_descriptors_the_fixtures_use ... ok
+test frame::tests::the_reference_singletons_name_their_operand_classes_per_opcode ... ok
+test frame_oracle::tests::flaw_three_a_comparator_that_reads_one_slot_less_is_caught ... ok
+test frame_oracle::tests::the_entry_state_follows_the_declaration ... ok
+test frame_oracle::tests::flaw_two_a_single_pass_over_the_blocks_is_caught_by_the_back_edge_body ... ok
+test frame_oracle::tests::flaw_one_reading_the_aggregated_edge_is_caught_by_the_two_site_body ... ok
+test frame_oracle::tests::the_legacy_clone_body_abstains_with_its_reason ... ok
+test frame_oracle::tests::the_oracles_own_raise_classification_finds_the_graphs_throw_sites ... ok
+test frame_oracle::tests::the_published_table_of_a_covered_body_has_the_blocks_the_oracle_reaches ... ok
+test frame_oracle::tests::the_plain_bodies_agree_with_the_published_table ... ok
+test frame_oracle::tests::two_throw_sites_of_one_block_agree_with_the_merge_of_both ... ok
+test frame_oracle::tests::the_oracle_never_names_a_transfer_helper_of_the_frame_pass ... ok
+test ir_audit::tests::a_clone_is_one_bci_in_several_nodes ... ok
+test ir_audit::tests::a_handler_with_two_sites_has_two_logical_inputs_and_one_edge ... ok
+test ir_audit::tests::two_records_of_one_source_keep_two_logical_inputs_and_two_operands ... ok
+test passes::tests::a_pass_that_cannot_run_publishes_nothing_and_keeps_the_last_valid_phase ... ok
+test passes::tests::a_cfg_change_invalidates_the_facts_derived_from_the_old_graph ... ok
+test method_ir::tests::a_merge_point_of_a_branching_body_hands_over_its_phi ... ok
+test frame_oracle::tests::the_model_round_trips_every_value_the_covered_bodies_state ... ok
+test passes::tests::a_fact_produced_twice_does_not_cycle_when_the_earlier_producer_serves_it ... ok
+test passes::tests::a_pass_that_requires_effects_no_pass_produces_is_rejected ... ok
+test passes::tests::a_table_out_of_phase_order_is_rejected ... ok
+test passes::tests::every_pass_declares_exactly_the_dimensions_it_bills ... ok
+test passes::tests::a_scheduled_pass_without_its_prerequisite_is_rejected ... ok
+test passes::tests::a_table_that_cycles_is_rejected ... ok
+test passes::tests::the_effects_consumer_is_refused_while_the_effects_are_stale ... ok
+test passes::tests::every_stage_maps_to_its_own_phase_in_order ... ok
+test passes::tests::the_fact_vocabulary_owns_one_ledger_index_and_one_name_each ... ok
+test passes::tests::the_implemented_phases_are_a_prefix_of_the_table ... ok
+test passes::tests::re_entering_an_earlier_phase_never_lowers_the_last_completed_phase ... ok
+test passes::tests::the_table_declares_the_fixed_dependencies_of_every_phase ... ok
+test ir_audit::tests::origin_is_traceable_to_the_original_bcis ... ok
+test ir_audit::tests::one_phi_input_per_logical_predecessor ... ok
+test ir_audit::tests::the_audited_bodies_really_hold_the_shapes_they_are_about ... ok
+test providers::tests::a_mixed_chain_orders_each_loader_by_its_own_delegation ... ok
+test providers::tests::a_lookup_reports_the_position_it_selected ... ok
+test providers::tests::a_closure_reads_headers_only_and_never_a_body ... ok
+test providers::tests::a_multi_release_path_keeps_the_physical_variant_p1_derives ... ok
+test providers::tests::a_class_that_extends_itself_is_refused_with_a_diagnostic ... ok
+test providers::tests::a_name_no_position_holds_is_missing_and_reads_nothing ... ok
+test providers::tests::a_cyclic_hierarchy_terminates_with_a_locatable_diagnostic ... ok
+test passes::tests::every_non_empty_stage_set_schedules_the_table_prefix_of_its_last_phase ... ok
+test providers::tests::a_repeated_demand_reuses_the_first_read_without_a_second_record ... ok
+test ir_audit::tests::the_reachable_set_is_the_published_blocks_minus_the_unreachable_ones ... ok
+test providers::tests::a_stopped_demand_is_not_remembered_as_a_decision ... ok
+test providers::tests::a_parent_chain_stops_before_the_step_over_the_dependency_depth ... ok
+test providers::tests::parent_first_walks_up_and_child_first_starts_at_the_caller ... ok
+test providers::tests::a_walk_stops_before_the_next_expansion_on_cancellation ... ok
+test providers::tests::an_unusable_chain_is_refused_instead_of_shortened ... ok
+test providers::tests::a_missing_supertype_ends_its_branch_without_a_fabricated_definition ... ok
+test reflection::tests::a_binary_name_is_read_the_way_jvms_4_2_1_states_it ... ok
+test providers::tests::one_binding_is_one_record_even_when_two_demands_read_it ... ok
+test reflection::tests::an_unsupported_rule_states_a_reason_and_is_still_registered ... ok
+test providers::tests::positions_follow_declaration_order_with_their_root_indices ... ok
+test reflection::tests::an_overload_the_registry_does_not_hold_is_not_a_subject ... ok
+test reflection::tests::every_registered_input_names_a_single_slot_parameter_of_its_own_descriptor ... ok
+test reflection::tests::every_registered_rule_states_what_it_does_not_claim ... ok
+test reflection::tests::the_required_families_are_registered_and_supported ... ok
+test reflection::tests::two_overloads_are_two_rules_and_no_overload_is_registered_twice ... ok
+test ir_audit::tests::def_use_agrees_in_both_directions ... ok
+test providers::tests::a_parent_chain_walk_follows_the_superclass_and_ignores_interfaces ... ok
+test providers::tests::an_ambiguous_supertype_is_a_gap_of_its_own_kind ... ok
+test ssa::tests::a_phi_that_only_names_itself_keeps_its_definition ... ok
+test ssa::tests::a_category_two_value_is_one_value_in_its_two_slots ... ok
+test ssa::tests::a_phi_with_one_usable_operand_is_replaced_and_its_uses_move_with_it ... ok
+test ssa::tests::a_replaced_phi_keeps_one_operand_per_logical_predecessor ... ok
+test ssa::tests::a_slot_its_own_merge_gave_a_class_must_have_a_value_on_some_input ... ok
+test ssa::tests::a_diamond_merge_names_one_phi_per_merged_slot ... ok
+test providers::tests::a_supertype_closure_reads_every_header_once ... ok
+test ssa::tests::a_straight_line_body_names_every_read_and_every_write ... ok
+test ssa::tests::a_loop_phi_takes_its_own_value_on_the_path_that_never_writes_it ... ok
+test ssa::tests::a_cycle_with_two_entries_is_named_at_its_merge_point ... ok
+test ssa::tests::a_loop_head_that_is_handed_its_own_value_spells_it_as_itself ... ok
+test ssa::tests::def_use_over_a_mixed_transfer_and_exception_input ... ok
+test ssa::tests::a_top_slot_never_becomes_a_value_or_a_phi ... ok
+test ssa::tests::a_replacement_records_the_block_that_holds_each_occurrence ... ok
+test ssa::tests::an_exception_merge_counts_throw_sites_and_never_raw_edges ... ok
+test ssa::tests::def_use_holds_under_every_rotation_of_a_loop_body ... ok
+test ssa::tests::the_names_do_not_depend_on_the_order_the_blocks_are_stored_in ... ok
+test ssa::tests::the_published_table_is_billed_by_the_copies_it_makes ... ok
+test ssa::tests::every_use_of_a_real_body_traces_back_to_its_definition ... ok
+test ssa_oracle::tests::group_three_a_handler_that_throws_again_merges_with_itself ... ok
+test ssa_oracle::tests::group_three_each_handler_record_brings_its_own_catch_type ... ok
+test ssa_oracle::tests::flaw_two_walking_forward_edges_only_turns_the_loop_red ... ok
+test ssa_oracle::tests::flaw_three_a_projection_that_parses_one_slot_less_is_caught ... ok
+test ssa_oracle::tests::group_three_a_constructor_call_hands_the_handler_the_converted_local ... ok
+test ssa_oracle::tests::flaw_one_also_turns_the_constructor_transition_red ... ok
+test ssa::tests::def_use_records_are_the_reads_and_phi_operands_over_four_bodies ... ok
+test ssa_oracle::tests::the_oracle_states_the_reach_of_a_straight_line_by_hand ... ok
+test ssa_oracle::tests::flaw_one_reading_the_aggregated_edge_turns_the_two_site_case_red ... ok
+test ssa_oracle::tests::one_value_held_as_two_phi_operands_is_not_a_contradiction ... ok
+test ssa_oracle::tests::group_three_two_sites_under_one_raw_edge_reach_the_handler_as_two_definitions ... ok
+test ssa_oracle::tests::group_one_the_ordinary_edges_agree ... ok
+test ssa_oracle::tests::group_three_the_exception_inputs_agree ... ok
+test ssa_oracle::tests::the_oracle_never_names_a_helper_of_the_naming_half ... ok
+test cfg::tests::the_block_ceiling_stops_the_pass_with_the_effective_limit ... ok
+test frame::tests::the_stack_ceiling_is_enforced ... ok
+test ssa_oracle::tests::group_two_the_random_graphs_agree ... ok
+
+test result: ok. 233 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running unittests src/lib.rs (target/debug/deps/jarde_query-aeab1814807eaece)
+
+running 7 tests
+test plugin::tests::every_registered_rule_states_a_source_a_boundary_and_an_unclaimed_list ... ok
+test plugin::tests::the_index_the_config_path_declares_is_the_one_the_shared_matcher_reads ... ok
+test query::tests::stable_codes_match_the_serde_tags ... ok
+test plugin::tests::a_request_without_a_rule_and_a_request_for_another_snapshot_are_input_errors ... ok
+test plugin::tests::a_standalone_class_file_has_no_entry_for_a_resource_rule_to_read ... ok
+test query::tests::cursor_digest_binds_every_bound_field ... ok
+test query::tests::payload_enums_round_trip_and_reject_unknown_fields ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/jarde_reader-1893830e81ce4b18)
+
+running 158 tests
+test artifact::tests::detectable_source_change_seam_rejects_mixed_open_snapshot ... ok
+test artifact::tests::eocd_count_mismatch_and_overlapping_spans_are_rejected ... ok
+test artifact::tests::encrypted_and_unknown_compression_are_explicitly_unsupported ... ok
+test artifact::tests::caller_cannot_forge_entry_metadata_to_change_security_or_budget_semantics ... ok
+test artifact::tests::central_directory_order_may_differ_from_physical_offset_order ... ok
+test artifact::tests::crc_and_size_mismatch_never_return_bytes ... ok
+test artifact::tests::empty_and_minimal_jar_war_enumeration_are_complete ... ok
+test artifact::tests::duplicate_non_utf8_and_nul_names_are_lossless_and_ordered ... ok
+test artifact::tests::artifact_tree_cancellation_after_a_candidate_keeps_root_prefix ... ok
+test artifact::tests::eocd_undercount_uses_observed_next_record_for_partial_coverage ... ok
+test artifact::tests::legal_zip_payload_cannot_forge_a_nested_origin_when_parent_is_not_candidate ... ok
+test artifact::tests::locator_charges_records_and_can_be_cancelled_mid_search ... ok
+test artifact::tests::malformed_local_span_and_header_conflict_fail_without_panicking ... ok
+test artifact::tests::overlap_index_rejects_predecessor_successor_aliases_and_zero_length_entries ... ok
+test artifact::tests::physical_view_keeps_all_mr_variants_nested_candidates_and_unverified_signatures ... ok
+test artifact::tests::later_structural_damage_preserves_prefix_and_fails ... ok
+test artifact::tests::enumeration_cancellation_returns_reliable_prefix ... ok
+test artifact::tests::enumeration_budget_exhaustion_preserves_prefix_and_dimension ... ok
+test artifact::tests::the_ceiling_bounds_the_bytes_a_read_produces_not_the_bytes_it_hoped_for ... ok
+test budget::tests::cancellation_applies_before_and_after_a_charge ... ok
+test budget::tests::an_exhausted_dimension_stays_exhausted_for_the_request ... ok
+test budget::tests::cancellation_blocks_new_charges_and_both_depth_observations ... ok
+test budget::tests::counted_dimensions_are_addressed_by_value ... ok
+test budget::tests::counted_set_is_the_declared_dimensions_in_order ... ok
+test budget::tests::default_limits_are_all_zero_and_fail_closed ... ok
+test artifact::tests::stored_and_deflated_reads_are_verified_and_accounted ... ok
+test budget::tests::dependency_depth_keeps_the_deepest_accepted_value ... ok
+test budget::tests::elapsed_is_not_a_chargeable_dimension ... ok
+test budget::tests::diagnostic_codes_are_the_serde_names_of_every_dimension ... ok
+test artifact::tests::cancellation_before_and_during_read_is_cooperative ... ok
+test budget::tests::every_new_counted_dimension_accepts_its_exact_limit_and_rejects_the_next_unit ... ok
+test artifact::tests::small_zip64_fixture_round_trips_from_bytes_and_jar_path ... ok
+test budget::tests::exact_limit_succeeds_and_next_charge_reports_counts ... ok
+test artifact::tests::standalone_bytes_and_path_are_fixed_snapshots ... ok
+test budget::tests::exhausted_analysis_steps_stop_the_next_step_on_the_steps_dimension ... ok
+test budget::tests::ir_storage_units_accumulate_nodes_slots_edges_and_clones ... ok
+test artifact::tests::rawzip_path_supports_descriptor_and_prefixed_archives_and_keeps_physical_ids ... ok
+test budget::tests::nested_depth_is_a_non_counted_high_water_mark ... ok
+test budget::tests::new_counted_dimensions_reject_the_overflowing_unit ... ok
+test budget::tests::overflow_is_rejected_without_mutating_usage ... ok
+test budget::tests::successful_charge_is_retained_when_cancelled_afterward ... ok
+test budget::tests::the_two_depth_dimensions_are_independent ... ok
+test budget::tests::zero_units_and_zero_depth_are_accepted_at_a_zero_limit ... ok
+test artifact::tests::deflate_trailing_compressed_bytes_are_rejected_after_verification ... ok
+test artifact::tests::named_budgets_cover_declared_actual_read_and_entry_count ... ok
+test budget::tests::usage_snapshot_is_json_serializable ... ok
+test classfile::reader_facts_tests::budget_hits_and_cancellation_never_fabricate_facts ... ok
+test classfile::reader_facts_tests::layout_verification_rejects_a_mismatched_pool ... ok
+test classfile::reader_facts_tests::real_fixture_spans_land_on_the_true_constant_pool_offsets ... ok
+test classfile::reader_facts_tests::real_fixture_class_facts_match_the_decoded_class ... ok
+test classfile::reader_facts_tests::synthetic_catalog_covers_every_constant_pool_tag_and_its_spans ... ok
+test classfile::reader_facts_tests::synthetic_catalog_member_and_class_attributes_are_typed ... ok
+test classfile::reader_facts_tests::duplicate_attributes_and_attribute_structure_overruns_are_errors ... ok
+test classfile::reader_facts_tests::truncated_module_attribute_is_a_structured_error ... ok
+test classfile::reader_facts_tests::unknown_tag_truncation_and_broken_shells_stop_with_structured_errors ... ok
+test classfile::reader_facts_tests::facts_and_public_inspections_agree_on_the_same_input ... ok
+test classfile::tests::a_complete_member_table_leaves_no_stop ... ok
+test classfile::reader_facts_tests::bootstrap_methods_need_a_handle_and_loadable_arguments ... ok
+test classfile::tests::bytecode_budgets_return_prefix_reports ... ok
+test classfile::tests::bytecode_request_charges_only_local_code_shell_and_returned_facts ... ok
+test classfile::tests::a_descriptor_that_does_not_parse_publishes_no_component ... ok
+test classfile::tests::a_damaged_member_record_keeps_the_prefix_and_names_the_stop ... ok
+test classfile::tests::branch_targets_inside_operands_are_rejected_with_the_sourcing_bci ... ok
+test classfile::tests::control_flow_targets_convert_branches_switches_and_handlers ... ok
+test classfile::tests::enforces_class_attribute_result_and_cancellation_budgets ... ok
+test classfile::tests::descriptor_mutf8_boundaries_survive_the_real_header_path ... ok
+test classfile::tests::an_element_type_outside_the_encoded_range_stops_the_decode ... ok
+test classfile::tests::handler_entry_inside_operands_is_rejected ... ok
+test classfile::tests::a_refused_member_read_is_an_error_not_a_stop ... ok
+test classfile::tests::forensic_diagnostics_are_atomically_charged_as_result_items ... ok
+test classfile::tests::an_arrays_element_type_does_not_widen_the_array ... ok
+test classfile::tests::bytecode_cancellation_returns_deterministic_prefix ... ok
+test classfile::tests::future_major_takes_priority_over_preview_marker ... ok
+test classfile::tests::handler_ranges_must_start_before_they_end_and_stay_inside_the_code ... ok
+test classfile::tests::handler_stage_budget_and_cancellation_preserve_handler_prefix ... ok
+test classfile::tests::header_inspection_leaves_attribute_and_flag_legality_to_the_fact_passes ... ok
+test classfile::tests::inspects_owned_lossless_header_and_exact_attribute_shells ... ok
+test classfile::tests::invalid_magic_keeps_noak_decode_diagnostic_even_if_pool_looks_like_final_long ... ok
+test classfile::tests::instruction_failure_preserves_precollected_handlers ... ok
+test classfile::tests::instruction_failures_return_reliable_prefix_and_stop_location ... ok
+test classfile::tests::implicit_and_wide_locals_keep_their_index ... ok
+test classfile::tests::invalid_tableswitch_ranges_are_method_local_partial_reports ... ok
+test classfile::tests::header_capability_follows_the_release_registry ... ok
+test classfile::tests::member_walk_agrees_with_the_whole_structure_read ... ok
+test classfile::tests::malformed_wide_forms_stop_exactly_at_the_current_bci ... ok
+test classfile::tests::method_lookup_code_cardinality_and_version_gate_are_stable ... ok
+test classfile::tests::jvm_string_json_rejects_inconsistent_derived_state ... ok
+test classfile::tests::jsr_operands_and_targets_use_the_same_validation ... ok
+test classfile::tests::preflight_cooperatively_stops_when_cancelled_during_pool_scan ... ok
+test classfile::tests::operand_facts_retain_the_opcode_each_wide_form_wraps ... ok
+test classfile::tests::operand_facts_retain_array_types_dimensions_and_interface_counts ... ok
+test classfile::tests::operand_facts_cover_immediates_locals_increments_and_cp_indices ... ok
+test classfile::tests::all_header_prefixes_are_panic_free_and_only_complete_input_succeeds ... ok
+test classfile::tests::oversized_attribute_length_is_rejected_at_the_owner_but_nested_code_stays_lazy ... ok
+test artifact::tests::many_disjoint_entries_enumerate_without_order_assumptions ... ok
+test classfile::tests::oversized_and_truncated_switch_declarations_stop_without_expansion ... ok
+test classfile::tests::rejects_long_in_last_constant_pool_slot_that_noak_accepts ... ok
+test classfile::tests::protected_ranges_must_not_be_empty ... ok
+test classfile::tests::relative_target_arithmetic_is_checked_in_both_directions ... ok
+test classfile::tests::rejects_trailing_bytes_and_decode_failures_with_stable_codes ... ok
+test classfile::tests::protected_range_endpoints_must_be_instruction_starts ... ok
+test classfile::tests::preview_and_unregistered_releases_stay_readable_and_are_never_reported_as_supported ... ok
+test classfile::tests::signed_operands_keep_their_sign ... ok
+test classfile::tests::public_bytecode_report_is_unchanged_by_reader_operand_facts ... ok
+test classfile::tests::stopped_bodies_keep_instruction_and_operand_lockstep ... ok
+test classfile::tests::switch_operands_reject_a_region_that_does_not_match_the_decoded_shape ... ok
+test classfile::tests::switch_case_targets_are_validated_like_branches ... ok
+test classfile::tests::switch_widths_use_code_start_alignment_and_do_not_iterate_table_pairs ... ok
+test classfile::tests::switch_defaults_are_validated_like_cases ... ok
+test classfile::tests::synthetic_historical_jsr_jsr_w_and_ret_boundaries_are_preserved ... ok
+test classfile::tests::tableswitch_keys_hold_their_low_high_bounds ... ok
+test classfile::tests::strict_errors_and_forensic_diagnostics_have_stable_version_codes ... ok
+test classfile::tests::inspects_fixed_wide_cp_and_exception_facts ... ok
+test classfile::tests::targets_at_code_length_are_out_of_bounds_not_unstarted ... ok
+test classfile::tests::targets_outside_the_code_array_are_rejected ... ok
+test classfile::tests::the_cursor_reads_one_component_at_a_time ... ok
+test entry_cursor::tests::a_standalone_class_snapshot_has_no_entry_to_walk ... ok
+test entry_cursor::tests::a_duplicate_raw_name_is_one_fact_of_the_walks_own_directory ... ok
+test classfile::tests::width_adapter_covers_operand_bearing_opcode_categories ... ok
+test entry_cursor::tests::a_subtree_that_is_not_an_archive_is_named_and_the_walk_continues ... ok
+test entry_cursor::tests::a_cancellation_observed_between_two_entries_stops_the_walk_there ... ok
+test entry_cursor::tests::a_budget_stop_keeps_the_containers_already_walked_and_states_the_one_it_did_not_open ... ok
+test error::tests::structured_error_round_trips_without_debug_text ... ok
+test facts_cache::tests::a_trusted_digest_and_the_bytes_it_came_from_are_one_key ... ok
+test classfile::tests::version_capability_and_header_inspection_round_trip_as_json ... ok
+test ledger::tests::the_owner_list_is_the_declared_three_in_order ... ok
+test ledger::tests::the_stop_serializes_as_the_report_spelling ... ok
+test model::tests::execution_status_tags_have_only_valid_variant_fields ... ok
+test model::tests::identical_bytes_keep_distinct_physical_origins ... ok
+test model::tests::field_identity_cannot_deserialize_as_code_method ... ok
+test model::tests::jvm_string_deserialization_enforces_modified_utf8_nul_and_overlong_rules ... ok
+test budget::tests::elapsed_limit_is_cooperative_and_reported_in_usage ... ok
+test entry_cursor::tests::every_entry_carries_the_walks_own_class_and_resource_classification ... ok
+test entry_cursor::tests::a_whole_snapshot_scope_walks_the_root_container_only ... ok
+test model::tests::physical_code_location_uses_method_identity_only ... ok
+test model::tests::provenance_derives_one_snapshot_from_location ... ok
+test entry_cursor::tests::the_entry_walk_yields_the_enumerations_own_entries_in_physical_order ... ok
+test entry_cursor::tests::a_walk_that_stopped_before_its_first_entry_states_the_roots_declared_range ... ok
+test multi_release::tests::policy_verdict_replaces_an_equally_ranked_unsupported_issue ... ok
+test multi_release::tests::result_item_exhaustion_stops_items_and_blocks_further_work ... ok
+test multi_release::tests::a_blocking_issue_outranks_the_policy_verdict ... ok
+test multi_release::tests::the_first_issue_of_a_priority_wins ... ok
+test classfile::tests::version_matrix_keeps_rules_dialect_and_java8_profile_orthogonal ... ok
+test release_registry::tests::attribute_placement_diagnostics_never_guess_from_a_name ... ok
+test release_registry::tests::dialect_bands_match_the_releases_they_cover ... ok
+test release_registry::tests::cumulative_lookups_inherit_earlier_releases ... ok
+test release_registry::tests::every_registered_entry_cites_a_source_within_its_release ... ok
+test release_registry::tests::registry_covers_every_major_between_minimum_and_ceiling ... ok
+test model::tests::raw_archive_and_jvm_bytes_round_trip_without_text_loss ... ok
+test release_registry::tests::opcode_rules_cover_introduction_forbidding_and_reserved_opcodes ... ok
+test release_registry::tests::flag_placement_covers_version_location_and_unregistered_names ... ok
+test release_registry::tests::unregistered_releases_make_no_claim ... ok
+test model::tests::representative_contract_round_trips_as_readable_json ... ok
+test release_registry::tests::modern_attributes_are_bound_to_their_releases ... ok
+test classfile::tests::property_mutf8_utf16_round_trip_and_escaping_are_stable ... ok
+test classfile::tests::property_attribute_lengths_and_tail_truncation_are_bounded ... ok
+test classfile::tests::repository_class_fixtures_validate_without_false_target_rejections ... ok
+test classfile::tests::property_instruction_byte_vectors_preserve_reliable_prefix ... ok
+
+test result: ok. 158 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
