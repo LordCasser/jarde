@@ -1,0 +1,24 @@
+{
+ "jadx_single_class": {
+  "max_ms": 870.07,
+  "median_ms": 856.67,
+  "min_ms": 840.99,
+  "n": 10,
+  "rss_mb": 455.7
+ },
+ "jadx_target": {
+  "class": "org.bouncycastle.asn1.ASN1Object"
+ },
+ "jarde_recover_method": {
+  "max_ms": 20.44,
+  "median_ms": 10.49,
+  "min_ms": 10.37,
+  "n": 10,
+  "rss_mb": 14.2
+ },
+ "jarde_target": {
+  "class": "org/bouncycastle/asn1/ASN1Object",
+  "descriptor": "()V",
+  "method": "<init>"
+ }
+}

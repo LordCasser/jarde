@@ -1,0 +1,110 @@
+[
+ {
+  "label": "evil",
+  "path": "/Users/lordcasser/workspace/vulnerability/vulhub/nacos/CVE-2021-29442/evil.jar",
+  "bytes": 2854,
+  "sha256": "9217f55601a388e5eb1e283e70e397d7c93a940e7171ec2dd4e6c66599f2c217",
+  "sha256_16": "9217f55601a388e5",
+  "frozen_prefix": "9217f55601a388e5",
+  "matches_frozen": true
+ },
+ {
+  "label": "weblogic_decrypt",
+  "path": "/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/weblogic_decrypt.jar",
+  "bytes": 19309,
+  "sha256": "bb5357d7f0dade90404188b39b6ee7f83d61f429f05e7df4a33886af4c3a7c1d",
+  "sha256_16": "bb5357d7f0dade90",
+  "frozen_prefix": "bb5357d7f0dade90",
+  "matches_frozen": true
+ },
+ {
+  "label": "bcprov",
+  "path": "/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/decrypt/lib/bcprov-jdk15on-152.jar",
+  "bytes": 2903072,
+  "sha256": "5329ddefb3c92927eef5d5e28f955a961cd9b776d0d69c0c93138c728fc17060",
+  "sha256_16": "5329ddefb3c92927",
+  "frozen_prefix": "5329ddefb3c92927",
+  "matches_frozen": true
+ },
+ {
+  "label": "hello",
+  "path": "/Users/lordcasser/workspace/vulnerability/vulhub/weblogic/weak_password/web/hello.war",
+  "bytes": 1927,
+  "sha256": "b47d85c9b6ec0e2c036a46c265495b1733e725dab3ac74fa2acc9aebc7b5ebfa",
+  "sha256_16": "b47d85c9b6ec0e2c",
+  "frozen_prefix": "b47d85c9b6ec0e2c",
+  "matches_frozen": true
+ },
+ {
+  "label": "s2-001",
+  "path": "/Users/lordcasser/workspace/vulnerability/vulhub/struts2/s2-001/S2-001.war",
+  "bytes": 3296352,
+  "sha256": "c2e74165ae8b645b4b7605d9a20c9a62070884ccf33e6891dac4ac187b65d69a",
+  "sha256_16": "c2e74165ae8b645b",
+  "frozen_prefix": "c2e74165ae8b645b",
+  "matches_frozen": true
+ },
+ {
+  "label": "s2-005",
+  "path": "/Users/lordcasser/workspace/vulnerability/vulhub/struts2/s2-005/S2-005.war",
+  "bytes": 3272437,
+  "sha256": "1c92a38a3618a44b42e13857990ddbe1623853d400238fe846be219ca908a9de",
+  "sha256_16": "1c92a38a3618a44b",
+  "frozen_prefix": "1c92a38a3618a44b",
+  "matches_frozen": true
+ },
+ {
+  "label": "s2-007",
+  "path": "/Users/lordcasser/workspace/vulnerability/vulhub/struts2/s2-007/S2-007.war",
+  "bytes": 3384417,
+  "sha256": "9b9b5e37ea721ed94eefbc37b1cab90bda3531d69a08f32cf5e5c4da7e1d874c",
+  "sha256_16": "9b9b5e37ea721ed9",
+  "frozen_prefix": "9b9b5e37ea721ed9",
+  "matches_frozen": true
+ },
+ {
+  "label": "s2-008",
+  "path": "/Users/lordcasser/workspace/vulnerability/vulhub/struts2/s2-008/S2-008.war",
+  "bytes": 3384218,
+  "sha256": "fa139b2d545b6ba34a9345144a3cd1b4772f5b7396997ed6ae0af4844204870e",
+  "sha256_16": "fa139b2d545b6ba3",
+  "frozen_prefix": "fa139b2d545b6ba3",
+  "matches_frozen": true
+ },
+ {
+  "label": "s2-009",
+  "path": "/Users/lordcasser/workspace/vulnerability/vulhub/struts2/s2-009/S2-009.war",
+  "bytes": 12272179,
+  "sha256": "dda30ca7a2587391e95bfc0b868726818311b1521dd15f68fd5feefd9ca1fc7c",
+  "sha256_16": "dda30ca7a2587391",
+  "frozen_prefix": "dda30ca7a2587391",
+  "matches_frozen": true
+ },
+ {
+  "label": "s2-012",
+  "path": "/Users/lordcasser/workspace/vulnerability/vulhub/struts2/s2-012/S2-012.war",
+  "bytes": 3383421,
+  "sha256": "73d40e42f78663322692862842a704ab3e58f3f5174cb7f0e6d2691ab3cb7291",
+  "sha256_16": "73d40e42f7866332",
+  "frozen_prefix": "73d40e42f7866332",
+  "matches_frozen": true
+ },
+ {
+  "label": "s2-013",
+  "path": "/Users/lordcasser/workspace/vulnerability/vulhub/struts2/s2-013/S2-013.war",
+  "bytes": 3383341,
+  "sha256": "c8f5c7e5c4140392904ab7970538d01ceb77c72d8167034161c3faa1e5f00fb7",
+  "sha256_16": "c8f5c7e5c4140392",
+  "frozen_prefix": "c8f5c7e5c4140392",
+  "matches_frozen": true
+ },
+ {
+  "label": "s2-015",
+  "path": "/Users/lordcasser/workspace/vulnerability/vulhub/struts2/s2-015/S2-015.war",
+  "bytes": 3510089,
+  "sha256": "23274e700381f13f8f6590979cba6da4ea0ac209da4f9af9010ccfc2d325f315",
+  "sha256_16": "23274e700381f13f",
+  "frozen_prefix": "23274e700381f13f",
+  "matches_frozen": true
+ }
+]

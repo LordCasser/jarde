@@ -1,0 +1,70 @@
+{
+ "T5": {
+  "methods": {
+   "value": {
+    "content": "contains_statements",
+    "quality": "structured",
+    "body": "\n    return \"\" + (int) c + \"!\";\n",
+    "diagnostics": [
+     "jre_recovery_produced",
+     "jre_concat_chains",
+     "jre_declaration"
+    ]
+   },
+   "prefixed": {
+    "content": "contains_statements",
+    "quality": "structured",
+    "body": "\n    return \"x\" + (int) c;\n",
+    "diagnostics": [
+     "jre_recovery_produced",
+     "jre_concat_chains",
+     "jre_declaration"
+    ]
+   }
+  },
+  "rebuilt_compiles": true,
+  "compile_error": "",
+  "output": [
+   "value(A)=65! rebuilt=65!",
+   "prefixed(A)=x65 rebuilt=x65",
+   "value(0)=48! rebuilt=48!",
+   "prefixed(0)=x48 rebuilt=x48"
+  ],
+  "behaviour_identical": true
+ },
+ "Shapes": {
+  "methods": {
+   "r8": {
+    "content": "contains_statements",
+    "quality": "fallback",
+    "body": "\n    x = x + 1;\n",
+    "diagnostics": [
+     "jre_recovery_produced",
+     "jre_declaration"
+    ]
+   },
+   "r15": {
+    "content": "contains_statements",
+    "quality": "fallback",
+    "body": "\n    if (count >= threshold) {\n    }\n",
+    "diagnostics": [
+     "jre_recovery_produced",
+     "jre_declaration"
+    ]
+   },
+   "arr": {
+    "content": "contains_statements",
+    "quality": "fallback",
+    "body": "\n    int i = 0;\n",
+    "diagnostics": [
+     "jre_region_unmet_precondition",
+     "jre_region_uncovered_blocks",
+     "jre_recovery_produced",
+     "jre_declaration"
+    ]
+   }
+  },
+  "rebuilt_compiles": false,
+  "compile_error": "ShapesRebuilt.java:4: error: missing return statement\n    }\n    ^\nShapesRebuilt.java:9: error: missing return statement\n    }\n    ^\nShapesRebuilt.java:13: error: missing return statement\n    }\n    ^\n3 errors"
+ }
+}
